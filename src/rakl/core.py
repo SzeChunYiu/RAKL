@@ -20,6 +20,17 @@ class Relationship(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
+TRANSITIVE_EQUIVALENCE_RELATIONSHIPS = frozenset(
+    {
+        Relationship.EXACT_ISOMORPHISM,
+        Relationship.GENERATOR_EQUIVALENCE,
+        Relationship.OBSERVATIONAL_EQUIVALENCE,
+        Relationship.ASYMPTOTIC_EQUIVALENCE,
+        Relationship.QOI_EQUIVALENCE,
+    }
+)
+
+
 class Authority(str, Enum):
     SOURCE_PROJECTION = "SOURCE_PROJECTION"
     NORMALIZED_CLAIM = "NORMALIZED_CLAIM"
@@ -99,6 +110,32 @@ class Discriminator:
         ) / self.cost
 
 
+def _components_from_relations(relations: Iterable[Relation]) -> list[set[str]]:
+    """Connected components for one already-compatible relation layer."""
+    edges = list(relations)
+    nodes = {endpoint for relation in edges for endpoint in (relation.left, relation.right)}
+    parent = {node: node for node in nodes}
+
+    def find(item: str) -> str:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: str, right: str) -> None:
+        root_left, root_right = find(left), find(right)
+        if root_left != root_right:
+            parent[root_right] = root_left
+
+    for relation in edges:
+        union(relation.left, relation.right)
+
+    groups: dict[str, set[str]] = {}
+    for node in parent:
+        groups.setdefault(find(node), set()).add(node)
+    return [group for group in groups.values() if len(group) > 1]
+
+
 @dataclass
 class KnowledgeFiber:
     fiber_id: str
@@ -174,40 +211,76 @@ class KnowledgeFiber:
             if relation.relationship == Relationship.CONTEXT_DEPENDENT_DIFFERENCE
         ]
 
-    def equivalence_classes(self) -> list[set[str]]:
-        """Connected components over representation-equivalence relationships."""
-        equivalence = {
-            Relationship.EXACT_ISOMORPHISM,
-            Relationship.GENERATOR_EQUIVALENCE,
-            Relationship.OBSERVATIONAL_EQUIVALENCE,
-            Relationship.ASYMPTOTIC_EQUIVALENCE,
-            Relationship.QOI_EQUIVALENCE,
-            Relationship.APPROXIMATE_REPRESENTATION,
-        }
-        parent = {projection_id: projection_id for projection_id in self.projections}
+    def equivalence_layers(self) -> list[dict]:
+        """Return transitive equivalence components without crossing type or scope.
 
-        def find(item: str) -> str:
-            while parent[item] != item:
-                parent[item] = parent[parent[item]]
-                item = parent[item]
-            return item
-
-        def union(left: str, right: str) -> None:
-            root_left, root_right = find(left), find(right)
-            if root_left != root_right:
-                parent[root_right] = root_left
-
+        A chain may be closed transitively only inside one relationship type and one
+        declared scope.  This prevents an exact-isomorphism edge followed by a
+        QoI-equivalence edge from silently becoming a stronger three-way equivalence.
+        Approximation is deliberately excluded because pairwise approximation is not
+        generally transitive.
+        """
+        grouped: dict[tuple[Relationship, str | None], list[Relation]] = {}
         for relation in self.relations:
-            if relation.relationship in equivalence:
-                union(relation.left, relation.right)
+            if relation.relationship not in TRANSITIVE_EQUIVALENCE_RELATIONSHIPS:
+                continue
+            grouped.setdefault((relation.relationship, relation.scope), []).append(relation)
 
-        groups: dict[str, set[str]] = {}
-        for projection_id in parent:
-            groups.setdefault(find(projection_id), set()).add(projection_id)
-        return [group for group in groups.values() if len(group) > 1]
+        layers: list[dict] = []
+        for (relationship, scope), relations in sorted(
+            grouped.items(), key=lambda item: (item[0][0].value, item[0][1] or "")
+        ):
+            for group in _components_from_relations(relations):
+                layers.append(
+                    {
+                        "relationship": relationship.value,
+                        "scope": scope,
+                        "members": sorted(group),
+                    }
+                )
+        return layers
+
+    def equivalence_classes(
+        self,
+        relationship: Relationship = Relationship.EXACT_ISOMORPHISM,
+        *,
+        scope: str | None = None,
+    ) -> list[set[str]]:
+        """Connected components for one equivalence layer.
+
+        The safe default is exact isomorphism.  When ``scope`` is omitted, components
+        from all scopes of the selected relationship are returned, but each scope is
+        still closed separately.  Cross-type or cross-scope transitive closure is never
+        inferred.
+        """
+        if relationship not in TRANSITIVE_EQUIVALENCE_RELATIONSHIPS:
+            raise ValueError(
+                f"{relationship.value} is not licensed for transitive equivalence closure"
+            )
+
+        grouped: dict[str | None, list[Relation]] = {}
+        for relation in self.relations:
+            if relation.relationship != relationship:
+                continue
+            if scope is not None and relation.scope != scope:
+                continue
+            grouped.setdefault(relation.scope, []).append(relation)
+
+        groups: list[set[str]] = []
+        for relation_scope in sorted(grouped, key=lambda value: value or ""):
+            groups.extend(_components_from_relations(grouped[relation_scope]))
+        return groups
+
+    def approximate_relationships(self) -> list[Relation]:
+        """Return approximation edges pairwise rather than treating them as closure."""
+        return [
+            relation
+            for relation in self.relations
+            if relation.relationship == Relationship.APPROXIMATE_REPRESENTATION
+        ]
 
     def global_portrait(self) -> dict:
-        """Compact evidence-preserving Apple-Principle synthesis."""
+        """Compact evidence-preserving Apple/Knowledge-Atlas synthesis."""
         by_facet = {
             facet: [p.projection_id for p in self.projections_for_facet(facet)]
             for facet in sorted(self.covered_facets())
@@ -218,8 +291,19 @@ class KnowledgeFiber:
             "atomic_step": self.atomic_step,
             "facets": by_facet,
             "missing_facets": sorted(self.missing_facets()),
+            # Compatibility alias with a deliberately safe meaning: exact-only.
             "equivalence_classes": [
                 sorted(group) for group in self.equivalence_classes()
+            ],
+            "equivalence_layers": self.equivalence_layers(),
+            "approximate_relationships": [
+                {
+                    "left": relation.left,
+                    "right": relation.right,
+                    "scope": relation.scope,
+                    "evidence": list(relation.evidence),
+                }
+                for relation in self.approximate_relationships()
             ],
             "contradictions": [
                 {
