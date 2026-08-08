@@ -112,7 +112,39 @@ microscopic mechanism equivalence
 
 Agreement at a weaker layer never silently upgrades to a stronger one.
 
-## 7. Sheaf-like interpretation
+## 7. Typed and scoped relation algebra
+
+Equivalence is not one undifferentiated relation.
+
+RAKL closes a relation transitively only when the edges belong to the **same licensed relationship type and the same declared scope**. For example:
+
+```text
+A EXACT_ISOMORPHISM B   [scope = global]
+B EXACT_ISOMORPHISM C   [scope = global]
+```
+
+may justify an exact class `{A,B,C}`.
+
+But:
+
+```text
+A EXACT_ISOMORPHISM B   [scope = global]
+B QOI_EQUIVALENCE C     [scope = QoI:x]
+```
+
+must remain two layers. It does not justify any stronger three-way class.
+
+Likewise, two QoI-equivalence edges referring to different consumers or QoIs are not composed unless an explicit transition argument proves that their scopes agree.
+
+`APPROXIMATE_REPRESENTATION` is pairwise by default. Approximation is not assumed transitive because error may accumulate, regimes may differ, and the approximation map itself may depend on context. A transitive approximation statement requires a separate bound or theorem.
+
+Practical rule:
+
+> **Closure is typed, scoped, and evidence-bearing. Cross-layer chains are visible paths in the atlas, not automatic equivalence classes.**
+
+This rule is also a falsifier for RAKL's own equivalence engine: any implementation that merges mixed relationship layers or incompatible scopes has created a false global picture.
+
+## 8. Sheaf-like interpretation
 
 The local-to-global structure resembles sheaf-based multi-view consistency: local descriptions are attached to parts of an object and compatibility is checked on overlaps before global synthesis.
 
@@ -122,7 +154,7 @@ RAKL does not require every application to implement full category/sheaf theory.
 
 For domains where multi-view consistency is central, a formal sheaf implementation may become a RAKL child formalism and must face its own known-answer and native validation.
 
-## 8. Recursive atlas
+## 9. Recursive atlas
 
 Each chart can itself be an object with its own atlas.
 
@@ -140,7 +172,7 @@ observation artifact
 
 Each of these receives local views from different research traditions. RAKL recursively repeats the same gluing process.
 
-## 9. RAKL itself as an atlas
+## 10. RAKL itself as an atlas
 
 External research frameworks should be treated as local charts of the object:
 

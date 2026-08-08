@@ -144,8 +144,67 @@
       "facets": ["unseen diversity", "discovery saturation"],
       "retained_projection": "diagnostic estimate of remaining semantic novelty; never a saturation certificate under adaptive search",
       "status": "ADOPTED_DIAGNOSTIC"
+    },
+    {
+      "id": "atms-de-kleer",
+      "source": "https://doi.org/10.1016/0004-3702(86)90080-9",
+      "facets": ["truth maintenance", "assumption-conditioned worlds", "contradiction handling", "branching", "negative history"],
+      "retained_projection": "store support under explicit assumption environments, preserve simultaneous candidate worlds, and identify inconsistent assumption combinations instead of retracting history globally",
+      "status": "ADOPT_NEXT",
+      "cannot_see": "evidence quality and probabilistic confidence are outside the classical ATMS formalism and remain RAKL authority-layer responsibilities"
+    },
+    {
+      "id": "dung-argumentation",
+      "source": "https://doi.org/10.1016/0004-3702(94)00041-X",
+      "facets": ["structured conflict", "argument acceptability", "nonmonotonic reasoning"],
+      "retained_projection": "make attack relations between claims/arguments first-class and compute acceptability from graph structure rather than prose consensus",
+      "status": "ADOPT_SCOPED",
+      "cannot_see": "an abstract attack graph does not itself establish that an argument is source-grounded or scientifically valid"
+    },
+    {
+      "id": "marge",
+      "source": "https://arxiv.org/abs/2508.02584",
+      "facets": ["claim verification", "structured argument trees", "multi-LLM synthesis"],
+      "retained_projection": "structured argument trees provide inspectable paths and can outperform unstructured multi-model debate; RAKL should borrow structure but never promote model-generated arguments above source evidence",
+      "status": "ADOPT_SCOPED_WITH_EVIDENCE_GATE"
+    },
+    {
+      "id": "claim-bench",
+      "source": "https://aclanthology.org/2025.ijcnlp-long.127/",
+      "facets": ["claim-evidence linking", "scientific comprehension benchmark", "prompt decomposition"],
+      "retained_projection": "evaluate claim-to-evidence linkage atomically; multi-pass decomposition can improve evidence linking at added cost",
+      "status": "ADOPT_RAKLBENCH"
+    },
+    {
+      "id": "evidencebench",
+      "source": "https://arxiv.org/abs/2504.18736",
+      "facets": ["evidence extraction", "hypothesis-conditioned retrieval", "expert annotation"],
+      "retained_projection": "benchmark sentence-level evidence retrieval against expert judgments rather than treating citation presence as grounding",
+      "status": "ADOPT_RAKLBENCH"
+    },
+    {
+      "id": "papertrail",
+      "source": "https://arxiv.org/abs/2602.21045",
+      "facets": ["granular provenance", "claim-evidence mapping", "unsupported claims", "omission detection"],
+      "retained_projection": "decompose answers and sources into atomic claims/evidence so support gaps and omissions become visible; provenance visibility alone does not guarantee users will verify",
+      "status": "ADOPT_SCOPED"
+    },
+    {
+      "id": "asreview",
+      "source": "https://doi.org/10.1038/s42256-020-00287-7",
+      "facets": ["active literature screening", "human-in-the-loop retrieval", "simulation benchmarking"],
+      "retained_projection": "use active-learning prioritization and simulation benchmarks to reduce screening cost while retaining explicit reviewer decisions",
+      "status": "ADOPT_SCOPED"
+    },
+    {
+      "id": "safe-stopping",
+      "source": "https://doi.org/10.1186/s13643-024-02502-7",
+      "facets": ["active-search stopping", "recall-risk calibration", "systematic review"],
+      "retained_projection": "stopping must balance additional screening cost against the risk of missed relevant records and should combine multiple conservative diagnostics rather than one magic threshold",
+      "status": "ADOPT_SCOPED_DIAGNOSTIC",
+      "cannot_see": "document-recall stopping is not semantic saturation; RAKL still requires route-diverse semantic novelty checks"
     }
   ],
   "round_status": "NON_FLAT",
-  "next_action": "Continue expanding each method facet with primary papers and high-quality implementations until semantic novelty is route-wise and independently flat."
+  "next_action": "Implement and benchmark typed/scoped relation algebra first; then open assumption-environment truth maintenance, structured evidence argumentation, atomic claim-evidence provenance, and active-search stopping as separate fibers. Continue until route-wise and independent semantic novelty is flat."
 }
