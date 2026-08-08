@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/projection.schema.json",
+  "title": "RAKL Source Projection",
+  "type": "object",
+  "required": [
+    "projection_id",
+    "object_id",
+    "source",
+    "facets",
+    "claim",
+    "context",
+    "authority",
+    "status"
+  ],
+  "properties": {
+    "projection_id": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "required": ["type", "locator"],
+      "properties": {
+        "type": {"type": "string"},
+        "locator": {"type": "string"},
+        "version": {"type": ["string", "null"]},
+        "retrieved_at": {"type": ["string", "null"]},
+        "hash": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "facets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "projection_operator": {
+      "description": "How the source turns the object into the reported observation/claim.",
+      "type": ["string", "null"]
+    },
+    "claim": {"type": "string", "minLength": 1},
+    "mathematical_object": {"type": ["string", "null"]},
+    "mechanism_interpretation": {"type": ["string", "null"]},
+    "context": {
+      "type": "object",
+      "properties": {
+        "population": {"type": ["string", "null"]},
+        "scale": {"type": ["string", "null"]},
+        "horizon": {"type": ["string", "null"]},
+        "observation_model": {"type": ["string", "null"]},
+        "units": {"type": ["string", "null"]},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "intervention": {"type": ["string", "null"]},
+        "method": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "uncertainty": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "authority": {
+      "enum": [
+        "SOURCE_PROJECTION",
+        "NORMALIZED_CLAIM",
+        "EQUIVALENCE_CLASS",
+        "PREDICTIVE_SURVIVOR",
+        "MECHANISTICALLY_DERIVED",
+        "IDENTIFIED_OR_BOUNDED",
+        "DECISION_USABLE"
+      ]
+    },
+    "cannot_see": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "mapping_to_existing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["target_id", "relationship"],
+        "properties": {
+          "target_id": {"type": "string"},
+          "relationship": {
+            "enum": [
+              "EXACT_ISOMORPHISM",
+              "GENERATOR_EQUIVALENCE",
+              "OBSERVATIONAL_EQUIVALENCE",
+              "ASYMPTOTIC_EQUIVALENCE",
+              "QOI_EQUIVALENCE",
+              "APPROXIMATE_REPRESENTATION",
+              "ANALOGY_ONLY",
+              "INCOMPATIBLE",
+              "UNKNOWN"
+            ]
+          },
+          "scope": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "status": {
+      "enum": ["RAW", "NORMALIZED", "PROMOTED", "CONFLICT", "REJECTED", "SUPERSEDED"]
+    }
+  },
+  "additionalProperties": true
+}
