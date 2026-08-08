@@ -47,10 +47,22 @@
     "tests/test_meta.py",
     "docs/RAKLBENCH.md"
   ],
+  "self_refutation_and_repair": {
+    "found": true,
+    "defect": "SaturationTracker.state initially emitted INDEPENDENT_FLAT_1 before checking whether independent_flat_required was already satisfied. Configurations requiring one independent flat round would therefore fail their own saturation condition.",
+    "caught_by": [
+      "test_new_semantic_object_resets_flat_sequence",
+      "test_native_residual_reopens_saturated_fiber"
+    ],
+    "fix_commit": "08340b7adf04316cffd831455a71076ffc9e5313",
+    "repair": "Check independent >= independent_flat_required before descriptive intermediate labels; require both flat thresholds >= 1.",
+    "equivalent_logic_recheck": "PASS"
+  },
   "verification": {
-    "equivalent_in_memory_logic_checks": "PASS",
+    "equivalent_in_memory_logic_checks": "PASS_AFTER_REPAIR",
     "checks_exercised": [
       "semantic flat sequence and independent saturation",
+      "custom independent-flat threshold = 1",
       "residual-driven saturation reopening",
       "workflow auto-promotion guard",
       "constitutional auto-promotion refusal"
@@ -58,7 +70,7 @@
     "full_repository_pytest": "CANNOT_CHECK_HOST_DNS",
     "reason": "The local runtime could not resolve github.com to clone the public repository.",
     "github_combined_status_seen": "NONE_AT_TIME_OF_CHECK",
-    "honesty_note": "Presence of a CI workflow file is not treated as evidence that CI executed."
+    "honesty_note": "Presence of a CI workflow file is not treated as evidence that CI executed. The defect above demonstrates why actual execution matters."
   },
   "saturation": {
     "RAKL_METHOD": "ACTIVE_NON_FLAT",
