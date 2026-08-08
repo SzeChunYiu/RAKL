@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/knowledge-fiber.schema.json",
+  "title": "RAKL Knowledge Fiber",
+  "type": "object",
+  "required": [
+    "fiber_id",
+    "object_id",
+    "atomic_step",
+    "status",
+    "dimensions",
+    "projections",
+    "relationships",
+    "gaps",
+    "next_discriminators"
+  ],
+  "properties": {
+    "fiber_id": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string", "minLength": 1},
+    "parent_fiber_id": {"type": ["string", "null"]},
+    "atomic_step": {"type": "string", "minLength": 1},
+    "question": {"type": ["string", "null"]},
+    "qoi": {"type": ["string", "null"]},
+    "status": {
+      "enum": [
+        "UNSEARCHED",
+        "SEARCHING",
+        "NON_FLAT",
+        "FLAT_SAME_CONTEXT",
+        "INDEPENDENT_FLAT_1",
+        "INDEPENDENT_FLAT_2",
+        "INDEPENDENT_FLAT_3",
+        "SATURATED_SCOPED",
+        "REOPENED_BY_RESIDUAL"
+      ]
+    },
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "observables": {"type": "array", "items": {"type": "string"}},
+        "representations": {"type": "array", "items": {"type": "string"}},
+        "microscopic_mechanisms": {"type": "array", "items": {"type": "string"}},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "scales_regimes": {"type": "array", "items": {"type": "string"}},
+        "observation_models": {"type": "array", "items": {"type": "string"}},
+        "coarse_graining_operators": {"type": "array", "items": {"type": "string"}},
+        "inference_methods": {"type": "array", "items": {"type": "string"}},
+        "numerical_methods": {"type": "array", "items": {"type": "string"}},
+        "falsifiers_counterexamples": {"type": "array", "items": {"type": "string"}},
+        "native_data_products": {"type": "array", "items": {"type": "string"}},
+        "qois": {"type": "array", "items": {"type": "string"}},
+        "decision_consumers": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "projections": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["left", "right", "relationship"],
+        "properties": {
+          "left": {"type": "string"},
+          "right": {"type": "string"},
+          "relationship": {
+            "enum": [
+              "COMPLEMENTARY",
+              "EXACT_ISOMORPHISM",
+              "GENERATOR_EQUIVALENCE",
+              "OBSERVATIONAL_EQUIVALENCE",
+              "ASYMPTOTIC_EQUIVALENCE",
+              "QOI_EQUIVALENCE",
+              "APPROXIMATE_REPRESENTATION",
+              "CONTEXT_DEPENDENT_DIFFERENCE",
+              "CONTRADICTION",
+              "ANALOGY_ONLY",
+              "INCOMPATIBLE",
+              "UNKNOWN"
+            ]
+          },
+          "scope": {"type": ["string", "null"]},
+          "evidence": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "compatibility_constraints": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "surviving_hypotheses": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gap_id", "kind", "description"],
+        "properties": {
+          "gap_id": {"type": "string"},
+          "kind": {
+            "enum": [
+              "MISSING_FACET",
+              "MISSING_CONTEXT",
+              "CONTRADICTION",
+              "IDENTIFIABILITY",
+              "MISSING_DATA",
+              "MECHANISM_GAP",
+              "DERIVATION_GAP",
+              "NUMERICAL_GAP",
+              "DECISION_GAP",
+              "METHOD_GAP"
+            ]
+          },
+          "description": {"type": "string"},
+          "reopens_dimensions": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "next_discriminators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "hypotheses", "prediction_frozen", "cost"],
+        "properties": {
+          "id": {"type": "string"},
+          "hypotheses": {"type": "array", "items": {"type": "string"}},
+          "prediction_frozen": {"type": "boolean"},
+          "separation_score": {"type": ["number", "null"]},
+          "identified_set_shrinkage": {"type": ["number", "null"]},
+          "cost": {"type": "number", "exclusiveMinimum": 0},
+          "required_data": {"type": "array", "items": {"type": "string"}},
+          "result_branches": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "research_rounds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["round_id", "context_id", "new_semantic_objects"],
+        "properties": {
+          "round_id": {"type": "string"},
+          "context_id": {"type": "string"},
+          "new_semantic_objects": {"type": "array", "items": {"type": "string"}},
+          "flat_after_dedup": {"type": "boolean"},
+          "independent": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
