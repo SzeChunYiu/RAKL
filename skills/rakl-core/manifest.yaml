@@ -1,4 +1,4 @@
-version: 0.1.0
+version: 0.2.0
 
 always_load:
   - static/core/principles.md
@@ -8,6 +8,7 @@ axes:
   workflow:
     allowed:
       - problem-solving
+      - perspective-discovery
       - literature-absorption
       - failure-diagnosis
       - self-rakl
@@ -15,6 +16,8 @@ axes:
     mappings:
       problem-solving:
         - workflows/problem-solving.md
+      perspective-discovery:
+        - workflows/perspective-discovery.md
       literature-absorption:
         - workflows/literature-absorption.md
       failure-diagnosis:
@@ -27,6 +30,8 @@ axes:
 routing_hints:
   problem-solving:
     detect: "new question, derive, explain, build model, solve, prove, formalize"
+  perspective-discovery:
+    detect: "missing perspectives, blind spots, broaden viewpoint, repeated search vocabulary, global picture, what facets are missing"
   literature-absorption:
     detect: "papers, literature, repository, prior work, survey, learn, absorb knowledge"
   failure-diagnosis:
@@ -36,15 +41,30 @@ routing_hints:
   strategy-synthesis:
     detect: "decision, strategy, policy, utility, profitability, execution, action selection"
 
+workflow_composition:
+  problem-solving:
+    recommended_pre_steps:
+      - perspective-discovery
+  literature-absorption:
+    recommended_pre_steps:
+      - perspective-discovery
+  failure-diagnosis:
+    conditional_steps:
+      - perspective-discovery
+
 invariants:
   - evidence_before_narrative
   - apple_projection_before_theory_competition
+  - context_before_contradiction
+  - normalize_before_multiplying
   - representation_is_not_mechanism
   - llm_is_proposer_not_authority
   - preserve_negative_results
   - no_post_result_threshold_rescue
   - same_context_reflection_is_not_independent_review
   - raw_ingestion_does_not_auto_promote_knowledge
+  - semantic_saturation_not_paper_count
+  - knowledge_saturation_is_not_problem_closure
   - native_residual_reopens_relevant_fiber
 
 schemas:
