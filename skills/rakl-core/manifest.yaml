@@ -1,0 +1,52 @@
+version: 0.1.0
+
+always_load:
+  - static/core/principles.md
+  - static/core/workflow.md
+
+axes:
+  workflow:
+    allowed:
+      - problem-solving
+      - literature-absorption
+      - failure-diagnosis
+      - self-rakl
+      - strategy-synthesis
+    mappings:
+      problem-solving:
+        - workflows/problem-solving.md
+      literature-absorption:
+        - workflows/literature-absorption.md
+      failure-diagnosis:
+        - workflows/failure-diagnosis.md
+      self-rakl:
+        - workflows/self-rakl.md
+      strategy-synthesis:
+        - workflows/strategy-synthesis.md
+
+routing_hints:
+  problem-solving:
+    detect: "new question, derive, explain, build model, solve, prove, formalize"
+  literature-absorption:
+    detect: "papers, literature, repository, prior work, survey, learn, absorb knowledge"
+  failure-diagnosis:
+    detect: "failed, refuted, residual, mismatch, bug, model does not work, contradictory evidence"
+  self-rakl:
+    detect: "improve RAKL, reflect on method, better workflow, research process, router, self-improve"
+  strategy-synthesis:
+    detect: "decision, strategy, policy, utility, profitability, execution, action selection"
+
+invariants:
+  - evidence_before_narrative
+  - apple_projection_before_theory_competition
+  - representation_is_not_mechanism
+  - llm_is_proposer_not_authority
+  - preserve_negative_results
+  - no_post_result_threshold_rescue
+  - same_context_reflection_is_not_independent_review
+  - raw_ingestion_does_not_auto_promote_knowledge
+  - native_residual_reopens_relevant_fiber
+
+schemas:
+  projection: ../../schemas/projection.schema.json
+  knowledge_fiber: ../../schemas/knowledge-fiber.schema.json
