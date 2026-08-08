@@ -1,0 +1,47 @@
+{
+  "benchmark_id": "SELF_RAKL_002_TYPED_EQUIVALENCE",
+  "frozen_at": "2026-08-09T01:42:00+02:00",
+  "starting_main_sha": "6d6ee5f54a7607765d5d1779859151f562030918",
+  "target_fiber": "representation-equivalence detection / Knowledge Atlas gluing",
+  "observed_residual": "KnowledgeFiber.equivalence_classes() currently unions EXACT_ISOMORPHISM, GENERATOR_EQUIVALENCE, OBSERVATIONAL_EQUIVALENCE, ASYMPTOTIC_EQUIVALENCE, QOI_EQUIVALENCE, and APPROXIMATE_REPRESENTATION into one connected-component graph. This can silently upgrade a chain of weaker or differently scoped relations into a stronger global equivalence class, contradicting the Knowledge Atlas rule that agreement at a weaker layer never upgrades to a stronger one.",
+  "blocking_invariants": [
+    "Normalize before multiplying",
+    "Representation is not mechanism",
+    "Context before contradiction",
+    "LLM proposes; evidence governs",
+    "Knowledge Atlas gluing must be earned on overlaps"
+  ],
+  "meta_qois": {
+    "primary": "false-merge reduction",
+    "secondary": ["scope honesty", "relationship-layer visibility", "backward interpretability"]
+  },
+  "frozen_cases": [
+    {
+      "id": "E1_exact_transitivity",
+      "world": "A EXACT_ISOMORPHISM B; B EXACT_ISOMORPHISM C under the same scope",
+      "expected": "A,B,C form one exact-isomorphism class"
+    },
+    {
+      "id": "E2_no_cross_layer_upgrade",
+      "world": "A EXACT_ISOMORPHISM B; B QOI_EQUIVALENCE C",
+      "expected": "exact layer contains A,B; QoI layer contains B,C; no class contains A,B,C"
+    },
+    {
+      "id": "E3_scope_partition",
+      "world": "A QOI_EQUIVALENCE B for QoI:x; B QOI_EQUIVALENCE C for QoI:y",
+      "expected": "two scoped QoI classes remain separate; no transitive A,C gluing"
+    },
+    {
+      "id": "E4_approximation_not_equivalence_closure",
+      "world": "A APPROXIMATE_REPRESENTATION B; B APPROXIMATE_REPRESENTATION C",
+      "expected": "approximation edges remain explicit pairwise relations and do not create a transitive equivalence class"
+    },
+    {
+      "id": "E5_global_portrait_visibility",
+      "world": "mixed exact, observational, QoI, and approximate relations",
+      "expected": "global portrait exposes typed/scoped equivalence layers plus pairwise approximate relations rather than one flat equivalence list"
+    }
+  ],
+  "acceptance_rule": "Promote only if all existing tests plus these frozen hostile cases pass in GitHub Actions, no blocking invariant is weakened, and the old mixed-layer class is no longer the default global-portrait representation.",
+  "status": "FROZEN_BEFORE_CHALLENGER_IMPLEMENTATION"
+}
