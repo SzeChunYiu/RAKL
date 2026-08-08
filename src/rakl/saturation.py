@@ -70,6 +70,12 @@ class SaturationTracker:
     _seen: set[str] = field(default_factory=set)
     _reopened_reason: str | None = None
 
+    def __post_init__(self) -> None:
+        if self.same_context_flat_required < 1:
+            raise ValueError("same_context_flat_required must be >= 1")
+        if self.independent_flat_required < 1:
+            raise ValueError("independent_flat_required must be >= 1")
+
     def record(self, research_round: ResearchRound) -> RecordedRound:
         if any(
             existing.research_round.round_id == research_round.round_id
@@ -157,14 +163,16 @@ class SaturationTracker:
         independent = self.independent_flat_count()
         if independent <= 0:
             return SaturationState.SAME_CONTEXT_PLATEAU
+
+        # Threshold must be checked before descriptive intermediate labels. This is
+        # load-bearing for projects that deliberately require only 1 or 2 independent
+        # flat rounds in a scoped/cheap benchmark.
+        if independent >= self.independent_flat_required:
+            return SaturationState.SATURATED_SCOPED
         if independent == 1:
             return SaturationState.INDEPENDENT_FLAT_1
         if independent == 2:
             return SaturationState.INDEPENDENT_FLAT_2
-        if independent == 3 and self.independent_flat_required > 3:
-            return SaturationState.INDEPENDENT_FLAT_3
-        if independent >= self.independent_flat_required:
-            return SaturationState.SATURATED_SCOPED
         return SaturationState.INDEPENDENT_FLAT_3
 
     def novelty_history(self) -> list[dict]:
