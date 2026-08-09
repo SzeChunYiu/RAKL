@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from math import sqrt
 from typing import Optional, Tuple
 
 from .similarity import SimilarityRelation, SimilarityWitness, WitnessVerdict, validate_similarity_witness
@@ -21,15 +20,16 @@ class MeasurementRelationVerdict(str, Enum):
 class MeasurementSpecification:
     """Context needed to interpret one reported or predicted observation.
 
-    The instrument id is deliberately separate from the measurand and observation
-    operator: two instruments can measure the same observable, and one instrument
-    can support different measurement procedures.
+    Instrument, measurement model, procedure, operator, measurand and result are
+    kept distinct.  A measurement result can be traceable even when the two
+    compared instruments are not identical.
     """
 
     observation_id: str
     measurand_id: str
     feature_of_interest_id: str
     unit_id: str
+    measurement_model_id: str
     observation_operator_id: str
     procedure_id: str
     instrument_id: str
@@ -46,7 +46,12 @@ class MeasurementSpecification:
 
 @dataclass(frozen=True)
 class MeasurementMapping:
-    """Predeclared map that makes two measurement specifications comparable."""
+    """Predeclared map that makes two measurement specifications comparable.
+
+    ``combined_standard_uncertainty`` is supplied by a separately justified
+    uncertainty-combination rule.  This support layer intentionally does not
+    assume independence or silently apply root-sum-square composition.
+    """
 
     mapping_id: str
     declared_before_results: Optional[bool]
@@ -54,7 +59,12 @@ class MeasurementMapping:
     feature_mapping_valid: Optional[bool]
     unit_transform_id: Optional[str]
     unit_transform_invertible: Optional[bool]
+    measurement_model_compatibility: Optional[bool]
     observation_operator_compatibility: Optional[bool]
+    uncertainty_combination_rule_id: Optional[str]
+    uncertainty_combination_valid: Optional[bool]
+    combined_standard_uncertainty: Optional[float]
+    probes_in_common_coordinate: Optional[bool]
     evidence_ids: Tuple[str, ...]
 
 
@@ -108,6 +118,7 @@ def _validate_spec(prefix: str, spec: MeasurementSpecification) -> Tuple[str, ..
         ("measurand_id", spec.measurand_id),
         ("feature_of_interest_id", spec.feature_of_interest_id),
         ("unit_id", spec.unit_id),
+        ("measurement_model_id", spec.measurement_model_id),
         ("observation_operator_id", spec.observation_operator_id),
         ("procedure_id", spec.procedure_id),
         ("instrument_id", spec.instrument_id),
@@ -149,8 +160,8 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
 
     This layer certifies only a scoped measurement relation. It never establishes
     mechanism identity, generator identity, or target scientific authority.
-    Generic SimilarityWitness validation remains a structural compatibility check;
-    this evaluator is the additional certificate required for measurement claims.
+    Generic ``SimilarityWitness`` validation remains a structural compatibility
+    check; this evaluator is the additional measurement certificate.
     """
 
     if trial.witness.relation not in {
@@ -234,6 +245,12 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
     if not set(trial.source.phenomenon_scope).intersection(trial.target.phenomenon_scope):
         return MeasurementRelationReport(MeasurementRelationVerdict.REJECT, ("phenomenon_scope_disjoint",))
 
+    if trial.source.measurement_model_id != trial.target.measurement_model_id:
+        if trial.mapping.measurement_model_compatibility is False:
+            return MeasurementRelationReport(MeasurementRelationVerdict.REJECT, ("measurement_model_mismatch",))
+        if trial.mapping.measurement_model_compatibility is None:
+            return MeasurementRelationReport(MeasurementRelationVerdict.CANNOT_CHECK, ("measurement_model_compatibility_unknown",))
+
     if trial.source.observation_operator_id != trial.target.observation_operator_id:
         if trial.mapping.observation_operator_compatibility is False:
             return MeasurementRelationReport(MeasurementRelationVerdict.REJECT, ("observation_operator_mismatch",))
@@ -271,9 +288,32 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
             ("measurement_resolution_missing",),
         )
 
-    combined_uncertainty = sqrt(
-        trial.source.standard_uncertainty ** 2 + trial.target.standard_uncertainty ** 2
-    )
+    if not trial.mapping.uncertainty_combination_rule_id:
+        return MeasurementRelationReport(
+            MeasurementRelationVerdict.CANNOT_CHECK,
+            ("uncertainty_combination_rule_missing",),
+        )
+    if trial.mapping.uncertainty_combination_valid is False:
+        return MeasurementRelationReport(
+            MeasurementRelationVerdict.REJECT,
+            ("uncertainty_combination_rule_invalid",),
+        )
+    if trial.mapping.uncertainty_combination_valid is None:
+        return MeasurementRelationReport(
+            MeasurementRelationVerdict.CANNOT_CHECK,
+            ("uncertainty_combination_rule_validity_unknown",),
+        )
+    if trial.mapping.combined_standard_uncertainty is None:
+        return MeasurementRelationReport(
+            MeasurementRelationVerdict.CANNOT_CHECK,
+            ("combined_standard_uncertainty_missing",),
+        )
+    if trial.mapping.combined_standard_uncertainty < 0:
+        return MeasurementRelationReport(
+            MeasurementRelationVerdict.REJECT,
+            ("combined_standard_uncertainty_negative",),
+        )
+    combined_uncertainty = trial.mapping.combined_standard_uncertainty
 
     if trial.witness.relation is SimilarityRelation.SAME_OBSERVABLE:
         return MeasurementRelationReport(
@@ -282,9 +322,10 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
                 "same_or_witnessed_measurand",
                 "same_or_witnessed_feature_of_interest",
                 "units_are_common_or_predeclared_transformable",
+                "measurement_models_are_common_or_witnessed_compatible",
                 "observation_operators_are_common_or_witnessed_compatible",
                 "calibration_and_required_traceability_are_valid",
-                "uncertainty_and_resolution_are_explicit",
+                "uncertainty_combination_is_predeclared_and_validated",
                 "measurement_relation_does_not_imply_same_mechanism",
             ),
             combined_uncertainty,
@@ -315,6 +356,14 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
             combined_uncertainty,
         )
 
+    if trial.source.unit_id != trial.target.unit_id:
+        if trial.mapping.probes_in_common_coordinate is not True:
+            return MeasurementRelationReport(
+                MeasurementRelationVerdict.CANNOT_CHECK,
+                ("probe_predictions_not_certified_in_common_coordinate",),
+                combined_uncertainty,
+            )
+
     tolerance = trial.equivalence_tolerance
     if combined_uncertainty > tolerance or max(trial.source.resolution, trial.target.resolution) > tolerance:
         return MeasurementRelationReport(
@@ -340,7 +389,7 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
         (
             "all_frozen_probes_indistinguishable_at_declared_tolerance",
             "measurement_capability_resolves_declared_tolerance",
-            "equivalence_is_relative_to_probe_family_operator_regime_and_qoi",
+            "equivalence_is_relative_to_probe_family_operator_model_regime_and_qoi",
             "observational_equivalence_does_not_imply_same_mechanism",
         ),
         combined_uncertainty,
