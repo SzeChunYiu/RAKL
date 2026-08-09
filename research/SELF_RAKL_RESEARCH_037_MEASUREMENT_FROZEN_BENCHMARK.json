@@ -1,0 +1,56 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_037_MEASUREMENT_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "parent_fiber": "META_N111_MEASUREMENT_INSTRUMENT_COGNITION",
+  "frozen_against_main": "1803221af7dd9be28652bcbd26aaf62904c0500c",
+  "object": "measurement-aware SAME_OBSERVABLE and OBSERVATIONALLY_EQUIVALENT support semantics",
+  "protected_meta_qois": {
+    "blocking": [
+      "no_same_observable_pass_when_measurands_differ",
+      "no_observational_equivalence_pass_when_observation_operators_are_incompatible_or_unknown",
+      "no_pass_when_calibration_or_traceability_required_by_scope_is missing_or_invalid",
+      "no_equivalence_from_equal_numeric_values_alone",
+      "no_equivalence_when_uncertainty_or_resolution_cannot_support_the_declared_tolerance",
+      "no_authority_escalation_from_measurement_compatibility",
+      "negative_measurement_obstructions_are_preserved"
+    ],
+    "non_blocking": [
+      "localize_failure_to_measurand_feature_operator_calibration_uncertainty_regime_or_probe_layer",
+      "permit_distinct_instruments_when a validated transform and uncertainty budget establish comparable results",
+      "distinguish_same_observable_from_observational_equivalence",
+      "support instrument-aware discriminating-probe design"
+    ]
+  },
+  "acceptance": {
+    "known_answer_and_hostile_worlds_must_match": true,
+    "cannot_check_must_remain_distinct_from_reject": true,
+    "thresholds_may_not_be_weakened_after_candidate_results": true,
+    "measurement_support_may_not_grant_scientific_or_target_authority": true
+  },
+  "worlds": [
+    {"id":"M01","name":"same measurand same operator calibrated","expected":"SAME_OBSERVABLE_SUPPORTED_PROPOSAL_ONLY"},
+    {"id":"M02","name":"equal numbers different measurands","expected":"REJECT_MEASURAND_MISMATCH"},
+    {"id":"M03","name":"same property different feature of interest without declared feature map","expected":"REJECT_FEATURE_MISMATCH"},
+    {"id":"M04","name":"unit conversion with predeclared invertible transform and propagated uncertainty","expected":"SAME_OBSERVABLE_SUPPORTED_PROPOSAL_ONLY"},
+    {"id":"M05","name":"post-hoc unit or observation transform","expected":"TRIAL_INVALID"},
+    {"id":"M06","name":"same measurand unknown observation operator","expected":"CANNOT_CHECK_OPERATOR"},
+    {"id":"M07","name":"same numerical output under incompatible observation operators","expected":"REJECT_OPERATOR_MISMATCH"},
+    {"id":"M08","name":"different instruments with validated calibration chain and common reference","expected":"SAME_OBSERVABLE_SUPPORTED_PROPOSAL_ONLY"},
+    {"id":"M09","name":"traceability claimed but calibration chain broken","expected":"REJECT_TRACEABILITY"},
+    {"id":"M10","name":"traceability applicability unknown","expected":"CANNOT_CHECK_TRACEABILITY"},
+    {"id":"M11","name":"predictions indistinguishable within declared resolution across frozen probe family","expected":"OBSERVATIONALLY_EQUIVALENT_PROPOSAL_ONLY"},
+    {"id":"M12","name":"one frozen probe separates predictions beyond tolerance after uncertainty","expected":"OBSERVATIONALLY_DISTINGUISHABLE"},
+    {"id":"M13","name":"equivalence asserted without frozen discriminating probe family","expected":"CANNOT_CHECK_PROBES"},
+    {"id":"M14","name":"tolerance narrower than measurement uncertainty budget","expected":"CANNOT_CHECK_RESOLUTION"},
+    {"id":"M15","name":"regime or phenomenon-time scopes are disjoint","expected":"REJECT_REGIME"},
+    {"id":"M16","name":"same observable but mechanism differs","expected":"SAME_OBSERVABLE_SUPPORTED_MECHANISM_NOT_INFERRED"},
+    {"id":"M17","name":"target test later refutes transport despite valid measurement relation","expected":"PRESERVE_MEASUREMENT_WITNESS_TARGET_REFUTATION_SEPARATE"},
+    {"id":"M18","name":"hidden label or discriminator inspected before instrument mapping freeze","expected":"TRIAL_INVALID"}
+  ],
+  "falsifiers": [
+    "a simpler existing generic SimilarityWitness contract matches all frozen worlds without additional measurement coordinates",
+    "measurement coordinates do not improve false-friend rejection or failure localization",
+    "new support layer silently turns calibration/traceability into mechanism or target authority"
+  ],
+  "implementation_not_yet_present_at_freeze": true
+}
