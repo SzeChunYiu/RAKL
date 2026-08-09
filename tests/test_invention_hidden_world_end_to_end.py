@@ -58,13 +58,16 @@ def test_hidden_quadratic_structure_is_recovered_from_data_only():
 
 
 def test_hidden_cross_feature_interaction_is_novel_composition():
+    # Use a Cartesian design so x*z is identifiable as a genuine interaction and
+    # cannot be replaced by a univariate polynomial caused by collinearity.
     rows = tuple(
         {
             "x": float(x),
             "z": float(z),
             "y": -0.75 + 1.8 * float(x) * float(z),
         }
-        for x, z in zip(range(1, 22), range(23, 2, -1))
+        for x in range(1, 9)
+        for z in range(2, 10)
     )
     discovery = discover_symbolic_laws(
         rows,
