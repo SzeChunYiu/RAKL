@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import TextIO
 
 from .project_runtime import ProjectRuntimeError, RAKLProject, TaskPacketVerdict
 from .reference_profile import (
@@ -25,8 +26,9 @@ def _tristate(value: str) -> bool | None:
     raise argparse.ArgumentTypeError("expected yes, no, or unknown")
 
 
-def _print_json(value: object, *, stream: object = sys.stdout) -> None:
-    print(json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False), file=stream)
+def _print_json(value: object, *, stream: TextIO | None = None) -> None:
+    target = sys.stdout if stream is None else stream
+    print(json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False), file=target)
 
 
 def build_parser() -> argparse.ArgumentParser:
