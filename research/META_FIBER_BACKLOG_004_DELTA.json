@@ -1,0 +1,102 @@
+{
+  "delta_id": "RAKL_META_FIBER_BACKLOG_004",
+  "date": "2026-08-09",
+  "base_backlog": "research/META_FIBER_BACKLOG.json",
+  "previous_delta": "research/META_FIBER_BACKLOG_003_DELTA.json",
+  "global_state": "ACTIVE_NON_FLAT",
+  "updates": [
+    {
+      "fiber_id": "META_N020_EVALUATOR_INTEGRITY",
+      "old_status": "NEW_IMPLEMENTED_GUARD_V0",
+      "new_status": "HOSTILE_PERIMETER_BYPASS_CONFIRMED_ATTESTATION_PRIMITIVES_V1",
+      "native_residual": "A candidate can leave the workflow and all pre-existing tests unchanged, modify pyproject.toml pytest discovery to a trivial-only directory, and obtain green exact-SHA CI while bypassing the intended suite.",
+      "hostile_evidence": {
+        "branch": "self-rakl/round-004-hostile-evaluator",
+        "sha": "1fe443787eec736ea004c809647b02236f1b95d2",
+        "workflow_run": 31288691577,
+        "job": 93182055535,
+        "result": "SUCCESS",
+        "pytest_observed": "1 passed in 0.81s",
+        "main_moved": false
+      },
+      "retained_addition": "Replace ad-hoc protected-path intuition with a declared evaluator influence perimeter plus externally observed evaluation attestation binding evaluator revision, materials, command, environment and authorized builder.",
+      "implementation": "src/rakl/evaluator.py adds supporting primitives only; active PromotionGate semantics are deliberately not self-replaced in this round.",
+      "next_discriminator": "Run the frozen parent evaluator against a hostile candidate using evaluator-owned command/config so candidate pytest configuration cannot suppress parent tests, then wire a verified attestation into a later PromotionGate challenger."
+    },
+    {
+      "fiber_id": "META_N006_INFORMATION_GAIN",
+      "old_status": "RESEARCHED_NOT_IMPLEMENTED",
+      "new_status": "RESEARCHED_GOAL_ROBUST_FEEDBACK_AWARE_NOT_IMPLEMENTED",
+      "retained_additions": [
+        "When a QoI/decision is declared, target expected information gain about that QoI/decision rather than global parameter/model entropy.",
+        "Treat belief/model misspecification as a first-class robustness coordinate.",
+        "Separate LLM prior/proposal generation from evidence-updated acquisition because feedback-insensitive LLM experiment planners can look semantically competent while failing sequential learning."
+      ],
+      "next_discriminator": "Known hypothesis worlds where maximum global entropy reduction selects the wrong experiment for the decision QoI, plus a misspecified-belief world and a permuted-feedback world; compare generic separation-per-cost, standard EIG and robust goal-oriented acquisition."
+    },
+    {
+      "fiber_id": "META_N007_RAKLBENCH",
+      "old_status": "EXECUTABLE_PARTIAL_PROPERTY_METAMORPHIC_V1",
+      "new_status": "EXECUTABLE_PARTIAL_WITH_LIVE_EVALUATOR_BYPASS_WORLD",
+      "retained_addition": "B14 evaluator-integrity world: green CI is a potentially adversarial observation and must be checked against the full evaluator influence perimeter.",
+      "next_discriminator": "Make the hostile evaluator bypass reproducible under a parent-controlled test harness and then add information-firewall leakage cases."
+    }
+  ],
+  "new_fibers": [
+    {
+      "fiber_id": "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+      "parent": "META_N020_EVALUATOR_INTEGRITY",
+      "priority": 1,
+      "status": "NEW_NATIVE_RESIDUAL_RESEARCHED_SUPPORTING_IMPLEMENTATION",
+      "question": "What is the transitive closure of files, commands, dependencies, environment and judge logic that can influence a RAKL evaluation verdict, and how can it be frozen or independently attested without trusting the candidate to enumerate it?",
+      "incumbent": "round-003 explicit fingerprint list for workflow, constitution and selected pre-existing tests",
+      "research_routes": [
+        "in-toto",
+        "SLSA provenance",
+        "Reproducible Builds",
+        "Bazel hermeticity",
+        "software supply-chain trust roots",
+        "translation validation"
+      ],
+      "next_discriminator": "Parent-controlled evaluation that explicitly invokes parent tests/configuration against candidate subject code; mutate pyproject, workflow, plugin configuration, dependency versions and judge code one at a time and require either detection or irrelevance proof."
+    },
+    {
+      "fiber_id": "META_N021_EVALUATOR_INFORMATION_FIREWALL",
+      "priority": 2,
+      "status": "NEW_RESEARCHED_NOT_IMPLEMENTED",
+      "question": "Which candidate metadata, hidden state, expected answers or peer outputs may each evaluator/reviewer observe, and how can blindness be enforced and leak-tested rather than merely asserted?",
+      "incumbent": "blind-review protocol for human/LLM reviewers but no machine-enforced scorer information boundary",
+      "research_routes": [
+        "Inspect AI scorers and sandboxes",
+        "benchmark leakage",
+        "double-blind evaluation",
+        "information-flow control",
+        "adversarial evaluation"
+      ],
+      "next_discriminator": "Planted benchmark where a scorer can achieve perfect apparent accuracy only by reading forbidden answer metadata; blinded scorer must lose that shortcut while retaining legitimate evidence access."
+    },
+    {
+      "fiber_id": "META_N022_GOAL_ROBUST_INFORMATION_GAIN",
+      "parent": "META_N006_INFORMATION_GAIN",
+      "priority": 1,
+      "status": "NEW_RESEARCHED_NOT_IMPLEMENTED",
+      "question": "How should RAKL select the next experiment/query when only a downstream QoI or decision matters and current belief models may be wrong?",
+      "incumbent": "discriminator separation plus identified-set shrinkage per cost",
+      "research_routes": [
+        "goal-oriented Bayesian experimental design",
+        "decision-focused experimental design",
+        "robust/generalized Bayesian design",
+        "feedback-sensitive sequential optimization",
+        "active learning"
+      ],
+      "next_discriminator": "Synthetic worlds with nuisance parameters carrying high entropy but no decision impact, plus model misspecification; score regret and QoI uncertainty rather than total posterior entropy."
+    }
+  ],
+  "saturation_update": {
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "state": "ACTIVE_NON_FLAT",
+    "reason": "A live hostile experiment exposed an unmodeled evaluator influence path and independent research routes added goal-oriented/robust acquisition and scorer information-firewall coordinates."
+  },
+  "instruction_for_next_ai": "Read the round-004 receipt and preserve the hostile branch as negative evidence. Highest-value next step is N020A: construct a parent-controlled evaluation job whose test discovery, judge, command and environment specification are outside candidate control, then test it on the preserved hostile SHA. Do not treat candidate green CI as rehabilitation. In parallel build N022 known-answer decision-QoI worlds before implementing an acquisition policy."
+}
