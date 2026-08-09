@@ -1,0 +1,182 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_022_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "starting_main_sha": "0a851009f6ddd8ffc0a39bc51645343ba684bef8",
+  "object": "NORMAL_LLM_REFERENCE_RUNTIME_AND_USER_PACKAGE",
+  "status": "FROZEN_BEFORE_ROUND_022_IMPLEMENTATION",
+  "constitutional_change": false,
+  "change_class_target": "A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "target_fibers": [
+    "META_N077_NORMAL_LLM_REFERENCE_PROFILE",
+    "META_N078_END_TO_END_CLEAN_INSTALL_WORKFLOW",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE"
+  ],
+  "scope": {
+    "must_close_in_this_round": [
+      "provider-neutral ordinary-LLM capability profile",
+      "initializable local RAKL project runtime",
+      "immutable content-addressed canonical payload storage",
+      "deterministic project diagnostics",
+      "bounded task-packet compilation through existing context compiler",
+      "python -m rakl user entrypoint",
+      "repository-level example project and executable end-to-end tests"
+    ],
+    "explicitly_out_of_scope": [
+      "calling any proprietary or hosted LLM API",
+      "claim-evidence semantic extraction",
+      "automatic scientific authority promotion",
+      "full crash-safe multi-step workflow engine",
+      "global framework or scientific closure",
+      "changing protected CI/evaluator workflows",
+      "changing pyproject.toml or pytest discovery"
+    ]
+  },
+  "registered_meta_qois": [
+    "fresh_project_initialization_success_rate",
+    "canonical_payload_integrity_detection_rate",
+    "duplicate_payload_storage_amplification",
+    "ordinary_llm_profile_honesty_rate",
+    "task_packet_determinism_rate",
+    "mandatory_negative_history_packet_recall",
+    "context_overflow_fail_closed_rate",
+    "project_doctor_fault_detection_rate",
+    "user_workflow_step_count",
+    "external_runtime_dependency_count"
+  ],
+  "blocking_invariants": [
+    "no LLM response may be treated as promoted scientific authority by this runtime",
+    "canonical payload identity is SHA-256 over exact bytes",
+    "an existing content-addressed object whose bytes do not match its digest is an integrity failure, never silently overwritten",
+    "mandatory context cannot be dropped to satisfy a budget",
+    "unknown model capabilities produce CANNOT_CHECK rather than optimistic PASS",
+    "low context capacity produces INCOMPATIBLE rather than silently shrinking the required profile",
+    "record identifiers cannot create arbitrary filesystem paths",
+    "project initialization cannot rewrite an existing incompatible project",
+    "task packet includes explicit authority boundary and source digests",
+    "no protected evaluator, workflow, promotion, or pytest configuration is modified"
+  ],
+  "known_answer_worlds": [
+    {
+      "id": "R22-W01",
+      "name": "ordinary_8k_profile_passes_without_native_tool_calls",
+      "given": "context_window=8192, parseable_json=true, instruction_following=true, native_tool_calls=false",
+      "expected": "PASS for ordinary-8k because external orchestration mediates tools"
+    },
+    {
+      "id": "R22-W02",
+      "name": "undersized_model_fails_profile",
+      "given": "context_window=4096 with otherwise known capabilities",
+      "expected": "INCOMPATIBLE for ordinary-8k"
+    },
+    {
+      "id": "R22-W03",
+      "name": "unknown_context_is_not_assumed",
+      "given": "context_window unknown",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "R22-W04",
+      "name": "canonical_store_deduplicates_equal_bytes",
+      "given": "same exact bytes inserted twice",
+      "expected": "one digest/object identity and no duplicate payload bytes"
+    },
+    {
+      "id": "R22-W05",
+      "name": "different_bytes_do_not_alias",
+      "given": "two payloads differing by one byte",
+      "expected": "different SHA-256 identities"
+    },
+    {
+      "id": "R22-W06",
+      "name": "tampered_payload_is_detected",
+      "given": "stored file bytes changed after insertion",
+      "expected": "doctor/store read reports integrity failure"
+    },
+    {
+      "id": "R22-W07",
+      "name": "unsafe_record_id_cannot_escape_project",
+      "given": "record_id='../../outside'",
+      "expected": "record metadata is stored using derived safe filename and no external path is created"
+    },
+    {
+      "id": "R22-W08",
+      "name": "existing_incompatible_project_not_reinitialized",
+      "given": "project manifest exists with different project_id",
+      "expected": "BLOCK/exception without rewriting manifest"
+    },
+    {
+      "id": "R22-W09",
+      "name": "mandatory_negative_history_survives_packet_compilation",
+      "given": "one mandatory refutation plus many optional records under a tight budget",
+      "expected": "refutation is present when packet compiles"
+    },
+    {
+      "id": "R22-W10",
+      "name": "mandatory_over_budget_fails_closed",
+      "given": "mandatory record token cost exceeds requested task budget",
+      "expected": "CANNOT_COMPILE and no truncated task packet"
+    },
+    {
+      "id": "R22-W11",
+      "name": "packet_replay_is_deterministic",
+      "given": "same project state, operation, question, fibers and token budget",
+      "expected": "byte-equivalent canonical JSON packet modulo no runtime timestamp fields"
+    },
+    {
+      "id": "R22-W12",
+      "name": "task_packet_is_proposal_only",
+      "given": "any successfully compiled task packet",
+      "expected": "contains authority_boundary saying LLM output is proposal-only and cannot self-promote"
+    },
+    {
+      "id": "R22-W13",
+      "name": "doctor_detects_missing_payload",
+      "given": "record metadata points to a deleted canonical payload",
+      "expected": "doctor returns unhealthy with explicit missing payload issue"
+    },
+    {
+      "id": "R22-W14",
+      "name": "doctor_accepts_clean_project",
+      "given": "fresh project with valid ingested records",
+      "expected": "healthy report with project/profile/record/store counts"
+    },
+    {
+      "id": "R22-W15",
+      "name": "end_to_end_reference_workflow",
+      "given": "temporary directory",
+      "steps": [
+        "init project",
+        "ingest source projection",
+        "ingest mandatory refutation",
+        "doctor",
+        "compile task packet",
+        "status"
+      ],
+      "expected": "all steps succeed with no network or third-party runtime dependency"
+    },
+    {
+      "id": "R22-W16",
+      "name": "unreadable_non_utf8_payload_is_not_silently_invented",
+      "given": "binary canonical payload selected for an LLM task packet",
+      "expected": "packet construction fails/CANNOT_CHECK rather than fabricating text"
+    }
+  ],
+  "acceptance": {
+    "required": [
+      "all Round-022 known-answer/hostile tests pass",
+      "all existing repository tests pass on exact candidate SHA",
+      "current main remains frozen until candidate validation completes",
+      "candidate is ahead-only from frozen main",
+      "protected evaluator/workflow/pyproject/promotion inputs remain unchanged",
+      "no blocking invariant regression"
+    ],
+    "promotion_rule": "non-forced fast-forward only after exact candidate CI success and immediate main recheck"
+  },
+  "falsifiers": [
+    "if the runtime needs vendor-specific APIs to complete the frozen E2E workflow, ordinary-provider-neutral portability is refuted",
+    "if a tampered canonical payload can pass doctor/read verification, payload-integrity closure is refuted",
+    "if mandatory negative evidence can disappear from a compiled packet solely due to budget pressure, context integration is refuted",
+    "if same-state task packets are nondeterministic without an explicit stochastic input, replayability is refuted",
+    "if the user workflow cannot be exercised without editing protected CI or test-discovery configuration, this round is blocked"
+  ]
+}
