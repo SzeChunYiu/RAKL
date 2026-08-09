@@ -1,0 +1,72 @@
+{
+  "delta_id":"EXTERNAL_FRAMEWORK_ATLAS_026_DELTA",
+  "date":"2026-08-09",
+  "object":"EVALUATOR_DEPENDENCY_FULL_SHA_PINNING",
+  "sources":[
+    {
+      "source_id":"GITHUB_SECURE_USE_FULL_SHA_CURRENT",
+      "type":"official_platform_security_documentation",
+      "source":"GitHub Actions secure use reference",
+      "url":"https://docs.github.com/en/actions/reference/security/secure-use",
+      "projection":"Pinning an action to a full-length commit SHA is GitHub's immutable action-reference form; GitHub advises verifying that the selected SHA belongs to the intended action repository rather than a fork.",
+      "rakl_mapping":[
+        "protected evaluator dependencies should bind exact action commits rather than mutable major tags",
+        "action repository identity must be checked separately from the text of the workflow"
+      ],
+      "novelty_effect":"full-SHA action pinning is established GitHub security practice, not RAKL novelty"
+    },
+    {
+      "source_id":"GITHUB_ACTION_SETTINGS_FULL_SHA_CURRENT",
+      "type":"official_platform_policy_documentation",
+      "source":"GitHub repository Actions settings documentation",
+      "url":"https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository",
+      "projection":"GitHub exposes repository/organization policy requiring actions to be pinned to full-length commit SHAs.",
+      "rakl_mapping":[
+        "a future release may enable platform enforcement after repository-level migration if the user chooses",
+        "workflow pinning and platform policy are distinct local/control-plane projections"
+      ],
+      "novelty_effect":"full-SHA enforcement policy is prior art/platform capability"
+    },
+    {
+      "source_id":"ACTIONS_CHECKOUT_PIN_11D5960",
+      "type":"official_open_source_action_commit",
+      "source":"actions/checkout commit 11d5960a326750d5838078e36cf38b85af677262",
+      "url":"https://github.com/actions/checkout/commit/11d5960a326750d5838078e36cf38b85af677262",
+      "projection":"The frozen checkout action revision exists in the official actions/checkout repository and matches RAKL's previously observed successful resolution of checkout@v4.",
+      "rakl_mapping":["exact protected dependency identity for Round-026 migration"]
+    },
+    {
+      "source_id":"ACTIONS_SETUP_PYTHON_PIN_A26AF69",
+      "type":"official_open_source_action_commit",
+      "source":"actions/setup-python commit a26af69be951a213d495a4c3e4e4022e16d87065",
+      "url":"https://github.com/actions/setup-python/commit/a26af69be951a213d495a4c3e4e4022e16d87065",
+      "projection":"The frozen setup-python action revision exists in the official actions/setup-python repository and matches RAKL's previously observed successful resolution of setup-python@v5.",
+      "rakl_mapping":["exact protected dependency identity for Round-026 migration"]
+    },
+    {
+      "source_id":"SLSA_BUILD_PROVENANCE_REINFORCED",
+      "type":"official_standard",
+      "source":"SLSA Build Provenance v1.2",
+      "url":"https://slsa.dev/spec/v1.2/build-provenance",
+      "projection":"Reproducibility/security reasoning separates output subject identity from builder/build-definition/dependency inputs.",
+      "rakl_mapping":[
+        "action revisions are part of evaluator/build inputs rather than the evaluated scientific subject",
+        "dependency identity does not itself prove evaluator sufficiency"
+      ],
+      "novelty_effect":"supply-chain dependency provenance is prior art"
+    }
+  ],
+  "retained_rakl_objects_after_deduplication":[
+    "PROTECTED_EVALUATOR_DEPENDENCY_EXACT_IDENTITY",
+    "TRUST_ROOT_MIGRATION_SEPARATE_FROM_AUTOMATIC_PARENT_PASS",
+    "OBSERVED_RESOLUTION_TO_PIN_TRANSITION",
+    "FUTURE_PIN_UPGRADE_AS_EXPLICIT_SUPERSESSION"
+  ],
+  "not_counted_as_paper_novelty":[
+    "full-SHA GitHub Action pinning",
+    "software supply-chain dependency identity",
+    "repository policy requiring immutable action references"
+  ],
+  "remaining_rakl_specific_question":"How a scientific self-improving method should migrate a protected evaluator trust root without weakening the incumbent checker or pretending that a checker designed to reject protected changes approved the migration.",
+  "route_coverage":{"official_security_guidance":true,"platform_policy":true,"official_action_repository_identity":true,"supply_chain_provenance":true}
+}
