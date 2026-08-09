@@ -1,35 +1,8 @@
-\begin{tikzpicture}[
-  >=Latex,
-  every node/.style={font=\sffamily\footnotesize,align=center},
-  step/.style={draw,rounded corners=1.5pt,minimum width=28mm,minimum height=11mm,fill=black!3},
-  guard/.style={draw,double,rounded corners=1.5pt,minimum width=30mm,minimum height=11mm,fill=black!8},
-  bad/.style={draw,dashed,rounded corners=1.5pt,minimum width=26mm,minimum height=10mm},
-  arrow/.style={->,line width=0.6pt},
-  dashedarrow/.style={->,dashed,line width=0.55pt}
-]
-
-\node[step] (m0) at (0,0) {incumbent\\$M_t$};
-\node[step] (challenge) at (3.2,0) {challenge /\\weakness diagnosis};
-\node[step] (candidate) at (6.4,0) {candidate\\$M'$};
-\node[step] (dev) at (9.6,0) {frozen development\\$\Delta_D$};
-\node[guard] (assure) at (12.9,0) {fresh assurance\\$\Delta_A$};
-\node[guard] (promote) at (16.3,0) {scoped promotion\\or retain incumbent};
-
-\draw[arrow] (m0) -- (challenge);
-\draw[arrow] (challenge) -- (candidate);
-\draw[arrow] (candidate) -- (dev);
-\draw[arrow] (dev) -- (assure);
-\draw[arrow] (assure) -- (promote);
-
-\node[bad] (equiv) at (6.4,-1.7) {equivalent to\\incumbent};
-\node[bad] (overfit) at (10.9,-1.7) {$\Delta_D>0$, $\Delta_A<0$\\\texttt{META\_OVERFIT}};
-\node[bad] (blocked) at (14.6,-1.7) {blocking invariant\\fails};
-
-\draw[dashedarrow] (candidate) -- (equiv);
-\draw[dashedarrow] (assure) -- (overfit);
-\draw[dashedarrow] (assure) -- (blocked);
-
+\begin{tikzpicture}[>=Latex,every node/.style={font=\sffamily\footnotesize,align=center},stagebox/.style={draw,rounded corners=1.5pt,minimum width=28mm,minimum height=11mm,fill=black!3},guard/.style={draw,double,rounded corners=1.5pt,minimum width=30mm,minimum height=11mm,fill=black!8},bad/.style={draw,dashed,rounded corners=1.5pt,minimum width=26mm,minimum height=10mm},arrow/.style={->,line width=0.6pt},dashedarrow/.style={->,dashed,line width=0.55pt}]
+\node[stagebox] (m0) at (0,0) {incumbent\\$M_t$}; \node[stagebox] (challenge) at (3.2,0) {challenge /\\weakness diagnosis}; \node[stagebox] (candidate) at (6.4,0) {candidate\\$M'$}; \node[stagebox] (dev) at (9.6,0) {frozen development\\$\Delta_D$}; \node[guard] (assure) at (12.9,0) {fresh assurance\\$\Delta_A$}; \node[guard] (promote) at (16.3,0) {scoped promotion\\or retain incumbent};
+\draw[arrow] (m0) -- (challenge); \draw[arrow] (challenge) -- (candidate); \draw[arrow] (candidate) -- (dev); \draw[arrow] (dev) -- (assure); \draw[arrow] (assure) -- (promote);
+\node[bad] (equiv) at (6.4,-1.7) {equivalent to\\incumbent}; \node[bad] (overfit) at (10.9,-1.7) {$\Delta_D>0$, $\Delta_A<0$\\\texttt{META\_OVERFIT}}; \node[bad] (blocked) at (14.6,-1.7) {blocking invariant\\fails};
+\draw[dashedarrow] (candidate) -- (equiv); \draw[dashedarrow] (assure) -- (overfit); \draw[dashedarrow] (assure) -- (blocked);
 \node[font=\sffamily\scriptsize,text width=60mm,anchor=north west] at (-0.8,-2.6) {The proposer may search, reflect, assimilate external methods, or invent new operators. It cannot write the evaluator or erase failed generations to create an apparent improvement.};
 \node[font=\sffamily\scriptsize,text width=72mm,anchor=north west] at (8.3,-2.6) {Development gain is local optimization. Strong scoped evolution evidence additionally requires material fresh-assurance gain, matched resources, negative-history preservation, and evaluator separation. Same-context bootstrap is first-sign evidence only.};
-
 \end{tikzpicture}
