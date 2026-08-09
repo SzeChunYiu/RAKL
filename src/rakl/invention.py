@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 from enum import Enum
-from typing import Iterable, Mapping, Optional, Sequence, Tuple
+from typing import Iterable, Mapping, Optional, Tuple
 
 from .formalism import (
     FormalEquation,
     FormalSymbol,
     Formalism,
     MechanismEdge,
-    MechanismGraph,
     MechanismNode,
     VerificationReport,
     VerificationVerdict,
@@ -168,13 +167,17 @@ class CandidateMutationReport:
 
 
 def _dedupe_by(items: Iterable, key) -> tuple:
-    seen = set()
+    """Deduplicate exact inherited objects while rejecting conflicting identities."""
+
+    seen = {}
     output = []
     for item in items:
         item_key = key(item)
         if item_key in seen:
-            raise ValueError(f"duplicate typed invention object: {item_key}")
-        seen.add(item_key)
+            if seen[item_key] == item:
+                continue
+            raise ValueError(f"conflicting typed invention object: {item_key}")
+        seen[item_key] = item
         output.append(item)
     return tuple(output)
 
@@ -602,7 +605,7 @@ def evaluate_positive_goal(
         return GoalAssessment(
             GoalAssessmentVerdict.CANNOT_CHECK,
             ("goal_threshold_chronology_unknown",),
-            next_action="freeze_success_thresholds_before evaluating candidate outcomes",
+            next_action="freeze_success_thresholds before evaluating candidate outcomes",
         )
     if contract.thresholds_frozen_before_results is False:
         return GoalAssessment(
@@ -668,6 +671,53 @@ def evaluate_positive_goal(
             "required_verification_passed",
             "candidate may advance to independent review and narrow promotion",
         ),
+    )
+
+
+_GOAL_RESIDUAL_KIND_MAP: Mapping[str, ResidualKind] = {
+    "descriptive_coverage": ResidualKind.UNCLASSIFIED,
+    "residual_closure": ResidualKind.UNCLASSIFIED,
+    "predictive_value": ResidualKind.PREDICTIVE,
+    "identification": ResidualKind.IDENTIFIABILITY,
+    "falsifiability": ResidualKind.CAUSAL,
+    "robustness": ResidualKind.TRANSPORT,
+    "complexity": ResidualKind.UNCLASSIFIED,
+}
+
+
+def residual_from_goal_assessment(
+    assessment: GoalAssessment,
+    *,
+    candidate_id: str,
+    residual_id: str,
+    implicated_fiber_ids: Tuple[str, ...] = (),
+    evidence_ids: Tuple[str, ...] = (),
+) -> Optional[ResidualSignature]:
+    """Convert a non-positive goal assessment into a typed search residual."""
+
+    if assessment.verdict is GoalAssessmentVerdict.GOAL_ACHIEVED:
+        return None
+
+    kinds: list[ResidualKind] = []
+    for criterion in assessment.unmet_criteria:
+        name = criterion.split(":", 1)[0]
+        kind = _GOAL_RESIDUAL_KIND_MAP.get(name)
+        if kind is None and name == "verification":
+            kind = ResidualKind.UNCLASSIFIED
+        if kind is not None and kind not in kinds:
+            kinds.append(kind)
+    if not kinds:
+        kinds.append(ResidualKind.UNCLASSIFIED)
+
+    description_parts = list(assessment.unmet_criteria) or list(assessment.reasons)
+    return ResidualSignature(
+        residual_id=residual_id,
+        kinds=tuple(kinds),
+        description="; ".join(description_parts),
+        implicated_fiber_ids=implicated_fiber_ids,
+        failed_candidate_ids=(candidate_id,),
+        evidence_ids=evidence_ids,
+        diagnostics={"goal_verdict": assessment.verdict.value},
     )
 
 
