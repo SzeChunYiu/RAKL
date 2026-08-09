@@ -1,0 +1,44 @@
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  >=Latex,
+  every node/.style={font=\sffamily\footnotesize,align=center},
+  box/.style={draw,rounded corners=1.5pt,minimum height=8mm,inner sep=4pt,fill=black!3},
+  strong/.style={draw,rounded corners=1.5pt,minimum height=9mm,inner sep=5pt,line width=0.8pt,fill=black!8},
+  gate/.style={draw,diamond,aspect=2.2,inner sep=2pt,fill=black!5},
+  arrow/.style={->,line width=0.6pt},
+  dashedarrow/.style={->,dashed,line width=0.55pt}
+]
+
+\node[box,text width=24mm] (evidence) {Evidence, tools,\\measurements};
+\node[strong,text width=29mm,right=of evidence] (proposer) {Replaceable LLM /\\proposal process $G_\theta$};
+\node[box,text width=24mm,right=of proposer] (proposal) {Candidate claim,\\experiment, map,\\or method change};
+\node[gate,right=10mm of proposal] (verify) {Verify $V$};
+\node[strong,text width=30mm,right=10mm of verify] (state) {Canonical epistemic state\\$K_t$ / Knowledge Atlas};
+
+\draw[arrow] (evidence) -- (proposer);
+\draw[arrow] (proposer) -- (proposal);
+\draw[arrow] (proposal) -- (verify);
+\draw[arrow] (evidence.south east) to[bend right=18] node[below,sloped]{external evidence} (verify.south west);
+\draw[arrow] (verify) -- node[above]{licensed update $\mathcal U$} (state);
+
+\node[box,text width=26mm,below=11mm of state] (residual) {Residual / obstruction /\\epistemic cut};
+\node[box,text width=25mm,left=12mm of residual] (action) {Next atomic fiber\\or discriminator};
+\draw[arrow] (state) -- (residual);
+\draw[arrow] (residual) -- (action);
+\draw[dashedarrow] (action.west) to[bend left=18] node[below,sloped]{new operation} (proposer.south);
+
+\node[strong,text width=31mm,below=22mm of proposal] (meta) {Challenge Learning /\\Self-RAKL};
+\node[box,text width=29mm,left=of meta] (methodres) {Method residual\\$e^{\mathrm{method}}$};
+\node[box,text width=29mm,right=of meta] (candidate) {Candidate operator /\\method $M'$};
+\node[gate,right=10mm of candidate] (assure) {Fresh assurance};
+
+\draw[arrow] (residual.west) to[bend right=16] (methodres.east);
+\draw[arrow] (methodres) -- (meta);
+\draw[arrow] (meta) -- (candidate);
+\draw[arrow] (candidate) -- (assure);
+\draw[dashedarrow] (assure.north) to[bend right=18] node[right]{only after protected gates} (state.south);
+
+\node[font=\sffamily\scriptsize,anchor=north west,text width=66mm] at ([yshift=-7mm]methodres.south west) {
+\textbf{Authority firewall.} Proposal fluency, support-module success, or self-reflection cannot directly mint scientific authority. Nulls, refutations, failed mappings, and failed method generations remain addressable negative history.};
+
+\end{tikzpicture}
