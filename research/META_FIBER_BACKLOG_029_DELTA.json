@@ -1,0 +1,56 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_029_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N064_EVIDENCE_LINEAGE_DEPENDENCE",
+      "status": "VALIDATED_IMPROVEMENT_SUPPORT_LAYER_REAL_UTILITY_OPEN",
+      "problem": "Flat lineage labels and raw source counts can overstate corroboration when evidence shares remote datasets, analyses, intellectual ancestors, alternate IDs, or versions.",
+      "implementation": "src/rakl/evidence_lineage.py + tests/test_evidence_lineage.py",
+      "result": "A frozen provenance DAG contract now detects known shared ancestry, collapses alternate identities, propagates unknown ancestry, rejects invalid graph structure, exposes structural provenance components, and can only preserve or downgrade generator-family corroboration. It explicitly refuses to infer statistical/epistemic independence or numeric effective N from graph topology.",
+      "first_exact_head_validation": {
+        "commit": "5d822d932a9f69ce1aebfd7bbd9d8d93ce9df4c1",
+        "workflow_run": 31325710479,
+        "result": "SUCCESS",
+        "tests": "340 passed"
+      },
+      "remaining_gap": "Real scientific duplicated-ancestry utility is untested. Compare raw count, flat labels and explicit lineage graph on a frozen real corpus under matched model/resource/evaluator budgets.",
+      "falsifier": "If graph-aware lineage analysis does not reduce false corroboration or improve failure localization versus simpler baselines, keep provenance for audit only and do not activate extra decision-layer complexity."
+    },
+    {
+      "fiber_id": "META_N068_REAL_COMPARATIVE_GENERATOR_BENCHMARK",
+      "status": "OPEN_REFINED_DEPENDENCY",
+      "note": "Include explicit shared-data/derivation ancestry cases so generator-family corroboration is evaluated with lineage-aware support rather than raw source count."
+    },
+    {
+      "fiber_id": "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+      "status": "OPEN_REFINED",
+      "note": "Round 029 adds evidence-to-evidence ancestry support, not the still-open exact claim-span-to-evidence provenance contract. Do not conflate these fibers."
+    },
+    {
+      "fiber_id": "META_N069_META_FIBER_REGISTRY_RECONCILIATION",
+      "status": "OPEN_UNCHANGED",
+      "note": "A deterministic compiler remains needed to reconstruct all fiber definitions/statuses and detect future orphan/conflicting references."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "framework_saturation_certificate_allowed": false,
+    "reason": "Round 029 retained a new typed provenance-dependence contract and generator-family downgrade semantics after semantic deduplication."
+  },
+  "highest_priority_frontier": [
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N086_REAL_MODEL_TOKEN_COUNTER_MATRIX",
+    "META_N087_REPRODUCIBLE_DISTRIBUTION_BUILD",
+    "META_N088_ARCHIVAL_RELEASE_IDENTITY",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "META_N068_REAL_COMPARATIVE_GENERATOR_BENCHMARK",
+    "META_N072_REAL_CONTEXTUAL_ATLAS_GLUING_BENCHMARK",
+    "META_N073_REAL_MULTI_HOP_SCIENTIFIC_BRIDGE_BENCHMARK",
+    "META_N069_META_FIBER_REGISTRY_RECONCILIATION"
+  ]
+}
