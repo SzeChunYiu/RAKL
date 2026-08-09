@@ -1,0 +1,49 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_027_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+      "status": "REOPENED_ACTIVE_PROMOTION_NOT_PREVIOUSLY_COMPLETED",
+      "new_evidence": "Round-026 candidate existed and passed candidate CI, but PR #3 was closed/unmerged, active main retained mutable action tags, and the prior validation's claimed promoted SHA does not resolve.",
+      "remaining": "Replay the frozen migration, pass exact candidate CI, perform a real non-forced fast-forward, then verify pins on active main."
+    },
+    {
+      "fiber_id": "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+      "status": "OPEN_REINFORCED",
+      "new_evidence": "Dependency identity and active-ref identity are separate evaluator-trust coordinates.",
+      "remaining": "Runner image/toolchain, Python/pip/package resolution, GitHub service behavior and other transitive influences remain open."
+    },
+    {
+      "fiber_id": "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE",
+      "status": "OPEN_BLOCKED_BY_PROMOTION_TRUTH_REPAIR",
+      "new_evidence": "Release claims cannot rely on validation receipts whose claimed active subject is absent from repository history.",
+      "remaining": "Complete Round-027 repair, runner/environment attestation, reproducible distribution, archival release identity, real model/tokenizer matrix and independent artifact reproduction."
+    },
+    {
+      "fiber_id": "META_N091_POST_PROMOTION_REF_STATE_ATTESTATION",
+      "status": "NEW_ACTIVE_NON_FLAT",
+      "problem": "The promotion gate can authorize a change while a later receipt incorrectly asserts that the active ref moved; candidate CI and prose validation are insufficient evidence of active repository state.",
+      "target": "Require externally observed candidate existence, active-main ancestry, required-content identity, exact candidate validation, exact active-main postvalidation and immutable negative history before granting post-promotion authority.",
+      "falsifier": "If a simpler native ref/ancestry check plus immutable erratum provides the same hostile-world correctness and lower complexity, keep the simpler implementation and reject additional architecture."
+    }
+  ],
+  "priority_engineering_lane": [
+    "META_N091_POST_PROMOTION_REF_STATE_ATTESTATION",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N090_EVALUATOR_RUNNER_IMAGE_IDENTITY",
+    "META_N086_REAL_MODEL_TOKEN_COUNTER_MATRIX",
+    "META_N087_REPRODUCIBLE_DISTRIBUTION_BUILD",
+    "META_N088_ARCHIVAL_RELEASE_IDENTITY",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "real matched scientific RAKLBench"
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Round 027 found and repaired a new blocking promotion-truth residual."
+  }
+}
