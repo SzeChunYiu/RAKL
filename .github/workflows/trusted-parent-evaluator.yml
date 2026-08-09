@@ -11,7 +11,7 @@ permissions:
 jobs:
   evaluator-integrity:
     if: github.event.workflow_run.event == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout trusted parent evaluator
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
