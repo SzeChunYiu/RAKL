@@ -1,0 +1,99 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_008_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "starting_main_sha": "a0e3c535412ce790d6baea8f997b689253c3a48a",
+  "change_class": "B",
+  "primary_fiber": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+  "constitutional_change": false,
+  "expert_panel": [
+    {
+      "role": "CI execution-provenance engineer",
+      "background": "Git object identity, GitHub Actions event semantics, trusted parent workflows",
+      "atomic_task": "separate source, base, synthesized integration and actually executed subjects"
+    },
+    {
+      "role": "formal methods / typed-identity engineer",
+      "background": "partial identification, state machines, fail-closed validators",
+      "atomic_task": "define which subject coordinates can and cannot be glued"
+    },
+    {
+      "role": "software supply-chain attestation engineer",
+      "background": "subject digests, builder identity, signed provenance and trusted observation",
+      "atomic_task": "bind execution claims to externally observed subject digests without upgrading provenance into correctness"
+    },
+    {
+      "role": "scientific provenance epistemologist",
+      "background": "evidence scope, observation operators, reproducibility and authority boundaries",
+      "atomic_task": "keep tree/content authority distinct from revision/history authority"
+    },
+    {
+      "role": "adversarial benchmark reviewer",
+      "background": "CI spoofing, metadata confusion and benchmark gaming",
+      "atomic_task": "plant subject-swapping and self-report attacks and require cannot-check or rejection"
+    }
+  ],
+  "blocking_meta_qois": [
+    "no_source_head_result_may_be_silently_upgraded_to_integration_result",
+    "no_integration_result_may_be_bound_to_an_unobserved_executed_subject",
+    "candidate_self_report_is_not_external_observation",
+    "tree_identity_does_not_silently_imply_revision_identity",
+    "negative_history_and_constitution_remain_unchanged"
+  ],
+  "improvement_meta_qois": [
+    "source_base_integration_executed_coordinates_explicit",
+    "correct_subject_mode_is_machine_checkable",
+    "tree_only_partial_identification_is_machine_visible",
+    "subject_mismatch_reasons_are_auditable"
+  ],
+  "known_answer_worlds": [
+    {
+      "id": "W1_INTEGRATION_EXACT",
+      "target": "INTEGRATION_RESULT",
+      "facts": "source and base match the frozen packet; platform integration revision/tree are externally observed; checkout revision/tree exactly match the integration subject",
+      "expected": "VALID_REVISION_AND_TREE"
+    },
+    {
+      "id": "W2_SOURCE_HEAD_MASQUERADES_AS_INTEGRATION",
+      "target": "INTEGRATION_RESULT",
+      "facts": "checkout executes source head while platform reports a different integration revision",
+      "expected": "INVALID"
+    },
+    {
+      "id": "W3_HEAD_ONLY_EXPLICIT",
+      "target": "SOURCE_HEAD",
+      "facts": "workflow explicitly targets source head and externally observed checkout revision equals source head",
+      "expected": "VALID_REVISION"
+    },
+    {
+      "id": "W4_TREE_MATCH_REVISION_UNKNOWN",
+      "target": "INTEGRATION_RESULT",
+      "facts": "trusted observer can bind the expected integration tree and executed tree but cannot bind the executed revision to the platform integration revision",
+      "expected": "PARTIALLY_IDENTIFIED_TREE_ONLY"
+    },
+    {
+      "id": "W5_EXECUTED_TREE_MISMATCH",
+      "target": "INTEGRATION_RESULT",
+      "facts": "integration revision label matches but executed tree differs from the integration tree",
+      "expected": "INVALID"
+    },
+    {
+      "id": "W6_BASE_MISMATCH",
+      "target": "INTEGRATION_RESULT",
+      "facts": "observed base revision differs from the frozen base revision",
+      "expected": "INVALID"
+    },
+    {
+      "id": "W7_CANDIDATE_SELF_REPORT_ONLY",
+      "target": "INTEGRATION_RESULT",
+      "facts": "all identifiers agree but the execution observation is candidate-produced rather than externally observed",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W8_MISSING_INTEGRATION_IDENTITY",
+      "target": "INTEGRATION_RESULT",
+      "facts": "no externally observed integration revision or integration tree is available",
+      "expected": "CANNOT_CHECK"
+    }
+  ],
+  "promotion_rule": "Do not move main until the final candidate SHA passes the unchanged parent test workflow and comparison is ahead-only. This v1 must remain a supporting module unless the trusted-parent workflow is separately benchmarked before activation."
+}
