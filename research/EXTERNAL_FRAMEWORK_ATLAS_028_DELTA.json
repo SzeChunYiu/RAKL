@@ -1,0 +1,44 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_028_DELTA",
+  "date": "2026-08-09",
+  "object": "HOSTED_RUNNER_OS_FAMILY_AND_IMAGE_BUILD_IDENTITY",
+  "sources": [
+    {
+      "source_id": "GITHUB_HOSTED_RUNNERS_CURRENT",
+      "type": "official_platform_documentation",
+      "source": "GitHub-hosted runners reference",
+      "url": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+      "projection": "GitHub exposes both ubuntu-latest and ubuntu-24.04 labels; workflow logs identify the runner actually used.",
+      "rakl_mapping": ["bind requested OS family separately from observed image build"]
+    },
+    {
+      "source_id": "GITHUB_RUNNER_IMAGES_CURRENT",
+      "type": "official_open_source_platform_repository",
+      "source": "actions/runner-images",
+      "url": "https://github.com/actions/runner-images",
+      "projection": "The -latest label follows the newest stable OS image and migration can change the OS; specifying a concrete OS version avoids unwanted OS migration, while runner images themselves continue to receive regular updates.",
+      "rakl_mapping": [
+        "ubuntu-latest is a mutable OS-family alias",
+        "ubuntu-24.04 narrows the family but is not an exact image-build pin"
+      ]
+    },
+    {
+      "source_id": "RUNNER_IMAGE_20260720_247_2",
+      "type": "official_open_source_platform_repository",
+      "source": "Ubuntu2404-Readme.md",
+      "url": "https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md",
+      "projection": "The current Ubuntu 24.04 runner manifest reports OS 24.04.4 and Image Version 20260720.247.2, matching the observed Round-027 CI logs.",
+      "rakl_mapping": ["observed image build can be recorded as evidence without pretending the hosted label pins it"]
+    }
+  ],
+  "retained_rakl_objects_after_deduplication": [
+    "REQUESTED_RUNNER_LABEL_VS_OBSERVED_RUNNER_IMAGE_IDENTITY",
+    "OS_FAMILY_BOUND_EXACT_IMAGE_BUILD_MUTABLE",
+    "PLATFORM_RUNTIME_OVERRIDE_REMAINS_EXTERNAL_INFLUENCE"
+  ],
+  "not_counted_as_rakl_novelty": [
+    "specific OS runner labels",
+    "runner image manifests",
+    "GitHub-hosted image update cadence"
+  ]
+}
