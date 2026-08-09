@@ -5,7 +5,7 @@ from enum import Enum
 from math import sqrt
 from typing import Optional, Tuple
 
-from .similarity import SimilarityRelation, SimilarityWitness, WitnessVerdict, _validate_similarity_witness_base
+from .similarity import SimilarityRelation, SimilarityWitness, WitnessVerdict, validate_similarity_witness
 
 
 class MeasurementRelationVerdict(str, Enum):
@@ -149,6 +149,8 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
 
     This layer certifies only a scoped measurement relation. It never establishes
     mechanism identity, generator identity, or target scientific authority.
+    Generic SimilarityWitness validation remains a structural compatibility check;
+    this evaluator is the additional certificate required for measurement claims.
     """
 
     if trial.witness.relation not in {
@@ -189,7 +191,7 @@ def evaluate_measurement_relation(trial: MeasurementRelationTrial) -> Measuremen
     if missing:
         return MeasurementRelationReport(MeasurementRelationVerdict.CANNOT_CHECK, tuple(missing))
 
-    base_report = _validate_similarity_witness_base(trial.witness, measurement_extension_present=True)
+    base_report = validate_similarity_witness(trial.witness)
     if base_report.verdict is WitnessVerdict.REJECT:
         return MeasurementRelationReport(
             MeasurementRelationVerdict.REJECT,
