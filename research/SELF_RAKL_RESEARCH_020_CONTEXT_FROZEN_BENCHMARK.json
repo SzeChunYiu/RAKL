@@ -1,0 +1,102 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_020_CONTEXT_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "BOUNDED_EPISTEMIC_CONTEXT_COMPILATION",
+  "starting_main_sha": "268bedaf800b344193ea2f9d8314d2626182bf28",
+  "status": "FROZEN_BEFORE_CONTEXT_COMPILER_IMPLEMENTATION",
+  "change_class_target": "A_SUPPORTING_IMPLEMENTATION",
+  "registered_meta_qois": [
+    "mandatory_epistemic_recall",
+    "negative_history_retention",
+    "authority_prerequisite_recall",
+    "contradiction_side_coverage",
+    "semantic_redundancy_reduction",
+    "context_token_ratio",
+    "unrelated_context_exclusion",
+    "compile_determinism",
+    "cannot_compile_honesty",
+    "reconstructability_pointer_coverage"
+  ],
+  "blocking_invariants": [
+    "never drop an explicitly mandatory item to satisfy budget",
+    "never silently truncate when mandatory cost exceeds budget",
+    "negative/falsifying evidence marked mandatory must survive compilation",
+    "authority prerequisites marked mandatory must survive compilation",
+    "compression/materialized views cannot mint authority beyond their source records",
+    "compiled output must preserve source record identifiers for rehydration",
+    "selection order must be deterministic under equal inputs",
+    "unrelated records must not be selected merely because budget remains"
+  ],
+  "worlds": [
+    {
+      "id": "W01_CRITICAL_REFUTATION_AMID_NOISE",
+      "budget": 20,
+      "records": 101,
+      "expected": "critical refutation retained; irrelevant noise excluded; verdict COMPILED"
+    },
+    {
+      "id": "W02_MANDATORY_EXCEEDS_BUDGET",
+      "budget": 5,
+      "mandatory_cost": 7,
+      "expected": "CANNOT_COMPILE with explicit mandatory_over_budget reason"
+    },
+    {
+      "id": "W03_DUPLICATE_SEMANTIC_OBJECTS",
+      "budget": 12,
+      "expected": "one representative selected for shared coverage unless different evidence/authority coverage is required"
+    },
+    {
+      "id": "W04_TWO_SIDED_CONTRADICTION",
+      "budget": 14,
+      "expected": "both contradiction sides retained when both are mandatory comparison prerequisites"
+    },
+    {
+      "id": "W05_MECHANISM_ANCESTRY",
+      "budget": 16,
+      "expected": "mechanism claim cannot be packed without its mandatory ancestry/evidence prerequisites"
+    },
+    {
+      "id": "W06_QUERY_SPECIFIC_FIBER",
+      "budget": 12,
+      "expected": "records from unrelated fibers excluded even if high generic salience"
+    },
+    {
+      "id": "W07_SUMMARY_REHYDRATION_POINTER",
+      "budget": 10,
+      "expected": "selected compact view retains source_record_ids and lossy/erasure metadata pointer"
+    },
+    {
+      "id": "W08_NEGATIVE_HISTORY_REPLAY_GUARD",
+      "budget": 12,
+      "expected": "historical failed method/falsifier marked relevant is retained against successor proposal"
+    },
+    {
+      "id": "W09_SHARED_LINEAGE_NO_DOUBLE_CREDIT",
+      "budget": 12,
+      "expected": "selection utility does not increase merely from duplicate records with the same coverage atoms"
+    },
+    {
+      "id": "W10_EQUAL_SCORE_DETERMINISM",
+      "budget": 8,
+      "expected": "stable lexical record_id tie-break produces identical selection independent of input order"
+    },
+    {
+      "id": "W11_PARTIAL_BUDGET_COVERAGE",
+      "budget": 9,
+      "expected": "after mandatory set, choose records by marginal weighted coverage per token rather than absolute score"
+    },
+    {
+      "id": "W12_EMPTY_RELEVANT_SET",
+      "budget": 8,
+      "expected": "COMPILED with mandatory/core only; no filler context is added"
+    }
+  ],
+  "baselines_for_future_empirical_round": [
+    "full_history_context",
+    "recency_truncation",
+    "similarity_top_k",
+    "summary_only",
+    "RAKL_budgeted_epistemic_context_compiler"
+  ],
+  "future_empirical_falsifier": "If a simpler baseline matches or exceeds RAKL on epistemic recall and downstream decisions at equal or lower token/cost budgets, do not mandate the richer compiler architecture."
+}
