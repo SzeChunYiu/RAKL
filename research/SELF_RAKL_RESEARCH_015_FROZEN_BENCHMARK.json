@@ -1,0 +1,173 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_015_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "AI_CAPABILITY_SHAPING_AND_RESEARCH_COGNITIVE_ARCHITECTURE",
+  "status": "FROZEN_BEFORE_ROUND_015_IMPLEMENTATION",
+  "starting_main_sha": "20c7cb78c1d3563812ef76417647b92a285ccf7b",
+  "constitutional_change": false,
+  "registered_hypothesis": "A research architecture can improve system-level research capability by selectively amplifying model strengths, suppressing predictable model failure modes, and explicitly substituting or complementing weak operations with external mechanisms, but only where matched-model ablations show decision-relevant improvement without blocking-validity regressions.",
+  "null_hypothesis": "Capability-specific scaffolding provides no reliable improvement over the same model with a simpler baseline once task packet, answer contract, evaluator, hidden labels, model configuration, tool/resource budget and cost accounting are controlled.",
+  "non_claims": [
+    "More agents are inherently better.",
+    "Longer prompts are inherently better.",
+    "Tool access is equivalent to improved intrinsic model reasoning.",
+    "External solver success is evidence that the base model itself became more capable.",
+    "Self-critique is independent review.",
+    "Any one workflow should be universally active across cognitive operations."
+  ],
+  "registered_meta_qois": [
+    {
+      "name": "task_success_rate",
+      "direction": "HIGHER_IS_BETTER",
+      "blocking": false
+    },
+    {
+      "name": "target_failure_mode_rate",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": false
+    },
+    {
+      "name": "blocking_validity_violation_rate",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": true
+    },
+    {
+      "name": "negative_history_loss_rate",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": true
+    },
+    {
+      "name": "authority_leakage_rate",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": true
+    },
+    {
+      "name": "information_gain_per_cost",
+      "direction": "HIGHER_IS_BETTER",
+      "blocking": false
+    },
+    {
+      "name": "cost_per_valid_result",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": false
+    },
+    {
+      "name": "latency_per_valid_result",
+      "direction": "LOWER_IS_BETTER",
+      "blocking": false
+    },
+    {
+      "name": "capability_attribution_completeness",
+      "direction": "HIGHER_IS_BETTER",
+      "blocking": true
+    }
+  ],
+  "attribution_classes": [
+    "MODEL_UTILIZATION_AMPLIFICATION",
+    "FAILURE_SUPPRESSION",
+    "EXTERNAL_CAPABILITY_SUBSTITUTION",
+    "SPECIALIST_COMPLEMENTATION",
+    "ROUTING_GAIN",
+    "DECOMPOSITION_GAIN",
+    "MEMORY_EXTERNALIZATION_GAIN",
+    "UNRESOLVED_MIXED_ATTRIBUTION"
+  ],
+  "worlds": [
+    {
+      "world_id": "CS015_W01_MATCHED_AMPLIFICATION",
+      "purpose": "A frozen decomposition scaffold improves task success for the same model and same resources without worsening blocking metrics.",
+      "expected": "VALIDATED_AMPLIFICATION"
+    },
+    {
+      "world_id": "CS015_W02_FAILURE_SUPPRESSION",
+      "purpose": "An immutable negative-evidence ledger reduces repeated refuted hypotheses while task quality is non-inferior.",
+      "expected": "VALIDATED_FAILURE_SUPPRESSION"
+    },
+    {
+      "world_id": "CS015_W03_AMPLIFY_AND_SUPPRESS",
+      "purpose": "A portfolio search scaffold increases hypothesis coverage and decreases premature-convergence failures under matched budget.",
+      "expected": "VALIDATED_AMPLIFICATION_AND_SUPPRESSION"
+    },
+    {
+      "world_id": "CS015_W04_DECORATIVE_SCAFFOLD",
+      "purpose": "A more complex multi-agent scaffold adds cost but no registered capability gain.",
+      "expected": "NO_MEASURED_GAIN"
+    },
+    {
+      "world_id": "CS015_W05_SCAFFOLD_REGRESSION",
+      "purpose": "A workflow increases nominal success but worsens a blocking validity metric.",
+      "expected": "BLOCKING_REGRESSION"
+    },
+    {
+      "world_id": "CS015_W06_RESOURCE_DELTA_DECLARED",
+      "purpose": "Adding a deterministic solver improves system success; the gain is valid system capability but not pure model-utilization amplification.",
+      "expected": "SYSTEM_GAIN_WITH_RESOURCE_DELTA"
+    },
+    {
+      "world_id": "CS015_W07_RESOURCE_DELTA_HIDDEN",
+      "purpose": "The challenger silently receives additional tools or external knowledge.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "world_id": "CS015_W08_MODEL_SUBJECT_MISMATCH",
+      "purpose": "Baseline and challenger use different base models while claiming workflow-only uplift.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "world_id": "CS015_W09_TASK_PACKET_MISMATCH",
+      "purpose": "Baseline and challenger are evaluated on different task packets.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "world_id": "CS015_W10_HIDDEN_LABEL_LEAKAGE",
+      "purpose": "The capability-shaping policy is modified after benchmark labels or expected failures are exposed.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "world_id": "CS015_W11_SELF_REVIEW_NOT_INDEPENDENT",
+      "purpose": "A same-context critique pass is described as independent review.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "world_id": "CS015_W12_EXTERNAL_ORACLE_SUBSTITUTION",
+      "purpose": "A deterministic verifier catches arithmetic errors the model misses; attribution records substitution rather than intrinsic reasoning gain.",
+      "expected": "SYSTEM_GAIN_WITH_RESOURCE_DELTA"
+    },
+    {
+      "world_id": "CS015_W13_SIMPLE_TASK_OVERHEAD",
+      "purpose": "A complex scaffold harms cost/latency on simple tasks without quality improvement.",
+      "expected": "NO_MEASURED_GAIN"
+    },
+    {
+      "world_id": "CS015_W14_LONG_HORIZON_DECOMPOSITION",
+      "purpose": "Atomic decomposition reduces long-horizon constraint-loss errors while preserving output contract and resources.",
+      "expected": "VALIDATED_FAILURE_SUPPRESSION"
+    },
+    {
+      "world_id": "CS015_W15_MEMORY_EXTERNALIZATION",
+      "purpose": "Structured persistent memory reduces contradiction and forgotten-negative errors relative to chat-context-only memory.",
+      "expected": "VALIDATED_FAILURE_SUPPRESSION"
+    },
+    {
+      "world_id": "CS015_W16_VERIFIER_FALSE_ALARMS",
+      "purpose": "A verifier catches some failures but creates enough false alarms to worsen a blocking validity metric.",
+      "expected": "BLOCKING_REGRESSION"
+    },
+    {
+      "world_id": "CS015_W17_UNKNOWN_CHRONOLOGY",
+      "purpose": "The evaluator cannot establish whether the benchmark and operator contract were frozen before results were observed.",
+      "expected": "CANNOT_CHECK"
+    }
+  ],
+  "evaluation_requirements": [
+    "Same-model attribution requires identical base-model identity and configuration.",
+    "Workflow-only attribution requires the same frozen task packet, answer contract and declared external resources.",
+    "Any resource difference must be explicit and changes the attribution class.",
+    "Hidden labels and expected outcomes must not be exposed to the operator designer during the frozen trial.",
+    "Blocking validity regressions dominate non-blocking gains.",
+    "No single scalar may erase cost, validity, failure suppression and task-success tradeoffs.",
+    "A capability-shaping operator must name the strength exploited, weakness targeted, compensating mechanism and falsifier.",
+    "No support evaluator may activate a default workflow or scientific authority by itself."
+  ],
+  "promotion_falsifier": "If capability-specific shaping does not outperform a simpler matched baseline on at least one registered non-blocking meta-QoI while preserving all blocking meta-QoIs, the operator remains optional/research-only and must not become default behavior."
+}
