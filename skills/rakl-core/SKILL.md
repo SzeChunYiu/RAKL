@@ -4,8 +4,8 @@ description: >-
   Recursive Atomic Knowledge Lattice research operating system. Use to solve hard scientific,
   mathematical, engineering, modelling, strategy, or method-design problems by recursively
   decomposing atomic steps, expanding multi-perspective knowledge fibers, mapping equivalent
-  representations, deriving mechanisms, selecting discriminating experiments, and recursively
-  improving the research method itself.
+  representations, inventing and deriving typed mechanisms/formalisms, selecting discriminating
+  experiments, and recursively improving the research method itself.
 ---
 
 # RAKL Core — Router
@@ -29,8 +29,10 @@ A task may activate one or more workflows:
 
 ```text
 problem-solving
+perspective-discovery
 literature-absorption
 failure-diagnosis
+mechanism-invention
 self-rakl
 strategy-synthesis
 ```
@@ -38,6 +40,10 @@ strategy-synthesis
 ### `problem-solving`
 
 Use when solving a new scientific, mathematical, engineering, or modelling problem.
+
+### `perspective-discovery`
+
+Use when the current vocabulary, ontology or decomposition may be missing relevant facets or alien-domain structure.
 
 ### `literature-absorption`
 
@@ -47,9 +53,15 @@ Use when expanding the lattice from papers, repositories, books, standards, or o
 
 Use when an existing model/method/derivation/experiment failed or produced a residual.
 
+### `mechanism-invention`
+
+Use when the task requires discovering or constructing a working mechanism, new mathematics, or a formalism; when existing representations fail to close a residual; or when a positive-goal lane must continue beyond failure of the current candidate set.
+
+This workflow must materialize proposals as typed formalism/mechanism deltas with residual targets, parent lineage and falsifiers. Text-only equations are not sufficient for a certifying invention lane.
+
 ### `self-rakl`
 
-Use when evaluating or improving RAKL's own decomposition, routing, search, synthesis, review, logging, or stopping procedures.
+Use when evaluating or improving RAKL's own decomposition, routing, search, synthesis, invention operator basis, review, logging, or stopping procedures.
 
 ### `strategy-synthesis`
 
@@ -71,19 +83,24 @@ Regardless of workflow, preserve this authority order:
 
 ```text
 source/evidence reality
-→ object + decision/QoI
+→ object + decision/QoI + frozen goal contract
 → atomic decomposition
 → knowledge fibers
 → projection/equivalence/compatibility analysis
-→ derivation or identified set
+→ mechanism/formalism construction when required
+→ identification / identified set
 → frozen discriminator
-→ known-answer/hostile validation
+→ formal/known-answer/hostile validation
 → native/real evidence
-→ residual recursion
-→ synthesis
+→ typed residual
+→ constructive mutation/recombination or ordinary recursion
+→ synthesis / candidate tournament
+→ positive-goal evaluation
 → review
-→ promotion or continued uncertainty
+→ narrow promotion or continued search
 ```
+
+A failed candidate is evidence, not successful project closure. If the registered positive goal is not achieved, preserve the failure and continue through residual-driven invention unless an integrity/resource/data block prevents execution. A block is `CANNOT_CHECK`, not a fabricated positive.
 
 ## 5. LLM governance
 
@@ -94,12 +111,13 @@ The LLM may propose:
 - equivalence mappings;
 - mechanisms;
 - experiments;
-- synthesized formalism;
+- new mathematical expressions and typed formalisms;
+- constructive invention moves;
 - improvements to RAKL itself.
 
 LLM proposals do not become canonical because they are fluent or plausible.
 
-Promotion requires the evidence and governance rules in the loaded workflow/core modules.
+For mechanism/formalism invention, the proposal must be externalized into the typed IR and bound to a candidate id before evaluation. Promotion requires the evidence and governance rules in the loaded workflow/core modules.
 
 ## 6. Apple Principle
 
@@ -120,6 +138,8 @@ Synthesize the global picture only after this classification.
 
 If the current RAKL workflow itself causes a repeated failure, open a `self-rakl` child fiber for the failing atomic method step.
 
+If an identified epistemic cut cannot be crossed by the current constructive operator basis, open a method-basis gap and benchmark a challenger operator before promotion.
+
 Do not silently patch the method inside another study.
 
 ## 8. Output minimum
@@ -128,16 +148,17 @@ Every substantive invocation should make explicit:
 
 ```text
 object/problem
-QoI/decision
+QoI/decision and positive-goal state when registered
 active atomic steps
 new knowledge fibers opened
 new semantic objects retained
 representation/equivalence map
 remaining mechanism/model set
+typed candidate formalisms and invention lineage when applicable
 frozen next discriminator(s)
 residuals/blockers
-synthesis status
-next recursion target
+candidate frontier / synthesis status
+next recursion or invention target
 ```
 
 For persistent implementations, use machine-readable schemas under `schemas/`.
