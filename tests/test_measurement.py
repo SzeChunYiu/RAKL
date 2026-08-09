@@ -53,6 +53,7 @@ def _spec(observation_id: str, **overrides) -> MeasurementSpecification:
         measurand_id="surface-temperature",
         feature_of_interest_id="sample-42",
         unit_id="K",
+        measurement_model_id="temperature-model-v1",
         observation_operator_id="contact-thermometry-v1",
         procedure_id="procedure-v1",
         instrument_id=f"instrument-{observation_id}",
@@ -78,8 +79,13 @@ def _mapping(**overrides) -> MeasurementMapping:
         feature_mapping_valid=True,
         unit_transform_id=None,
         unit_transform_invertible=None,
+        measurement_model_compatibility=True,
         observation_operator_compatibility=True,
-        evidence_ids=("calibration-certificate", "procedure-comparison"),
+        uncertainty_combination_rule_id="certified-uq-rule-v1",
+        uncertainty_combination_valid=True,
+        combined_standard_uncertainty=0.03,
+        probes_in_common_coordinate=True,
+        evidence_ids=("calibration-certificate", "procedure-comparison", "uq-certificate"),
     )
     values.update(overrides)
     return MeasurementMapping(**values)
@@ -215,6 +221,7 @@ def test_m14_uncertainty_larger_than_tolerance_cannot_establish_equivalence():
         _trial(
             SimilarityRelation.OBSERVATIONALLY_EQUIVALENT,
             target=target,
+            mapping=_mapping(combined_standard_uncertainty=0.2),
             equivalence_tolerance=0.1,
         )
     )
@@ -275,3 +282,50 @@ def test_non_measurement_relation_is_rejected_by_measurement_extension():
     report = evaluate_measurement_relation(_trial(SimilarityRelation.RELATIONALLY_ANALOGOUS))
     assert report.verdict is MeasurementRelationVerdict.REJECT
     assert "measurement_extension_used_for_non_measurement_relation" in report.reasons
+
+
+def test_mu01_certified_combined_uncertainty_allows_evaluation():
+    report = evaluate_measurement_relation(_trial())
+    assert report.verdict is MeasurementRelationVerdict.SAME_OBSERVABLE_SUPPORTED_PROPOSAL_ONLY
+    assert report.combined_standard_uncertainty == 0.03
+
+
+def test_mu02_missing_uncertainty_combination_rule_cannot_check():
+    report = evaluate_measurement_relation(
+        _trial(mapping=_mapping(uncertainty_combination_rule_id=None))
+    )
+    assert report.verdict is MeasurementRelationVerdict.CANNOT_CHECK
+    assert "uncertainty_combination_rule_missing" in report.reasons
+
+
+def test_mu03_invalid_uncertainty_combination_rule_rejects():
+    report = evaluate_measurement_relation(
+        _trial(mapping=_mapping(uncertainty_combination_valid=False))
+    )
+    assert report.verdict is MeasurementRelationVerdict.REJECT
+    assert "uncertainty_combination_rule_invalid" in report.reasons
+
+
+def test_mu04_missing_combined_uncertainty_cannot_check():
+    report = evaluate_measurement_relation(
+        _trial(mapping=_mapping(combined_standard_uncertainty=None))
+    )
+    assert report.verdict is MeasurementRelationVerdict.CANNOT_CHECK
+    assert "combined_standard_uncertainty_missing" in report.reasons
+
+
+def test_mu05_different_units_need_common_probe_coordinate_for_observational_equivalence():
+    target = _spec("obs-target", unit_id="degC")
+    report = evaluate_measurement_relation(
+        _trial(
+            SimilarityRelation.OBSERVATIONALLY_EQUIVALENT,
+            target=target,
+            mapping=_mapping(
+                unit_transform_id="kelvin-to-celsius",
+                unit_transform_invertible=True,
+                probes_in_common_coordinate=False,
+            ),
+        )
+    )
+    assert report.verdict is MeasurementRelationVerdict.CANNOT_CHECK
+    assert "probe_predictions_not_certified_in_common_coordinate" in report.reasons
