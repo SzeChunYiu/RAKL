@@ -1,0 +1,36 @@
+{
+  "erratum_id": "SELF_RAKL_RESEARCH_027_PROCESS_ERRATUM",
+  "date": "2026-08-09",
+  "verdict": "PROCESS_VIOLATION_PREPROMOTION_EXACT_HEAD_NOT_PROVEN",
+  "original_history_preserved": true,
+  "event": {
+    "candidate_head": "1c7fc9bb81e26a7228bae43401159224cabe44e8",
+    "pr": 4,
+    "pr_test_run": 31324607467,
+    "pr_test_conclusion": "success",
+    "workflow_run_head_sha_metadata": "1c7fc9bb81e26a7228bae43401159224cabe44e8",
+    "actually_checked_out_revision": "b7134767b90acaa6595844bf01f371fc5cd6c6d9",
+    "actually_checked_out_subject_kind": "pull_request_merge_ref",
+    "main_ref_was_updated_to_candidate": true,
+    "main_ref_update_force": false,
+    "postpromotion_push_run": 31324691150,
+    "postpromotion_push_checked_out_exact_main": "1c7fc9bb81e26a7228bae43401159224cabe44e8",
+    "postpromotion_test_count": 318,
+    "postpromotion_test_conclusion": "success"
+  },
+  "diagnosis": [
+    "GitHub workflow metadata head_sha identifies the PR head but the default pull_request checkout selected refs/pull/4/merge.",
+    "Therefore the successful pre-promotion test was merge-integration evidence, not exact execution of the candidate head.",
+    "The later exact-main push run demonstrates that the active tree passes after promotion, but cannot rewrite the prior chronology as a compliant pre-promotion exact-head check."
+  ],
+  "authority": {
+    "round027_initial_promotion_process": "NONCOMPLIANT_PRESERVED_AS_NEGATIVE_HISTORY",
+    "round027_active_tree_behavior_after_push_test": "POSTHOC_TESTED_NOT_RETROACTIVELY_PROMOTION_COMPLIANT",
+    "saturation_certificate_impact": "BLOCKING_UNTIL_SUBJECT_BINDING_IS_FIXED_AND_FUTURE_PROMOTIONS_USE_IT"
+  },
+  "repair": {
+    "frozen_benchmark": "research/SELF_RAKL_RESEARCH_027B_FROZEN_BENCHMARK.json",
+    "fiber": "META_N092_PR_TEST_EXECUTED_SUBJECT_BINDING",
+    "required": "Explicitly checkout the PR head SHA/push SHA and assert git rev-parse HEAD before installation or tests; preserve merge-ref evidence as a distinct integration subject when desired."
+  }
+}
