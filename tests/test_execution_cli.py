@@ -29,8 +29,9 @@ def test_cli_run_roundtrip_and_replay(tmp_path, capsys):
         "c=Path(sys.argv[1])\n"
         "n=int(c.read_text() if c.exists() else '0')+1\n"
         "c.write_text(str(n))\n"
-        "p=json.load(sys.stdin)\n"
-        "print(json.dumps({'proposal':'ok','question':p['question'],'count':n}))\n",
+        "e=json.load(sys.stdin)\n"
+        "p=e['task_packet']\n"
+        "print(json.dumps({'proposal':'ok','question':p['question'],'count':n,'temperature':e['generation_config']['temperature']}))\n",
         encoding="utf-8",
     )
 
@@ -60,7 +61,10 @@ def test_cli_run_roundtrip_and_replay(tmp_path, capsys):
     assert first["status"] == "COMPLETED"
     assert first["replayed"] is False
     assert first["receipt"]["output_authority"] == "PROPOSAL_ONLY"
-    assert json.loads(output.read_text("utf-8"))["proposal"] == "ok"
+    assert first["receipt"]["generation_config_authority"] == "DELIVERED_TO_RUNNER_PROTOCOL"
+    result = json.loads(output.read_text("utf-8"))
+    assert result["proposal"] == "ok"
+    assert result["temperature"] == 0
 
     assert main(argv) == 0
     second = json.loads(capsys.readouterr().out)
