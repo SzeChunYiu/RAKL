@@ -1,0 +1,141 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_019_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "MULTI_HOP_ANALOGY_BRIDGE_COMPOSITION",
+  "starting_main_sha": "bdd860681be211959b0f2ba067525d6da8ffbd24",
+  "primary_fiber": "META_N040_MULTI_HOP_ANALOGY_COMPOSITION",
+  "status": "FROZEN_BEFORE_ROUND_019_IMPLEMENTATION",
+  "constitutional_change": false,
+  "research_question": "Can RAKL distinguish a merely navigable chain of individually valid analogies from an end-to-end transfer-composable bridge without silently changing the invariant, role semantics, question/QoI, regime, approximation budget, evidence ancestry, or authority across hops?",
+  "frozen_principles": [
+    "BRIDGE_TO denotes navigation and never automatic endpoint equivalence",
+    "each hop requires its own valid typed similarity witness",
+    "adjacent hops must share the same intermediate object identity",
+    "end-to-end transfer requires a declared invariant preserved on every hop",
+    "a carried invariant explicitly listed NOT_PRESERVED on any hop invalidates its end-to-end composition",
+    "shared-node role semantics must be compatible across adjacent hops",
+    "question/QoI must remain fixed in v1 unless a future separately benchmarked transition contract is added",
+    "end-to-end transfer requires non-empty intersection of validity regimes across all hops",
+    "approximation/error accumulation must be explicit and predeclared",
+    "shared evidence ancestry cannot be counted as independent multi-hop corroboration",
+    "a composable path yields a transfer hypothesis only; it never creates target authority or an inferred endpoint relation without a separately registered composition rule",
+    "hidden answer exposure and post-hoc path/invariant selection invalidate the trial"
+  ],
+  "registered_meta_qois": [
+    "multi_hop_composition_error_rate",
+    "bridge_navigation_recall",
+    "composable_transfer_precision",
+    "invariant_handoff_failure_localization_accuracy",
+    "role_handoff_failure_localization_accuracy",
+    "regime_intersection_failure_detection_rate",
+    "approximation_budget_violation_detection_rate",
+    "evidence_lineage_independence_honesty_rate",
+    "endpoint_relation_escalation_rate",
+    "target_authority_leakage_rate",
+    "cannot_check_honesty_rate",
+    "cost_per_valid_composable_bridge"
+  ],
+  "blocking_meta_qois": [
+    "target_authority_leakage_rate",
+    "endpoint_relation_escalation_rate",
+    "hidden_answer_or_outcome_leakage_rate",
+    "negative_history_preservation_rate"
+  ],
+  "worlds": [
+    {
+      "id": "W01_VALID_TWO_HOP_SHARED_INVARIANT",
+      "description": "A->B and B->C are valid witnesses under one QoI, preserve the same declared invariant, share compatible B roles, have overlapping regimes and explicit nonnegative error bounds.",
+      "expected": "COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY"
+    },
+    {
+      "id": "W02_VALID_HOPS_DIFFERENT_INVARIANTS",
+      "description": "A->B preserves feedback while B->C preserves threshold structure, with no invariant carried across all hops.",
+      "expected": "NAVIGABLE_ONLY"
+    },
+    {
+      "id": "W03_INTERMEDIATE_OBJECT_ID_MISMATCH",
+      "description": "First hop ends at B1 while second hop starts at B2 despite surface naming similarity.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "W04_SHARED_NODE_ROLE_HANDOFF_MISMATCH",
+      "description": "Both hops touch B but the source role used by the second hop is incompatible with the target role delivered by the first.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "W05_QOI_DRIFT_ACROSS_HOPS",
+      "description": "A->B concerns stability while B->C concerns throughput, with no registered QoI-transition contract.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "W06_EMPTY_GLOBAL_REGIME_INTERSECTION",
+      "description": "Each pair is locally valid but no single regime is valid across the complete A->B->C path.",
+      "expected": "NAVIGABLE_ONLY"
+    },
+    {
+      "id": "W07_CARRIED_INVARIANT_EXPLICITLY_BROKEN",
+      "description": "The path claims conservation as an end-to-end invariant but one hop lists conservation in NOT_PRESERVED.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "W08_CARRIED_INVARIANT_UNRESOLVED_ON_ONE_HOP",
+      "description": "The path declares an invariant that is neither preserved nor explicitly broken on one hop.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W09_ERROR_BOUND_UNKNOWN",
+      "description": "All structural handoffs pass but one hop lacks an approximation/error bound needed by the claimed end-to-end transfer.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W10_ERROR_BUDGET_EXCEEDED",
+      "description": "Per-hop approximation bounds are valid but their conservative accumulated upper bound exceeds the frozen path tolerance.",
+      "expected": "NAVIGABLE_ONLY"
+    },
+    {
+      "id": "W11_NEGATIVE_OR_INVALID_ERROR_BOUND",
+      "description": "A hop reports a negative approximation error or malformed error semantics.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "W12_CORRELATED_EVIDENCE_LINEAGES",
+      "description": "All hops compose structurally but their evidence descends from one shared source lineage.",
+      "expected": "COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY_WITH_CORRELATED_EVIDENCE_FLAG"
+    },
+    {
+      "id": "W13_HIDDEN_ENDPOINT_LABEL_EXPOSED",
+      "description": "The path constructor sees the benchmark-designated successful endpoint before bridge selection.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W14_POSTHOC_INVARIANT_OR_PATH_SELECTION",
+      "description": "The carried invariant or intermediate path is selected after inspecting endpoint outcomes.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W15_SINGLE_HOP_MISLABELED_MULTI_HOP",
+      "description": "Only one similarity witness is supplied.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W16_MIXED_RELATION_ENDPOINT_ESCALATION",
+      "description": "A->B is observationally equivalent and B->C is mathematically isomorphic; the system attempts to mint SAME_MECHANISM for A->C.",
+      "expected": "NO_ENDPOINT_RELATION_MINTED"
+    },
+    {
+      "id": "W17_TARGET_REFUTES_COMPOSABLE_BRIDGE",
+      "description": "The structural path is valid and composable, but the transferred hypothesis fails a frozen target-domain test.",
+      "expected": "TARGET_REFUTED_PATH_WITNESSES_PRESERVED"
+    },
+    {
+      "id": "W18_TARGET_TEST_PASSES",
+      "description": "The structural path is valid and composable and the frozen target test passes.",
+      "expected": "TARGET_TEST_PASSED_SEPARATE_PROMOTION_REQUIRED"
+    }
+  ],
+  "acceptance_rule": {
+    "support_layer": "All known-answer, hostile and cannot-check worlds must match the frozen expected state; no endpoint relation or target authority may be minted by path composition.",
+    "active_workflow": "Not authorized by this benchmark alone. A Class B activation would additionally require a matched real scientific bridge benchmark with at least one registered meta-QoI improvement and no blocking regression."
+  },
+  "falsifier": "If explicit path certificates do not improve composition-error detection or transfer precision over validating pairwise hops independently on a matched real benchmark, keep BRIDGE_TO as simple navigation and do not add richer active composition machinery."
+}
