@@ -75,7 +75,7 @@ class HistoricalFiberEvent:
 
     @property
     def slot(self) -> int:
-        match = _NUMERIC_FIBER_RE.match(self.canonical_fiber_id)
+        match = _NUMERIC_FIBER_RE.fullmatch(self.canonical_fiber_id)
         if match is None:
             raise ValueError(f"not a numeric fiber id: {self.canonical_fiber_id}")
         return int(match.group("slot"))
@@ -142,9 +142,8 @@ class HistoricalMetaLedgerReport:
 
 
 def git_blob_sha(data: bytes) -> str:
-    """Return the Git blob object id for exact bytes."""
-    header = f"blob {len(data)}\0".encode("ascii")
-    return sha1(header + data).hexdigest()
+    """Return the Git object id for exact blob bytes."""
+    return sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
 
 
 def _numeric_fiber_id(value: object) -> str | None:
@@ -165,10 +164,10 @@ def _round_sequence(path: str, *, kind: str) -> tuple[int, int, int, str]:
     suffix_rank = 0 if not suffix else ord(suffix) - ord("A") + 1
     if kind == "reconciliation":
         phase = 20
-    elif "_CLOSURE_DELTA" in name:
-        phase = 40
     elif "_RECONCILIATION_DELTA" in name:
         phase = 30
+    elif "_CLOSURE_DELTA" in name:
+        phase = 40
     elif "_POSTVALIDATION_DELTA" in name:
         phase = 50
     else:
@@ -188,17 +187,8 @@ def _artifact_snapshot(path: Path, repo_root: Path, *, kind: str) -> HistoricalA
     )
 
 
-def _read_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 def discover_meta_ledger_paths(research_dir: Path) -> tuple[Path, ...]:
-    """Discover canonical machine-readable meta-fiber ledger artifacts.
-
-    The list is intentionally pattern-based rather than round-number based so a
-    newly added backlog/reconciliation artifact automatically enters the next
-    compilation.
-    """
+    """Discover ledger artifacts without a hard-coded round manifest."""
     paths = set(research_dir.glob("META_FIBER_BACKLOG*.json"))
     paths.update(research_dir.glob("META_FIBER_REGISTRY_RECONCILIATION*.json"))
     return tuple(sorted(paths, key=lambda path: path.name))
@@ -215,35 +205,12 @@ def _extract_markdown_new_fibers(text: str) -> tuple[str, ...]:
                 break
             in_section = heading == "new fibers"
             continue
-        if not in_section:
-            continue
-        for match in _MARKDOWN_FIBER_RE.finditer(line):
-            found.append(match.group(1))
+        if in_section:
+            found.extend(match.group(1) for match in _MARKDOWN_FIBER_RE.finditer(line))
     return tuple(found)
 
 
-def _iter_exact_id_strings(value: Any, location: str = "$") -> Iterable[tuple[str, str]]:
-    if isinstance(value, Mapping):
-        for key, child in value.items():
-            child_location = f"{location}.{key}"
-            if isinstance(child, str):
-                fiber_id = _numeric_fiber_id(child)
-                if fiber_id is not None:
-                    yield child_location, fiber_id
-            else:
-                yield from _iter_exact_id_strings(child, child_location)
-    elif isinstance(value, list):
-        for index, child in enumerate(value):
-            child_location = f"{location}[{index}]"
-            if isinstance(child, str):
-                fiber_id = _numeric_fiber_id(child)
-                if fiber_id is not None:
-                    yield child_location, fiber_id
-            else:
-                yield from _iter_exact_id_strings(child, child_location)
-
-
-def _walk_fiber_records(
+def _walk_records(
     value: Any,
     *,
     source_path: str,
@@ -252,11 +219,9 @@ def _walk_fiber_records(
     alias_pairs: Mapping[str, str],
     location: str = "$",
     container_key: str | None = None,
-) -> tuple[list[HistoricalFiberEvent], list[HistoricalLedgerIssue], set[str]]:
+) -> tuple[list[HistoricalFiberEvent], list[HistoricalLedgerIssue]]:
     events: list[HistoricalFiberEvent] = []
     issues: list[HistoricalLedgerIssue] = []
-    consumed_locations: set[str] = set()
-
     definition_containers = {
         "items",
         "fibers",
@@ -266,8 +231,7 @@ def _walk_fiber_records(
         "child_fibers",
     }
     update_containers = {"updates", "fiber_updates"}
-    recognized_fields = {
-        "question",
+    recognized_update_fields = {
         "status",
         "state",
         "old_status",
@@ -284,24 +248,28 @@ def _walk_fiber_records(
 
     if isinstance(value, Mapping):
         raw_id = _numeric_fiber_id(value.get("fiber_id"))
+        consumed: set[str] = set()
         if raw_id is not None:
             id_location = f"{location}.fiber_id"
-            consumed_locations.add(id_location)
+            consumed.add("fiber_id")
             canonical_id = scoped_aliases.get((source_path, raw_id), raw_id)
             question_obj = value.get("question")
             question = question_obj.strip() if isinstance(question_obj, str) and question_obj.strip() else None
             state: str | None = None
-            for state_key in ("new_status", "state", "status", "disposition"):
-                state_obj = value.get(state_key)
-                if isinstance(state_obj, str) and state_obj.strip():
-                    state = state_obj.strip()
+            for key in ("new_status", "state", "status", "disposition"):
+                candidate = value.get(key)
+                if isinstance(candidate, str) and candidate.strip():
+                    state = candidate.strip()
                     break
 
-            if container_key in definition_containers or question is not None:
+            if container_key in update_containers:
+                role = FiberEventRole.UPDATE
+            elif container_key in definition_containers or question is not None:
                 role = FiberEventRole.DEFINITION
-            elif container_key in update_containers or recognized_fields.intersection(value.keys()):
+            elif recognized_update_fields.intersection(value.keys()):
                 role = FiberEventRole.UPDATE
             else:
+                role = FiberEventRole.UPDATE
                 issues.append(
                     HistoricalLedgerIssue(
                         kind=HistoricalIssueKind.UNCLASSIFIED_FIBER_RECORD,
@@ -310,7 +278,6 @@ def _walk_fiber_records(
                         fiber_id=raw_id,
                     )
                 )
-                role = FiberEventRole.UPDATE
             events.append(
                 HistoricalFiberEvent(
                     source_path=source_path,
@@ -325,30 +292,45 @@ def _walk_fiber_records(
             )
 
             historical_id = _numeric_fiber_id(value.get("historical_id"))
-            canonical_declared = _numeric_fiber_id(value.get("fiber_id"))
-            if historical_id is not None and canonical_declared is not None:
-                hist_location = f"{location}.historical_id"
-                consumed_locations.add(hist_location)
+            if historical_id is not None:
                 expected = alias_pairs.get(historical_id)
-                if expected == canonical_declared:
+                if expected == canonical_id:
+                    consumed.add("historical_id")
                     events.append(
                         HistoricalFiberEvent(
                             source_path=source_path,
                             sequence=sequence,
                             role=FiberEventRole.HISTORICAL_REFERENCE,
                             raw_fiber_id=historical_id,
-                            canonical_fiber_id=canonical_declared,
-                            location=hist_location,
+                            canonical_fiber_id=canonical_id,
+                            location=f"{location}.historical_id",
                         )
                     )
 
         for key, child in value.items():
-            if key == "fiber_id" and raw_id is not None:
+            if key in consumed:
                 continue
-            if key == "historical_id" and f"{location}.historical_id" in consumed_locations:
+            # Reconciliation alias pairs are parsed in a dedicated pass; they
+            # are not ordinary global references.
+            if container_key == "explicit_aliases" and key in {"historical_id", "canonical_id"}:
                 continue
             child_location = f"{location}.{key}"
-            child_events, child_issues, child_consumed = _walk_fiber_records(
+            if isinstance(child, str):
+                raw_child = _numeric_fiber_id(child)
+                if raw_child is not None:
+                    canonical_child = scoped_aliases.get((source_path, raw_child), raw_child)
+                    events.append(
+                        HistoricalFiberEvent(
+                            source_path=source_path,
+                            sequence=sequence,
+                            role=FiberEventRole.REFERENCE,
+                            raw_fiber_id=raw_child,
+                            canonical_fiber_id=canonical_child,
+                            location=child_location,
+                        )
+                    )
+                    continue
+            child_events, child_issues = _walk_records(
                 child,
                 source_path=source_path,
                 sequence=sequence,
@@ -359,11 +341,25 @@ def _walk_fiber_records(
             )
             events.extend(child_events)
             issues.extend(child_issues)
-            consumed_locations.update(child_consumed)
     elif isinstance(value, list):
         for index, child in enumerate(value):
             child_location = f"{location}[{index}]"
-            child_events, child_issues, child_consumed = _walk_fiber_records(
+            if isinstance(child, str):
+                raw_child = _numeric_fiber_id(child)
+                if raw_child is not None:
+                    canonical_child = scoped_aliases.get((source_path, raw_child), raw_child)
+                    events.append(
+                        HistoricalFiberEvent(
+                            source_path=source_path,
+                            sequence=sequence,
+                            role=FiberEventRole.REFERENCE,
+                            raw_fiber_id=raw_child,
+                            canonical_fiber_id=canonical_child,
+                            location=child_location,
+                        )
+                    )
+                    continue
+            child_events, child_issues = _walk_records(
                 child,
                 source_path=source_path,
                 sequence=sequence,
@@ -374,32 +370,14 @@ def _walk_fiber_records(
             )
             events.extend(child_events)
             issues.extend(child_issues)
-            consumed_locations.update(child_consumed)
-    elif isinstance(value, str):
-        raw_id = _numeric_fiber_id(value)
-        if raw_id is not None and location not in consumed_locations:
-            canonical_id = scoped_aliases.get((source_path, raw_id), raw_id)
-            events.append(
-                HistoricalFiberEvent(
-                    source_path=source_path,
-                    sequence=sequence,
-                    role=FiberEventRole.REFERENCE,
-                    raw_fiber_id=raw_id,
-                    canonical_fiber_id=canonical_id,
-                    location=location,
-                )
-            )
-            consumed_locations.add(location)
-
-    return events, issues, consumed_locations
+    return events, issues
 
 
 def _canonical_state(events: Iterable[HistoricalFiberEvent]) -> tuple[CanonicalFiberState, ...]:
     grouped: dict[str, list[HistoricalFiberEvent]] = {}
     for event in events:
-        if event.role not in {FiberEventRole.DEFINITION, FiberEventRole.UPDATE}:
-            continue
-        grouped.setdefault(event.canonical_fiber_id, []).append(event)
+        if event.role in {FiberEventRole.DEFINITION, FiberEventRole.UPDATE}:
+            grouped.setdefault(event.canonical_fiber_id, []).append(event)
     states: list[CanonicalFiberState] = []
     for fiber_id, fiber_events in grouped.items():
         ordered = sorted(fiber_events, key=lambda event: (event.sequence, event.source_path, event.location))
@@ -407,22 +385,20 @@ def _canonical_state(events: Iterable[HistoricalFiberEvent]) -> tuple[CanonicalF
         if not definitions:
             continue
         first = definitions[0]
-        question = next((event.question for event in definitions if event.question), None)
-        latest_state = next((event.state for event in reversed(ordered) if event.state), None)
         states.append(
             CanonicalFiberState(
                 fiber_id=fiber_id,
                 first_source_path=first.source_path,
                 first_sequence=first.sequence,
-                question=question,
-                latest_state=latest_state,
+                question=next((event.question for event in definitions if event.question), None),
+                latest_state=next((event.state for event in reversed(ordered) if event.state), None),
                 event_count=len(ordered),
             )
         )
     return tuple(sorted(states, key=lambda state: state.fiber_id))
 
 
-def _report_digest(
+def _digest(
     artifacts: Iterable[HistoricalArtifactSnapshot],
     events: Iterable[HistoricalFiberEvent],
     reallocations: Iterable[ScopedFiberReallocation],
@@ -430,41 +406,19 @@ def _report_digest(
 ) -> str:
     payload = {
         "artifacts": [
-            {"path": a.path, "sha256": a.sha256, "git_blob_sha": a.git_blob_sha, "sequence": a.sequence, "kind": a.kind}
+            (a.path, a.sha256, a.git_blob_sha, a.sequence, a.kind)
             for a in sorted(artifacts, key=lambda item: item.path)
         ],
         "events": [
-            {
-                "source_path": e.source_path,
-                "sequence": e.sequence,
-                "role": e.role.value,
-                "raw": e.raw_fiber_id,
-                "canonical": e.canonical_fiber_id,
-                "question": e.question,
-                "state": e.state,
-                "location": e.location,
-            }
+            (e.source_path, e.sequence, e.role.value, e.raw_fiber_id, e.canonical_fiber_id, e.question, e.state, e.location)
             for e in sorted(events, key=lambda item: (item.source_path, item.location, item.role.value, item.raw_fiber_id))
         ],
         "reallocations": [
-            {
-                "source_path": r.source_path,
-                "historical": r.historical_id,
-                "canonical": r.canonical_id,
-                "reconciliation": r.reconciliation_path,
-                "sequence": r.reconciliation_sequence,
-            }
-            for r in sorted(reallocations, key=lambda item: (item.source_path, item.historical_id, item.canonical_id))
+            (r.source_path, r.historical_id, r.canonical_id, r.reconciliation_path, r.reconciliation_sequence)
+            for r in sorted(reallocations, key=lambda item: (item.source_path, item.historical_id))
         ],
         "issues": [
-            {
-                "kind": i.kind.value,
-                "message": i.message,
-                "source_path": i.source_path,
-                "fiber_id": i.fiber_id,
-                "resolved": i.resolved,
-                "resolution": i.resolution,
-            }
+            (i.kind.value, i.message, i.source_path, i.fiber_id, i.resolved, i.resolution)
             for i in sorted(issues, key=lambda item: (item.kind.value, item.source_path or "", item.fiber_id or "", item.message))
         ],
     }
@@ -473,27 +427,28 @@ def _report_digest(
 
 
 def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport:
-    """Compile the historical meta-fiber ledger from repository artifacts.
+    """Compile immutable meta-fiber history with source-scoped reconciliation.
 
-    Identity reconciliation is source-scoped. A historical alias never becomes a
-    global string replacement, because an older canonical fiber may legitimately
-    retain the same raw numeric slot.
+    The compiler deliberately separates raw identifier occurrences from
+    canonical identity. A forward repair for one historical source never acts
+    as a global string substitution, because the same raw numeric slot may be
+    the valid canonical identity of an earlier fiber.
     """
     research_dir = Path(research_dir)
     repo_root = research_dir.parent
-    discovered = discover_meta_ledger_paths(research_dir)
     artifacts: list[HistoricalArtifactSnapshot] = []
-    issues: list[HistoricalLedgerIssue] = []
     parsed: dict[str, Any] = {}
     raw_bytes: dict[str, bytes] = {}
+    issues: list[HistoricalLedgerIssue] = []
 
-    for path in discovered:
+    for path in discover_meta_ledger_paths(research_dir):
         rel = path.relative_to(repo_root).as_posix()
         kind = "reconciliation" if path.name.startswith("META_FIBER_REGISTRY_RECONCILIATION") else "backlog"
         artifacts.append(_artifact_snapshot(path, repo_root, kind=kind))
-        raw_bytes[rel] = path.read_bytes()
+        data = path.read_bytes()
+        raw_bytes[rel] = data
         try:
-            parsed[rel] = _read_json(path)
+            parsed[rel] = json.loads(data.decode("utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             issues.append(
                 HistoricalLedgerIssue(
@@ -503,14 +458,15 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                 )
             )
 
-    reconciliations = [
-        artifact for artifact in artifacts if artifact.kind == "reconciliation" and artifact.path in parsed
-    ]
-    scoped_reallocations: list[ScopedFiberReallocation] = []
+    reconciliation_artifacts = sorted(
+        (a for a in artifacts if a.kind == "reconciliation" and a.path in parsed),
+        key=lambda item: item.sequence,
+    )
+    reallocations: list[ScopedFiberReallocation] = []
     orphan_resolutions: dict[str, str] = {}
     alias_pairs: dict[str, str] = {}
 
-    for artifact in sorted(reconciliations, key=lambda item: item.sequence):
+    for artifact in reconciliation_artifacts:
         obj = parsed[artifact.path]
         if not isinstance(obj, Mapping):
             issues.append(
@@ -528,36 +484,35 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
             for source in sources_obj:
                 if not isinstance(source, Mapping):
                     continue
-                source_path_obj = source.get("path")
-                expected_blob_obj = source.get("blob_sha")
-                if not isinstance(source_path_obj, str) or not isinstance(expected_blob_obj, str):
+                source_path = source.get("path")
+                expected_blob = source.get("blob_sha")
+                if not isinstance(source_path, str) or not isinstance(expected_blob, str):
                     continue
-                source_file = repo_root / source_path_obj
+                source_file = repo_root / source_path
                 if not source_file.exists():
                     issues.append(
                         HistoricalLedgerIssue(
                             kind=HistoricalIssueKind.SOURCE_MISSING,
-                            message=f"Reconciliation source is missing: {source_path_obj}",
+                            message=f"Reconciliation source is missing: {source_path}",
                             source_path=artifact.path,
                         )
                     )
                     continue
                 source_data = source_file.read_bytes()
                 actual_blob = git_blob_sha(source_data)
-                if actual_blob != expected_blob_obj:
+                if actual_blob != expected_blob:
                     issues.append(
                         HistoricalLedgerIssue(
                             kind=HistoricalIssueKind.SOURCE_BLOB_MISMATCH,
-                            message=f"Expected Git blob {expected_blob_obj}, got {actual_blob} for {source_path_obj}",
+                            message=f"Expected Git blob {expected_blob}, got {actual_blob} for {source_path}",
                             source_path=artifact.path,
                         )
                     )
                     continue
-                verified_sources[source_path_obj] = source_data.decode("utf-8")
-                if source_path_obj not in raw_bytes:
-                    raw_bytes[source_path_obj] = source_data
-                    source_kind = "reconciliation_source"
-                    artifacts.append(_artifact_snapshot(source_file, repo_root, kind=source_kind))
+                verified_sources[source_path] = source_data.decode("utf-8")
+                if source_path not in raw_bytes:
+                    raw_bytes[source_path] = source_data
+                    artifacts.append(_artifact_snapshot(source_file, repo_root, kind="reconciliation_source"))
 
         aliases_obj = obj.get("explicit_aliases", [])
         if isinstance(aliases_obj, list):
@@ -568,21 +523,18 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                 canonical_id = _numeric_fiber_id(alias.get("canonical_id"))
                 if historical_id is None or canonical_id is None:
                     continue
-                matching_sources = [path for path, text in verified_sources.items() if historical_id in text]
-                if len(matching_sources) != 1:
+                matches = [path for path, text in verified_sources.items() if historical_id in text]
+                if len(matches) != 1:
                     issues.append(
                         HistoricalLedgerIssue(
                             kind=HistoricalIssueKind.RECONCILIATION_SCOPE_UNVERIFIABLE,
-                            message=(
-                                f"Expected exactly one verified historical source containing {historical_id}; "
-                                f"found {len(matching_sources)}"
-                            ),
+                            message=f"Expected exactly one verified historical source containing {historical_id}; found {len(matches)}",
                             source_path=artifact.path,
                             fiber_id=historical_id,
                         )
                     )
                     continue
-                source_path = matching_sources[0]
+                source_path = matches[0]
                 source_sequence = _round_sequence(source_path, kind="reconciliation_source")
                 if source_sequence >= artifact.sequence:
                     issues.append(
@@ -594,7 +546,7 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                         )
                     )
                     continue
-                scoped_reallocations.append(
+                reallocations.append(
                     ScopedFiberReallocation(
                         source_path=source_path,
                         historical_id=historical_id,
@@ -606,91 +558,74 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                 alias_pairs[historical_id] = canonical_id
 
         target_reference = _numeric_fiber_id(obj.get("target_reference"))
-        disposition_obj = obj.get("disposition")
+        disposition = obj.get("disposition")
         if (
             target_reference is not None
-            and isinstance(disposition_obj, str)
-            and "HISTORICAL_ORPHAN_REFERENCE" in disposition_obj
+            and isinstance(disposition, str)
+            and "HISTORICAL_ORPHAN_REFERENCE" in disposition
             and obj.get("retroactive_definition_created") is False
         ):
             orphan_resolutions[target_reference] = artifact.path
 
-    scoped_alias_map = {
-        (item.source_path, item.historical_id): item.canonical_id for item in scoped_reallocations
-    }
+    scoped_aliases = {(r.source_path, r.historical_id): r.canonical_id for r in reallocations}
 
     events: list[HistoricalFiberEvent] = []
-    consumed_exact_locations: set[tuple[str, str]] = set()
     for artifact in sorted(artifacts, key=lambda item: (item.sequence, item.path)):
-        if artifact.path not in parsed or artifact.kind == "reconciliation_source":
+        if artifact.kind == "reconciliation_source" or artifact.path not in parsed:
             continue
-        artifact_events, artifact_issues, consumed = _walk_fiber_records(
+        artifact_events, artifact_issues = _walk_records(
             parsed[artifact.path],
             source_path=artifact.path,
             sequence=artifact.sequence,
-            scoped_aliases=scoped_alias_map,
+            scoped_aliases=scoped_aliases,
             alias_pairs=alias_pairs,
         )
         events.extend(artifact_events)
         issues.extend(artifact_issues)
-        consumed_exact_locations.update((artifact.path, location) for location in consumed)
-        for location, fiber_id in _iter_exact_id_strings(parsed[artifact.path]):
-            if (artifact.path, location) not in consumed_exact_locations:
-                events.append(
-                    HistoricalFiberEvent(
-                        source_path=artifact.path,
-                        sequence=artifact.sequence,
-                        role=FiberEventRole.REFERENCE,
-                        raw_fiber_id=fiber_id,
-                        canonical_fiber_id=fiber_id,
-                        location=location,
-                    )
-                )
-                consumed_exact_locations.add((artifact.path, location))
 
-    # Reconciliation-linked Markdown is evidence-bearing historical identity input.
+    # Only reconciliation-linked Markdown sections explicitly declaring new
+    # fibers are promoted to definition events. Other prose mentions remain
+    # evidence, not registry declarations.
     for artifact in sorted(artifacts, key=lambda item: (item.sequence, item.path)):
         if artifact.kind != "reconciliation_source" or not artifact.path.endswith(".md"):
             continue
         text = raw_bytes[artifact.path].decode("utf-8")
         for index, raw_id in enumerate(_extract_markdown_new_fibers(text)):
-            canonical_id = scoped_alias_map.get((artifact.path, raw_id), raw_id)
             events.append(
                 HistoricalFiberEvent(
                     source_path=artifact.path,
                     sequence=artifact.sequence,
                     role=FiberEventRole.DEFINITION,
                     raw_fiber_id=raw_id,
-                    canonical_fiber_id=canonical_id,
+                    canonical_fiber_id=scoped_aliases.get((artifact.path, raw_id), raw_id),
                     location=f"markdown:new_fibers[{index}]",
                 )
             )
 
     events.sort(key=lambda event: (event.sequence, event.source_path, event.location, event.role.value, event.raw_fiber_id))
 
-    # Preserve raw namespace collisions as negative history, resolving only the
-    # source-scoped occurrences covered by an explicit verified reconciliation.
-    raw_definitions_by_slot: dict[int, list[HistoricalFiberEvent]] = {}
+    raw_by_slot: dict[int, list[HistoricalFiberEvent]] = {}
     for event in events:
         if event.role != FiberEventRole.DEFINITION:
             continue
         match = _NUMERIC_FIBER_RE.fullmatch(event.raw_fiber_id)
-        if match is None:
+        if match is not None:
+            raw_by_slot.setdefault(int(match.group("slot")), []).append(event)
+    for slot, slot_events in sorted(raw_by_slot.items()):
+        ordered = sorted(slot_events, key=lambda event: (event.sequence, event.source_path, event.location))
+        baseline_raw_id = ordered[0].raw_fiber_id
+        distinct = sorted({event.raw_fiber_id for event in ordered})
+        if len(distinct) <= 1:
             continue
-        raw_definitions_by_slot.setdefault(int(match.group("slot")), []).append(event)
-    for slot, slot_events in sorted(raw_definitions_by_slot.items()):
-        unique_raw_ids = sorted({event.raw_fiber_id for event in slot_events})
-        if len(unique_raw_ids) <= 1:
-            continue
-        for event in slot_events:
-            if event.raw_fiber_id == unique_raw_ids[0]:
+        for event in ordered[1:]:
+            if event.raw_fiber_id == baseline_raw_id:
                 continue
-            mapped = scoped_alias_map.get((event.source_path, event.raw_fiber_id))
+            mapped = scoped_aliases.get((event.source_path, event.raw_fiber_id))
             resolved = mapped is not None and mapped != event.raw_fiber_id
             issues.append(
                 HistoricalLedgerIssue(
                     kind=HistoricalIssueKind.NAMESPACE_SLOT_COLLISION,
-                    message=f"Raw slot {slot} was allocated to {', '.join(unique_raw_ids)}",
+                    message=f"Raw slot {slot} was allocated to {', '.join(distinct)}",
                     source_path=event.source_path,
                     fiber_id=event.raw_fiber_id,
                     resolved=resolved,
@@ -698,9 +633,9 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                 )
             )
 
-    canonical_definitions = [event for event in events if event.role == FiberEventRole.DEFINITION]
+    definitions = [event for event in events if event.role == FiberEventRole.DEFINITION]
     canonical_by_slot: dict[int, set[str]] = {}
-    for event in canonical_definitions:
+    for event in definitions:
         match = _NUMERIC_FIBER_RE.fullmatch(event.canonical_fiber_id)
         if match is not None:
             canonical_by_slot.setdefault(int(match.group("slot")), set()).add(event.canonical_fiber_id)
@@ -714,7 +649,7 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
             )
 
     questions_by_id: dict[str, set[str]] = {}
-    for event in canonical_definitions:
+    for event in definitions:
         if event.question:
             questions_by_id.setdefault(event.canonical_fiber_id, set()).add(" ".join(event.question.split()))
     for fiber_id, questions in sorted(questions_by_id.items()):
@@ -727,8 +662,8 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
                 )
             )
 
-    defined_ids = {event.canonical_fiber_id for event in canonical_definitions}
-    for reallocation in scoped_reallocations:
+    defined_ids = {event.canonical_fiber_id for event in definitions}
+    for reallocation in reallocations:
         if reallocation.canonical_id not in defined_ids:
             issues.append(
                 HistoricalLedgerIssue(
@@ -765,8 +700,7 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
     if any(issue.kind == HistoricalIssueKind.RECONCILIATION_CHRONOLOGY_INVALID for issue in unresolved):
         verdict = HistoricalLedgerVerdict.TRIAL_INVALID
     elif any(
-        issue.kind
-        in {
+        issue.kind in {
             HistoricalIssueKind.INVALID_JSON,
             HistoricalIssueKind.SOURCE_MISSING,
             HistoricalIssueKind.SOURCE_BLOB_MISMATCH,
@@ -778,23 +712,21 @@ def compile_meta_fiber_history(research_dir: Path) -> HistoricalMetaLedgerReport
         verdict = HistoricalLedgerVerdict.CANNOT_CHECK
     elif unresolved:
         verdict = HistoricalLedgerVerdict.CONFLICTED
-    elif scoped_reallocations or any(issue.resolved for issue in issues):
+    elif reallocations or any(issue.resolved for issue in issues):
         verdict = HistoricalLedgerVerdict.CONSISTENT_WITH_RECONCILIATION_HISTORY
     else:
         verdict = HistoricalLedgerVerdict.CONSISTENT
 
-    canonical_fibers = _canonical_state(events)
     artifact_tuple = tuple(sorted(artifacts, key=lambda item: item.path))
     event_tuple = tuple(events)
-    reallocation_tuple = tuple(sorted(scoped_reallocations, key=lambda item: (item.source_path, item.historical_id)))
+    reallocation_tuple = tuple(sorted(reallocations, key=lambda item: (item.source_path, item.historical_id)))
     issue_tuple = tuple(sorted(issues, key=lambda item: (item.kind.value, item.source_path or "", item.fiber_id or "", item.message)))
-    digest = _report_digest(artifact_tuple, event_tuple, reallocation_tuple, issue_tuple)
     return HistoricalMetaLedgerReport(
         verdict=verdict,
         artifacts=artifact_tuple,
         events=event_tuple,
         reallocations=reallocation_tuple,
         issues=issue_tuple,
-        canonical_fibers=canonical_fibers,
-        ledger_digest=digest,
+        canonical_fibers=_canonical_state(events),
+        ledger_digest=_digest(artifact_tuple, event_tuple, reallocation_tuple, issue_tuple),
     )
