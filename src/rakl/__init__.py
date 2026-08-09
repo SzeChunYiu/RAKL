@@ -25,18 +25,31 @@ from .promotion import (
     PromotionVerdict,
     RequiredCheck,
 )
+from .subject_identity import (
+    EvaluationTarget,
+    ExecutionSubjectObservation,
+    FrozenSubjectSpec,
+    PlatformSubjectObservation,
+    SubjectAttestationReport,
+    SubjectVerdict,
+    verify_execution_subject,
+)
 
 __all__ = [
     "Authority",
     "CheckConclusion",
     "Context",
     "Discriminator",
+    "EvaluationTarget",
     "EvidenceIdentityEdge",
     "EvidenceIdentityLedger",
     "EvidenceIdentityRelation",
+    "ExecutionSubjectObservation",
+    "FrozenSubjectSpec",
     "IdentityAwareSaturationTracker",
     "KnowledgeFiber",
     "LineageResolution",
+    "PlatformSubjectObservation",
     "Projection",
     "PromotionDecision",
     "PromotionGate",
@@ -45,7 +58,10 @@ __all__ = [
     "Relation",
     "Relationship",
     "RequiredCheck",
+    "SubjectAttestationReport",
+    "SubjectVerdict",
     "compare_contexts",
     "rank_discriminators",
     "semantic_gain",
+    "verify_execution_subject",
 ]
