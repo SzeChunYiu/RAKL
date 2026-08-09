@@ -60,6 +60,7 @@ class Context:
             "horizon",
             "observation_model",
             "units",
+            "assumptions",
             "intervention",
         ),
     ) -> tuple:
@@ -155,6 +156,17 @@ class KnowledgeFiber:
             )
         if not projection.projection_id:
             raise ValueError("projection_id cannot be empty")
+
+        existing = self.projections.get(projection.projection_id)
+        if existing is not None:
+            if existing == projection:
+                # Event replay/retry is safe and does not duplicate semantic state.
+                return
+            raise ValueError(
+                f"projection_id {projection.projection_id!r} already exists with "
+                "different content; projection identity is immutable"
+            )
+
         self.projections[projection.projection_id] = projection
         self.dimensions.setdefault("facets", set()).update(projection.facets)
 
@@ -215,7 +227,7 @@ class KnowledgeFiber:
         """Return transitive equivalence components without crossing type or scope.
 
         A chain may be closed transitively only inside one relationship type and one
-        declared scope.  This prevents an exact-isomorphism edge followed by a
+        declared scope. This prevents an exact-isomorphism edge followed by a
         QoI-equivalence edge from silently becoming a stronger three-way equivalence.
         Approximation is deliberately excluded because pairwise approximation is not
         generally transitive.
@@ -248,9 +260,9 @@ class KnowledgeFiber:
     ) -> list[set[str]]:
         """Connected components for one equivalence layer.
 
-        The safe default is exact isomorphism.  When ``scope`` is omitted, components
+        The safe default is exact isomorphism. When ``scope`` is omitted, components
         from all scopes of the selected relationship are returned, but each scope is
-        still closed separately.  Cross-type or cross-scope transitive closure is never
+        still closed separately. Cross-type or cross-scope transitive closure is never
         inferred.
         """
         if relationship not in TRANSITIVE_EQUIVALENCE_RELATIONSHIPS:
@@ -410,6 +422,7 @@ def compare_contexts(
         "horizon",
         "observation_model",
         "units",
+        "assumptions",
         "intervention",
     ),
 ) -> dict[str, tuple[object, object]]:
