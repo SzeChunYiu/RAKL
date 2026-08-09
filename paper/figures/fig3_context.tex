@@ -1,8 +1,8 @@
 \begin{tikzpicture}[
   >=Latex,
   every node/.style={font=\sffamily\footnotesize,align=center},
-  tier/.style={draw,rounded corners=1.5pt,minimum width=38mm,minimum height=12mm,fill=black!3},
-  mandatory/.style={draw,rounded corners=1.5pt,minimum width=33mm,minimum height=10mm,fill=black!8},
+  tier/.style={draw,rounded corners=1.5pt,minimum width=42mm,minimum height=12mm,fill=black!3},
+  mandatory/.style={draw,rounded corners=1.5pt,minimum width=38mm,minimum height=9mm,fill=black!8},
   arrow/.style={->,line width=0.6pt}
 ]
 
@@ -14,19 +14,17 @@
 \draw[arrow] (index) -- node[right]{retrieve / rehydrate} (working);
 \draw[arrow] (working) -- node[right]{compile} (prompt);
 
-\node[mandatory] (neg) at (5.4,1.9) {negative history};
-\node[mandatory] (fals) at (5.4,0.7) {falsifiers / assumptions};
-\node[mandatory] (contr) at (5.4,-0.5) {contradiction sides};
-\node[mandatory] (anc) at (5.4,-1.7) {authority + mechanism ancestry};
-\draw[arrow] (neg.west) -- (working.east);
-\draw[arrow] (fals.west) -- (working.east);
-\draw[arrow] (contr.west) -- (working.east);
-\draw[arrow] (anc.west) -- (working.east);
+\node[mandatory] (neg) at (6.0,2.2) {negative history};
+\node[mandatory] (fals) at (6.0,1.05) {falsifiers / assumptions};
+\node[mandatory] (contr) at (6.0,-0.10) {contradiction sides};
+\node[mandatory] (anc) at (6.0,-1.25) {authority + mechanism ancestry};
+\node[draw,dashed,rounded corners=2pt,fit=(neg)(anc),inner sep=3mm,label={[font=\sffamily\scriptsize]above:mandatory set $M(o)$}] (mand) {};
+\draw[arrow] (mand.west) -- (working.east);
 
-\node[draw,dashed,rounded corners=1.5pt,text width=35mm,minimum height=13mm] (fail) at (9.3,-0.8) {$Tokens(M(o))>B$\\$\Rightarrow$ \texttt{CANNOT\_COMPILE}};
-\draw[arrow,dashed] (working) -- (fail);
+\node[draw,dashed,rounded corners=1.5pt,text width=40mm,minimum height=13mm] (fail) at (6.0,-2.75) {$Tokens(M(o))>B$\\$\Rightarrow$ \texttt{CANNOT\_COMPILE}};
+\draw[arrow,dashed] (mand.south) -- (fail.north);
 
-\node[font=\sffamily\scriptsize,text width=44mm,anchor=north west] at (-2.0,-3.25) {Archive growth does not imply prompt growth. Compact views remain reconstructable projections with raw-source pointers and erasure metadata.};
-\node[font=\sffamily\scriptsize,text width=50mm,anchor=north west] at (4.2,-3.25) {For a fixed target, irrelevant archive growth should have approximately zero effect on active tokens. Mandatory scientific material is never traded away for a smaller prompt.};
+\node[font=\sffamily\scriptsize,text width=45mm,anchor=north] at (0,-3.45) {Archive growth does not imply prompt growth. Compact views remain reconstructable projections with raw-source pointers and erasure metadata.};
+\node[font=\sffamily\scriptsize,text width=50mm,anchor=north] at (6.0,-3.45) {For a fixed target, irrelevant archive growth should have approximately zero effect on active tokens. Mandatory scientific material is never traded away for a smaller prompt.};
 
 \end{tikzpicture}
