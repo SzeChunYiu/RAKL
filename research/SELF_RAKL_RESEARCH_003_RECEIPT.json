@@ -6,8 +6,9 @@
   "starting_main_sha": "0a5fd25ad59175277ad47061f280b3a82c40e8a4",
   "frozen_benchmark_commit": "3bddb6a43a6206dc4a8360b0c769af1bc3ad6572",
   "candidate_ref": "self-rakl/round-003-candidate",
-  "candidate_sha_binding": "the exact commit containing this receipt and all prior round-003 candidate changes",
+  "candidate_sha": "b84322e89e7d33058f931f42f13886c7d045db81",
   "research_status": "NON_FLAT",
+  "promotion_status": "PROMOTED_AFTER_PREPROMOTION_VALIDATION",
   "core_philosophy_changed": false,
   "constitutional_change_activated": false,
   "selected_fibers": [
@@ -61,12 +62,13 @@
       "tests/test_saturation.py": "b699ae2bf9b218e7418a2b4203c73c21f5914727",
       "tests/test_tree.py": "ebacadb2316ab890feeb9b495e9c328bb2e6c86d"
     },
-    "registered_improvements": [
-      "promotion_gate_exactness",
-      "context_alignment_recall",
-      "projection_identity_integrity",
-      "counterexample_search_surface"
-    ]
+    "fingerprints_rechecked_on_candidate": true,
+    "registered_improvements": {
+      "promotion_gate_exactness": "positive: this run kept main at the frozen incumbent while exact candidate CI executed, then moved main non-forced only after success",
+      "context_alignment_recall": "positive: assumptions are now part of default context alignment",
+      "projection_identity_integrity": "positive: overwrite becomes immutable-ID rejection; identical replay remains idempotent",
+      "counterexample_search_surface": "positive: generated/metamorphic tests added with Hypothesis"
+    }
   },
   "candidate_implementation": {
     "class": "B workflow plus implementation corrections; no constitutional amendment",
@@ -87,30 +89,53 @@
   "native_residuals_addressed": [
     {
       "id": "META_N016_PREPROMOTION_STAGING",
-      "challenger": "candidate branch + exact-SHA trusted checks + protected-evaluator fingerprints + non-forced fast-forward only after PROMOTE"
+      "challenger": "candidate branch + exact-SHA trusted checks + protected-evaluator fingerprints + non-forced fast-forward only after PROMOTE",
+      "status": "IMPLEMENTED_V1_AND_USED_IN_THIS_RUN"
     },
     {
       "id": "CONTEXT_ASSUMPTIONS_OMITTED",
-      "challenger": "assumptions included in default Context comparison/key"
+      "challenger": "assumptions included in default Context comparison/key",
+      "status": "FIXED_AND_TESTED"
     },
     {
       "id": "PROJECTION_ID_OVERWRITE",
-      "challenger": "identical replay is idempotent; differing content under same ID is rejected"
+      "challenger": "identical replay is idempotent; differing content under same ID is rejected",
+      "status": "FIXED_AND_TESTED"
     }
   ],
   "verification": {
-    "incumbent_main_ci": {
-      "sha": "0a5fd25ad59175277ad47061f280b3a82c40e8a4",
-      "run_id": 31284838328,
-      "conclusion": "success"
-    },
+    "incumbent_main_before_promotion": "3bddb6a43a6206dc4a8360b0c769af1bc3ad6572",
+    "candidate_exact_sha": "b84322e89e7d33058f931f42f13886c7d045db81",
     "candidate_ci": {
-      "status": "PENDING_PREPROMOTION",
-      "required_workflow": "test",
-      "expected_source": "GitHub Actions",
-      "exact_sha_required": true
+      "workflow": "test",
+      "source": "GitHub Actions",
+      "run_id": 31286926152,
+      "job_id": 93177332569,
+      "status": "completed",
+      "conclusion": "success",
+      "pytest": "45 passed in 2.73s",
+      "checkout_log_confirmed_exact_sha": true
     },
-    "promotion_verdict": "PENDING_PREPROMOTION"
+    "candidate_compare_to_incumbent": {
+      "status": "ahead",
+      "ahead_by": 10,
+      "behind_by": 0,
+      "merge_base_is_incumbent": true
+    },
+    "main_still_incumbent_when_verdict_checked": true,
+    "promotion_verdict": "PROMOTE",
+    "promotion_action": "non-forced fast-forward main to already-tested candidate SHA",
+    "promotion_succeeded": true
+  },
+  "postpromotion_research_ledgers": {
+    "external_framework_delta": {
+      "path": "research/EXTERNAL_FRAMEWORK_ATLAS_003_DELTA.json",
+      "commit": "9ecc06954ae67bb0f7b40ce462204cbad211e679"
+    },
+    "meta_fiber_delta": {
+      "path": "research/META_FIBER_BACKLOG_003_DELTA.json",
+      "commit": "976f4a560e20a822f524e839a67a9b09cf3d4a89"
+    }
   },
   "rejected_false_novelty_or_scope_limits": [
     "Required-status-check staging is not treated as scientific evidence quality; it is a software promotion safeguard.",
@@ -124,22 +149,24 @@
     "same_context_flat_rounds": 0,
     "independent_flat_rounds": 0,
     "saturated": false,
-    "reason": "Seven retained semantic objects survived deduplication across materially different routes."
+    "reason": "Seven retained semantic objects and new meta-fibers survived deduplication across materially different routes."
   },
   "next_priority_fibers": [
+    "META_N020_EVALUATOR_INTEGRITY",
     "META_N015_CLAIM_EVIDENCE_PROVENANCE",
-    "META_N013_ASSUMPTION_TRUTH_MAINTENANCE",
-    "META_N006_INFORMATION_GAIN",
     "META_N017_PROVENANCE_ALGEBRA",
-    "META_N018_PROPERTY_BASED_RAKLBENCH",
-    "META_N019_DURABLE_RESEARCH_EXECUTION"
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N006_INFORMATION_GAIN",
+    "META_N013_ASSUMPTION_TRUTH_MAINTENANCE",
+    "META_N018_PROPERTY_BASED_RAKLBENCH"
   ],
   "result_branches": {
-    "positive": "If exact candidate checks pass while main stays incumbent and protected evaluator fingerprints are unchanged, fast-forward main non-forced to that exact candidate SHA, then finalize this receipt.",
-    "null": "Keep incumbent and retain the benchmark/research result; select a materially different challenger.",
+    "positive": "Completed: exact candidate passed frozen gates and was promoted only afterward.",
+    "null": "If a future challenger adds no semantic/meta-QoI gain, keep incumbent and retain only measured saturation evidence.",
     "refuted": "Preserve failing candidate branch/receipt and keep main unchanged; minimize the failing sequence and reopen the implicated fiber.",
     "partial_identification": "Promote only the scoped subchange whose frozen gates pass; retain other challenger pieces as research state.",
     "blocked": "If exact checks cannot be observed, record CANNOT_CHECK and leave main unchanged.",
     "transport_failure": "Scope successful local invariants to the contexts/domains where their benchmark evidence holds."
-  }
+  },
+  "instruction_for_next_ai": "Start from the newest main and this receipt plus both round-003 delta ledgers. Do not repeat this run's release/property/provenance survey. Highest-value next discriminator is hostile evaluator-integrity: stage a candidate that weakens a protected test/CI rule and verify the frozen parent validator blocks it while main remains unchanged. In parallel, turn claim/evidence provenance into executable packets/DAGs without letting lineage imply truth."
 }
