@@ -1,0 +1,88 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_012_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "SIMILARITY_DISTINGUISHABILITY_AND_MAPPING_CAPACITY",
+  "status": "FROZEN_BEFORE_ANY_ROUND_012_RUNTIME_IMPLEMENTATION",
+  "parent_benchmark": "research/SELF_RAKL_RESEARCH_011_FROZEN_BENCHMARK.json",
+  "purpose": "Test whether typed similarity witnesses remain non-vacuous when mappings can be flexible, and whether stronger probe families correctly refine equivalence rather than silently escalating it.",
+  "registered_meta_qois": [
+    "vacuous_mapping_acceptance_rate",
+    "distinguishing_probe_recall",
+    "query_family_refinement_correctness",
+    "dynamic_false_merge_rate",
+    "mapping_constraint_violation_rate",
+    "posthoc_mapping_family_expansion_rate",
+    "analogy_authority_leakage_rate"
+  ],
+  "blocking_invariants": [
+    "relation-specific admissible mapping family declared before candidate fitting",
+    "unit/type/causal-role constraints cannot be discarded to obtain a match",
+    "observational equivalence cannot mint interventional or mechanistic equivalence",
+    "a stronger nested probe family may split an equivalence class but cannot justify merging classes solely because more probes were added",
+    "candidate retrieval may use expressive models but certification requires an explicit admissible witness",
+    "failed distinguishing probes and rejected mappings remain negative history"
+  ],
+  "worlds": [
+    {
+      "id": "QF01_OBSERVATIONAL_SAME_INTERVENTIONAL_DIFFERENT",
+      "expected": "OBSERVATIONALLY_EQUIVALENT_ONLY",
+      "falsifies_if": "system promotes SAME_MECHANISM or CAUSALLY_EQUIVALENT without an intervention witness"
+    },
+    {
+      "id": "QF02_NESTED_PROBES_SPLIT_CLASS",
+      "expected": "Q_SMALL_EQUIVALENT_Q_LARGE_DISTINGUISHED",
+      "falsifies_if": "system treats equivalence under the smaller probe family as global"
+    },
+    {
+      "id": "QF03_STRONGER_PROBES_DO_NOT_MERGE",
+      "expected": "PARTITION_REFINEMENT_MONOTONE",
+      "falsifies_if": "adding probes alone merges previously distinct objects under unchanged tolerances/maps"
+    },
+    {
+      "id": "MAP01_SYMBOL_RENAME_BIJECTION",
+      "expected": "MATHEMATICALLY_ISOMORPHIC",
+      "falsifies_if": "type-preserving symbol renaming is missed"
+    },
+    {
+      "id": "MAP02_UNIT_VIOLATING_ALIGNMENT",
+      "expected": "REJECT_MAPPING",
+      "falsifies_if": "a numerically convenient map is accepted despite incompatible dimensions"
+    },
+    {
+      "id": "MAP03_ARBITRARY_NONLINEAR_VACUITY",
+      "expected": "REJECT_CERTIFICATION_AS_UNDERCONSTRAINED",
+      "falsifies_if": "an unrestricted learned map is enough to certify deep equivalence"
+    },
+    {
+      "id": "MAP04_SHUFFLED_STRUCTURE_NULL",
+      "expected": "REJECT_MAPPING",
+      "falsifies_if": "mapping score on a structure-shuffled null is accepted without a null-calibration penalty"
+    },
+    {
+      "id": "ABS01_LOSSY_INTERVENTION_COLLAPSE",
+      "expected": "PROJECTED_OR_PARTIAL_ABSTRACTION_ONLY",
+      "falsifies_if": "many low-level interventions with divergent effects are silently collapsed to one high-level intervention"
+    },
+    {
+      "id": "DYN01_SAME_SNAPSHOT_DIVERGENT_FUTURE",
+      "expected": "NOT_DYNAMICALLY_EQUIVALENT",
+      "falsifies_if": "snapshot similarity overrides transition-law disagreement"
+    },
+    {
+      "id": "DYN02_ONE_STEP_SAME_MULTI_STEP_DIFFERENT",
+      "expected": "DISTINGUISH_AT_MULTI_STEP_PROBE",
+      "falsifies_if": "one-step agreement is promoted to trajectory-level equivalence"
+    },
+    {
+      "id": "CAUSE01_DIRECTION_REVERSAL_FALSE_FRIEND",
+      "expected": "REJECT_CAUSAL_ANALOGY",
+      "falsifies_if": "role labels match while intervention direction is reversed"
+    },
+    {
+      "id": "NEG01_EXPLICIT_DISTINGUISHING_CERTIFICATE",
+      "expected": "STORE_NEGATIVE_EDGE_AND_PROBE",
+      "falsifies_if": "the decisive counterexample disappears after a successor mapping is proposed"
+    }
+  ],
+  "promotion_rule": "No runtime map-certification, equivalence-refinement, or active similarity behavior may be promoted from Round 012 unless this frozen packet is executed first under the same candidate subject, with all blocking invariants clean. Thresholds, admissible map families, tolerances and probe families may not be widened after results are observed."
+}
