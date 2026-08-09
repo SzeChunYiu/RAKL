@@ -1,0 +1,60 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_028_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "HOSTED_RUNNER_OS_FAMILY_PINNING",
+  "frozen_on_main": "b8c65d57432a29e2ef1d7acc94ca4b4544403ca2",
+  "target_fibers": [
+    "META_N090_EVALUATOR_RUNNER_IMAGE_IDENTITY",
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N020A_EVALUATOR_INFLUENCE_CLOSURE"
+  ],
+  "external_prior_art": {
+    "github_hosted_runner_docs": "GitHub documents ubuntu-latest and ubuntu-24.04 as hosted-runner labels and states that -latest selects the latest stable image.",
+    "runner_images_repo": "The official runner-images repository states that -latest migrations can change OS version and recommends a specific OS label to avoid unwanted migration; image software is still updated on an ongoing cadence."
+  },
+  "problem": "Both protected workflows use runs-on: ubuntu-latest. This permits GitHub to migrate the OS family independently of repository source identity. Current logs resolve the label to Ubuntu 24.04 image 20260720.247.2, but exact hosted-image build identity is not selectable through the standard runs-on label.",
+  "allowed_exact_transformations": [
+    {"path":".github/workflows/test.yml","from":"runs-on: ubuntu-latest","to":"runs-on: ubuntu-24.04","count":1},
+    {"path":".github/workflows/trusted-parent-evaluator.yml","from":"runs-on: ubuntu-latest","to":"runs-on: ubuntu-24.04","count":1}
+  ],
+  "forbidden_changes": [
+    "workflow triggers/events",
+    "permissions",
+    "action SHAs",
+    "checkout subject-binding logic",
+    "Python version",
+    "install or pytest commands",
+    "trusted parent evaluator command/boundary",
+    "evaluator/promotion source",
+    "existing tests",
+    "acceptance thresholds"
+  ],
+  "known_answer_worlds": [
+    {"id":"R28-W01","world":"ubuntu-latest source with observed ubuntu-24.04 execution","expected":"OS_FAMILY_OBSERVED_BUT_FUTURE_ALIAS_MUTABLE"},
+    {"id":"R28-W02","world":"ubuntu-24.04 source with observed ubuntu-24.04 execution","expected":"OS_FAMILY_BOUND_IMAGE_BUILD_STILL_MUTABLE"},
+    {"id":"R28-W03","world":"ubuntu-24.04 source with a later different image version","expected":"NO_OS_FAMILY_REGRESSION_BUT_ENVIRONMENT_DRIFT_REMAINS"},
+    {"id":"R28-W04","world":"specific OS label claimed to pin exact hosted image build","expected":"REFUTE_OVERCLAIM"},
+    {"id":"R28-W05","world":"runner image version absent from evidence","expected":"CANNOT_CHECK_EXACT_IMAGE_VERSION"},
+    {"id":"R28-W06","world":"test workflow changed beyond exact label substitution","expected":"REJECT"},
+    {"id":"R28-W07","world":"trusted evaluator workflow changed beyond exact label substitution","expected":"REJECT"},
+    {"id":"R28-W08","world":"candidate exact-head test runs on ubuntu-24.04 and passes","expected":"TEST_RUNNER_FAMILY_VALIDATED"},
+    {"id":"R28-W09","world":"future trusted-parent evaluator run on promoted main reports ubuntu-24.04","expected":"TRUSTED_EVALUATOR_RUNNER_FAMILY_VALIDATED"},
+    {"id":"R28-W10","world":"Node/action runtime is platform-forced despite pinned action SHA","expected":"KEEP_PLATFORM_RUNTIME_INFLUENCE_OPEN"}
+  ],
+  "registered_meta_qois": {
+    "protected_workflow_latest_runner_alias_count": {"baseline":2,"required":0,"direction":"lower_is_better"},
+    "protected_workflow_specific_os_family_label_count": {"baseline":0,"required":2,"direction":"higher_is_better"},
+    "exact_hosted_image_build_pinability": {"baseline":false,"required_claim":false,"note":"do not pretend a standard hosted-runner label freezes the weekly image build"},
+    "non_runner_label_semantic_changes": {"required":false,"blocking":true}
+  },
+  "acceptance": [
+    "candidate diff contains only the two frozen runs-on substitutions plus research/validation artifacts",
+    "exact PR-head test workflow succeeds under META_N092 subject binding",
+    "test job setup reports Image: ubuntu-24.04",
+    "existing parent evaluator rejects protected workflow byte changes rather than being weakened",
+    "main remains the benchmark lineage immediately before force=false fast-forward",
+    "post-promotion exact-main test succeeds and reports Ubuntu 24.04"
+  ],
+  "terminal_classification_target": "PARTIALLY_IDENTIFIED: OS family can be bound to Ubuntu 24.04, while exact GitHub-hosted image build/runtime remains an explicit external-platform influence requiring observation or a different execution substrate.",
+  "adversarial_falsifier": "If ubuntu-latest is contractually guaranteed to remain Ubuntu 24.04 for the relevant horizon or a standard hosted-runner syntax can pin exact image build identity, the value/limits of this migration must be re-evaluated from official evidence."
+}
