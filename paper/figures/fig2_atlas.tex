@@ -1,36 +1,36 @@
 \begin{tikzpicture}[
   >=Latex,
   every node/.style={font=\sffamily\footnotesize,align=center},
-  chart/.style={draw,rounded corners=1.5pt,minimum width=28mm,minimum height=17mm,fill=black!3},
-  target/.style={draw,double,rounded corners=1.5pt,minimum width=26mm,minimum height=13mm,fill=black!7},
-  cut/.style={draw,dashed,rounded corners=1.5pt,minimum width=26mm,minimum height=12mm},
+  chart/.style={draw,rounded corners=1.5pt,minimum width=29mm,minimum height=17mm,fill=black!3},
+  target/.style={draw,double,rounded corners=1.5pt,minimum width=28mm,minimum height=14mm,fill=black!7},
+  cut/.style={draw,dashed,rounded corners=1.5pt,minimum width=30mm,minimum height=13mm},
   trans/.style={->,line width=0.6pt},
+  strongpath/.style={->,line width=0.95pt},
   weak/.style={->,dashed,line width=0.55pt}
 ]
 
-\node[chart] (c1) at (0,1.7) {$C_1$\\population A\\representation $\phi_1$};
-\node[chart] (c2) at (4.0,1.7) {$C_2$\\population A\\representation $\phi_2$};
-\node[chart] (c3) at (0,-1.6) {$C_3$\\population B\\measurement $h_3$};
-\node[chart] (c4) at (4.0,-1.6) {$C_4$\\population A\\mechanistic view};
+\node[chart] (c1) at (0,1.55) {$C_1$\\population A\\representation $\phi_1$};
+\node[chart] (c2) at (4.05,1.55) {$C_2$\\population A\\representation $\phi_2$};
+\node[chart] (c3) at (0,-1.45) {$C_3$\\population B\\measurement $h_3$};
+\node[chart] (c4) at (4.05,-1.45) {$C_4$\\population A\\mechanistic view};
+\node[target] (tau) at (8.45,0.9) {target $\tau$\\$(q,\alpha^*,\gamma)$};
+\node[cut] (cut) at (8.45,-1.65) {missing prerequisite\\epistemic cut $B^*_{\tau}$};
 
 \draw[trans] (c1) -- node[above]{typed $T_{12}^{\tau,\sigma}$} (c2);
-\draw[weak] (c1) -- node[left]{context translation} (c3);
-\draw[trans] (c2) -- node[right]{ancestry / derivation} (c4);
-\draw[weak] (c3) -- node[below]{no licensed glue} (c4);
-\node[font=\Large] at (2.0,-1.6) {$\times$};
-\node[font=\sffamily\scriptsize,text width=27mm] at (2.0,-2.35) {obstruction retained};
+\draw[weak] (c1) -- node[left,xshift=-1mm]{context\\translation} (c3);
+\draw[trans] (c2) -- node[right,xshift=1.5mm,text width=23mm]{ancestry /\\derivation} (c4);
 
-\node[target] (tau) at (8.1,0.2) {target $\tau$\\$(q,\alpha^*,\gamma)$};
-\node[cut] (cut) at (6.0,-1.6) {missing prerequisite\\$B^*_{\tau}$};
+% An unlicensed local relation is represented as an obstruction, not a forced edge.
+\draw[dashed,line width=0.55pt] (c3.east) -- (c4.west);
+\node[fill=white,inner sep=2pt,font=\sffamily\scriptsize] at (2.03,-1.45) {obstruction};
 
-\draw[trans,line width=1pt] (c1.east) to[bend left=8] (c2.west);
-\draw[trans,line width=1pt] (c2.east) to[bend left=10] (tau.north west);
-\draw[trans,line width=1pt] (c4.east) to[bend right=10] (tau.south west);
-\draw[weak] (cut) -- (tau);
+\draw[strongpath] (c2.east) to[bend left=7] (tau.north west);
+\draw[strongpath] (c4.east) to[bend right=9] (tau.south west);
+\draw[weak] (cut.north) -- (tau.south);
 
-\node[font=\sffamily\scriptsize,text width=44mm,anchor=north west] at (-1.4,-3.1) {
+\node[font=\sffamily\scriptsize,text width=45mm,anchor=north west] at (-1.35,-2.95) {
 Local papers, datasets and derived models are contextual charts rather than globally competing whole objects. Pairwise compatibility is not enough for a unique global theory.};
-\node[font=\sffamily\scriptsize,text width=48mm,anchor=north west] at (4.3,-3.1) {
-The active LLM context follows the smallest authority-valid support corridor to the target. If every route crosses an unresolved prerequisite, that prerequisite becomes an epistemic cut and a new fiber.};
+\node[font=\sffamily\scriptsize,text width=49mm,anchor=north west] at (4.55,-2.95) {
+The active LLM context follows the smallest authority-valid support corridor to the target. If every admissible route crosses an unresolved prerequisite, that prerequisite becomes an epistemic cut and a new fiber.};
 
 \end{tikzpicture}
