@@ -1,0 +1,110 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_014_DELTA",
+  "date": "2026-08-09",
+  "object": "ANALOGY_DISCOVERY_FAILURE_LOCALIZATION",
+  "route": "analogy retrieval vs recognition, structural decomposition, cross-analogy confirmation, contrastive relational evaluation, scientific inspiration retrieval, structure-guided retrieval",
+  "sources": [
+    {
+      "source_id": "CHEN_ET_AL_ADR_CANA_2026",
+      "type": "primary_preprint",
+      "source": "Chen et al., Analogical Deep Research: Retrieving and Integrating Historical Analogies for Foresight Analysis, arXiv:2607.13602, 2026",
+      "url": "https://arxiv.org/abs/2607.13602",
+      "projection": "Deep-research agents tend to match surface features rather than mechanisms in historical analogy search; CANA uses structural decomposition and cross-analogy confirmation, and its formalism distinguishes surface description from mechanistic structure.",
+      "rakl_mapping": [
+        "supports mechanism/structure-first retrieval rather than surface similarity",
+        "supports explicit multi-analogy coverage/confirmation as a proposal-strengthening operation",
+        "requires RAKL to keep confirmation distinct from target-domain authority"
+      ],
+      "novelty_effect": "mechanism-aligned analogy retrieval and cross-analogy confirmation are prior art; do not claim them individually"
+    },
+    {
+      "source_id": "LIU_ET_AL_RESEARCHBENCH_2026",
+      "type": "primary_conference_paper",
+      "source": "Liu et al., ResearchBench: Benchmarking LLMs in Scientific Discovery via Inspiration-Based Task Decomposition, Findings of ACL 2026",
+      "url": "https://aclanthology.org/2026.findings-acl.644/",
+      "projection": "Scientific discovery can be benchmarked through separately scored inspiration retrieval, hypothesis composition and hypothesis ranking subtasks on a contamination-aware corpus.",
+      "rakl_mapping": [
+        "reinforces stage-separated evaluation rather than one end-to-end discovery score",
+        "motivates frozen corpus identity and stage-localized errors for scientific JUMP evaluation"
+      ],
+      "novelty_effect": "retrieval/composition/ranking decomposition is prior art"
+    },
+    {
+      "source_id": "DAS_BALKE_RELATIONAL_ANALOGIES_2025",
+      "type": "primary_conference_paper",
+      "source": "Das and Balke, From Prototypical to Relational: How LLMs Navigate Complex Analogies, INLG 2025",
+      "url": "https://aclanthology.org/2025.inlg-main.28/",
+      "projection": "A benchmark with semantically plausible distractors evaluates ranked relational overlap separately from embedding/context similarity and prototypicality; fine-grained relational mapping remains more difficult than surface-semantic measures.",
+      "rakl_mapping": [
+        "recognition should score relational mapping rather than reuse retrieval similarity",
+        "surface-plausible distractors are necessary hostile controls"
+      ],
+      "novelty_effect": "relational-overlap evaluation and plausible analogy distractors are prior art"
+    },
+    {
+      "source_id": "ZHANG_LYU_A3E_2025",
+      "type": "primary_conference_paper_with_open_code",
+      "source": "Zhang and Lyu, Can Language Models Serve as Analogy Annotators?, Findings of ACL 2025",
+      "url": "https://aclanthology.org/2025.findings-acl.819/",
+      "code": "https://github.com/zhangxjohn/A3E",
+      "projection": "A3E uses a multi-stage progressive structure-mapping workflow to annotate analogy candidates across fine-grained categories.",
+      "rakl_mapping": [
+        "candidate retrieval and analogy annotation/recognition should remain distinct replaceable modules",
+        "fine-grained analogy status can be represented explicitly rather than as one score"
+      ],
+      "novelty_effect": "multi-stage LLM analogy annotation is prior art"
+    },
+    {
+      "source_id": "KHOJASTEH_ET_AL_YARN_2026",
+      "type": "primary_preprint_with_open_code",
+      "source": "Khojasteh et al., Enhancing Structural Mapping with LLM-derived Abstractions for Analogical Reasoning in Narratives, arXiv:2603.29997, 2026",
+      "url": "https://arxiv.org/abs/2603.29997",
+      "code": "https://github.com/mhkhojaste/narrative-analogy",
+      "projection": "YARN modularizes unit extraction, multiple abstraction levels and local/global structural mapping; its error analysis identifies abstraction-level choice and implicit causality as unresolved challenges.",
+      "rakl_mapping": [
+        "supports the L0-L6 abstraction ladder as an experimental coordinate rather than a monotone hierarchy",
+        "supports recording which abstraction/retrieval route surfaced a candidate"
+      ],
+      "novelty_effect": "LLM abstraction before structural mapping and multi-level abstraction comparison are prior art"
+    },
+    {
+      "source_id": "XIE_ET_AL_SG_RAG_2026",
+      "type": "primary_conference_paper",
+      "source": "Xie et al., Structure Guided Retrieval-Augmented Generation for Factual Queries, ACL 2026",
+      "url": "https://aclanthology.org/2026.acl-long.1873/",
+      "projection": "SG-RAG formulates retrieval with structural constraints as embedding-based subgraph matching rather than relying only on vector similarity.",
+      "rakl_mapping": [
+        "graph/subgraph retrieval is a replaceable structural retrieval route for JUMP",
+        "structure-aware retrieval must be benchmarked against lexical/embedding routes under the same frozen corpus and top-k budget"
+      ],
+      "novelty_effect": "structure-guided/subgraph retrieval is prior art"
+    }
+  ],
+  "open_source_frameworks_inspected": [
+    {
+      "repo": "mhkhojaste/narrative-analogy",
+      "projection": "executable unit -> abstraction -> stage/super-unit -> local/global mapping pipeline"
+    },
+    {
+      "repo": "zhangxjohn/A3E",
+      "projection": "open implementation/data for multi-stage analogy annotation"
+    }
+  ],
+  "retained_rakl_internal_objects_after_deduplication": [
+    "CORPUS_RETRIEVAL_RECOGNITION_TRANSFER_QUADRIPARTITION",
+    "RETRIEVAL_ROUTE_ATTRIBUTION",
+    "ANALOGY_TRIAL_LEAKAGE_SENTINELS",
+    "CROSS_ANALOGY_MOTIF_PROPOSAL_ONLY"
+  ],
+  "not_counted_as_paper_novelty": [
+    "mechanism-aligned analogy retrieval",
+    "cross-analogy confirmation",
+    "scientific inspiration-retrieval decomposition",
+    "multi-stage analogy annotation",
+    "LLM-derived abstraction before structural mapping",
+    "structure-guided graph/subgraph retrieval",
+    "relational-overlap analogy evaluation",
+    "contrastive or plausible near-miss distractors"
+  ],
+  "remaining_candidate_contribution": "The narrower RAKL synthesis is an evidence-governed analogy discovery ledger that separates corpus coverage, retrieval, witness construction and target transfer, binds each retrieved candidate to route provenance and frozen chronology, preserves refuted structural witnesses, and prevents cross-analogy corroboration from escalating target authority. This remains provisional pending real far-domain retrieval experiments and adversarial prior-art review."
+}
