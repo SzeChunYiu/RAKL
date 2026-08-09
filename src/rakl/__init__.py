@@ -46,6 +46,13 @@ from .capability import (
     evaluate_capability_shaping,
     validate_capability_operator,
 )
+from .challenge_learning import (
+    ChallengeLearningCase,
+    ChallengeLearningReport,
+    FailureCause,
+    LearningControlVerdict,
+    choose_learning_control,
+)
 from .claim_evidence import (
     ClaimAtom,
     ClaimEvidenceLink,
@@ -259,6 +266,8 @@ __all__ = [
     "CapabilityTrial",
     "CapabilityTrialReport",
     "CapabilityTrialVerdict",
+    "ChallengeLearningCase",
+    "ChallengeLearningReport",
     "CheckConclusion",
     "ClaimAtom",
     "ClaimEvidenceLink",
@@ -286,6 +295,7 @@ __all__ = [
     "EvidenceSourceSnapshot",
     "ExecutionSubjectObservation",
     "ExprOp",
+    "FailureCause",
     "FormalEquation",
     "FormalExpression",
     "FormalSymbol",
@@ -317,6 +327,7 @@ __all__ = [
     "InventionOperator",
     "InventionTask",
     "KnowledgeFiber",
+    "LearningControlVerdict",
     "LiftReport",
     "LiftVerdict",
     "LimitCase",
@@ -386,6 +397,7 @@ __all__ = [
     "assess_generator_family",
     "attest_promotion_state",
     "canonical_source_closure",
+    "choose_learning_control",
     "compare_contexts",
     "compare_retrieval_routes",
     "compile_epistemic_context",
