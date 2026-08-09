@@ -1,0 +1,75 @@
+{
+  "addendum_id": "SELF_RAKL_RESEARCH_023_EXECUTION_SEMANTICS_ADDENDUM",
+  "date": "2026-08-09",
+  "parent_benchmark": "research/SELF_RAKL_RESEARCH_023_FROZEN_BENCHMARK.json",
+  "frozen_after_green_support_sha": "f32460207e01c56db1dcb0279bce21814bf510e9",
+  "status": "FROZEN_BEFORE_CORRECTIVE_IMPLEMENTATION",
+  "historical_parent_benchmark_unchanged": true,
+  "residuals": [
+    {
+      "id": "R23-A1",
+      "problem": "generation_config participates in invocation identity and receipts but is not yet delivered to the runner through a canonical protocol, so the runtime cannot distinguish declared configuration from runner-visible configuration"
+    },
+    {
+      "id": "R23-A2",
+      "problem": "append-only event refs make races visible, but there is no explicit per-invocation local lease preventing two processes from attempting the same external execution concurrently"
+    }
+  ],
+  "new_blocking_invariants": [
+    "runner stdin is a canonical JSON execution envelope containing exact task_packet object, exact generation_config object, invocation_id and protocol version",
+    "the exact runner-input envelope is content-addressed and bound in the receipt",
+    "receipt wording may establish DELIVERED_TO_RUNNER_PROTOCOL but may not claim the model/provider actually honored generation settings unless separately attested",
+    "at most one local process may hold the execution lease for one invocation id at a time",
+    "a live same-invocation local lease blocks a second execution attempt before the external command starts",
+    "a stale local lease may be reclaimed only after local process-liveness evidence says its recorded PID is not alive",
+    "local lease semantics are not described as distributed exactly-once execution",
+    "RUNNING history remains recovery-blocking even after a stale lease is reclaimed"
+  ],
+  "known_answer_worlds": [
+    {
+      "id": "R23-AW01",
+      "name": "generation_config_delivered_in_runner_envelope",
+      "given": "temperature=0.25 and seed=7",
+      "expected": "fake runner observes those exact values under execution envelope generation_config and receipt binds runner_input_sha256"
+    },
+    {
+      "id": "R23-AW02",
+      "name": "task_packet_preserved_inside_runner_envelope",
+      "expected": "runner sees the exact parsed task packet object and receipt packet_sha256 still identifies original task-packet bytes"
+    },
+    {
+      "id": "R23-AW03",
+      "name": "configuration_authority_is_not_overclaimed",
+      "expected": "receipt states generation_config_authority=DELIVERED_TO_RUNNER_PROTOCOL, not APPLIED_BY_MODEL"
+    },
+    {
+      "id": "R23-AW04",
+      "name": "concurrent_same_invocation_executes_once_locally",
+      "given": "first runner holds lease while sleeping after incrementing a counter; second manager invocation starts while first is active",
+      "expected": "first eventually completes, second returns RECOVERY_REQUIRED/invocation_active_elsewhere, counter=1"
+    },
+    {
+      "id": "R23-AW05",
+      "name": "stale_lease_can_be_reclaimed_for_retry_safe_prepared_attempt",
+      "given": "PREPARED history plus lock with demonstrably dead PID and retry_safe=true",
+      "expected": "lease reclaimed and new attempt may execute"
+    },
+    {
+      "id": "R23-AW06",
+      "name": "stale_lease_does_not_override_running_ambiguity",
+      "given": "RUNNING history plus stale lease",
+      "expected": "RECOVERY_REQUIRED; no external execution"
+    },
+    {
+      "id": "R23-AW07",
+      "name": "lease_metadata_does_not_contain_secret_env_values",
+      "expected": "lease contains invocation/PID/timestamp only"
+    }
+  ],
+  "falsifiers": [
+    "if a fake runner cannot observe the exact frozen generation config from its canonical input envelope, configuration binding is refuted",
+    "if two local concurrent callers execute the same external runner under the same invocation id, local duplicate-safe execution is refuted",
+    "if reclaiming a stale lease allows RUNNING history to auto-retry, recovery safety is refuted",
+    "if the receipt calls delivered settings model-applied without provider evidence, authority honesty is refuted"
+  ]
+}
