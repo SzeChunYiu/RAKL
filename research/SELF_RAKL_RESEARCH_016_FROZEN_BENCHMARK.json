@@ -1,0 +1,223 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_016_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "REAL_CROSS_DOMAIN_RETRIEVAL_AND_GROUND_TRUTH_FACTORIZATION",
+  "status": "FROZEN_BEFORE_ANY_ROUND_016_IMPLEMENTATION",
+  "starting_main_sha": "1ee39b67243e393c257b51a42910675da9565fa4",
+  "primary_fibers": [
+    "META_N052_REAL_FAR_DOMAIN_RETRIEVAL_BENCHMARK",
+    "META_N055_MATCHED_SCAFFOLD_ABLATION_BENCHMARK"
+  ],
+  "research_question": "Can RAKL distinguish corpus coverage, inspiration retrieval, structural analogy recognition, and target transfer on real cross-domain scientific material while measuring whether structural abstraction adds value beyond lexical/embedding baselines under matched model, task, evaluator, top-k, and resource contracts?",
+  "ground_truth_factorization": {
+    "principle": "Do not treat one benchmark label as authority for all similarity layers.",
+    "layers": [
+      {
+        "label": "RETRIEVAL_RELEVANCE",
+        "meaning": "The source is a benchmark-designated methodology inspiration or otherwise relevant retrieval target.",
+        "does_not_imply": [
+          "typed structural equivalence",
+          "causal analogy",
+          "target transfer validity"
+        ]
+      },
+      {
+        "label": "STRUCTURAL_WITNESS_VALIDITY",
+        "meaning": "A separately evaluated typed mapping preserves the registered relations/invariants under a predeclared mapping and probe family.",
+        "does_not_imply": [
+          "retrieval relevance was complete",
+          "target-domain utility",
+          "mechanism identity"
+        ]
+      },
+      {
+        "label": "TRANSFER_UTILITY_OR_VALIDITY",
+        "meaning": "A predeclared target-domain test supports the specific inference/intervention transferred through the witness.",
+        "does_not_imply": [
+          "global object equivalence",
+          "mechanism identity beyond the tested scope"
+        ]
+      }
+    ]
+  },
+  "external_benchmark_manifests": [
+    {
+      "benchmark": "MIR_Methodology_Inspiration_Retrieval",
+      "purpose": "real scientific paper/inspiration retrieval",
+      "source_paper": "Garikaparthi et al., ACL 2025, 10.18653/v1/2025.acl-long.1390",
+      "repository_full_name": "Anikethh/Methodology-Inspiration-Retrieval",
+      "repository_revision": "dc0545adffad7cd15c730f4a7bb9388d6440a47c",
+      "artifacts": [
+        {
+          "path": "data/test_chronological_df.csv",
+          "git_blob_sha": "ae1d293db3dd755232e527c3f8d58800ba7e06ad",
+          "size_bytes": 5169467,
+          "role": "test split candidate/label source"
+        },
+        {
+          "path": "data/full_mag.csv",
+          "git_blob_sha": "eadcb6a1b424ef7037fe69428ecf0b7283374206",
+          "size_bytes": 7782375,
+          "role": "methodology adjacency graph artifact"
+        },
+        {
+          "path": "data/mir_test_time_based_filtering.csv",
+          "git_blob_sha": "24bce07828cbbf082f2ccc57199e4a01991f7f25",
+          "size_bytes": 2001385,
+          "role": "time-filtered test artifact"
+        }
+      ],
+      "verified_this_run": "repository revision and artifact metadata pinned through GitHub",
+      "execution_status_this_run": "ARTIFACT_BYTES_NOT_INGESTED_IN_AUTOMATION_RUNTIME",
+      "authority_boundary": "MIR gold inspiration labels are retrieval-relevance evidence only unless RAKL separately constructs and validates a typed structural witness."
+    },
+    {
+      "benchmark": "IsoSci",
+      "purpose": "cross-domain isomorphic science problems separating reasoning from domain-knowledge retrieval",
+      "source_paper": "Abdaljalil, Serpedin, Kurban, arXiv:2607.01431v1",
+      "dataset_reference": "qqqqqqx0411/logicisomorphism",
+      "dataset_execution_status_this_run": "CANNOT_CHECK_DATASET_BYTES_ACCESS_NOT_ESTABLISHED",
+      "authority_boundary": "IsoSci structural isomorphism labels probe reasoning-versus-knowledge attribution; they are not paper-inspiration retrieval labels and are not merged with MIR into one score."
+    }
+  ],
+  "route_families": [
+    "LEXICAL",
+    "EMBEDDING",
+    "DOMAIN_STRIPPED_RELATIONAL",
+    "GRAPH_OR_STRUCTURAL"
+  ],
+  "matched_route_contract": {
+    "must_match": [
+      "corpus_id",
+      "corpus_revision",
+      "task_packet_id",
+      "query_packet_id",
+      "top_k",
+      "base_model_id",
+      "base_model_config_id",
+      "output_contract_id",
+      "evaluator_id",
+      "hidden_label_policy"
+    ],
+    "resource_rule": "Resource/tool differences must be explicitly declared and costed. If resources differ, any gain is system-level or mixed-attribution evidence, not pure route/model-utilization amplification.",
+    "chronology_rule": "Queries, abstraction prompts, route parameters, top-k, evaluator and labels must be frozen before outcome inspection."
+  },
+  "registered_meta_qois": [
+    "corpus_coverage_rate",
+    "retrieval_recall_at_k",
+    "mean_reciprocal_rank_of_designated_sources",
+    "recognition_precision_given_retrieval",
+    "typed_witness_validity_rate",
+    "contrastive_near_miss_rejection_rate",
+    "route_specific_incremental_recall",
+    "domain_diversity_subject_to_valid_witness",
+    "transfer_validation_rate_given_valid_witness",
+    "hidden_label_or_answer_leakage_rate",
+    "posthoc_query_or_abstraction_modification_rate",
+    "cost_per_valid_witness",
+    "capability_attribution_completeness"
+  ],
+  "blocking_meta_qois": [
+    "hidden_label_or_answer_leakage_rate",
+    "posthoc_query_or_abstraction_modification_rate",
+    "benchmark_identity_mismatch_rate",
+    "authority_leakage_rate",
+    "negative_history_loss_rate"
+  ],
+  "hostile_worlds": [
+    {
+      "id": "W01_UNPINNED_CORPUS",
+      "condition": "route trials name MIR but omit exact repository revision or artifact SHA",
+      "expected": "CANNOT_CHECK_OR_TRIAL_INVALID"
+    },
+    {
+      "id": "W02_SPLIT_MISMATCH",
+      "condition": "one route uses chronological test while another uses a different split",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W03_HIDDEN_LABEL_EXPOSURE",
+      "condition": "designated inspiration/source IDs are visible to query generation or retrieval",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W04_POSTHOC_ABSTRACTION",
+      "condition": "domain-stripped query is edited after inspecting gold sources",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W05_TOPK_MISMATCH",
+      "condition": "structural route receives larger top-k than lexical baseline without explicit normalization",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W06_MODEL_MISMATCH",
+      "condition": "one route uses a stronger base model/configuration",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W07_UNDECLARED_RESOURCE_DELTA",
+      "condition": "graph route uses an external graph/index while baseline resource set is reported as identical",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W08_DECLARED_RESOURCE_DELTA",
+      "condition": "graph route adds a declared graph/index and improves recall",
+      "expected": "SYSTEM_GAIN_WITH_RESOURCE_DELTA_NOT_PURE_MODEL_UTILIZATION_GAIN"
+    },
+    {
+      "id": "W09_RELEVANCE_NOT_STRUCTURE",
+      "condition": "MIR gold inspiration is retrieved but fails the predeclared structural witness probes",
+      "expected": "RETRIEVAL_SUCCESS_RECOGNITION_FAILURE_OR_NON_ANALOGY"
+    },
+    {
+      "id": "W10_STRUCTURE_NOT_TRANSFER",
+      "condition": "typed structural witness is valid but target-domain transfer test fails",
+      "expected": "TARGET_TRANSFER_REFUTED_WITH_WITNESS_PRESERVED"
+    },
+    {
+      "id": "W11_SURFACE_FALSE_FRIEND",
+      "condition": "high lexical overlap candidate outranks the gold/structural source but violates a decisive invariant",
+      "expected": "NEAR_MISS_REJECTED_AND_DISTINGUISHING_PROBE_RECORDED"
+    },
+    {
+      "id": "W12_DOMAIN_DISTANCE_GAMING",
+      "condition": "route increases disciplinary distance without improving valid-witness recall",
+      "expected": "NO_CAPABILITY_GAIN"
+    },
+    {
+      "id": "W13_DUPLICATE_ROUTE_CREDIT",
+      "condition": "the same candidate is returned by multiple routes",
+      "expected": "ONE_CANDIDATE_WITH_MULTI_ROUTE_PROVENANCE_NOT_MULTIPLE_INDEPENDENT_WITNESSES"
+    },
+    {
+      "id": "W14_CORPUS_ABSENCE",
+      "condition": "designated source is absent from the frozen candidate corpus",
+      "expected": "CORPUS_COVERAGE_FAILURE_NOT_RETRIEVAL_FAILURE"
+    },
+    {
+      "id": "W15_REASONING_VS_KNOWLEDGE",
+      "condition": "IsoSci-style isomorphic pair is solved only after domain knowledge retrieval",
+      "expected": "KNOWLEDGE_DEPENDENT_SYSTEM_GAIN_NOT_STRUCTURE_INVARIANT_REASONING_GAIN"
+    },
+    {
+      "id": "W16_STRUCTURE_INVARIANT_REASONING",
+      "condition": "same model improves consistently across an isomorphic pair without resource delta under frozen conditions",
+      "expected": "CANDIDATE_REASONING_OR_MODEL_UTILIZATION_AMPLIFICATION_EVIDENCE"
+    },
+    {
+      "id": "W17_VIEWER_TRANSPORT_FAILURE",
+      "condition": "a presentation/viewer layer fails or changes while pinned repository artifacts remain identifiable",
+      "expected": "USE_PINNED_SOURCE_OR_CANNOT_CHECK_NEVER_SILENTLY_SUBSTITUTE_CORPUS"
+    }
+  ],
+  "acceptance_rule": {
+    "support_implementation": "May be promoted only if it merely validates benchmark identity/comparability and passes unchanged tests; it must not activate a retrieval route.",
+    "future_route_activation": "A richer route can become default only after the real benchmark is actually executed, blocking invariants remain clean, and it improves at least one registered capability meta-QoI under matched or correctly attributed resource conditions.",
+    "null": "If lexical+embedding matches richer routes on valid-witness recall, near-miss rejection, transfer utility and cost, keep the simpler baseline and preserve the null.",
+    "refuted": "If RAKL structural abstraction increases false analogies or fails matched retrieval, retain counterexamples and do not promote it.",
+    "partial_id": "If MIR supports retrieval relevance but not structural ground truth, report only retrieval performance there and obtain structural labels from a separate benchmark/probe process.",
+    "blocked": "If exact corpus bytes/revision, hidden-label isolation, model identity, evaluator identity or route resources cannot be established, mark the affected trial CANNOT_CHECK."
+  },
+  "promotion_rule": "No active retrieval behavior is changed by this frozen benchmark."
+}
