@@ -108,6 +108,63 @@ benchmark contamination
 
 Do not modify code merely because a new paper uses a fashionable technique.
 
+## 5A. Capability-shaping check before adding workflow complexity
+
+Treat every candidate research-method change as a capability-shaping hypothesis.
+
+Before adding a prompt scaffold, extra agent, reviewer, tool, memory layer, verifier, decomposition stage, routing rule, abstraction level, or interface, record:
+
+```text
+atomic cognitive operation
+model strength intentionally exploited
+predictable weakness/failure mode targeted
+amplification mechanism
+compensator or externalizer
+verification/oracle contract
+typed handoff / memory contract
+base-model identity and configuration
+external resources available before/after
+blocking validity invariants
+non-blocking meta-QoIs
+cost/latency accounting
+falsifier
+```
+
+Use `docs/AI_CAPABILITY_SHAPING.md` as the theory contract and `src/rakl/capability.py` as the support evaluator.
+
+Distinguish at least:
+
+```text
+MODEL_UTILIZATION_AMPLIFICATION
+FAILURE_SUPPRESSION
+EXTERNAL_CAPABILITY_SUBSTITUTION
+SPECIALIST_COMPLEMENTATION
+ROUTING_GAIN
+DECOMPOSITION_GAIN
+MEMORY_EXTERNALIZATION_GAIN
+UNRESOLVED_MIXED_ATTRIBUTION
+```
+
+A system can become better because it receives an external solver, specialist model, additional corpus, interface, or tool. That is a valid system gain but is not evidence that the base model itself became intrinsically more capable.
+
+### Smallest-compensator rule
+
+Never assume more scaffolding is better. For each named weakness compare, when feasible:
+
+```text
+minimal baseline
+smallest targeted compensator
+richer scaffold only if justified
+```
+
+Use the same frozen task packet, model/configuration, answer contract, evaluator, hidden labels and resource set for a workflow-only attribution claim. Any resource delta must be explicit and changes the attribution class.
+
+If the simpler baseline ties or beats the richer scaffold at lower cost, preserve the null/negative result and keep the richer method optional.
+
+A blocking validity regression cannot be traded away for higher nominal task success.
+
+Same-context self-critique remains same-context self-critique; do not relabel it as independent review.
+
 ## 6. Freeze challenger evaluation and its validator
 
 For Class B workflow changes, before evaluating the implementation record:
@@ -259,6 +316,18 @@ positive/null/refuted/partial-ID/blocked/transport branches
 next highest-value fibers
 ```
 
+For capability-shaping trials also record:
+
+```text
+claimed capability attribution
+actual resource delta
+improved metrics
+worsened metrics
+unchanged metrics
+whether blocking validity regressed
+whether the result establishes only system capability or a same-resource model-utilization effect
+```
+
 ## 12. Retry and side-effect discipline
 
 Long-running research automation should separate replayable planning/evaluation state from irreversible or externally visible side effects.
@@ -284,7 +353,8 @@ selecting discriminating experiments
 preserving research history
 synthesizing local views without false unification
 knowing when knowledge is saturated
-and knowing when its own research method needs to change
+knowing when its own research method needs to change
+and shaping the research environment so model strengths are amplified while predictable weaknesses are constrained, externalized, substituted or exposed
 ```
 
 The objective is not frequent commits. The objective is cumulative epistemic improvement.
