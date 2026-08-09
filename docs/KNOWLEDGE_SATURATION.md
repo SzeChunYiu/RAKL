@@ -67,7 +67,9 @@ rejected false novelty
 contradictions opened
 new discriminators/data requirements
 flat_after_dedup
-independent
+process-independent declaration
+evidence-lineage IDs
+lineage completeness
 cost
 ```
 
@@ -95,11 +97,24 @@ The current agent/context has at least the registered number of trailing flat ro
 
 This is an operational plateau, **not independent saturation**.
 
-### Independent flat
+### Independent flat has two axes
 
-A genuinely different context/implementation/source-routing pass independently adds no high-impact semantic object after deduplication against the frozen ledger.
+RAKL separates **process/context independence** from **evidence-lineage independence**.
 
-Same-session personas do not count as independent.
+A different paper, agent, wording, repository, or search route can still reuse the same experiment, dataset, sample, code output, benchmark, upstream review, or derivation chain. Such rounds may be useful corroborations, but they are not automatically independent evidence for a saturation certificate.
+
+For full independent-flat credit, a round must therefore satisfy both conditions:
+
+1. its research process/context is genuinely separate under the registered review protocol; and
+2. its evidence ancestry is declared with canonical lineage identifiers sufficiently completely to test overlap with other credited rounds.
+
+Among eligible flat rounds, RAKL conservatively credits a **maximum pairwise-lineage-disjoint subset**. Shared ancestry is represented as dependence rather than counted again. If ancestry is missing or incomplete, the round remains process-independent but receives no full evidence-independence credit; the saturation state is then partially identified rather than silently upgraded.
+
+This rule is deliberately conservative. It can delay a saturation declaration when provenance is incomplete, but it cannot manufacture extra independence from cosmetic route diversity.
+
+For a small number of rounds the executable tracker solves the disjoint-subset problem exactly. If the configured exact-search limit is exceeded, it reports a deterministic lower bound and marks the count as non-exact. A lower bound may postpone saturation; it is not allowed to certify more independence than has actually been demonstrated.
+
+Canonicalization is load-bearing. Two aliases for the same underlying dataset must not be treated as different lineages merely because their strings differ. Until lineage identity normalization is established for a domain, alias uncertainty must be carried as a residual rather than converted into independence.
 
 ### Saturated scoped
 
@@ -107,9 +122,9 @@ Default strong criterion:
 
 - required route coverage is complete;
 - at least 3 trailing same-context eligible flat rounds;
-- at least 3 genuinely independent flat rounds;
+- at least 3 process-independent **and lineage-qualified** flat rounds, counted conservatively under shared ancestry;
 - no newly discovered contradiction remains unregistered;
-- the semantic ledger and evidence cutoff are frozen for the saturation receipt.
+- the semantic ledger, evidence-lineage cutoff and evidence cutoff are frozen for the saturation receipt.
 
 A project may choose stricter criteria.
 
