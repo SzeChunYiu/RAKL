@@ -1,0 +1,98 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_024_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "starting_main_sha": "2a62dd2ed868a127ffb01b28bfcda9847740750e",
+  "object": "PROVIDER_NEUTRAL_EXECUTION_RECEIPT_AND_DUPLICATE_SAFE_RECOVERY",
+  "status": "FROZEN_BEFORE_REBASED_ROUND_024_IMPLEMENTATION",
+  "constitutional_change": false,
+  "change_class_target": "A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "transport_history": {
+    "stale_starting_main_sha": "80d3d79cd5fcd8cb5dcbdc1443e940e8ca5d8518",
+    "stale_parent_benchmark_commit": "81f543995438e230f3838c10f073b14e290b595d",
+    "stale_addendum_commit": "e629fce29da014899fd611868bd3f93cbf774bc3",
+    "stale_green_final_candidate": "979401504dece32c64483c25faaaaa4a172f8247",
+    "stale_final_candidate_result": "291_passed_in_6.55s",
+    "reason_not_promoted": "main advanced with independent Round-023 semantic-closure research and occupied the Round-023 ledger filenames",
+    "force_update_used": false,
+    "expected_results_changed": false,
+    "thresholds_changed": false,
+    "falsifiers_weakened": false
+  },
+  "target_fibers": [
+    "META_N080_PROVIDER_ADAPTER_EXECUTION_RECEIPT",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE"
+  ],
+  "blocking_invariants": [
+    "runner uses argv sequence with shell=False and absolute executable path",
+    "exact task-packet bytes are SHA-256 bound before execution",
+    "runner receives canonical JSON envelope containing invocation_id, task_packet and generation_config",
+    "runner-input envelope is content-addressed and bound in the terminal receipt",
+    "generation settings are labeled DELIVERED_TO_RUNNER_PROTOCOL, never APPLIED_BY_MODEL without provider evidence",
+    "completed invocation replay returns terminal receipt without executing the command again",
+    "historical RUNNING without terminal evidence never auto-retries",
+    "historical PREPARED may retry only when retry_safe was declared",
+    "one live local same-invocation lease blocks a second local external execution",
+    "stale local lease reclamation cannot override historical RUNNING ambiguity",
+    "stdout/stderr exact bytes are stored by digest before final receipt commits",
+    "environment values are never serialized in spec/event/lease/receipt metadata",
+    "LLM/model output remains PROPOSAL_ONLY regardless of process exit code",
+    "nonzero exit, timeout, malformed JSON and missing executable are distinct failure states",
+    "no protected workflow/evaluator/pyproject/promotion input is changed"
+  ],
+  "known_answer_worlds": [
+    {"id":"R24-W01","name":"successful_json_runner_receipt","expected":"COMPLETED receipt binds input/output/model/argv/config-delivery/timing and proposal-only authority"},
+    {"id":"R24-W02","name":"completed_replay_no_duplicate_execution","expected":"external counter increments once across identical replay"},
+    {"id":"R24-W03","name":"changed_packet_changes_identity","expected":"one-byte/semantic packet change gives different invocation id"},
+    {"id":"R24-W04","name":"changed_generation_config_changes_identity","expected":"config change gives different invocation id"},
+    {"id":"R24-W05","name":"timeout_explicit","expected":"TIMED_OUT, partial raw output preserved when supplied by subprocess layer"},
+    {"id":"R24-W06","name":"nonzero_exit_explicit","expected":"FAILED_PROCESS with exit code and raw streams"},
+    {"id":"R24-W07","name":"malformed_json_explicit","expected":"FAILED_PROTOCOL with raw stdout"},
+    {"id":"R24-W08","name":"missing_executable_explicit","expected":"FAILED_START with no fabricated output"},
+    {"id":"R24-W09","name":"interrupted_non_idempotent_prepared_blocks_retry","expected":"RECOVERY_REQUIRED and no external execution"},
+    {"id":"R24-W10","name":"retry_safe_prepared_new_attempt","expected":"new numbered attempt may execute, prior attempt history retained"},
+    {"id":"R24-W11","name":"running_never_auto_retries","expected":"RECOVERY_REQUIRED even if retry_safe=true"},
+    {"id":"R24-W12","name":"secret_env_value_not_logged","expected":"receipt/event/lease metadata contains env names but not supplied secret value"},
+    {"id":"R24-W13","name":"shell_metachar_literal","expected":"metacharacters remain argv literal, no implicit shell side effect"},
+    {"id":"R24-W14","name":"receipt_tamper_detected","expected":"changed receipt reference/digest fails verification"},
+    {"id":"R24-W15","name":"zero_exit_no_authority","expected":"output_authority remains PROPOSAL_ONLY"},
+    {"id":"R24-W16","name":"undeclared_env_rejected","expected":"execution fails before command starts"},
+    {"id":"R24-W17","name":"cli_run_roundtrip","expected":"python -m rakl run executes once and identical second call replays"},
+    {"id":"R24-W18","name":"generation_config_delivered","expected":"fake runner observes exact generation_config inside canonical envelope"},
+    {"id":"R24-W19","name":"task_packet_preserved_in_envelope","expected":"fake runner sees exact parsed task-packet object and packet digest still identifies original bytes"},
+    {"id":"R24-W20","name":"concurrent_same_invocation_executes_once_locally","expected":"first completes, overlapping second returns RECOVERY_REQUIRED/invocation_active_elsewhere, counter=1"},
+    {"id":"R24-W21","name":"stale_lease_retry_safe_prepared","expected":"dead-PID lease reclaimed and PREPARED retry-safe execution proceeds as new attempt"},
+    {"id":"R24-W22","name":"stale_lease_running_still_blocks","expected":"RECOVERY_REQUIRED and no external execution"}
+  ],
+  "registered_meta_qois": [
+    "task_packet_receipt_binding_rate",
+    "runner_input_binding_rate",
+    "completed_replay_duplicate_execution_rate",
+    "local_concurrent_duplicate_execution_rate",
+    "ambiguous_retry_safety_rate",
+    "raw_output_preservation_rate",
+    "failure_status_classification_accuracy",
+    "secret_value_receipt_leakage_rate",
+    "configuration_authority_honesty_rate",
+    "cannot_check_honesty_rate"
+  ],
+  "acceptance": {
+    "required": [
+      "all transported known-answer/hostile tests pass",
+      "all pre-existing repository tests pass on exact final candidate SHA",
+      "candidate is ahead-only from current frozen main",
+      "protected inputs remain unchanged",
+      "current main unchanged immediately before non-forced promotion"
+    ],
+    "promotion_rule": "non-forced fast-forward only after exact candidate CI success"
+  },
+  "falsifiers": [
+    "identical completed invocation re-executes external command",
+    "two local concurrent callers execute same external invocation",
+    "RUNNING ambiguity automatically retries",
+    "secret environment value appears in canonical metadata",
+    "generation config is claimed model-applied without evidence",
+    "zero exit upgrades model output authority",
+    "argv crosses an implicit shell boundary"
+  ]
+}
