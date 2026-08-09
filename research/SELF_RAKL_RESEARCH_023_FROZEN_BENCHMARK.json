@@ -1,0 +1,154 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_023_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "starting_main_sha": "80d3d79cd5fcd8cb5dcbdc1443e940e8ca5d8518",
+  "object": "PROVIDER_NEUTRAL_EXECUTION_RECEIPT_AND_DUPLICATE_SAFE_RECOVERY",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "constitutional_change": false,
+  "change_class_target": "A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "target_fibers": [
+    "META_N080_PROVIDER_ADAPTER_EXECUTION_RECEIPT",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE"
+  ],
+  "scope": {
+    "must_close_in_this_round": [
+      "provider-neutral command runner contract",
+      "exact task-packet digest binding",
+      "raw stdout/stderr content-addressed archival",
+      "append-only per-invocation state/receipt files",
+      "completed invocation replay without duplicate execution",
+      "interrupted non-idempotent invocation recovery block",
+      "timeout/nonzero/protocol failure receipts",
+      "secret-value non-disclosure in receipt",
+      "CLI execution entrypoint"
+    ],
+    "explicitly_out_of_scope": [
+      "vendor-specific hosted API adapters",
+      "automatic tool-call execution inside model output",
+      "distributed consensus or exactly-once semantics across machines",
+      "automatic scientific promotion",
+      "full workflow DAG scheduler",
+      "protected CI/evaluator/pyproject changes"
+    ]
+  },
+  "registered_meta_qois": [
+    "task_packet_receipt_binding_rate",
+    "completed_replay_duplicate_execution_rate",
+    "ambiguous_retry_safety_rate",
+    "raw_output_preservation_rate",
+    "failure_status_classification_accuracy",
+    "secret_value_receipt_leakage_rate",
+    "execution_receipt_replayability_rate",
+    "runner_shell_injection_surface",
+    "execution_overhead_ms",
+    "cannot_check_honesty_rate"
+  ],
+  "blocking_invariants": [
+    "runner uses argv sequence with shell=False",
+    "exact input bytes are hashed before execution",
+    "completed invocation with same identity is returned from receipt without running command again",
+    "a PREPARED or RUNNING non-idempotent invocation from a prior process may not be automatically retried",
+    "stdout and stderr exact bytes are stored by digest before final receipt commits",
+    "environment variable values are never serialized into execution receipts",
+    "LLM/model output remains PROPOSAL_ONLY irrespective of process exit code",
+    "nonzero exit, timeout, malformed JSON and missing executable are explicit failure states",
+    "invocation identity cannot be chosen as an arbitrary filesystem path",
+    "no protected workflow/evaluator/pyproject input changes"
+  ],
+  "known_answer_worlds": [
+    {
+      "id": "R23-W01",
+      "name": "successful_json_runner_receipt",
+      "expected": "COMPLETED receipt binds input/output digests, model declaration, argv digest, timing and proposal-only authority"
+    },
+    {
+      "id": "R23-W02",
+      "name": "completed_replay_no_duplicate_execution",
+      "expected": "same invocation spec returns cached terminal receipt and external counter increments once"
+    },
+    {
+      "id": "R23-W03",
+      "name": "changed_packet_changes_invocation_identity",
+      "expected": "one-byte input change yields a different invocation id"
+    },
+    {
+      "id": "R23-W04",
+      "name": "changed_decoding_config_changes_invocation_identity",
+      "expected": "temperature/config change yields different invocation id"
+    },
+    {
+      "id": "R23-W05",
+      "name": "timeout_is_terminal_failure_with_raw_partial_output_when_available",
+      "expected": "TIMED_OUT receipt; no COMPLETED claim"
+    },
+    {
+      "id": "R23-W06",
+      "name": "nonzero_exit_is_explicit_failure",
+      "expected": "FAILED_PROCESS receipt contains exit code and archived stdout/stderr digests"
+    },
+    {
+      "id": "R23-W07",
+      "name": "malformed_json_is_protocol_failure",
+      "expected": "FAILED_PROTOCOL and raw stdout preserved"
+    },
+    {
+      "id": "R23-W08",
+      "name": "missing_executable_is_start_failure",
+      "expected": "FAILED_START without fabricated output"
+    },
+    {
+      "id": "R23-W09",
+      "name": "simulated_interrupted_non_idempotent_run_blocks_retry",
+      "expected": "RECOVERY_REQUIRED and command is not invoked"
+    },
+    {
+      "id": "R23-W10",
+      "name": "safe_retry_declaration_may_retry_prepared_run",
+      "expected": "predeclared retry_safe runner can continue with attempt increment; history retains prior ambiguous attempt"
+    },
+    {
+      "id": "R23-W11",
+      "name": "secret_environment_value_not_logged",
+      "expected": "receipt records allowed env variable names only; secret value absent from canonical receipt/raw metadata"
+    },
+    {
+      "id": "R23-W12",
+      "name": "argument_with_shell_metacharacters_is_literal",
+      "expected": "shell=False argv passes metacharacters as an argument, not shell syntax"
+    },
+    {
+      "id": "R23-W13",
+      "name": "receipt_tamper_detected",
+      "expected": "receipt/state integrity verification detects changed bytes or inconsistent identity"
+    },
+    {
+      "id": "R23-W14",
+      "name": "output_is_never_promoted_by_runner",
+      "expected": "all successful receipt metadata declares output authority PROPOSAL_ONLY"
+    },
+    {
+      "id": "R23-W15",
+      "name": "cli_run_roundtrip",
+      "expected": "python -m rakl run executes deterministic local runner from task packet and prints terminal receipt JSON"
+    }
+  ],
+  "acceptance": {
+    "required": [
+      "all Round-023 tests pass",
+      "all pre-existing tests pass on exact candidate SHA",
+      "candidate is ahead-only from frozen main",
+      "protected evaluator/workflow/pyproject inputs unchanged",
+      "current main unchanged immediately before promotion",
+      "no blocking invariant regression"
+    ],
+    "promotion_rule": "non-forced fast-forward only after exact candidate CI success"
+  },
+  "falsifiers": [
+    "if replay of a completed invocation reruns the external command, duplicate-safe execution is refuted",
+    "if interrupted non-idempotent execution is automatically retried without external evidence, recovery safety is refuted",
+    "if secret environment values appear in a receipt, observability safety is refuted",
+    "if output is treated as scientific authority because the process exited zero, proposal/authority separation is refuted",
+    "if argv is executed via a shell, the frozen security contract is refuted"
+  ]
+}
