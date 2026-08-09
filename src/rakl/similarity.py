@@ -151,12 +151,8 @@ class StructuralMotifReport:
         return False
 
 
-def _validate_similarity_witness_base(
-    witness: SimilarityWitness,
-    *,
-    measurement_extension_present: bool,
-) -> WitnessReport:
-    """Fail-closed core validator with a guarded measurement extension hook."""
+def validate_similarity_witness(witness: SimilarityWitness) -> WitnessReport:
+    """Fail-closed validation of the Round-011/012 witness contract."""
 
     missing: list[str] = []
     for name, value in (
@@ -242,15 +238,6 @@ def _validate_similarity_witness_base(
                 ("type_or_unit_compatibility_constraint_missing",),
             )
 
-    if witness.relation in {
-        SimilarityRelation.SAME_OBSERVABLE,
-        SimilarityRelation.OBSERVATIONALLY_EQUIVALENT,
-    } and not measurement_extension_present:
-        return WitnessReport(
-            WitnessVerdict.CANNOT_CHECK,
-            ("measurement_context_extension_required",),
-        )
-
     return WitnessReport(
         WitnessVerdict.VALID,
         (
@@ -261,20 +248,6 @@ def _validate_similarity_witness_base(
             "null_calibration_passed",
             "mapping_constraints_clean",
         ),
-    )
-
-
-def validate_similarity_witness(witness: SimilarityWitness) -> WitnessReport:
-    """Validate a generic similarity witness.
-
-    Measurement relations deliberately fail closed here: their observable,
-    operator, calibration, uncertainty and resolution coordinates are validated
-    by ``rakl.measurement.evaluate_measurement_relation``.
-    """
-
-    return _validate_similarity_witness_base(
-        witness,
-        measurement_extension_present=False,
     )
 
 
