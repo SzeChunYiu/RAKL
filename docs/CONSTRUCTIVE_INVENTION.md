@@ -3,33 +3,48 @@
 Status: Round-036 candidate method layer  
 Date: 2026-08-09
 
-## 1. Why this layer exists
+## Purpose
 
-RAKL already knows how to decompose an object, build contextual knowledge fibers, GLUE compatible projections, JUMP to witnessed analogues, discriminate surviving hypotheses, preserve residuals, and recursively improve the method.
+RAKL's original epistemic machinery could decompose objects, build Knowledge Fibers, GLUE projections, JUMP to distant analogues, diagnose residuals and govern promotion. Round 036 adds the missing constructive layer required when the goal is not merely to compare known models but to **discover or construct a working mechanism, mathematics or formalism**.
 
-Those capabilities are necessary but not sufficient for a research programme whose objective is to **construct a mechanism or formalism that does not already exist as one retrieved representation**.
-
-Before Round 036, the phrase “derive a new formalism” was largely a governed LLM cognition step. Round 036 externalizes that step into explicit objects and operators.
-
-The core extension is:
+The constructive system is:
 
 \[
-(\Gamma,\mathcal O,\mathcal V,\mathcal R,\mathcal G),
+(\Gamma_T,\mathcal O,\mathcal C,\mathcal S,\mathcal V,\mathcal R,\mathcal G),
 \]
 
 where:
 
-- `Gamma` is the compatibility-constrained Knowledge Lattice;
-- `O` is the constructive invention-operator basis;
-- `V` is the formal/empirical verification stack;
-- `R` is the structured residual field;
-- `G` is an immutable positive-goal contract when the task is goal-seeking.
+- `Gamma_T` — typed, compatibility-witnessed Knowledge Lattice;
+- `O` — constructive invention operators;
+- `C` — mechanism-to-formalism compiler and symbolic discovery operators;
+- `S` — residual-driven candidate-population search controller;
+- `V` — formal, mathematical, statistical and empirical verification stack;
+- `R` — structured residual field;
+- `G` — immutable positive-goal plus exact hard-gate contract.
 
-## 2. Typed formalism IR
+## Typed Knowledge Lattice
 
-`src/rakl/formalism.py` defines a small formal intermediate representation.
+`src/rakl/typed_lattice.py` promotes useful lattice coordinates from semantic strings into first-class atoms:
 
-A candidate is no longer only a prose mechanism name or LaTeX string. It can contain:
+```text
+observable / representation
+mechanism node / mechanism edge
+equation / expression
+assumption / regime / observation model
+coarse-graining operator
+invariant / symmetry / falsifier
+data product / inference method / QoI
+causal relation / failure motif / analogy motif
+```
+
+Pairwise compatibility requires an explicit witness with relation, scope condition and evidence. Strict constructive paths reject unknown or incompatible pairs. A compatible path can be transformed into a residual-specific `LatticeSynthesisSeed` carrying typed equations/mechanism fragments, source fibers, evidence lineage and applicable invention operators.
+
+This is the point at which the Knowledge Lattice becomes an explicit generator of theory-construction inputs rather than only an atlas.
+
+## Typed Formalism IR
+
+`src/rakl/formalism.py` represents candidate theories as machine-manipulable objects:
 
 ```text
 FormalSymbol
@@ -37,159 +52,109 @@ FormalExpression AST
 FormalEquation
 MechanismGraph
 ObservationMap
-Invariant
-LimitCase
+Invariant / LimitCase
 Formalism
 ```
 
-Expression nodes currently include:
+Expression nodes include symbols, constants, arithmetic, powers, functions, derivatives, expectations, sums, integrals and piecewise expressions.
+
+## Constructive Invention Algebra
+
+`src/rakl/invention.py` defines typed mutation/recombination operators including:
 
 ```text
-SYMBOL
-CONSTANT
-ADD / SUB / MUL / DIV / POW / NEG
-FUNCTION
-DERIVATIVE
-EXPECTATION
-SUM
-INTEGRAL
-PIECEWISE
+COMPOSE / RECOMBINE
+ADD/REMOVE_LATENT_STATE
+SPLIT/MERGE_REGIME
+CHANGE_CLOCK
+COARSE/FINE_GRAIN
+GENERALIZE / SPECIALIZE / TAKE_LIMIT / DUALIZE
+STOCHASTICIZE / DETERMINIZE
+ADD/REMOVE_FEEDBACK
+ADD/REMOVE_COUPLING
+ADD_INTERACTION
+RELAX/STRENGTHEN_ASSUMPTION
+ADD_INVARIANT
+ADD/BREAK_SYMMETRY
+NONLINEARIZE / LINEARIZE
+IMPORT_ANALOGICAL_MOTIF
+CHANGE_OBSERVATION_MAP
+EXPLAIN_RESIDUAL
 ```
 
-This is intentionally small enough to audit and large enough to act as a translation target for LLMs, symbolic-regression systems, CAS/proof systems, simulation code and domain-specific solvers.
+Every move targets registered residuals, preserves parent lineage and must be frozen before certifying evaluation.
 
-## 3. Mechanism representation
+## Mechanism-to-equation compilation
 
-A mechanism is represented as a graph whose nodes may be entities, states, latent states, observables, shocks, clocks or regimes. Typed edges include:
+`src/rakl/mechanism_compiler.py` prevents a mechanism graph from merely sitting next to unrelated equations.
+
+Influential graph edges are bound to explicit `InteractionLaw` objects and compiled into registered state-evolution equations. Missing influential edge laws produce `CANNOT_CHECK`; post-result interaction laws are rejected. This creates explicit ancestry:
 
 ```text
-CAUSES
-MEDIATES
-MODULATES
-CONSTRAINS
-OBSERVES
-FEEDBACK
-COUPLES
-SWITCHES
+mechanism edge
+-> interaction law
+-> state evolution equation
+-> observable projection
 ```
 
-A mechanistic claim therefore has explicit ancestry and directional structure rather than relying on a narrative label.
+## Native symbolic law discovery
 
-## 4. Constructive invention algebra
+`src/rakl/symbolic_discovery.py` provides a bounded data-driven mathematical invention operator.
 
-`src/rakl/invention.py` defines a first operator basis.
+It:
 
-An `InventionMove` is a typed delta. It can add/remove symbols, equations, mechanism nodes/edges, assumptions, regimes and symmetries while preserving:
+- enumerates a frozen expression grammar;
+- evaluates candidate expressions on a training-only partition;
+- deduplicates observationally equivalent forms;
+- searches nonlinear interactions;
+- fits affine wrappers and two-basis linear combinations;
+- emits typed `FormalEquation` candidates;
+- preserves the rule that untouched/forward validation is still required.
+
+Symbolic discovery therefore supplements LLM proposals rather than granting authority to training fit.
+
+## Structured residuals and search controller
+
+Candidate failure is represented by typed residual signatures spanning distribution, time, regimes, tails, volatility, cross-asset/venue state, flow/liquidity, observation, clocks, causality, identifiability, calibration, transport and prediction.
+
+`src/rakl/search_controller.py` plans diverse operator families across active residuals, tracks retry counts and candidate budgets, preserves Pareto-surviving parents and routes mathematical moves toward symbolic/solver-first generation.
+
+Budget exhaustion is `RESOURCE_BLOCK_NONTERMINAL`. It never becomes a negative project success state.
+
+## Candidate tournament
+
+Candidate theories are maintained on a Pareto frontier across:
 
 ```text
-move id
-operator type
-rationale
-targeted residual ids
-source fiber ids
-source analogy/witness ids
-freeze chronology
+descriptive coverage
+residual closure
+predictive value
+identification
+falsifiability
+robustness
+novelty
+complexity
 ```
 
-The current basis contains structural, dynamical, abstraction, causal and representational transforms. It is deliberately extensible: if persistent residuals expose a missing operation, RAKL's metacognitive layer should open a method-basis gap and benchmark a challenger operator.
+No single fit statistic can average away a blocking scientific defect.
 
-## 5. Residual-driven search
+## Mathematical and formal oracles
 
-A candidate failure is converted into a `ResidualSignature` rather than a generic loss value.
+Current built-in oracles include:
 
-The initial residual ontology covers:
+- typed symbol/expression/mechanism structural validation;
+- dimensional consistency;
+- exact local rank-condition identifiability;
+- exact 1D/2D continuous/discrete local stability tests;
+- covariance positive-semidefinite validation for bounded dimensions;
+- stochastic transition-matrix validation;
+- exact-candidate verification packet binding.
 
-```text
-distribution
-temporal structure
-regime structure
-tails
-volatility
-cross-asset
-cross-venue
-flow/liquidity
-observation process
-clock
-causal structure
-identifiability
-calibration
-transport
-prediction
-unclassified structure
-```
+Harder systems fail closed to specialist CAS, numerical, causal, stochastic or proof backends rather than receiving an implicit pass.
 
-Each class activates a diverse operator prior. This is only a routing prior: operator proposals still require formalization and validation.
+## Hidden-world invention benchmark
 
-The loop is:
-
-\[
-T^{(k)}
-\xrightarrow{\text{test}}
-R^{(k)}
-\xrightarrow{\text{fiber reopening + GLUE/JUMP}}
-\mathcal O_k
-\xrightarrow{\text{typed mutation/recombination}}
-\{T_j^{(k+1)}\}.
-\]
-
-## 6. Constructive Knowledge State
-
-`src/rakl/constructive_lattice.py` binds the invention objects to a live `KnowledgeFiber`.
-
-It registers:
-
-```text
-residual signatures
-candidate theories
-invention moves
-candidate score vectors
-positive-goal contract
-goal assessments
-```
-
-back into the fiber's dimensional state. This makes the Knowledge Lattice a generator of new candidate theory objects rather than only an atlas of retrieved knowledge.
-
-Registration does not imply authority or promotion.
-
-## 7. Candidate tournament
-
-A candidate score vector currently contains:
-
-\[
-(C_D,C_R,P,I,F,B,N,K),
-\]
-
-with coordinates for descriptive coverage, residual closure, predictive value, identification, falsifiability, robustness, novelty and complexity.
-
-RAKL retains a Pareto frontier. This avoids silently converting all scientific goals into one goodness-of-fit scalar.
-
-## 8. Mathematical oracles
-
-`src/rakl/math_oracles.py` implements the first automatic oracle: dimensional consistency.
-
-It propagates symbolic dimensions through the formal expression tree and fails closed when an operator's dimension rule is unknown.
-
-This layer is intentionally modular. Future oracle fibers should add, where relevant:
-
-```text
-symbolic simplification / equivalence
-support/domain constraints
-stability / bifurcation analysis
-stochastic-process validity
-conservation/invariant solvers
-causal graph consistency
-identifiability analysis
-proof assistants / theorem checking
-numerical convergence / stiffness checks
-```
-
-## 9. Hidden-world invention benchmark
-
-`src/rakl/invention_benchmark.py` evaluates invention separately from validation of a known candidate.
-
-A certifying trial withholds the target structure from the proposer, freezes evidence and thresholds, freezes the candidate before target exposure, and uses a separate evaluator.
-
-Worlds include:
+`src/rakl/invention_benchmark.py` tests invention as a capability rather than assuming it from fluent output. It supports:
 
 ```text
 RECONSTRUCTION
@@ -198,44 +163,64 @@ CROSS_DOMAIN_TRANSFER
 ADVERSARIAL_RESIDUAL
 ```
 
-`NOVEL_COMPOSITION` is especially important. It requires a candidate to recover a registered combination that was not handed to the proposer as a complete source component.
+Targets remain hidden from the proposer, thresholds and evidence are frozen, and a separate evaluator checks structural recovery plus target validation. Novel-composition worlds require recovery of combinations not supplied as complete source components.
 
-Passing this benchmark supports only a scoped invention-capability claim for the frozen worlds and resource boundary. It does not imply universal scientific creativity.
+## Positive goal and exact hard gates
 
-## 10. Positive-goal semantics
+`PositiveGoalContract` supplies frozen multi-objective thresholds. `src/rakl/hard_gates.py` supplies non-compensatory gates.
 
-For a goal-seeking project, `PositiveGoalContract` defines immutable success requirements.
+For the Polymarket/crypto spot application, hard gates include the Round-035 predictive requirements plus typed formalism, descriptive-axis coverage, mechanism ancestry, structured residual closure, falsifier execution, strict availability, exact candidate binding, independent review and integrity.
 
-The only successful terminal verdict is:
+The only successful project closure is:
 
 ```text
 GOAL_ACHIEVED
 ```
 
-A failed candidate produces:
+Failed candidates become `CANDIDATE_REJECTED_CONTINUE`; missing evidence becomes `CANNOT_CHECK`; exhausted finite compute becomes a nonterminal resource block.
+
+## End-to-end runtime
+
+`src/rakl/invention_runtime.py` coordinates the complete loop:
 
 ```text
-CANDIDATE_REJECTED_CONTINUE
+typed lattice
+-> synthesis seed / generation request
+-> typed candidate
+-> mechanism compilation / symbolic discovery as needed
+-> formal + empirical verification
+-> numeric goal + hard gates
+-> typed residual on failure
+-> reopen implicated fibers
+-> next diverse invention round
+-> repeat
 ```
 
-The distinction is essential:
+The public facade is `rakl.invention_api`.
 
-> RAKL may refuse to accept failure of the current candidate set as project closure, while still refusing to manufacture a positive result.
+## Polymarket/crypto binding
 
-If data, tools or identifiability are insufficient, the state is `CANNOT_CHECK` or an explicit block, not a false positive.
-
-## 11. Polymarket/crypto binding
-
-The stronger search semantics for the real case are frozen in:
+The stronger stopping/search semantics are frozen in:
 
 `research/RAKL_POLYMARKET_CRYPTO_POSITIVE_GOAL_CONTRACT_036.json`
 
-Round 035 remains immutable. Round 036 changes what happens **after a candidate fails**: the mechanism-invention loop is mandatory until the positive goal is achieved or execution is blocked by an explicitly recorded evidence/resource boundary.
+Round 035 remains immutable. Round 036 changes what happens after a candidate fails: failure of the current candidate family is not project closure; it becomes input to the next constructive round or, if the operator basis itself is exhausted, a RAKL method-basis evolution problem.
 
-## 12. What remains external
+## Integrity boundary
 
-This implementation creates the theory language, constructive operators, routing, state, goal semantics, dimensional oracle and invention benchmarks. It does not pretend to contain every scientific solver.
+A persistent positive objective does not imply a promise that finite data contain an identifiable or predictive mechanism. RAKL can guarantee the **search/closure semantics**—it will not declare current failure to be success—but it cannot truthfully manufacture information absent from the evidence.
 
-CAS systems, symbolic regression, numerical simulation, theorem provers, causal/identification solvers and domain-specific statistical pipelines are treated as verification/generation resources that plug into the typed contracts.
+Forbidden shortcuts remain:
 
-RAKL's job is to ensure those resources are invoked on explicit candidate identities with preserved ancestry, evidence scope, residual targets and promotion rules.
+```text
+fabricated evidence or citations
+target leakage
+post-result threshold rescue
+selective deletion of failed candidates
+hidden multiplicity
+analogy authority leak
+in-sample fit relabeled as predictive success
+descriptive fit relabeled as mechanism without ancestry
+```
+
+The objective is persistent constructive discovery with a hard positive closure condition, not significance by construction.
