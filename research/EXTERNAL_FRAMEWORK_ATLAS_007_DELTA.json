@@ -1,0 +1,63 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_007_DELTA",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "research_routes": [
+    {
+      "route": "persistent scholarly identifiers and data versioning",
+      "sources": ["DataCite IsIdenticalTo guidance", "DataCite versioning guidance"],
+      "projection": "Exact identity and version membership are different relations. IsIdenticalTo is for the exact same research output under alternate identifiers/locations; IsVersionOf/HasVersion and new/previous version relations preserve distinct versions.",
+      "rakl_absorption": "Use typed evidence-identity relations. Collapse only exact aliases; retain versions as distinct entities while exposing common ancestry."
+    },
+    {
+      "route": "formal provenance semantics",
+      "sources": ["W3C PROV-O and PROV semantics"],
+      "projection": "Entity sameness/aspect relations, specialization and derivation have different logical behavior; provenance relations should remain typed rather than becoming one generic equivalence edge.",
+      "rakl_absorption": "Separate exact aliasing from directed version/derivation ancestry and unresolved alias hypotheses. Provenance structure does not itself grant truth authority."
+    },
+    {
+      "route": "intrinsic software-object identity",
+      "sources": ["Software Heritage SWHID specification", "Git commit-tree documentation"],
+      "projection": "Identity is object-type scoped. Software Heritage distinguishes content, directory, revision, release and snapshot identifiers. Git separately identifies a tree state and a commit that adds parent/history/metadata around that state.",
+      "rakl_absorption": "Add the semantic object SUBJECT_IDENTITY_TYPED_BY_OBJECT_SCOPE. RAKL must state whether sameness concerns content, structured state, version/revision, derivation history or repository snapshot."
+    },
+    {
+      "route": "CI integration-subject semantics",
+      "sources": ["GitHub Actions pull_request event documentation", "actions/checkout documentation", "native round-005 hostile PR trace"],
+      "projection": "A normal pull_request workflow tests the synthesized merge result by default, while explicit checkout of pull_request.head.sha tests the source head. The triggering run API head SHA is therefore not sufficient by itself to identify the actually executed integration subject.",
+      "rakl_absorption": "Keep META_N024 partially identified. Preserve source head, base revision, integration commit/tree and executed subject as separate coordinates until a parent-controlled attestation binds them."
+    }
+  ],
+  "retained_semantic_objects": [
+    {
+      "id": "TYPED_EVIDENCE_IDENTITY_ALGEBRA",
+      "novelty": "NEW",
+      "meaning": "Exact alias, version membership, derivation and possible alias are not interchangeable relations."
+    },
+    {
+      "id": "UNRESOLVED_IDENTITY_BLOCKS_INDEPENDENCE",
+      "novelty": "NEW",
+      "meaning": "An unresolved alias touching evidence used for a saturation certificate creates partial identification rather than assumed sameness or difference."
+    },
+    {
+      "id": "SUBJECT_IDENTITY_TYPED_BY_OBJECT_SCOPE",
+      "novelty": "NEW",
+      "meaning": "Content/tree/state/revision/history/snapshot identity must be typed; one unqualified 'same object' predicate is insufficient."
+    },
+    {
+      "id": "PERSISTENT_IDENTIFIER_IS_NOT_CONTENT_PROOF",
+      "novelty": "NEW_CHILD_RESIDUAL",
+      "meaning": "A DOI, URL or other persistent identifier names/resolves an entity, but exact-content identity needs an explicit trusted relation or stronger attestation. Identifier normalization alone must not manufacture IDENTICAL_TO."
+    },
+    {
+      "id": "INTEGRATION_SUBJECT_GAP_REINFORCED_BY_OBJECT_IDENTITY",
+      "novelty": "REINFORCED_NOT_DOUBLE_COUNTED",
+      "meaning": "N024 remains open; Git source commit, base, merge/integration commit or tree, and actually executed subject are distinct identity coordinates."
+    }
+  ],
+  "deduplication_notes": [
+    "OpenLineage/W3C PROV ancestry was already retained in round 006; this round counts only the new typed identity/scope consequences.",
+    "GitHub PR merge semantics reinforce N024 and are not counted as a separate new fiber merely because another source states them.",
+    "The new implementation does not infer exact aliases from titles, URLs or DOI formatting. IDENTICAL_TO must be supplied as evidence-bearing input."
+  ]
+}
