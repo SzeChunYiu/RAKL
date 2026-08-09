@@ -1,0 +1,66 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_020_DELTA",
+  "date": "2026-08-09",
+  "object": "BOUNDED_CONTEXT_MEMORY_AND_ENGINEERING_CLOSURE",
+  "routes": [
+    {
+      "route": "virtual-memory operating-system analogy",
+      "sources": ["MemGPT: Towards LLMs as Operating Systems", "current Letta memory/context implementation"],
+      "projection": "A finite LLM context can be treated as fast working memory backed by larger external state with explicit movement/compaction rather than as the whole agent memory.",
+      "rakl_absorption": "Separate the immutable epistemic archive from a compiled operation-specific working context; do not require the model to remember the archive."
+    },
+    {
+      "route": "hierarchical multi-resolution retrieval",
+      "sources": ["RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval", "HORMA: Organize then Retrieve"],
+      "projection": "Hierarchical summaries/navigation can retrieve across abstraction levels while retaining access to fine-grained source material; recent work explicitly targets minimal sufficient context under constrained budgets.",
+      "rakl_absorption": "Build regenerable multi-resolution views whose compact nodes point back to exact canonical records; context starts coarse and rehydrates only where authority/detail requires it."
+    },
+    {
+      "route": "retrieval compression and selective augmentation",
+      "sources": ["RECOMP", "LLMLingua", "LongLLMLingua", "LLMLingua-2", "SeleCom", "SARA"],
+      "projection": "Long retrieved contexts contain substantial redundancy. Query-conditioned or task-aware selection/compression can reduce token/latency costs, and compressing all available information is not necessarily optimal.",
+      "rakl_absorption": "Perform epistemic/task selection before optional textual compression; compression is a projection and must preserve rehydration/evidence pointers."
+    },
+    {
+      "route": "budget-aware context control",
+      "sources": ["ContextBudget: Budget-Aware Context Management for Long-Horizon Search Agents"],
+      "projection": "Context management can be formalized as a decision problem under an explicit budget rather than an after-the-fact truncation step.",
+      "rakl_absorption": "Make context budget a registered operation constraint and return CANNOT_COMPILE when epistemically mandatory material cannot fit."
+    },
+    {
+      "route": "memory evaluation isolation",
+      "sources": ["MemGym: a Long-Horizon Memory Environment for LLM Agents"],
+      "projection": "Memory quality can be evaluated separately from general reasoning/tool competence, reducing attribution confounds.",
+      "rakl_absorption": "Benchmark context/memory policy as its own fiber with matched model/tool/task conditions before claiming whole-system gains."
+    },
+    {
+      "route": "current open-source memory engineering",
+      "sources": ["Letta/Letta Code releases and memory-first architecture"],
+      "projection": "Production stateful-agent systems encounter context inflation, compaction, stale recompile and memory rendering problems in practice; memory/context engineering is a continuing systems concern rather than solved by increasing nominal context windows.",
+      "rakl_absorption": "Treat context compilation, recompile identity and compaction/reconstruction as explicit engineering fibers with telemetry and regression tests."
+    }
+  ],
+  "retained_rakl_objects_after_deduplication": [
+    "LOSSLESS_ARCHIVE_BOUNDED_WORKING_SET_SEPARATION",
+    "EPISTEMIC_MANDATORY_CONTEXT_SET",
+    "FAIL_CLOSED_CONTEXT_OVERFLOW",
+    "RECONSTRUCTABLE_LOSSY_VIEW_CONTRACT",
+    "FIBER_AWARE_MARGINAL_COVERAGE_COMPILATION",
+    "CONTEXT_MANIFEST_AS_EVALUATION_SUBJECT",
+    "ENGINEERING_CLOSURE_AS_RAKL_FIBERS",
+    "SCOPED_RELEASE_PLANE_CLOSURE"
+  ],
+  "not_counted_as_novel": [
+    "virtual context management",
+    "hierarchical memory",
+    "recursive summary trees",
+    "retrieval augmented generation",
+    "prompt compression",
+    "query-conditioned compression",
+    "budget-aware context management",
+    "memory navigation",
+    "content-addressed storage or materialized views generally"
+  ],
+  "candidate_novelty_question": "Whether explicit epistemic mandatory sets, negative-history/authority guards, reconstructable erasure-bearing compact views and fail-closed scientific context compilation constitute a distinct useful control layer when integrated with RAKL's atlas and authority system.",
+  "empirical_falsifier": "If matched simpler context baselines preserve the same required evidence, negative history and downstream decisions at equal or lower cost, RAKL must not claim added value for the richer compiler."
+}
