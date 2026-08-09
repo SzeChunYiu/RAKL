@@ -1,4 +1,4 @@
-from dataclasses import FrozenInstanceError, replace
+from dataclasses import FrozenInstanceError
 
 import pytest
 
@@ -249,14 +249,20 @@ def test_m18_hidden_discriminator_exposure_invalidates_trial():
     assert report.verdict is MeasurementRelationVerdict.TRIAL_INVALID
 
 
-def test_generic_similarity_validator_fails_closed_for_measurement_relations():
-    for relation in (
-        SimilarityRelation.SAME_OBSERVABLE,
-        SimilarityRelation.OBSERVATIONALLY_EQUIVALENT,
-    ):
-        report = validate_similarity_witness(_witness(relation))
-        assert report.verdict is WitnessVerdict.CANNOT_CHECK
-        assert "measurement_context_extension_required" in report.reasons
+def test_generic_similarity_witness_is_structural_not_measurement_certificate():
+    generic = validate_similarity_witness(_witness(SimilarityRelation.OBSERVATIONALLY_EQUIVALENT))
+    assert generic.verdict is WitnessVerdict.VALID
+
+    target = _spec("obs-target", observation_operator_id="infrared-radiometry-v2")
+    measurement = evaluate_measurement_relation(
+        _trial(
+            SimilarityRelation.OBSERVATIONALLY_EQUIVALENT,
+            target=target,
+            mapping=_mapping(observation_operator_compatibility=False),
+        )
+    )
+    assert measurement.verdict is MeasurementRelationVerdict.REJECT
+    assert "observation_operator_mismatch" in measurement.reasons
 
 
 def test_measurement_contract_is_immutable():
