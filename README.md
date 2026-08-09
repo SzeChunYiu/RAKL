@@ -36,6 +36,17 @@ These are not automatically competing theories. They may be orthogonal facets of
 
 RAKL therefore treats a source contribution primarily as a **projection** onto one or more facets of an object, not as a whole-object answer.
 
+The Apple Principle now has two explicitly different discovery operators:
+
+```text
+GLUE = conservatively find and align more projections of the same underlying object
+JUMP = adventurously find different objects/domains that preserve useful deep structure
+```
+
+After GLUE reconstructs a deeper object, RAKL can abstract away domain identity through relational, causal, mechanistic, dynamical, mathematical, functional, regime, and failure representations and search for distant analogues. A JUMP is a search/hypothesis operation, not target-domain evidence; transfer requires an explicit mapping witness and target validation.
+
+See `docs/APPLE_PRINCIPLE.md`, `docs/SIMILARITY_ANALOGY_ALGEBRA.md`, and `research/SIMILARITY_ANALOGY_LOOP_PROTOCOL.md`.
+
 The synthesis problem is:
 
 ```text
@@ -166,8 +177,13 @@ README.md
 ARCHITECTURE.md
 docs/
   APPLE_PRINCIPLE.md
+  SIMILARITY_ANALOGY_ALGEBRA.md
   SELF_RAKL.md
   NATURE_SKILLS_INTEGRATION.md
+research/
+  SIMILARITY_ANALOGY_LOOP_PROTOCOL.md
+  SELF_RAKL_RESEARCH_011.md
+  SELF_RAKL_RESEARCH_011_FROZEN_BENCHMARK.json
 skills/
   rakl-core/
     SKILL.md
