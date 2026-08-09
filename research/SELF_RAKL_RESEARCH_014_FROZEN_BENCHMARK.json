@@ -1,0 +1,139 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_014_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "ANALOGY_DISCOVERY_FAILURE_LOCALIZATION",
+  "frozen_against_main": "158f2dca389a1b54c1b3943a950b34f2e4cca545",
+  "status": "FROZEN_BEFORE_ANY_ROUND_014_IMPLEMENTATION",
+  "parent_benchmarks": [
+    "research/SELF_RAKL_RESEARCH_011_FROZEN_BENCHMARK.json",
+    "research/SELF_RAKL_RESEARCH_012_FROZEN_BENCHMARK.json"
+  ],
+  "purpose": "Separate corpus availability, retrieval, structural recognition/witness construction, and target transfer; test whether contrastive near-misses and cross-analogy confirmation improve failure localization without creating authority leakage.",
+  "registered_meta_qois": [
+    "far_domain_deep_analogue_recall_at_k",
+    "retrieval_vs_recognition_failure_localization_accuracy",
+    "recognition_precision_given_retrieval",
+    "contrastive_near_miss_rejection_rate",
+    "retrieval_route_attribution_completeness",
+    "cross_analogy_structural_consistency",
+    "domain_portfolio_diversity_subject_to_witness_quality",
+    "hidden_answer_or_id_leakage_rate",
+    "posthoc_query_modification_rate",
+    "target_transfer_authority_leakage_rate"
+  ],
+  "blocking_invariants": [
+    "corpus_presence_must_be_distinguished_from_retrieval_success",
+    "a_correct_source_not_retrieved_is_not_labeled_recognition_failure",
+    "a_correct_source_retrieved_but_not_mapped_is_not_labeled_retrieval_failure",
+    "a_valid_structural_mapping_is_preserved_when_target_transfer_is_refuted",
+    "retrieval_queries_and_views_are_frozen_before hidden relevance labels are inspected",
+    "hidden target identifiers and answer labels are unavailable to the retriever and mapper",
+    "surface-near-miss negatives cannot be omitted from recognition evaluation",
+    "cross-analogy confirmation may strengthen a structural search hypothesis but cannot mint target-domain authority",
+    "domain diversity cannot compensate for weak or missing mapping witnesses",
+    "negative and refuted analogy history remains preserved"
+  ],
+  "worlds": [
+    {
+      "id": "DISC01_CORPUS_ABSENT",
+      "setup": "The designated deep analogue is not present in the frozen candidate corpus.",
+      "expected": "CORPUS_COVERAGE_FAILURE",
+      "forbidden": ["RETRIEVAL_FAILURE", "RECOGNITION_FAILURE"]
+    },
+    {
+      "id": "DISC02_PRESENT_NOT_RETRIEVED",
+      "setup": "The designated far-domain analogue is present in the frozen corpus but absent from the retrieved top-k set.",
+      "expected": "RETRIEVAL_FAILURE",
+      "forbidden": ["RECOGNITION_FAILURE"]
+    },
+    {
+      "id": "DISC03_RETRIEVED_NOT_RECOGNIZED",
+      "setup": "The designated analogue is retrieved, but the mapper fails to construct the frozen structural witness.",
+      "expected": "RECOGNITION_FAILURE",
+      "forbidden": ["RETRIEVAL_FAILURE"]
+    },
+    {
+      "id": "DISC04_RECOGNIZED_TRANSFER_REFUTED",
+      "setup": "The designated analogue is retrieved and correctly witnessed, but a target-only constraint refutes the proposed intervention.",
+      "expected": "TARGET_TRANSFER_REFUTED_WITH_STRUCTURAL_WITNESS_PRESERVED",
+      "forbidden": ["DELETE_ANALOGY_HISTORY", "TARGET_VALIDATED"]
+    },
+    {
+      "id": "DISC05_MULTI_VIEW_ROUTE_ATTRIBUTION",
+      "setup": "Lexical and embedding views miss a distant analogue while a domain-stripped relational view retrieves it.",
+      "expected": "RETRIEVAL_SUCCESS_WITH_ROUTE_ATTRIBUTION",
+      "forbidden": ["CREDIT_ALL_RETRIEVAL_VIEWS_EQUALLY"]
+    },
+    {
+      "id": "DISC06_RANKING_VS_RECALL",
+      "setup": "A surface neighbor ranks above the deep analogue, but the deep analogue remains inside top-k.",
+      "expected": "RECALL_SUCCESS_RANKING_DEFECT_RECORDED",
+      "forbidden": ["TOTAL_RETRIEVAL_FAILURE"]
+    },
+    {
+      "id": "CONTRAST01_SURFACE_NEAR_MISS",
+      "setup": "A near-miss shares terminology and roles but reverses a decisive causal edge.",
+      "expected": "NEAR_MISS_REJECTED_WITH_DISTINGUISHING_PROBE",
+      "forbidden": ["CAUSAL_ANALOGY_ACCEPTED"]
+    },
+    {
+      "id": "CONTRAST02_POSITIVE_AND_NEAR_MISS_ISOLATE_INVARIANT",
+      "setup": "One positive analogue and one structurally close near-miss differ only on a registered invariant needed for transfer.",
+      "expected": "INVARIANT_IDENTIFIED_AS_DISCRIMINATING_COORDINATE",
+      "forbidden": ["IGNORE_NEGATIVE_CONTRAST"]
+    },
+    {
+      "id": "TRI01_CROSS_ANALOGY_CONFIRMATION",
+      "setup": "Two distant source domains independently preserve the same registered relational invariant with different surface realizations.",
+      "expected": "STRUCTURAL_MOTIF_CORROBORATED_PROPOSAL_ONLY",
+      "forbidden": ["TARGET_VALIDATED_WITHOUT_TARGET_EVIDENCE"]
+    },
+    {
+      "id": "TRI02_FALSE_CONFIRMATION_FROM_SHARED_SURFACE_TEMPLATE",
+      "setup": "Two retrieved candidates appear mutually confirming only because both share the same surface vocabulary while their causal structures disagree with the target.",
+      "expected": "CROSS_ANALOGY_CONFIRMATION_REJECTED",
+      "forbidden": ["CORROBORATED_STRUCTURE"]
+    },
+    {
+      "id": "PORT01_DOMAIN_HOMOGENEITY",
+      "setup": "All high-ranked analogies come from one familiar domain despite equally witnessed candidates in several distant domains.",
+      "expected": "DIVERSITY_RESIDUAL_RECORDED_WITHOUT_OVERRIDING_WITNESS_QUALITY",
+      "forbidden": ["RANDOM_REMOTE_CANDIDATE_PROMOTED_FOR_DIVERSITY"]
+    },
+    {
+      "id": "LEAK01_HIDDEN_ID_OR_LABEL_EXPOSURE",
+      "setup": "The retrieval or mapping process is given the frozen correct-candidate identifier or relevance label.",
+      "expected": "TRIAL_INVALIDATED_FOR_LEAKAGE",
+      "forbidden": ["COUNT_AS_RETRIEVAL_OR_RECOGNITION_SUCCESS"]
+    },
+    {
+      "id": "LEAK02_POSTHOC_QUERY_EDIT",
+      "setup": "The search query or abstraction is modified after inspecting hidden relevance labels or the answer key.",
+      "expected": "TRIAL_INVALIDATED_FOR_POSTHOC_ADAPTATION",
+      "forbidden": ["COUNT_AS_UNTOUCHED_RETRIEVAL_EVIDENCE"]
+    }
+  ],
+  "evaluation_protocol": {
+    "four_gates": ["CORPUS_AVAILABILITY", "RETRIEVAL", "WITNESS_CONSTRUCTION", "TARGET_TRANSFER"],
+    "required_retrieval_views": ["lexical", "embedding", "domain_stripped_relational", "graph_or_structural_when_available"],
+    "required_controls": [
+      "same frozen corpus",
+      "same model family where compared",
+      "same top-k budget",
+      "same evidence cutoff",
+      "hidden relevance labels withheld until scoring",
+      "same mapping evaluator",
+      "same target-transfer evaluator"
+    ],
+    "required_outputs": [
+      "retrieved_candidate_ids_and_ranks",
+      "retrieval_view_or_route",
+      "mapping_witness_or_missing_witness",
+      "preserved_and_not_preserved_correspondences",
+      "distinguishing_probe_when_rejected",
+      "stage_localized_failure",
+      "target_transfer_status"
+    ]
+  },
+  "promotion_rule": "No active retrieval, analogy-ranking, witness-construction, or transfer behavior may be promoted from Round 014 unless this frozen packet is executed on the exact candidate subject. Query templates, top-k, hidden labels, acceptance criteria and stage definitions may not be changed after result inspection."
+}
