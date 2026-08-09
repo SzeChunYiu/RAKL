@@ -1,0 +1,123 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_023_RECEIPT",
+  "date": "2026-08-09",
+  "object": "PROVIDER_NEUTRAL_EXECUTION_RECEIPT_AND_DUPLICATE_SAFE_RECOVERY",
+  "starting_main_sha": "80d3d79cd5fcd8cb5dcbdc1443e940e8ca5d8518",
+  "constitutional_change": false,
+  "change_class": "A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "expert_panel_roles": [
+    "agent-runtime/state-machine architect",
+    "reliability/idempotency engineer",
+    "execution-security engineer",
+    "provenance/content-addressed-storage engineer",
+    "observability/trace engineer",
+    "adversarial reproducibility reviewer"
+  ],
+  "review_independence_note": "Role-separated passes shared one orchestration context and are not counted as mutually blind or independent review.",
+  "frozen_benchmark": {
+    "artifact": "research/SELF_RAKL_RESEARCH_023_FROZEN_BENCHMARK.json",
+    "commit": "81f543995438e230f3838c10f073b14e290b595d",
+    "world_count": 15,
+    "status": "FROZEN_BEFORE_IMPLEMENTATION"
+  },
+  "pre_addendum_support": {
+    "sha": "f32460207e01c56db1dcb0279bce21814bf510e9",
+    "workflow_run_id": 31322215229,
+    "pytest_job_id": 93266848159,
+    "result": "287_passed_in_6.26s",
+    "native_residuals_after_green": [
+      "generation configuration bound to identity but not forced through runner input protocol",
+      "no explicit local same-invocation lease before external execution"
+    ]
+  },
+  "corrective_addendum": {
+    "artifact": "research/SELF_RAKL_RESEARCH_023_EXECUTION_SEMANTICS_ADDENDUM.json",
+    "commit": "e629fce29da014899fd611868bd3f93cbf774bc3",
+    "status": "FROZEN_BEFORE_CORRECTIVE_IMPLEMENTATION",
+    "world_count": 7,
+    "parent_benchmark_unchanged": true
+  },
+  "corrected_support_candidate": {
+    "sha": "6d73324091fa4e8303d25b9d897f087ce6ee9f2e",
+    "workflow_run_id": 31322523121,
+    "pytest_job_id": 93267596876,
+    "result": "291_passed_in_6.73s"
+  },
+  "implementation": {
+    "module": "src/rakl/execution.py",
+    "cli": "python -m rakl run",
+    "tests": ["tests/test_execution.py", "tests/test_execution_cli.py"],
+    "docs": "docs/EXECUTION_RUNTIME.md",
+    "example_runner": "examples/minimal/runner.py",
+    "core_properties": [
+      "exact task packet SHA-256 binding",
+      "canonical runner envelope with generation config",
+      "runner input SHA-256 binding",
+      "append-only hash-chained execution events",
+      "content-addressed raw stdout/stderr",
+      "immutable terminal receipt",
+      "completed invocation replay without re-execution",
+      "RUNNING ambiguity recovery block",
+      "retry-safe PREPARED new attempts with preserved history",
+      "local same-invocation active lease",
+      "secret environment values absent from receipts/lease",
+      "argv execution with shell=false",
+      "proposal-only output authority"
+    ]
+  },
+  "retained_semantic_objects": [
+    "PACKET_BOUND_EXECUTION_RECEIPT",
+    "CONTENT_ADDRESSED_RAW_EXECUTION_ARTIFACTS",
+    "APPEND_ONLY_HASH_CHAINED_EXECUTION_EVENTS",
+    "AMBIGUOUS_RUN_RECOVERY_BLOCK",
+    "COMPLETED_INVOCATION_REPLAY_WITHOUT_REEXECUTION",
+    "SECRET_FREE_ENVIRONMENT_IDENTITY_DECLARATION",
+    "RUNNER_INPUT_CONFIGURATION_DELIVERY_CERTIFICATE",
+    "LOCAL_SAME_INVOCATION_EXECUTION_LEASE"
+  ],
+  "not_counted_as_novel": [
+    "agent execution tracing",
+    "checkpoint/retry engineering",
+    "idempotency controls",
+    "process execution security",
+    "trace/span observability",
+    "content-addressed execution logs"
+  ],
+  "protected_inputs": {
+    "constitution_changed": false,
+    "test_workflow_changed": false,
+    "trusted_parent_workflow_changed": false,
+    "pyproject_changed": false,
+    "promotion_module_changed": false,
+    "evaluator_module_changed": false,
+    "parent_evaluator_module_changed": false,
+    "preexisting_parent_tests_modified": false
+  },
+  "release_readiness": "NOT_READY_OPEN_ENGINEERING_AND_EMPIRICAL_PROGRAM",
+  "publication_readiness": "METHOD_SPECIFICATION_AND_EXECUTABLE_ARTIFACT_MATURE_EMPIRICAL_CASE_OPEN",
+  "new_or_reinforced_fibers": [
+    "META_N080_PROVIDER_ADAPTER_EXECUTION_RECEIPT",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE",
+    "META_N083_DISTRIBUTED_EXECUTION_COORDINATION",
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N085_EXECUTION_TRACE_EXPORT_AND_OBSERVABILITY",
+    "META_N081_TOKENIZER_BUDGET_CALIBRATION",
+    "META_N082_RELEASE_ARTIFACT_IDENTITY"
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "engineering_lane": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0
+  },
+  "final_candidate_validation": "PENDING_AFTER_RESEARCH_ARTIFACT_COMMIT",
+  "next_ai": {
+    "positive": "Freeze tokenizer-budget and release-artifact identity benchmarks before implementation; then close those two reference-package gaps before expanding orchestration complexity.",
+    "null": "If canonical packet/output hashes and thin execution receipts are sufficient for real audit/recovery tasks, keep standardized trace/export layers optional.",
+    "refuted": "Any frozen duplicate execution, secret leakage, runner-input/config mismatch or automatic retry of ambiguous RUNNING state blocks this execution contract.",
+    "partial_id": "Hosted model/provider implementation and configuration compliance remain externally attested/partially identified unless exact evidence exists.",
+    "blocked": "Inaccessible provider identity or environment details remain CANNOT_CHECK.",
+    "transport": "If main advances before promotion, rebuild on current main without force while preserving parent benchmark, addendum and all green/failed histories."
+  }
+}
