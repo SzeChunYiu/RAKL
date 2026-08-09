@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Iterable
+from typing import Iterable, Sequence
 
 
 class SaturationState(str, Enum):
@@ -27,6 +27,12 @@ class ResearchRound:
     independent: bool = False
     cost: float = 0.0
     source_ids: tuple[str, ...] = ()
+    evidence_lineage: frozenset[str] = frozenset()
+    lineage_complete: bool = False
+
+    def __post_init__(self) -> None:
+        if self.lineage_complete and not self.evidence_lineage:
+            raise ValueError("lineage_complete requires at least one canonical evidence-lineage id")
 
     @classmethod
     def from_objects(
@@ -39,6 +45,8 @@ class ResearchRound:
         independent: bool = False,
         cost: float = 0.0,
         source_ids: Iterable[str] = (),
+        evidence_lineage: Iterable[str] = (),
+        lineage_complete: bool = False,
     ) -> "ResearchRound":
         return cls(
             round_id=round_id,
@@ -48,6 +56,8 @@ class ResearchRound:
             independent=independent,
             cost=cost,
             source_ids=tuple(source_ids),
+            evidence_lineage=frozenset(evidence_lineage),
+            lineage_complete=lineage_complete,
         )
 
 
@@ -70,11 +80,18 @@ class SaturationTracker:
     _seen: set[str] = field(default_factory=set)
     _reopened_reason: str | None = None
 
+    # Exact set-packing is intentionally bounded. Above this size RAKL returns a
+    # deterministic conservative lower bound rather than pretending an expensive
+    # heuristic is exact evidence of independence.
+    lineage_exact_limit: int = 20
+
     def __post_init__(self) -> None:
         if self.same_context_flat_required < 1:
             raise ValueError("same_context_flat_required must be >= 1")
         if self.independent_flat_required < 1:
             raise ValueError("independent_flat_required must be >= 1")
+        if self.lineage_exact_limit < 1:
+            raise ValueError("lineage_exact_limit must be >= 1")
 
     def record(self, research_round: ResearchRound) -> RecordedRound:
         if any(
@@ -139,13 +156,138 @@ class SaturationTracker:
             and r.research_round.context_id == active_context
         )
 
-    def independent_flat_count(self) -> int:
+    def _independent_flat_tail(self) -> list[RecordedRound]:
         last_nonflat = self._last_nonflat_index()
-        return sum(
-            1
+        return [
+            r
             for r in self.rounds[last_nonflat + 1 :]
             if r.flat and r.research_round.independent
-        )
+        ]
+
+    @staticmethod
+    def _round_key(recorded: RecordedRound) -> tuple[str, tuple[str, ...]]:
+        rr = recorded.research_round
+        return (rr.round_id, tuple(sorted(rr.evidence_lineage)))
+
+    def _maximum_disjoint_lineage_subset(
+        self,
+        rounds: Sequence[RecordedRound],
+    ) -> tuple[tuple[RecordedRound, ...], str]:
+        """Return a conservative set of fully lineage-disjoint flat rounds.
+
+        For small collections this solves the set-packing problem exactly. For larger
+        collections it uses a deterministic greedy lower bound. A lower bound can delay
+        saturation but can never create false independent evidence.
+        """
+
+        ordered = tuple(sorted(rounds, key=self._round_key))
+        if not ordered:
+            return (), "exact"
+
+        if len(ordered) > self.lineage_exact_limit:
+            selected: list[RecordedRound] = []
+            used: set[str] = set()
+            for recorded in sorted(
+                ordered,
+                key=lambda r: (
+                    len(r.research_round.evidence_lineage),
+                    self._round_key(r),
+                ),
+            ):
+                lineage = set(recorded.research_round.evidence_lineage)
+                if used.isdisjoint(lineage):
+                    selected.append(recorded)
+                    used.update(lineage)
+            return tuple(sorted(selected, key=self._round_key)), "greedy_lower_bound"
+
+        best: tuple[RecordedRound, ...] = ()
+
+        def choose(
+            index: int,
+            used: frozenset[str],
+            selected: tuple[RecordedRound, ...],
+        ) -> None:
+            nonlocal best
+            if len(selected) + (len(ordered) - index) < len(best):
+                return
+            if index >= len(ordered):
+                if len(selected) > len(best):
+                    best = selected
+                elif len(selected) == len(best):
+                    current_ids = tuple(r.research_round.round_id for r in selected)
+                    best_ids = tuple(r.research_round.round_id for r in best)
+                    if current_ids < best_ids:
+                        best = selected
+                return
+
+            current = ordered[index]
+            lineage = current.research_round.evidence_lineage
+            if used.isdisjoint(lineage):
+                choose(index + 1, used | lineage, selected + (current,))
+            choose(index + 1, used, selected)
+
+        choose(0, frozenset(), ())
+        return best, "exact"
+
+    def independence_diagnostic(self) -> dict:
+        """Describe process independence separately from evidence-lineage independence.
+
+        ``independent=True`` only asserts process/context independence. Full saturation
+        credit additionally requires a complete canonical evidence-lineage declaration.
+        Shared ancestry is treated as dependence. Missing ancestry is partial
+        identification, not evidence of independence.
+        """
+
+        tail = self._independent_flat_tail()
+        complete = [
+            r
+            for r in tail
+            if r.research_round.lineage_complete and r.research_round.evidence_lineage
+        ]
+        unknown = [
+            r.research_round.round_id
+            for r in tail
+            if not r.research_round.lineage_complete
+            or not r.research_round.evidence_lineage
+        ]
+
+        overlap_pairs: list[dict] = []
+        for i, left in enumerate(complete):
+            for right in complete[i + 1 :]:
+                shared = left.research_round.evidence_lineage & right.research_round.evidence_lineage
+                if shared:
+                    overlap_pairs.append(
+                        {
+                            "left": left.research_round.round_id,
+                            "right": right.research_round.round_id,
+                            "shared_lineage": sorted(shared),
+                        }
+                    )
+
+        selected, method = self._maximum_disjoint_lineage_subset(complete)
+        selected_ids = [r.research_round.round_id for r in selected]
+
+        if unknown:
+            status = "PARTIALLY_IDENTIFIED_LINEAGE"
+        elif overlap_pairs:
+            status = "DEPENDENCE_IDENTIFIED"
+        else:
+            status = "FULL_LINEAGE_DISJOINT"
+
+        return {
+            "status": status,
+            "declared_process_independent_flat_rounds": len(tail),
+            "lineage_complete_flat_rounds": len(complete),
+            "unknown_or_incomplete_lineage_rounds": sorted(unknown),
+            "overlap_pairs": overlap_pairs,
+            "conservative_full_independent_rounds": len(selected),
+            "credited_round_ids": selected_ids,
+            "count_method": method,
+            "exact_count": method == "exact",
+        }
+
+    def independent_flat_count(self) -> int:
+        return int(self.independence_diagnostic()["conservative_full_independent_rounds"])
 
     @property
     def state(self) -> SaturationState:
@@ -182,6 +324,8 @@ class SaturationTracker:
                 "route": r.research_round.route,
                 "context_id": r.research_round.context_id,
                 "independent": r.research_round.independent,
+                "evidence_lineage": sorted(r.research_round.evidence_lineage),
+                "lineage_complete": r.research_round.lineage_complete,
                 "new_count": len(r.new_semantic_objects),
                 "new_semantic_objects": sorted(r.new_semantic_objects),
                 "flat": r.flat,
