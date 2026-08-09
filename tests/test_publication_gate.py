@@ -16,6 +16,13 @@ REQUIRED = (
     "E2_SPOT_PREDICTIVE",
 )
 
+MANUSCRIPT_SLOTS = (
+    "SOFTWARE_VALIDATION",
+    "MATCHED_WORKFLOW",
+    "SELF_EVOLUTION",
+    "SPOT_SCIENCE",
+)
+
 
 def packet(**overrides):
     base = dict(
@@ -65,8 +72,10 @@ def test_current_manuscript_result_slots_block_submission():
         )
     )
     assert report.verdict == PublicationGateVerdict.NOT_SUBMISSION_READY
+    # Canonical experiment/receipt identities stay frozen even if the prose-facing
+    # manuscript gives the unresolved placeholders shorter presentation names.
     assert set(report.unresolved_result_ids) == set(REQUIRED)
-    assert set(report.unresolved_manuscript_slots) == set(REQUIRED)
+    assert set(report.unresolved_manuscript_slots) == set(MANUSCRIPT_SLOTS)
 
 
 def test_development_only_self_evolution_cannot_close_submission():

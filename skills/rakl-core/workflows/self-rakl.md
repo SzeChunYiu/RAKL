@@ -1,6 +1,6 @@
 # Workflow — Self-RAKL
 
-Use when improving the research method itself.
+Use when evaluating or improving the RAKL research method itself.
 
 ## Object
 
@@ -8,44 +8,155 @@ Use when improving the research method itself.
 RAKL_METHOD
 ```
 
-## Meta-fibers
+Self-application is **not** self-authorization. RAKL may be both the research instrument and the research object, but a challenger still requires evidence from a protected evaluator and fresh tasks outside the challenger's write authority.
 
-At minimum:
+## Current method-surface inventory
+
+Use the canonical 24-surface registry in `src/rakl/method_specs.py` rather than maintaining a shorter informal list inside this workflow.
+
+Before proposing a new method surface, ask whether the problem is already owned by an existing surface and only lacks implementation or empirical validation.
+
+## Bootstrap acceptance question
+
+A mature RAKL should be able to perform:
 
 ```text
-problem decomposition
-workflow routing
-source discovery/fallback
-claim extraction
-ontology/terminology normalization
-representation equivalence
-contradiction diagnosis
-knowledge-gap detection
-discriminator selection
-formalism synthesis
-review architecture
-logging/provenance
-saturation/stopping
-LLM prompting/context policy
+current RAKL
+-> research RAKL as the target object
+-> search same-domain + cross-domain method knowledge
+-> normalize/deduplicate until route families are flat or blocked
+-> run method-completeness challenge
+-> localize a previously unlabelled weakness
+-> attribute the failure cause
+-> route existing method OR assimilate/invent a candidate operator
+-> freeze candidate + discriminator
+-> development validation
+-> fresh assurance
+-> narrow promotion or retained negative result
 ```
 
-## Procedure
+A same-context run that finds and repairs a real weakness is useful **first-sign evidence only**. Strong self-evolution evidence requires the frozen bootstrap benchmark in `research/SELF_RAKL_BOOTSTRAP_BENCHMARK_041.json` and fresh assurance.
 
-1. Identify a concrete method residual or repeated inefficiency.
-2. Open a knowledge fiber for the failing method step.
-3. Study alternative practices from research-agent repositories, scientific-method literature, theorem proving, experiment design, information retrieval, causal inference, and other relevant domains.
-4. Apply the Apple Principle: each external system may contribute one strong projection of the research-process object rather than a complete replacement.
-5. Normalize and deduplicate equivalent practices.
-6. Define frozen meta-QoIs such as semantic recall, false novelty, contradiction detection, evidence grounding, reproducibility, cost, and decision quality.
-7. Run incumbent and challenger on the same immutable benchmark packet.
-8. For qualitative evaluations, use mutually blind reviewers and freeze reports before synthesis.
-9. Promote only the improved atomic method step.
-10. Preserve the incumbent and a rollback/supersession receipt.
+## Minimum search route families
+
+Do not claim method-search saturation after reading only LLM-agent papers. Before a strong flatness claim, cover or explicitly block at least:
+
+```text
+scientific method / philosophy of science / metascience
+metacognition / self-regulated learning / expert learning
+active learning / experiment design / optimal control
+formal methods / truth maintenance / belief revision / provenance
+knowledge representation / local-to-global consistency
+causal inference / identification / partial identification
+information retrieval / databases / memory / context compression
+software reliability / reproducibility / supply-chain provenance
+self-improving agents / program evolution / skill learning
+scientific visualization / human factors / communication
+at least two domain-specific non-LLM research workflows
+```
+
+For every route:
+
+1. extract atomic mechanisms, not framework reputations;
+2. normalize semantic equivalents;
+3. preserve assumptions, resource requirements and evidence scope;
+4. record genuinely new operators, corroboration, novelty corrections and negative findings;
+5. repeat from materially different query vocabulary until semantic gain is flat or the route is explicitly blocked.
+
+Search-budget exhaustion while new semantic objects are still arriving is `NOT_SATURATED`.
+
+## Failure attribution before self-modification
+
+A project failure does not automatically imply that RAKL needs a new operator. Classify at least:
+
+```text
+MISSING_EVIDENCE_OR_MEASUREMENT
+IMPLEMENTATION_DEFECT
+STOCHASTIC_OR_UNDERPOWERED_RESULT
+WRONG_EXISTING_STRATEGY_OR_ROUTING
+ONTOLOGY_OR_CONTEXT_GAP
+METHOD_BASIS_GAP
+OBJECTIVE_OR_EVALUATOR_DEFECT
+```
+
+Only a supported `METHOD_BASIS_GAP` routes directly to operator assimilation/invention. Missing evidence routes to evidence acquisition; implementation defects route to code repair; uncertain cases require a discriminating challenge.
+
+## Candidate construction
+
+For an external candidate, use the method-assimilation contract. For a new candidate, use constructive invention. In both cases freeze before result access:
+
+```text
+candidate id
+parent/incumbent lineage
+scope/context
+I/O contract
+assumptions/preconditions
+failure modes
+scientific authority it may and may not create
+predicted improvement
+falsifiers
+resource budget
+benchmark/evaluator identity
+```
+
+Semantic renaming of an incumbent method is not improvement.
+
+## Evaluation chronology
+
+1. Freeze incumbent source/evidence cutoff and resource profile.
+2. Freeze development benchmark and blocking meta-QoIs.
+3. Freeze candidate identity before candidate outcomes are revealed.
+4. Run development known-answer and hostile worlds.
+5. If development improves, execute a **fresh assurance** task/realization not used to design the repair.
+6. Compare fixed RAKL, generic reflection, unconstrained self-editing and governed RAKL under matched resources when the claim is comparative.
+7. Preserve every failed, null, blocked and meta-overfit generation.
+8. Promote only through the normal protected method-change gate.
+
+Development improvement
+
+\[
+\Delta_D > 0
+\]
+
+is local optimization only. Strong scoped evolution evidence also requires
+
+\[
+\Delta_A > 0
+\]
+
+on fresh assurance with all blocking invariants clean.
+
+If \(\Delta_D>0\) but \(\Delta_A<0\), record `META_OVERFIT`.
+
+Repeated disclosure of assurance scores consumes the assurance reserve. Rotate or refresh assurance rather than adapt indefinitely against one held-out set.
+
+## Output minimum
+
+Every Self-RAKL run should produce:
+
+```text
+incumbent exact identity
+method surface/fiber under challenge
+search route coverage + semantic flatness state
+weakness/residual and epistemic cut
+failure attribution
+candidate source: endogenous / external / implementation repair / no change
+frozen benchmark/evaluator identity
+candidate exact identity
+negative-history delta
+development delta
+fresh-assurance delta or CANNOT_CHECK
+resource/cost delta
+blocking invariant results
+verdict
+next reopen trigger
+```
 
 ## Safety
 
-The self-improver may not change evaluation criteria after seeing its own result.
-
-The LLM that proposes a method change cannot be the only authority certifying it.
-
-Same-context reflections can generate candidates but do not constitute independent validation.
+- The self-improver may not change evaluation criteria after seeing its own result.
+- The proposer cannot be the only authority certifying its repair.
+- Same-context role separation is not independent review.
+- A method-search saturation claim is local to the registered source/query/evidence universe.
+- `NO_IMPROVEMENT` is a valid result; do not force a change merely to demonstrate recursion.
+- Constitutional changes remain proposal-only under separate amendment governance.
