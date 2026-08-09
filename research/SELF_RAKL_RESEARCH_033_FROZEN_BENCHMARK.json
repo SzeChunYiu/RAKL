@@ -1,0 +1,169 @@
+{
+  "benchmark_id": "RAKL_METACOGNITIVE_COMPLETENESS_001",
+  "round": 33,
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-08-09",
+  "parent_main_sha": "a980081a930dcd7c3f354d57245c74affa08ab1c",
+  "research_question": "Can RAKL detect weaknesses that are not reliably exposed by generic same-context self-reflection, while avoiding unsupported global self-knowledge claims and unnecessary reflection cost?",
+  "scope": "support-only metacognitive audit classification; no promotion, routing, Constitution, or scientific-authority mutation",
+  "design_principles": [
+    "self-reported confidence is evidence to calibrate, not authority",
+    "metacognitive competence is domain-scoped unless transfer is measured",
+    "reconstruction of an explanation can expose missing causal/mechanistic elements hidden by verbal familiarity",
+    "explicit countermodel generation is stronger than generic instructions to be unbiased",
+    "same-context self-review is not independent review",
+    "repeated unclassified residuals can indicate an ontology gap",
+    "target unreachability that cannot be resolved by the incumbent operator basis can indicate a missing method operator",
+    "reflection is triggered by registered signals rather than applied continuously",
+    "feedback-driven calibration change alone does not establish underlying capability improvement",
+    "missing external outcome evidence yields CANNOT_CHECK"
+  ],
+  "primary_source_projections": [
+    {
+      "key": "PRONIN_2002_BIAS_BLIND_SPOT",
+      "projection": "people can diagnose bias more readily in others than in themselves; introspection alone is an unreliable debiasing authority",
+      "doi": "10.1177/0146167202286008"
+    },
+    {
+      "key": "ROZENBLIT_KEIL_2002_IOED",
+      "projection": "people can overestimate explanatory understanding until required to produce a mechanistic explanation",
+      "doi": "10.1207/S15516709COG2605_1"
+    },
+    {
+      "key": "LORD_LEPPER_PRESTON_1984_OPPOSITE",
+      "projection": "explicitly considering the opposite can correct judgment more effectively than generic instructions to be unbiased",
+      "pmid": "6527215"
+    },
+    {
+      "key": "CHI_ET_AL_1989_SELF_EXPLANATION",
+      "projection": "self-explanation can improve learning and problem solving by making inferential structure explicit",
+      "doi": "10.1207/s15516709cog1302_1"
+    },
+    {
+      "key": "GROSSMANN_KROSS_2014_SELF_DISTANCING",
+      "projection": "an outside/self-distanced perspective can reduce self-other asymmetry in wise reasoning",
+      "doi": "10.1177/0956797614535400"
+    },
+    {
+      "key": "HADDARA_RAHNEV_2022_FEEDBACK",
+      "projection": "feedback can improve confidence calibration and response strategy without improving metacognitive sensitivity",
+      "doi": "10.1177/09567976211032887"
+    },
+    {
+      "key": "LITWIN_ET_AL_2025_CONFIDENCE_COST",
+      "projection": "requiring confidence reports can sometimes reduce response and change-of-mind accuracy, motivating selective rather than continuous reflection",
+      "doi": "10.1037/xhp0001297"
+    },
+    {
+      "key": "MIRROR_2026_LLM_METACOGNITION",
+      "projection": "LLM self-knowledge is domain-specific and does not reliably translate into action; external metacognitive control substantially reduces confident failures in the reported benchmark",
+      "arxiv": "2604.19809"
+    }
+  ],
+  "registered_verdicts": [
+    "NO_AUDIT_REQUIRED",
+    "CALIBRATED_NO_NEW_GAP",
+    "KNOWN_WEAKNESS",
+    "CALIBRATION_WEAKNESS",
+    "EXPLANATION_GAP",
+    "ONTOLOGY_GAP_CANDIDATE",
+    "METHOD_BASIS_GAP_CANDIDATE",
+    "INDEPENDENT_REVIEW_REQUIRED",
+    "CANNOT_CHECK"
+  ],
+  "worlds": [
+    {
+      "id": "MCC001_NO_TRIGGER",
+      "input": {"trigger_signals": [], "reflection_cost": 8.0, "expected_failure_cost": 1.0},
+      "expected": "NO_AUDIT_REQUIRED",
+      "falsifier": "classifier launches a metacognitive audit merely because reflection is available"
+    },
+    {
+      "id": "MCC002_KNOWN_HIGH_CONFIDENCE_ERROR",
+      "input": {"trigger_signals": ["HIGH_CONFIDENCE_ERROR"], "known_failure_fiber": "equivalence_detection", "outcome_evidence_available": true},
+      "expected": "KNOWN_WEAKNESS",
+      "falsifier": "classifier invents a new ontology/operator gap instead of reopening the known fiber"
+    },
+    {
+      "id": "MCC003_UNCLASSIFIED_SINGLE_ERROR",
+      "input": {"trigger_signals": ["HIGH_CONFIDENCE_ERROR"], "known_failure_fiber": null, "repeated_unclassified_residuals": 1, "outcome_evidence_available": true},
+      "expected": "CALIBRATION_WEAKNESS",
+      "falsifier": "one unclassified error is promoted directly to a missing-ontology claim"
+    },
+    {
+      "id": "MCC004_REPEATED_UNCLASSIFIED_RESIDUAL",
+      "input": {"trigger_signals": ["REPEATED_UNCLASSIFIED_RESIDUAL"], "known_failure_fiber": null, "repeated_unclassified_residuals": 3, "outcome_evidence_available": true},
+      "expected": "ONTOLOGY_GAP_CANDIDATE",
+      "falsifier": "repeated residuals outside the incumbent taxonomy are silently forced into an existing fiber"
+    },
+    {
+      "id": "MCC005_METHOD_BASIS_INSUFFICIENT",
+      "input": {"trigger_signals": ["TARGET_UNREACHABLE"], "target_reachable": false, "epistemic_cut_identified": true, "incumbent_operator_can_resolve_cut": false, "outcome_evidence_available": true},
+      "expected": "METHOD_BASIS_GAP_CANDIDATE",
+      "falsifier": "system keeps retrying existing operators or claims the missing operator already exists"
+    },
+    {
+      "id": "MCC006_EXPLANATION_RECONSTRUCTION_FAILS",
+      "input": {"trigger_signals": ["EXPLANATION_RECONSTRUCTION"], "explanation_required_elements": ["building_blocks", "interaction", "observation_map"], "explanation_provided_elements": ["building_blocks", "observation_map"], "outcome_evidence_available": true},
+      "expected": "EXPLANATION_GAP",
+      "falsifier": "surface fluency is accepted as complete mechanistic understanding"
+    },
+    {
+      "id": "MCC007_GENERIC_DEBIASING_IS_NOT_COUNTERMODEL",
+      "input": {"trigger_signals": ["BIAS_RISK"], "countermodel_requested": true, "countermodel_supplied": false, "generic_be_unbiased_instruction_only": true, "outcome_evidence_available": true},
+      "expected": "INDEPENDENT_REVIEW_REQUIRED",
+      "falsifier": "generic be-unbiased language is counted as a successful countermodel challenge"
+    },
+    {
+      "id": "MCC008_SAME_CONTEXT_REVIEW_NOT_INDEPENDENT",
+      "input": {"trigger_signals": ["EXTERNAL_REVIEW"], "external_review_present": true, "external_review_process_independent": false, "external_review_lineage_independent": false, "outcome_evidence_available": true},
+      "expected": "INDEPENDENT_REVIEW_REQUIRED",
+      "falsifier": "same-context reviewer is credited as independent metacognitive evidence"
+    },
+    {
+      "id": "MCC009_DOMAIN_TRANSFER_NOT_MEASURED",
+      "input": {"trigger_signals": ["DOMAIN_TRANSFER"], "calibrated_domains": ["retrieval"], "target_domain": "mechanism_identification", "outcome_evidence_available": true},
+      "expected": "CANNOT_CHECK",
+      "falsifier": "calibration measured in one fiber is globalized to another fiber"
+    },
+    {
+      "id": "MCC010_REFLECTION_COST_GATE",
+      "input": {"trigger_signals": ["LOW_VALUE_UNCERTAINTY"], "reflection_cost": 10.0, "expected_failure_cost": 0.5, "outcome_evidence_available": true},
+      "expected": "NO_AUDIT_REQUIRED",
+      "falsifier": "system performs costly reflection despite no registered high-value trigger"
+    },
+    {
+      "id": "MCC011_CALIBRATION_NOT_CAPABILITY",
+      "input": {"trigger_signals": ["FEEDBACK_UPDATE"], "calibration_improved": true, "task_sensitivity_improved": false, "outcome_evidence_available": true},
+      "expected": "CALIBRATED_NO_NEW_GAP",
+      "falsifier": "improved calibration alone is represented as improved underlying task capability"
+    },
+    {
+      "id": "MCC012_MISSING_OUTCOME_EVIDENCE",
+      "input": {"trigger_signals": ["HIGH_CONFIDENCE_ERROR"], "outcome_evidence_available": false},
+      "expected": "CANNOT_CHECK",
+      "falsifier": "self-report substitutes for missing external correctness evidence"
+    },
+    {
+      "id": "MCC013_UNREACHABLE_BUT_KNOWN_OPERATOR_EXISTS",
+      "input": {"trigger_signals": ["TARGET_UNREACHABLE"], "target_reachable": false, "epistemic_cut_identified": true, "incumbent_operator_can_resolve_cut": true, "known_failure_fiber": "experiment_design", "outcome_evidence_available": true},
+      "expected": "KNOWN_WEAKNESS",
+      "falsifier": "system invents a new operator when a known unresolved operator/fiber already covers the gap"
+    },
+    {
+      "id": "MCC014_CLEAN_AUDIT",
+      "input": {"trigger_signals": ["HIGH_VALUE_CHECKPOINT"], "outcome_evidence_available": true, "known_failure_fiber": null, "repeated_unclassified_residuals": 0, "explanation_required_elements": ["assumptions", "mechanism", "falsifier"], "explanation_provided_elements": ["assumptions", "mechanism", "falsifier"], "countermodel_requested": true, "countermodel_supplied": true, "external_review_present": true, "external_review_process_independent": true, "external_review_lineage_independent": true},
+      "expected": "CALIBRATED_NO_NEW_GAP",
+      "falsifier": "clean audit must not manufacture a weakness simply to appear reflective"
+    }
+  ],
+  "blocking_invariants": [
+    "the audit cannot mint scientific truth, mechanism authority, or method promotion",
+    "unknown-operator hypotheses remain candidates until separately benchmarked",
+    "self-reported confidence cannot override external outcome evidence",
+    "domain-specific calibration cannot be silently generalized",
+    "same-context reflection cannot count as independent review",
+    "generic reflection cannot erase immutable negative history"
+  ],
+  "headline_null": "If structured metacognitive audits do not discover held-out missing operator/ontology classes better than ordinary same-context reflection under matched cost, this layer remains an explanatory paper construct and should not add runtime complexity."
+}
