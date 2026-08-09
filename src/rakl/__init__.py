@@ -110,6 +110,12 @@ from .promotion import (
     PromotionVerdict,
     RequiredCheck,
 )
+from .promotion_attestation import (
+    PromotionAttestationPacket,
+    PromotionAttestationReport,
+    PromotionAttestationVerdict,
+    attest_promotion_state,
+)
 from .retrieval_benchmark import (
     BenchmarkVerdict,
     CorpusArtifactIdentity,
@@ -237,6 +243,9 @@ __all__ = [
     "PlatformSubjectObservation",
     "ProbeFamily",
     "Projection",
+    "PromotionAttestationPacket",
+    "PromotionAttestationReport",
+    "PromotionAttestationVerdict",
     "PromotionDecision",
     "PromotionGate",
     "PromotionPacket",
@@ -260,6 +269,7 @@ __all__ = [
     "WitnessReport",
     "WitnessVerdict",
     "assess_generator_family",
+    "attest_promotion_state",
     "canonical_source_closure",
     "compare_contexts",
     "compare_retrieval_routes",
