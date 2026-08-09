@@ -1,0 +1,97 @@
+{
+  "delta_id": "RAKL_META_FIBER_BACKLOG_003",
+  "date": "2026-08-09",
+  "base_backlog": "research/META_FIBER_BACKLOG.json",
+  "base_backlog_sha": "f160e5caee2d2cd9266630cc75e44fa2e225b2c4",
+  "global_state": "ACTIVE_NON_FLAT",
+  "updates": [
+    {
+      "fiber_id": "META_N016_PREPROMOTION_STAGING",
+      "old_status": "NATIVE_PROCESS_RESIDUAL_OPEN",
+      "new_status": "IMPLEMENTED_V1_EXACT_SHA_STAGING_CI_PASS",
+      "evidence": {
+        "frozen_incumbent": "3bddb6a43a6206dc4a8360b0c769af1bc3ad6572",
+        "candidate_ref": "self-rakl/round-003-candidate",
+        "candidate_sha": "b84322e89e7d33058f931f42f13886c7d045db81",
+        "candidate_ci_run": 31286926152,
+        "candidate_ci_job": 93177332569,
+        "pytest": "45 passed in 2.73s",
+        "main_before_verdict": "3bddb6a43a6206dc4a8360b0c769af1bc3ad6572",
+        "promotion": "non-forced fast-forward only after exact candidate CI success"
+      },
+      "next_discriminator": "Stage a deliberately failing candidate and a protected-evaluator-change candidate; prove operationally that main remains on the incumbent in both worlds."
+    },
+    {
+      "fiber_id": "META_N007_RAKLBENCH",
+      "old_status": "SPEC_DEFINED_NOT_EXECUTABLE_COMPLETE",
+      "new_status": "EXECUTABLE_PARTIAL_PROPERTY_METAMORPHIC_V1",
+      "evidence": "Added B13 transactional-promotion cases plus generated/metamorphic invariants using Hypothesis; exact candidate CI passed.",
+      "next_discriminator": "Add stateful long-horizon generated action sequences spanning branch/retry/supersession events and preserve minimized failing sequences."
+    },
+    {
+      "fiber_id": "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+      "old_status": "NEW_RESEARCHED_NOT_IMPLEMENTED",
+      "new_status": "RESEARCHED_MULTI_ROUTE_NOT_IMPLEMENTED",
+      "new_routes": ["W3C PROV", "ProvSQL provenance circuits", "nanopublications"],
+      "retained_addition": "Separate atomic assertion content from exact evidence/provenance and execution/publication metadata; keep derivation lineage composable but separate from evidence authority.",
+      "next_discriminator": "Known papers with alternative derivation paths, unsupported claims, contradictory evidence and omitted evidence; recover exact claim-evidence spans plus a provenance DAG without upgrading lineage into truth."
+    }
+  ],
+  "new_fibers": [
+    {
+      "fiber_id": "META_N017_PROVENANCE_ALGEBRA",
+      "priority": 2,
+      "status": "NEW_RESEARCHED_NOT_IMPLEMENTED",
+      "question": "How should RAKL compose and query multiple alternative claim/evidence derivation paths without flattening them or confusing provenance with evidence strength?",
+      "incumbent": "free-form Projection.source and Relation.evidence identifiers plus append-only memory",
+      "research_routes": ["W3C PROV", "provenance semirings", "ProvSQL", "workflow provenance", "nanopublications", "causal provenance"],
+      "next_discriminator": "Known derivation DAGs with two sufficient evidence paths, shared upstream evidence, contradictory paths and one invalid source; recover minimal derivations while keeping authority/independence separate."
+    },
+    {
+      "fiber_id": "META_N018_PROPERTY_BASED_RAKLBENCH",
+      "priority": 2,
+      "status": "IMPLEMENTED_ATOMIC_V1_LONG_HORIZON_OPEN",
+      "question": "Which RAKL invariants admit generated/metamorphic worlds, and how can failing worlds be minimized without encoding benchmark-answer bias?",
+      "incumbent": "Hypothesis tests for context symmetry, assumptions-as-context, replay idempotency, immutable projection identity and relation-order invariance",
+      "research_routes": ["property-based testing", "metamorphic testing", "model-based/stateful testing", "delta debugging", "fuzzing", "scientific software testing"],
+      "next_discriminator": "Generate stateful RAKL action histories, inject one invariant violation, and require automatic discovery plus a minimized causal sequence."
+    },
+    {
+      "fiber_id": "META_N019_DURABLE_RESEARCH_EXECUTION",
+      "priority": 2,
+      "status": "NEW_RESEARCHED_PROTOCOL_V0",
+      "question": "How should long-running RAKL separate replayable reasoning from irreversible research side effects so retries and interruptions do not duplicate commits, experiments or semantic records?",
+      "incumbent": "append-only receipts and immutable memory without an explicit workflow/activity execution contract",
+      "research_routes": ["Temporal durable execution", "event sourcing", "sagas", "transactional outbox", "idempotency keys", "scientific workflow systems"],
+      "next_discriminator": "Simulate interruption immediately before/after a commit or experiment side effect; replay must reconstruct the same authorization state and never duplicate the side effect."
+    },
+    {
+      "fiber_id": "META_N020_EVALUATOR_INTEGRITY",
+      "priority": 1,
+      "status": "NEW_IMPLEMENTED_GUARD_V0",
+      "question": "How can a self-modifying research method improve its evaluators without allowing a challenger to weaken the validator that certifies that same challenger?",
+      "incumbent": "frozen protected evaluator fingerprints + exact-SHA trusted checks; evaluator evolution requires parent/frozen or independent validation path",
+      "research_routes": ["proof-carrying code", "translation validation", "diverse double compilation", "reproducible builds", "benchmark governance", "Goodhart/reward-hacking literature"],
+      "next_discriminator": "Candidate deliberately edits a test or CI rule to hide a planted failure; parent validator must reject it despite candidate-reported green status."
+    }
+  ],
+  "native_residuals_closed_scoped": [
+    {
+      "id": "CONTEXT_ASSUMPTIONS_OMITTED",
+      "change": "assumptions are now a default Context comparison/key coordinate",
+      "evidence": "property/metamorphic tests passed in exact candidate CI"
+    },
+    {
+      "id": "PROJECTION_ID_OVERWRITE",
+      "change": "identical replay is idempotent; different content cannot reuse an existing projection_id",
+      "evidence": "property/metamorphic tests passed in exact candidate CI"
+    }
+  ],
+  "saturation_update": {
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "state": "ACTIVE_NON_FLAT",
+    "reason": "New retained objects and three new child fibers survived semantic deduplication."
+  },
+  "instruction_for_next_ai": "Read this delta together with the base backlog and round-003 receipt. Prefer N020 hostile evaluator-integrity testing, N015/N017 executable provenance packets, N006 expected-information-gain fixtures, or N019 retry-state benchmarks. Do not repeat the round-003 release/property/provenance survey unless a new residual reopens it."
+}
