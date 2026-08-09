@@ -1,0 +1,59 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_008_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+      "status": "IMPLEMENTED_SUPPORT_V1_NOT_ACTIVATED_IN_TRUSTED_WORKFLOW",
+      "evidence": "Frozen worlds now distinguish source-head evaluation from integration-result evaluation and separately bind frozen source/base, platform integration revision/tree and actually executed revision/tree.",
+      "implementation": "FrozenSubjectSpec + PlatformSubjectObservation + ExecutionSubjectObservation + verify_execution_subject; fail-closed INVALID/CANNOT_CHECK plus explicit tree-only partial identification.",
+      "remaining_gap": "The trusted-parent workflow does not yet produce these typed observations, so this module is supporting infrastructure rather than active promotion authority. Activation requires a separate frozen workflow benchmark."
+    },
+    {
+      "fiber_id": "META_N028_SUBJECT_SCOPE_AUTHORITY",
+      "status": "NEW_OPEN",
+      "problem": "A verified tree/content state and a verified revision/history object support different downstream claims. RAKL lacks a registry that says which identity scope is sufficient for each validator or promotion claim.",
+      "target": "Add claim-scoped authority requirements so tree-only evidence can authorize content-state claims without authorizing exact-revision/reproducibility claims.",
+      "required_known_answer_worlds": [
+        "same tree under different commits is sufficient for a content-only deterministic function but insufficient for revision provenance",
+        "same revision label with mismatching executed tree is invalid",
+        "tree-only partial identification remains visible through downstream synthesis",
+        "validator explicitly requiring revision identity rejects tree-only evidence"
+      ]
+    },
+    {
+      "fiber_id": "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+      "status": "NEW_NATIVE_RESIDUAL_OPEN",
+      "problem": "The current test workflow references actions by major tags. The round-008 execution log resolved those tags to concrete action commits at runtime, so unchanged workflow text does not freeze the evaluator's transitive action implementation identity.",
+      "target": "Freeze/attest evaluator dependencies and runtime resolution, preferably with immutable action SHAs or externally observed resolved digests, without confusing dependency provenance with test correctness.",
+      "required_known_answer_worlds": [
+        "same workflow text with a moved action tag is detected as evaluator-identity drift",
+        "full-length pinned action commits yield stable action identity",
+        "runner/toolchain image drift is surfaced separately from repository evaluator code drift",
+        "dependency attestation with missing or candidate-self-reported resolution returns CANNOT_CHECK",
+        "legitimate dependency upgrade requires a new frozen evaluator benchmark rather than silent inheritance"
+      ]
+    },
+    {
+      "fiber_id": "META_N027_IDENTITY_ASSERTION_AUTHORITY",
+      "status": "OPEN_UNCHANGED",
+      "note": "Round 008 reinforces that subject identity requires external evidence, but does not solve authority ranking for dataset/content identity assertions."
+    },
+    {
+      "fiber_id": "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+      "status": "OPEN_UNCHANGED",
+      "note": "Exact claim-to-evidence spans remain the highest-value scientific provenance target after execution/evaluator identity is stabilized."
+    }
+  ],
+  "next_priority_order": [
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N024_INTEGRATION_SUBJECT_IDENTITY_WORKFLOW_ACTIVATION",
+    "META_N027_IDENTITY_ASSERTION_AUTHORITY",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "META_N028_SUBJECT_SCOPE_AUTHORITY",
+    "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+    "META_N022_GOAL_ROBUST_INFORMATION_GAIN",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N013_ASSUMPTION_TRUTH_MAINTENANCE"
+  ]
+}
