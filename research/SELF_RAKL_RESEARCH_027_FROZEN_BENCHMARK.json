@@ -1,0 +1,101 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_027_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "POST_PROMOTION_REF_STATE_ATTESTATION_AND_ROUND026_REPAIR",
+  "frozen_on_observed_main": "a63babbe08a8de11ff6b927ed81150391a1467e9",
+  "reason": "The active main ref contradicts the existing Round-026 validation claim: the claimed promoted SHA is not resolvable, PR #3 is closed/unmerged, and active protected workflows still contain mutable action tags. Freeze the discriminator before any behavioral repair or replay.",
+  "blocking_invariants": [
+    "non_fabrication",
+    "negative_history_preservation",
+    "exact_subject_identity",
+    "reproducibility",
+    "scope_and_authority_honesty"
+  ],
+  "distinctions_under_test": [
+    "promotion_gate_decision != ref_update_event",
+    "ref_update_event != active_ref_identity",
+    "candidate_ci_success != active_main_validation",
+    "validation_document_presence != claimed_subject_reachability",
+    "postpromotion_authority requires externally observed ref/subject facts"
+  ],
+  "known_answer_worlds": [
+    {
+      "id": "W01_GATE_GREEN_REF_NEVER_MOVED",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": true, "main_descends_from_candidate": false, "candidate_ci_green": true},
+      "expected": "NOT_PROMOTED"
+    },
+    {
+      "id": "W02_CLAIMED_SHA_NONEXISTENT",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": false, "main_descends_from_candidate": false},
+      "expected": "REFUTED_CLAIM"
+    },
+    {
+      "id": "W03_PR_CLOSED_UNMERGED_MAIN_LACKS_CANDIDATE",
+      "facts": {"candidate_exists": true, "pr_merged": false, "main_descends_from_candidate": false},
+      "expected": "NOT_PROMOTED"
+    },
+    {
+      "id": "W04_CANDIDATE_EXISTS_NOT_ANCESTOR_OF_MAIN",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": true, "main_descends_from_candidate": false},
+      "expected": "NOT_ACTIVE"
+    },
+    {
+      "id": "W05_MAIN_EXACTLY_CANDIDATE",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": true, "observed_main_equals_candidate": true, "required_active_paths_match": true},
+      "expected": "ACTIVE_PROMOTION_CONFIRMED"
+    },
+    {
+      "id": "W06_MAIN_DESCENDANT_OF_CANDIDATE",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": true, "main_descends_from_candidate": true, "required_active_paths_match": true},
+      "expected": "ACTIVE_PROMOTION_CONFIRMED"
+    },
+    {
+      "id": "W07_VALIDATION_DOC_PRESENT_CANDIDATE_CONTENT_ABSENT",
+      "facts": {"main_descends_from_candidate": false, "validation_doc_present": true, "required_active_paths_match": false},
+      "expected": "REFUTED_CLAIM"
+    },
+    {
+      "id": "W08_STALE_CANDIDATE_CI_ONLY",
+      "facts": {"candidate_ci_green": true, "postpromotion_ci_exact_active_main": false, "main_descends_from_candidate": false},
+      "expected": "NOT_PROMOTED"
+    },
+    {
+      "id": "W09_ACTIVE_CONTENT_MISMATCH",
+      "facts": {"main_descends_from_candidate": true, "required_active_paths_match": false},
+      "expected": "REFUTED_CLAIM"
+    },
+    {
+      "id": "W10_MISSING_ANCESTRY_OBSERVATION",
+      "facts": {"candidate_exists": true, "claimed_promoted_exists": true, "main_descends_from_candidate": null},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W11_CLAIMED_PROMOTED_SHA_DIFFERS_FROM_CANDIDATE_WITHOUT_SUPERSESSION",
+      "facts": {"claimed_matches_candidate": false, "explicit_supersession": false},
+      "expected": "REFUTED_CLAIM"
+    },
+    {
+      "id": "W12_VALID_DESCENDANT_WITH_SEPARATE_POSTVALIDATION_COMMIT",
+      "facts": {"claimed_matches_candidate": true, "main_descends_from_candidate": true, "required_active_paths_match": true, "postpromotion_ci_exact_active_main": true},
+      "expected": "ACTIVE_PROMOTION_CONFIRMED"
+    },
+    {
+      "id": "W13_NEGATIVE_HISTORY_ERASED",
+      "facts": {"main_descends_from_candidate": true, "required_active_paths_match": true, "history_preserved": false},
+      "expected": "REFUTED_CLAIM"
+    },
+    {
+      "id": "W14_OBSERVED_ACTIVE_REF_CHANGED_DURING_ATTESTATION",
+      "facts": {"main_descends_from_candidate": true, "required_active_paths_match": true, "ref_observation_stable": false},
+      "expected": "CANNOT_CHECK"
+    }
+  ],
+  "registered_meta_qois": {
+    "false_positive_promotion_attestations": {"incumbent": 1, "required": 0, "direction": "lower_is_better"},
+    "active_ref_truth_coverage": {"incumbent": 0, "required": 1, "direction": "higher_is_better"},
+    "negative_history_preservation": {"blocking": true, "required": true},
+    "candidate_ci_exactness": {"blocking": true, "required": true}
+  },
+  "adversarial_falsifier": "If a simpler repository-native ref/ancestry check plus immutable erratum provides the same fail-closed guarantees with less machinery, retain the simpler mechanism and record the richer architecture as unnecessary.",
+  "authority_boundary": "This benchmark can validate repository promotion/ref-state truth. It cannot establish scientific truth, evaluator sufficiency, runner immutability, or empirical RAKL superiority."
+}
