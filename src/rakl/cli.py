@@ -15,6 +15,18 @@ from .reference_profile import (
     assess_reference_profile,
     get_reference_profile,
 )
+from .release_manifest import (
+    ReleaseArtifactSpec,
+    ReleaseManifest,
+    ReleaseManifestVerdict,
+    create_release_manifest,
+    verify_release_manifest,
+)
+from .token_budget import (
+    PacketBudgetVerdict,
+    TokenCounterContract,
+    certify_packet_budget,
+)
 
 
 def _tristate(value: str) -> bool | None:
@@ -34,10 +46,7 @@ def _print_json(value: object, *, stream: TextIO | None = None) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="python -m rakl",
-        description="RAKL provider-neutral research runtime",
-    )
+    parser = argparse.ArgumentParser(prog="python -m rakl", description="RAKL provider-neutral research runtime")
     sub = parser.add_subparsers(dest="command", required=True)
 
     profiles = sub.add_parser("profiles", help="list built-in model reference profiles")
@@ -106,6 +115,27 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--output")
     run.set_defaults(handler=_cmd_run)
 
+    token = sub.add_parser("certify-packet", help="strictly certify packet token budget with an executed counter")
+    token.add_argument("root")
+    token.add_argument("packet")
+    token.add_argument("--counter-id", required=True)
+    token.add_argument("--counter-revision", required=True)
+    token.add_argument("--exec", dest="executable", required=True)
+    token.add_argument("--arg", action="append", default=[])
+    token.add_argument("--timeout", type=float, default=30.0)
+    token.set_defaults(handler=_cmd_certify_packet)
+
+    manifest = sub.add_parser("release-manifest", help="create a deterministic release artifact identity manifest")
+    manifest.add_argument("root")
+    manifest.add_argument("--source-revision", required=True)
+    manifest.add_argument("--artifact", action="append", required=True, help="ROLE:relative/path")
+    manifest.add_argument("--output", required=True)
+    manifest.set_defaults(handler=_cmd_release_manifest)
+
+    verify = sub.add_parser("verify-release", help="verify a release artifact identity manifest")
+    verify.add_argument("root")
+    verify.add_argument("manifest")
+    verify.set_defaults(handler=_cmd_verify_release)
     return parser
 
 
@@ -117,70 +147,42 @@ def _cmd_profiles(args: argparse.Namespace) -> int:
 
 def _cmd_check_profile(args: argparse.Namespace) -> int:
     profile = get_reference_profile(args.profile)
-    declaration = ModelCapabilityDeclaration(
-        model_id=args.model_id,
-        context_window_tokens=args.context_window,
-        instruction_following=args.instruction_following,
-        parseable_json=args.json_output,
-        native_tool_calls=args.native_tool_calls,
-    )
+    declaration = ModelCapabilityDeclaration(args.model_id, args.context_window, args.instruction_following, args.json_output, args.native_tool_calls)
     assessment = assess_reference_profile(profile, declaration)
     _print_json(assessment.to_dict())
     return 0 if assessment.compatible else 3
 
 
 def _cmd_init(args: argparse.Namespace) -> int:
-    project = RAKLProject.create(
-        args.root,
-        project_id=args.project_id,
-        reference_profile=args.profile,
-    )
+    project = RAKLProject.create(args.root, project_id=args.project_id, reference_profile=args.profile)
     _print_json(project.status())
     return 0
 
 
 def _cmd_ingest(args: argparse.Namespace) -> int:
     project = RAKLProject.open(args.root)
-    record = project.ingest_file(
-        args.file,
-        record_id=args.record_id,
-        token_cost=args.tokens,
-        kind=args.kind,
-        semantic_tags=args.tag,
-        fiber_ids=args.fiber,
-        coverage_atoms=args.coverage,
-        mandatory=args.mandatory,
-    )
+    record = project.ingest_file(args.file, record_id=args.record_id, token_cost=args.tokens, kind=args.kind, semantic_tags=args.tag, fiber_ids=args.fiber, coverage_atoms=args.coverage, mandatory=args.mandatory)
     _print_json(record.to_dict())
     return 0
 
 
 def _cmd_status(args: argparse.Namespace) -> int:
-    project = RAKLProject.open(args.root)
-    _print_json(project.status())
+    _print_json(RAKLProject.open(args.root).status())
     return 0
 
 
 def _cmd_doctor(args: argparse.Namespace) -> int:
-    project = RAKLProject.open(args.root)
-    report = project.doctor()
+    report = RAKLProject.open(args.root).doctor()
     _print_json(report.to_dict())
     return 0 if report.healthy else 4
 
 
 def _cmd_packet(args: argparse.Namespace) -> int:
     project = RAKLProject.open(args.root)
-    report = project.compile_task_packet(
-        operation=args.operation,
-        question=args.question,
-        budget_tokens=args.budget,
-        target_fibers=args.fiber,
-        required_coverage_atoms=args.require,
-    )
+    report = project.compile_task_packet(operation=args.operation, question=args.question, budget_tokens=args.budget, target_fibers=args.fiber, required_coverage_atoms=args.require)
     payload = report.to_dict()
     if args.output and report.verdict == TaskPacketVerdict.READY and report.packet is not None:
-        output = Path(args.output)
-        output.parent.mkdir(parents=True, exist_ok=True)
+        output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(project.canonical_packet_json(report.packet) + "\n", encoding="utf-8")
         payload["output"] = str(output)
     _print_json(payload)
@@ -191,57 +193,55 @@ def _cmd_run(args: argparse.Namespace) -> int:
     project = RAKLProject.open(args.root)
     packet_bytes = Path(args.packet).read_bytes()
     config = json.loads(args.config_json)
-    if not isinstance(config, dict):
-        raise ValueError("--config-json must decode to a JSON object")
-
-    env_names = tuple(sorted(set(args.env)))
-    environment: dict[str, str] = {}
-    missing: list[str] = []
+    if not isinstance(config, dict): raise ValueError("--config-json must decode to a JSON object")
+    env_names = tuple(sorted(set(args.env))); environment = {}; missing = []
     for name in env_names:
-        if name in os.environ:
-            environment[name] = os.environ[name]
-        else:
-            missing.append(name)
-    if missing:
-        raise ValueError(f"missing declared environment variables: {missing}")
-
-    contract = RunnerContract(
-        runner_id=args.runner_id,
-        model_id=args.model_id,
-        model_version=args.model_version,
-        argv=(args.executable, *tuple(args.arg)),
-        timeout_seconds=args.timeout,
-        expects_json=not args.no_json_protocol,
-        retry_safe=args.retry_safe,
-        allowed_env_names=env_names,
-        environment_revision=args.env_revision,
-    )
+        if name in os.environ: environment[name] = os.environ[name]
+        else: missing.append(name)
+    if missing: raise ValueError(f"missing declared environment variables: {missing}")
+    contract = RunnerContract(args.runner_id, args.model_id, args.model_version, (args.executable, *tuple(args.arg)), args.timeout, not args.no_json_protocol, args.retry_safe, env_names, args.env_revision)
     manager = ExecutionManager(project)
-    result = manager.execute(
-        packet_bytes=packet_bytes,
-        runner=contract,
-        generation_config=config,
-        execution_nonce=args.nonce,
-        environment=environment,
-    )
+    result = manager.execute(packet_bytes=packet_bytes, runner=contract, generation_config=config, execution_nonce=args.nonce, environment=environment)
     payload = result.to_dict()
     if args.output and result.receipt is not None and result.receipt.stdout_sha256 is not None:
-        output = Path(args.output)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(manager.read_stdout(result.receipt))
-        payload["output"] = str(output)
+        output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True); output.write_bytes(manager.read_stdout(result.receipt)); payload["output"] = str(output)
     _print_json(payload)
     return 0 if result.status == ExecutionStatus.COMPLETED else 6
 
 
+def _cmd_certify_packet(args: argparse.Namespace) -> int:
+    project = RAKLProject.open(args.root)
+    profile = get_reference_profile(project.manifest.reference_profile)
+    counter = TokenCounterContract(args.counter_id, args.counter_revision, (args.executable, *tuple(args.arg)), args.timeout)
+    report = certify_packet_budget(Path(args.packet).read_bytes(), profile, counter=counter)
+    _print_json(report.to_dict())
+    return 0 if report.verdict == PacketBudgetVerdict.WITHIN_BUDGET else 7
+
+
+def _parse_artifacts(values: list[str]) -> list[ReleaseArtifactSpec]:
+    result = []
+    for value in values:
+        if ":" not in value: raise ValueError("--artifact must be ROLE:relative/path")
+        role, path = value.split(":", 1); result.append(ReleaseArtifactSpec(role=role, path=path))
+    return result
+
+
+def _cmd_release_manifest(args: argparse.Namespace) -> int:
+    manifest = create_release_manifest(args.root, source_revision=args.source_revision, artifacts=_parse_artifacts(args.artifact))
+    output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True); output.write_text(manifest.canonical_json + "\n", encoding="utf-8")
+    _print_json({"manifest_sha256": manifest.manifest_sha256, "artifact_count": len(manifest.artifacts), "output": str(output), "authority_scope": manifest.authority_scope})
+    return 0
+
+
+def _cmd_verify_release(args: argparse.Namespace) -> int:
+    manifest = ReleaseManifest.from_dict(json.loads(Path(args.manifest).read_text("utf-8")))
+    report = verify_release_manifest(args.root, manifest)
+    _print_json(report.to_dict())
+    return 0 if report.verdict == ReleaseManifestVerdict.VERIFIED else 8
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    try:
-        return int(args.handler(args))
+    parser = build_parser(); args = parser.parse_args(argv)
+    try: return int(args.handler(args))
     except (ProjectRuntimeError, RuntimeError, ValueError, KeyError, OSError, json.JSONDecodeError) as exc:
-        _print_json(
-            {"error": type(exc).__name__, "message": str(exc)},
-            stream=sys.stderr,
-        )
-        return 2
+        _print_json({"error": type(exc).__name__, "message": str(exc)}, stream=sys.stderr); return 2
