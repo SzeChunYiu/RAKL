@@ -1,0 +1,80 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_030_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "base_main_sha": "93ad54f362a590d47d58c5b7e619e811048edf25",
+  "selected_fiber": "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+  "question": "Can a minimal fail-closed exact claim-to-source-span provenance contract improve evidence identity and failure localization without pretending that locator fidelity establishes semantic support or scientific authority?",
+  "frozen_before_implementation": true,
+  "class": "A_SUPPORT_LAYER",
+  "scope": {
+    "included": [
+      "immutable source snapshot identity",
+      "unicode-code-point text span offsets",
+      "exact quote plus optional prefix/suffix anchoring",
+      "selector freeze chronology",
+      "separate externally supplied semantic evidence judgment",
+      "scope/link identity consistency",
+      "support/refutation/insufficient review outcomes",
+      "authority non-escalation"
+    ],
+    "excluded": [
+      "automatic claim extraction",
+      "automatic semantic entailment",
+      "citation influence or causal generation attribution",
+      "multi-span evidence aggregation",
+      "scientific target promotion",
+      "routing or retrieval policy changes"
+    ]
+  },
+  "prior_art_constraints": [
+    "W3C Web Annotation already specifies text quote and text position selectors; selector machinery is not claimed as novel.",
+    "CLAIM-BENCH and EvidenceBench already benchmark claim/evidence linking and evidence extraction; generic claim-evidence mapping is not claimed as novel.",
+    "PaperTrail already studies claim-evidence provenance interfaces for scholarly QA; granular scholarly grounding is not claimed as novel.",
+    "Recent source-aware verification work distinguishes source ownership from pooled factual support; RAKL must keep source identity separate from semantic judgment.",
+    "RAKL candidate contribution is limited to fail-closed immutable span/source identity plus chronology and authority boundaries integrated with RAKL evidence governance."
+  ],
+  "blocking_meta_qois": {
+    "stale_or_wrong_source_false_pass_rate": 0,
+    "invalid_or_posthoc_selector_false_pass_rate": 0,
+    "semantic_support_without_review_rate": 0,
+    "authority_escalation_rate": 0,
+    "known_answer_world_accuracy": 1.0,
+    "negative_result_preservation": true,
+    "determinism_on_stable_inputs": true
+  },
+  "nonblocking_meta_qois": [
+    "failure_localization_correctness",
+    "valid_locator_recall",
+    "explicit separation of locator, semantic judgment and authority",
+    "implementation simplicity"
+  ],
+  "hostile_worlds": [
+    {"id":"W01","case":"exact source hash, valid offsets and exact quote; no semantic judgment","expected":"LOCATOR_VERIFIED_SEMANTICS_UNREVIEWED"},
+    {"id":"W02","case":"actual source content differs from frozen source hash","expected":"CANNOT_CHECK_STALE_SOURCE"},
+    {"id":"W03","case":"link source hash differs from registered snapshot hash","expected":"TRIAL_INVALID_SOURCE_IDENTITY_MISMATCH"},
+    {"id":"W04","case":"negative or reversed text offsets","expected":"TRIAL_INVALID_SELECTOR_BOUNDS"},
+    {"id":"W05","case":"offset slice does not equal exact quote","expected":"TRIAL_INVALID_EXACT_MISMATCH"},
+    {"id":"W06","case":"declared prefix does not match immediate source context","expected":"TRIAL_INVALID_PREFIX_MISMATCH"},
+    {"id":"W07","case":"declared suffix does not match immediate source context","expected":"TRIAL_INVALID_SUFFIX_MISMATCH"},
+    {"id":"W08","case":"same quote appears twice but declared offsets identify one exact occurrence","expected":"LOCATOR_VERIFIED_SEMANTICS_UNREVIEWED"},
+    {"id":"W09","case":"non-ASCII text indexed by Unicode code points","expected":"LOCATOR_VERIFIED_SEMANTICS_UNREVIEWED"},
+    {"id":"W10","case":"selector chronology explicitly says locator was frozen after semantic review/outcome","expected":"TRIAL_INVALID_POSTHOC_SELECTOR"},
+    {"id":"W11","case":"locator valid but semantic judgment absent","expected":"NO_SEMANTIC_SUPPORT_AUTHORITY"},
+    {"id":"W12","case":"semantic judgment exists but known-answer validation state is unknown","expected":"CANNOT_CHECK_SEMANTIC_REVIEW"},
+    {"id":"W13","case":"semantic judgment was not frozen before downstream synthesis","expected":"TRIAL_INVALID_POSTHOC_SEMANTIC_REVIEW"},
+    {"id":"W14","case":"semantic judgment references a different claim or evidence link","expected":"TRIAL_INVALID_JUDGMENT_IDENTITY_MISMATCH"},
+    {"id":"W15","case":"semantic judgment scope differs from frozen claim scope","expected":"TRIAL_INVALID_SCOPE_MISMATCH"},
+    {"id":"W16","case":"proposed SUPPORTS link receives validated REFUTES review","expected":"REVIEW_CONTRADICTION_REFUTATION_PRESERVED"},
+    {"id":"W17","case":"validated semantic review returns INSUFFICIENT","expected":"REVIEWED_INSUFFICIENT_EVIDENCE"},
+    {"id":"W18","case":"exact locator plus validated pre-synthesis SUPPORTS judgment","expected":"REVIEWED_SUPPORT_PROPOSAL_ONLY"},
+    {"id":"W19","case":"exact locator plus validated pre-synthesis REFUTES judgment","expected":"REVIEWED_REFUTATION_PROPOSAL_ONLY"},
+    {"id":"W20","case":"same semantic text is copied into a different source snapshot/version","expected":"SOURCE_HASH_PREVENTS_SILENT_RELOCATION"},
+    {"id":"W21","case":"valid semantic review attempts to grant target/decision authority","expected":"AUTHORITY_NON_ESCALATION"},
+    {"id":"W22","case":"identical stable inputs are evaluated repeatedly","expected":"DETERMINISTIC_REPORT"}
+  ],
+  "acceptance": {
+    "support_layer": "All blocking meta-QoIs must pass on the frozen hostile worlds. The implementation may validate locator identity and externally supplied review records only; it must not infer entailment or grant target/scientific authority.",
+    "real_utility": "CANNOT_CHECK until a frozen real CLAIM-BENCH/EvidenceBench-like packet compares citation/source-only, exact-span provenance, and exact-span-plus-semantic-review approaches under matched model/resource/evaluator budgets.",
+    "falsifier": "If exact span provenance does not reduce wrong-source/stale-span errors or improve failure localization relative to simpler source-level citations on real scientific packets, retain it as optional audit metadata rather than mandatory decision-layer complexity."
+  }
+}
