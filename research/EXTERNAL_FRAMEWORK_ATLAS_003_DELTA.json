@@ -1,0 +1,82 @@
+{
+  "delta_id": "RAKL_METHOD_EXTERNAL_FRAMEWORK_ATLAS_003",
+  "date": "2026-08-09",
+  "base_atlas": "research/EXTERNAL_FRAMEWORK_ATLAS.json",
+  "base_atlas_sha": "2c069bcc3d4222b05006b1435b89c1933a7f50fb",
+  "rule": "These are contextual projections on atomic RAKL method fibers. This delta is append-only evidence and must be folded into a future normalized atlas without deleting the source-specific scope guards.",
+  "entries": [
+    {
+      "id": "github-required-status-checks",
+      "source": "https://github.com/github/docs/blob/main/content/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets.md",
+      "source_class": "official first-party documentation",
+      "facets": ["promotion staging", "required CI", "trusted validation source", "merge safety"],
+      "retained_projection": "validate a candidate before promotion; require successful checks and optionally bind an expected source integration",
+      "rakl_extension": "bind checks to the exact candidate SHA, freeze evaluator fingerprints, require active main to remain on the incumbent until verdict, then non-forced fast-forward",
+      "cannot_see": "a required-check system alone does not prove scientific validity and does not prevent self-certification if the candidate is allowed to weaken the evaluator",
+      "status": "ADOPTED_SCOPED"
+    },
+    {
+      "id": "hypothesis-property-based-testing",
+      "source": "https://github.com/HypothesisWorks/hypothesis/blob/master/paper.md",
+      "source_class": "author-maintained research software/paper",
+      "facets": ["benchmarking", "generated hostile cases", "counterexample reduction", "metamorphic invariants"],
+      "retained_projection": "state properties over input families and generate examples that try to refute them; minimize/reduce failures into useful counterexamples",
+      "rakl_extension": "use property/metamorphic tests for RAKL invariants such as context symmetry, relation-order invariance, retry idempotency and immutable semantic identity",
+      "cannot_see": "generated software invariants do not substitute for source-grounded scientific benchmarks or guarantee the chosen invariant is epistemically correct",
+      "status": "ADOPTED_RAKLBENCH"
+    },
+    {
+      "id": "w3c-prov",
+      "source": "https://github.com/w3c/prov",
+      "source_class": "official standards working-group repository",
+      "facets": ["provenance", "derivation lineage", "activity/entity/agent separation", "reconstruction"],
+      "retained_projection": "represent derivation and production history as a first-class provenance graph rather than burying lineage in prose",
+      "cannot_see": "provenance does not by itself establish evidence truth, independence, strength or causal identification",
+      "status": "ADOPT_NEXT"
+    },
+    {
+      "id": "provsql-provenance-algebra",
+      "source": "https://github.com/PierreSenellart/provsql",
+      "source_class": "author-maintained research software",
+      "facets": ["compositional provenance", "alternative derivations", "provenance circuits", "uncertainty computation"],
+      "retained_projection": "keep alternative derivation paths in an inspectable DAG/circuit and compose lineage algebraically instead of flattening it to one citation list",
+      "cannot_see": "a provenance semiring/circuit encodes derivational structure; it must not be conflated with RAKL authority, evidence quality or mechanistic identification",
+      "status": "OPEN_META_FIBER"
+    },
+    {
+      "id": "nanopublication-atomic-claim-packets",
+      "source": "https://github.com/Nanopublication/nanopub-java",
+      "source_class": "official project implementation",
+      "facets": ["atomic claims", "assertion/provenance separation", "publication metadata", "stable identity/signing"],
+      "retained_projection": "separate assertion content, provenance and publication/process information in an atomic scholarly object",
+      "rakl_extension": "add exact evidence spans, contradiction/omission coverage and RAKL authority separately from identity/signature metadata",
+      "cannot_see": "signature or stable identity provides integrity/attribution, not scientific truth",
+      "status": "ADOPT_NEXT"
+    },
+    {
+      "id": "temporal-durable-execution",
+      "source": "https://github.com/temporalio/temporal/blob/main/docs/architecture/README.md",
+      "source_class": "official architecture documentation",
+      "facets": ["durable execution", "event sourcing", "replay", "idempotent side effects", "retry semantics"],
+      "retained_projection": "append-only event history permits replay/reconstruction; deterministic workflow state and side-effectful activities require different correctness rules",
+      "rakl_extension": "make planning/evaluation replay-safe while commits, branch moves and experiments carry explicit side-effect identities and idempotency/receipt rules",
+      "cannot_see": "durable execution correctness does not decide scientific evidence authority or whether a research conclusion is true",
+      "status": "OPEN_META_FIBER"
+    }
+  ],
+  "semantic_deduplication": {
+    "corroboration_only": [
+      "GitHub required checks corroborate the existing fail-closed test-honesty principle",
+      "W3C PROV corroborates the already adopted append-only provenance direction"
+    ],
+    "new_retained_objects": [
+      "candidate-check-before-main two-phase promotion",
+      "evaluator non-self-modification/fingerprint gate",
+      "property/metamorphic RAKLBench",
+      "compositional provenance algebra distinct from evidence strength",
+      "assertion/provenance/process separation for atomic claim packets",
+      "durable/replay-safe research execution with idempotent side effects"
+    ]
+  },
+  "round_status": "NON_FLAT"
+}
