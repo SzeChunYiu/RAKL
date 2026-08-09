@@ -1,0 +1,40 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_027B_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "PR_TEST_EXECUTED_SUBJECT_BINDING",
+  "frozen_on_observed_main": "1c7fc9bb81e26a7228bae43401159224cabe44e8",
+  "trigger": "Adversarial review of the successful PR #4 test log showed that GitHub associated the run with head_sha 1c7fc9b..., but actions/checkout actually checked out pull/4/merge at b713476.... Therefore the run was merge-integration evidence, not exact-candidate execution evidence.",
+  "blocking_invariants": [
+    "non_fabrication",
+    "exact_subject_identity",
+    "benchmark_before_behavior_change",
+    "negative_history_preservation"
+  ],
+  "known_answer_worlds": [
+    {"id":"R27B-W01","world":"PR metadata head_sha equals candidate but executed checkout is pull/N/merge","expected":"MERGE_INTEGRATION_NOT_EXACT_CANDIDATE"},
+    {"id":"R27B-W02","world":"PR checkout explicitly refs github.event.pull_request.head.sha and rev-parse assertion matches","expected":"EXACT_CANDIDATE_EXECUTION"},
+    {"id":"R27B-W03","world":"push checkout explicitly refs github.sha and rev-parse assertion matches","expected":"EXACT_ACTIVE_MAIN_EXECUTION"},
+    {"id":"R27B-W04","world":"workflow run is green but executed SHA is unknown","expected":"CANNOT_CHECK_SUBJECT"},
+    {"id":"R27B-W05","world":"trusted parent checks exact candidate as passive data while ordinary test executes merge ref","expected":"PARENT_EXACT_PASSIVE_DOES_NOT_UPGRADE_TEST_SUBJECT"},
+    {"id":"R27B-W06","world":"merge-ref test passes while candidate-head test would fail","expected":"NO_CANDIDATE_AUTHORITY"},
+    {"id":"R27B-W07","world":"candidate-head test passes but merge integration fails","expected":"CANDIDATE_VALIDATION_POSITIVE_INTEGRATION_NEGATIVE"},
+    {"id":"R27B-W08","world":"subject-binding expression falls back to github.sha on push","expected":"PUSH_EXACTNESS_PRESERVED"},
+    {"id":"R27B-W09","world":"checkout ref is explicit but no rev-parse assertion exists","expected":"PARTIAL_SUBJECT_EVIDENCE_NOT_ATTESTED"},
+    {"id":"R27B-W10","world":"previous receipt called merge-ref run exact candidate","expected":"PRESERVE_AND_SUPERSEDE_AS_FALSE_EXACTNESS_CLAIM"}
+  ],
+  "authorized_smallest_change": {
+    "path": ".github/workflows/test.yml",
+    "requirements": [
+      "checkout the PR head SHA on pull_request and github.sha on push",
+      "assert git rev-parse HEAD equals the expected subject before installing or testing",
+      "do not alter Python version, package install commands, pytest command, permissions, runner label or action pins"
+    ]
+  },
+  "registered_meta_qois": {
+    "false_exact_candidate_test_claims": {"incumbent":1,"required":0,"direction":"lower_is_better"},
+    "executed_subject_assertion_coverage": {"incumbent":0,"required":1,"direction":"higher_is_better"},
+    "existing_test_command_semantics_changed": {"required":false,"blocking":true}
+  },
+  "process_disposition": "The earlier Round-027 ref update remains preserved as PROCESS_VIOLATION_PREPROMOTION_EXACT_HEAD_NOT_PROVEN. A later subject-binding fix may prevent recurrence and validate the current tree exactly, but must not rewrite the original chronology as compliant.",
+  "saturation_effect": "NON_FLAT_NEW_NATIVE_RESIDUAL_META_N092_PR_TEST_EXECUTED_SUBJECT_BINDING"
+}
