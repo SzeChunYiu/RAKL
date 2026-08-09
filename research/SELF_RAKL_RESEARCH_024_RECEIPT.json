@@ -1,0 +1,86 @@
+{
+  "receipt_id":"SELF_RAKL_RESEARCH_024_RECEIPT",
+  "date":"2026-08-09",
+  "object":"PROVIDER_NEUTRAL_EXECUTION_RECEIPT_AND_DUPLICATE_SAFE_RECOVERY",
+  "starting_main_sha":"2a62dd2ed868a127ffb01b28bfcda9847740750e",
+  "constitutional_change":false,
+  "change_class":"A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "expert_panel_roles":["agent-runtime/state-machine architect","reliability/idempotency engineer","execution-security engineer","provenance/content-addressed-storage engineer","observability/trace engineer","adversarial reproducibility reviewer"],
+  "review_independence_note":"Role-separated passes shared one orchestration context and are not independent or mutually blind review.",
+  "transport_history":{
+    "prior_engineering_round":"stale Round-023 execution lane",
+    "prior_stale_final_sha":"979401504dece32c64483c25faaaaa4a172f8247",
+    "prior_stale_final_result":"291 passed in 6.55s",
+    "reason_not_promoted":"main advanced with independent semantic-closure research and occupied Round-023 ledger filenames",
+    "force_update_used":false,
+    "expectations_or_thresholds_changed":false
+  },
+  "frozen_benchmark":{
+    "artifact":"research/SELF_RAKL_RESEARCH_024_FROZEN_BENCHMARK.json",
+    "commit":"41c6cfb233d99dee3a9ff6a477d4e61c6d746a48",
+    "status":"FROZEN_BEFORE_REBASED_IMPLEMENTATION",
+    "world_count":22
+  },
+  "rebased_support":{
+    "implementation_sha":"04d2f043d90daa999332125cdd6345945b9b8b7d",
+    "workflow_run_id":31322891757,
+    "pytest_job_id":93268511027,
+    "result":"291_passed_in_6.60s"
+  },
+  "implementation":{
+    "module":"src/rakl/execution.py",
+    "cli":"python -m rakl run",
+    "tests":["tests/test_execution.py","tests/test_execution_cli.py"],
+    "docs":"docs/EXECUTION_RUNTIME.md",
+    "example":"examples/minimal/runner.py",
+    "core_properties":[
+      "exact task packet SHA-256 binding",
+      "canonical runner envelope with generation configuration",
+      "runner-input content identity",
+      "append-only hash-chained execution events",
+      "content-addressed stdout/stderr",
+      "immutable terminal receipts",
+      "completed replay without command re-execution",
+      "RUNNING ambiguity fail-closed recovery",
+      "retry-safe PREPARED numbered attempts",
+      "local same-invocation process lease",
+      "secret-free canonical execution metadata",
+      "argv shell=false execution",
+      "proposal-only output authority"
+    ]
+  },
+  "retained_semantic_objects":[
+    "PACKET_BOUND_EXECUTION_RECEIPT",
+    "RUNNER_INPUT_CONFIGURATION_DELIVERY_CERTIFICATE",
+    "CONTENT_ADDRESSED_RAW_EXECUTION_ARTIFACTS",
+    "APPEND_ONLY_HASH_CHAINED_EXECUTION_EVENTS",
+    "COMPLETED_INVOCATION_REPLAY_WITHOUT_REEXECUTION",
+    "AMBIGUOUS_RUN_RECOVERY_BLOCK",
+    "LOCAL_SAME_INVOCATION_EXECUTION_LEASE",
+    "MODEL_OUTPUT_PROPOSAL_ONLY_EXECUTION_BOUNDARY"
+  ],
+  "not_counted_as_novel":["agent tracing","locks","idempotency/retry engineering","checkpointing","subprocess isolation","execution receipts","content-addressed logs"],
+  "protected_inputs":{
+    "constitution_changed":false,
+    "test_workflow_changed":false,
+    "trusted_parent_workflow_changed":false,
+    "pyproject_changed":false,
+    "promotion_module_changed":false,
+    "evaluator_module_changed":false,
+    "parent_evaluator_module_changed":false,
+    "preexisting_parent_tests_modified":false
+  },
+  "release_readiness":"NOT_READY_OPEN_ENGINEERING_AND_EMPIRICAL_PROGRAM",
+  "publication_readiness":"METHOD_SPECIFICATION_AND_EXECUTABLE_ARTIFACT_MATURE_EMPIRICAL_CASE_OPEN",
+  "next_priority":["META_N081_TOKENIZER_BUDGET_CALIBRATION","META_N082_RELEASE_ARTIFACT_IDENTITY","META_N029_EVALUATOR_DEPENDENCY_PINNING","META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION","META_N015_CLAIM_EVIDENCE_PROVENANCE","real matched scientific RAKLBench"],
+  "saturation":{"state":"ACTIVE_NON_FLAT","engineering_lane":"ACTIVE_NON_FLAT","same_context_flat_rounds":0,"independent_flat_rounds":0},
+  "final_candidate_validation":"PENDING_AFTER_THIS_RECEIPT_COMMIT",
+  "next_ai":{
+    "positive":"Freeze token-budget and release-artifact identity benchmarks before implementation.",
+    "null":"Keep trace/distributed orchestration optional if thin immutable receipts solve the registered audit/recovery problems.",
+    "refuted":"Any frozen duplicate execution, secret leakage, runner-input mismatch, RUNNING auto-retry or authority escalation blocks release.",
+    "partial_id":"Hosted provider/model infrastructure and setting compliance remain externally attested or partially identified.",
+    "blocked":"Unknown tokenization/provider identity remains CANNOT_CHECK.",
+    "transport":"If main advances before promotion, rebuild without force and preserve this benchmark/transport history."
+  }
+}
