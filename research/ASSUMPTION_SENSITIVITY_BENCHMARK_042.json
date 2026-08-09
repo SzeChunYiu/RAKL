@@ -1,0 +1,36 @@
+{
+  "round": 42,
+  "date": "2026-08-09",
+  "object": "ASSUMPTION_SENSITIVITY_AND_ROBUSTNESS",
+  "parent_method_surfaces": ["benchmarking", "experiment_query_selection", "synthesis", "authority_promotion"],
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "question": "Can RAKL represent and evaluate whether a scientific conclusion is robust to a preregistered envelope of assumption violations without treating robustness as proof that the assumptions are true or silently selecting favorable perturbations after seeing the result?",
+  "formal_object": {
+    "baseline": "theta_0 under assumption vector a_0",
+    "registered_scenarios": "{(a_j, theta_j)} for j=1..J",
+    "conclusion_function": "c(theta; delta_material) in {NEGATIVE, INDETERMINATE, POSITIVE}",
+    "robust_positive": "all valid registered scenarios remain above +delta_material",
+    "robust_negative": "all valid registered scenarios remain below -delta_material",
+    "sensitive": "registered scenarios cross conclusion class or material boundary",
+    "partially_identified": "some scenarios cannot be evaluated or the admissible assumption envelope itself is not point specified"
+  },
+  "known_answer_worlds": [
+    {"id":"AS01_ALL_PREDECLARED_SCENARIOS_RETAIN_MATERIAL_POSITIVE_CONCLUSION","expected":"ROBUST_WITHIN_REGISTERED_ENVELOPE"},
+    {"id":"AS02_ONE_PLAUSIBLE_SCENARIO_FLIPS_POSITIVE_TO_NEGATIVE","expected":"ASSUMPTION_SENSITIVE"},
+    {"id":"AS03_ONE_SCENARIO_SHRINKS_EFFECT_BELOW_MATERIALITY_WITHOUT_SIGN_FLIP","expected":"ASSUMPTION_SENSITIVE"},
+    {"id":"AS04_SCENARIOS_SELECTED_AFTER_SEEING_RESULT","expected":"TRIAL_INVALID"},
+    {"id":"AS05_ONLY_FAVORABLE_SCENARIOS_RETAINED_AFTER_NEGATIVE_HISTORY","expected":"TRIAL_INVALID"},
+    {"id":"AS06_REQUIRED_SCENARIO_RESULT_UNAVAILABLE","expected":"PARTIALLY_IDENTIFIED_OR_CANNOT_CHECK"},
+    {"id":"AS07_ROBUST_CONCLUSION_USED_TO_CLAIM_ASSUMPTIONS_TRUE","expected":"REJECT_AUTHORITY_ESCALATION"},
+    {"id":"AS08_DIFFERENT_POPULATION_SCENARIO_MISLABELED_AS_ASSUMPTION_PERTURBATION","expected":"CANNOT_COMPARE"},
+    {"id":"AS09_PERTURBATION_CHANGES_TARGET_OR_QOI","expected":"CANNOT_COMPARE"},
+    {"id":"AS10_BASELINE_ONLY_WITH_NO_PLAUSIBLE_ENVELOPE","expected":"CANNOT_CHECK"}
+  ],
+  "authority_boundary": [
+    "robustness is relative to the registered assumption envelope",
+    "robustness does not prove assumptions true or mechanism identified",
+    "sensitivity can lower decision/claim authority even when the baseline model fits",
+    "a scenario that changes population/QoI is a new contextual chart, not an assumption perturbation of the same claim"
+  ],
+  "main_falsifier": "If assumption-sensitivity conclusions are unstable to arbitrary analyst-chosen scenario envelopes, the method must report the envelope itself as an identification object rather than a robust conclusion."
+}
