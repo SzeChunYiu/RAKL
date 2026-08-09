@@ -1,7 +1,7 @@
 {
   "round": 42,
   "date": "2026-08-09",
-  "allocation_basis": "The first Round-042 allocation reused canonical slots 123 and 124. Exact-head CI correctly failed because the Round-041 historical compiler recovered META_N123_SCOPED_SELF_EVOLUTION_EVIDENCE and META_N124_ADAPTIVE_ASSURANCE_RESERVE. The failed allocation remains in Git history as negative process evidence. This current mapping preserves collision-free slots 125-127 that did not trigger the compiler and moves the two colliding concepts plus the later assumption-sensitivity child into new candidate slots 128-130; the full-ledger compiler remains the final authority on collision freedom.",
+  "allocation_basis": "The first Round-042 allocation reused canonical slots 123 and 124. Exact-head CI correctly failed because those slots were already allocated in the canonical historical ledger. The failed allocation is preserved by Git candidate identity d902f9256b7bed115d0c4eb3aff95e4fe0be7a81 and its failed CI rather than by retaining orphan META_N identifiers in the live ledger. This mapping preserves slots 125-127 that did not trigger the compiler and moves the two colliding concepts plus the later assumption-sensitivity child into candidate slots 128-130; the full-ledger compiler remains the final authority on collision freedom.",
   "fibers": [
     {
       "fiber_id": "META_N125_MODEL_CRITICISM_GENERATIVE_ADEQUACY",
@@ -34,10 +34,11 @@
       "purpose": "Evaluate whether registered conclusions survive a frozen scope-compatible assumption envelope without treating robustness as proof that the assumptions are true."
     }
   ],
-  "superseded_failed_round042_allocations": [
-    "META_N123_SELF_BOOTSTRAP_ACCEPTANCE",
-    "META_N124_ARCHIVE_SCALE_CONTEXT_INVARIANCE"
-  ],
+  "failed_allocation_evidence": {
+    "candidate_sha": "d902f9256b7bed115d0c4eb3aff95e4fe0be7a81",
+    "ci_disposition": "FAILED_CANONICAL_META_LEDGER_COLLISION",
+    "history_policy": "Preserve the failed commit and CI record; do not keep undefined historical candidate identifiers as live references."
+  },
   "authority_effect": "NONE_BY_REGISTRATION",
   "saturation": {
     "state": "ACTIVE_NON_FLAT",
