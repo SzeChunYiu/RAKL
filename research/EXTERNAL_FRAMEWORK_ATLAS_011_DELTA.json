@@ -1,0 +1,108 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_011_DELTA",
+  "date": "2026-08-09",
+  "object": "RAKL_SIMILARITY_ANALOGY_SCIENTIFIC_JUMPS",
+  "research_routes": [
+    {
+      "route": "classical cognitive analogy and structure mapping",
+      "sources": [
+        "Gentner, Structure-Mapping: A Theoretical Framework for Analogy, Cognitive Science 1983, doi:10.1207/s15516709cog0702_3",
+        "Falkenhainer, Forbus and Gentner, The Structure-Mapping Engine, Artificial Intelligence 1989, doi:10.1016/0004-3702(89)90077-5",
+        "Forbus, Gentner and Law, MAC/FAC: A Model of Similarity-Based Retrieval, Cognitive Science 1995, doi:10.1207/s15516709cog1902_1"
+      ],
+      "projection": "Analogy privileges relational systems and systematic connected structure over isolated attributes; retrieval and expensive structural mapping can be separated because surface cues often dominate retrieval even when deep structure dominates judged similarity.",
+      "rakl_absorption": "Represent similarity with explicit relational witnesses; separate candidate retrieval from structural recognition; do not count structure mapping or coarse-to-fine analogy retrieval as novel."
+    },
+    {
+      "route": "controlled cross-domain analogical guidance",
+      "source": "Larraz and Corma, Human analogical guidance amplifies LLM performance through cross-domain knowledge activation, Nature Communications 2026, doi:10.1038/s41467-026-70873-7",
+      "projection": "With fixed retrieved context, explicit cross-domain guidance strongly changed which available knowledge the model used, demonstrating a distinction between access to knowledge and activation/use of cross-domain knowledge.",
+      "rakl_absorption": "Benchmark retrieval, recognition and utilization/transfer separately; a corpus containing the right source is not evidence that the agent can discover or use it autonomously."
+    },
+    {
+      "route": "scientific creativity through relational analogy",
+      "source": "Shen, Druckmann and Zou, Unlocking LLM Creativity in Science through Analogical Reasoning, arXiv:2605.11258",
+      "projection": "Cross-domain analogies built around shared relational structure expand solution diversity and can yield useful scientific solution candidates.",
+      "rakl_absorption": "Treat analogy as a deliberate search-space expansion operator, but keep generated transfers proposal-only until target validation."
+    },
+    {
+      "route": "mechanism-centered serendipitous retrieval",
+      "source": "Zhou and Jia, Mechanism-Centric Cross-Domain Retrieval for Scientific Discovery, Knowledge-Based Systems 2026, doi:10.1016/j.knosys.2026.116667",
+      "projection": "Mechanistic alignment can be decoupled from topical similarity, and semantic distance can be rewarded to surface cross-domain isomorphisms.",
+      "rakl_absorption": "Do not claim mechanism-centered remote retrieval as novel. Replace a single remoteness reward with a typed witness plus multi-objective jump frontier and explicit target-evidence gate."
+    },
+    {
+      "route": "reasoning-structure retrieval",
+      "source": "Fu et al., GraphIC: A Graph-Based In-Context Example Retrieval Model for Multi-Step Reasoning, AAAI 2026, doi:10.1609/aaai.v40i36.40332",
+      "projection": "Text embedding similarity can contain irrelevant semantics and miss deeper reasoning structure; graph representations of reasoning dependencies provide another retrieval view.",
+      "rakl_absorption": "Include reasoning/relational graph retrieval as a replaceable candidate generator alongside lexical, semantic, ontology, equation and causal views."
+    },
+    {
+      "route": "scientific inspiration retrieval",
+      "source": "Yang et al., MOOSE-Chem: Large Language Models for Rediscovering Unseen Chemistry Scientific Hypotheses, ICLR 2025",
+      "projection": "Scientific hypothesis rediscovery can be decomposed into inspiration retrieval, hypothesis generation and ranking, making retrieval quality a separately testable scientific capability.",
+      "rakl_absorption": "Evaluate the source-discovery stage independently from mapping and hypothesis validation; preserve failure localization."
+    },
+    {
+      "route": "ontological graph discovery",
+      "sources": [
+        "Ghafarollahi and Buehler, SciAgents: Automating Scientific Discovery Through Bioinspired Multi-Agent Intelligent Graph Reasoning, Advanced Materials 2025, doi:10.1002/adma.202413523",
+        "lamm-mit/SciAgentsDiscovery GitHub repository"
+      ],
+      "projection": "Ontological scientific knowledge graphs plus multi-agent graph reasoning can expose interdisciplinary connections and support hypothesis generation.",
+      "rakl_absorption": "Use ontological graph structure as one local retrieval chart rather than treating graph connectivity as proof of analogy or mechanism."
+    },
+    {
+      "route": "nature-skills workflow architecture",
+      "sources": [
+        "Yuan1z0825/nature-skills nature-academic-search",
+        "Yuan1z0825/nature-skills nature-reviewer",
+        "Yuan1z0825/nature-skills nature-figure"
+      ],
+      "projection": "Search, review and figure production are routed as explicit workflows with source hierarchy, deduplication, review-boundary honesty and figure-evidence contracts.",
+      "rakl_absorption": "Use modular workflow routing and explicitly state that same-context role passes are not independent blind review. Keep conceptual similarity figures labeled as non-empirical."
+    }
+  ],
+  "retained_semantic_objects": [
+    {
+      "id": "TYPED_SIMILARITY_MAPPING_WITNESS",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "A similarity statement is carried by a scoped mapping witness with preserved structure, known broken correspondences, regime, distortion and evidence rather than by a scalar alone."
+    },
+    {
+      "id": "GLUE_JUMP_AUTHORITY_SEPARATION",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "Same-object/equivalence discovery and distant structural analogy have different error costs and different authority; GLUE may reorganize canonical knowledge, JUMP only proposes transfers until validated."
+    },
+    {
+      "id": "ANALOGY_AUTHORITY_LIFECYCLE",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "Candidate retrieval, witnessed analogy, transfer hypothesis and target validation/refutation are distinct epistemic states."
+    },
+    {
+      "id": "ABSTRACTION_ERASURE_LEDGER",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "Every domain-stripping abstraction records removed constraints so increased retrieval recall cannot silently authorize invalid transfer."
+    },
+    {
+      "id": "PARETO_SCIENTIFIC_JUMP_FRONTIER",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "Deep structure, domain distance, transfer value, evidence readiness, analogy risk and cost remain a multi-objective portfolio rather than one universal similarity/serendipity score."
+    },
+    {
+      "id": "WITNESSED_MULTI_HOP_BRIDGE_COMPOSITION",
+      "novelty": "RAKL_REFINEMENT",
+      "meaning": "Multi-hop cross-domain search requires invariant, role, scope and error compatibility at each hop; BRIDGE_TO is navigation, not equivalence closure."
+    }
+  ],
+  "reinforced_not_double_counted": [
+    "relational structure mapping",
+    "systematicity",
+    "coarse-to-fine analogy retrieval",
+    "cross-domain analogical creativity",
+    "mechanism-centric retrieval",
+    "graph-based structural retrieval",
+    "knowledge-graph scientific discovery",
+    "inspiration retrieval as a scientific-agent stage"
+  ]
+}

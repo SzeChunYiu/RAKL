@@ -1,0 +1,142 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_011_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "RAKL_SIMILARITY_ANALOGY_ALGEBRA",
+  "frozen_against_main": "9ad83e15a285e2ee0d09cde51b61a294efdebc12",
+  "status": "FROZEN_BEFORE_ANY_RUNTIME_SIMILARITY_IMPLEMENTATION",
+  "constitutional_change": false,
+  "behavior_change_in_this_freeze": false,
+  "primary_meta_qois": [
+    "glue_precision",
+    "far_domain_deep_analogy_recall",
+    "mapping_witness_correctness",
+    "preserved_and_not_preserved_correspondence_completeness",
+    "regime_and_scope_completeness",
+    "retrieval_vs_recognition_failure_localization",
+    "invalid_transfer_rate",
+    "analogy_authority_leakage_rate",
+    "multi_hop_composition_error_rate",
+    "transfer_utility_per_cost"
+  ],
+  "blocking_invariants": [
+    "no_false_glue_across_incompatible_identity_or_mechanism_scopes",
+    "no_observational_or_qoi_equivalence_to_mechanism_upgrade",
+    "no_analogy_candidate_to_target_authority_without_target_evidence",
+    "no_missing_critical_erasure_coordinate_silently_ignored",
+    "no_multi_hop_bridge_auto_composition_without_scope_and_role_compatibility",
+    "negative_and_refuted_analogy_history_preserved"
+  ],
+  "worlds": [
+    {
+      "id": "GLUE_01_COORDINATE_REPRESENTATION",
+      "class": "GLUE",
+      "setup": "Two sources describe the same state under an invertible coordinate transformation with aligned context and measurement scope.",
+      "expected": ["EXACT_ISOMORPHISM", "GLUE_ALLOWED_AT_REPRESENTATION_LAYER"],
+      "forbidden": ["MECHANISM_EQUIVALENCE_UNLESS_SEPARATELY_EVIDENCED"]
+    },
+    {
+      "id": "GLUE_02_OBSERVATIONAL_EQUIVALENCE_DIFFERENT_MECHANISMS",
+      "class": "GLUE",
+      "setup": "Two distinct microscopic mechanisms induce the same registered observational law.",
+      "expected": ["OBSERVATIONALLY_EQUIVALENT", "MECHANISM_UNRESOLVED"],
+      "forbidden": ["SAME_MECHANISM", "MECHANISM_IDENTIFIED"]
+    },
+    {
+      "id": "GLUE_03_SURFACE_ALIAS_FALSE_ENTITY",
+      "class": "GLUE",
+      "setup": "Two papers use the same term for different entities or populations.",
+      "expected": ["DO_NOT_GLUE", "CONTEXT_OR_IDENTITY_OBSTRUCTION"],
+      "forbidden": ["SAME_ENTITY_FROM_LABEL_ONLY"]
+    },
+    {
+      "id": "JUMP_01_FAR_DOMAIN_RELATIONAL_ANALOGY",
+      "class": "JUMP",
+      "setup": "Target and source have near-zero lexical overlap but preserve a connected causal/relational schema with explicit role mapping.",
+      "expected": ["WITNESSED_ANALOGY", "TRANSFER_HYPOTHESIS_ALLOWED"],
+      "forbidden": ["TARGET_VALIDATED_WITHOUT_TARGET_TEST"]
+    },
+    {
+      "id": "JUMP_02_SURFACE_FALSE_FRIEND",
+      "class": "JUMP",
+      "setup": "Two concepts share vocabulary and topical embedding proximity but reverse a key causal relation.",
+      "expected": ["REJECT_DEEP_ANALOGY", "DIRECTION_FLIP_RECORDED"],
+      "forbidden": ["CAUSALLY_ANALOGOUS"]
+    },
+    {
+      "id": "JUMP_03_EQUATION_FALSE_FRIEND",
+      "class": "JUMP",
+      "setup": "Two systems use the same equation form but variables have incompatible semantics and boundary conditions.",
+      "expected": ["MATHEMATICAL_FORM_MATCH_ONLY", "TRANSFER_BLOCKED_OR_NARROWED"],
+      "forbidden": ["SAME_MECHANISM", "UNSCOPED_DYNAMIC_EQUIVALENCE"]
+    },
+    {
+      "id": "ABSTRACT_01_CRITICAL_ERASURE",
+      "class": "ABSTRACTION",
+      "setup": "Domain stripping removes a material constraint that determines whether the proposed transfer works.",
+      "expected": ["ERASURE_LEDGER_FLAGS_CRITICAL_COORDINATE", "TRANSFER_NOT_AUTHORIZED"],
+      "forbidden": ["ABSTRACTION_TREATED_AS_LOSSLESS"]
+    },
+    {
+      "id": "ABSTRACT_02_SAFE_ERASURE_FOR_RETRIEVAL",
+      "class": "ABSTRACTION",
+      "setup": "Removing domain nouns while retaining roles, causal direction and boundary conditions reveals a distant candidate.",
+      "expected": ["RETRIEVAL_RECALL_GAIN_ALLOWED", "WITNESS_STILL_REQUIRED"],
+      "forbidden": ["RETRIEVAL_MATCH_AUTO_PROMOTED"]
+    },
+    {
+      "id": "PIPELINE_01_RETRIEVAL_FAILURE",
+      "class": "PIPELINE",
+      "setup": "A known deep analogy exists in the frozen corpus but the retrieval stage does not surface it.",
+      "expected": ["RETRIEVAL_FAILURE"],
+      "forbidden": ["RECOGNITION_FAILURE_LABEL"]
+    },
+    {
+      "id": "PIPELINE_02_RECOGNITION_FAILURE",
+      "class": "PIPELINE",
+      "setup": "The correct distant source is retrieved but the system fails to construct the known mapping witness.",
+      "expected": ["RECOGNITION_OR_MAPPING_FAILURE"],
+      "forbidden": ["RETRIEVAL_FAILURE_LABEL"]
+    },
+    {
+      "id": "PIPELINE_03_TRANSFER_FAILURE",
+      "class": "PIPELINE",
+      "setup": "A correct structural analogy suggests an intervention, but a target-only constraint causes the intervention to fail under a frozen test.",
+      "expected": ["TARGET_REFUTED", "ANALOGY_REMAINS_HISTORICALLY_VALID_AT_STRUCTURAL_LAYER"],
+      "forbidden": ["DELETE_MAPPING_HISTORY", "SOURCE_SUCCESS_COUNTED_AS_TARGET_EVIDENCE"]
+    },
+    {
+      "id": "BRIDGE_01_VALID_MULTI_HOP",
+      "class": "MULTI_HOP",
+      "setup": "A->B and B->C preserve the same registered invariant, the B role mappings agree, and scopes intersect.",
+      "expected": ["BRIDGE_PATH_VALID_FOR_NAMED_TRANSFER", "ACCUMULATED_SCOPE_AND_ERROR_RECORDED"],
+      "forbidden": ["GLOBAL_EQUIVALENCE_FROM_BRIDGE"]
+    },
+    {
+      "id": "BRIDGE_02_BROKEN_INTERMEDIATE_ROLE",
+      "class": "MULTI_HOP",
+      "setup": "A->B and B->C are individually plausible, but the role used in B differs between the two mappings.",
+      "expected": ["BRIDGE_COMPOSITION_REJECTED", "ROLE_INCOMPATIBILITY_RECORDED"],
+      "forbidden": ["A_TO_C_TRANSFER_FROM_PAIRWISE_SCORES"]
+    },
+    {
+      "id": "RANK_01_DISTANCE_GAMING",
+      "class": "RANKING",
+      "setup": "Candidate X is extremely remote but structurally weak; candidate Y is moderately remote with strong structure and testable transfer value.",
+      "expected": ["Y_NOT_DOMINATED_BY_DISTANCE_ONLY", "PARETO_OR_CONSTRAINED_SELECTION"],
+      "forbidden": ["X_WINS_SOLELY_FROM_DOMAIN_DISTANCE"]
+    },
+    {
+      "id": "AUTH_01_ANALOGY_AUTHORITY_LEAK",
+      "class": "AUTHORITY",
+      "setup": "An LLM generates a compelling cross-domain analogy with no target experiment or target evidence.",
+      "expected": ["TRANSFER_HYPOTHESIS_ONLY"],
+      "forbidden": ["TARGET_VALIDATED", "MECHANISM_IDENTIFIED", "DECISION_USABLE_WITHOUT_SEPARATE_EVIDENCE"]
+    }
+  ],
+  "evaluation_protocol": {
+    "controls": ["same base model", "same corpus", "same evidence cutoff", "same search budget", "same target evaluator"],
+    "required_baselines": ["embedding_only_retrieval", "lexical_plus_embedding_retrieval", "direct_llm_analogy_generation", "graph_or_reasoning_structure_retrieval_when_available"],
+    "ablation_candidates": ["no_erasure_ledger", "no_not_preserved_fields", "single_scalar_similarity", "no_retrieval_recognition_separation", "no_target_validation_gate", "no_bridge_composition_check"]
+  },
+  "promotion_rule": "Any runtime similarity/analogy module must be tested against this frozen packet before active behavior changes. No threshold may be weakened after results are observed."
+}
