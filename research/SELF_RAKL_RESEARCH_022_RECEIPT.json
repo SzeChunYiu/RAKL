@@ -1,0 +1,135 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_022_RECEIPT",
+  "date": "2026-08-09",
+  "object": "NORMAL_LLM_REFERENCE_RUNTIME_AND_USER_PACKAGE",
+  "starting_main_sha": "0a851009f6ddd8ffc0a39bc51645343ba684bef8",
+  "constitutional_change": false,
+  "change_class": "A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "expert_panel_roles": [
+    "agent-runtime architect",
+    "research-software engineer",
+    "LLM systems engineer",
+    "storage/provenance engineer",
+    "observability/reliability engineer",
+    "adversarial reproducibility reviewer"
+  ],
+  "review_independence_note": "Role-separated passes shared one orchestration context and are not counted as mutually blind or independent review.",
+  "frozen_benchmark": {
+    "artifact": "research/SELF_RAKL_RESEARCH_022_FROZEN_BENCHMARK.json",
+    "commit": "4e291d40b206ca68a0043465509851562baed739",
+    "status": "FROZEN_BEFORE_IMPLEMENTATION",
+    "world_count": 16,
+    "registered_meta_qois": [
+      "fresh_project_initialization_success_rate",
+      "canonical_payload_integrity_detection_rate",
+      "duplicate_payload_storage_amplification",
+      "ordinary_llm_profile_honesty_rate",
+      "task_packet_determinism_rate",
+      "mandatory_negative_history_packet_recall",
+      "context_overflow_fail_closed_rate",
+      "project_doctor_fault_detection_rate",
+      "user_workflow_step_count",
+      "external_runtime_dependency_count"
+    ]
+  },
+  "negative_history": {
+    "failed_candidate": "9bca56f2949cac83351bb00037f38150b653f78b",
+    "workflow_run_id": 31321273632,
+    "pytest_job_id": 93264532920,
+    "result": "2_failed_267_passed",
+    "failure": "CLI JSON output helper bound sys.stdout at import/default-argument time, defeating in-process capture isolation even though commands reached expected runtime states.",
+    "disposition": "preserved; candidate was never promoted; benchmark unchanged"
+  },
+  "corrective_candidate": {
+    "sha": "ade737802cd8f326a6c054cdfb56b5106c927328",
+    "workflow_run_id": 31321408609,
+    "pytest_job_id": 93264868181,
+    "result": "269_passed_in_3.59s",
+    "change": "resolve output stream dynamically at call time"
+  },
+  "install_conformance_candidate": {
+    "sha": "df182c42e5bda8a3a1502f01cea5e5bdaa572f3f",
+    "workflow_run_id": 31321466720,
+    "pytest_job_id": 93265015174,
+    "result": "270_passed_in_7.17s",
+    "added_check": "non-editable pip install into isolated target with no dependencies/build isolation, followed by python -m rakl profiles"
+  },
+  "implementation": {
+    "modules": [
+      "src/rakl/reference_profile.py",
+      "src/rakl/project_runtime.py",
+      "src/rakl/cli.py",
+      "src/rakl/__main__.py"
+    ],
+    "tests": [
+      "tests/test_reference_profile.py",
+      "tests/test_project_runtime.py",
+      "tests/test_cli_runtime.py",
+      "tests/test_package_install.py"
+    ],
+    "docs_and_examples": [
+      "docs/REFERENCE_RUNTIME.md",
+      "docs/ARTIFACT_EVALUATION.md",
+      "examples/minimal/README.md",
+      "examples/minimal/source.txt",
+      "examples/minimal/refutation.txt"
+    ],
+    "runtime_dependencies": "Python standard library only",
+    "entrypoint": "python -m rakl",
+    "protected_pyproject_changed": false
+  },
+  "retained_semantic_objects": [
+    "MODEL_EXTERNALIZED_EPISTEMIC_PROJECT_STATE",
+    "PROVIDER_NEUTRAL_ORDINARY_LLM_REFERENCE_PROFILE",
+    "CONTENT_ADDRESSED_CANONICAL_PAYLOAD_STORE",
+    "DETERMINISTIC_EPISTEMIC_TASK_PACKET",
+    "FAIL_CLOSED_PROJECT_DOCTOR",
+    "MODEL_OUTPUT_PROPOSAL_ONLY_RUNTIME_BOUNDARY"
+  ],
+  "not_counted_as_novel": [
+    "content-addressed storage",
+    "CLI packaging",
+    "capability profiles",
+    "durable checkpointing",
+    "normalized agent execution",
+    "artifact-evaluation agents",
+    "reproduction scripts",
+    "structured experiment logs"
+  ],
+  "new_or_reinforced_fibers": [
+    "META_N077_NORMAL_LLM_REFERENCE_PROFILE",
+    "META_N078_END_TO_END_CLEAN_INSTALL_WORKFLOW",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE",
+    "META_N080_PROVIDER_ADAPTER_EXECUTION_RECEIPT",
+    "META_N081_TOKENIZER_BUDGET_CALIBRATION",
+    "META_N082_RELEASE_ARTIFACT_IDENTITY",
+    "META_N019_DURABLE_RESEARCH_EXECUTION"
+  ],
+  "protected_inputs": {
+    "constitution_changed": false,
+    "test_workflow_changed": false,
+    "trusted_parent_workflow_changed": false,
+    "pyproject_changed": false,
+    "promotion_module_changed": false,
+    "evaluator_module_changed": false,
+    "parent_evaluator_module_changed": false,
+    "existing_parent_owned_tests_changed": false
+  },
+  "release_readiness": "NOT_READY_OPEN_ENGINEERING_AND_EMPIRICAL_PROGRAM",
+  "publication_readiness": "METHOD_AND_ARTIFACT_DRAFT_MATURE_EMPIRICAL_CASE_OPEN",
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "engineering_lane": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0
+  },
+  "final_research_candidate_validation": "PENDING_AFTER_RESEARCH_ARTIFACT_COMMIT",
+  "next_ai": {
+    "positive": "Freeze META_N080 before implementing any provider adapter/run ledger; bind exact task-packet digest, model/version/config, raw output, tools, retries and costs while keeping outputs proposal-only.",
+    "null": "If thin external scripts plus canonical task/output hashes equal a richer adapter runtime on audit/replay QoIs, keep RAKL orchestration minimal.",
+    "refuted": "If payload identity, mandatory evidence retention, deterministic task-packet generation, or proposal-only authority fails on a frozen world, preserve the counterexample and block release.",
+    "partial_id": "Unknown model capabilities or token limits remain CANNOT_CHECK; do not infer compatibility from model name.",
+    "blocked": "If a fresh environment cannot install/run the reference workflow, keep N078 and user-package closure open.",
+    "transport": "If main moves before promotion, rebuild on current main without force while preserving benchmark and failed-candidate history."
+  }
+}

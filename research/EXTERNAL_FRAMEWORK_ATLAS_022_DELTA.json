@@ -1,0 +1,104 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_022_DELTA",
+  "date": "2026-08-09",
+  "object": "REFERENCE_RUNTIME_REPRODUCIBILITY_ENGINEERING",
+  "sources": [
+    {
+      "source_id": "BENCHAGENT_2026",
+      "type": "primary_preprint",
+      "source": "Fu et al., Do More Agents Help? Controlled and Protocol-Aligned Evaluation of LLM Agent Workflows, arXiv:2606.05670",
+      "url": "https://arxiv.org/abs/2606.05670",
+      "projection": "Fair agent comparison benefits from a normalized execution substrate with shared benchmark loader, tool access, answer contract, usage accounting, and trajectory logging.",
+      "rakl_mapping": [
+        "reference runtime and future provider adapters should normalize task packets and execution receipts",
+        "agent count or orchestration complexity is not assumed to improve scientific quality"
+      ],
+      "novelty_effect": "normalized execution/accounting is prior art; RAKL runtime is infrastructure rather than headline novelty"
+    },
+    {
+      "source_id": "LANGGRAPH_PERSISTENCE_2026",
+      "type": "official_open_source_documentation",
+      "source": "LangGraph persistence documentation",
+      "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+      "projection": "Graph state can be saved as checkpoints, including pending writes that support failure recovery without rerunning completed work.",
+      "rakl_mapping": [
+        "META_N019 durable research execution should compare checkpoint/write-ahead designs rather than invent persistence from scratch",
+        "model state and workflow state should remain separate"
+      ],
+      "novelty_effect": "durable checkpointed agent execution is prior art"
+    },
+    {
+      "source_id": "ARTIFACT_COPILOT_2026",
+      "type": "primary_preprint",
+      "source": "Wu et al., Agent-Based Software Artifact Evaluation, arXiv:2602.02235",
+      "url": "https://arxiv.org/abs/2602.02235",
+      "projection": "Automated artifact evaluation must perceive execution state, stabilize execution environments, plan dependency-aware commands, and recover from execution errors.",
+      "rakl_mapping": [
+        "release conformance requires executable artifact instructions and diagnostics, not prose-only claims",
+        "future artifact-evaluation lane should test clean environment construction and error localization"
+      ],
+      "novelty_effect": "automated artifact execution/recovery is prior art"
+    },
+    {
+      "source_id": "ARTISAN_2026",
+      "type": "primary_preprint",
+      "source": "Baek and Pradel, Artisan: Agentic Artifact Evaluation, arXiv:2602.10046",
+      "url": "https://arxiv.org/abs/2602.10046",
+      "projection": "Research reproduction can be represented as independently executable scripts and judged with execution-based artifact benchmarks.",
+      "rakl_mapping": [
+        "RAKL publication artifacts should be independently runnable without the authoring agent",
+        "artifact conformance should be execution-based and known-answer grounded"
+      ],
+      "novelty_effect": "independently executable artifact reproduction is prior art"
+    },
+    {
+      "source_id": "PYPA_ENTRY_POINTS_CURRENT",
+      "type": "official_standard_documentation",
+      "source": "Python Packaging User Guide, pyproject.toml and entry-points specifications",
+      "url": "https://packaging.python.org/en/latest/specifications/entry-points/",
+      "projection": "Installed distributions may expose console commands through declared entry points; project.scripts maps to console_scripts.",
+      "rakl_mapping": [
+        "a future protected-input change may add a console entry point after evaluator-aware re-freezing",
+        "Round 022 intentionally uses python -m rakl to avoid changing protected pyproject configuration"
+      ],
+      "novelty_effect": "CLI entry points and packaging conventions are standards/prior art"
+    },
+    {
+      "source_id": "NATURE_EXPERIMENT_LOG_CURRENT",
+      "type": "open_source_skill",
+      "source": "nature-skills nature-experiment-log",
+      "url": "https://github.com/Yuan1z0825/nature-skills/tree/main/skills/nature-experiment-log",
+      "projection": "Experiment logging benefits from structured records, raw archives, anomaly capture, and explicit missing/ambiguous fields rather than guessed values.",
+      "rakl_mapping": [
+        "future execution receipts should preserve raw outputs and unknown fields",
+        "diagnostic logs must not repair or invent scientific evidence"
+      ],
+      "novelty_effect": "structured experiment logging/raw archival is established practice"
+    }
+  ],
+  "retained_rakl_objects_after_deduplication": [
+    "MODEL_EXTERNALIZED_EPISTEMIC_PROJECT_STATE",
+    "PROVIDER_NEUTRAL_ORDINARY_LLM_REFERENCE_PROFILE",
+    "CONTENT_ADDRESSED_CANONICAL_PAYLOAD_STORE",
+    "DETERMINISTIC_EPISTEMIC_TASK_PACKET",
+    "FAIL_CLOSED_PROJECT_DOCTOR",
+    "MODEL_OUTPUT_PROPOSAL_ONLY_RUNTIME_BOUNDARY"
+  ],
+  "not_counted_as_paper_novelty": [
+    "content-addressed storage",
+    "command-line interfaces",
+    "capability profiles",
+    "durable checkpointed workflows",
+    "normalized agent execution protocols",
+    "artifact evaluation agents",
+    "reproduction scripts",
+    "structured experiment logs"
+  ],
+  "route_coverage": {
+    "controlled_agent_execution": true,
+    "durable_agent_runtime": true,
+    "artifact_evaluation": true,
+    "packaging_standard": true,
+    "scientific_logging_skill": true
+  }
+}
