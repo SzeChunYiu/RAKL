@@ -1,0 +1,131 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_029_EVIDENCE_LINEAGE",
+  "date": "2026-08-09",
+  "frozen_before_implementation": true,
+  "selected_fiber": "META_N064_EVIDENCE_LINEAGE_DEPENDENCE",
+  "object": "RAKL_METHOD",
+  "problem": "Raw paper/source count and flat lineage labels can overstate corroboration when apparently distinct evidence descends from shared datasets, analyses, intellectual ancestors, or alternate identifiers.",
+  "registered_claim_boundary": "A provenance graph can establish known shared ancestry or absence of known shared ancestry under the registered graph. It cannot by itself establish statistical, causal, or epistemic independence.",
+  "registered_meta_qois": [
+    "shared_ancestry_detection_rate",
+    "alternate_identity_collapse_rate",
+    "unknown_ancestry_honesty_rate",
+    "cycle_and_dangling_reference_rejection_rate",
+    "provenance_component_count_correctness",
+    "generator_family_false_corroboration_rejection_rate",
+    "input_permutation_invariance",
+    "authority_non_escalation"
+  ],
+  "worlds": [
+    {
+      "id": "EL01_shared_direct_parent",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "Two evidence items have different IDs but the same direct parent source."
+    },
+    {
+      "id": "EL02_shared_remote_root",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "Two analyses descend through different intermediate nodes from one remote dataset root."
+    },
+    {
+      "id": "EL03_disjoint_known_roots",
+      "expected": "NO_KNOWN_SHARED_ANCESTRY",
+      "description": "Two evidence items have complete, disjoint registered provenance roots."
+    },
+    {
+      "id": "EL04_unknown_ancestry",
+      "expected": "CANNOT_CHECK",
+      "description": "At least one selected evidence item has explicitly incomplete ancestry."
+    },
+    {
+      "id": "EL05_dangling_parent",
+      "expected": "CANNOT_CHECK",
+      "description": "A selected evidence item references a parent absent from the registered graph."
+    },
+    {
+      "id": "EL06_derivation_cycle",
+      "expected": "TRIAL_INVALID",
+      "description": "The registered derivation graph contains a cycle reachable from selected evidence."
+    },
+    {
+      "id": "EL07_alternate_ids_same_entity",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "Two evidence IDs are declared alternates of the same underlying evidence entity."
+    },
+    {
+      "id": "EL08_specialization_same_source",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "Two evidence items are specializations/versions of one common source entity."
+    },
+    {
+      "id": "EL09_mixed_shared_and_unique_roots",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "Two selected items share one registered root even though each also has a unique root."
+    },
+    {
+      "id": "EL10_three_items_two_components",
+      "expected_components": 2,
+      "description": "Three selected items form one two-item shared-ancestry component plus one disjoint item."
+    },
+    {
+      "id": "EL11_duplicate_id_rejected",
+      "expected": "TRIAL_INVALID",
+      "description": "Graph contains duplicate node identifiers with conflicting definitions."
+    },
+    {
+      "id": "EL12_empty_selection",
+      "expected": "CANNOT_CHECK",
+      "description": "No evidence items are selected for corroboration assessment."
+    },
+    {
+      "id": "EL13_unregistered_selected_item",
+      "expected": "CANNOT_CHECK",
+      "description": "A selected evidence identifier is absent from the graph."
+    },
+    {
+      "id": "EL14_graph_order_permutation",
+      "expected": "IDENTICAL_REPORT",
+      "description": "Permuting node and selected-item order must not change the report."
+    },
+    {
+      "id": "EL15_provenance_not_statistical_independence",
+      "expected": "NO_KNOWN_SHARED_ANCESTRY",
+      "description": "Disjoint registered roots must not be labeled statistically or epistemically independent."
+    },
+    {
+      "id": "EL16_generator_family_shared_ancestry_downgrade",
+      "expected": "CORRELATED_SUPPORT_ONLY",
+      "description": "A generator family that passes flat lineage-ID checks is downgraded when graph ancestry reveals a common root."
+    },
+    {
+      "id": "EL17_generator_family_unknown_ancestry",
+      "expected": "CANNOT_CHECK",
+      "description": "Generator corroboration cannot claim independent support when selected evidence ancestry is incomplete."
+    },
+    {
+      "id": "EL18_generator_family_disjoint_provenance_retains_proposal",
+      "expected": "CORROBORATED_PROPOSAL_ONLY",
+      "description": "Generator proposal may retain proposal status when registered evidence roots are complete and disjoint, but still gains no target authority."
+    },
+    {
+      "id": "EL19_graph_does_not_mint_authority",
+      "expected": false,
+      "description": "Any lineage report or generator-lineage report must not activate canonical scientific knowledge or grant target authority."
+    },
+    {
+      "id": "EL20_no_arbitrary_effective_sample_size",
+      "expected": "NO_NUMERIC_STATISTICAL_EFFECTIVE_N",
+      "description": "Graph topology alone must not invent a statistical effective sample size or independence probability."
+    }
+  ],
+  "acceptance": {
+    "all_hostile_worlds_pass": true,
+    "no_existing_test_regression": true,
+    "no_target_authority_escalation": true,
+    "unknown_ancestry_fails_closed": true,
+    "provenance_disjointness_not_renamed_independence": true,
+    "generator_integration_optional_and_backward_compatible": true
+  },
+  "falsifier": "If lineage-aware graph support fails to detect frozen shared-ancestry worlds or adds no discrimination beyond flat labels on duplicated-ancestry tests, retain provenance records only and do not add corroboration logic.",
+  "real_utility_boundary": "Synthetic support validation does not establish improved real scientific evidence synthesis; a future frozen real duplicated-ancestry corpus is required for empirical utility."
+}
