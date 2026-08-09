@@ -1,0 +1,85 @@
+{
+  "readiness_id": "RELEASE_READINESS_023",
+  "date": "2026-08-09",
+  "starting_main_sha": "80d3d79cd5fcd8cb5dcbdc1443e940e8ca5d8518",
+  "overall": "NOT_READY_OPEN_ENGINEERING_AND_EMPIRICAL_PROGRAM",
+  "important_change": "The user/runtime execution plane now includes exact task-packet binding, canonical runner input, raw-output archival, local duplicate-safe replay/recovery and proposal-only execution receipts.",
+  "planes": {
+    "epistemic_core": {
+      "state": "IMPLEMENTED_PARTIAL_OPEN_EMPIRICAL",
+      "blockers": ["real process-level RAKLBench", "claim-evidence provenance", "independent novelty/formal review"]
+    },
+    "storage_memory": {
+      "state": "IMPLEMENTED_REFERENCE_STORAGE_PARTIAL",
+      "evidence": ["SHA-256 exact payload CAS", "append-only memory", "reconstructable views", "content-addressed execution events/raw outputs"],
+      "blockers": ["workflow-level durable transaction/checkpoint semantics", "real long-horizon ablation"]
+    },
+    "context_execution": {
+      "state": "REFERENCE_RUNTIME_AND_LOCAL_EXECUTION_V1_TESTED",
+      "evidence": [
+        "bounded epistemic context compiler",
+        "provider-neutral task packets",
+        "ordinary-8k capability profile",
+        "execution envelope with generation config delivery",
+        "append-only execution state chain",
+        "terminal receipt replay without re-execution",
+        "local same-invocation lease",
+        "explicit timeout/process/protocol/start failures",
+        "raw stdout/stderr CAS"
+      ],
+      "blockers": [
+        "tokenizer/budget calibration",
+        "runner artifact/environment attestation",
+        "real provider/local-model compatibility matrix",
+        "workflow-DAG durable execution",
+        "optional standardized trace export"
+      ]
+    },
+    "evaluation_governance": {
+      "state": "IMPLEMENTED_CORE_OPEN_TRUST_BOUNDARY",
+      "blockers": ["evaluator dependency pinning", "information firewall", "complete evaluator influence closure"]
+    },
+    "user_package": {
+      "state": "REFERENCE_RUNTIME_EXECUTABLE_PARTIAL",
+      "evidence": [
+        "python -m rakl project workflow",
+        "python -m rakl run local adapter workflow",
+        "non-editable installation conformance",
+        "reviewer artifact instructions",
+        "minimal deterministic runner example"
+      ],
+      "blockers": [
+        "built release wheel/sdist identity manifest and fresh environment matrix",
+        "real model adapter example",
+        "tokenizer adapter",
+        "telemetry/observability export policy"
+      ]
+    },
+    "scientific_validation": {
+      "state": "NOT_CLOSED",
+      "blockers": [
+        "matched real RAKL versus strong baselines/ablations",
+        "real contextual gluing/generator/bridge tasks",
+        "historical time-cutoff study",
+        "independent adversarial/formal review"
+      ]
+    }
+  },
+  "release_claim_allowed": "Runnable, provider-neutral reference research runtime with locally duplicate-safe execution receipts and scoped software-validation evidence",
+  "release_claim_not_allowed": [
+    "production distributed exactly-once autonomous scientist",
+    "scientifically proven superior research method",
+    "complete provider attestation",
+    "all ordinary LLMs verified compatible",
+    "globally closed scientific framework"
+  ],
+  "next_release_gates": [
+    "META_N081_TOKENIZER_BUDGET_CALIBRATION",
+    "META_N082_RELEASE_ARTIFACT_IDENTITY",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "real matched scientific RAKLBench",
+    "independent paper/theory/artifact review"
+  ]
+}
