@@ -93,6 +93,15 @@ from .identity import (
     LineageResolution,
 )
 from .identity_saturation import IdentityAwareSaturationTracker
+from .multires_memory import (
+    MemoryView,
+    MemoryViewKind,
+    MemoryViewReport,
+    MemoryViewVerdict,
+    SourcePin,
+    canonical_source_closure,
+    validate_memory_view,
+)
 from .promotion import (
     CheckConclusion,
     PromotionDecision,
@@ -213,6 +222,10 @@ __all__ = [
     "LiftVerdict",
     "LineageResolution",
     "MappingAdmissibility",
+    "MemoryView",
+    "MemoryViewKind",
+    "MemoryViewReport",
+    "MemoryViewVerdict",
     "MethodOperatorContract",
     "MetricDirection",
     "MetricKind",
@@ -238,6 +251,7 @@ __all__ = [
     "RouteTrialVerdict",
     "SimilarityRelation",
     "SimilarityWitness",
+    "SourcePin",
     "StructuralMotifReport",
     "SubjectAttestationReport",
     "SubjectVerdict",
@@ -246,6 +260,7 @@ __all__ = [
     "WitnessReport",
     "WitnessVerdict",
     "assess_generator_family",
+    "canonical_source_closure",
     "compare_contexts",
     "compare_retrieval_routes",
     "compile_epistemic_context",
@@ -265,6 +280,7 @@ __all__ = [
     "validate_corpus_artifact",
     "validate_generator_lift",
     "validate_ground_truth_factorization",
+    "validate_memory_view",
     "validate_overlap_transition",
     "validate_similarity_witness",
     "verify_execution_subject",
