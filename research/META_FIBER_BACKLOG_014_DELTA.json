@@ -1,0 +1,86 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_014_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N037_RETRIEVAL_RECOGNITION_TRANSFER_SEPARATION",
+      "status": "IMPLEMENTED_SUPPORT_V1_NOT_ACTIVE_RETRIEVAL",
+      "new_result": "RAKL now has a support-only four-gate diagnostic layer separating corpus coverage, retrieval, witness construction and target transfer. The layer cannot activate authority or change routing.",
+      "implementation": "src/rakl/similarity.py + tests/test_similarity.py",
+      "remaining_gap": "No real far-domain corpus has yet been executed under matched retrieval routes, so recall/precision improvements remain unvalidated."
+    },
+    {
+      "fiber_id": "META_N049_CORPUS_COVERAGE_AND_RETRIEVAL_ROUTE_ATTRIBUTION",
+      "status": "NEW_OPEN_HIGH_PRIORITY",
+      "problem": "End-to-end analogy failure currently conflates an absent analogue with a retriever miss, and successful retrieval does not always record which lexical/embedding/relational/graph route actually surfaced the candidate.",
+      "target": "Freeze corpus identity and hidden relevance labels, then score corpus coverage separately from recall@k while recording the retrieval route and rank for every designated analogue.",
+      "falsifier": "If route attribution adds no diagnostic value beyond ordinary recall/rank metrics on the frozen corpus, collapse it into standard retrieval logging."
+    },
+    {
+      "fiber_id": "META_N050_CONTRASTIVE_ANALOGY_NEGATIVES",
+      "status": "NEW_OPEN",
+      "problem": "A mapper can appear strong when evaluated only against unrelated negatives; surface-plausible near-misses that violate one decisive relation are more discriminating.",
+      "target": "Construct positive/near-miss packets where terminology and many roles match but one registered invariant, causal direction, regime or unit constraint differs; require a distinguishing-probe certificate.",
+      "falsifier": "If near-miss packets do not reduce false analogies or improve failure localization relative to random negatives, do not add a dedicated contrastive-negative lane."
+    },
+    {
+      "fiber_id": "META_N051_CROSS_ANALOGY_CONFIRMATION_INDEPENDENCE",
+      "status": "NEW_OPEN",
+      "problem": "Multiple apparent analogies may share one source tradition, template or hidden dependency and therefore should not be counted as independent confirmation of a structural motif.",
+      "target": "Test domain/source-lineage diversity, shared evidence ancestry and conditional-independence assumptions before treating cross-analogy overlap as corroborating a structural search motif; keep the result proposal-only until target evidence exists.",
+      "falsifier": "If independence-aware confirmation does not outperform simple witness intersection on frozen false-confirmation worlds, retain only the simpler intersection and provenance record."
+    },
+    {
+      "fiber_id": "META_N052_REAL_FAR_DOMAIN_RETRIEVAL_BENCHMARK",
+      "status": "NEW_OPEN_HIGHEST_PRIORITY",
+      "problem": "Synthetic stage-localization worlds do not demonstrate that RAKL can retrieve real distant scientific analogues with low lexical overlap.",
+      "target": "Build a frozen real-paper corpus with expert-validated far-domain analogues and near-miss negatives, withheld candidate labels, fixed top-k, and matched lexical, embedding, domain-stripped relational and graph/structural routes.",
+      "registered_metrics": [
+        "far_domain_deep_analogue_recall_at_k",
+        "mean_reciprocal_rank_of_designated_analogues",
+        "recognition_precision_given_retrieval",
+        "contrastive_near_miss_rejection_rate",
+        "route_specific_incremental_recall",
+        "domain_diversity_subject_to_witness_quality",
+        "cost_per_valid_witness"
+      ],
+      "falsifier": "If simple embedding or lexical+embedding retrieval matches all richer routes under the same corpus, model and budget, keep structural routes optional rather than active complexity."
+    },
+    {
+      "fiber_id": "META_N033_PROCESS_LEVEL_SCIENTIFIC_REASONING_BENCHMARK",
+      "status": "OPEN_REINFORCED",
+      "new_metrics": [
+        "corpus_coverage_failure_rate",
+        "retrieval_vs_recognition_localization_accuracy",
+        "analogy_trial_leakage_rate",
+        "posthoc_query_adaptation_rate",
+        "cross_analogy_false_confirmation_rate"
+      ]
+    },
+    {
+      "fiber_id": "META_N032_ADVERSARIAL_METHOD_NOVELTY_REVIEW",
+      "status": "OPEN_REINFORCED_AND_NARROWED",
+      "new_prior_art": [
+        "Analogical Deep Research / CANA mechanism-aligned retrieval and cross-analogy confirmation",
+        "ResearchBench inspiration retrieval / composition / ranking decomposition",
+        "A3E multi-stage analogy annotation",
+        "YARN multi-level abstraction plus structural mapping",
+        "SG-RAG structure-guided subgraph retrieval",
+        "relational-overlap analogy evaluation with plausible semantic distractors"
+      ],
+      "consequence": "Do not claim stage decomposition, structural analogy retrieval, cross-analogy confirmation, abstraction-assisted mapping or relational analogy scoring individually. Any RAKL novelty claim must remain at the narrower evidence-governance / failure-ledger / authority-boundary level."
+    }
+  ],
+  "priority_order_similarity_lane": [
+    "META_N052_REAL_FAR_DOMAIN_RETRIEVAL_BENCHMARK",
+    "META_N049_CORPUS_COVERAGE_AND_RETRIEVAL_ROUTE_ATTRIBUTION",
+    "META_N050_CONTRASTIVE_ANALOGY_NEGATIVES",
+    "META_N051_CROSS_ANALOGY_CONFIRMATION_INDEPENDENCE",
+    "META_N043_MAPPING_CAPACITY_AND_VACUITY_CONTROL",
+    "META_N042_QUERY_FAMILY_EQUIVALENCE_REFINEMENT",
+    "META_N044_DISTINGUISHING_PROBE_MEMORY",
+    "META_N037_RETRIEVAL_RECOGNITION_TRANSFER_SEPARATION",
+    "META_N038_ABSTRACTION_ERASURE_CONTROL",
+    "META_N045_DYNAMICAL_BEHAVIORAL_SIMILARITY_VIEW"
+  ]
+}
