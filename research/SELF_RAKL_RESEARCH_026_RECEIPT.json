@@ -1,0 +1,90 @@
+{
+  "receipt_id":"SELF_RAKL_RESEARCH_026_RECEIPT",
+  "date":"2026-08-09",
+  "object":"EVALUATOR_DEPENDENCY_FULL_SHA_PINNING",
+  "starting_main_sha":"11c8ccbffa65c4ef2922d85e5dcfc966f17fe7de",
+  "constitutional_change":false,
+  "change_class":"B_PROTECTED_WORKFLOW_TRUST_ROOT_MIGRATION",
+  "external_authorization":"Explicit user request to complete the engineering and publication-grade trust chain; scope constrained by the pre-frozen migration benchmark.",
+  "frozen_benchmark":{
+    "artifact":"research/SELF_RAKL_RESEARCH_026_FROZEN_BENCHMARK.json",
+    "commit":"a2c25547c5d6d462717b4acfad75ef91b36315d5",
+    "status":"FROZEN_BEFORE_PROTECTED_WORKFLOW_EDITS"
+  },
+  "dependency_identity":{
+    "checkout":{"repository":"actions/checkout","pinned_sha":"11d5960a326750d5838078e36cf38b85af677262","official_repository_verified":true,"matched_previous_successful_resolution":true},
+    "setup_python":{"repository":"actions/setup-python","pinned_sha":"a26af69be951a213d495a4c3e4e4022e16d87065","official_repository_verified":true,"matched_previous_successful_resolution":true}
+  },
+  "candidate_before_research_artifacts":{
+    "sha":"194d96401a8cc64b59fa5e68d4a2887604680151",
+    "pr_number":3,
+    "pr_test_run_id":31323827001,
+    "pr_test_job_id":93270893511,
+    "test_result":"303_passed_in_9.14s",
+    "pinned_test_steps_observed":true
+  },
+  "incumbent_parent_observation":{
+    "workflow_run_id":31323847238,
+    "job_id":93270942996,
+    "parent_revision":"11c8ccbffa65c4ef2922d85e5dcfc966f17fe7de",
+    "candidate_revision":"194d96401a8cc64b59fa5e68d4a2887604680151",
+    "conclusion":"failure_expected_by_frozen_migration_contract",
+    "parent_evaluator_verdict":"REJECT",
+    "reasons":[
+      "protected input changed: .github/workflows/test.yml",
+      "protected input changed: .github/workflows/trusted-parent-evaluator.yml"
+    ],
+    "counted_as_parent_pass":false,
+    "checker_weakened":false
+  },
+  "workflow_changes":{
+    "mutable_action_refs_before":4,
+    "mutable_action_refs_candidate":0,
+    "full_sha_action_refs_before":0,
+    "full_sha_action_refs_candidate":4,
+    "test_workflow_checkout_substitutions":1,
+    "test_workflow_setup_python_substitutions":1,
+    "trusted_parent_checkout_substitutions":2,
+    "other_workflow_semantics_changed":false,
+    "pyproject_changed":false,
+    "evaluator_code_changed":false,
+    "promotion_code_changed":false,
+    "tests_changed":false
+  },
+  "registered_meta_qoi_improvement":{
+    "mutable_action_reference_count":"4_to_0_positive",
+    "full_sha_action_reference_count":"0_to_4_positive",
+    "action_dependency_identity_matches_last_observed_successful_resolution":true,
+    "non_dependency_workflow_semantics_changed":false
+  },
+  "retained_semantic_objects":[
+    "PROTECTED_EVALUATOR_DEPENDENCY_EXACT_IDENTITY",
+    "TRUST_ROOT_MIGRATION_SEPARATE_FROM_AUTOMATIC_PARENT_PASS",
+    "OBSERVED_RESOLUTION_TO_PIN_TRANSITION",
+    "FUTURE_PIN_UPGRADE_AS_EXPLICIT_SUPERSESSION"
+  ],
+  "not_counted_as_novel":[
+    "full-SHA GitHub Action pinning",
+    "immutable action references",
+    "software supply-chain dependency identity"
+  ],
+  "new_or_reinforced_fibers":[
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE",
+    "META_N089_EVALUATOR_TRUST_ROOT_MIGRATION_PROTOCOL",
+    "META_N090_EVALUATOR_RUNNER_IMAGE_IDENTITY"
+  ],
+  "release_readiness":"NOT_READY_OPEN_REMAINING_TRUST_AND_EMPIRICAL_PROGRAM",
+  "publication_readiness":"PUBLISHABLE_METHOD_SPECIFICATION_AND_REFERENCE_ARTIFACT_EMPIRICAL_SUPERIORITY_OPEN",
+  "saturation":{"state":"ACTIVE_NON_FLAT","engineering_lane":"ACTIVE_NON_FLAT","same_context_flat_rounds":0,"independent_flat_rounds":0},
+  "final_candidate_validation":"PENDING_AFTER_THIS_RECEIPT_COMMIT",
+  "next_ai":{
+    "positive":"After promotion/post-promotion validation, freeze META_N090 or META_N084 before further evaluator/runner trust changes.",
+    "null":"If runner image drift has no registered decision impact and exact observed metadata suffices, do not force hermetic infrastructure merely for completeness.",
+    "refuted":"Any non-whitelisted workflow semantic change, different action SHA, test regression, checker weakening or forced main update blocks migration.",
+    "partial_id":"Hosted runner image/service identity remains a separate partially identified evaluator coordinate.",
+    "blocked":"If official action commit identity or exact candidate execution cannot be verified, do not promote.",
+    "transport":"If main moves before promotion, rebuild on current main while retaining this frozen migration benchmark and expected parent rejection."
+  }
+}
