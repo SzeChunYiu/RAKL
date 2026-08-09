@@ -1,0 +1,102 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_006_RECEIPT",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "starting_main_sha": "d1ef1507153b57da8a77a0af4b6318c6f80589de",
+  "constitutional_change": false,
+  "change_class": "B",
+  "primary_fiber": "META_N023_EVIDENCE_LINEAGE_INDEPENDENCE",
+  "frozen_benchmark_commit": "7bb8899ed2ef20829ade59f00bbd9bda6e40b2ba",
+  "expert_panel_roles": [
+    "research-synthesis statistician",
+    "scientific provenance engineer",
+    "formal-methods engineer",
+    "CI/evaluation systems engineer",
+    "adversarial red-team reviewer"
+  ],
+  "intermediate_candidate_validation": {
+    "sha": "c4c08e8feb52edddc95ca592d0651ff934b7b968",
+    "run_id": 31292916558,
+    "job_id": 93193114001,
+    "workflow": "test",
+    "event": "push",
+    "conclusion": "success",
+    "exact_checkout_sha": "c4c08e8feb52edddc95ca592d0651ff934b7b968",
+    "pytest": "65 passed in 2.77s",
+    "compare_to_frozen_main": {
+      "status": "ahead",
+      "ahead_by": 3,
+      "behind_by": 0,
+      "protected_evaluator_or_config_inputs_changed": false
+    }
+  },
+  "change_summary": {
+    "process_independence": "ResearchRound.independent remains a process/context-independence declaration.",
+    "evidence_independence": "Full independent-flat saturation credit additionally requires complete canonical evidence-lineage identifiers.",
+    "dependence_rule": "Rounds sharing any canonical ancestry cannot both be in the fully independent credited subset.",
+    "count_rule": "Use an exact maximum pairwise-disjoint lineage subset up to lineage_exact_limit; above the limit report a deterministic conservative lower bound and mark it non-exact.",
+    "unknown_lineage_rule": "Incomplete/unknown lineage receives no full evidence-independence credit and is reported as partial identification.",
+    "reopening_rule": "Any new retained semantic object still reopens the flat sequence regardless of lineage."
+  },
+  "registered_meta_qoi_results": {
+    "shared_lineage_false_independence_detection": "IMPROVED_FROM_UNDETECTED_TO_DETECTED",
+    "partial_overlap_visibility": "IMPROVED_FROM_BINARY_HIDDEN_TO_EXPLICIT_OVERLAP_PAIRS",
+    "conservative_independent_flat_lower_bound_accuracy": "IMPROVED_ON_FROZEN_KNOWN_ANSWER_WORLDS",
+    "lineage_uncertainty_honesty": "IMPROVED_WITH_PARTIALLY_IDENTIFIED_LINEAGE_STATE"
+  },
+  "blocking_meta_qois": {
+    "false_saturation_from_shared_ancestry": "PASS_ON_FROZEN_WORLD",
+    "unknown_lineage_silently_independent": "PASS_ON_FROZEN_WORLD",
+    "new_semantic_object_reopens": "PASS_ON_FROZEN_WORLD",
+    "negative_history_preserved": "UNCHANGED",
+    "constitution_preserved": "UNCHANGED"
+  },
+  "retained_semantic_objects": [
+    "PROCESS_VS_EVIDENCE_INDEPENDENCE",
+    "LINEAGE_SET_PACKING_SATURATION",
+    "LINEAGE_PARTIAL_IDENTIFICATION",
+    "CONSERVATIVE_LINEAGE_COUNT_FALLBACK",
+    "LINEAGE_IDENTITY_NORMALIZATION_GAP",
+    "EFFECTIVE_EVIDENCE_DEPENDENCE_GAP",
+    "INTEGRATION_SUBJECT_COORDINATE_GAP_REINFORCED"
+  ],
+  "open_residuals": [
+    {
+      "fiber": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+      "status": "PARTIALLY_IDENTIFIED_NOT_ACTIVATED",
+      "summary": "Source head, base, synthesized integration revision/tree and actual executed revision remain distinct coordinates."
+    },
+    {
+      "fiber": "META_N025_LINEAGE_IDENTITY_NORMALIZATION",
+      "status": "NEW_OPEN",
+      "summary": "Aliases or versions of the same underlying evidence artifact can evade exact string lineage overlap."
+    },
+    {
+      "fiber": "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+      "status": "NEW_OPEN",
+      "summary": "Shared ancestry proves non-independence but does not identify dependence strength or fractional information contribution."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Seven non-duplicate semantic objects/residuals were retained; no flat counter advances."
+  },
+  "final_candidate_validation": {
+    "status": "PENDING_EXACT_SHA_CI_AFTER_RECEIPT_STAGING",
+    "required_before_promotion": true
+  },
+  "promotion": {
+    "status": "NOT_YET_PROMOTED",
+    "rule": "main must remain starting_main_sha until the exact final candidate SHA passes the unchanged test workflow and compare confirms protected evaluator/configuration inputs remain unchanged"
+  },
+  "next_ai": {
+    "positive": "After successful exact-SHA validation and non-forced fast-forward, finalize this receipt with the tested SHA/run and final main SHA. Then freeze META_N024 subject-identity known-answer worlds before any active change.",
+    "null": "If lineage-aware tests add no behavior beyond the incumbent in an externally relevant case, retain the null and do not invent stronger independence claims.",
+    "refuted": "If the disjoint-lineage rule creates a false saturation or rejects a known full-independent world, keep main unchanged and preserve the counterexample.",
+    "partial_id": "If canonical lineage identity is unresolved, use PARTIALLY_IDENTIFIED_LINEAGE and move to META_N025 rather than guessing aliases.",
+    "blocked": "If exact candidate CI or protected-input comparison cannot be observed, record CANNOT_CHECK and do not promote.",
+    "transport": "On transient GitHub/API failure preserve the candidate branch and retry the same frozen benchmark later."
+  }
+}
