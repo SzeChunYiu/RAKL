@@ -1,0 +1,114 @@
+{
+  "round": "035B",
+  "benchmark_id": "RAKL_META_FIBER_REGISTRY_RECONCILIATION_001",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "date": "2026-08-09",
+  "parent_main_sha": "86abda67870c37f85dd9e241c2b3fdf5ce702fc8",
+  "target_fiber": "META_N069_META_FIBER_REGISTRY_RECONCILIATION",
+  "problem": "RAKL cannot trust closure or saturation bookkeeping if immutable ledgers reuse a numeric meta-fiber namespace slot for distinct concepts, redefine the same full fiber identifier incompatibly, reference undefined fibers, or create ambiguous alias/supersession chains.",
+  "frozen_meta_qois": {
+    "blocking_namespace_collision_recall": 1.0,
+    "blocking_definition_conflict_recall": 1.0,
+    "orphan_reference_recall": 1.0,
+    "supersession_or_alias_cycle_recall": 1.0,
+    "false_auto_merge_rate": 0.0,
+    "authority_escalation_rate": 0.0,
+    "input_permutation_nondeterminism_rate": 0.0,
+    "negative_history_erasure_rate": 0.0
+  },
+  "blocking_failures": [
+    "distinct concepts sharing one META_N### namespace slot are reported consistent",
+    "one full fiber identifier with materially different definitions is silently overwritten",
+    "undefined references are treated as resolved",
+    "alias or supersession cycles are accepted",
+    "semantic similarity alone auto-merges two fiber identities",
+    "reconciliation grants scientific, method, target, or saturation authority",
+    "explicitly repaired history disappears from the report",
+    "changing input order changes the canonical report"
+  ],
+  "worlds": [
+    {
+      "id": "W01_unique_definitions_resolved_references",
+      "expected": "CONSISTENT"
+    },
+    {
+      "id": "W02_numeric_slot_reuse_distinct_suffixes",
+      "expected": "CONFLICTED_NAMESPACE_SLOT"
+    },
+    {
+      "id": "W03_same_full_id_different_question",
+      "expected": "CONFLICTED_DEFINITION"
+    },
+    {
+      "id": "W04_reference_without_definition",
+      "expected": "ORPHAN_REFERENCE"
+    },
+    {
+      "id": "W05_repeated_identical_definition_same_source_hash",
+      "expected": "IDEMPOTENT_DUPLICATE"
+    },
+    {
+      "id": "W06_same_source_id_different_hash",
+      "expected": "SOURCE_IDENTITY_CONFLICT"
+    },
+    {
+      "id": "W07_supersession_cycle",
+      "expected": "SUPERSESSION_CYCLE"
+    },
+    {
+      "id": "W08_alias_to_unknown_target",
+      "expected": "ALIAS_TARGET_ORPHAN"
+    },
+    {
+      "id": "W09_alias_cycle",
+      "expected": "ALIAS_CYCLE"
+    },
+    {
+      "id": "W10_alias_chronology_unknown",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "W11_posthoc_alias",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "W12_terminal_old_definition_distinct_new_same_slot",
+      "expected": "CONFLICTED_NAMESPACE_SLOT"
+    },
+    {
+      "id": "W13_semantically_similar_names_without_explicit_alias",
+      "expected": "DISTINCT_IDENTITIES"
+    },
+    {
+      "id": "W14_explicit_alias_preserves_original_negative_history",
+      "expected": "CONSISTENT_WITH_RECONCILIATION_HISTORY"
+    },
+    {
+      "id": "W15_input_permutation",
+      "expected": "DETERMINISTIC_EQUIVALENT_REPORT"
+    },
+    {
+      "id": "W16_current_round033_round034_collision",
+      "expected": "DETECT_N101_TO_N106_SLOT_COLLISIONS"
+    },
+    {
+      "id": "W17_conflict_blocks_saturation_counting",
+      "expected": "NOT_ELIGIBLE_FOR_SATURATION"
+    },
+    {
+      "id": "W18_valid_explicit_renumber_mapping",
+      "expected": "PROPOSAL_ONLY_NO_AUTHORITY"
+    }
+  ],
+  "protected_surfaces": [
+    "docs/CONSTITUTION.md",
+    ".github/workflows/test.yml",
+    ".github/workflows/trusted-parent-evaluator.yml",
+    "src/rakl/evaluator.py",
+    "src/rakl/parent_evaluator.py",
+    "src/rakl/promotion.py",
+    "src/rakl/promotion_attestation.py"
+  ],
+  "promotion_class": "A_SUPPORT_ONLY",
+  "strongest_allowed_claim": "The deterministic support layer detects registered identity/reconciliation failures on the frozen benchmark; real historical registry correctness remains separately auditable."
+}
