@@ -1,5 +1,11 @@
 """Public facade for the Round-036 constructive invention engine."""
 
+from .availability_oracle import (
+    AvailabilityReport,
+    AvailabilityVerdict,
+    SymbolAvailability,
+    check_predictive_availability,
+)
 from .constructive_lattice import ConstructiveKnowledgeState
 from .formal_oracles import (
     DynamicsClock,
