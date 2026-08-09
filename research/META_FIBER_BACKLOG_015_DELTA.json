@@ -1,0 +1,66 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_015_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N053_AI_CAPABILITY_SHAPING_ARCHITECTURE",
+      "status": "IMPLEMENTED_SUPPORT_V1_NOT_DEFAULT",
+      "problem": "RAKL currently evaluates method components mainly by task outcomes but does not explicitly model which AI strengths a research operator exploits, which predictable weaknesses it suppresses, or whether observed gains come from the model, workflow, or added external resources.",
+      "target": "Represent each atomic cognitive operator with a frozen strength/weakness/amplifier/compensator/verifier/handoff contract and evaluate it against a matched simpler baseline.",
+      "implementation": "docs/AI_CAPABILITY_SHAPING.md + src/rakl/capability.py + tests/test_capability.py",
+      "falsifier": "If capability-specific contracts do not improve failure localization, method selection, or measured research performance relative to ordinary workflow ablations, keep the layer descriptive rather than operational."
+    },
+    {
+      "fiber_id": "META_N054_MODEL_SYSTEM_CAPABILITY_ATTRIBUTION",
+      "status": "NEW_OPEN_HIGH_PRIORITY",
+      "problem": "A system can improve because it receives a solver, database, specialist model, better interface, or extra compute, yet this is often conflated with better intrinsic base-model reasoning.",
+      "target": "Develop factorial resource/workflow ablations and provenance so gains can be classified as model-utilization amplification, failure suppression, external substitution, specialist complementation, routing, or unresolved mixed attribution.",
+      "falsifier": "If resource-aware attribution cannot be made reproducible on frozen trials, report only whole-system performance and prohibit finer causal claims."
+    },
+    {
+      "fiber_id": "META_N055_MATCHED_SCAFFOLD_ABLATION_BENCHMARK",
+      "status": "NEW_OPEN_HIGHEST_PRIORITY",
+      "problem": "Synthetic hostile contract tests do not show that capability shaping improves real RAKL research tasks.",
+      "target": "Build same-model same-task same-evaluator comparisons of minimal baseline, smallest targeted compensator, and richer scaffold across decomposition, search, analogy, verification, memory and synthesis.",
+      "registered_metrics": [
+        "task_success_rate",
+        "target_failure_mode_rate",
+        "blocking_validity_violation_rate",
+        "negative_history_loss_rate",
+        "authority_leakage_rate",
+        "information_gain_per_cost",
+        "cost_per_valid_result",
+        "latency_per_valid_result",
+        "capability_attribution_completeness"
+      ],
+      "falsifier": "If richer or targeted scaffolds do not improve at least one registered non-blocking meta-QoI without blocking regressions, retain the simpler baseline."
+    },
+    {
+      "fiber_id": "META_N056_COGNITIVE_OPERATION_CAPABILITY_MAP",
+      "status": "NEW_OPEN",
+      "problem": "The same model has different error profiles across decomposition, retrieval, analogy, mathematics, causal reasoning, synthesis, review, memory and stopping; one global scaffold may help one operation while harming another.",
+      "target": "Estimate operation-specific strength/failure profiles and route the smallest validated compensator per operation rather than globally enabling every method module.",
+      "falsifier": "If operation-specific routing adds no quality/validity/cost advantage over a single simple workflow, do not add a capability-aware router."
+    },
+    {
+      "fiber_id": "META_N057_EXTERNAL_MEMORY_FAILURE_SUPPRESSION",
+      "status": "NEW_OPEN",
+      "problem": "RAKL assumes persistent negative-history and provenance memory suppresses model forgetting, but this has not been measured against a chat-context-only baseline.",
+      "target": "Measure resurrection of refuted hypotheses, contradiction recurrence, and provenance loss with versus without structured external memory on the same model and tasks.",
+      "falsifier": "If structured memory does not reduce registered forgetting/failure rates at acceptable cost, simplify the memory layer."
+    },
+    {
+      "fiber_id": "META_N052_REAL_FAR_DOMAIN_RETRIEVAL_BENCHMARK",
+      "status": "OPEN_REINFORCED_AS_FIRST_CAPABILITY_SHAPING_CASE_STUDY",
+      "new_role": "Use the similarity/JUMP pipeline as the first real matched-model capability-shaping experiment: simple lexical+embedding baseline versus domain-stripped/structural routes, with identical model, corpus, labels, top-k, evaluator and cost accounting."
+    }
+  ],
+  "priority_order": [
+    "META_N055_MATCHED_SCAFFOLD_ABLATION_BENCHMARK",
+    "META_N052_REAL_FAR_DOMAIN_RETRIEVAL_BENCHMARK",
+    "META_N054_MODEL_SYSTEM_CAPABILITY_ATTRIBUTION",
+    "META_N056_COGNITIVE_OPERATION_CAPABILITY_MAP",
+    "META_N057_EXTERNAL_MEMORY_FAILURE_SUPPRESSION",
+    "META_N053_AI_CAPABILITY_SHAPING_ARCHITECTURE"
+  ]
+}

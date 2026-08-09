@@ -139,6 +139,29 @@ The LLM may propose better alternatives for any of these steps. Proposed changes
 
 **The LLM is a proposer and synthesizer, not the authority.** Evidence, invariants, known-answer tests, falsifiers, and explicit governance determine promotion.
 
+## AI capability shaping
+
+RAKL treats the research algorithm as a **capability transformer**, not just a prompt around the model.
+
+For each atomic cognitive operation, a candidate method should declare:
+
+```text
+strengths to exploit
+predictable weaknesses to suppress
+amplification mechanisms
+compensators / externalizers
+verification oracles
+typed handoff / memory contract
+resource additions
+falsifier
+```
+
+The goal is not to add maximum scaffolding. The goal is to use the **smallest targeted compensator** that measurably improves the same model on a frozen task packet without blocking validity regressions.
+
+RAKL distinguishes model-utilization amplification from system gains caused by external solvers, tools, specialist models, interfaces, or extra resources. System success must not be misreported as intrinsic model improvement.
+
+See `docs/AI_CAPABILITY_SHAPING.md` and `research/SELF_RAKL_RESEARCH_015_FROZEN_BENCHMARK.json`.
+
 ## Design lessons absorbed from `nature-skills`
 
 RAKL adopts several architectural patterns inspired by the open-source `Yuan1z0825/nature-skills` project while remaining a distinct method:
@@ -178,12 +201,13 @@ ARCHITECTURE.md
 docs/
   APPLE_PRINCIPLE.md
   SIMILARITY_ANALOGY_ALGEBRA.md
+  AI_CAPABILITY_SHAPING.md
   SELF_RAKL.md
   NATURE_SKILLS_INTEGRATION.md
 research/
   SIMILARITY_ANALOGY_LOOP_PROTOCOL.md
   SELF_RAKL_RESEARCH_011.md
-  SELF_RAKL_RESEARCH_011_FROZEN_BENCHMARK.json
+  SELF_RAKL_RESEARCH_015_FROZEN_BENCHMARK.json
 skills/
   rakl-core/
     SKILL.md
@@ -195,8 +219,12 @@ schemas/
   projection.schema.json
 src/rakl/
   core.py
+  similarity.py
+  capability.py
 tests/
   test_core.py
+  test_similarity.py
+  test_capability.py
 ```
 
 ## First-use workflow
