@@ -1,0 +1,63 @@
+{
+  "delta_id":"EXTERNAL_FRAMEWORK_ATLAS_025_DELTA",
+  "date":"2026-08-09",
+  "object":"TOKEN_BUDGET_AUTHORITY_AND_RELEASE_ARTIFACT_IDENTITY",
+  "sources":[
+    {
+      "source_id":"HUGGINGFACE_TOKENIZERS_CURRENT",
+      "type":"official_open_source_documentation",
+      "source":"Hugging Face Tokenizers documentation and repository",
+      "urls":["https://huggingface.co/docs/tokenizers/main/api/tokenizer","https://github.com/huggingface/tokenizers"],
+      "projection":"Tokenization is produced by a concrete tokenizer pipeline/model and its preprocessing/postprocessing configuration rather than being an intrinsic model-independent property of text.",
+      "rakl_mapping":["token count authority is scoped to an executed counter implementation/revision","do not promote declared token metadata to exact model budget authority"],
+      "novelty_effect":"tokenizer-specific counting is established infrastructure, not RAKL novelty"
+    },
+    {
+      "source_id":"HUGGINGFACE_MODEL_SPECIFIC_TOKENIZER_SETTINGS_CURRENT",
+      "type":"official_documentation",
+      "source":"Hugging Face Transformers fast-tokenizer documentation",
+      "url":"https://huggingface.co/docs/transformers/en/fast_tokenizers",
+      "projection":"Some tokenizer behavior includes model-specific settings beyond a generic tokenizer artifact.",
+      "rakl_mapping":["model/tokenizer compatibility is a scoped relation and may remain partially identified for hosted providers"],
+      "novelty_effect":"narrows any claim of universal token counting"
+    },
+    {
+      "source_id":"SLSA_BUILD_PROVENANCE_1_2",
+      "type":"official_standard",
+      "source":"SLSA Build Provenance v1.2",
+      "url":"https://slsa.dev/spec/v1.2/build-provenance",
+      "projection":"Build provenance identifies output subjects and build context so consumers can verify artifacts against expectations; cryptographic digests are central artifact identities.",
+      "rakl_mapping":["release manifest binds exact artifact bytes now while richer builder/material provenance remains a separate future layer","artifact provenance does not mint scientific truth"],
+      "novelty_effect":"artifact-digest provenance is established supply-chain practice"
+    },
+    {
+      "source_id":"PYPA_WHEEL_SPEC_CURRENT",
+      "type":"official_standard_documentation",
+      "source":"Python Packaging User Guide wheel/binary-distribution specification",
+      "url":"https://packaging.python.org/en/latest/specifications/binary-distribution-format/",
+      "projection":"Wheel is a standardized Python binary distribution format with explicit distribution metadata and compatibility semantics.",
+      "rakl_mapping":["publication release identity should bind the exact built wheel rather than only source files"],
+      "novelty_effect":"Python distribution formats are standards, not RAKL novelty"
+    },
+    {
+      "source_id":"PYPA_REPRODUCIBLE_ENVIRONMENTS_CURRENT",
+      "type":"official_standard_documentation",
+      "source":"Python Packaging User Guide reproducible-environments specifications",
+      "url":"https://packaging.python.org/en/latest/specifications/section-reproducible-environments/",
+      "projection":"Package/environment selection needs explicit, reproducible dependency identities rather than whatever is available at execution time.",
+      "rakl_mapping":["reinforces evaluator dependency pinning and future release dependency manifests"],
+      "novelty_effect":"reproducible dependency/environment specifications are prior art"
+    }
+  ],
+  "retained_rakl_objects_after_deduplication":[
+    "SCOPED_TOKEN_MEASUREMENT_AUTHORITY",
+    "STRICT_BUDGET_CANNOT_CHECK_WITHOUT_EXACT_COUNTER",
+    "PACKET_COUNTER_SUBJECT_BINDING",
+    "DETERMINISTIC_RELEASE_ARTIFACT_IDENTITY_MANIFEST",
+    "RELEASE_PATH_AND_SYMLINK_CONTAINMENT",
+    "ENGINEERING_ARTIFACT_IDENTITY_NO_SCIENTIFIC_AUTHORITY"
+  ],
+  "not_counted_as_paper_novelty":["tokenizers","token counting","cryptographic file digests","release manifests","wheel artifacts","software supply-chain provenance","reproducible environments"],
+  "remaining_rakl_specific_question":"Whether scoped token/artifact authority integrated with RAKL's context compiler, execution receipts and scientific authority separation improves reproducibility/error localization relative to common agent-research packaging practices.",
+  "route_coverage":{"tokenizer_implementation":true,"model_specific_tokenizer_settings":true,"build_provenance_standard":true,"python_distribution_standard":true,"reproducible_environment_standard":true}
+}
