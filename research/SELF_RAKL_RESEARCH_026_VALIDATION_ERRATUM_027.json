@@ -1,0 +1,38 @@
+{
+  "erratum_id": "SELF_RAKL_RESEARCH_026_VALIDATION_ERRATUM_027",
+  "date": "2026-08-09",
+  "supersedes_authority_of": "research/SELF_RAKL_RESEARCH_026_VALIDATION.json",
+  "original_history_preserved": true,
+  "verdict": "REFUTED_POSTPROMOTION_CLAIM_NOT_ACTIVE",
+  "observations": {
+    "main_at_round027_start": "a63babbe08a8de11ff6b927ed81150391a1467e9",
+    "main_parent": "11c8ccbffa65c4ef2922d85e5dcfc966f17fe7de",
+    "round026_pr": 3,
+    "round026_pr_state": "closed_unmerged",
+    "round026_candidate_branch": "self-rakl/round026-evaluator-pinning",
+    "round026_candidate_head": "b29030f5e0cceb60ff7a601334bdd66fdaf908df",
+    "claimed_promoted_sha_in_original_validation": "d63139040bbf22c54aa8009c3950d43eac6f368c",
+    "claimed_promoted_sha_resolves_in_repository": false,
+    "active_test_workflow_at_round027_start": {
+      "checkout_ref": "actions/checkout@v4",
+      "setup_python_ref": "actions/setup-python@v5",
+      "therefore_round026_pins_active": false
+    }
+  },
+  "diagnosis": [
+    "The Round-026 candidate validation evidence and the active-repository promotion event were conflated.",
+    "A green or otherwise validated candidate does not prove that the branch ref moved.",
+    "A post-promotion validation document cannot grant authority to an unreachable or nonexistent claimed promoted subject.",
+    "The original validation file is retained as immutable negative history; this erratum removes its authority rather than rewriting it."
+  ],
+  "reopen_actions": [
+    "freeze Round-027 post-promotion ref-state benchmark before repair",
+    "add a fail-closed post-promotion attestation contract",
+    "replay the exact Round-026 full-SHA dependency migration under preserved prior benchmark evidence",
+    "require exact candidate CI and immediate main identity recheck",
+    "perform a real non-forced main ref update",
+    "verify active-main ancestry/content after update",
+    "only then issue a new post-promotion validation receipt"
+  ],
+  "authority_boundary": "This erratum establishes only repository-state contradiction. It does not invalidate the Round-026 candidate's local tests or the security rationale for full-SHA pinning."
+}
