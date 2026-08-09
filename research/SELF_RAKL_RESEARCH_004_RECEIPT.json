@@ -7,10 +7,12 @@
   "frozen_benchmark_commit": "ac96ec72044671fee62c2e726936c3be76577e67",
   "frozen_benchmark_path": "research/SELF_RAKL_RESEARCH_004_FROZEN_BENCHMARK.json",
   "candidate_ref": "self-rakl/round-004-candidate",
+  "candidate_sha": "88955d02b8135db58a0a8c03fe149855c3efb14d",
   "research_status": "NON_FLAT",
-  "promotion_status": "PENDING_FINAL_EXACT_SHA_VALIDATION",
+  "promotion_status": "PROMOTED_SUPPORTING_IMPLEMENTATION_AFTER_EXACT_SHA_VALIDATION",
   "core_philosophy_changed": false,
   "constitutional_change_activated": false,
+  "active_promotion_gate_replaced": false,
   "expert_panel": [
     "evaluator-security/formal-methods engineer",
     "scientific reproducibility/workflow engineer",
@@ -50,7 +52,6 @@
   ],
   "supporting_implementation": {
     "class": "CLASS_A_SUPPORTING_IMPLEMENTATION",
-    "active_promotion_gate_replaced": false,
     "files": [
       "src/rakl/evaluator.py",
       "tests/test_evaluator.py"
@@ -71,7 +72,25 @@
       "conclusion": "success",
       "pytest": "51 passed in 2.79s"
     },
-    "final_exact_sha_ci": "PENDING_AFTER_THIS_RECEIPT_COMMIT"
+    "final_exact_sha_ci": {
+      "sha": "88955d02b8135db58a0a8c03fe149855c3efb14d",
+      "run": 31288837675,
+      "job": 93182442474,
+      "conclusion": "success",
+      "pytest": "51 passed in 2.52s",
+      "checkout_log_confirmed_exact_sha": true
+    }
+  },
+  "promotion_verification": {
+    "main_before_verdict": "ac96ec72044671fee62c2e726936c3be76577e67",
+    "candidate_compare_status": "ahead",
+    "candidate_ahead_by": 6,
+    "candidate_behind_by": 0,
+    "merge_base_is_frozen_main": true,
+    "promotion_action": "non-forced fast-forward main to exact tested candidate SHA",
+    "promotion_succeeded": true,
+    "tested_candidate_became_main": "88955d02b8135db58a0a8c03fe149855c3efb14d",
+    "hostile_branch_preserved_unmerged": true
   },
   "research_routes": [
     "in-toto software supply-chain authorization/provenance",
@@ -128,12 +147,12 @@
     "META_N013_ASSUMPTION_TRUTH_MAINTENANCE"
   ],
   "result_branches": {
-    "positive": "If final exact candidate CI succeeds and main remains the benchmark lineage, fast-forward only the supporting implementation/research candidate; keep hostile branch as negative evidence.",
+    "positive": "Completed for the scoped supporting implementation: exact candidate CI succeeded and main was fast-forwarded afterward; hostile branch remains negative evidence.",
     "null": "If later parent-controlled evaluation adds no detection beyond current primitives, retain the hostile residual and reopen the influence-closure model instead of adding ceremony.",
-    "refuted": "If supporting attestation primitives accept a planted changed/missing frozen input, keep main unchanged, minimize the counterexample and revise the supporting model on a new candidate.",
+    "refuted": "If supporting attestation primitives accept a planted changed/missing frozen input, keep the active promotion judge unchanged, minimize the counterexample and revise the supporting model on a new candidate.",
     "partial_identification": "Promote only evidence-independent supporting data structures whose frozen tests pass; do not wire them into PromotionGate until parent/frozen validation exists.",
-    "blocked": "If final exact candidate checks cannot be observed, record CANNOT_CHECK and do not move main.",
-    "transport_failure": "If one evaluation backend cannot expose command/environment identity, scope its authority to the fields that are externally attested and mark the rest CANNOT_CHECK."
+    "blocked": "If a future exact candidate check cannot be observed, record CANNOT_CHECK and do not move main.",
+    "transport_failure": "If one evaluation backend cannot expose command/environment identity, scope its authority to externally attested fields and mark the rest CANNOT_CHECK."
   },
   "instruction_for_next_ai": "Start from newest main plus this receipt and preserve self-rakl/round-004-hostile-evaluator as negative evidence. Highest-value next experiment is parent-controlled evaluation: run frozen parent tests/config/judge against hostile SHA so candidate-controlled pyproject cannot suppress the suite. Separately freeze N022 decision-QoI and misspecification worlds before implementing a new query/acquisition policy."
 }
