@@ -1,0 +1,52 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_006_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N023_EVIDENCE_LINEAGE_INDEPENDENCE",
+      "status": "IMPLEMENTED_V1_CANDIDATE_CI_PASS",
+      "evidence": "Frozen round-006 hostile worlds now distinguish process independence from evidence-lineage independence. Shared canonical ancestry reduces full independent-flat credit; disjoint complete lineages receive separate credit; missing lineage remains partially identified.",
+      "implementation": "ResearchRound.evidence_lineage + lineage_complete, SaturationTracker.independence_diagnostic(), exact maximum disjoint-lineage subset up to a configured limit and explicit conservative lower-bound fallback above it.",
+      "remaining_gap": "Canonical lineage identity is assumed. Alias/version normalization and graded dependence strength are separate open child fibers."
+    },
+    {
+      "fiber_id": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+      "status": "RESEARCH_REINFORCED_PARTIALLY_IDENTIFIED_NOT_ACTIVATED",
+      "evidence": "GitHub documents pull_request GITHUB_SHA/ref as the synthesized merge branch while workflow/check-suite APIs expose the source head_sha; the preserved round-005 merge revision has base and source as distinct parents.",
+      "remaining_gap": "Need trusted parent-owned attestation of source, base, integration tree/revision and executed revision at evaluation time. Do not infer exact executed-subject authority from source head alone."
+    },
+    {
+      "fiber_id": "META_N025_LINEAGE_IDENTITY_NORMALIZATION",
+      "status": "NEW_OPEN",
+      "problem": "The same dataset, sample, benchmark or derived artifact can appear under different URLs, DOIs, repository paths, dataset names or versions. Exact string-disjoint lineage IDs can therefore create false independence.",
+      "target": "Build an evidence-identity ledger with canonical entity/version IDs, alias/specialization relations, and cannot-check states when identity cannot be resolved.",
+      "required_known_answer_worlds": [
+        "two aliases of the same dataset version collapse before independence counting",
+        "two genuinely different versions with overlapping records preserve an overlap coordinate rather than forced same/different",
+        "derived datasets retain ancestry to their common raw source",
+        "unresolved alias identity blocks full independence instead of guessing"
+      ]
+    },
+    {
+      "fiber_id": "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+      "status": "NEW_OPEN",
+      "problem": "Shared ancestry proves that full independence is not established, but it does not identify the magnitude of dependence or incremental information.",
+      "target": "Only when the domain supplies covariance/sample-overlap/causal-hierarchical structure, estimate effective evidence contribution; otherwise retain the conservative full-independent lower bound.",
+      "required_known_answer_worlds": [
+        "duplicate analysis of identical observations adds zero effective sample independence",
+        "partially overlapping samples produce intermediate dependence when overlap is known",
+        "shared upstream calibration with otherwise disjoint samples is represented without arbitrary fractional credit",
+        "unknown covariance remains partially identified"
+      ]
+    }
+  ],
+  "next_priority_order": [
+    "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+    "META_N025_LINEAGE_IDENTITY_NORMALIZATION",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+    "META_N022_GOAL_ROBUST_INFORMATION_GAIN",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N013_ASSUMPTION_TRUTH_MAINTENANCE"
+  ]
+}
