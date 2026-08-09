@@ -10,6 +10,13 @@ from .core import (
     rank_discriminators,
     semantic_gain,
 )
+from .identity import (
+    EvidenceIdentityEdge,
+    EvidenceIdentityLedger,
+    EvidenceIdentityRelation,
+    LineageResolution,
+)
+from .identity_saturation import IdentityAwareSaturationTracker
 from .promotion import (
     CheckConclusion,
     PromotionDecision,
@@ -24,7 +31,12 @@ __all__ = [
     "CheckConclusion",
     "Context",
     "Discriminator",
+    "EvidenceIdentityEdge",
+    "EvidenceIdentityLedger",
+    "EvidenceIdentityRelation",
+    "IdentityAwareSaturationTracker",
     "KnowledgeFiber",
+    "LineageResolution",
     "Projection",
     "PromotionDecision",
     "PromotionGate",
