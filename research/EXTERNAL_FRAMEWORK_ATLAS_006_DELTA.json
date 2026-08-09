@@ -1,0 +1,60 @@
+{
+  "atlas_delta_id": "EXTERNAL_FRAMEWORK_ATLAS_006_DELTA",
+  "date": "2026-08-09",
+  "entries": [
+    {
+      "source_family": "dependent-effect meta-analysis",
+      "sources": [
+        "Hedges, Tipton & Johnson (2010), Robust variance estimation in meta-regression with dependent effect size estimates, DOI 10.1002/jrsm.5",
+        "Pustejovsky & Tipton (2021), Meta-analysis with Robust Variance Estimation: Expanding the Range of Working Models"
+      ],
+      "projection": "Nominally different estimates can be statistically dependent because they reuse the same individuals, samples, study, laboratory or related data-generating structure. Dependence should be modeled rather than converted into extra precision by counting labels.",
+      "rakl_absorption": "Split independent-flat authority into process/context independence and evidence-lineage independence. Full saturation credit is conservative under shared ancestry; shared lineage does not become a new independent observation merely because a different paper, route or agent reports it.",
+      "scope_limit": "Shared ancestry need not imply zero incremental information. RAKL v1 therefore computes a conservative full-independence lower bound and leaves graded/effective dependence for a future covariance/causal model rather than inventing fractional credit."
+    },
+    {
+      "source_family": "W3C PROV provenance model",
+      "sources": [
+        "https://www.w3.org/TR/prov-dm/",
+        "https://www.w3.org/TR/prov-sem/",
+        "https://www.w3.org/TR/prov-n/"
+      ],
+      "projection": "Provenance is a graph of entities, activities, agents and derivations, with explicit relations for derivation and mechanisms for provenance-of-provenance and alternate/specialized entities.",
+      "rakl_absorption": "Evidence independence should be computed from declared ancestry/derivation coordinates rather than source names alone. The initial executable layer uses canonical lineage IDs; a fuller provenance DAG can later distinguish raw datasets, transformations, analyses and derived evidence packets.",
+      "scope_limit": "A provenance edge documents ancestry, not truth, reliability or the magnitude of statistical dependence."
+    },
+    {
+      "source_family": "OpenLineage operational provenance",
+      "sources": [
+        "https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.md",
+        "https://github.com/OpenLineage/OpenLineage"
+      ],
+      "projection": "Operational lineage distinguishes jobs from runs, records input/output datasets and versions/facets, and uses consistent naming strategies so observed execution ancestry can be reconstructed across systems.",
+      "rakl_absorption": "RAKL lineage should eventually be versioned at the evidence-artifact level instead of treating one paper/source ID as the lineage atom. Dataset identity, version, transformation/run and derived artifact are separate coordinates.",
+      "scope_limit": "OpenLineage is designed for data pipelines, not scientific epistemic independence; its identity model is a useful chart, not a complete evidence model."
+    },
+    {
+      "source_family": "GitHub Actions pull-request execution semantics plus native round-005 trace",
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/variables",
+        "https://github.com/actions/checkout",
+        "RAKL run 31290886159",
+        "RAKL merge revision 33a8f0aea308ab6b26410f85dbb074159ed8517e"
+      ],
+      "projection": "For pull_request workflows GitHub's merge ref / GITHUB_SHA identifies a synthesized merge subject, whereas workflow/check-suite head_sha identifies the source head. Default checkout tests the merge result unless explicitly directed to the source head.",
+      "rakl_absorption": "META_N024 remains open and is now more sharply typed: source-head identity, base identity, integration/merge identity and executed identity are separate coordinates. An attestation must say which subject each verdict actually covers.",
+      "scope_limit": "Round 006 did not activate a new promotion authority for integration identity. Public run/check-suite metadata alone was not treated as proof of the exact executed merge subject."
+    }
+  ],
+  "new_atomic_gaps_after_dedup": [
+    {
+      "fiber_id": "META_N025_LINEAGE_IDENTITY_NORMALIZATION",
+      "gap": "Two lineage strings can refer to the same underlying dataset/artifact/version; string-disjoint IDs can therefore fake evidence independence unless aliases and versions are normalized."
+    },
+    {
+      "fiber_id": "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+      "gap": "Known shared lineage establishes non-independence but does not by itself identify its strength. Fractional/effective information credit requires covariance, overlap, causal or hierarchical structure rather than an arbitrary scalar penalty."
+    }
+  ]
+}
