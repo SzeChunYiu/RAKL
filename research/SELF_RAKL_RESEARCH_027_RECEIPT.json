@@ -1,0 +1,55 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_027_RECEIPT",
+  "date": "2026-08-09",
+  "starting_main_sha": "a63babbe08a8de11ff6b927ed81150391a1467e9",
+  "benchmark_freeze_commit": "ebba54dd62de3e9667c66b81a04be2fa4b1377b9",
+  "candidate_branch": "self-rakl/round027-promotion-ref-state",
+  "change_class": "B_WORKFLOW_TRUST_REPAIR_PLUS_A_SUPPORT_CONTRACT",
+  "constitutional_change": false,
+  "selected_residual": "prior validation asserted a promotion that is absent from active repository history",
+  "negative_history": {
+    "original_round026_validation_preserved": true,
+    "erratum": "research/SELF_RAKL_RESEARCH_026_VALIDATION_ERRATUM_027.json",
+    "prior_round026_candidate_head": "b29030f5e0cceb60ff7a601334bdd66fdaf908df",
+    "prior_round026_candidate_ci": "success",
+    "prior_round026_pr": 3,
+    "prior_round026_pr_merged": false,
+    "prior_claimed_promoted_sha_resolves": false
+  },
+  "candidate_changes": [
+    "add pure post-promotion ref-state attestation classifier",
+    "add hostile tests frozen from Round-027 known-answer worlds",
+    "expose support API",
+    "restore Round-026 full-SHA protected dependency migration and its historical frozen contract",
+    "preserve immutable Round-026 validation erratum",
+    "record external provenance/ref-state prior art and panel review"
+  ],
+  "registered_meta_qois": {
+    "false_positive_promotion_attestations": {"before": 1, "target": 0},
+    "active_ref_truth_coverage": {"before": 0, "target": 1},
+    "mutable_action_references_protected_workflows": {"before": 4, "target": 0},
+    "full_sha_action_references_protected_workflows": {"before": 0, "target": 4}
+  },
+  "required_candidate_checks": [
+    "exact candidate test workflow success",
+    "no regression in existing tests",
+    "protected workflow diff limited to frozen Round-026 action substitutions",
+    "existing trusted parent evaluator rejection, if observed, is preserved as expected negative evidence"
+  ],
+  "promotion_preconditions": [
+    "active main must still equal benchmark freeze commit immediately before ref update",
+    "candidate must be a fast-forward descendant of benchmark freeze commit",
+    "candidate CI must be exact-SHA positive",
+    "main update must use force=false"
+  ],
+  "postpromotion_preconditions_for_authority": [
+    "observed main equals or descends from candidate",
+    "pinned protected workflow content is active",
+    "claimed promoted SHA resolves",
+    "post-promotion exact-active-main test is positive",
+    "original false receipt and erratum remain preserved"
+  ],
+  "status": "CANDIDATE_REQUIRES_EXACT_CI_AND_REAL_REF_UPDATE",
+  "semantic_novelty": "retained: promotion decision/ref update/active subject/postvalidation are distinct authority objects",
+  "saturation_effect": "NON_FLAT_RESET_COUNTERS_TO_ZERO"
+}
