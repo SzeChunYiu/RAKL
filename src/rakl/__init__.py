@@ -107,6 +107,15 @@ from .identity import (
     LineageResolution,
 )
 from .identity_saturation import IdentityAwareSaturationTracker
+from .measurement import (
+    MeasurementMapping,
+    MeasurementRelationReport,
+    MeasurementRelationTrial,
+    MeasurementRelationVerdict,
+    MeasurementSpecification,
+    ObservationProbe,
+    evaluate_measurement_relation,
+)
 from .multires_memory import (
     MemoryView,
     MemoryViewKind,
@@ -250,6 +259,11 @@ __all__ = [
     "LiftVerdict",
     "LineageResolution",
     "MappingAdmissibility",
+    "MeasurementMapping",
+    "MeasurementRelationReport",
+    "MeasurementRelationTrial",
+    "MeasurementRelationVerdict",
+    "MeasurementSpecification",
     "MemoryView",
     "MemoryViewKind",
     "MemoryViewReport",
@@ -259,6 +273,7 @@ __all__ = [
     "MetricKind",
     "MotifVerdict",
     "ObstructionType",
+    "ObservationProbe",
     "OperatorReport",
     "OperatorVerdict",
     "OverlapTransition",
@@ -304,6 +319,7 @@ __all__ = [
     "evaluate_bridge_transfer",
     "evaluate_capability_shaping",
     "evaluate_generator_relation",
+    "evaluate_measurement_relation",
     "evaluate_method_assimilation",
     "evaluate_retrieval_route_trial",
     "freeze_source_snapshot",

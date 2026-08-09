@@ -1,0 +1,66 @@
+{
+  "round": 37,
+  "date": "2026-08-09",
+  "search_angle": "metrology + sensor ontology + inverse-problem identifiability + open-source uncertainty software",
+  "materially_different_from_recent_similarity_routes": true,
+  "projections": [
+    {
+      "source": "JCGM/BIPM VIM 3",
+      "url": "https://jcgm.bipm.org/vim/en/2.41.html",
+      "projection": "metrological traceability is a property of a measurement result connected to a reference through a documented calibration chain, with calibration uncertainty contributing along the chain",
+      "rakl_mapping": ["measurement_result_identity", "calibration_chain", "traceability_reference", "uncertainty_context"],
+      "semantic_novelty": "PRIOR_ART_CONFIRMATION"
+    },
+    {
+      "source": "JCGM/BIPM VIM 3 measurement model",
+      "url": "https://jcgm.bipm.org/vim/en/2.48.html",
+      "projection": "the measurand is inferred through a measurement model from input quantities rather than being identical to an instrument indication",
+      "rakl_mapping": ["measurement_model_id", "representation_not_mechanism", "observation_operator_context"],
+      "semantic_novelty": "PRIOR_ART_CONFIRMATION"
+    },
+    {
+      "source": "NIST metrological traceability policy/FAQ",
+      "url": "https://www.nist.gov/metrology/metrological-traceability",
+      "projection": "instrument calibration alone is insufficient to establish traceability of a measurement result; traceability also does not imply fitness for a particular use",
+      "rakl_mapping": ["result_not_instrument_authority", "scope_specific_fitness", "authority_non_escalation"],
+      "semantic_novelty": "PRIOR_ART_CONFIRMATION"
+    },
+    {
+      "source": "W3C Semantic Sensor Network Ontology — 2023 Edition",
+      "url": "https://www.w3.org/TR/vocab-ssn-2023/",
+      "projection": "observation, observable property, feature of interest, sensor/system, procedure and result are distinct semantic roles",
+      "rakl_mapping": ["typed_measurement_specification", "ontology_role_separation"],
+      "semantic_novelty": "PRIOR_ART_CONFIRMATION"
+    },
+    {
+      "source": "Bakeer, Herbers & Marx 2025",
+      "url": "https://arxiv.org/abs/2511.16628",
+      "projection": "sensor layout and experiment design bound identifiability and uncertainty in an inverse problem, so observational informativeness is observation-design dependent",
+      "rakl_mapping": ["probe_family_relative_equivalence", "sensor_geometry_as_discriminator", "cannot_check_when_unidentifiable"],
+      "semantic_novelty": "ADJACENT_DOMAIN_SUPPORT"
+    },
+    {
+      "source": "PTB measurement uncertainty software / PyDynamic / GUM2DFT",
+      "url": "https://www.ptb.de/cms/en/ptb/fachabteilungen/abt8/fb-84/ag-842/software.html",
+      "projection": "open-source metrology software explicitly propagates uncertainty through dynamic transforms instead of treating transformations as uncertainty-free",
+      "rakl_mapping": ["uncertainty_transform_execution", "META_N121_MEASUREMENT_TRANSFORM_AND_UQ_EXECUTION"],
+      "semantic_novelty": "OPEN_SOURCE_IMPLEMENTATION_PRIOR_ART"
+    }
+  ],
+  "deduplicated_retained_objects": [
+    "measurement-aware similarity certificate distinct from generic structural witness",
+    "observation equivalence indexed by probe family, tolerance, operator/model, uncertainty, resolution and regime",
+    "same observable explicitly non-authoritative for mechanism/generator/target truth",
+    "generic quadrature uncertainty composition refuted without a declared dependence/composition contract",
+    "measurement transform/UQ execution residual separated from support-contract validation"
+  ],
+  "not_counted_as_new": [
+    "measurand",
+    "measurement model",
+    "calibration",
+    "traceability",
+    "sensor ontology",
+    "observability",
+    "uncertainty propagation"
+  ]
+}
