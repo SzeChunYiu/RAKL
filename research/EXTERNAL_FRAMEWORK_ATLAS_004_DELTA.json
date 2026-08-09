@@ -1,0 +1,111 @@
+{
+  "delta_id": "RAKL_EXTERNAL_FRAMEWORK_ATLAS_004",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "routes": [
+    "software supply-chain attestations",
+    "hermetic and reproducible execution",
+    "agent-evaluation scorer/sandbox isolation",
+    "goal-oriented Bayesian experimental design",
+    "robust experimental design under misspecification",
+    "scientific-agent feedback loops"
+  ],
+  "projections": [
+    {
+      "source": "in-toto",
+      "source_type": "primary specification and reference implementation",
+      "urls": [
+        "https://github.com/in-toto/docs/blob/master/in-toto-spec.md",
+        "https://github.com/in-toto/in-toto"
+      ],
+      "facet": "evaluator_integrity",
+      "projection": "Authorization should bind workflow steps to authorized actors plus materials/products and commands; integrity is a property of the full execution chain, not a final success bit.",
+      "rakl_adoption": "Treat the evaluator itself as a content-addressed evidence-producing supply chain with explicit authorized builders and protected inputs.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "SLSA provenance",
+      "source_type": "primary specification",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "facet": "evaluator_integrity",
+      "projection": "A result should identify the subject plus build definition, inputs, builder identity and run details; the builder identity represents a transitive trusted platform boundary.",
+      "rakl_adoption": "Evaluation attestation must bind candidate SHA, evaluator revision, protected materials, command definition, environment specification and authorized builder.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "Reproducible Builds and Bazel hermeticity",
+      "source_type": "primary project documentation",
+      "urls": [
+        "https://reproducible-builds.org/docs/system-images/",
+        "https://bazel.build/basics/hermeticity"
+      ],
+      "facet": "reproducibility",
+      "projection": "Tools, versions, configuration and environment are causally relevant inputs; implicit host/configuration state undermines reproducibility and validation.",
+      "rakl_adoption": "The trusted evaluator perimeter includes configuration and environment specifications, not only test source files and workflow YAML.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "UK AISI Inspect AI",
+      "source_type": "primary open-source evaluation framework",
+      "urls": [
+        "https://github.com/UKGovernmentBEIS/inspect_ai",
+        "https://github.com/UKGovernmentBEIS/inspect_sandboxes"
+      ],
+      "facet": "evaluation_isolation",
+      "projection": "Agent evaluations explicitly separate scorers/components and use isolated sandboxes; current project discussion also treats scorer blindness to specified metadata/state as an integrity concern.",
+      "rakl_adoption": "Open a scorer-information-firewall fiber: evaluator visibility must be specified and leak-tested, not assumed from role labels.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "BED-LLM",
+      "source_type": "primary research paper and implementation",
+      "url": "https://machinelearning.apple.com/research/bed-llm",
+      "facet": "experiment_query_selection",
+      "projection": "LLM belief representations can support sequential query selection by expected information gain rather than query volume.",
+      "rakl_adoption": "Use as one proposal/prior route for N006, but never let LLM confidence itself certify information gain.",
+      "novelty": "RETAINED_SCOPED"
+    },
+    {
+      "source": "goal-oriented Bayesian experimental design",
+      "source_type": "primary research papers",
+      "urls": [
+        "https://arxiv.org/abs/2603.19071",
+        "https://arxiv.org/abs/2606.09010"
+      ],
+      "facet": "experiment_query_selection",
+      "projection": "Optimal design can target uncertainty in a scientific QoI or downstream decision instead of globally reducing parameter/model entropy.",
+      "rakl_adoption": "Upgrade N006 target from generic separation/information gain to decision/QoI-relevant information gain when a downstream QoI is declared.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "robust Bayesian experimental design and LLM Bayesian-optimization evaluation",
+      "source_type": "primary research papers",
+      "urls": [
+        "https://arxiv.org/abs/2503.00185",
+        "https://aclanthology.org/2025.findings-emnlp.1036/"
+      ],
+      "facet": "experiment_query_selection",
+      "projection": "Standard Bayesian utility can be brittle under model misspecification, and LLM experiment-design agents can fail to use observed feedback reliably; hybrid designs separate semantic prior/proposal generation from explicit acquisition/update rules.",
+      "rakl_adoption": "Make robustness-to-belief-misspecification and feedback sensitivity explicit hostile tests; LLM proposes candidates/priors, evidence-updated acquisition governs selection.",
+      "novelty": "RETAINED_NEW_COORDINATE"
+    },
+    {
+      "source": "Robin autonomous scientific discovery",
+      "source_type": "primary paper and repository",
+      "urls": [
+        "https://github.com/Future-House/robin",
+        "https://www.nature.com/articles/s41586-026-09917-4"
+      ],
+      "facet": "closed_loop_science",
+      "projection": "Literature, hypothesis generation, experiment proposal, result interpretation and hypothesis revision can be integrated into an agentic research loop.",
+      "rakl_adoption": "Reinforces existing residual-driven recursive RAKL loop; no new constitutional coordinate retained.",
+      "novelty": "REINFORCING_DEDUPED"
+    }
+  ],
+  "deduplication_notes": [
+    "Supply-chain attestations, reproducible builds and hermeticity overlap on execution integrity but contribute distinct coordinates: authorization/provenance, environment reproducibility and dependency isolation.",
+    "Goal-oriented information gain is not merged with generic entropy reduction because a query can be globally informative yet irrelevant to the declared QoI/decision.",
+    "Agent evaluation sandboxing is not treated as scientific evidence authority; it is an evaluator-isolation mechanism.",
+    "Robin is recorded as reinforcement rather than semantic novelty because RAKL already contains hypothesis-experiment-residual recursion."
+  ]
+}
