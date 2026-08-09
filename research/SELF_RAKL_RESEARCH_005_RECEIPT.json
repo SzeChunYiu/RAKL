@@ -1,0 +1,149 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_005_RECEIPT",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "starting_main_sha": "409cfb8bc6e0e3e9156f8235a778c45b09d5c6df",
+  "frozen_benchmark_commit": "561a2c16d9343be03391386e8162eb16a3a2130c",
+  "constitutional_change": false,
+  "promotion_gate_semantics_changed": false,
+  "expert_panel_roles": [
+    "CI/evaluator-security engineer",
+    "scientific reproducibility engineer",
+    "research-synthesis statistician",
+    "decision-theoretic experimental-design scientist",
+    "adversarial red-team reviewer"
+  ],
+  "supporting_candidate": {
+    "branch": "self-rakl/round-005-candidate",
+    "sha": "b8287ad05dcaf3242c354178617df7977e1826d2",
+    "changed_scope": [
+      "src/rakl/parent_evaluator.py",
+      "tests/test_parent_evaluator.py",
+      ".github/workflows/trusted-parent-evaluator.yml"
+    ],
+    "compare_to_frozen_main": {
+      "status": "ahead",
+      "ahead_by": 3,
+      "behind_by": 0,
+      "merge_base": "561a2c16d9343be03391386e8162eb16a3a2130c"
+    },
+    "candidate_ci": {
+      "run_id": 31290820648,
+      "job_id": 93187504734,
+      "workflow": "test",
+      "event": "push",
+      "conclusion": "success",
+      "exact_checkout_sha": "b8287ad05dcaf3242c354178617df7977e1826d2",
+      "pytest": "59 passed in 2.76s"
+    },
+    "prepromotion_main_sha_observed": "561a2c16d9343be03391386e8162eb16a3a2130c",
+    "promotion": "NON_FORCED_FAST_FORWARD",
+    "promoted_behavior_sha": "b8287ad05dcaf3242c354178617df7977e1826d2",
+    "main_push_ci": {
+      "run_id": 31290868846,
+      "workflow": "test",
+      "event": "push",
+      "conclusion": "success"
+    }
+  },
+  "hostile_native_experiment": {
+    "prediction_frozen_before_experiment": true,
+    "branch": "self-rakl/round-005-hostile-evaluator",
+    "source_head_sha": "f4e5a5ac563a067a39a17d91469e41401fdaaeb4",
+    "base_sha": "b8287ad05dcaf3242c354178617df7977e1826d2",
+    "pull_request": 1,
+    "mutations": [
+      "pyproject.toml pytest testpaths redirected from tests to hostile_tests",
+      "hostile_tests/test_smoke.py added with one trivial passing test"
+    ],
+    "candidate_controlled_pr_ci": {
+      "run_id": 31290886159,
+      "job_id": 93187688816,
+      "api_head_sha": "f4e5a5ac563a067a39a17d91469e41401fdaaeb4",
+      "actual_checkout_sha_from_job_log": "33a8f0aea308ab6b26410f85dbb074159ed8517e",
+      "checkout_subject": "synthesized pull-request merge commit",
+      "conclusion": "success",
+      "pytest": "1 passed in 0.71s"
+    },
+    "trusted_parent_observer": {
+      "run_id": 31290896105,
+      "job_id": 93187716545,
+      "workflow": "trusted-parent-evaluator",
+      "event": "workflow_run",
+      "permissions_observed": "contents: read; metadata: read",
+      "trusted_parent_sha": "b8287ad05dcaf3242c354178617df7977e1826d2",
+      "inspected_candidate_source_head_sha": "f4e5a5ac563a067a39a17d91469e41401fdaaeb4",
+      "candidate_code_executed_by_observer": false,
+      "conclusion": "failure",
+      "expected_negative_control": true,
+      "report": {
+        "valid": false,
+        "changed_paths": ["pyproject.toml"],
+        "missing_paths": [],
+        "unsafe_paths": [],
+        "reason": "protected parent input changed: pyproject.toml"
+      }
+    },
+    "pull_request_final_state": "closed_unmerged",
+    "negative_branch_preserved": true,
+    "native_result": "POSITIVE_FOR_PARENT_INTEGRITY_HYPOTHESIS"
+  },
+  "retained_semantic_objects": [
+    {
+      "id": "PARENT_CONTROLLED_PASSIVE_EVALUATOR_INTEGRITY",
+      "status": "IMPLEMENTED_AND_NATIVE_VALIDATED",
+      "summary": "A separately trusted parent observer can reject evaluator-input tampering even when candidate-controlled CI is green, without executing candidate code."
+    },
+    {
+      "id": "EVIDENCE_LINEAGE_INDEPENDENCE",
+      "status": "NEW_RESEARCH_FIBER_NOT_ACTIVATED",
+      "summary": "Different papers/routes/agents are not independent evidence when they share datasets, samples, code, upstream sources or derivation ancestry; saturation independence needs lineage coordinates."
+    },
+    {
+      "id": "INTEGRATION_SUBJECT_IDENTITY",
+      "status": "NEW_NATIVE_RESIDUAL",
+      "summary": "Pull-request API source head and the synthesized merge revision actually executed by checkout can differ; exact evaluation authority must bind source head, base, integration tree/revision and executed subject separately."
+    }
+  ],
+  "reinforced_existing_fibers": [
+    {
+      "fiber": "META_N022_GOAL_ROBUST_INFORMATION_GAIN",
+      "finding": "Goal-oriented design should target declared prediction/decision QoIs, while robust/generalized/maximin design warns against brittle information gain under misspecification.",
+      "activation": "NOT_ACTIVATED"
+    },
+    {
+      "fiber": "META_N021_EVALUATOR_INFORMATION_FIREWALL",
+      "finding": "Privileged observers should execute trusted code only and treat candidate content as passive data under least privilege.",
+      "activation": "PARTIAL_SUPPORTING_IMPLEMENTATION"
+    }
+  ],
+  "source_routes": [
+    "official GitHub Actions security and event documentation",
+    "GitHub Security Lab workflow security guidance",
+    "meta-analysis/evidence-dependence methodology",
+    "goal-oriented and robust Bayesian experimental design",
+    "native hostile GitHub branch/PR experiment"
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Three non-duplicate semantic objects were retained and the integration-subject identity residual reopened evaluator work. Goal-robust information gain was reinforcement of an already-open fiber rather than double-counted as new."
+  },
+  "scope_limits": [
+    "Parent evaluator v1 proves protected-input integrity, not full behavioral correctness.",
+    "workflow_run is itself a privileged context; candidate content must remain passive and least-privileged.",
+    "The observer currently inspects source head while PR test checkout executed a synthesized merge commit; META_N024 is open.",
+    "Evidence-lineage-aware saturation was not activated without an executable frozen benchmark.",
+    "Goal-robust information-gain acquisition was not activated without RAKL-specific known-answer worlds."
+  ],
+  "next_ai": {
+    "positive": "Freeze executable META_N024 worlds first; bind source head, base revision, integration tree/revision and actual executed subject using trusted/external observations. Then stage the smallest challenger and require the parent observer to detect planted subject mismatches.",
+    "null": "If all subject-identity worlds reconcile, preserve the null and move to META_N023 evidence-lineage independence without inventing a defect.",
+    "refuted": "If parent subject binding itself can be bypassed or requires executing candidate code, preserve the counterexample, keep current observer only as a scoped integrity check and search a different trusted-attestation architecture.",
+    "partial_id": "If GitHub exposes some but not all executed-subject coordinates, report partial identification and avoid claiming exact-SHA authority.",
+    "blocked": "If trusted platform observations cannot expose the executed revision, record CANNOT_CHECK rather than accepting candidate-produced metadata as authoritative.",
+    "transport": "On GitHub/API transport failure, do not change promotion/evaluator semantics; preserve candidate/ref state and retry the same frozen experiment in a later run."
+  },
+  "main_at_receipt_parent": "be5ea27848e50ce71e60d4d0c58af0c8f09a10a9"
+}
