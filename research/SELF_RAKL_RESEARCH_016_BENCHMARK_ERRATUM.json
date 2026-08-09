@@ -1,0 +1,40 @@
+{
+  "erratum_id": "SELF_RAKL_RESEARCH_016_BENCHMARK_ERRATUM",
+  "date": "2026-08-09",
+  "benchmark": "research/SELF_RAKL_RESEARCH_016_FROZEN_BENCHMARK.json",
+  "benchmark_commit": "f32cbe43fc4411ca2d2c1788aaa67d5c82321528",
+  "policy": "The frozen benchmark is not rewritten after a source-identity error is discovered. This erratum preserves the original record and supersedes only the affected transport identity for future execution.",
+  "unaffected": {
+    "MIR_manifest": "VALID_AS_PINNED",
+    "MIR_repository": "Anikethh/Methodology-Inspiration-Retrieval",
+    "MIR_revision": "dc0545adffad7cd15c730f4a7bb9388d6440a47c",
+    "MIR_artifact_identities": "VALID_AS_RECORDED"
+  },
+  "affected": {
+    "benchmark_entry": "external_benchmark_manifests[1]",
+    "benchmark_name": "IsoSci",
+    "original_dataset_reference": "qqqqqqx0411/logicisomorphism",
+    "status": "SUPERSEDED_FOR_DATASET_IDENTITY",
+    "reason": "A post-freeze source-identity check found that the recorded dataset reference did not match the currently observed official/current Hugging Face dataset identity."
+  },
+  "correction": {
+    "current_observed_dataset_reference": "isosci/isosci",
+    "access_state": "GATED",
+    "observed_card_summary": {
+      "pair_count": 144,
+      "train_pairs": 80,
+      "test_pairs": 64,
+      "card_last_updated": "2026-05-04"
+    },
+    "exact_immutable_file_identity_established_this_run": false,
+    "execution_status_this_run": "CANNOT_CHECK",
+    "reason": "Gated dataset bytes and an exact immutable file-level identity were not established through the available runtime."
+  },
+  "authority_consequence": [
+    "No Round-016 IsoSci execution result is valid or claimed.",
+    "The MIR benchmark contract and support implementation are unaffected.",
+    "Any future IsoSci execution must start from a newly frozen corrected packet after exact access, revision/file identity, split identity and hidden-label policy are established.",
+    "The original wrong reference remains in the frozen benchmark as negative provenance; it must not be silently erased."
+  ],
+  "lesson": "Benchmark and dataset identity are epistemic coordinates, not transport trivia. Source-name familiarity or a plausible dataset identifier is insufficient evidence of corpus identity."
+}
