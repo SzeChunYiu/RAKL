@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/formalism.schema.json",
+  "title": "RAKL Typed Formalism Candidate",
+  "type": "object",
+  "required": [
+    "formalism_id",
+    "object_id",
+    "symbols",
+    "equations",
+    "mechanism",
+    "parent_formalism_ids",
+    "invention_move_ids"
+  ],
+  "$defs": {
+    "expression": {
+      "type": "object",
+      "required": ["op"],
+      "properties": {
+        "op": {
+          "enum": ["SYMBOL", "CONSTANT", "ADD", "SUB", "MUL", "DIV", "POW", "NEG", "FUNCTION", "DERIVATIVE", "EXPECTATION", "SUM", "INTEGRAL", "PIECEWISE"]
+        },
+        "args": {"type": "array", "items": {"$ref": "#/$defs/expression"}},
+        "symbol": {"type": ["string", "null"]},
+        "value": {"type": ["number", "null"]},
+        "function_name": {"type": ["string", "null"]},
+        "variable": {"type": ["string", "null"]},
+        "order": {"type": "integer", "minimum": 1},
+        "metadata": {"type": "object", "additionalProperties": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "formalism_id": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string", "minLength": 1},
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "role", "domain"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "role": {"enum": ["STATE", "LATENT_STATE", "OBSERVABLE", "PARAMETER", "CONTROL", "NOISE", "CLOCK", "REGIME", "AUXILIARY"]},
+          "domain": {"type": "string", "minLength": 1},
+          "units": {"type": ["string", "null"]},
+          "description": {"type": "string"},
+          "observable_at_decision_time": {"type": ["boolean", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "equations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["equation_id", "lhs", "rhs", "kind"],
+        "properties": {
+          "equation_id": {"type": "string", "minLength": 1},
+          "lhs": {"$ref": "#/$defs/expression"},
+          "rhs": {"$ref": "#/$defs/expression"},
+          "kind": {"enum": ["DEFINITION", "ALGEBRAIC", "DIFFERENTIAL", "STOCHASTIC", "STRUCTURAL", "OBSERVATION", "CONSTRAINT", "OBJECTIVE"]},
+          "regime": {"type": "array", "items": {"type": "string"}},
+          "assumptions": {"type": "array", "items": {"type": "string"}},
+          "unit_balance_passed": {"type": ["boolean", "null"]},
+          "derivation_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "required": ["mechanism_id", "nodes", "edges"],
+      "properties": {
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "nodes": {"type": "array", "items": {"type": "object"}},
+        "edges": {"type": "array", "items": {"type": "object"}},
+        "regime": {"type": "array", "items": {"type": "string"}},
+        "falsifiers": {"type": "array", "items": {"type": "string"}},
+        "source_fiber_ids": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "regimes": {"type": "array", "items": {"type": "string"}},
+    "invariants": {"type": "array", "items": {"type": "object"}},
+    "limit_cases": {"type": "array", "items": {"type": "object"}},
+    "observation_maps": {"type": "array", "items": {"type": "object"}},
+    "symmetries": {"type": "array", "items": {"type": "string"}},
+    "boundary_conditions": {"type": "array", "items": {"type": "string"}},
+    "parent_formalism_ids": {"type": "array", "items": {"type": "string"}},
+    "invention_move_ids": {"type": "array", "items": {"type": "string"}},
+    "evidence_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
