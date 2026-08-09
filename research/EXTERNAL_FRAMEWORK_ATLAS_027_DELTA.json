@@ -1,0 +1,55 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_027_DELTA",
+  "date": "2026-08-09",
+  "object": "POST_PROMOTION_SUBJECT_AND_REF_STATE_ATTESTATION",
+  "sources": [
+    {
+      "source_id": "GITHUB_ARTIFACT_ATTESTATIONS_CURRENT",
+      "type": "official_platform_documentation",
+      "source": "GitHub artifact attestations",
+      "url": "https://docs.github.com/en/actions/concepts/security/artifact-attestations",
+      "projection": "An attestation is useful only when verified; provenance links a concrete subject to where/how it was produced and does not itself prove the subject is secure.",
+      "rakl_mapping": [
+        "a post-promotion receipt must bind a concrete repository subject/ref state",
+        "receipt existence is not equivalent to verification"
+      ],
+      "novelty_effect": "subject-bound provenance and verification are established supply-chain practice"
+    },
+    {
+      "source_id": "GITHUB_ATTESTATION_SUBJECT_DIGEST_CURRENT",
+      "type": "official_platform_documentation",
+      "source": "GitHub artifact attestation generation/verification",
+      "url": "https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations",
+      "projection": "Artifact attestations bind claims to an explicit subject digest such as SHA-256.",
+      "rakl_mapping": ["promotion authority should be subject-identity specific rather than prose-specific"]
+    },
+    {
+      "source_id": "SLSA_V1_2_VERIFY_SUBJECT",
+      "type": "official_standard",
+      "source": "SLSA v1.2 artifact verification",
+      "url": "https://slsa.dev/spec/v1.2/verifying-artifacts",
+      "projection": "Verification checks that an attestation statement subject matches the digest of the artifact being evaluated.",
+      "rakl_mapping": ["claimed active revision must be checked against the actually observed active subject"]
+    },
+    {
+      "source_id": "GIT_PUSH_FAST_FORWARD_CURRENT",
+      "type": "official_version_control_documentation",
+      "source": "Git git-push documentation",
+      "url": "https://git-scm.com/docs/git-push",
+      "projection": "For branch refs, a normal update is fast-forward only when the old destination is an ancestor of the new source; this preserves intervening history.",
+      "rakl_mapping": ["promotion replay should use a non-forced fast-forward and separately verify the resulting active ref"]
+    }
+  ],
+  "retained_rakl_objects_after_deduplication": [
+    "PROMOTION_DECISION_REF_UPDATE_ACTIVE_REF_ATTESTATION_SEPARATION",
+    "POST_PROMOTION_SUBJECT_REACHABILITY_WITNESS",
+    "VALIDATION_RECEIPT_AUTHORITY_REQUIRES_ACTIVE_SUBJECT_MATCH",
+    "IMMUTABLE_ERRATUM_FOR_FALSE_PROMOTION_RECEIPT"
+  ],
+  "not_counted_as_rakl_novelty": [
+    "generic provenance",
+    "subject-digest attestation",
+    "Git fast-forward semantics"
+  ],
+  "remaining_rakl_specific_question": "How a recursively self-modifying research method prevents its own validation ledger from asserting a successful promotion when the active repository ref never actually moved."
+}
