@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/typed-lattice.schema.json",
+  "title": "RAKL Typed Constructive Knowledge Lattice",
+  "type": "object",
+  "required": ["atoms", "compatibility_witnesses"],
+  "properties": {
+    "atoms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["atom_id", "fiber_id", "kind", "label"],
+        "properties": {
+          "atom_id": {"type": "string", "minLength": 1},
+          "fiber_id": {"type": "string", "minLength": 1},
+          "kind": {
+            "enum": [
+              "OBSERVABLE", "REPRESENTATION", "MECHANISM_NODE", "MECHANISM_EDGE",
+              "EQUATION", "EXPRESSION", "ASSUMPTION", "REGIME", "OBSERVATION_MODEL",
+              "COARSE_GRAINING", "INVARIANT", "SYMMETRY", "FALSIFIER", "DATA_PRODUCT",
+              "INFERENCE_METHOD", "QOI", "CAUSAL_RELATION", "FAILURE_MOTIF", "ANALOGY_MOTIF"
+            ]
+          },
+          "label": {"type": "string", "minLength": 1},
+          "evidence_ids": {"type": "array", "items": {"type": "string"}},
+          "formal_payload_ref": {"type": ["string", "null"]},
+          "payload": {"type": "object", "additionalProperties": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "compatibility_witnesses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["left_atom_id", "right_atom_id", "relation", "reason"],
+        "properties": {
+          "left_atom_id": {"type": "string", "minLength": 1},
+          "right_atom_id": {"type": "string", "minLength": 1},
+          "relation": {"enum": ["COMPATIBLE", "INCOMPATIBLE", "CONDITIONAL", "UNKNOWN"]},
+          "reason": {"type": "string", "minLength": 1},
+          "condition": {"type": ["string", "null"]},
+          "evidence_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

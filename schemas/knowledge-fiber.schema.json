@@ -150,6 +150,100 @@
           "independent": {"type": "boolean"}
         }
       }
+    },
+    "residual_signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["residual_id", "kinds", "description"],
+        "properties": {
+          "residual_id": {"type": "string", "minLength": 1},
+          "kinds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "DISTRIBUTION", "TEMPORAL", "REGIME", "TAIL", "VOLATILITY",
+                "CROSS_ASSET", "CROSS_VENUE", "FLOW_LIQUIDITY", "OBSERVATION",
+                "CLOCK", "CAUSAL", "IDENTIFIABILITY", "CALIBRATION", "TRANSPORT",
+                "PREDICTIVE", "UNCLASSIFIED"
+              ]
+            }
+          },
+          "description": {"type": "string", "minLength": 1},
+          "implicated_fiber_ids": {"type": "array", "items": {"type": "string"}},
+          "failed_candidate_ids": {"type": "array", "items": {"type": "string"}},
+          "evidence_ids": {"type": "array", "items": {"type": "string"}},
+          "diagnostics": {"type": "object", "additionalProperties": {"type": ["number", "string"]}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "formalism_candidate_ids": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "invention_moves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["move_id", "operator", "rationale", "residual_ids"],
+        "properties": {
+          "move_id": {"type": "string", "minLength": 1},
+          "operator": {
+            "enum": [
+              "COMPOSE", "RECOMBINE", "ADD_LATENT_STATE", "REMOVE_LATENT_STATE",
+              "SPLIT_REGIME", "MERGE_REGIME", "CHANGE_CLOCK", "COARSE_GRAIN",
+              "FINE_GRAIN", "GENERALIZE", "SPECIALIZE", "TAKE_LIMIT", "DUALIZE",
+              "STOCHASTICIZE", "DETERMINIZE", "ADD_FEEDBACK", "REMOVE_FEEDBACK",
+              "ADD_COUPLING", "REMOVE_COUPLING", "ADD_INTERACTION", "RELAX_ASSUMPTION",
+              "STRENGTHEN_ASSUMPTION", "ADD_INVARIANT", "BREAK_SYMMETRY", "ADD_SYMMETRY",
+              "NONLINEARIZE", "LINEARIZE", "IMPORT_ANALOGICAL_MOTIF",
+              "CHANGE_OBSERVATION_MAP", "EXPLAIN_RESIDUAL"
+            ]
+          },
+          "rationale": {"type": "string", "minLength": 1},
+          "residual_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "source_fiber_ids": {"type": "array", "items": {"type": "string"}},
+          "source_witness_ids": {"type": "array", "items": {"type": "string"}},
+          "declared_before_evaluation": {"type": ["boolean", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "candidate_frontier": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "positive_goal_contract": {
+      "type": "object",
+      "required": [
+        "contract_id",
+        "min_descriptive_coverage",
+        "min_residual_closure",
+        "min_predictive_value",
+        "min_identification",
+        "min_falsifiability",
+        "min_robustness",
+        "negative_results_terminal"
+      ],
+      "properties": {
+        "contract_id": {"type": "string", "minLength": 1},
+        "min_descriptive_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_residual_closure": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_predictive_value": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_identification": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_falsifiability": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_robustness": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_complexity": {"type": ["number", "null"], "minimum": 0},
+        "verification_required": {"type": "boolean"},
+        "thresholds_frozen_before_results": {"type": ["boolean", "null"]},
+        "negative_results_terminal": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "goal_status": {
+      "enum": ["SEARCHING", "GOAL_ACHIEVED", "CANNOT_CHECK", "BLOCKED_INTEGRITY"]
     }
   },
   "additionalProperties": true
