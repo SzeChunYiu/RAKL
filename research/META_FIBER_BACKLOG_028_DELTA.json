@@ -1,0 +1,30 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_028_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N090_EVALUATOR_RUNNER_IMAGE_IDENTITY",
+      "status": "CANDIDATE_PARTIAL_IDENTIFICATION",
+      "problem": "Protected workflows requested ubuntu-latest, allowing future OS-family migration independent of source identity.",
+      "candidate_resolution": "Bind both protected workflows to ubuntu-24.04 while explicitly retaining hosted image-build mutability as an external platform boundary.",
+      "terminal_if_validated": "PARTIALLY_IDENTIFIED",
+      "remaining_bound": "Exact hosted image build and platform runtime are observed per run but not source-pinned by the standard label."
+    },
+    {
+      "fiber_id": "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+      "status": "OPEN_REFINED",
+      "new_evidence": "Round-027B logs expose runner version, image version, OS version, Python version and platform-forced Node runtime; a stable machine-readable per-run environment receipt and package/toolchain identity are still absent."
+    },
+    {
+      "fiber_id": "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+      "status": "OPEN_REFINED",
+      "new_evidence": "Pinning action SHAs and OS family still leaves GitHub-hosted image updates, runner service behavior, action runtime override and dynamically resolved Python packages in the evaluator influence set."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Runner identity remains a live trust-boundary coordinate and the round changes source behavior if validated."
+  }
+}
