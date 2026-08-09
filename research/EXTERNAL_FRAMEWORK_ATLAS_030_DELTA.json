@@ -1,0 +1,83 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_030_DELTA",
+  "date": "2026-08-09",
+  "lane": "exact claim-evidence provenance for scientific mapping witnesses",
+  "semantic_deduplication_applied": true,
+  "projections": [
+    {
+      "id": "W3C_WEB_ANNOTATION_TEXT_SELECTORS",
+      "kind": "primary_standard",
+      "source": "W3C Web Annotation Data Model",
+      "url": "https://www.w3.org/TR/annotation-model/",
+      "retrieved": "2026-08-09",
+      "projection": "The standard defines TextQuoteSelector and TextPositionSelector, including exact quoted text, optional surrounding context and character positions.",
+      "rakl_effect": "Treat exact span selectors as prior art; reuse the structural idea while adding RAKL-specific freeze/source-identity/authority rules.",
+      "novelty_disposition": "TEXT_SELECTOR_MACHINERY_PRIOR_ART"
+    },
+    {
+      "id": "CLAIM_BENCH_2025",
+      "kind": "primary_benchmark_research",
+      "source": "Can AI Validate Science? Benchmarking LLMs on Claim → Evidence Reasoning in AI Papers",
+      "url": "https://aclanthology.org/2025.ijcnlp-long.127/",
+      "retrieved": "2026-08-09",
+      "projection": "CLAIM-BENCH evaluates more than 300 scientific claim-evidence pairs and reports significant model limitations; multi-pass linking improves performance at additional cost.",
+      "rakl_effect": "Generic claim-evidence linking and validation are prior art and empirically nontrivial; use matched real benchmarks rather than assuming an LLM can supply semantic relation labels reliably.",
+      "novelty_disposition": "CLAIM_EVIDENCE_LINKING_PRIOR_ART"
+    },
+    {
+      "id": "EVIDENCEBENCH_COLM_2025",
+      "kind": "open_source_benchmark",
+      "source": "EvidenceBench/EvidenceBench",
+      "url": "https://github.com/EvidenceBench/EvidenceBench",
+      "retrieved": "2026-08-09",
+      "projection": "Open-source biomedical evidence extraction data include sentence-level evidence annotations with human validation and a larger automatically annotated corpus.",
+      "rakl_effect": "Provides a plausible future real-corpus route for exact-span versus source-level provenance ablations; evidence extraction benchmarks are not a RAKL novelty.",
+      "novelty_disposition": "OPEN_SOURCE_EVIDENCE_BENCHMARK_PRIOR_ART"
+    },
+    {
+      "id": "PAPERTRAIL_2026",
+      "kind": "primary_hci_research",
+      "source": "PaperTrail: A Claim-Evidence Interface for Grounding Provenance in LLM-based Scholarly Q&A",
+      "url": "https://arxiv.org/abs/2602.21045",
+      "retrieved": "2026-08-09",
+      "projection": "PaperTrail decomposes scholarly answers and sources into claims and evidence because citation-level provenance is too coarse for rigorous verification.",
+      "rakl_effect": "Granular scholarly claim-evidence provenance is prior art; RAKL narrows its contribution to fail-closed evidence governance and authority boundaries.",
+      "novelty_disposition": "GRANULAR_SCHOLARLY_PROVENANCE_PRIOR_ART"
+    },
+    {
+      "id": "PROVENANCEGUARD_2026",
+      "kind": "primary_preprint_research",
+      "source": "ProvenanceGuard: Source-Aware Factuality Verification for MCP-Based LLM Agents",
+      "url": "https://arxiv.org/abs/2606.18037",
+      "retrieved": "2026-08-09",
+      "projection": "The work treats source attribution as an independent axis from pooled factual support and reports that joint source-plus-relation accuracy can remain difficult when sources are semantically close.",
+      "rakl_effect": "Keep source/span identity separate from semantic evidence relation; exact locator fidelity cannot substitute for relation validation.",
+      "novelty_disposition": "SOURCE_AWARE_VERIFICATION_PRIOR_ART"
+    },
+    {
+      "id": "PROVENAI_2026",
+      "kind": "primary_preprint_research",
+      "source": "ProvenAI: Provenance-Native Traces of Evidence in Generated Answers",
+      "url": "https://arxiv.org/abs/2606.26449",
+      "retrieved": "2026-08-09",
+      "projection": "The framework separates answer correctness, citation fidelity and per-document behavioral influence under intervention.",
+      "rakl_effect": "Do not conflate evidence support provenance with causal generation influence. Round 030 intentionally validates only source/span identity plus externally supplied evidence-review records.",
+      "novelty_disposition": "CITATION_VS_INFLUENCE_SEPARATION_PRIOR_ART"
+    }
+  ],
+  "retained_new_rakl_semantic_objects": [
+    "exact locator fidelity is structurally distinct from semantic evidence relation",
+    "exact source snapshot identity plus span chronology can fail closed on stale or post-hoc evidence links",
+    "proposed-versus-reviewed support/refutation disagreement is preserved as a typed contradiction",
+    "neither exact span provenance nor a reviewed relation record grants scientific/target authority"
+  ],
+  "deduplicated_not_retained_as_new": [
+    "generic text position selector",
+    "generic text quote selector",
+    "generic claim-evidence extraction",
+    "generic sentence-level evidence benchmark",
+    "generic claim-evidence provenance interface",
+    "generic source-aware factuality verification",
+    "generic citation influence analysis"
+  ]
+}

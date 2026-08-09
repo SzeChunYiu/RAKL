@@ -1,0 +1,62 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_030_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+      "status": "VALIDATED_IMPROVEMENT_SUPPORT_LAYER_SEMANTIC_AND_REAL_UTILITY_OPEN",
+      "problem": "Atomic scientific claims could reference source strings without a fail-closed exact source snapshot/span identity contract, allowing stale versions, repeated passages or post-hoc locators to masquerade as grounded evidence.",
+      "implementation": "src/rakl/claim_evidence.py + tests/test_claim_evidence.py + docs/CLAIM_EVIDENCE_PROVENANCE.md",
+      "result": "A frozen source SHA-256 plus exact code-point span/prefix/suffix locator now validates claim-evidence identity separately from an externally supplied semantic review record. Locator fidelity cannot establish semantic support, and neither layer grants scientific/target authority.",
+      "frozen_benchmark_commit": "bc1b81135db550660f1bb631b4e5f217c69120a4",
+      "first_exact_head_validation": {
+        "commit": "a3b88b125982ae03cb4a4c7c58b5b5bae345daeb",
+        "workflow_run": 31326491093,
+        "result": "SUCCESS",
+        "tests": "359 passed in 7.88s"
+      },
+      "remaining_gap": "Automatic claim extraction, semantic relation validation, multi-span aggregation and real scientific utility are untested. Run a matched real claim-evidence benchmark before requiring this representation in generator/gluing/bridge workflows.",
+      "falsifier": "If exact-span provenance does not reduce stale/wrong-source errors or improve failure localization relative to source-level citation baselines, retain it as optional audit metadata rather than mandatory decision-layer complexity."
+    },
+    {
+      "fiber_id": "META_N068_REAL_COMPARATIVE_GENERATOR_BENCHMARK",
+      "status": "OPEN_REFINED_DEPENDENCY",
+      "note": "Future real generator packets should bind generator-support claims to exact source/span provenance where available, while separately scoring semantic relation accuracy and evidence-lineage dependence."
+    },
+    {
+      "fiber_id": "META_N072_REAL_CONTEXTUAL_ATLAS_GLUING_BENCHMARK",
+      "status": "OPEN_REFINED_DEPENDENCY",
+      "note": "Future multi-paper gluing packets should expose exact evidence spans behind transition/compatibility claims so locator failures can be distinguished from semantic or gluing failures."
+    },
+    {
+      "fiber_id": "META_N073_REAL_MULTI_HOP_SCIENTIFIC_BRIDGE_BENCHMARK",
+      "status": "OPEN_REFINED_DEPENDENCY",
+      "note": "Future bridge packets should distinguish exact span identity, semantic relation, path composition and target authority at every hop."
+    },
+    {
+      "fiber_id": "META_N069_META_FIBER_REGISTRY_RECONCILIATION",
+      "status": "OPEN_UNCHANGED",
+      "note": "A deterministic compiler remains needed to reconstruct all fiber definitions/statuses and detect orphan/conflicting references."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "framework_saturation_certificate_allowed": false,
+    "reason": "Round 030 retained a new exact claim-to-source-span provenance contract plus locator/semantic/authority separation after semantic deduplication."
+  },
+  "highest_priority_frontier": [
+    "META_N084_RUNNER_ARTIFACT_AND_ENVIRONMENT_ATTESTATION",
+    "META_N020A_EVALUATOR_INFLUENCE_CLOSURE",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N086_REAL_MODEL_TOKEN_COUNTER_MATRIX",
+    "META_N087_REPRODUCIBLE_DISTRIBUTION_BUILD",
+    "META_N088_ARCHIVAL_RELEASE_IDENTITY",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "META_N068_REAL_COMPARATIVE_GENERATOR_BENCHMARK",
+    "META_N072_REAL_CONTEXTUAL_ATLAS_GLUING_BENCHMARK",
+    "META_N073_REAL_MULTI_HOP_SCIENTIFIC_BRIDGE_BENCHMARK",
+    "META_N069_META_FIBER_REGISTRY_RECONCILIATION"
+  ]
+}
