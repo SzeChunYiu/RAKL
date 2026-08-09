@@ -1,0 +1,116 @@
+{
+  "receipt_id": "SELF_RAKL_RESEARCH_008_RECEIPT",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "starting_main_sha": "a0e3c535412ce790d6baea8f997b689253c3a48a",
+  "constitutional_change": false,
+  "change_class": "B",
+  "primary_fiber": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+  "secondary_fibers": [
+    "META_N028_SUBJECT_SCOPE_AUTHORITY",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N027_IDENTITY_ASSERTION_AUTHORITY",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE"
+  ],
+  "frozen_benchmark_commit": "743441d82dd6663d239d7658c842801a85d927f6",
+  "expert_panel_roles": [
+    "CI execution-provenance engineer",
+    "formal methods / typed-identity engineer",
+    "software supply-chain attestation engineer",
+    "scientific provenance epistemologist",
+    "adversarial benchmark reviewer"
+  ],
+  "intermediate_candidate_validation": {
+    "sha": "0844928275b11cdf253e2461a75d1f73576d645e",
+    "run_id": 31297080787,
+    "job_id": 93203847669,
+    "workflow": "test",
+    "event": "push",
+    "conclusion": "success",
+    "exact_head_sha": "0844928275b11cdf253e2461a75d1f73576d645e",
+    "pytest": "86 passed in 2.93s",
+    "note": "Intermediate exact-SHA authority after supporting module, hostile tests and public API export. Final candidate CI remains mandatory after all round-008 research and receipt commits."
+  },
+  "change_summary": {
+    "evaluation_targets": ["SOURCE_HEAD", "INTEGRATION_RESULT"],
+    "subject_coordinates": [
+      "frozen_source_revision",
+      "frozen_base_revision",
+      "platform_integration_revision",
+      "platform_integration_tree",
+      "executed_revision",
+      "executed_tree"
+    ],
+    "verdicts": [
+      "VALID_REVISION_AND_TREE",
+      "VALID_REVISION",
+      "PARTIALLY_IDENTIFIED_TREE_ONLY",
+      "INVALID",
+      "CANNOT_CHECK"
+    ],
+    "scope_rule": "Matching content trees do not silently establish revision/history identity.",
+    "external_observation_rule": "Candidate-produced platform/execution subject claims receive CANNOT_CHECK rather than authority.",
+    "activation_rule": "subject_identity is supporting infrastructure only; trusted-parent workflow activation requires a separately frozen benchmark"
+  },
+  "registered_meta_qoi_results": {
+    "source_base_integration_executed_coordinates_explicit": "IMPROVED_FROM_CONCEPTUAL_TO_MACHINE_CHECKABLE",
+    "source_head_vs_integration_target": "IMPROVED_WITH_FROZEN_DECLARATION",
+    "tree_only_partial_identification": "IMPROVED_FROM_UNTYPED_GAP_TO_EXPLICIT_VERDICT",
+    "subject_mismatch_auditability": "IMPROVED_WITH_MACHINE_REASONS"
+  },
+  "blocking_meta_qois": {
+    "source_head_not_upgraded_to_integration": "PASS_ON_FROZEN_WORLD",
+    "unobserved_execution_not_authoritative": "PASS_ON_FROZEN_WORLD",
+    "candidate_self_report_not_external_observation": "PASS_ON_FROZEN_WORLD",
+    "tree_identity_not_revision_identity": "PASS_ON_FROZEN_WORLD",
+    "negative_history_preserved": "UNCHANGED",
+    "constitution_preserved": "UNCHANGED"
+  },
+  "retained_semantic_objects": [
+    "EXECUTION_SUBJECT_VECTOR",
+    "DECLARED_EVALUATION_TARGET",
+    "TREE_SCOPED_PARTIAL_AUTHORITY",
+    "META_N028_SUBJECT_SCOPE_AUTHORITY",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING"
+  ],
+  "reinforced_not_double_counted": [
+    "external observation / candidate self-report rejection from evaluator-integrity work",
+    "Git tree versus commit object-scope distinction from round 007"
+  ],
+  "native_residuals": [
+    {
+      "fiber": "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+      "status": "NEW_NATIVE_RESIDUAL_OPEN",
+      "observation": "The round-008 CI log resolved actions/checkout@v4 and actions/setup-python@v5 to concrete action commits at runtime while workflow text remained tag-based.",
+      "effect": "Frozen repository evaluator files do not yet bind the transitive implementation identity of third-party actions/runtime dependencies.",
+      "safety_action": "No protected workflow change is made because this residual was discovered after the round benchmark was frozen; N029 requires its own benchmark."
+    },
+    {
+      "fiber": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+      "status": "SUPPORT_V1_NOT_WORKFLOW_ACTIVATED",
+      "effect": "The new validator cannot receive promotion authority until the trusted-parent workflow can emit externally observed subject coordinates under a separate frozen experiment."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Five non-duplicate semantic objects or child residuals survived deduplication, including one native evaluator-identity residual."
+  },
+  "final_candidate_validation": {
+    "status": "PENDING_EXACT_SHA_CI_AFTER_RECEIPT_STAGING",
+    "required_before_promotion": true
+  },
+  "promotion": {
+    "status": "NOT_YET_PROMOTED",
+    "rule": "main must remain starting_main_sha until the exact final candidate SHA passes the unchanged test workflow, comparison is ahead-only, and existing protected parent evaluator/configuration inputs are unchanged"
+  },
+  "next_ai": {
+    "positive": "After final candidate CI and non-forced fast-forward, write a separate validation artifact. Then freeze META_N029 dependency-pinning worlds before editing any protected evaluator workflow.",
+    "null": "If typed subject identity does not improve downstream evaluator decisions when workflow activation is tested, preserve the null and keep the module support-only.",
+    "refuted": "If a frozen world shows source/integration/tree/revision typing creates false authority or incorrect rejection, preserve the counterexample and do not activate it in promotion authority.",
+    "partial_id": "Tree-only identity remains PARTIALLY_IDENTIFIED_TREE_ONLY when revision/history is unresolved; do not upgrade it for convenience.",
+    "blocked": "If final exact-SHA CI, ahead-only comparison, protected-input checks or current-main identity cannot be observed, record CANNOT_CHECK and do not promote.",
+    "transport": "On transient GitHub/API failure, preserve self-rakl/round-008-candidate and resume against this same frozen benchmark."
+  }
+}
