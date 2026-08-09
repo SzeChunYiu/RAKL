@@ -1,0 +1,133 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_012_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "starting_main_sha": "e39a7d2a6fe9b3c76f2ea68e1b32cdce9cfa8812",
+  "primary_fiber": "META_N042_CONTEXTUAL_METHOD_ASSIMILATION",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "change_class": "A_SUPPORTING_IMPLEMENTATION",
+  "activation_scope": "supporting contract/evaluator only; no automatic method import, routing change, or authority promotion",
+  "registered_meta_qois": [
+    "authority_leakage_rejection",
+    "missing_evidence_cannot_check",
+    "parallel_local_view_preservation",
+    "semantic_equivalence_deduplication",
+    "negative_history_repeat_rejection",
+    "clean_shadow_eligibility_precision"
+  ],
+  "blocking_invariants": [
+    "external method reputation cannot mint scientific authority",
+    "requested authority must stay inside the verified may-mint envelope",
+    "explicit must-not-mint authority is never granted",
+    "missing external provenance or transition evidence returns CANNOT_CHECK",
+    "known failed anti-patterns remain blocking negative history",
+    "incompatible method assumptions remain a parallel local view rather than forced global fusion",
+    "candidate eligibility never equals active promotion"
+  ],
+  "worlds": [
+    {
+      "id": "clean_candidate",
+      "contract": {
+        "component_id": "external.claim_evidence_linker",
+        "source_framework": "ExampleFramework",
+        "source_version": "abc123",
+        "target_fiber": "claim_extraction",
+        "input_schema": ["claim", "source"],
+        "output_schema": ["evidence_packet"],
+        "context_scope": ["scientific_text"],
+        "assumptions": ["source_text_available"],
+        "provenance_ids": ["paper:primary"],
+        "may_mint": ["SOURCE_LINKED"],
+        "must_not_mint": ["MECHANISM_IDENTIFIED"],
+        "transition_map_id": "tm:claim-evidence:v1",
+        "failure_modes": ["span_misalignment"],
+        "dependency_ids": ["parser:v1"],
+        "benchmark_id": "bench:claim-evidence:v1"
+      },
+      "evidence": {
+        "provenance_verified": true,
+        "transition_verified": true,
+        "authority_scope_verified": true,
+        "frozen_benchmark_registered": true,
+        "assumptions_declared": true,
+        "context_scope_declared": true,
+        "external_observation": true,
+        "equivalent_to_incumbent": false,
+        "compatible_with_incumbent": true,
+        "negative_history_match": false,
+        "requested_authorities": ["SOURCE_LINKED"]
+      },
+      "expected": "ELIGIBLE_FOR_SHADOW"
+    },
+    {
+      "id": "self_contradictory_authority_contract",
+      "modify": {"may_mint_add": ["MECHANISM_IDENTIFIED"]},
+      "expected": "REJECT"
+    },
+    {
+      "id": "requested_authority_outside_envelope",
+      "modify_evidence": {"requested_authorities": ["SOURCE_LINKED", "DECISION_USABLE"]},
+      "expected": "REJECT"
+    },
+    {
+      "id": "missing_provenance_observation",
+      "modify_evidence": {"provenance_verified": null},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "candidate_self_report_only",
+      "modify_evidence": {"external_observation": false},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "transition_map_missing",
+      "modify_contract": {"transition_map_id": null},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "transition_map_refuted",
+      "modify_evidence": {"transition_verified": false},
+      "expected": "BLOCK"
+    },
+    {
+      "id": "benchmark_not_frozen",
+      "modify_evidence": {"frozen_benchmark_registered": false},
+      "expected": "BLOCK"
+    },
+    {
+      "id": "authority_scope_not_verified",
+      "modify_evidence": {"authority_scope_verified": null},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "assumption_packet_incomplete",
+      "modify_evidence": {"assumptions_declared": false},
+      "expected": "BLOCK"
+    },
+    {
+      "id": "context_scope_unknown",
+      "modify_evidence": {"context_scope_declared": null},
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "equivalent_to_incumbent",
+      "modify_evidence": {"equivalent_to_incumbent": true},
+      "expected": "EQUIVALENT_TO_INCUMBENT"
+    },
+    {
+      "id": "incompatible_but_locally_valid",
+      "modify_evidence": {"compatible_with_incumbent": false},
+      "expected": "PARALLEL_LOCAL_VIEW"
+    },
+    {
+      "id": "known_negative_history_repeat",
+      "modify_evidence": {"negative_history_match": true},
+      "expected": "REJECT"
+    },
+    {
+      "id": "comparison_status_unknown",
+      "modify_evidence": {"equivalent_to_incumbent": null},
+      "expected": "CANNOT_CHECK"
+    }
+  ],
+  "falsifier": "If a simpler untyped import flag matches all frozen verdicts without authority leakage or forced fusion, the typed assimilation contract does not earn implementation complexity."
+}
