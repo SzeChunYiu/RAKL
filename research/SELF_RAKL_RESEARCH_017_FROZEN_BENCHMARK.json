@@ -1,0 +1,123 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_017_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "COMPARATIVE_GENERATOR_TRANSPORT",
+  "starting_main_sha": "58881dda74ebc2a3fe9ed22ddda98d4d31d25cdb",
+  "status": "FROZEN_BEFORE_ROUND_017_IMPLEMENTATION",
+  "research_question": "Can RAKL distinguish weak shared-category/parent relations from evidence-bearing shared generators, preserve instance-specific deviations and evidence ancestry, and transport only generator-level structure that survives explicit intervention/query/regime checks?",
+  "operators": ["GLUE", "LIFT", "JUMP", "PROJECT"],
+  "registered_meta_qois": [
+    "generator_relation_typing_accuracy",
+    "category_only_false_transfer_rejection_rate",
+    "intervention_or_query_commutation_completeness",
+    "regime_mismatch_rejection_rate",
+    "generator_family_outlier_preservation_rate",
+    "evidence_lineage_independence_honesty",
+    "target_authority_leakage_rate",
+    "cannot_check_honesty_rate",
+    "cost_per_valid_generator_witness"
+  ],
+  "blocking_invariants": [
+    "LLM_PROPOSES_EVIDENCE_GOVERNS",
+    "REPRESENTATION_IS_NOT_MECHANISM",
+    "NEGATIVE_HISTORY_PRESERVED",
+    "SAME_CONTEXT_NOT_INDEPENDENT",
+    "TARGET_TRANSFER_REQUIRES_TARGET_EVIDENCE",
+    "CATEGORY_MEMBERSHIP_IS_NOT_GENERATOR_IDENTITY"
+  ],
+  "worlds": [
+    {
+      "id": "G017_01_CATEGORY_ONLY_FRUIT",
+      "description": "Apple and banana share only a taxonomic fruit category; no mechanism or intervention correspondence is supplied.",
+      "expected": "DISCOVERY_HINT_ONLY"
+    },
+    {
+      "id": "G017_02_SHARED_PARENT_WEAK",
+      "description": "Two objects share a declared parent concept but no generator-level invariance evidence.",
+      "expected": "RETRIEVAL_HINT_ONLY"
+    },
+    {
+      "id": "G017_03_ABSTRACT_SCHEMA_ONLY",
+      "description": "Two systems share a feedback schema at L6 but have different mechanisms and substrates.",
+      "expected": "ANALOGY_PROPOSAL_ONLY"
+    },
+    {
+      "id": "G017_04_MECHANISM_FAMILY_TRANSFER",
+      "description": "Source and target share a mechanism family, typed roles, compatible regime and mapped query semantics, but target evidence has not been run.",
+      "expected": "TRANSFER_HYPOTHESIS_ONLY"
+    },
+    {
+      "id": "G017_05_SHARED_GENERATOR_COMMUTES",
+      "description": "Source and target lift to the same generator and all registered intervention/query probes commute within tolerance.",
+      "expected": "TRANSFER_HYPOTHESIS_ONLY"
+    },
+    {
+      "id": "G017_06_SHARED_GENERATOR_NO_INTERVENTION_CHECK",
+      "description": "A causal shared-generator claim lacks an intervention/query commutation result.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "G017_07_INTERVENTION_MISMATCH",
+      "description": "The proposed shared generator predicts incompatible mapped intervention effects.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "G017_08_DISJOINT_REGIMES",
+      "description": "Source and target map to the same abstract generator name but have no overlapping validity regime for the transported claim.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "G017_09_LEVEL_MISMATCH",
+      "description": "Source and target lifts are certified at different abstraction levels with no explicit level-transition map.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "G017_10_CORE_FEATURE_CONTRADICTION",
+      "description": "A required generator core feature is preserved in one sibling but explicitly NOT_PRESERVED in another.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "G017_11_CORRELATED_LINEAGE_SUPPORT",
+      "description": "Three sibling papers support the same generator signature but all descend from one evidence/theory lineage.",
+      "expected": "CORRELATED_SUPPORT_ONLY"
+    },
+    {
+      "id": "G017_12_MULTI_LINEAGE_MULTI_ENVIRONMENT",
+      "description": "The same generator signature survives across at least two evidence lineages and two environments.",
+      "expected": "CORROBORATED_GENERATOR_PROPOSAL_ONLY"
+    },
+    {
+      "id": "G017_13_OUTLIER_SIBLING",
+      "description": "One sibling violates a required core feature while other siblings support it; the outlier must be preserved, not forced into the generator family.",
+      "expected": "CORROBORATED_WITH_OUTLIER_PRESERVED"
+    },
+    {
+      "id": "G017_14_UNKNOWN_SIBLING",
+      "description": "One sibling has insufficient evidence on a required core feature; it must remain unknown rather than counted as support or refutation.",
+      "expected": "CORROBORATED_WITH_UNKNOWN_PRESERVED"
+    },
+    {
+      "id": "G017_15_TARGET_REFUTES_PROJECTED_CLAIM",
+      "description": "The generator witness remains valid but the transported target-domain claim fails its frozen target test.",
+      "expected": "TARGET_REFUTED_GENERATOR_WITNESS_PRESERVED"
+    },
+    {
+      "id": "G017_16_HIDDEN_LABEL_EXPOSURE",
+      "description": "Evaluator-side generator membership or expected transfer outcome is exposed while constructing the map.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "G017_17_POSTHOC_GENERATOR_EXPANSION",
+      "description": "The generator definition or required core features are changed after inspecting sibling outcomes.",
+      "expected": "TRIAL_INVALID"
+    },
+    {
+      "id": "G017_18_CATEGORY_ESCALATION",
+      "description": "A category-only relation is mislabeled as mechanism/generator evidence to authorize transport.",
+      "expected": "REJECT"
+    }
+  ],
+  "acceptance_rule": "Support code may be promoted only if the exact candidate head passes the unchanged test workflow, all hostile worlds represented by tests behave as frozen, protected evaluator/workflow inputs remain unchanged, and no operation can grant target authority without target evidence.",
+  "null_rule": "If generator-level contracts add no diagnostic separation beyond the existing typed similarity witness on frozen hostile worlds, do not add active workflow complexity; preserve the simpler existing contract.",
+  "authority_boundary": "The benchmark can validate method-control behavior only. It cannot establish that any real scientific generator or transfer is true."
+}
