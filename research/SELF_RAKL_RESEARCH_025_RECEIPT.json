@@ -1,0 +1,81 @@
+{
+  "receipt_id":"SELF_RAKL_RESEARCH_025_RECEIPT",
+  "date":"2026-08-09",
+  "object":"TOKEN_BUDGET_AUTHORITY_AND_RELEASE_ARTIFACT_IDENTITY",
+  "starting_main_sha":"70b3ae7489e0c288c80dd006344f8634ee80bb0b",
+  "constitutional_change":false,
+  "change_class":"A_SUPPORTING_IMPLEMENTATION_PLUS_RESEARCH",
+  "expert_panel_roles":["LLM/tokenization systems engineer","context-budget engineer","software supply-chain/provenance engineer","Python packaging/release engineer","research-artifact reproducibility engineer","adversarial path/tamper/authority reviewer"],
+  "review_independence_note":"Role-separated same-context passes; not counted as independent or blind review.",
+  "frozen_benchmark":{
+    "artifact":"research/SELF_RAKL_RESEARCH_025_FROZEN_BENCHMARK.json",
+    "status":"FROZEN_BEFORE_IMPLEMENTATION",
+    "world_count":20
+  },
+  "implementation_candidate":{
+    "sha":"38eb2141cc7b9cfb1c9c6211d2809231122f5fa8",
+    "workflow_run_id":31323331377,
+    "pytest_job_id":93269649900,
+    "result":"303_passed_in_8.13s",
+    "note":"implementation-level result before research/documentation receipt commits; final candidate requires separate exact-SHA rerun"
+  },
+  "implementation":{
+    "modules":["src/rakl/token_budget.py","src/rakl/release_manifest.py"],
+    "cli_commands":["certify-packet","release-manifest","verify-release"],
+    "tests":["tests/test_token_budget.py","tests/test_release_manifest.py"],
+    "docs":["docs/TOKEN_BUDGET_AUTHORITY.md","docs/RELEASE_ARTIFACT_IDENTITY.md"],
+    "core_properties":[
+      "exact token measurement bound to payload/counter/revision/argv digest",
+      "strict CANNOT_CHECK without an executed exact counter",
+      "exact profile budget WITHIN/OVER classification",
+      "token authority engineering-only",
+      "release manifest full source revision plus exact artifact SHA-256/size",
+      "deterministic artifact ordering/self-digest",
+      "symlink/path escape rejection",
+      "tamper/missing artifact detection",
+      "real wheel build artifact identity verification",
+      "artifact identity engineering-only"
+    ]
+  },
+  "retained_semantic_objects":[
+    "SCOPED_TOKEN_MEASUREMENT_AUTHORITY",
+    "STRICT_BUDGET_CANNOT_CHECK_WITHOUT_EXACT_COUNTER",
+    "PACKET_COUNTER_SUBJECT_BINDING",
+    "DETERMINISTIC_RELEASE_ARTIFACT_IDENTITY_MANIFEST",
+    "RELEASE_PATH_AND_SYMLINK_CONTAINMENT",
+    "ENGINEERING_ARTIFACT_IDENTITY_NO_SCIENTIFIC_AUTHORITY"
+  ],
+  "not_counted_as_novel":["tokenizers","token counting","cryptographic file hashes","release manifests","wheel distributions","software build provenance","reproducible-environment specifications"],
+  "external_sources":["Hugging Face Tokenizers official docs/repository","Hugging Face model-specific tokenizer docs","SLSA Build Provenance v1.2","Python Packaging wheel specification","Python Packaging reproducible environments specifications"],
+  "protected_inputs":{
+    "constitution_changed":false,
+    "test_workflow_changed":false,
+    "trusted_parent_workflow_changed":false,
+    "pyproject_changed":false,
+    "promotion_module_changed":false,
+    "evaluator_module_changed":false,
+    "parent_evaluator_module_changed":false,
+    "preexisting_parent_tests_modified":false
+  },
+  "new_or_reinforced_fibers":[
+    "META_N081_TOKENIZER_BUDGET_CALIBRATION",
+    "META_N082_RELEASE_ARTIFACT_IDENTITY",
+    "META_N086_REAL_MODEL_TOKEN_COUNTER_MATRIX",
+    "META_N087_REPRODUCIBLE_DISTRIBUTION_BUILD",
+    "META_N088_ARCHIVAL_RELEASE_IDENTITY",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE"
+  ],
+  "release_readiness":"NOT_READY_OPEN_TRUST_AND_EMPIRICAL_PROGRAM",
+  "publication_readiness":"PUBLISHABLE_METHOD_SPECIFICATION_AND_REFERENCE_ARTIFACT_EMPIRICAL_SUPERIORITY_OPEN",
+  "saturation":{"state":"ACTIVE_NON_FLAT","engineering_lane":"ACTIVE_NON_FLAT","same_context_flat_rounds":0,"independent_flat_rounds":0},
+  "final_candidate_validation":"PENDING_AFTER_THIS_RECEIPT_COMMIT",
+  "next_ai":{
+    "positive":"Prioritize META_N029 evaluator dependency pinning with a separately frozen Class-B workflow-upgrade benchmark; then real model/tokenizer and archival release worlds.",
+    "null":"If exact tokenizer adapters add negligible value beyond conservative bounds, retain generic counter protocol and avoid provider-specific core dependencies.",
+    "refuted":"Any estimate-as-exact upgrade, over-budget false pass, artifact-tamper false verify, symlink/escape acceptance or engineering-to-scientific authority leakage blocks release.",
+    "partial_id":"Hosted provider tokenizer/build identities remain scoped/partial unless exact evidence exists.",
+    "blocked":"Unavailable exact counter/provenance yields CANNOT_CHECK rather than inferred compatibility.",
+    "transport":"If main moves before promotion, rebuild non-forced while preserving frozen benchmark and all evidence."
+  }
+}
