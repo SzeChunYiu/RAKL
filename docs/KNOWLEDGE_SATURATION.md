@@ -106,7 +106,7 @@ A different paper, agent, wording, repository, or search route can still reuse t
 For full independent-flat credit, a round must therefore satisfy both conditions:
 
 1. its research process/context is genuinely separate under the registered review protocol; and
-2. its evidence ancestry is declared with canonical lineage identifiers sufficiently completely to test overlap with other credited rounds.
+2. its evidence ancestry is declared sufficiently completely to test overlap with other credited rounds.
 
 Among eligible flat rounds, RAKL conservatively credits a **maximum pairwise-lineage-disjoint subset**. Shared ancestry is represented as dependence rather than counted again. If ancestry is missing or incomplete, the round remains process-independent but receives no full evidence-independence credit; the saturation state is then partially identified rather than silently upgraded.
 
@@ -114,7 +114,24 @@ This rule is deliberately conservative. It can delay a saturation declaration wh
 
 For a small number of rounds the executable tracker solves the disjoint-subset problem exactly. If the configured exact-search limit is exceeded, it reports a deterministic lower bound and marks the count as non-exact. A lower bound may postpone saturation; it is not allowed to certify more independence than has actually been demonstrated.
 
-Canonicalization is load-bearing. Two aliases for the same underlying dataset must not be treated as different lineages merely because their strings differ. Until lineage identity normalization is established for a domain, alias uncertainty must be carried as a residual rather than converted into independence.
+### Typed evidence identity normalization
+
+Raw lineage strings are not trusted as identity certificates. RAKL distinguishes at least four relations:
+
+```text
+IDENTICAL_TO
+VERSION_OF
+DERIVED_FROM
+POSSIBLE_ALIAS
+```
+
+Only `IDENTICAL_TO` collapses identifiers into one exact entity. `VERSION_OF` and `DERIVED_FROM` preserve the identity of the specific entity while adding ancestor coordinates used for overlap detection. Thus two dataset versions remain two versions but can still share a resource-family ancestor; two transformed datasets remain distinct artifacts but can still share the same raw-data ancestor.
+
+`POSSIBLE_ALIAS` is deliberately unresolved. If a possible alias touches a lineage used for an independent-flat certificate, that round is marked partially identified and receives no full independence credit until the identity question is resolved. RAKL does not guess that two resources are either the same or different merely because doing so would make the saturation count convenient.
+
+The identity graph must also be structurally coherent. Version/derivation ancestry is directed and acyclic. Exact aliases are canonicalized deterministically before ancestry is expanded. The executable `IdentityAwareSaturationTracker` performs this normalization before the conservative lineage-disjoint count; the incumbent `SaturationTracker` remains available when the caller already supplies canonical lineage IDs.
+
+Identity itself is scoped. A persistent identifier, content object, dataset version, derived artifact, directory/tree state, revision/history object, and repository snapshot are not interchangeable identity coordinates. A future identity assertion should therefore state **what kind of object is claimed identical and by what evidence**, rather than using one untyped notion of sameness.
 
 ### Saturated scoped
 
@@ -122,7 +139,7 @@ Default strong criterion:
 
 - required route coverage is complete;
 - at least 3 trailing same-context eligible flat rounds;
-- at least 3 process-independent **and lineage-qualified** flat rounds, counted conservatively under shared ancestry;
+- at least 3 process-independent **and lineage-qualified** flat rounds, counted conservatively under normalized shared ancestry;
 - no newly discovered contradiction remains unregistered;
 - the semantic ledger, evidence-lineage cutoff and evidence cutoff are frozen for the saturation receipt.
 
