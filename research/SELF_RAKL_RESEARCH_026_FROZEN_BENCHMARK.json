@@ -1,0 +1,92 @@
+{
+  "benchmark_id":"SELF_RAKL_RESEARCH_026_FROZEN_BENCHMARK",
+  "date":"2026-08-09",
+  "starting_main_sha":"11c8ccbffa65c4ef2922d85e5dcfc966f17fe7de",
+  "object":"EVALUATOR_DEPENDENCY_FULL_SHA_PINNING",
+  "status":"FROZEN_BEFORE_PROTECTED_WORKFLOW_CHANGE",
+  "constitutional_change":false,
+  "change_class_target":"B_PROTECTED_WORKFLOW_TRUST_ROOT_MIGRATION",
+  "external_authorization":"User explicitly requested completing the project engineering/trust chain; this authorizes the narrowly frozen Class-B trust-root migration but does not waive tests, exact-diff or evidence requirements.",
+  "target_fibers":["META_N029_EVALUATOR_DEPENDENCY_PINNING","META_N020A_EVALUATOR_INFLUENCE_CLOSURE","META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE"],
+  "frozen_parent_inputs":{
+    ".github/workflows/test.yml":{"blob_sha":"4e32433575f9443a2ff7039138ce6785b1ee150c"},
+    ".github/workflows/trusted-parent-evaluator.yml":{"blob_sha":"0ced9d4928c94fc614ab12fa7df9ea657407e965"}
+  },
+  "observed_resolved_dependencies_from_successful_parent_runs":{
+    "actions/checkout@v4":"11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python@v5":"a26af69be951a213d495a4c3e4e4022e16d87065"
+  },
+  "official_repository_identity_checks_required":[
+    "11d5960a326750d5838078e36cf38b85af677262 must exist in github.com/actions/checkout",
+    "a26af69be951a213d495a4c3e4e4022e16d87065 must exist in github.com/actions/setup-python"
+  ],
+  "allowed_exact_transformations":[
+    {"path":".github/workflows/test.yml","from":"actions/checkout@v4","to":"actions/checkout@11d5960a326750d5838078e36cf38b85af677262","count":1},
+    {"path":".github/workflows/test.yml","from":"actions/setup-python@v5","to":"actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065","count":1},
+    {"path":".github/workflows/trusted-parent-evaluator.yml","from":"actions/checkout@v4","to":"actions/checkout@11d5960a326750d5838078e36cf38b85af677262","count":2}
+  ],
+  "forbidden_changes":[
+    "workflow triggers/events",
+    "permissions",
+    "runner image",
+    "checkout ref/path/persist-credentials settings",
+    "Python version",
+    "pip/install/test commands",
+    "trusted parent evaluator command or PYTHONPATH",
+    "candidate execution boundary",
+    "src/rakl/evaluator.py",
+    "src/rakl/parent_evaluator.py",
+    "src/rakl/promotion.py",
+    "pyproject.toml",
+    "pre-existing tests",
+    "acceptance thresholds"
+  ],
+  "registered_meta_qois":[
+    {"name":"mutable_action_reference_count_protected_workflows","direction":"lower","baseline":4,"required_candidate":0},
+    {"name":"full_sha_action_reference_count_protected_workflows","direction":"higher","baseline":0,"required_candidate":4},
+    {"name":"action_dependency_identity_matches_last_observed_successful_resolution","direction":"boolean","required_candidate":true},
+    {"name":"non_dependency_workflow_semantics_changed","direction":"boolean","required_candidate":false},
+    {"name":"candidate_exact_sha_test_workflow_success","direction":"boolean","required_candidate":true},
+    {"name":"candidate_test_count_regression","direction":"lower_or_equal_zero","required_candidate":0}
+  ],
+  "known_answer_worlds":[
+    {"id":"R26-W01","name":"all_four_action_uses_are_full_sha","expected":"4 full 40-hex official action SHAs and zero mutable tags"},
+    {"id":"R26-W02","name":"pin_matches_observed_checkout_resolution","expected":"checkout SHA exactly 11d5960..."},
+    {"id":"R26-W03","name":"pin_matches_observed_setup_python_resolution","expected":"setup-python SHA exactly a26af69..."},
+    {"id":"R26-W04","name":"test_commands_identical","expected":"pip upgrade, editable test install and pytest command byte-for-byte unchanged"},
+    {"id":"R26-W05","name":"test_trigger_and_python_version_identical","expected":"push/pull_request and Python 3.11 unchanged"},
+    {"id":"R26-W06","name":"trusted_parent_passive_candidate_boundary_unchanged","expected":"candidate is still checkout-only/passive and parent python code only is executed"},
+    {"id":"R26-W07","name":"trusted_parent_permissions_identical","expected":"contents:read only"},
+    {"id":"R26-W08","name":"existing_parent_evaluator_rejects_protected_migration","expected":"when exercised on a PR, current parent evaluator reports REJECT because protected workflow bytes changed; preserve this expected defense rather than weakening checker"},
+    {"id":"R26-W09","name":"pinned_candidate_test_runs_successfully","expected":"exact candidate test workflow success with full-SHA action steps"},
+    {"id":"R26-W10","name":"postmigration_main_test_runs_successfully","expected":"separate exact-main push workflow success after authorized migration"}
+  ],
+  "authorization_model":{
+    "automatic_parent_evaluator":"EXPECTED_TO_REJECT_PROTECTED_CHANGE",
+    "migration_authority":"external user authorization + pre-frozen exact transformation contract + exact candidate test + meta-QoI improvement + immediate main recheck",
+    "checker_weakening_allowed":false,
+    "parent_rejection_interpretation":"expected evidence that protected-change firewall remains intact; it is not relabeled PASS"
+  },
+  "acceptance":{
+    "required":[
+      "official repository identity checks pass for both pinned SHAs",
+      "candidate diff is exactly the four allowed uses substitutions plus frozen research/validation artifacts",
+      "zero forbidden workflow semantic changes",
+      "all accessible repository tests pass on exact candidate SHA",
+      "mutable action reference meta-QoI improves 4 to 0",
+      "full-SHA action reference meta-QoI improves 0 to 4",
+      "if PR parent evaluator executes it must reject as expected; do not call it passing",
+      "main unchanged immediately before non-forced fast-forward"
+    ],
+    "promotion_rule":"one-time externally authorized Class-B migration; non-forced fast-forward only after exact candidate CI success and exact-diff verification"
+  },
+  "falsifiers":[
+    "any pinned SHA differs from the already-observed successful action resolution",
+    "any non-uses workflow semantic changes",
+    "candidate tests fail or test count regresses",
+    "parent evaluator is weakened to make migration pass",
+    "candidate or migration changes pyproject/evaluator/promotion code",
+    "main moves before promotion and candidate is force-updated"
+  ],
+  "history_note_027":"This artifact was originally committed on the Round-026 candidate history before its protected workflow change. Round 027 restores the exact frozen contract into the active lineage while preserving the original branch/PR chronology."
+}
