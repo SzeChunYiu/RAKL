@@ -5,4 +5,4 @@ legacy declaration recovery. Earlier failed Round-041 implementations remain
 recoverable in Git history as immutable negative evidence.
 """
 
-from .meta_history_v3 import *  # noqa: F401,F403
+from .meta_history_v4 import *  # noqa: F401,F403
