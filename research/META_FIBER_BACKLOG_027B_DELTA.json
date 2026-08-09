@@ -1,0 +1,29 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_027B_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N092_PR_TEST_EXECUTED_SUBJECT_BINDING",
+      "status": "NEW_ACTIVE_NON_FLAT",
+      "problem": "The pull_request workflow advertised the PR head SHA in run metadata but default checkout executed the synthetic merge ref, allowing merge-integration evidence to be mislabeled as exact-candidate evidence.",
+      "target": "Explicitly select and assert the candidate head SHA for pull_request runs and github.sha for push runs before installing or testing candidate code.",
+      "falsifier": "If an independently observed GitHub primitive proves executed source identity without explicit checkout/ref assertion, compare it against the explicit binding and retain the simpler equally strong mechanism."
+    },
+    {
+      "fiber_id": "META_N091_POST_PROMOTION_REF_STATE_ATTESTATION",
+      "status": "IMPLEMENTED_SUPPORT_OPEN_PROCESS_VALIDATION",
+      "new_evidence": "The ref-state classifier caught the earlier Round-026 false promotion class, but Round-027 adversarial review exposed a separate executed-test-subject identity coordinate."
+    },
+    {
+      "fiber_id": "META_N029_EVALUATOR_DEPENDENCY_PINNING",
+      "status": "ACTIVE_ON_MAIN_POSTHOC_TESTED_PROCESS_VIOLATION_PRESERVED",
+      "new_evidence": "Pinned action refs are active and passed exact-main push tests, but the original Round-027 pre-promotion PR test was a merge-ref execution and cannot be called exact-head."
+    }
+  ],
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "A second adversarial pass found a new exact-subject identity residual during the same closure run."
+  }
+}
