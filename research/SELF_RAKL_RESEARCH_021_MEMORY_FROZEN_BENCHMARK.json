@@ -1,0 +1,69 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_021_MEMORY_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "MULTI_RESOLUTION_RECONSTRUCTABLE_MEMORY",
+  "fiber": "META_N076_MULTI_RESOLUTION_RECONSTRUCTABLE_MEMORY",
+  "frozen_before_implementation": true,
+  "constitutional_change": false,
+  "change_class_if_implemented": "A_SUPPORTING_IMPLEMENTATION",
+  "panel": [
+    {"role": "cognitive-science/analogy expert", "focus": "preserve relational structure and negative evidence while moving between coarse and fine views"},
+    {"role": "knowledge-representation/ontology expert", "focus": "typed source closure, derivation identity, authority inheritance and erasure semantics"},
+    {"role": "scientific-information-retrieval expert", "focus": "coarse-to-fine navigation without treating summaries as replacement evidence"},
+    {"role": "applied-mathematics/systems expert", "focus": "DAG invariants, deterministic closure and explicit non-invertibility of lossy maps"},
+    {"role": "computational-creativity/search expert", "focus": "multi-resolution exploration without collapsing alternate views"},
+    {"role": "adversarial scientific-method reviewer", "focus": "dangling lineage, stale derivations, false reconstructability and authority escalation"}
+  ],
+  "review_independence_note": "Role-separated passes share one orchestration context and are not independent review.",
+  "meta_qois": [
+    "canonical_leaf_preservation",
+    "transitive_source_closure_completeness",
+    "dangling_lineage_detection",
+    "cycle_detection",
+    "source_hash_pinning",
+    "lossy_erasure_explicitness",
+    "reconstruction_claim_honesty",
+    "authority_non_escalation",
+    "contradiction_side_preservation",
+    "deterministic_navigation",
+    "stale_view_detection",
+    "negative_history_rehydratability"
+  ],
+  "blocking_invariants": [
+    "canonical source records are never replaced by derived views",
+    "every derived view has explicit direct source IDs and pinned source hashes",
+    "transitive source closure terminates at canonical records or validation fails",
+    "cycles and dangling source references fail closed",
+    "lossy views declare an erasure ledger and may not be described as self-reconstructing",
+    "a pointer-backed lossy view may only claim source-rehydratability, not recovery of erased content from the view alone",
+    "a derived view cannot assert an authority class above the strongest authority licensed by all of its required source evidence under the declared authority order",
+    "registered contradiction sides and negative-history roots remain individually reachable from any view that claims to summarize them",
+    "regeneration/reconstruction is only claimed when an explicit witness has been externally verified; a transform name alone is not proof",
+    "input ordering does not change source closure or validation verdict"
+  ],
+  "known_answer_worlds": [
+    {"id": "M01", "name": "canonical leaf", "expected": "VALID_CANONICAL", "condition": "a canonical record has no derived-source dependency"},
+    {"id": "M02", "name": "valid pointer-backed lossy view", "expected": "SOURCE_REHYDRATABLE", "condition": "lossy view pins all direct sources, declares erasures, and reaches canonical roots"},
+    {"id": "M03", "name": "lossy view falsely claims self reconstruction", "expected": "INVALID", "condition": "lossy view declares self-reconstructable without verified reconstruction witness"},
+    {"id": "M04", "name": "dangling source", "expected": "INVALID", "condition": "derived view references a missing source record"},
+    {"id": "M05", "name": "stale source hash", "expected": "INVALID", "condition": "pinned source hash differs from current immutable source record hash"},
+    {"id": "M06", "name": "cycle", "expected": "INVALID", "condition": "derived views form a source cycle"},
+    {"id": "M07", "name": "transitive closure", "expected": "SOURCE_REHYDRATABLE", "condition": "multi-level view reaches every canonical leaf through complete transitive source closure"},
+    {"id": "M08", "name": "authority escalation", "expected": "INVALID", "condition": "derived view declares higher authority than a required source can support"},
+    {"id": "M09", "name": "two-sided contradiction", "expected": "SOURCE_REHYDRATABLE", "condition": "coarse view over a contradiction preserves both source branches as reachable roots"},
+    {"id": "M10", "name": "contradiction side silently dropped", "expected": "INVALID", "condition": "view claims contradiction coverage but only one registered side is reachable"},
+    {"id": "M11", "name": "verified exact regeneration", "expected": "REGENERATION_VERIFIED", "condition": "lossless derived view pins sources and carries an externally verified reconstruction witness"},
+    {"id": "M12", "name": "transform label without witness", "expected": "SOURCE_REHYDRATABLE", "condition": "lossless view names a transform but has no verified reconstruction witness, so exact regeneration is not claimed"},
+    {"id": "M13", "name": "negative-history root", "expected": "SOURCE_REHYDRATABLE", "condition": "a high-level current view retains a reachable refutation/failure source from earlier history"},
+    {"id": "M14", "name": "permutation determinism", "expected": "SAME", "condition": "registry input permutation leaves validation and canonical source closure unchanged"}
+  ],
+  "matched_future_empirical_baselines": [
+    "flat canonical memory only",
+    "rolling summary memory",
+    "vector retrieval over flat memory",
+    "hierarchical memory without source-hash/erasure contracts",
+    "RAKL reconstructable multi-resolution memory"
+  ],
+  "falsifier": "If simpler flat or hierarchical memory preserves the same source recall, negative history, contradiction coverage, downstream decisions and cost under matched tasks, the richer reconstructability layer must remain optional rather than mandatory.",
+  "authority_boundary": "This benchmark can authorize only support-layer memory lineage/reconstruction metadata behavior. It cannot establish scientific truth, real-agent performance or global framework closure."
+}
