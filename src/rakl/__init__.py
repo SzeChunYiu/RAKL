@@ -46,6 +46,13 @@ from .capability import (
     evaluate_capability_shaping,
     validate_capability_operator,
 )
+from .context_compiler import (
+    ContextCompileReport,
+    ContextCompileRequest,
+    ContextCompileVerdict,
+    ContextItem,
+    compile_epistemic_context,
+)
 from .core import (
     Authority,
     Context,
@@ -168,6 +175,10 @@ __all__ = [
     "CapabilityTrialVerdict",
     "CheckConclusion",
     "Context",
+    "ContextCompileReport",
+    "ContextCompileRequest",
+    "ContextCompileVerdict",
+    "ContextItem",
     "CorpusArtifactIdentity",
     "CorpusArtifactReport",
     "CycleConsistencyWitness",
@@ -237,6 +248,7 @@ __all__ = [
     "assess_generator_family",
     "compare_contexts",
     "compare_retrieval_routes",
+    "compile_epistemic_context",
     "corroborate_structural_motif",
     "diagnose_analogy_discovery",
     "evaluate_atlas_gluing",
