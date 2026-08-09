@@ -1,0 +1,80 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_023_DELTA",
+  "date": "2026-08-09",
+  "object": "EXECUTION_PROVENANCE_DUPLICATE_SAFE_RECOVERY",
+  "sources": [
+    {
+      "source_id": "AGENTIC_HARNESS_ENGINEERING_2026",
+      "type": "primary_preprint",
+      "source": "Agentic Harness Engineering, arXiv:2604.25850",
+      "url": "https://arxiv.org/abs/2604.25850",
+      "projection": "Agent reliability depends materially on the execution harness and benefits from observability that links predictions, runtime events and outcomes rather than treating the model alone as the unit of engineering.",
+      "rakl_mapping": [
+        "bind model proposal execution to explicit runtime events and outcomes",
+        "future provider adapters should expose enough trace state to localize model versus harness failures"
+      ],
+      "novelty_effect": "observability-driven harness engineering is prior art"
+    },
+    {
+      "source_id": "OPENTELEMETRY_TRACE_API_CURRENT",
+      "type": "official_standard_documentation",
+      "source": "OpenTelemetry Trace API and specification",
+      "url": "https://opentelemetry.io/docs/specs/otel/trace/api/",
+      "projection": "Distributed execution observability is represented with traces/spans carrying timing, attributes, status, resources and causal parentage.",
+      "rakl_mapping": [
+        "RAKL execution events/receipts should have stable identities and timing suitable for later trace export",
+        "telemetry representation does not grant scientific truth authority"
+      ],
+      "novelty_effect": "trace/span observability semantics are established standards"
+    },
+    {
+      "source_id": "PYTHON_SUBPROCESS_CURRENT",
+      "type": "official_standard_documentation",
+      "source": "Python subprocess documentation",
+      "url": "https://docs.python.org/3/library/subprocess.html",
+      "projection": "subprocess.run provides explicit argv, stdin/stdout/stderr capture, environment and timeout behavior; shell invocation has separate security semantics.",
+      "rakl_mapping": [
+        "local provider runner uses argv sequence with shell=False",
+        "timeout/start/nonzero failures remain distinct execution states"
+      ],
+      "novelty_effect": "safe subprocess execution and timeout semantics are standard-library prior art"
+    },
+    {
+      "source_id": "LANGGRAPH_PERSISTENCE_REINFORCED",
+      "type": "official_open_source_documentation",
+      "source": "LangGraph persistence and durable execution documentation",
+      "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+      "projection": "Checkpointed execution preserves graph state and pending writes for durable recovery and avoids indiscriminate reruns of completed work.",
+      "rakl_mapping": [
+        "terminal RAKL invocation receipts replay without duplicate execution",
+        "ambiguous side-effecting states should fail closed rather than restart blindly"
+      ],
+      "novelty_effect": "durable checkpoint/recovery architecture is prior art"
+    }
+  ],
+  "retained_rakl_objects_after_deduplication": [
+    "PACKET_BOUND_EXECUTION_RECEIPT",
+    "CONTENT_ADDRESSED_RAW_EXECUTION_ARTIFACTS",
+    "APPEND_ONLY_HASH_CHAINED_EXECUTION_EVENTS",
+    "AMBIGUOUS_RUN_RECOVERY_BLOCK",
+    "COMPLETED_INVOCATION_REPLAY_WITHOUT_REEXECUTION",
+    "SECRET_FREE_ENVIRONMENT_IDENTITY_DECLARATION",
+    "RUNNER_INPUT_CONFIGURATION_DELIVERY_CERTIFICATE",
+    "LOCAL_SAME_INVOCATION_EXECUTION_LEASE"
+  ],
+  "not_counted_as_paper_novelty": [
+    "agent execution tracing",
+    "durable checkpoints",
+    "idempotency/retry design",
+    "subprocess isolation",
+    "trace/span observability",
+    "content-addressed raw execution logs"
+  ],
+  "remaining_rakl_specific_question": "Whether binding these execution controls to RAKL's proposal-only epistemic authority, exact task-packet provenance, immutable negative history and separately governed promotion measurably reduces scientific-process failure versus matched agent runtimes.",
+  "route_coverage": {
+    "agent_harness_observability": true,
+    "distributed_trace_standard": true,
+    "local_process_execution": true,
+    "durable_agent_checkpointing": true
+  }
+}
