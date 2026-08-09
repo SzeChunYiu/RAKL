@@ -1,0 +1,70 @@
+{
+  "validation_id": "SELF_RAKL_RESEARCH_041_VALIDATION",
+  "date": "2026-08-09",
+  "object": "META_N069_META_FIBER_REGISTRY_RECONCILIATION_FULL_LEDGER_COMPILER",
+  "frozen_benchmark_commit": "4d66e17094dbc95353e8721b62eed1934c16512a",
+  "starting_main": "41b4d7f0a510fd3d379a0f3060e3ee1c44117aeb",
+  "candidate_branch": "self-rakl/round041-meta-ledger-a09",
+  "negative_history": [
+    {
+      "candidate": "3aedf0146aec4ab300988aee436bedca105b2ae1",
+      "result": "REFUTED_AS_COMPLETE",
+      "tests": "556 passed, 2 failed",
+      "finding": "live compiler exposed 12 unresolved historical identity/schema records rather than silently passing them"
+    },
+    {
+      "candidate": "43b4083ee2445912d01b54065e03db210ccd5c47",
+      "result": "REFUTED_BY_SELF_APPLICATION",
+      "workflow_run_id": 31338999095,
+      "tests": "556 passed, 3 failed",
+      "finding": "new Round-041 backlog accidentally encoded a trial coordinate as undefined pseudo-fiber META_N106_HELD_OUT_MISSING_OPERATOR_DISCOVERY_REAL_MATCHED_TRIAL; the ledger compiler caught it and the backlog was repaired instead of weakening the diagnostic"
+    }
+  ],
+  "final_candidate": {
+    "sha": "c6b190d79c04f98b72e49f04fc7b4a0f0b70473a",
+    "workflow_run_id": 31339034665,
+    "conclusion": "success",
+    "executed_subject_bound": true,
+    "tests": "559 passed",
+    "blocking_regressions": 0,
+    "live_ledger_unresolved_issues": 0
+  },
+  "promotion": {
+    "method": "non-forced fast-forward of main",
+    "pre_promotion_main": "41b4d7f0a510fd3d379a0f3060e3ee1c44117aeb",
+    "promoted_sha": "c6b190d79c04f98b72e49f04fc7b4a0f0b70473a",
+    "candidate_compare": {
+      "ahead_by": 18,
+      "behind_by": 0
+    },
+    "constitution_modified": false,
+    "test_workflow_modified": false,
+    "preexisting_protected_evaluator_modified": false
+  },
+  "post_promotion_main": {
+    "sha": "c6b190d79c04f98b72e49f04fc7b4a0f0b70473a",
+    "workflow_run_id": 31339068323,
+    "conclusion": "success",
+    "executed_subject_bound": true,
+    "tests": "559 passed"
+  },
+  "registered_meta_qoi_improvement": {
+    "artifact_discovery": "automatic pattern-based coverage of the registered machine-readable meta-fiber backlog/reconciliation plane",
+    "live_history": "zero unresolved identity failures after explicit source-scoped repair",
+    "new_failure_suppression": [
+      "Round-027/Round-030 N091 and N092 namespace reuse is now detected and preserved as resolved negative history",
+      "legacy id-under-new_fibers and first-purpose child declarations are recovered structurally",
+      "undefined pseudo-fiber references fail closed, including one introduced by Round 041 itself"
+    ],
+    "authority_escalation_count": 0
+  },
+  "disposition": "VALIDATED_IMPROVEMENT_MACHINE_READABLE_FULL_LEDGER_COMPILER",
+  "scope_limit": "This closes the registered machine-readable historical ledger compiler coordinate. It does not authorize semantic identity inference from arbitrary prose and does not grant scientific, method, target, independent-review or framework-saturation authority.",
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "framework_saturation_certificate_allowed": false,
+    "reason": "Round 041 retained a new validated compiler contract and exposed/reconciled a previously unknown real namespace collision."
+  }
+}
