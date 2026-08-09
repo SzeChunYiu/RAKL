@@ -1,0 +1,76 @@
+{
+  "round": 41,
+  "date": "2026-08-09",
+  "object": "RAKL_KNOWLEDGE_SPACE_TOKEN_EFFICIENCY",
+  "status": "FROZEN_BEFORE_ROUND041_EFFICIENCY_HARDENING",
+  "question": "Can the canonical scientific archive and method history grow substantially without proportional growth in the active LLM context for an unchanged target, while preserving all mandatory epistemic material and useful target coverage?",
+  "core_invariant": "storage growth must not imply prompt growth",
+  "primary_quantities": {
+    "mandatory_recall": "|mandatory selected| / |mandatory relevant|",
+    "required_coverage_recall": "|required coverage atoms materialized| / |required coverage atoms|",
+    "active_token_ratio": "active prompt/context tokens / registered input budget",
+    "archive_context_ratio": "active selected tokens / total declared archive token cost",
+    "weighted_epistemic_density": "weighted new required/relevant coverage / active selected tokens",
+    "distractor_growth_slope": "Delta active selected tokens / Delta irrelevant archive records for fixed target",
+    "prompt_padding_rate": "selected optional token mass with zero marginal target coverage / selected optional token mass",
+    "rehydration_traceability": "fraction of selected compact/lossy views with valid raw-source reconstruction lineage"
+  },
+  "known_answer_worlds": [
+    {
+      "id": "TE01_1X_10X_100X_IRRELEVANT_ARCHIVE_GROWTH",
+      "setup": "same mandatory and target-fiber records; add semantically novel distractor records assigned only to unrelated fibers",
+      "expected": [
+        "selected record identities unchanged",
+        "used token count unchanged",
+        "mandatory_recall=1",
+        "required_coverage_recall=1",
+        "distractor_growth_slope=0"
+      ]
+    },
+    {
+      "id": "TE02_SAME_FIBER_REDUNDANT_ARCHIVE_GROWTH",
+      "setup": "add many same-fiber records whose coverage atoms duplicate already selected atoms",
+      "expected": [
+        "zero-marginal filler not selected",
+        "prompt_padding_rate=0",
+        "used tokens unchanged after complete target coverage"
+      ]
+    },
+    {
+      "id": "TE03_SAME_FIBER_GENUINELY_NEW_REQUIRED_COVERAGE",
+      "setup": "add a same-fiber record containing a newly registered required coverage atom",
+      "expected": [
+        "context grows only if needed to satisfy the new registered requirement",
+        "required coverage materialized or CANNOT_COMPILE"
+      ]
+    },
+    {
+      "id": "TE04_MANDATORY_NEGATIVE_HISTORY_HIDDEN_AMONG_DISTRACTORS",
+      "expected": "mandatory negative evidence retained regardless of marginal utility ranking"
+    },
+    {
+      "id": "TE05_MANDATORY_SET_EXCEEDS_BUDGET",
+      "expected": "CANNOT_COMPILE; no silent truncation"
+    },
+    {
+      "id": "TE06_LOSSY_COMPACT_VIEW_WITHOUT_REHYDRATION",
+      "expected": "REJECT_OR_INVALID before context selection"
+    },
+    {
+      "id": "TE07_ARCHIVE_GROWS_BUT_TARGET_FIBER_NOT_DECLARED",
+      "expected": "benchmark should expose possible contamination/cost growth; strict scale-invariance claim requires a target/query-conditioned retrieval boundary"
+    },
+    {
+      "id": "TE08_EXACT_TOKEN_COUNTER_UNAVAILABLE",
+      "expected": "CANNOT_CHECK for strict model-budget certification; estimates remain estimates"
+    }
+  ],
+  "success_for_current_support_layer": [
+    "TE01 through TE06 pass deterministically",
+    "strict token claims are scoped to exact counter/profile when executed",
+    "global archive is never inserted wholesale into an LLM prompt",
+    "coding-agent recurring instructions remain a thin router rather than embedding the full framework"
+  ],
+  "real_project_falsifier": "If active context/token cost grows materially with irrelevant archive size, or RAKL loses mandatory evidence/reconstruction quality compared with a simpler retrieval/context policy under matched budgets, the current memory/context architecture is not adequate for long-horizon use and must reopen before a strong efficiency claim.",
+  "authority_boundary": "engineering efficiency only; token efficiency does not establish scientific correctness"
+}
