@@ -1,0 +1,86 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_029_DELTA",
+  "date": "2026-08-09",
+  "fiber": "SCOPED_SELF_EVOLUTION_AND_EXTERNAL_METHOD_ASSIMILATION",
+  "source_cutoff": "2026-08-09",
+  "sources": [
+    {
+      "id": "ADAS_META_AGENT_SEARCH",
+      "title": "Automated Design of Agentic Systems",
+      "primary_source": "arXiv:2408.08435",
+      "projection": "A meta-agent can iteratively program new agentic systems, invent building blocks and combine them in new ways; the archive of discovered agents supports continued search and some designs transfer across domains/models.",
+      "dedup_effect": "Refutes any RAKL novelty claim based only on automatic agent design, recombination or archive-driven agent improvement.",
+      "retained_lesson": "External/internal method candidates can be represented as discoverable programmatic operators rather than fixed hand-designed workflows."
+    },
+    {
+      "id": "EVO_AGENT_BENCH",
+      "title": "EvoAgentBench: Benchmarking Agent Self-Evolution via Ability Transfer",
+      "primary_source": "arXiv:2607.05202",
+      "projection": "Self-evolution should be evaluated through transfer of reusable procedural abilities rather than single-episode accuracy; current automatic methods do not sustain positive gain in every tested setting.",
+      "dedup_effect": "Refutes the idea that held-out transfer is unique to RAKL and requires the paper to compare against ability-transfer evaluation explicitly.",
+      "retained_lesson": "RAKL self-evolution claims must distinguish local benchmark gains from transferable method gains."
+    },
+    {
+      "id": "SKILLFOUNDRY",
+      "title": "SKILLFOUNDRY: Building Self-Evolving Agent Skill Libraries from Heterogeneous Scientific Resources",
+      "primary_source": "arXiv:2604.03964",
+      "projection": "Heterogeneous scientific artifacts can be mined into validated executable skills with I/O, environment assumptions, provenance and tests; libraries can expand, repair, merge and prune over time.",
+      "dedup_effect": "Refutes novelty claims based on external resource assimilation, validated scientific skills or evolving skill libraries alone.",
+      "retained_lesson": "RAKL should assimilate atomic operational contracts rather than entire external repositories."
+    },
+    {
+      "id": "RED_QUEEN_GODEL_MACHINE",
+      "title": "The Red Queen Gödel Machine: Co-Evolving Agents and Their Evaluators",
+      "primary_source": "arXiv:2606.26294",
+      "projection": "Recursive self-improvement can include controlled evaluator/utility evolution across epochs instead of assuming one stationary objective.",
+      "dedup_effect": "Refutes novelty claims based on co-evolving evaluators or non-stationary self-improvement objectives alone.",
+      "retained_lesson": "RAKL must distinguish legitimate evaluator-version evolution from evaluator capture; stronger assurance requires a frozen evaluator within each claimed comparison scope and explicit boundary changes between scopes."
+    }
+  ],
+  "cross_source_dedup": [
+    {
+      "semantic_object": "automatic_method_or_agent_recombination",
+      "status": "PRIOR_ART",
+      "sources": ["ADAS_META_AGENT_SEARCH", "SKILLFOUNDRY"]
+    },
+    {
+      "semantic_object": "self_evolution_requires_transfer_evidence",
+      "status": "PRIOR_ART_NEIGHBOR",
+      "sources": ["EVO_AGENT_BENCH"]
+    },
+    {
+      "semantic_object": "evaluator_can_itself_evolve",
+      "status": "PRIOR_ART",
+      "sources": ["RED_QUEEN_GODEL_MACHINE"]
+    }
+  ],
+  "retained_candidate_rakl_objects": [
+    {
+      "id": "SCOPED_EVOLUTION_EVIDENCE",
+      "novelty_status": "CANDIDATE_COMPOSITIONAL",
+      "description": "Require positive frozen development gain plus positive fresh/blind held-out assurance, exact subject identity, history preservation, evaluator separation and blocking-invariant cleanliness before calling a self-change evidence of evolution."
+    },
+    {
+      "id": "ADAPTIVE_ASSURANCE_RESERVE",
+      "novelty_status": "CANDIDATE_APPLICATION_OF_ESTABLISHED_ADAPTIVE_EVALUATION_PRINCIPLE",
+      "description": "Treat optimizer-visible held-out evaluation capacity as consumable; exhausted assurance can show transfer but cannot repeatedly certify independent self-evolution generations."
+    },
+    {
+      "id": "DUAL_SOURCE_METHOD_EVOLUTION",
+      "novelty_status": "CANDIDATE_COMPOSITIONAL",
+      "description": "Endogenous residual-driven method challengers and exogenous external-framework operators converge on the same evidence-governed assimilation and promotion path."
+    },
+    {
+      "id": "CONTEXT_INDEXED_METHOD_CAPABILITY_FRONTIER",
+      "novelty_status": "CANDIDATE_THEORY_RESIDUAL",
+      "description": "Accumulate non-dominated validated methods per atomic fiber/context instead of forcing all strengths into one globally dominant monolithic agent."
+    }
+  ],
+  "novelty_refuter": "A pre-cutoff method semantically equivalent to RAKL's full dual-source, authority-scoped, assurance-limited method evolution protocol would narrow or refute the candidate contribution.",
+  "saturation": {
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "reason": "Fresh 2026 self-evolution and skill-library prior art materially narrows the claim while exposing the new assurance-reserve and contextual capability-frontier residuals."
+  }
+}
