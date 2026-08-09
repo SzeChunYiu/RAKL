@@ -1,0 +1,99 @@
+{
+  "validation_id": "SELF_RAKL_RESEARCH_027B_VALIDATION",
+  "date": "2026-08-09",
+  "verdict": "VALIDATED_IMPROVEMENT_WITH_PRESERVED_PRIOR_PROCESS_VIOLATION",
+  "benchmark": {
+    "artifact": "research/SELF_RAKL_RESEARCH_027B_FROZEN_BENCHMARK.json",
+    "freeze_commit": "6aa31cb961eec102cc6c217c0ea780359f38855f",
+    "frozen_before_behavior_change": true
+  },
+  "candidate": {
+    "sha": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "branch": "self-rakl/round027b-exact-test-subject",
+    "pr": 5,
+    "base_sha": "6aa31cb961eec102cc6c217c0ea780359f38855f",
+    "compare_before_promotion": {"ahead_by":3,"behind_by":0,"changed_paths":[".github/workflows/test.yml","research/SELF_RAKL_RESEARCH_027_PROCESS_ERRATUM.json","research/META_FIBER_BACKLOG_027B_DELTA.json"]}
+  },
+  "prepromotion_exact_candidate_test": {
+    "workflow_run_id": 31324789113,
+    "event": "pull_request",
+    "run_head_sha": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "checkout_ref_observed_in_log": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "git_head_observed_in_log": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "expected_sha_assertion": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "subject_binding_step": "success",
+    "pytest": {"conclusion":"success","passed":318,"duration_seconds":7.75},
+    "action_dependencies": {
+      "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+      "actions/setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065"
+    }
+  },
+  "trusted_parent_evaluator": {
+    "workflow_run_id": 31324829239,
+    "parent_sha": "6aa31cb961eec102cc6c217c0ea780359f38855f",
+    "candidate_sha": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "passive_candidate_binding": "verified",
+    "conclusion": "failure_expected_and_preserved",
+    "reason": "protected parent input changed: .github/workflows/test.yml",
+    "interpretation": "The unchanged firewall correctly rejects a protected workflow change. This is negative evidence, not a passing parent review."
+  },
+  "promotion": {
+    "main_observed_immediately_before_update": "6aa31cb961eec102cc6c217c0ea780359f38855f",
+    "candidate_ahead_by": 3,
+    "candidate_behind_by": 0,
+    "update_force": false,
+    "ref_update_result": "success",
+    "main_observed_immediately_after_update": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "active_test_workflow_contains_exact_subject_binding": true
+  },
+  "postpromotion_exact_active_main_test": {
+    "workflow_run_id": 31324865908,
+    "event": "push",
+    "run_head_sha": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "checkout_ref_observed_in_log": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "git_head_observed_in_log": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "expected_sha_assertion": "98de172cd4a6de04687a17e7a562ab6d05a9407f",
+    "subject_binding_step": "success",
+    "pytest": {"conclusion":"success","passed":318,"duration_seconds":8.37}
+  },
+  "observed_environment_not_treated_as_stable_attestation": {
+    "github_runner_version": "2.336.0",
+    "runner_image": "ubuntu-24.04",
+    "runner_image_version": "20260720.247.2",
+    "python": "CPython 3.11.15",
+    "note": "GitHub logs also warned that actions targeting Node 20 were forced to execute on Node 24. This demonstrates that full action-SHA pinning does not close runner/runtime/platform influence and keeps META_N084/META_N090 open."
+  },
+  "fiber_disposition": {
+    "META_N092_PR_TEST_EXECUTED_SUBJECT_BINDING": "VALIDATED_IMPROVEMENT",
+    "META_N091_POST_PROMOTION_REF_STATE_ATTESTATION": "IMPLEMENTED_SUPPORT_ACTIVE_BROADER_OBSERVER_INTEGRATION_OPEN",
+    "META_N029_EVALUATOR_DEPENDENCY_PINNING": "VALIDATED_ACTIVE_WITH_HISTORICAL_PROCESS_VIOLATION_PRESERVED",
+    "META_N020A_EVALUATOR_INFLUENCE_CLOSURE": "OPEN",
+    "META_N075_ENGINEERING_CLOSURE_AND_RELEASE_CONFORMANCE": "OPEN"
+  },
+  "negative_history": [
+    {
+      "artifact": "research/SELF_RAKL_RESEARCH_026_VALIDATION.json",
+      "status": "preserved; promotion authority refuted by research/SELF_RAKL_RESEARCH_026_VALIDATION_ERRATUM_027.json"
+    },
+    {
+      "artifact": "research/SELF_RAKL_RESEARCH_027_PROCESS_ERRATUM.json",
+      "status": "preserved; initial Round-027 ref move remains PROCESS_VIOLATION_PREPROMOTION_EXACT_HEAD_NOT_PROVEN and is not retroactively rewritten"
+    }
+  ],
+  "registered_meta_qois": {
+    "false_exact_candidate_test_claims": {"before":1,"after":0,"improved":true},
+    "executed_subject_assertion_coverage": {"before":0,"after":1,"improved":true},
+    "mutable_action_references_protected_workflows": {"before_round026_repair":4,"active_now":0,"improved":true},
+    "full_sha_action_references_protected_workflows": {"before_round026_repair":0,"active_now":4,"improved":true}
+  },
+  "authority_boundary": "This validation establishes the current repository workflow's exact executed-subject binding and active full-SHA action references under the observed GitHub runs. It does not establish runner-image immutability, transitive package identity, release reproducibility, scientific benchmark superiority, or framework saturation.",
+  "framework_state": {
+    "inventory": "research/FRAMEWORK_FIBER_INVENTORY_027B.json",
+    "state": "ACTIVE_NON_FLAT",
+    "same_context_flat_rounds": 0,
+    "independent_flat_rounds": 0,
+    "saturation_certificate_allowed": false,
+    "reason": "This run discovered two real authority/subject-identity residuals and validated one corrective mechanism; semantic growth is not flat."
+  },
+  "documentation_record_note": "This validation file is a documentation-only descendant of the validated behavioral subject. Its own exact-head CI result is external evidence and must not be self-asserted inside this immutable file."
+}
