@@ -12,6 +12,7 @@ from rakl.formalism import (
     VerificationVerdict,
 )
 from rakl.invention import (
+    CandidateMutationVerdict,
     CandidateScore,
     CandidateTheory,
     GoalAssessmentVerdict,
@@ -25,6 +26,8 @@ from rakl.invention import (
     evaluate_positive_goal,
     invention_tasks_for_residual,
     pareto_frontier,
+    recombine_candidates,
+    residual_from_goal_assessment,
 )
 
 
@@ -91,6 +94,53 @@ def test_typed_invention_move_preserves_lineage():
     assert "z" in report.candidate.formalism.symbol_map()
 
 
+def test_recombination_allows_identical_shared_ancestry():
+    root = _candidate()
+    left_move = InventionMove(
+        move_id="left",
+        operator=InventionOperator.ADD_LATENT_STATE,
+        rationale="left branch",
+        residual_ids=("r1",),
+        add_symbols=(FormalSymbol("z", SymbolRole.LATENT_STATE, "real", units="state"),),
+        add_mechanism_nodes=(
+            MechanismNode("n_z", MechanismNodeKind.LATENT_STATE, "z", symbol="z"),
+        ),
+        declared_before_evaluation=True,
+    )
+    right_move = InventionMove(
+        move_id="right",
+        operator=InventionOperator.ADD_LATENT_STATE,
+        rationale="right branch",
+        residual_ids=("r1",),
+        add_symbols=(FormalSymbol("w", SymbolRole.LATENT_STATE, "real", units="state"),),
+        add_mechanism_nodes=(
+            MechanismNode("n_w", MechanismNodeKind.LATENT_STATE, "w", symbol="w"),
+        ),
+        declared_before_evaluation=True,
+    )
+    left = apply_invention_move(root, left_move, candidate_id="left", formalism_id="fl").candidate
+    right = apply_invention_move(root, right_move, candidate_id="right", formalism_id="fr").candidate
+    assert left is not None and right is not None
+    merge = InventionMove(
+        move_id="merge",
+        operator=InventionOperator.RECOMBINE,
+        rationale="combine non-equivalent latent coordinates",
+        residual_ids=("r1",),
+        declared_before_evaluation=True,
+    )
+    report = recombine_candidates(
+        left,
+        right,
+        merge,
+        candidate_id="merged",
+        formalism_id="fm",
+    )
+    assert report.verdict is CandidateMutationVerdict.CREATED
+    assert report.candidate is not None
+    assert set(report.candidate.formalism.symbol_map()) == {"x", "z", "w"}
+    assert report.candidate.parent_candidate_ids == ("left", "right")
+
+
 def test_pareto_frontier_keeps_non_dominated_theories():
     strong = CandidateScore("strong", 0.9, 0.9, 0.8, 0.8, 0.8, 0.8, 0.6, 2.0)
     weak = CandidateScore("weak", 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4, 3.0)
@@ -121,12 +171,37 @@ def test_failed_candidate_is_nonterminal_and_requires_continuation():
     assert continuation_required(assessment)
 
 
+def test_failed_goal_becomes_typed_residual_for_next_round():
+    score = CandidateScore("c1", 0.9, 0.4, 0.2, 0.8, 0.9, 0.6, 0.7, 2.0)
+    assessment = evaluate_positive_goal(
+        _contract(),
+        score,
+        VerificationReport(VerificationVerdict.PASS, ("ok",)),
+    )
+    residual = residual_from_goal_assessment(
+        assessment,
+        candidate_id="c1",
+        residual_id="goal-r1",
+        implicated_fiber_ids=("fiber:spot",),
+        evidence_ids=("receipt:goal",),
+    )
+    assert residual is not None
+    assert residual.failed_candidate_ids == ("c1",)
+    assert ResidualKind.PREDICTIVE in residual.kinds
+    assert ResidualKind.TRANSPORT in residual.kinds
+
+
 def test_goal_only_closes_on_positive_locked_success():
     score = CandidateScore("c2", 0.95, 0.9, 0.8, 0.75, 0.9, 0.85, 0.8, 2.0)
     verification = VerificationReport(VerificationVerdict.PASS, ("all checks passed",))
     assessment = evaluate_positive_goal(_contract(), score, verification)
     assert assessment.verdict is GoalAssessmentVerdict.GOAL_ACHIEVED
     assert not continuation_required(assessment)
+    assert residual_from_goal_assessment(
+        assessment,
+        candidate_id="c2",
+        residual_id="unused",
+    ) is None
 
 
 def test_post_result_threshold_rescue_is_blocked():
