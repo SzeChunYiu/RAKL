@@ -1,0 +1,60 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_041_META_LEDGER_FROZEN_BENCHMARK",
+  "date": "2026-08-09",
+  "object": "META_N069_META_FIBER_REGISTRY_RECONCILIATION_FULL_LEDGER_COMPILER",
+  "frozen_against_main": "41b4d7f0a510fd3d379a0f3060e3ee1c44117aeb",
+  "purpose": "Test whether immutable machine-readable meta-fiber base/delta/reconciliation artifacts can be deterministically compiled into an auditable identity ledger without globalizing source-scoped historical aliases, inventing undocumented intent, or granting saturation authority.",
+  "protected_meta_qois": {
+    "artifact_discovery_recall": {"target": 1.0, "blocking": true},
+    "contract_bearing_numeric_mention_classification_recall": {"target": 1.0, "blocking": true},
+    "unresolved_namespace_collisions_after_valid_reconciliation": {"target": 0, "blocking": true},
+    "canonical_identity_false_merge_count": {"target": 0, "blocking": true},
+    "known_orphan_false_definition_count": {"target": 0, "blocking": true},
+    "source_identity_mismatch_false_pass_count": {"target": 0, "blocking": true},
+    "permutation_nondeterminism_count": {"target": 0, "blocking": true},
+    "authority_escalation_count": {"target": 0, "blocking": true},
+    "protected_regression_count": {"target": 0, "blocking": true}
+  },
+  "worlds": [
+    {"id":"W01","case":"base plus every machine-readable backlog delta is auto-discovered","expected":"all matching artifacts covered; no hard-coded round list"},
+    {"id":"W02","case":"Round-033 and Round-034 reuse N101-N106 for different concepts","expected":"collision history remains visible"},
+    {"id":"W03","case":"035B forward reconciliation maps the later Round-034 concepts to N108-N113","expected":"reconciliation resolves later occurrences without renaming the earlier canonical N101-N106 fibers"},
+    {"id":"W04","case":"same raw short identifier appears in two source contexts with different identities","expected":"source-scoped identity is preserved; no global alias collapse"},
+    {"id":"W05","case":"reconciliation points to a missing historical source","expected":"CANNOT_CHECK"},
+    {"id":"W06","case":"reconciliation source blob hash does not match repository bytes","expected":"CANNOT_CHECK"},
+    {"id":"W07","case":"malformed backlog JSON","expected":"CANNOT_CHECK with exact path"},
+    {"id":"W08","case":"unrecognized contract-bearing fiber record shape","expected":"CANNOT_CHECK rather than ignored"},
+    {"id":"W09","case":"reference to never-defined fiber with no explicit historical disposition","expected":"CONFLICTED orphan"},
+    {"id":"W10","case":"N041 historical orphan has an explicit non-retroactive Round-023 disposition","expected":"preserve orphan history as resolved-by-disposition; do not fabricate a definition"},
+    {"id":"W11","case":"two semantically similar fibers have different identifiers and no identity witness","expected":"remain distinct"},
+    {"id":"W12","case":"one canonical identifier is reused for two incompatible definitions without reconciliation","expected":"CONFLICTED"},
+    {"id":"W13","case":"post-hoc or ambiguous reconciliation chronology","expected":"CANNOT_CHECK or TRIAL_INVALID; never silently authorize"},
+    {"id":"W14","case":"input artifact enumeration order changes","expected":"identical normalized ledger digest and verdict"},
+    {"id":"W15","case":"negative collision/orphan history is reconciled","expected":"negative event remains in immutable issue ledger with resolved flag"},
+    {"id":"W16","case":"named nonnumeric meta surfaces such as META_ROUTING coexist with numeric fibers","expected":"not forced into numeric namespace and not misclassified as invalid numeric IDs"},
+    {"id":"W17","case":"new backlog artifact appears after a previously frozen manifest","expected":"automatic discovery includes it and changes the ledger digest"},
+    {"id":"W18","case":"compiler report is otherwise clean","expected":"may enable registry bookkeeping only; cannot grant scientific, method, target, independent-review, or framework-saturation authority"},
+    {"id":"W19","case":"reconciliation maps an occurrence outside its declared/source-evidenced historical scope","expected":"false reconciliation rejected"},
+    {"id":"W20","case":"richer semantic/NLP merge heuristic proposed","expected":"simpler structural compiler remains incumbent unless a frozen benchmark proves additional required recall without false merges"}
+  ],
+  "capability_shaping": {
+    "model_strength_amplified": "candidate generation and semantic interpretation can point to possible identity relationships",
+    "weakness_externalized": "LLM bookkeeping drift, identifier reuse, forgotten negative history, and overconfident semantic merging",
+    "smallest_compensator": "deterministic source-scoped structural ledger compiler over immutable artifacts",
+    "verification_oracle": "hostile unit tests plus compilation of the live repository history",
+    "resource_delta": "Python standard library only; no model or external service required",
+    "typed_handoff": "artifact events -> definitions/references/reconciliation events -> normalized ledger report",
+    "simpler_baseline": "existing supplied-record reconcile_meta_fiber_registry plus manual 023/035B reconciliation documents",
+    "richer_challenger_rule": "Do not add NLP/embedding identity inference unless this frozen benchmark exposes a structural recall gap that cannot be solved deterministically."
+  },
+  "acceptance": {
+    "class": "B",
+    "requires_registered_meta_qoi_improvement": "automatic historical artifact coverage and source-scoped collision reconciliation must improve while all blocking counts remain zero",
+    "must_preserve_existing_meta_registry_tests": true,
+    "must_not_modify_constitution": true,
+    "must_not_modify_test_workflow_or_trusted_parent_evaluator": true,
+    "must_fail_closed_on_unclassified_or_unverifiable_identity_events": true,
+    "must_preserve_all_negative_history": true,
+    "saturation_authority": "NONE"
+  }
+}
