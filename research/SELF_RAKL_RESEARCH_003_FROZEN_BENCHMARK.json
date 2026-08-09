@@ -1,0 +1,122 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_003",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "status": "FROZEN_BEFORE_CHALLENGER",
+  "starting_main_sha": "0a5fd25ad59175277ad47061f280b3a82c40e8a4",
+  "selected_fibers": [
+    "META_N016_PREPROMOTION_STAGING",
+    "META_N007_RAKLBENCH",
+    "context-alignment native residual",
+    "projection-identity native residual"
+  ],
+  "expert_panel": [
+    {
+      "role": "release and formal-verification engineer",
+      "focus": "candidate staging, exact-SHA checks, fail-closed promotion"
+    },
+    {
+      "role": "software-testing researcher",
+      "focus": "property-based/metamorphic invariants and minimal counterexamples"
+    },
+    {
+      "role": "scientific knowledge/provenance engineer",
+      "focus": "immutable claim identity, provenance lineage, replay safety"
+    },
+    {
+      "role": "Bayesian scientific-method reviewer",
+      "focus": "blocking evidence invariants, scoped improvement and cannot-check honesty"
+    },
+    {
+      "role": "adversarial red-team reviewer",
+      "focus": "self-modified validators, evaluator bypass and false-green CI"
+    }
+  ],
+  "blocking_meta_qois": [
+    "groundedness",
+    "known-answer correctness",
+    "negative-result preservation",
+    "scope/authority honesty",
+    "validator integrity"
+  ],
+  "optimization_meta_qois": {
+    "promotion_gate_exactness": "increase",
+    "context_alignment_recall": "increase",
+    "projection_identity_integrity": "increase",
+    "counterexample_search_surface": "increase_without_weakening_blocking_qois"
+  },
+  "protected_evaluator_baseline": {
+    ".github/workflows/test.yml": "4e32433575f9443a2ff7039138ce6785b1ee150c",
+    "docs/CONSTITUTION.md": "4d456ceab32122391c830fe8586766cf0e0037aa",
+    "tests/test_core.py": "179ffe344d2373cfbd70a8a6180efa9ef0e71d21",
+    "tests/test_memory.py": "ccd5d44157fd8d83003cd22ea57ceb02f2ea10a4",
+    "tests/test_meta.py": "270d4c0253f456edc10282f648588c45dff51f12",
+    "tests/test_saturation.py": "b699ae2bf9b218e7418a2b4203c73c21f5914727",
+    "tests/test_tree.py": "ebacadb2316ab890feeb9b495e9c328bb2e6c86d"
+  },
+  "known_answer_cases": [
+    {
+      "id": "P1",
+      "world": "candidate has a required failing check",
+      "expected": "BLOCK; incumbent main SHA unchanged"
+    },
+    {
+      "id": "P2",
+      "world": "candidate has no observed checks or a pending required check",
+      "expected": "CANNOT_CHECK; incumbent main SHA unchanged"
+    },
+    {
+      "id": "P3",
+      "world": "Class C constitutional challenger has passing checks",
+      "expected": "PROPOSAL_ONLY; never auto-promote"
+    },
+    {
+      "id": "P4",
+      "world": "candidate changes a protected validator/evaluator artifact after benchmark freeze",
+      "expected": "BLOCK even if candidate-reported CI is green"
+    },
+    {
+      "id": "P5",
+      "world": "Class B challenger passes tests but has no registered positive meta-QoI improvement",
+      "expected": "BLOCK"
+    },
+    {
+      "id": "P6",
+      "world": "Class B challenger has frozen evaluation, trusted successful required checks, clean blocking invariants, preserved history, receipt, and positive meta-QoI improvement",
+      "expected": "PROMOTE"
+    },
+    {
+      "id": "P7",
+      "world": "main moves away from incumbent before the gate issues PROMOTE",
+      "expected": "PROCESS_VIOLATION"
+    },
+    {
+      "id": "C1",
+      "world": "two otherwise identical Context values differ only in assumptions",
+      "expected": "compare_contexts surfaces assumptions by default"
+    },
+    {
+      "id": "I1",
+      "world": "an identical Projection with the same projection_id is replayed",
+      "expected": "idempotent no-op"
+    },
+    {
+      "id": "I2",
+      "world": "a different Projection attempts to reuse an existing projection_id",
+      "expected": "reject mutation; existing projection remains unchanged"
+    }
+  ],
+  "metamorphic_properties": [
+    "context comparison is symmetric up to tuple reversal",
+    "typed/scoped equivalence closure is invariant to relation insertion order",
+    "replaying an identical projection is idempotent",
+    "changing non-identity content under an existing projection_id cannot mutate history"
+  ],
+  "acceptance_rule": "All pre-existing tests must remain unchanged and pass; new hostile/property tests must pass; candidate exact SHA must complete the trusted GitHub Actions test workflow successfully while main still equals the frozen incumbent SHA; no protected evaluator artifact may change; Class B changes require at least one registered positive meta-QoI improvement.",
+  "rejection_rule": "Any failed/pending/unobserved required check, evaluator mutation, premature main movement, blocking invariant failure, missing history/receipt, or absent Class B improvement leaves main on the incumbent.",
+  "cost_budget": {
+    "candidate_branches": 1,
+    "required_ci_workflows": ["test"],
+    "implementation_scope": "promotion gate + context/identity invariants + property-based benchmark harness"
+  }
+}
