@@ -1,0 +1,52 @@
+name: trusted-parent-evaluator
+
+on:
+  workflow_run:
+    workflows: ["test"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  evaluator-integrity:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted parent evaluator
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          persist-credentials: false
+
+      - name: Checkout exact candidate as passive data
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: candidate
+          persist-credentials: false
+
+      - name: Bind both checkouts to recorded revisions
+        shell: bash
+        env:
+          EXPECTED_PARENT_SHA: ${{ github.sha }}
+          EXPECTED_CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C trusted rev-parse HEAD)" = "$EXPECTED_PARENT_SHA"
+          test "$(git -C candidate rev-parse HEAD)" = "$EXPECTED_CANDIDATE_SHA"
+
+      - name: Compare frozen parent evaluator inputs
+        env:
+          PYTHONPATH: ${{ github.workspace }}/trusted/src
+          PARENT_SHA: ${{ github.sha }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # Candidate files are passive input only. Do not install, import, or execute
+          # code from the candidate checkout in this privileged observer.
+          python -m rakl.parent_evaluator \
+            --parent trusted \
+            --candidate candidate \
+            --parent-sha "$PARENT_SHA" \
+            --candidate-sha "$CANDIDATE_SHA"
