@@ -1,0 +1,64 @@
+{
+  "delta_id": "EXTERNAL_FRAMEWORK_ATLAS_008_DELTA",
+  "date": "2026-08-09",
+  "object": "RAKL_METHOD",
+  "research_routes": [
+    {
+      "route": "GitHub pull-request integration semantics",
+      "sources": ["GitHub Actions events documentation", "actions/checkout README", "GitHub pull-request refs documentation"],
+      "projection": "A pull-request source head and GitHub's synthesized integration/merge ref are different software subjects. Normal pull_request execution targets the merge subject by default; explicit checkout of the PR head SHA targets the source head.",
+      "rakl_absorption": "Require a predeclared evaluation target and preserve source, base, integration and executed subject coordinates separately. A green source-head test cannot be silently promoted into integration-result authority."
+    },
+    {
+      "route": "Git object model and intrinsic state identity",
+      "sources": ["Git commit-tree documentation", "Git object model"],
+      "projection": "A Git tree identifies recursive content state, whereas a commit adds parent/history and metadata around a tree. Identical tree state therefore does not establish identical revision/history identity.",
+      "rakl_absorption": "Introduce tree-scoped partial identification. Matching integration and executed trees can support content-state authority while exact revision identity remains unresolved."
+    },
+    {
+      "route": "software supply-chain provenance",
+      "sources": ["SLSA Build Provenance v1.2", "GitHub artifact attestations", "Sigstore verification model"],
+      "projection": "Trustworthy execution claims separate the subject digest from builder/run provenance, resolved dependencies and verification identity. Provenance authenticates what process/subject was observed; it does not itself establish scientific correctness.",
+      "rakl_absorption": "Treat execution-subject attestation as an observation layer feeding PromotionGate rather than as proof that the evaluated scientific method is correct. Open transitive evaluator-dependency identity as its own fiber."
+    },
+    {
+      "route": "GitHub Actions evaluator dependency security",
+      "sources": ["GitHub Secure use reference", "native round-008 GitHub Actions log"],
+      "projection": "Workflow text can remain unchanged while third-party action tags resolve to action implementations. GitHub recommends pinning an action to a full-length commit SHA when immutable action identity is required.",
+      "rakl_absorption": "Open META_N029_EVALUATOR_DEPENDENCY_PINNING. Evaluator integrity must eventually bind the transitive implementation identity of actions/tools/runtime inputs, not just the repository workflow text. Do not mutate the protected workflow until this child fiber has its own frozen benchmark."
+    }
+  ],
+  "retained_semantic_objects": [
+    {
+      "id": "EXECUTION_SUBJECT_VECTOR",
+      "novelty": "NEW",
+      "meaning": "Source revision, base revision, synthesized integration revision/tree and actually executed revision/tree are separate coordinates of the evaluation subject."
+    },
+    {
+      "id": "DECLARED_EVALUATION_TARGET",
+      "novelty": "NEW",
+      "meaning": "Authority must state in advance whether evaluation targets the source head or an integration result; the target cannot be inferred opportunistically from a passing run."
+    },
+    {
+      "id": "TREE_SCOPED_PARTIAL_AUTHORITY",
+      "novelty": "NEW",
+      "meaning": "Matching content trees can justify tree/state-level identification while revision/history identity remains unresolved; this partial result must not be upgraded globally."
+    },
+    {
+      "id": "SUBJECT_SCOPE_AUTHORITY_GAP",
+      "novelty": "NEW_CHILD_RESIDUAL",
+      "meaning": "Downstream gates still need explicit rules for which subject scope is sufficient for which claim, for example behavior-on-content versus reproducibility-of-exact-revision."
+    },
+    {
+      "id": "EVALUATOR_TRANSITIVE_DEPENDENCY_IDENTITY_GAP",
+      "novelty": "NEW_NATIVE_RESIDUAL",
+      "meaning": "The round-008 CI log showed tagged actions resolving to concrete action commits at runtime. Frozen workflow text therefore does not by itself freeze the complete evaluator implementation."
+    }
+  ],
+  "deduplication_notes": [
+    "Git commit/tree scope was introduced conceptually in round 007. Round 008 counts only its new operational consequence: tree-only subject attestation and partial authority.",
+    "External observation and candidate-self-report rejection already existed in evaluator-integrity work; they are benchmarked here but are not counted as new semantic objects.",
+    "Artifact attestation and SLSA provenance are used as projections for subject/run/dependency separation, not imported as scientific truth criteria.",
+    "META_N029 is opened from a native CI observation plus primary GitHub security guidance; no protected evaluator workflow is changed in this round."
+  ]
+}
