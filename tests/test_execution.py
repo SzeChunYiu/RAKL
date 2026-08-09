@@ -1,11 +1,14 @@
 import json
 import os
 import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
 
 from rakl.execution import (
+    GENERATION_CONFIG_AUTHORITY,
     ExecutionLedger,
     ExecutionManager,
     ExecutionSpec,
@@ -46,14 +49,14 @@ def test_successful_json_runner_receipt_binds_subjects_and_authority(tmp_path):
     project = RAKLProject.create(tmp_path / "project", project_id="p")
     script = _write_script(
         tmp_path,
-        "import json,sys\np=json.load(sys.stdin)\nprint(json.dumps({'proposal':'ok','question':p['question']}))\n",
+        "import json,sys\ne=json.load(sys.stdin)\np=e['task_packet']\nc=e['generation_config']\nprint(json.dumps({'proposal':'ok','question':p['question'],'temperature':c['temperature']}))\n",
     )
     manager = ExecutionManager(project)
     packet = _packet("science")
     result = manager.execute(
         packet_bytes=packet,
         runner=_contract(script),
-        generation_config={"temperature": 0},
+        generation_config={"temperature": 0.25, "seed": 7},
     )
     assert result.status == ExecutionStatus.COMPLETED
     assert not result.replayed
@@ -61,11 +64,21 @@ def test_successful_json_runner_receipt_binds_subjects_and_authority(tmp_path):
     assert receipt is not None
     assert receipt.packet_sha256 == project.store.put_bytes(packet).sha256
     assert receipt.runner["shell"] is False
+    assert receipt.runner["input_protocol"] == "RAKL_EXECUTION_ENVELOPE_JSON_V1"
     assert receipt.runner["model_id"] == "test-model"
     assert receipt.output_authority == "PROPOSAL_ONLY"
     assert receipt.may_promote_canonical_knowledge is False
+    assert receipt.generation_config_authority == GENERATION_CONFIG_AUTHORITY
+    assert receipt.generation_config_authority != "APPLIED_BY_MODEL"
     assert receipt.stdout_sha256 is not None
-    assert json.loads(manager.read_stdout(receipt))["proposal"] == "ok"
+    output = json.loads(manager.read_stdout(receipt))
+    assert output["proposal"] == "ok"
+    assert output["temperature"] == 0.25
+    envelope = json.loads(manager.read_runner_input(receipt))
+    assert envelope["task_packet"] == json.loads(packet)
+    assert envelope["generation_config"] == {"seed": 7, "temperature": 0.25}
+    assert envelope["invocation_id"] == result.invocation_id
+    assert project.store.put_bytes(manager.read_runner_input(receipt)).sha256 == receipt.runner_input_sha256
 
 
 def test_completed_replay_does_not_execute_command_twice(tmp_path):
@@ -288,3 +301,128 @@ def test_environment_not_allowlisted_is_rejected_before_execution(tmp_path):
             runner=_contract(script),
             environment={"UNDECLARED": "value"},
         )
+
+
+def test_concurrent_same_invocation_executes_once_locally(tmp_path):
+    project = RAKLProject.create(tmp_path / "project", project_id="p")
+    counter = tmp_path / "counter.txt"
+    started = tmp_path / "started.txt"
+    script = _write_script(
+        tmp_path,
+        "import json,sys,time\nfrom pathlib import Path\njson.load(sys.stdin)\nc=Path(sys.argv[1])\nn=int(c.read_text() if c.exists() else '0')+1\nc.write_text(str(n))\nPath(sys.argv[2]).write_text('started')\ntime.sleep(0.25)\nprint('{}')\n",
+    )
+    contract = _contract(script, str(counter), str(started))
+    manager = ExecutionManager(project)
+    results = []
+
+    def first_call():
+        results.append(manager.execute(packet_bytes=_packet(), runner=contract))
+
+    thread = threading.Thread(target=first_call)
+    thread.start()
+    deadline = time.monotonic() + 2
+    while not started.exists() and time.monotonic() < deadline:
+        time.sleep(0.005)
+    assert started.exists()
+    second = manager.execute(packet_bytes=_packet(), runner=contract)
+    thread.join(timeout=2)
+    assert not thread.is_alive()
+    assert len(results) == 1
+    first = results[0]
+    assert first.status == ExecutionStatus.COMPLETED
+    assert second.status == ExecutionStatus.RECOVERY_REQUIRED
+    assert second.reason == "invocation_active_elsewhere"
+    assert counter.read_text() == "1"
+
+
+def test_stale_lease_can_be_reclaimed_for_retry_safe_prepared_attempt(tmp_path):
+    project = RAKLProject.create(tmp_path / "project", project_id="p")
+    script = _write_script(tmp_path, "import json,sys\njson.load(sys.stdin)\nprint('{}')\n")
+    contract = _contract(script, retry_safe=True)
+    packet = _packet()
+    spec = ExecutionSpec.build(packet_bytes=packet, runner=contract)
+    ledger = ExecutionLedger(project, spec)
+    ledger.ensure_spec()
+    ledger.append(attempt=1, status=ExecutionStatus.PREPARED)
+    ledger.lease_path.write_text(
+        json.dumps({
+            "invocation_id": spec.invocation_id,
+            "pid": 99999999,
+            "lease_id": "stale",
+            "acquired_at_utc": "2000-01-01T00:00:00Z",
+        }),
+        encoding="utf-8",
+    )
+    result = ExecutionManager(project).execute(packet_bytes=packet, runner=contract)
+    assert result.status == ExecutionStatus.COMPLETED
+    assert result.receipt.attempt == 2
+    assert not ledger.lease_path.exists()
+
+
+def test_stale_lease_does_not_override_running_ambiguity(tmp_path):
+    project = RAKLProject.create(tmp_path / "project", project_id="p")
+    marker = tmp_path / "ran.txt"
+    script = _write_script(
+        tmp_path,
+        "from pathlib import Path\nPath(sys.argv[1]).write_text('ran')\nprint('{}')\n",
+    )
+    contract = _contract(script, str(marker), retry_safe=True)
+    packet = _packet()
+    spec = ExecutionSpec.build(packet_bytes=packet, runner=contract)
+    ledger = ExecutionLedger(project, spec)
+    ledger.ensure_spec()
+    ledger.append(attempt=1, status=ExecutionStatus.PREPARED)
+    ledger.append(attempt=1, status=ExecutionStatus.RUNNING)
+    ledger.lease_path.write_text(
+        json.dumps({
+            "invocation_id": spec.invocation_id,
+            "pid": 99999999,
+            "lease_id": "stale",
+            "acquired_at_utc": "2000-01-01T00:00:00Z",
+        }),
+        encoding="utf-8",
+    )
+    result = ExecutionManager(project).execute(packet_bytes=packet, runner=contract)
+    assert result.status == ExecutionStatus.RECOVERY_REQUIRED
+    assert result.reason == "prior_attempt_may_still_have_executed"
+    assert not marker.exists()
+
+
+def test_live_lease_metadata_contains_no_environment_values(tmp_path):
+    project = RAKLProject.create(tmp_path / "project", project_id="p")
+    started = tmp_path / "started.txt"
+    script = _write_script(
+        tmp_path,
+        "import json,os,sys,time\nfrom pathlib import Path\njson.load(sys.stdin)\nassert os.environ['RAKL_TEST_SECRET']\nPath(sys.argv[1]).write_text('started')\ntime.sleep(0.2)\nprint('{}')\n",
+    )
+    secret = "never-in-lease"
+    contract = _contract(
+        script,
+        str(started),
+        allowed_env_names=("RAKL_TEST_SECRET",),
+        environment_revision="secret-v1",
+    )
+    manager = ExecutionManager(project)
+    holder = []
+
+    def call():
+        holder.append(
+            manager.execute(
+                packet_bytes=_packet(),
+                runner=contract,
+                environment={"RAKL_TEST_SECRET": secret},
+            )
+        )
+
+    thread = threading.Thread(target=call)
+    thread.start()
+    deadline = time.monotonic() + 2
+    while not started.exists() and time.monotonic() < deadline:
+        time.sleep(0.005)
+    assert started.exists()
+    spec = manager.build_spec(packet_bytes=_packet(), runner=contract)
+    lease_text = ExecutionLedger(project, spec).lease_path.read_text("utf-8")
+    assert secret not in lease_text
+    assert "RAKL_TEST_SECRET" not in lease_text
+    thread.join(timeout=2)
+    assert holder[0].status == ExecutionStatus.COMPLETED
