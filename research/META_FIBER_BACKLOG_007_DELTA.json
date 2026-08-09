@@ -1,0 +1,45 @@
+{
+  "delta_id": "META_FIBER_BACKLOG_007_DELTA",
+  "date": "2026-08-09",
+  "updates": [
+    {
+      "fiber_id": "META_N025_LINEAGE_IDENTITY_NORMALIZATION",
+      "status": "IMPLEMENTED_V1_CANDIDATE_PENDING_FINAL_CI",
+      "evidence": "Frozen worlds distinguish exact aliases, versions, derivations, unresolved possible aliases and genuinely disjoint entities before saturation independence is counted.",
+      "implementation": "EvidenceIdentityLedger + IdentityAwareSaturationTracker; deterministic exact-alias canonicalization, transitive version/derivation ancestry, unresolved-identity partial state, conservative disjoint-lineage counting.",
+      "remaining_gap": "Identity relations are supplied as assertions. RAKL still needs authority/evidence levels for claims such as exact content identity versus metadata-only alias declarations."
+    },
+    {
+      "fiber_id": "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+      "status": "RESEARCH_REINFORCED_PARTIALLY_IDENTIFIED_NOT_ACTIVATED",
+      "evidence": "GitHub pull_request execution normally checks the synthesized merge subject, while workflow_run head_sha/source metadata names the source head. Git and Software Heritage also distinguish tree/content state from revision/history identity.",
+      "remaining_gap": "Need parent-controlled attestation of source commit, base commit, integration commit/tree and actually executed commit/tree without trusting candidate-produced metadata."
+    },
+    {
+      "fiber_id": "META_N027_IDENTITY_ASSERTION_AUTHORITY",
+      "status": "NEW_OPEN",
+      "problem": "Typed identity relations are useful only if their evidence strength is explicit. A normalized DOI/URL, metadata relation, content hash, trusted repository statement and empirically verified record overlap do not have equal authority.",
+      "target": "Add evidence-bearing identity assertions with authority/scope and cannot-check states; exact identity must state which object layer is identical and why.",
+      "required_known_answer_worlds": [
+        "same DOI string with changed mutable landing content does not imply byte identity",
+        "trusted IsIdenticalTo metadata links exact research output without collapsing a distinct version relation",
+        "matching content hash can establish content identity while revision/history identity remains distinct",
+        "conflicting alias assertions preserve both evidence packets and remain unresolved"
+      ]
+    },
+    {
+      "fiber_id": "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+      "status": "OPEN_UNCHANGED",
+      "note": "Identity/ancestry normalization determines whether full independence is established; it still does not justify arbitrary fractional information credit under dependence."
+    }
+  ],
+  "next_priority_order": [
+    "META_N024_INTEGRATION_SUBJECT_IDENTITY",
+    "META_N027_IDENTITY_ASSERTION_AUTHORITY",
+    "META_N015_CLAIM_EVIDENCE_PROVENANCE",
+    "META_N026_EFFECTIVE_EVIDENCE_DEPENDENCE",
+    "META_N022_GOAL_ROBUST_INFORMATION_GAIN",
+    "META_N019_DURABLE_RESEARCH_EXECUTION",
+    "META_N013_ASSUMPTION_TRUTH_MAINTENANCE"
+  ]
+}
