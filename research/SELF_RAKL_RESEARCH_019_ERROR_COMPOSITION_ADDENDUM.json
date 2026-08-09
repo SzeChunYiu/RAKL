@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_019_ERROR_COMPOSITION_ADDENDUM",
+  "date": "2026-08-09",
+  "parent_benchmark": "SELF_RAKL_RESEARCH_019_FROZEN_BENCHMARK",
+  "trigger": "Fresh primary-source review after the first support implementation exposed that generic addition of per-hop approximation values is not justified unless the declared error semantics has a certified composition rule.",
+  "historical_parent_benchmark_unchanged": true,
+  "frozen_before_corrective_implementation": true,
+  "source_projection": "Rischel and Weichwald, Compositional Abstraction Error and a Category of Causal Models, arXiv:2103.15758: compositional error can be bounded under a specifically constructed compositional framework, while naive KL-divergence errors can violate the triangle inequality arbitrarily badly.",
+  "new_blocking_rule": "End-to-end numerical error accumulation is CANNOT_CHECK unless all hops declare the same error semantics and a predeclared composition-rule certificate states that the path upper bound is valid for that semantics. Generic pairwise numbers must never be summed merely because they are called errors.",
+  "worlds": [
+    {
+      "id": "E01_COMPOSITION_RULE_MISSING",
+      "description": "All hops report numeric approximation values but no error-semantics/composition rule is declared.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "E02_ERROR_SEMANTICS_MISMATCH",
+      "description": "One hop reports a TV-style bound and another reports KL divergence under one claimed additive path budget.",
+      "expected": "REJECT"
+    },
+    {
+      "id": "E03_UNCERTIFIED_ADDITIVE_KL",
+      "description": "All hops call their values KL divergence and the path attempts generic additive composition without a certified rule.",
+      "expected": "CANNOT_CHECK"
+    },
+    {
+      "id": "E04_CERTIFIED_ADDITIVE_BOUND",
+      "description": "All hops use one declared error semantics with a predeclared certified ADDITIVE_UPPER_BOUND rule and the accumulated value is within tolerance.",
+      "expected": "COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY"
+    },
+    {
+      "id": "E05_RULE_DECLARED_POSTHOC",
+      "description": "The error-composition rule is selected after endpoint outcomes are observed.",
+      "expected": "TRIAL_INVALID"
+    }
+  ],
+  "acceptance_rule": "The corrective support layer must fail closed on missing, mismatched or post-hoc error composition semantics and preserve the original no-authority boundary."
+}
