@@ -1,3 +1,10 @@
+from .assimilation import (
+    AssimilationEvidence,
+    AssimilationReport,
+    AssimilationVerdict,
+    MethodOperatorContract,
+    evaluate_method_assimilation,
+)
 from .core import (
     Authority,
     Context,
@@ -36,6 +43,9 @@ from .subject_identity import (
 )
 
 __all__ = [
+    "AssimilationEvidence",
+    "AssimilationReport",
+    "AssimilationVerdict",
     "Authority",
     "CheckConclusion",
     "Context",
@@ -49,6 +59,7 @@ __all__ = [
     "IdentityAwareSaturationTracker",
     "KnowledgeFiber",
     "LineageResolution",
+    "MethodOperatorContract",
     "PlatformSubjectObservation",
     "Projection",
     "PromotionDecision",
@@ -61,6 +72,7 @@ __all__ = [
     "SubjectAttestationReport",
     "SubjectVerdict",
     "compare_contexts",
+    "evaluate_method_assimilation",
     "rank_discriminators",
     "semantic_gain",
     "verify_execution_subject",
