@@ -192,4 +192,4 @@ Independent reviewers, different model backbones and fresh evidence lineages rem
 
 ## Result-slot policy
 
-Any token of the form `[[RESULT:...]]` is a blocking unresolved result. It may be replaced only by a table/figure/text fragment generated from an immutable machine-readable result receipt whose subject, population, code, evaluator and preregistration identities are verified.
+Every named unresolved result placeholder in this manuscript is blocking. A result placeholder may be replaced only by a table, figure, or text fragment generated from an immutable machine-readable result receipt whose subject, population, code, evaluator, and preregistration identities are verified.
