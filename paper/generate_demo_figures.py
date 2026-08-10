@@ -18,7 +18,7 @@ FIGURES = ROOT / "paper" / "figures"
 GENERATED = FIGURES / "generated"
 
 FIGURE_WIDTH_IN = 7.0
-FIGURE_HEIGHT_IN = 2.85
+FIGURE_HEIGHT_IN = 2.45
 DPI = 300
 
 
@@ -36,7 +36,6 @@ def _style() -> None:
             "xtick.labelsize": 7.0,
             "ytick.labelsize": 7.0,
             "legend.fontsize": 7.0,
-            "figure.titlesize": 8.5,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "svg.fonttype": "none",
@@ -62,7 +61,6 @@ def figure_source_data() -> dict[str, dict[str, Any]]:
         "blocking_cuts": [1, 0, 0, 0],
         "support_paths": [0, 1, 1, 1],
         "independent_evidence_roots": [6, 7, 7, 8],
-        "event_labels": ["baseline", "finite-amplitude\nclosure", "flat repeat", "independent\nreplication"],
     }
 
     fig6 = {
@@ -100,7 +98,6 @@ def render_growth(data: dict[str, Any], output_dir: Path) -> None:
     _style()
     rounds = data["rounds"]
     x = list(range(len(rounds)))
-    tick_labels = [f"{r}\n{event}" for r, event in zip(rounds, data["event_labels"], strict=True)]
 
     fig, axes = plt.subplots(1, 3, figsize=(FIGURE_WIDTH_IN, FIGURE_HEIGHT_IN), constrained_layout=True)
 
@@ -109,7 +106,7 @@ def render_growth(data: dict[str, Any], output_dir: Path) -> None:
     ax.plot(x, data["occupied_cells"], marker="s", linestyle="--", linewidth=1.2, label="Occupied cells")
     ax.set_title("Atlas geometry")
     ax.set_ylabel("Count")
-    ax.set_xticks(x, tick_labels)
+    ax.set_xticks(x, rounds)
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_ylim(0, max(data["atom_count"]) + 1.5)
     ax.legend(frameon=False, loc="lower right")
@@ -135,15 +132,6 @@ def render_growth(data: dict[str, Any], output_dir: Path) -> None:
     ax.set_ylim(min(data["independent_evidence_roots"]) - 0.5, max(data["independent_evidence_roots"]) + 0.7)
     _panel_label(ax, "c")
 
-    fig.suptitle("Knowledge geometry and target-conditioned value are distinct", y=1.03, fontweight="bold")
-    fig.text(
-        0.5,
-        -0.015,
-        f"Longitudinal geometry uses frozen basis {data['basis_id']}; R1 opens the target path, R2 is flat, and R3 adds independent evidence without another path opening.",
-        ha="center",
-        va="top",
-        fontsize=6.8,
-    )
     _save_all(fig, output_dir / "fig5_demo_growth")
 
 
@@ -167,13 +155,13 @@ def render_context(data: dict[str, Any], output_dir: Path) -> None:
     ax = axes[1]
     storage_labels = ["Raw unique", "Lossless stored", "Hot tier"]
     storage_values = [data["raw_unique_bytes"], data["lossless_stored_bytes"], data["hot_stored_bytes"]]
-    bars = ax.bar(storage_labels, storage_values)
+    bars = ax.barh(storage_labels, storage_values)
+    ax.invert_yaxis()
     ax.set_title("Physical evidence storage")
-    ax.set_ylabel("Bytes")
-    ax.set_ylim(0, max(storage_values) * 1.18)
-    ax.tick_params(axis="x", rotation=25)
+    ax.set_xlabel("Bytes")
+    ax.set_xlim(0, max(storage_values) * 1.22)
     for bar, value in zip(bars, storage_values, strict=True):
-        ax.text(bar.get_x() + bar.get_width() / 2, value + max(storage_values) * 0.025, f"{value}", ha="center", va="bottom")
+        ax.text(value + max(storage_values) * 0.025, bar.get_y() + bar.get_height() / 2, f"{value}", va="center")
     _panel_label(ax, "b")
 
     ax = axes[2]
@@ -188,27 +176,9 @@ def render_context(data: dict[str, Any], output_dir: Path) -> None:
     ax.set_ylabel("Bytes")
     ax.set_xticks(x, categories)
     ax.set_ylim(0, max(logical) * 1.18)
-    ax.legend(frameon=False, loc="lower right")
-    ax.text(
-        0.02,
-        0.96,
-        f"{data['records_after_refetch']} logical records / {data['unique_blobs_after_refetch']} unique blobs\nrehydration verified = {str(data['rehydration_verified']).lower()}",
-        transform=ax.transAxes,
-        ha="left",
-        va="top",
-        fontsize=6.8,
-    )
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=1)
     _panel_label(ax, "c")
 
-    fig.suptitle("Archive growth, active context, and hot storage are controlled separately", y=1.03, fontweight="bold")
-    fig.text(
-        0.5,
-        -0.015,
-        "Exact refetch adds provenance/logical history without new physical bytes; cold demotion reduces the hot footprint without deleting canonical evidence.",
-        ha="center",
-        va="top",
-        fontsize=6.8,
-    )
     _save_all(fig, output_dir / "fig6_demo_context")
 
 
