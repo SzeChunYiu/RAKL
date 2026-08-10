@@ -1,0 +1,104 @@
+{
+  "annotation_gate": {
+    "adjudication_required": true,
+    "all_evaluated_items_confirmatory_eligible": true,
+    "minimum_independent_human_or_expert_annotations_per_confirmatory_item": 2
+  },
+  "chronology": {
+    "benchmark_labels_visible_during_construction": true,
+    "confirmatory_use_permitted": false,
+    "model_metrics_not_run_before_protocol_freeze": true
+  },
+  "context": {
+    "evidence_authority": "internal proposal only",
+    "family_holdout": "leave one entire mechanism family out",
+    "quadrants": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4"
+    ],
+    "replication_unit": "constructed source-target pair",
+    "seeds": "none; deterministic pilot"
+  },
+  "controls": [
+    {
+      "arm": "semantic_calibrated",
+      "features": [
+        "calibrated_surface_jaccard"
+      ]
+    },
+    {
+      "arm": "skill_aware",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard"
+      ]
+    },
+    {
+      "arm": "dependency_aware",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard",
+        "dependency_pattern_jaccard"
+      ]
+    },
+    {
+      "arm": "witnessed_structure",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard",
+        "dependency_pattern_jaccard",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete"
+      ]
+    }
+  ],
+  "diagnostic_thresholds": {
+    "maximum_q3_false_accept": 0.2,
+    "minimum_average_precision_gain": 0.05,
+    "minimum_q2_true_accept": 0.8,
+    "minimum_roc_auc_gain": 0.05,
+    "require_brier_improvement": true
+  },
+  "frozen_before_evaluated_result_access": true,
+  "metrics": [
+    "roc_auc",
+    "average_precision",
+    "brier",
+    "log_loss",
+    "ece_5bin",
+    "q2_true_accept",
+    "q3_false_accept"
+  ],
+  "model": {
+    "classification_threshold": 0.5,
+    "family_split": "leave-one-family-out",
+    "strongest_control_selection": "maximum held-out ROC-AUC among non-structural controls; ties broken by PR-AUC then fixed arm order",
+    "training": "deterministic batch gradient descent",
+    "type": "L2-regularized logistic regression"
+  },
+  "object": "directional validity of context/QoI-scoped transfer between source and target structural descriptions",
+  "parent_subject_sha": "7d8316d4a532e3512cf905e1642194310e766b0d",
+  "plot_policy": {
+    "editable_vector_text": true,
+    "no_annotate": true,
+    "no_arrows_to_data": true,
+    "no_ax_text": true,
+    "no_text_boxes_over_data": true,
+    "panel_letters_outside_axes": true,
+    "source": "exact receipt only"
+  },
+  "population": "constructed balanced Q1-Q4 pairs across eleven proposed mechanism families",
+  "positive_goal": {
+    "failure_or_block": "narrow to formalism/conformance and internal diagnostic; do not train expensively",
+    "state": "registered",
+    "success": "independently supported incremental structural signal with acceptable Q3 false accept"
+  },
+  "protocol_id": "paper3-cheap-gate-lofo-v1-20260810",
+  "qoi": "incremental held-out discrimination of valid versus invalid transfer beyond semantic, skill and dependency-aware controls",
+  "scale_rule": "Authorize expensive training only if both annotation_gate and diagnostic_signal_gate pass. Missing evidence fails closed.",
+  "schema_version": "paper3-cheap-gate-protocol-v1"
+}
