@@ -1,0 +1,128 @@
+{
+  "round": 44,
+  "date": "2026-08-10",
+  "trial_id": "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001",
+  "status": "PREREGISTERED_NOT_EXECUTED",
+  "purpose": "Bridge the deterministic RAKL software-contract demo to the first real LLM-in-the-loop comparison without changing the model, evidence corpus, evaluator, question set, output schema or tool policy between arms.",
+  "scientific_authority": {
+    "engineering_claim_allowed_after_execution": "The same registered LLM/corpus/evaluator can be run under a direct-corpus arm and a RAKL-context arm with mechanically checked matching constraints and auditable RAKL execution traces.",
+    "scientific_superiority_claim_allowed": false,
+    "reason": "One tiny known-answer domain is a diagnostic microtrial, not sufficient evidence of general scientific superiority."
+  },
+  "arms": [
+    {
+      "condition": "DIRECT_CORPUS",
+      "intervention": "Provide the frozen raw evidence corpus directly in a deterministic canonical source order plus the registered question and output schema. No RAKL projection, atlas, context compiler or RAKL-derived annotations are included in the model prompt."
+    },
+    {
+      "condition": "RAKL_CONTEXT",
+      "intervention": "Ingest the identical frozen raw evidence corpus through the registered RAKL lifecycle; compile the bounded target-conditioned working context; provide that context plus the identical registered question and output schema to the same model."
+    }
+  ],
+  "must_match_exactly_between_arms": [
+    "model_id",
+    "model_revision",
+    "temperature",
+    "max_output_tokens",
+    "seed",
+    "system_prompt_hash",
+    "raw_evidence_corpus_hash",
+    "source_ids_and_source_hashes",
+    "question_set_hash",
+    "tool_policy_id",
+    "output_schema_id",
+    "evaluator_protocol_hash"
+  ],
+  "intervention_allowed_to_differ": [
+    "prompt materialization caused by RAKL projection/normalization/identity/provenance/atlas/context compilation",
+    "RAKL internal deterministic execution trace and state updates"
+  ],
+  "tool_policy": {
+    "id": "NO_EXTERNAL_TOOLS_AFTER_PROMPT_BUILD_V1",
+    "rule": "Neither arm may search the web, call retrieval, use calculators or invoke external tools after its final model prompt is frozen. All evidence must come from the identical preregistered source corpus."
+  },
+  "model_fields": {
+    "model_id": "TO_BE_PINNED_BEFORE_EXECUTION",
+    "model_revision": "TO_BE_PINNED_BEFORE_EXECUTION",
+    "temperature": 0.0,
+    "max_output_tokens": 512,
+    "seed": 17,
+    "system_prompt": "Answer the registered scientific question using only supplied evidence. Return the registered structured schema and a concise evidence-grounded explanation."
+  },
+  "question_set": [
+    {
+      "question_id": "Q1",
+      "prompt": "For the simple pendulum evidence supplied, state whether the usual small-angle period law is exact or asymptotic and whether the first finite-amplitude correction increases or decreases the period."
+    },
+    {
+      "question_id": "Q2",
+      "prompt": "Determine whether a source measuring time to reach a specified angle can be treated as a direct contradiction of a source measuring full oscillation period. State the context-alignment requirement."
+    },
+    {
+      "question_id": "Q3",
+      "prompt": "Identify the source ids that support the finite-amplitude period conclusion and the source ids that should be rejected as context-misaligned for that direct comparison."
+    }
+  ],
+  "output_schema": {
+    "id": "PENDULUM_STRUCTURED_ANSWER_V1",
+    "fields": [
+      "small_angle_is_asymptotic:boolean",
+      "finite_amplitude_increases_period:boolean",
+      "period_differs_from_time_to_angle:boolean",
+      "context_alignment_required_before_contradiction:boolean",
+      "supporting_source_ids:list[string]",
+      "rejected_as_misaligned_source_ids:list[string]"
+    ]
+  },
+  "sealed_known_answer_evaluator": {
+    "implementation": "src/rakl/matched_microtrial.py::score_pendulum_answer",
+    "required_support_source_ids": ["S2", "S3", "S7"],
+    "misaligned_source_ids": ["S4", "S5"],
+    "allowed_support_source_ids": ["S1", "S2", "S3", "S6", "S7", "S8"],
+    "conceptual_coordinates": [
+      "small_angle_is_asymptotic",
+      "finite_amplitude_increases_period",
+      "period_differs_from_time_to_angle",
+      "context_alignment_required_before_contradiction"
+    ]
+  },
+  "primary_endpoints": [
+    "conceptual_correct / 4",
+    "exact_conceptual_pass",
+    "required_support_recall",
+    "support_precision",
+    "misalignment_recall",
+    "unsupported_source_count"
+  ],
+  "engineering_endpoints": [
+    "same-model matching validation passes before any model call",
+    "same evidence-corpus fingerprint in both arms",
+    "RAKL arm emits the complete registered atomic lifecycle trace",
+    "RAKL canonical state changes only through registered authority gates",
+    "input token count",
+    "output token count",
+    "active-context/archive ratio",
+    "lattice transition metrics"
+  ],
+  "reporting_rules": [
+    "Report every registered endpoint for both arms; do not cherry-pick only favorable coordinates.",
+    "Report the exact model id/revision, seed, temperature, prompts, corpus hashes and raw model outputs.",
+    "Do not interpret lower token use as scientific correctness.",
+    "Do not interpret lattice growth as scientific value without the sealed target-conditioned endpoints.",
+    "Do not claim general RAKL superiority from this microtrial regardless of outcome.",
+    "If the arms fail the matching validator, label the run INVALID_MATCHED_COMPARISON and do not score it as evidence."
+  ],
+  "implementation": {
+    "harness": "src/rakl/matched_microtrial.py",
+    "tests": "tests/test_matched_microtrial.py",
+    "raw_corpus_source": "src/rakl/mini_research_demo.py::_sources",
+    "deterministic_rakl_reference": "research/MINI_RESEARCH_DEMO_043_RECEIPT.json",
+    "lattice_metrology_reference": "research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json"
+  },
+  "execution_blockers": [
+    "Pin one exact model id and immutable/reproducible revision before execution.",
+    "Freeze the exact raw source-payload hashes and final question/evaluator protocol hashes into the execution receipt.",
+    "Use a provider/runtime that can return or preserve raw outputs and token accounting for both arms under the same settings."
+  ],
+  "result": "PENDING"
+}
