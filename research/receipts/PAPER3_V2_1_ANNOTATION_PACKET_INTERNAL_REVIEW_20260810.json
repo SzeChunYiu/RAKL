@@ -1,0 +1,115 @@
+{
+  "artifact_sha256": {
+    ".github/workflows/paper3-v2-1-annotation-packet.yml": "cdb4c6c697fa5962fb6749479b83c6f44fab49113a2be1576f59b172a44ce860",
+    "paper/structural_amortization/README_V5.md": "c548a3939c59da61155a4f5c4aebf65a98ba23c7571da5d40df555a6741ca855",
+    "paper/structural_amortization/main_v5.tex": "a547cfb62948a6ac980396f82eb672ad098b9eca6bf12dfc0c1088ac1f697836",
+    "paper/structural_amortization/sections/03_benchmark_v5.tex": "0fafa226bca15acd56867599d1535952aacd89c9cd15ddf104e3b26255df3e57",
+    "research/paper3/annotation/EXTERNAL_ANNOTATION_PACKET_V2_1_20260810.json": "9cf6d78962f2f2dc8db31f0e799f8aa23f7461b23d72d881837e7315caa74e0c",
+    "research/paper3/annotation/README_V2_1.md": "3689f82cd9acadf1490e30f26fc4a5b4e95b80e2d81689dba56366fd3baaf613",
+    "research/receipts/PAPER3_V2_1_ANNOTATION_PACKET_FREEZE_20260810.json": "cdde46e5f218d184800aa0d8581d93a922af7bc6b95903e1d805a14ff0c91764",
+    "schemas/paper3-adjudication-v2-1.schema.json": "a605e256a263948af98a325de394ea33aa9240fda04b768797b3d72c6adcf84f",
+    "schemas/paper3-adjudication.schema.json": "952bce204a670a4365465519e9530afcf507793ad84d5e025be8e273d9f3d080",
+    "schemas/paper3-annotation-submission-v2-1.schema.json": "9b4616a55de3ca81f0ef27b65e23ebc8558fec420bfcab02e9384d666de1eb61",
+    "schemas/paper3-annotation-submission.schema.json": "dd76c2084a214dd2339dcd94b45333acc35fa5425f741f27c1bd0b678714e6dc",
+    "tests/test_paper3_v2_1_annotation_packet.py": "961461b1a1783893caae0f99a5acfa673f4bd8a6e4e44faf2fede35281d8addf"
+  },
+  "blocking_code_or_artifact_findings_remaining": [],
+  "claim_boundary": "Same-context internal review only; not independent review, peer review, annotation evidence, signal evidence or compute authorization.",
+  "created_at_utc": "2026-08-10T21:43:40Z",
+  "external_evidence_gate": {
+    "open_concern_ids": [
+      "P3-V2P-R5-EXPENSIVE-COMPUTE"
+    ],
+    "passed": false,
+    "required_next": "Two complete genuinely external annotations per item, distinct adjudication and external provenance audit, followed by the frozen cheap v2 signal gate."
+  },
+  "frozen_original_schema_hashes_preserved": {
+    "schemas/paper3-adjudication.schema.json": "952bce204a670a4365465519e9530afcf507793ad84d5e025be8e273d9f3d080",
+    "schemas/paper3-annotation-submission.schema.json": "dd76c2084a214dd2339dcd94b45333acc35fa5425f741f27c1bd0b678714e6dc"
+  },
+  "internal_verdict": "INTERNALLY_READY_FOR_PUBLIC_EXTERNAL_ANNOTATION_SOLICITATION_AFTER_EXACT_CI_AND_MERGE",
+  "lenses": [
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2P-R5-SCOPE",
+          "finding": "The v5 manuscript calls this a zero-judgement solicitation packet and does not claim generalization, efficiency, independent review or publication readiness.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2P-R5-MANUSCRIPT-TYPO",
+          "finding": "The additive v5 section restores the missing LaTeX command escape in the disclosed near_miss identifier text; frozen v4 remains unchanged.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "editorial_novelty_significance"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2P-R5-SUBJECT-BINDING",
+          "finding": "Packet binds exact merged source-repair subject and exact v2.1 source-set/negative-history hashes.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2P-R5-LINKAGE-PRIVACY",
+          "finding": "Private linkage is absent from Git and was observed on FS9 at the receipt-bound path with mode 0600, size and hashes.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "reproducibility_provenance"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2P-R5-CANNOT-CHECK-COERCION",
+          "finding": "Original frozen v2 schemas are unchanged. Additive v2.1 validation views allow cannot_assess=true only with nine null coordinates; runtime remains fail closed.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2P-R5-DISCARDED-PACKET-REUSE",
+          "finding": "New packet hashes differ from the discarded pre-repair packet and bind the neutral v2.1 source set.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "hostile_annotation_usability"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2P-R5-EXPENSIVE-COMPUTE",
+          "finding": "Zero external submissions, adjudication or provenance audit exist. Signal evaluation and every training/inference/break-even SLURM job remain unauthorized.",
+          "status": "open_external_gate"
+        }
+      ],
+      "lens": "compute_economics_and_gate_order"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2P-R5-FIGURES",
+          "finding": "This iteration adds no quantitative result and no new quantitative figure.",
+          "status": "not_applicable"
+        }
+      ],
+      "lens": "figure_integrity"
+    }
+  ],
+  "local_verification": {
+    "blocking_overfull_or_undefined_warnings": 0,
+    "exact_pr_ci_required": true,
+    "full_tests_collected": 917,
+    "full_tests_exit_code": 0,
+    "manuscript_engine": "tectonic 0.15.0",
+    "manuscript_pages": 13,
+    "nonblocking_underfull_warning_present": true,
+    "targeted_tests_collected": 47,
+    "targeted_tests_exit_code": 0
+  },
+  "object": "Paper 3 v2.1 external annotation packet, missing-evidence contract and closed compute gate",
+  "parent_subject_sha": "f4cee8313ec64d02873b87f92c51c35c113cd70d",
+  "quantity_of_interest": "internal solicitation readiness without promoting absent external evidence",
+  "review_class": "same_context_recursive_nature_skills_style_review_not_independent_review_or_peer_review",
+  "review_id": "paper3-v2-1-annotation-packet-internal-review-20260810",
+  "schema_version": "paper3-v2-1-annotation-packet-internal-review-v1"
+}

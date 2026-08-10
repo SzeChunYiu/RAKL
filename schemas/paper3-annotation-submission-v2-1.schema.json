@@ -1,0 +1,257 @@
+{
+  "$defs": {
+    "judgement": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "boundary_matched": {
+                "type": "null"
+              },
+              "directional_mapping_complete": {
+                "type": "null"
+              },
+              "invariant_preserved": {
+                "type": "null"
+              },
+              "qoi_matched": {
+                "type": "null"
+              },
+              "roles_preserved": {
+                "type": "null"
+              },
+              "semantic_similarity_high": {
+                "type": "null"
+              },
+              "structural_match": {
+                "type": "null"
+              },
+              "transfer_valid": {
+                "type": "null"
+              },
+              "typed_relations_preserved": {
+                "type": "null"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "cannot_assess": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "boundary_matched": {
+                "type": "boolean"
+              },
+              "directional_mapping_complete": {
+                "type": "boolean"
+              },
+              "invariant_preserved": {
+                "type": "boolean"
+              },
+              "qoi_matched": {
+                "type": "boolean"
+              },
+              "roles_preserved": {
+                "type": "boolean"
+              },
+              "semantic_similarity_high": {
+                "type": "boolean"
+              },
+              "structural_match": {
+                "type": "boolean"
+              },
+              "transfer_valid": {
+                "type": "boolean"
+              },
+              "typed_relations_preserved": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "boundary_matched": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "cannot_assess": {
+          "type": "boolean"
+        },
+        "directional_mapping_complete": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "evidence_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "invariant_preserved": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "item_id": {
+          "pattern": "^p3item-[0-9a-f]{20}$",
+          "type": "string"
+        },
+        "qoi_matched": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rationale": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "roles_preserved": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "semantic_similarity_high": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "structural_match": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "transfer_valid": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "typed_relations_preserved": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "item_id",
+        "semantic_similarity_high",
+        "structural_match",
+        "roles_preserved",
+        "typed_relations_preserved",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete",
+        "transfer_valid",
+        "cannot_assess",
+        "rationale",
+        "evidence_refs"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://example.invalid/rakl/paper3-annotation-submission-v2-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "annotator_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "attestation": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at_utc": {
+          "format": "date-time",
+          "pattern": "Z$",
+          "type": "string"
+        },
+        "conflicts_disclosed": {
+          "const": true
+        },
+        "human_or_domain_expert": {
+          "const": true
+        },
+        "independent_of_benchmark_author": {
+          "const": true
+        },
+        "no_other_annotator_or_result_access": {
+          "const": true
+        }
+      },
+      "required": [
+        "human_or_domain_expert",
+        "independent_of_benchmark_author",
+        "no_other_annotator_or_result_access",
+        "conflicts_disclosed",
+        "completed_at_utc"
+      ],
+      "type": "object"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/judgement"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "packet_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "protocol_id": {
+      "const": "paper3-confirmatory-gate-v2"
+    },
+    "protocol_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "rubric_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "rubric_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper3-external-annotation-submission-v2"
+    }
+  },
+  "required": [
+    "schema_version",
+    "packet_id",
+    "packet_sha256",
+    "protocol_id",
+    "protocol_sha256",
+    "rubric_id",
+    "rubric_sha256",
+    "annotator_id",
+    "attestation",
+    "items"
+  ],
+  "title": "Paper 3 independent annotation submission v2.1 validation view",
+  "type": "object"
+}
