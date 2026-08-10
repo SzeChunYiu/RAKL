@@ -31,7 +31,7 @@ def test_epistemic_mechanics_is_longform_and_contains_required_results():
         "Unrestricted open-world completeness is not finitely certifiable",
         "Worked mechanics trace: the simple pendulum",
         "GWT-OMISSION-01",
-        "Typed compatibility complex",
+        "typed compatibility complex",
     ):
         assert needle in text
 
