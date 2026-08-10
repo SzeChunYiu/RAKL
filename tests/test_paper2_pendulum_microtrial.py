@@ -6,7 +6,10 @@ import platform
 from pathlib import Path
 
 import pytest
-from jsonschema import Draft202012Validator, FormatChecker
+
+jsonschema = pytest.importorskip("jsonschema")
+Draft202012Validator = jsonschema.Draft202012Validator
+FormatChecker = jsonschema.FormatChecker
 
 from rakl.paper2_pendulum_microtrial import (
     _encode_prompt_for_generation,
