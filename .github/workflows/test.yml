@@ -28,3 +28,7 @@ jobs:
         run: python -m rakl.mini_research_metrology
       - name: Emit deterministic archive storage receipt
         run: python -m rakl.mini_archive_demo
+      - name: Generate receipt-bound publication figures
+        run: python paper/generate_demo_figures.py
+      - name: Inspect exact reviewed V2 source anchors
+        run: python paper/build_v2_1_source.py --inspect
