@@ -1,0 +1,160 @@
+\section{Introduction}
+
+A research agent can make a claim easy to retrieve, repeat and act on long before the claim deserves scientific trust. The distinction is obvious in ordinary laboratory practice. A conjecture written on a whiteboard is available to the group, but availability does not make it compatible with every measurement, and compatibility does not make it established. A computational research system should preserve the same separation. Yet language-model agents naturally operate through text: hypotheses, plans, summaries, tool calls and conclusions all arrive through a common linguistic interface. Without an external discipline, the fact that a sentence is fluent, salient or repeatedly reused can leak into a surrogate for truth.
+
+This problem becomes sharper as language models are connected to search engines, code execution, laboratory automation and persistent memory. Autonomous chemical systems can plan tool use and execute experiments; chemistry agents can combine language models with expert-designed tools; general-purpose research agents can generate ideas, run code, write manuscripts and even simulate review \cite{boiko2023,bran2024,lu2024}. More recent systems distribute scientific work across multiple agents or long-running research loops \cite{gottweis2025,kosmos2025}. These systems make the control problem more important, not less: a larger action space creates more ways for a provisional statement to become operationally consequential before its evidential status is clear.
+
+\RAKL{} approaches this problem by treating scientific knowledge as an external state with typed transitions. A language model may propose, retrieve, combine or criticize objects, but canonical scientific state changes only through registered operations. The present paper develops the mathematical discipline behind that design and then asks a second question: \emph{when may a recursively expanding research process stop?} That question is central to this project. Knowledge should accumulate while new evidence, mechanisms, contradictions, derivations or relevant prior art continue to appear. A release is justified only after repeated, deliberately heterogeneous attempts to expand the knowledge state cease to produce substantive growth under a fixed measurement basis and a declared freshness horizon.
+
+The resulting notion is not absolute completion. An unrestricted scientific world is not a finite database, and no finite search transcript can show that an unknown relevant paper, mechanism or counterexample does not exist. The defensible target is instead \emph{bounded epistemic saturation}: a fixed-point-like condition relative to declared scope, discovery routes, identity rules, evidence standards and time cutoff. This qualification is not rhetorical. It changes the software contract, the mathematics of the stopping rule and the claims that a paper is permitted to make.
+
+\subsection{Three separations}
+
+The central architecture can be summarized by three inequalities:
+\[
+\boxed{\text{computational access}\neq\text{cross-context coherence}\neq\text{epistemic authority}.}
+\]
+Computational access asks whether an object is active and reusable by downstream computation. Coherence asks whether objects can coexist after their contexts, representations and regimes have been aligned. Authority asks what the registered evidence licenses the system to assert. None of these coordinates is a monotone proxy for the other two.
+
+A second separation distinguishes persistent epistemic state from a transient workspace. Contemporary language-model systems already use retrieval, tools, scratchpads and memory hierarchies to extend what can be brought into a model's immediate context \cite{lewis2020,yao2023,schick2023,packer2023,mialon2023}. Generative agents and reflection-based agents likewise maintain memories or textual feedback that can influence future behavior \cite{park2023,shinn2023}. These mechanisms are useful models of computational access, but they do not define scientific authority. In the architecture developed here, a workspace can change what downstream operators see without acquiring any canonical write permission.
+
+The third separation concerns geometric growth and scientific progress. Adding a node, splitting a category or storing another textual representation can increase the size of a knowledge graph while adding no scientific content. Conversely, a failed experiment, a counterexample or a newly discovered prior-art equivalence may add little geometric volume while substantially narrowing what can responsibly be claimed. For that reason the saturation rule introduced later uses a non-compensatory vector of epistemically meaningful changes rather than a single object count.
+
+\subsection{Contributions and claim boundary}
+
+The paper makes seven contributions.
+
+\begin{enumerate}[leftmargin=*]
+\item It formalizes a typed scientific state in which claims, evidence, context, uncertainty, obstructions, negative history and authority certificates have distinct roles.
+\item It distinguishes pairwise compatibility from higher-order gluing. A three-context parity construction gives an explicit counterexample in which every pair is compatible while the triple has no global section.
+\item It audits the overloaded term ``lattice.'' The current reference object is a typed compatibility complex. We then give sufficient additional structure for a genuine lattice: the fixed points of an extensive, monotone and idempotent closure operator form a complete lattice, with intersection as meet and closure of union as join.
+\item It proves that a multi-coordinate authority order containing incomparable states cannot be faithfully collapsed into a real-valued scalar order without losing incomparability information.
+\item It formulates the transient workspace as a capacity-constrained selection problem, proves optimality of the implemented reservation-first greedy rule under its explicit unit-cost/additive-utility assumptions, and proves that workspace-only transitions do not create authority or compatibility certificates.
+\item It develops Open-World Mechanism Discovery (OWMD), in which unowned functions are inverted into vocabulary-independent signatures and searched through heterogeneous route families. A finite transcript can certify bounded closure but not unrestricted open-world completeness.
+\item It introduces bounded epistemic saturation as the release/stopping criterion for both research and manuscript construction. The criterion requires repeated zero substantive gain under a stable basis, stable route coverage, closed blocking fibers, omission and nearest-work audits, and an explicit freshness horizon. Any new substantive object reopens the state.
+\end{enumerate}
+
+The scope is deliberately narrower than the ambition of autonomous science. We do not claim that these structures make a model conscious, that a finite process can exhaust the scientific literature, or that the current implementation improves real scientific outcomes. The paper provides formal and executable governance mechanics. Empirical superiority requires matched experiments; external credibility requires independent review; and unrestricted completeness is excluded by construction.
+
+\section{Foundations and the gap between them}
+
+Epistemic mechanics sits near several mature fields, but the combination needed for evidence-governed research agents is not supplied by any one of them. This section treats the neighboring literatures as constraints on novelty. Where an older field already owns a function, the contribution here is the integration and the additional boundary, not a renamed invention.
+
+\subsection{Agentic scientific systems: powerful proposal generators}
+
+Tool-augmented language models established that text models can be embedded in loops that retrieve information, invoke programs and act in external environments \cite{lewis2020,yao2023,schick2023,mialon2023}. Scientific systems extend the same pattern to domain tools and experiments. Coscientist connects planning, search, code and cloud-laboratory execution in chemistry \cite{boiko2023}; ChemCrow augments a language model with a suite of chemistry tools \cite{bran2024}. The AI Scientist automates an end-to-end machine-learning research loop including ideation, experimentation and paper writing \cite{lu2024}, while the AI co-scientist distributes hypothesis generation and critique across specialized agents \cite{gottweis2025}. Kosmos uses a structured world model to support long-running cycles of literature search, data analysis and hypothesis generation \cite{kosmos2025}.
+
+These systems demonstrate that proposal generation and tool orchestration can be automated at increasing scale. They do not, by that fact alone, solve the normative question addressed here: which generated objects are permitted to modify a persistent scientific record, under what evidence, and with what consequences for contradiction, uncertainty and later reuse? A system may be highly capable as an actor while remaining under-specified as an epistemic governor. Epistemic mechanics therefore treats the model as one operator in a larger state machine rather than locating scientific authority inside the model's token probabilities.
+
+\subsection{Belief change and truth maintenance: revision without the full evidence geometry}
+
+Truth-maintenance systems established early that intelligent systems need explicit justifications and mechanisms for retracting conclusions when their supports change. Doyle's TMS records dependencies between beliefs and maintains consistency as assumptions are revised \cite{doyle1979}. De Kleer's assumption-based TMS goes further by representing sets of assumptions that support propositions, allowing multiple contexts to coexist and enabling reasoning across alternative environments \cite{dekleer1986}. These ideas are direct ancestors of any architecture that refuses to treat a current text buffer as the whole epistemic state.
+
+Belief revision supplies a complementary normative perspective. The AGM framework characterizes rational revision and contraction of deductively closed belief sets \cite{agm1985}, and G\"ardenfors develops the broader dynamics of changing knowledge states \cite{gardenfors1988}. Abstract argumentation separates attack relations from acceptance semantics and shows how nonmonotonic conclusions can be organized around conflict and defense \cite{dung1995}. Four-valued and paraconsistent traditions show another route: inconsistency need not collapse a reasoning system into triviality \cite{belnap1977}.
+
+The present framework borrows the need for explicit revision, contexts, conflict and justification, but it does not identify scientific state with a deductively closed belief set. Scientific claims may be partially identified, empirically bounded, model-dependent or blocked by missing measurements. A failed claim should remain in negative history because the failure itself can guide later search. Evidence objects also have physical provenance and independence structure that ordinary logical consequence does not represent. The state therefore needs a richer typing discipline than ``believed/not believed'' or even ``in/out/undecided.''
+
+\subsection{Provenance: ancestry is necessary but not authority}
+
+Database provenance and scientific workflow provenance solve another part of the problem. Why- and where-provenance distinguish different questions about the origin of query results \cite{buneman2001}; provenance semirings give an algebraic account of how annotations propagate through relational queries \cite{green2007}. The W3C PROV standard provides interoperable entities, activities and agents for provenance exchange \cite{prov2013}. FAIR principles similarly emphasize that research objects should be findable, accessible, interoperable and reusable \cite{wilkinson2016}.
+
+These are essential capabilities, and RAKL does not claim novelty for provenance graphs. The missing distinction is between \emph{having ancestry} and \emph{having scientific authority}. A claim can have immaculate lineage back to a source that is observationally weak, context-misaligned or itself a hypothesis. Conversely, several independent evidence roots may jointly strengthen a claim even when they share no common textual source. We therefore attach provenance to evidence and transitions while representing authority as a separate coordinate structure. Provenance answers ``where did this object come from?''; authority answers ``what is this object licensed to support here?''
+
+\subsection{Context and local-to-global reasoning}
+
+Scientific contradiction is rarely well-defined without context. McCarthy's work on formalizing context and Giunchiglia's account of contextual reasoning both emphasize that assertions may be valid relative to a local theory or context and require explicit lifting when moved elsewhere \cite{mccarthy1993,giunchiglia1993}. Sheaf theory provides a mathematical language for local data and global consistency. In contextuality theory, compatible local assignments need not extend to a global assignment \cite{abramsky2011}. Applied sheaf work has used the same local-to-global machinery to reason about structured data and sensor consistency \cite{curry2014,robinson2017}.
+
+The analogy is useful but should not be exaggerated. RAKL's present atlas is not a full sheaf implementation. What is retained is the obligation structure: local claims live over declared domains and contexts; overlaps require alignment maps; and pairwise compatibility does not automatically license global gluing. Section~4 makes the obstruction concrete with a finite parity example.
+
+\subsection{Causality, evidence and intervention}
+
+Causal models make a related distinction between observational association and intervention. Structural causal models provide semantics for interventions and counterfactual questions \cite{pearl2009}, while formal accounts of actual causality expose how strongly causal conclusions depend on the declared model and contingency structure \cite{halpern2016}. Epistemic mechanics uses interventions in a narrower engineering sense when testing whether workspace contents are computationally load-bearing. Removing an item from an active workspace and observing a changed proposal can establish dependence of that proposal on the item under the registered computational setup. It does not turn the active item into scientific evidence for the claim it influenced. Cognitive provenance and evidential provenance therefore remain different graph types.
+
+\subsection{The integration gap}
+
+The neighboring fields thus own substantial parts of the problem. Truth-maintenance systems own justification-sensitive revision; AGM owns abstract belief change; argumentation owns attack/acceptance structure; provenance systems own lineage; contextual logics and sheaves own local-to-global obligations; causal models own intervention semantics; agent architectures own tool use, memory and iterative proposal generation. The open problem addressed here is how to compose these functions into a scientific-state machine in which (i) context is first-class, (ii) evidence and authority remain typed, (iii) proposals cannot silently promote themselves, (iv) active computational access is transient, (v) discovery can deliberately escape current vocabulary, and (vi) recursive research has a defensible stopping rule.
+
+That last requirement is especially important. A system that never stops is unusable; a system that stops because it has stopped asking new kinds of questions is unreliable. The saturation construction in Section~8 treats stopping as an epistemic certificate rather than an intuition about having ``read enough.''
+
+\section{Epistemic state and transition mechanics}
+
+We now define the persistent state on which the later compatibility, workspace, discovery and saturation results operate.
+
+\subsection{Local scientific charts}
+
+A local scientific chart is a tuple
+\[
+C_i=(U_i,\phi_i,\gamma_i,e_i,u_i,\alpha_i),
+\]
+where \(U_i\) is a scientific subdomain; \(\phi_i\) is a representation or coordinate system; \(\gamma_i\) records regime, boundary and observation conditions; \(e_i\) is evidence/provenance; \(u_i\) is an uncertainty object; and \(\alpha_i\) is scoped authority. The chart language is deliberately broader than a numerical model. A chart can represent a dataset under calibration assumptions, a symbolic law over a regime, an observational claim, a mechanistic hypothesis or a negative result, provided the type-specific obligations are explicit.
+
+For a claim \(c\), define an authority coordinate
+\[
+\alpha(c)=(G_c,R_c,M_c,I_c,D_c),
+\]
+where \(G_c\) is grounding/provenance support, \(R_c\) is representation/relation support, \(M_c\) is mechanism support, \(I_c\) is identification or bounding support, and \(D_c\) is decision/QoI usability. Each coordinate is a set or structured certificate family, not a real number. Under a common scope, we write
+\[
+\alpha_1\preceq\alpha_2
+\quad\Longleftrightarrow\quad
+\forall q\in\{G,R,M,I,D\},\; \alpha_1^{(q)}\subseteq \alpha_2^{(q)}
+\]
+when certificate inclusion is the relevant local order. More general coordinate-specific entailment relations can replace set inclusion without changing the product-order argument in Section~5.
+
+\subsection{Canonical state}
+
+At time \(t\), canonical state is
+\[
+K_t=(\mathcal A_t,\mathcal T_t,\mathcal V_t,\mathcal E_t,\mathcal U_t,
+\mathcal O_t,\mathcal F_t,\mathcal H_t^{-},\mathcal S_t,\mathcal G_t^K).
+\]
+Here \(\mathcal A_t\) contains local charts or typed atoms; \(\mathcal T_t\) contains typed transitions and alignment maps; \(\mathcal V_t\) contains currently surviving models or validated objects; \(\mathcal E_t\) stores evidence and provenance; \(\mathcal U_t\) uncertainty objects; \(\mathcal O_t\) obstructions and residuals; \(\mathcal F_t\) open research fibers; \(\mathcal H_t^{-}\) immutable negative history; \(\mathcal S_t\) discovery/saturation state; and \(\mathcal G_t^K\) protected governance identities and policies.
+
+A proposal generator is outside the canonical update map:
+\[
+G_\theta(K_t,a_t)\longrightarrow \mathcal P_t,
+\]
+where \(a_t\) is an action or research objective and \(\mathcal P_t\) is a set of proposals. Verification is typed:
+\[
+V(p,e,\gamma)\in
+\{\mathrm{SUPPORTED},\mathrm{REFUTED},\mathrm{PARTIALLY\ IDENTIFIED},
+\mathrm{BLOCKED},\mathrm{CANNOT\ CHECK}\}.
+\]
+Only a separately licensed update operator may transform canonical state:
+\[
+K_{t+1}=\mathcal U(K_t,p,e,\gamma,\chi),
+\]
+where \(\chi\) is the authority/governance certificate required for that transition type.
+
+\begin{proposition}[Proposal non-sovereignty]
+If the codomain of every proposal-generating operator excludes canonical state and every canonical update requires a certificate \(\chi\) unavailable to proposal generators, then no finite composition of proposal generators alone can change \(K_t\).
+\end{proposition}
+
+\begin{proof}
+Every proposal generator maps into a proposal space. Composition therefore remains inside proposal-bearing or transient computational state until an operator with codomain in canonical state is invoked. By assumption, every such canonical operator requires \(\chi\), and proposal generators cannot construct a valid \(\chi\). Hence a composition containing no certified update leaves the canonical projection invariant.
+\end{proof}
+
+This is a software-architecture theorem rather than a theorem about model psychology. It says that authority separation can be made a property of types and write permissions instead of an instruction asking a model to be cautious.
+
+\subsection{Evidence roots and negative history}
+
+Evidence support is represented by roots and derivation paths rather than by citation count alone. Two papers that report the same upstream experiment are not automatically independent evidence. A new review article that repeats an old claim adds provenance but may add no new evidence root. Conversely, a failure to reproduce a claim can add a negative-history object and close a previously admissible support path. The state therefore preserves negative evidence:
+\[
+\mathcal H_t^{-}\subseteq \mathcal H_{t+1}^{-}
+\]
+for ordinary monotone archival updates. Correction is represented by superseding metadata or scope, not by deleting the fact that a refutation was observed.
+
+\begin{proposition}[Negative-history monotonicity under append-only archival policy]
+Suppose the only transitions that touch \(\mathcal H^{-}\) are append operations and metadata corrections that preserve object identity. Then \(\mathcal H_t^{-}\subseteq\mathcal H_{t+n}^{-}\) for every \(n\ge 0\).
+\end{proposition}
+
+\begin{proof}
+Each permitted transition is extensive on \(\mathcal H^{-}\). A finite composition of extensive set updates is extensive, so the inclusion is preserved by induction.
+\end{proof}
+
+The importance of this small invariant becomes visible later. Saturation must count negative results and counterexamples as knowledge growth; otherwise a research process could become ``saturated'' precisely by ignoring the observations that narrow its theory space.
+
+\subsection{Uncertainty is not authority}
+
+Uncertainty and authority answer different questions. A posterior distribution, confidence interval or error bar quantifies uncertainty under a statistical/modeling setup; it does not by itself certify provenance, mechanism or cross-context applicability. Conversely, a high-authority calibration fact may have a broad uncertainty interval. Epistemic mechanics therefore stores \(u(c)\) and \(\alpha(c)\) separately. Bayesian or causal calculations may contribute evidence certificates when their assumptions are registered, but the numerical output is not coerced into the authority tuple by default \cite{pearl2009}.
+
+This separation prepares the two main mathematical issues of the next sections. First, compatibility must be checked after context alignment and can fail at higher order even when all pairs look acceptable. Second, a multi-coordinate authority structure generally contains incomparable states, so reducing it to one scalar destroys information that matters for scientific governance.
