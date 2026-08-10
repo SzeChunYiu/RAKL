@@ -216,7 +216,7 @@ def wrapper_tex(filename: str, receipts: str) -> str:
     return "\n".join(
         [
             f"% GENERATED FROM {receipts}. DO NOT HAND EDIT.",
-            f"\\includegraphics[width=\\linewidth]{{../figures/generated/{filename}.pdf}}",
+            f"\\includegraphics[width=\\linewidth]{{{filename}.pdf}}",
             "",
         ]
     )
