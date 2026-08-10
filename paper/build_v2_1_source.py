@@ -190,6 +190,12 @@ Two additional falsifiers follow from the hardening pass. First, longitudinal at
 \bibitem{skjaeveland2023} M. G. Skj\ae veland, K. Balog, N. Bernard, W. \L ajewska, and T. Linjordet. An Ecosystem for Personal Knowledge Graphs: A Survey and Research Roadmap. arXiv:2304.09572, 2023.
 """
     text = _insert_before_once(text, r"\end{thebibliography}", bib_delta, "bibliography-delta")
+    text = _replace_once(
+        text,
+        "\\sloppy\n\\begin{thebibliography}{99}",
+        "\\sloppy\n\\small\n\\begin{thebibliography}{99}",
+        "bibliography-size",
+    )
 
     # Public source must remain a scoped methods/preregistration manuscript.
     forbidden = ("[[RESULT:", "scientific superiority demonstrated", "independent peer review completed")
