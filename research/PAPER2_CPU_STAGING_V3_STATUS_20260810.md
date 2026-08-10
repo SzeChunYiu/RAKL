@@ -1,6 +1,6 @@
 # Paper 2 CPU staging V3 status
 
-Date: 2026-08-10  
+Date: 2026-08-10; native update: 2026-08-11
 Contract: `PAPER2_CPU_STAGING_V3`
 
 ## Evidence boundary
@@ -103,7 +103,56 @@ valid.
 - exact contract, manifest, wheel-lock and requirements-lock identities.
 
 No Paper 2 quantitative figure or performance section is changed because there is
-no new empirical result. After a separately reviewed merge, the next material
-step is the two-phase LUNARC staging run and harvest. Only a successful staging
-receipt may authorize freezing a later V3 execution packet; it still cannot
-authorize a performance claim by itself.
+no new empirical result. After a separately reviewed merge, the next material step is to preserve and
+retire the dirty old checkout, atomically bootstrap the exact new merged SHA, and
+repeat the submission dry-run. Only if that passes may the two-phase LUNARC
+staging run and harvest proceed. Only a successful staging receipt may authorize
+freezing a later V3 execution packet; it still cannot authorize a performance
+claim by itself.
+
+## Native bootstrap and submission dry-run update
+
+The first native LUNARC operator pass used the exact merged subject
+`2fc6457bce764baef01bca6b19c5a9e053f702f4`. Its atomic bootstrap receipt,
+preserved as
+`research/paper2_microtrial_v3/native_receipts/BOOTSTRAP_NATIVE_2FC6457B.json`, has
+SHA-256 `6c76c22ecc36f36c7b42ed998b819d5c91d8306de1095597069d234092453fdf`
+and verdict `BOOTSTRAP_PASS_ATOMICALLY_PROMOTED`. This is native checkout
+bootstrap evidence only: it is not asset-staging success, model execution, or
+Paper 2 empirical evidence.
+
+The subsequent submission dry-run failed closed before `sbatch` and job submission.
+Its preserved receipt,
+`research/paper2_microtrial_v3/native_receipts/SUBMISSION_DRYRUN_NATIVE_2FC6457B.json`,
+has SHA-256
+`5e102ec6e1d0f6145e4c19d5e45f989c30fd236a4d7975d0de05c2aa84b1f445`,
+verdict `REFUSE_PREFLIGHT_VALIDATION`, failure `checkout_not_clean`, and no
+submitted job ids. The shell wrapper observed the checkout as clean, then its
+repository-module invocation wrote Python bytecode under
+`src/rakl/__pycache__` before the Python-side Git observation. The Python
+preflight correctly treated that newly dirty checkout as a falsifier rather
+than proceeding.
+
+The repair sets `PYTHONDONTWRITEBYTECODE=1` on every repository-module Python
+invocation in the submission, network-probe, staging and harvest paths. It does
+not reinterpret the refusal as a pass. The repaired scripts and regenerated
+contract still require exact CI and a new post-merge native bootstrap/dry-run;
+no new native staging success is claimed here.
+
+A read-only native observation at `2026-08-10T23:41:29Z`, preserved as
+`research/paper2_microtrial_v3/native_receipts/REMOTE_DIRTY_CHECKOUT_OBSERVATION_NATIVE_2FC6457B.json`
+with SHA-256
+`f58bdc2646b055c4e048f5ffe75d17195c047a9efb3541356ba639dc11aa4921`,
+found zero tracked changes and exactly 24 untracked
+`src/rakl/__pycache__/*.pyc` files at the exact `2fc6457b...` checkout. Exact
+paths and byte hashes are retained in that receipt. This bounded native sequence
+supports bytecode generation as a sufficient observed mechanism; it does not claim bytecode was the sole possible
+mutation at the earlier refusal time. The remote checkout remains negative-history evidence with the observed bytecode dirt.
+A later operator must preserve and retire that checkout
+before atomically bootstrapping the exact new merged repair SHA. It must not
+silently delete the bytecode, clean or mutate the old checkout in place, or
+reuse its earlier bootstrap receipt for the new subject.
+
+Across this native update, jobs submitted, model executions and evaluated
+result records all remain **zero**. No inference packet exists, no evaluated
+output was opened, and no empirical or performance claim is licensed.

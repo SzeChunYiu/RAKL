@@ -15,7 +15,7 @@ set -euo pipefail
 : "${SLURM_JOB_ID:?staging must run in a SLURM batch allocation}"
 
 probe_receipt="/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3/network-probe-${RAKL_PROBE_JOB_ID}.json"
-PYTHONPATH="${RAKL_REPO_PATH}/src" python3 -m rakl.paper2_cpu_staging stage-assets \
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${RAKL_REPO_PATH}/src" python3 -m rakl.paper2_cpu_staging stage-assets \
   --contract "${RAKL_STAGING_CONTRACT}" \
   --repo "${RAKL_REPO_PATH}" \
   --expected-repo-sha "${RAKL_EXPECTED_REPO_SHA}" \

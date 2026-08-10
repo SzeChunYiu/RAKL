@@ -12,7 +12,7 @@ while (($#)); do
   esac
 done
 [[ -n "$repo" && -n "$submission" && -n "$output" ]] || { usage; exit 64; }
-PYTHONPATH="$repo/src" python3 -m rakl.paper2_cpu_staging harvest \
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$repo/src" python3 -m rakl.paper2_cpu_staging harvest \
   --submission-receipt "$submission" \
   --receipt-root "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3" \
   --final-root "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3" \

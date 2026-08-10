@@ -1,6 +1,6 @@
 # Paper 2 CPU staging V3 — same-context hostile review
 
-Date: 2026-08-10  
+Date: 2026-08-10; native update: 2026-08-11
 Scope: asset identities, dependency lock, SLURM staging/submission/harvest path,
 receipts, and claim boundaries.
 
@@ -113,7 +113,10 @@ new checkout is built in a preserved candidate and atomically promoted; an
 existing checkout must already match and is never mutated. The operator wrapper
 requires and revalidates its atomic JSON receipt before any `sbatch` call.
 
-**State:** resolved in code; the FS9 bootstrap has not been run.
+**State:** native bootstrap passed atomically for exact subject
+`2fc6457bce764baef01bca6b19c5a9e053f702f4`. This establishes the bounded
+checkout-bootstrap claim only; the later dry-run refusal below prevents any
+staging-readiness or execution inference.
 
 ### P2-V3-H9 — direct versions did not prove the promoted runtime
 
@@ -127,7 +130,9 @@ platform/libc observation, repository commit/tree/ancestry attestation, free-spa
 headroom, and a Torch smoke test with exact `2.8.0+cpu`, null CUDA build metadata
 and a CPU tensor.
 
-**State:** resolved as a fail-closed native gate; no native receipt exists yet.
+**State:** the native submission dry-run exercised this fail-closed boundary and
+refused the checkout as dirty before `sbatch` or job submission. No native staging or
+promoted-runtime receipt exists.
 
 ### P2-V3-H10 — V2 paths and `torch==2.8.0` cannot authorize V3 execution
 
@@ -189,11 +194,52 @@ occupied final directory.
 
 **State:** resolved in software; native filesystem behavior remains unexecuted.
 
+### P2-V3-H14 — the preflight mutated the checkout it was required to attest
+
+**Finding.** The native bootstrap for exact subject
+`2fc6457bce764baef01bca6b19c5a9e053f702f4` passed atomically, but the following
+submission dry-run refused with `checkout_not_clean`. The shell wrapper first
+observed a clean checkout, then invoked `python -m rakl.paper2_cpu_staging` with
+the repository `src/` tree on `PYTHONPATH`. CPython created
+`src/rakl/__pycache__/*.pyc` before the module performed its independent Git
+observation. The preflight therefore changed the object it was supposed to
+measure.
+
+**Evidence.** The preserved bootstrap receipt has verdict
+`BOOTSTRAP_PASS_ATOMICALLY_PROMOTED` and SHA-256
+`6c76c22ecc36f36c7b42ed998b819d5c91d8306de1095597069d234092453fdf`.
+The preserved dry-run receipt has verdict `REFUSE_PREFLIGHT_VALIDATION`, failure
+`checkout_not_clean`, SHA-256
+`5e102ec6e1d0f6145e4c19d5e45f989c30fd236a4d7975d0de05c2aa84b1f445`,
+and an empty submitted-job-id list. A later read-only observation at
+`2026-08-10T23:41:29Z`, receipt SHA-256
+`f58bdc2646b055c4e048f5ffe75d17195c047a9efb3541356ba639dc11aa4921`,
+found zero tracked changes and exactly 24 untracked bytecode files at the exact
+checkout, with every path and byte hash retained. This bounded native sequence
+supports bytecode generation as a sufficient observed mechanism but does not establish it
+as the sole possible mutation at the earlier refusal time. Jobs submitted, model
+executions and evaluated result records remain zero.
+
+**Resolution.** Every repository-module Python invocation in the submission,
+network-probe, staging and harvest paths now sets
+`PYTHONDONTWRITEBYTECODE=1`. The native refusal is retained as a falsifier and
+is not overwritten by the repair.
+
+**State:** repaired in the candidate scripts, pending exact CI and a new
+post-merge native bootstrap/dry-run. The dirty `2fc6457b...` remote checkout
+must be preserved and retired before the new exact merged subject is atomically
+bootstrapped; silently deleting its bytecode, cleaning it in place, or reusing
+its bootstrap lineage would erase negative history.
+
 ## Verdict
 
-`INTERNAL_STAGING_CONTRACT_READY__NO_JOB_SUBMITTED__NO_MODEL_EXECUTED`
+`NATIVE_DRYRUN_FALSIFIER_PRESERVED__REPAIR_READY_NOT_SUBMITTED`
 
-The V3 lane is ready for exact CI and review as a staging-only iteration. It must
-be merged before any operator submits the jobs. A future successful harvest may
-permit a separate V3 microtrial packet freeze; it is not itself an empirical
+This same-context review is internal and is not independent review or peer
+review. The bootstrap PASS and dry-run refusal establish only the bounded native
+behaviors described above. The repair must pass exact CI, review and merge before
+a later operator preserves/retires the old dirty checkout and tests the exact new
+merged subject. No job was submitted, no model was executed and no evaluated
+result was produced. A future successful harvest may permit a separate V3
+microtrial packet freeze; neither the bootstrap nor the repair is an empirical
 Paper 2 result.
