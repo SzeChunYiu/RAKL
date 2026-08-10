@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - uses: actions/setup-python@a26af69be951213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
       - run: pip install -e ".[test]"
@@ -35,8 +35,8 @@ jobs:
       - name: Install manuscript build tools
         run: |
           sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
-      - name: Build exact Paper 1 and expose LaTeX failure
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Build and production-preflight exact Paper 1
         shell: bash
         run: |
           set -euo pipefail
@@ -47,15 +47,32 @@ jobs:
           latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            for n in 1312 1313 1314 1315 1316 1317; do
-              line="$(sed -n "${n}p" main.tex)"
-              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
-              echo "::error title=Paper 1 source line ${n}::$safe"
-            done
             { grep -n -E '^!|LaTeX Error|Undefined control sequence|Emergency stop|Fatal error|^[^ ]+\.tex:[0-9]+:' main.log || true; } | head -40 | while IFS= read -r line; do
               safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
               echo "::error title=Paper 1 LaTeX::$safe"
             done
-            tail -80 main.log
             exit "$status"
+          fi
+          set -e
+          pdfinfo main.pdf | tee pdfinfo.txt
+          PAGES="$(awk '/^Pages:/ {print $2}' pdfinfo.txt)"
+          echo "Paper 1 pages: $PAGES"
+          if [ "$PAGES" -lt 20 ]; then
+            echo "::error title=Paper 1 preflight::Page count $PAGES is below required 20"
+            exit 1
+          fi
+          warnings="$(grep -E 'Overfull \[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log || true)"
+          if [ -n "$warnings" ]; then
+            printf '%s\n' "$warnings" | head -60 | while IFS= read -r line; do
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 1 production preflight::$safe"
+            done
+            exit 1
+          fi
+          mkdir -p renders
+          pdftoppm -png -r 160 main.pdf renders/page >/dev/null
+          RENDERS="$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)"
+          if [ "$RENDERS" -ne "$PAGES" ]; then
+            echo "::error title=Paper 1 render preflight::Rendered $RENDERS of $PAGES pages"
+            exit 1
           fi
