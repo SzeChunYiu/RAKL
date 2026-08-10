@@ -1,4 +1,4 @@
-# R002 — MCSP threshold transport and complexity amplification
+# R002 — MCSP threshold transport and compression
 
 **State:** ACTIVE PRIMARY ROUTE
 
@@ -11,9 +11,21 @@ For an `n`-variable Boolean function represented by a truth table of length `N=2
 The STACS 2021 MCSP lower-bound paper records two facts that nearly meet but use different threshold regimes.
 
 1. A barely superlinear one-tape lower bound for `MCSP[2^(mu n)]` at a sufficiently small `mu>0` would imply `P != NP` via the McKay–Murray–Williams hardness-magnification route.
-2. For every constant `1/2 < mu < 1`, the same paper proves strong oracle-robust one-tape lower bounds with exponents approaching `2 mu`, but explicitly identifies the circuit-size threshold as the missing bridge.
+2. At larger threshold constants the paper proves much stronger one-tape lower bounds and explicitly identifies the circuit-size threshold as the missing bridge.
 
 The current route therefore treats **threshold transport** as the atomic object rather than attempting another unrelated MCSP lower bound.
+
+## Reduction direction
+
+The useful contradiction has the form
+
+`fast low-threshold MCSP algorithm  +  high->low reduction  =>  forbidden fast high-threshold MCSP algorithm`.
+
+Therefore the transport direction is
+
+`high-threshold MCSP -> low-threshold MCSP`.
+
+`C003` records the exponent accounting implied by this direction. In particular, an ordinary circuit-complexity amplifier is not automatically useful and can be directionally adverse.
 
 ## Desired transport object
 
@@ -29,17 +41,37 @@ There should be controlled functions `s_low`, `s_high` such that
 
 `CC(f) <= s_high(n)` iff (or with a registered gap) `CC(A_n(f)) <= s_low(m(n))`.
 
-The direction needed for each reduction must be frozen before use.
+The high-to-low direction must be frozen before any circuit-size intuition is used.
 
 ### T2. Input-length efficiency
 
 Writing `N=2^n` and `M=2^m`, an algorithm on the transformed truth table must be simulable from the original truth table at a cost that does not erase the lower-bound exponent.
 
-### T3. Circuit-complexity amplification
+Explicitly materializing a target truth table of length `M=N^c` already spends exponent `c` before the target algorithm runs.
 
-Plain dummy-variable padding preserves circuit complexity exactly. A useful stronger transport may need
+### T3. Threshold-compression accounting
 
-`CC(A_n(f))` to grow faster than the truth-table/input-length expansion, at least on the boundary separating YES and NO MCSP instances.
+Suppose on the relevant threshold boundary
+
+`log2 CC(A_n(f)) = alpha * log2 CC(f) + o(n)`
+
+and
+
+`m = c n + o(n)`.
+
+Exact alignment of high and low exponential thresholds gives
+
+`c = alpha * mu_high / mu_low + o(1)`.
+
+If the target algorithm runs in time `M^a`, the induced source exponent is at least
+
+`a * alpha * mu_high / mu_low`
+
+before additional overhead. Against a high-threshold lower-bound envelope near `2 mu_high`, a necessary condition is approximately
+
+`alpha < 2 mu_low / a`.
+
+For a barely-superlinear target exponent and `mu_low <= 1/2`, this requires `alpha<1`. Thus exponent-preserving transports such as padding are insufficient, and pure amplification `alpha>1` points in the wrong direction unless another component of the reduction changes the accounting.
 
 ### T4. Boundary robustness
 
@@ -47,36 +79,36 @@ Exact MCSP threshold preservation is fragile. If a transport only gives inequali
 
 ### T5. Proof-technique independence
 
-A high-threshold hardness-magnification theorem cannot simply reuse the short-oracle/locality technique blocked by the 2021 oracle lower bound. Any magnification-at-high-threshold candidate must name its non-local step.
+A high-threshold hardness-magnification theorem cannot simply reuse the short-oracle/locality technique blocked by the existing barrier analysis. Any magnification-at-high-threshold candidate must name its non-local step.
 
 ## Candidate transformation families
 
-These are only generators.
+These are only generators and must be tested in the high-to-low direction.
 
-- dummy-variable padding, first calibration and likely negative checkpoint;
-- direct sum / disjoint union of truth tables;
-- XOR/direct-product composition;
-- block composition `g(f_1,...,f_k)` with a reconstruction restriction;
-- error-correcting encodings of truth tables with circuit-complexity preservation/amplification;
-- tensor/product constructions with a provable inverse restriction;
-- self-reducibility based amplifiers;
-- gap-preserving randomized embeddings with frozen completeness/soundness.
+- dummy-variable padding as the exponent-neutral calibration;
+- threshold-compressing transforms with an inverse or reconstruction theorem;
+- self-reducibility transforms that shrink the threshold scale faster than truth-table length grows;
+- Gap-MCSP embeddings with asymmetric YES/NO circuit-size control;
+- implicit-output reductions that avoid explicit `2^m` materialization;
+- direct sum / XOR / block composition only if they provide a proved compression advantage rather than merely larger circuits;
+- direct high-threshold hardness magnification using a non-local proof ingredient.
 
 ## Falsification order
 
 For each transport, check in this order.
 
-1. exact effect on circuit size, including both upper and lower directions;
-2. exact effect on truth-table length;
-3. induced exponent when simulating the target machine model;
-4. threshold-boundary direction;
-5. whether the transformed problem remains the exact registered MCSP variant;
-6. whether the hoped-for contradiction actually enters the proven lower-bound regime.
+1. freeze the reduction direction and exact YES/NO threshold implication;
+2. exact effect on circuit size, with both upper and lower directions where required;
+3. exact effect on number of variables and truth-table length;
+4. induced machine-time exponent, including reduction/simulation overhead;
+5. threshold-boundary or gap semantics;
+6. whether the transformed problem remains the registered MCSP variant;
+7. whether the resulting source algorithm actually enters the forbidden lower-bound regime.
 
-A transport that fails item 3 is retained as negative history even if items 1 and 2 are mathematically elegant.
+A transport that fails the exponent inequality is retained as negative history even if its circuit identity is mathematically elegant.
 
-## Current discriminator
+## Current checkpoints
 
-`C002` analyzes dummy-variable padding exactly. It shows that threshold matching multiplies the input-length exponent by the same factor that it multiplies the threshold exponent. Against the STACS 2021 exponent envelope, the factors cancel. Thus padding cannot move a barely-superlinear lower-bound target from `mu <= 1/2` into the proven `mu > 1/2` regime.
+`C002` analyzes dummy-variable padding exactly. It shows that the threshold multiplier and induced input-length exponent multiplier cancel.
 
-The next invention target is therefore a **nontrivial complexity amplifier** with a better threshold-gain / truth-table-expansion ratio than padding.
+`C003` generalizes the accounting and corrects the route language. For high-to-low transport, the next invention target is a **threshold compressor, gap-preserving reduction, implicit-output reduction, or direct high-threshold magnification theorem**, not a generic complexity amplifier.
