@@ -42,6 +42,24 @@ def test_c005_pair_coverage_orientations() -> None:
     )
 
 
+def test_overlap_deletion_can_destroy_canonical_coverage() -> None:
+    # C007 exact counterexample. A non-singleton row fibre can straddle
+    # E-only and E∩H. The original pair covers, but deleting E∩H destroys
+    # full containment of that generator.
+    row = frozenset({0, 1})
+    column = frozenset({2})
+    e_set = frozenset({0, 1})
+    h_set = frozenset({1, 2})
+
+    assert oracle.pair_covers_canonical_edge(row, column, e_set, h_set)
+    assert not oracle.pair_covers_canonical_edge(
+        row,
+        column,
+        e_set - h_set,
+        h_set - e_set,
+    )
+
+
 def test_neq_source_calibration_on_powers_of_two() -> None:
     assert oracle.neq_calibration(2).minimum_pairs == 1
     assert oracle.neq_calibration(4).minimum_pairs == 2
