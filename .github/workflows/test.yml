@@ -66,6 +66,14 @@ jobs:
           grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/v2_2/main.tex
           grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$GITHUB_SHA}}" paper/build/v2_2/main.tex
           grep -F "\\section{Workspace-gated research cognition and open-world discovery}" paper/build/v2_2/main.tex
+      - name: Finalize deterministic release typography
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/finalize_release_layout.py paper/build/v2_1/main.tex
+          python paper/finalize_release_layout.py paper/build/v2_2/main.tex
+          grep -F '\setlength{\emergencystretch}{3em}' paper/build/v2_1/main.tex
+          grep -F '\setlength{\emergencystretch}{3em}' paper/build/v2_2/main.tex
       - name: Stage exact-subject Epistemic Mechanics manuscript
         shell: bash
         run: |
