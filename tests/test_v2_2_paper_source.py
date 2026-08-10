@@ -31,7 +31,9 @@ def test_v2_2_source_adds_workspace_and_open_world_discovery_section():
     assert "bounded discovery-closure certificate" in text
     assert "GWT-OMISSION-01" in text
     assert "J-space" in text
-    assert "order-theoretic lattice" in text
+    assert "geometric rather than order-theoretic" in text
+    assert "partial order" in text
+    assert "meet/join laws" in text
     assert "phenomenal consciousness" in text
     assert r"\bibitem{gurnee2026}" in text
     assert r"\bibitem{garikaparthi2025}" in text
