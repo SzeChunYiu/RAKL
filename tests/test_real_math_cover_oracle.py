@@ -144,6 +144,16 @@ def test_perfect_matching_ceiling_construction_for_all_n3_supersets() -> None:
                 )
 
 
+def test_hall_deficient_complement_can_have_smaller_canonical_cover() -> None:
+    # C010 star-biclique partition example. The 3x3 complement has maximum
+    # matching size 2 and no perfect matching:
+    # L0={0,1}, R0={0}; L1={2}, R1={1,2}.
+    complement = {(0, 0), (1, 0), (2, 1), (2, 2)}
+    result = oracle.exact_canonical_cover_number(3, complement)
+    assert result.canonical_edges > 0
+    assert result.minimum_pairs == 1
+
+
 def test_neq_source_calibration_on_powers_of_two() -> None:
     assert oracle.neq_calibration(2).minimum_pairs == 1
     assert oracle.neq_calibration(4).minimum_pairs == 2
