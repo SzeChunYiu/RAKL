@@ -21,16 +21,17 @@ def _module():
 def test_epistemic_mechanics_contains_required_formal_results():
     text = (ROOT / "paper" / "epistemic_mechanics" / "main.tex").read_text(encoding="utf-8")
     for needle in (
-        "Workspace non-authority",
-        "Coactivation non-gluing",
-        "Conservative workspace extension",
-        "No finite certificate of unrestricted open-world completeness",
-        "Finite-budget OWMD termination",
-        "Scalar inadequacy",
+        "Authority-preservation invariant",
+        "Coactivation does not imply compatibility",
+        "Conservative workspace metadata",
+        "Unrestricted open-world completeness is not finitely certifiable",
+        "Why one scalar is not enough",
         "GWT-OMISSION-01",
         "Typed compatibility complex",
     ):
         assert needle in text
+    assert r"\begin{theorem}[Finite-budget OWMD termination]" not in text
+    assert r"\title{Epistemic Mechanics: From Linguistic Claims to Evidence-Governed Scientific State}" in text
 
 
 def test_epistemic_mechanics_exact_subject_binding():
@@ -40,3 +41,4 @@ def test_epistemic_mechanics_exact_subject_binding():
     assert rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}" in text
     assert rf"\newcommand{{\SoftwareTests}}{{702}}" in text
     assert "UNBOUND" not in text
+    assert "Git commit \\ImplementationSHA" not in text
