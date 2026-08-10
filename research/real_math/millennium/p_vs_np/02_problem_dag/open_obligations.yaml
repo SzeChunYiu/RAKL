@@ -13,9 +13,9 @@ bridges:
 
 active_obligations:
   - id: O1
-    target: "refresh primary-source frontier through the current cutoff"
+    target: "maintain a primary-source frontier refresh through the current cutoff"
     route: literature-absorption
-    status: OPEN
+    status: ACTIVE
   - id: O2
     target: "formalize B1 and B2 in the proof DAG with exact uniform/nonuniform definitions"
     route: mathematical-research
@@ -23,21 +23,37 @@ active_obligations:
   - id: O3
     target: "validate exact small-circuit state-graph oracle"
     route: R003
-    status: ACTIVE
+    status: DEFERRED
   - id: O4
     target: "synthesize and falsify compressed 1-Lipschitz state potentials"
     route: R003
-    status: OPEN
+    status: DEFERRED
     depends_on: [O3]
   - id: O5
     target: "apply surviving potentials to small structured monotone targets and measure negation advantage"
     route: R001+R003
-    status: OPEN
+    status: DEFERRED
     depends_on: [O4]
   - id: O6
-    target: "freeze one exact MCSP variant and one hardness-magnification bridge theorem"
+    target: "bind the exact MCSP small-threshold magnification theorem and high-threshold lower-bound theorem"
+    route: R002
+    status: SOURCE_BOUND
+  - id: O6a
+    target: "prune threshold transports that preserve absolute circuit complexity while only expanding variables"
+    route: R002
+    status: PROOF_DRAFT_NEGATIVE_CHECKPOINT
+    artifacts: [C002, C003]
+  - id: O6b
+    target: "construct or refute a multi-copy/direct-product MCSP transport with threshold gain exceeding truth-table expansion cost"
+    route: R002
+    status: ACTIVE
+    depends_on: [O6a]
+    residual: C003-R1
+  - id: O6c
+    target: "if exact MCSP boundary control fails, move explicitly to a Gap-MCSP transport with frozen completeness/soundness slack"
     route: R002
     status: OPEN
+    depends_on: [O6b]
   - id: O7
     target: "formalize any nontrivial surviving lemma and produce an exact proof receipt"
     route: assurance
@@ -46,5 +62,11 @@ active_obligations:
     target: "three isolated mathematical reviews on any candidate promoted above VERIFIED_LEMMA"
     route: review
     status: OPEN
+
+negative_checkpoints:
+  - id: C002
+    result: "dummy-variable padding cannot bridge the MCSP threshold gap because threshold gain and time-exponent expansion cancel"
+  - id: C003
+    result: "streamable single-copy restriction-recoverable wrappers cannot improve the exponential threshold/length ratio beyond the same cancellation"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
