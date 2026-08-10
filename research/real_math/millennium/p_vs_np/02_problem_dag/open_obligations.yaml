@@ -84,10 +84,17 @@ active_obligations:
     status: ACTIVE
     depends_on: [O9a]
   - id: O9c
-    target: "derive an expansion/spectral invariant that upper-bounds the number of canonical edge semi-filters covered by one pair"
+    target: "control the load-bearing E-intersect-H overlap state in arbitrary-fibre canonical covers; partition normalization is invalid in general"
+    route: R004
+    status: ACTIVE
+    depends_on: [O9a]
+    artifacts: [C006, C007]
+    residual: C007-R1
+  - id: O9d
+    target: "construct an overlap-sensitive two-dimensional potential for realizable ternary signatures and test it on explicit graph families"
     route: R004
     status: OPEN
-    depends_on: [O9a]
+    depends_on: [O9c]
 
 negative_checkpoints:
   - id: C002
@@ -96,5 +103,7 @@ negative_checkpoints:
     result: "streamable single-copy restriction-recoverable wrappers cannot improve the exponential threshold/length ratio beyond the same cancellation"
   - id: C004
     result: "subexponential black-box copying, including ordinary direct-product/XOR/AND/OR composition, cannot repair the MCSP threshold/length exponent mismatch; even ideal additive direct-sum growth is insufficient"
+  - id: C007
+    result: "the NEQ singleton-fibre disjoint/partition normalization step does not generalize to arbitrary canonical fibres; E-intersect-H overlap can be load-bearing"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
