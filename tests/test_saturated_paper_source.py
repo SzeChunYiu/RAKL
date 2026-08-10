@@ -31,14 +31,15 @@ def _expand_tex(path: Path, seen: set[Path] | None = None) -> str:
 
     def repl(match: re.Match[str]) -> str:
         rel = match.group(1)
-        candidate = (path.parent / rel).with_suffix(".tex")
-        if not candidate.exists():
-            candidate = path.parent / rel
-        if not candidate.exists():
+        candidates = [SOURCE / rel, path.parent / rel]
+        if not rel.endswith(".tex"):
+            candidates = [candidate.with_suffix(".tex") for candidate in candidates]
+        candidate = next((p for p in candidates if p.exists()), None)
+        if candidate is None:
             # build_identity.tex is intentionally injected only for exact-subject release builds.
             if rel == "build_identity.tex":
                 return ""
-            raise AssertionError(f"missing TeX input: {candidate}")
+            raise AssertionError(f"missing TeX input: {rel}")
         return _expand_tex(candidate, seen.copy())
 
     return re.sub(r"\\input\{([^}]+)\}", repl, text)
