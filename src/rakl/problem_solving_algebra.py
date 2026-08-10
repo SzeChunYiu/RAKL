@@ -68,6 +68,10 @@ class ProblemState:
     applied_operators: Tuple[str, ...] = ()
     terminal: TerminalKind = TerminalKind.OPEN
 
+    def __post_init__(self) -> None:
+        if not self.state_id:
+            raise ValueError("problem states require a nonempty state_id")
+
 
 @dataclass(frozen=True)
 class ResearchOperator:
@@ -89,8 +93,8 @@ class ResearchOperator:
             raise ValueError("operator_id must be nonempty")
         if self.cost < 0 or self.verification_debt < 0 or self.boundary_risk < 0:
             raise ValueError("operator costs and risks must be nonnegative")
-        if not self.clears.issubset(self.targets | self.clears):
-            raise ValueError("invalid obstruction declaration")
+        if not self.clears.issubset(self.targets):
+            raise ValueError("an operator may clear only obstructions it explicitly targets")
 
 
 @dataclass(frozen=True)
@@ -106,6 +110,17 @@ class TerminalCertificate:
             raise ValueError("OPEN is not a closure certificate")
         if not self.scope or not self.artifact_id:
             raise ValueError("closure certificates require scope and artifact identity")
+        if (
+            self.verified
+            and self.kind
+            in {
+                TerminalKind.PROOF,
+                TerminalKind.COUNTEREXAMPLE,
+                TerminalKind.INDEPENDENCE_RELATIVE,
+            }
+            and not self.checker
+        ):
+            raise ValueError("verified logical closure requires a checker identity")
 
 
 @dataclass(frozen=True)
@@ -132,9 +147,9 @@ def operator_applicable(operator: ResearchOperator, state: ProblemState) -> bool
 def apply_operator_symbolic(operator: ResearchOperator, state: ProblemState) -> ProblemState:
     """Project a candidate research move without minting terminal authority.
 
-    This function is a planning transition.  It may update candidate facts,
+    This function is a planning transition. It may update candidate facts,
     representations, obligations and modeled blockers, but it can never close a
-    mathematical/scientific problem.  Closure requires ``close_with_certificate``.
+    mathematical/scientific problem. Closure requires ``close_with_certificate``.
     """
 
     if not operator_applicable(operator, state):
@@ -187,7 +202,7 @@ def search_operator_paths(
     """Best-first search over typed partial operators.
 
     The search is obstruction-guided and deliberately operates over planning
-    states.  A returned path is a candidate research route, never a proof or
+    states. A returned path is a candidate research route, never a proof or
     authority certificate.
     """
 
@@ -199,7 +214,9 @@ def search_operator_paths(
     queue: list[tuple[float, int, ProblemState, float, float, float]] = []
     heappush(queue, (0.0, next(serial), state, 0.0, 0.0, 0.0))
     candidates: list[PathCandidate] = []
-    seen: dict[tuple[frozenset[str], frozenset[ObstructionKind], Tuple[str, ...]], float] = {}
+    seen: dict[
+        tuple[frozenset[str], frozenset[ObstructionKind], Tuple[str, ...]], float
+    ] = {}
 
     while queue:
         _, _, current, cost_so_far, debt_so_far, risk_so_far = heappop(queue)
@@ -215,7 +232,9 @@ def search_operator_paths(
             )
             candidates.append(
                 PathCandidate(
-                    operators=current.applied_operators[len(state.applied_operators) :],
+                    operators=current.applied_operators[
+                        len(state.applied_operators) :
+                    ],
                     resulting_state=current,
                     estimated_cost=cost_so_far,
                     obstruction_relief=relief,
@@ -228,7 +247,9 @@ def search_operator_paths(
             continue
 
         for operator in atlas:
-            if operator.operator_id in current.applied_operators[len(state.applied_operators) :]:
+            if operator.operator_id in current.applied_operators[
+                len(state.applied_operators) :
+            ]:
                 continue
             if not operator_applicable(operator, current):
                 continue
@@ -236,7 +257,11 @@ def search_operator_paths(
             new_cost = cost_so_far + operator.cost
             new_debt = debt_so_far + operator.verification_debt
             new_risk = risk_so_far + operator.boundary_risk
-            key = (nxt.facts, nxt.obstructions, nxt.applied_operators[len(state.applied_operators) :])
+            key = (
+                nxt.facts,
+                nxt.obstructions,
+                nxt.applied_operators[len(state.applied_operators) :],
+            )
             scalar = new_cost + new_debt + new_risk
             if key in seen and seen[key] <= scalar:
                 continue
@@ -249,9 +274,18 @@ def search_operator_paths(
                 verification_debt=new_debt,
                 boundary_risk=new_risk,
             )
-            heappush(queue, (priority, next(serial), nxt, new_cost, new_debt, new_risk))
+            heappush(
+                queue,
+                (priority, next(serial), nxt, new_cost, new_debt, new_risk),
+            )
 
-    candidates.sort(key=lambda candidate: (candidate.score, candidate.estimated_cost, candidate.operators))
+    candidates.sort(
+        key=lambda candidate: (
+            candidate.score,
+            candidate.estimated_cost,
+            candidate.operators,
+        )
+    )
     return tuple(candidates[:top_k])
 
 
@@ -365,7 +399,10 @@ DEFAULT_OPERATOR_ATLAS: Tuple[ResearchOperator, ...] = (
         cost=1.5,
         verification_debt=0.5,
         boundary_risk=0.5,
-        failure_modes=("rediscovery_under_changed_notation", "corpus_coverage_gap"),
+        failure_modes=(
+            "rediscovery_under_changed_notation",
+            "corpus_coverage_gap",
+        ),
     ),
     ResearchOperator(
         "review_research_value",
