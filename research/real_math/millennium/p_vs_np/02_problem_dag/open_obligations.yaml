@@ -118,20 +118,28 @@ active_obligations:
   - id: O9d2
     target: "construct or refute coupled full-cover products/tensors whose cross-coordinate complement structure defeats global pair multiplexing"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C011
     depends_on: [O9d1]
-    residual: C010-R1
+    artifacts: [C011, coordinate_product_cover]
+    result: "coordinate-factorized complement tensor powers admit rho <= t*sigma(base); C008 tensor powers admit rho <= 2t = O(log N)"
   - id: O9d3
     target: "develop an upper-bound adversary for any proposed coupled composition before attempting an asymptotic lower bound"
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, and non-disjoint overlap reuse first"
+    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, low-dimensional feature codes, non-disjoint overlap reuse, and restrictions/projections first"
+  - id: O9d4
+    target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d2]
+    residual: C011-R1
+    discriminator: "test code/parity-constrained complements first against low-dimensional feature-code generator separation"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d2]
+    depends_on: [O9d4]
 
 negative_checkpoints:
   - id: C002
@@ -146,6 +154,8 @@ negative_checkpoints:
     result: "for every square graph, rho_can(G) <= ceil(log2 nu(G^c)) <= ceil(log2 N); the entire super-log canonical lane is impossible"
   - id: C010
     result: "fixed-gadget block-diagonal complement sums cannot amplify full cover complexity beyond sigma(base)+ceil(log2 t); for C008 this is at most 2+ceil(log2 t)"
+  - id: C011
+    result: "coordinate-factorized complement tensor powers cannot amplify full cover complexity beyond t*sigma(base); fixed-base products therefore stay O(log N)"
 
 finite_checkpoints:
   - id: C008
