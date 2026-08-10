@@ -51,6 +51,10 @@ jobs:
               safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
               echo "::error title=Paper 1 LaTeX::$safe"
             done
+            nl -ba main.tex | sed -n '1304,1320p' | while IFS= read -r line; do
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 1 source context::$safe"
+            done
             tail -80 main.log
             exit "$status"
           fi
