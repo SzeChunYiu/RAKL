@@ -50,7 +50,8 @@ def test_chaptered_source_manifest_is_complete():
     assert manifest["source_layout"] == "chaptered"
     assert manifest["entrypoint"] == "main.tex"
     assert len(manifest["sections"]) >= 18
-    for rel in manifest["sections"] + manifest["assets"]:
+    declared = manifest["sections"] + manifest.get("included_fragments", []) + manifest["assets"]
+    for rel in declared:
         assert (SOURCE / rel).exists(), rel
 
 
@@ -63,7 +64,7 @@ def test_all_manuscript_citations_have_unique_bibliography_entries():
     assert len(bibitems) == len(set(bibitems))
     missing = sorted(citations - set(bibitems))
     assert not missing, missing
-    assert len(bibitems) >= 90
+    assert len(bibitems) >= 100
 
 
 def test_saturated_manuscript_is_approximately_three_times_v22_depth():
@@ -85,6 +86,8 @@ def test_geometry_and_saturation_boundaries_are_explicit():
         "Same-context manuscript review can support only",
         "independent peer review",
         "Section purpose is itself a proof obligation",
+        "evidence substrate",
+        "strong combined-summary baseline",
     )
     for phrase in required:
         assert phrase in expanded, phrase
