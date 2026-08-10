@@ -80,14 +80,21 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         if fragment not in text:
             raise RuntimeError(f"required release fragment missing: {fragment}")
 
-    forbidden = (
-        "UNBOUND",
-        "global novelty has been proved",
+    # Lint only affirmative overclaims. Negative statements explaining why such
+    # claims are not licensed are intentionally allowed.
+    forbidden_affirmative_claims = (
+        "we prove global novelty",
+        "global novelty is established",
+        "guarantees global novelty",
         "autonomous mathematical discovery superiority has been established",
+        "we establish autonomous mathematical discovery superiority",
     )
-    for phrase in forbidden:
-        if phrase in text:
-            raise RuntimeError(f"forbidden release phrase present: {phrase}")
+    if "UNBOUND" in text:
+        raise RuntimeError("unbound release identity present")
+    lower_text = text.lower()
+    for phrase in forbidden_affirmative_claims:
+        if phrase.lower() in lower_text:
+            raise RuntimeError(f"forbidden affirmative release claim present: {phrase}")
     return text
 
 
