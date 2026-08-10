@@ -20,46 +20,53 @@ def build_v2_2_source(*, subject_sha: str, software_tests: int) -> str:
     owmd_section = r"""
 \section{Workspace-gated research cognition and open-world discovery}
 
-\paragraph{Persistent epistemic state is not active computational access.}
-A bounded research process cannot expose every archived object to every proposer at every step. We therefore introduce a transient workspace above, rather than inside, canonical epistemic state. For candidate set \(C_t\), a gate selects
+The persistent atlas is designed to remember what a research process has established, rejected or left unresolved. It is not intended to place the entire archive in active computational context. That distinction matters because salience is easy to create: a claim can become available to every downstream operator without becoming coherent with the rest of the evidence, let alone more trustworthy.
+
+\subsection{A transient workspace without epistemic write authority}
+
+For a current target and residual, let \(C_t\) denote candidate material retrieved from canonical state. A bounded gate selects
 \[
 W_t=G_{\kappa,\Pi_t^x}(C_t),\qquad |W_t|\leq\kappa .
 \]
-The frame records selected content, a typed broadcast map, a selection ledger and lifetime/intervention metadata. Downstream operators receive workspace projections and return proposals; canonical state still changes only through the existing verification and promotion path. This separation is motivated by prior blackboard control architectures and global-workspace accounts, where specialized processes coordinate through a shared, capacity-limited structure \cite{hayesroth1985,nii1986,dehaene2001,mashour2020}. Neural variants likewise select a small subset for broader reuse: the Consciousness Prior emphasizes attention-mediated selection and broadcast \cite{bengio2017}, while Shared Global Workspace architectures make specialist modules compete for a bandwidth-limited communication channel \cite{goyal2021}. RAKL therefore claims no novelty for shared workspaces, competition or broadcast in isolation.
+The frame stores selected content, a typed broadcast map, a selection ledger and intervention/lifetime metadata. Downstream operators consume projections of this frame and return proposals. Canonical state still changes only through verification and promotion.
 
-\paragraph{Access, coherence and authority are different globalities.}
-Let \(A_t(a)\) denote global computational accessibility, \(C_t(a)\) atlas coherence under the registered context/gluing obligations, and \(\alpha_t(a)\) scientific authority. The architecture enforces the non-implications
+This separation has substantial prior art. Blackboard architectures coordinated heterogeneous knowledge sources through a shared structure \cite{hayesroth1985,nii1986}; Global Workspace and Global Neuronal Workspace accounts emphasise broad availability under limited capacity \cite{dehaene2001,mashour2020}. Neural variants make the same computational idea explicit: the Consciousness Prior uses attention-mediated selection and broadcast \cite{bengio2017}, while Shared Global Workspace architectures make specialist modules compete for a bandwidth-limited communication channel \cite{goyal2021}. We therefore do not claim novelty for shared workspaces, competition or broadcast themselves. The RAKL-specific requirement is narrower: workspace access must not create a new route to scientific authority.
+
+Let \(A_t(a)\) denote computational access, \(C_t(a)\) atlas coherence under registered context and gluing obligations, and \(\alpha_t(a)\) scientific authority. The intended non-implications are
 \[
 A_t(a)\not\Rightarrow C_t(a),\qquad
 A_t(a)\not\Rightarrow \operatorname{True}(a),\qquad
 C_t(a)\not\Rightarrow \alpha_t(a)\text{ increases}.
 \]
-The workspace module has no canonical write capability: it can select, reweight, substitute, evict and broadcast items, but its direct output type is a proposal. Coactivation similarly produces no compatibility or gluing witness. We reserve workspace capacity for challenge, novelty and negative-history material so that a pure relevance or current-authority ranking cannot be the only gate policy. Controlled interventions on workspace contents can establish computational load-bearing influence on later proposals, but such cognitive provenance is stored separately from evidential provenance and cannot itself support a scientific claim.
+The reference workspace enforces the first boundary at the software write surface: it can select, reweight, substitute, evict and broadcast, but its direct output is a proposal. Coactivation creates no compatibility or gluing witness. The default gate also reserves capacity for challenge, novelty and negative-history material, preventing a simple relevance ranking from filling every slot with material that already agrees with the current state.
 
-\paragraph{J-space is motivation for causal tests, not a RAKL identity claim.}
-Gurnee et al. report language-model representations with functional properties associated with a global workspace, including reportability, directed modulation, internal reasoning, flexible generalization and selectivity \cite{gurnee2026}. Their framing concerns functional access and explicitly takes no position on phenomenal consciousness. The formal J-space is defined from sparse non-negative combinations of J-lens vectors; for fixed sparsity \(k\), its geometry is a union of \(k\)-dimensional cones. This does not make it an order-theoretic lattice, and RAKL does not identify J-space with its epistemic substrate. The study also leaves the mechanism that causes representations to enter J-space uncharacterized. We use the result narrowly: it motivates intervention-based tests of which active representations are computationally load-bearing and reinforces the need to separate prominence from epistemic authority.
+Controlled workspace interventions can still be scientifically useful. Removing, replacing or reweighting an active item can show that the item was computationally load-bearing for a later proposal. That result belongs to cognitive provenance. It is stored separately from evidential provenance and cannot, by itself, support the scientific claim carried by the item.
+
+\subsection{J-space as an empirical comparison, not an identity claim}
+
+Gurnee et al. report language-model representations with functional properties associated with a global workspace, including reportability, directed modulation, internal reasoning, flexible generalisation and selectivity \cite{gurnee2026}. Their framing concerns functional access and explicitly takes no position on phenomenal consciousness. The formal J-space construction is also geometric rather than order-theoretic: for fixed sparsity \(k\), sparse non-negative combinations of J-lens vectors form a union of \(k\)-dimensional cones. That construction supplies neither a partial order nor meet/join laws, so `J-space = RAKL lattice' is not a licensed inference. The study further leaves open the mechanism that causes representations to enter J-space. We use the work as motivation for selective-access and intervention tests, not as a theorem about the epistemic substrate.
 
 \subsection{Open-World Mechanism Discovery}
 
-The failure that motivated this addition was not insufficient recursive depth but \emph{ontology-conditioned closure}: search could recursively refine concepts while inheriting the same vocabulary and disciplinary neighborhood. For each high-impact subsystem \(M\), RAKL now registers required functions
+The search failure that motivated this addition was not a lack of recursion. Recursive search had repeatedly refined concepts while inheriting the same vocabulary and disciplinary neighbourhood. We call this \emph{ontology-conditioned closure}. The repair begins one level earlier, with functional ownership. For each high-impact subsystem \(M\), the system registers
 \[
-\mathcal F_{\mathrm{req}}(M)=\{f_1,\ldots,f_n\},
+\mathcal F_{\mathrm{req}}(M)=\{f_1,\ldots,f_n\}.
 \]
-and an owner is valid only when it records a mechanism, scope, preconditions, postconditions, evidence, executable tests and failure semantics. Missing owners open blocking research fibers.
+A function is considered owned only when the record names a mechanism, scope, preconditions, postconditions, evidence, executable tests and failure semantics. A subsystem label alone is not sufficient.
 
-For each gap \(f\), the system inverts the capability into a functional signature
+An unowned or contested function is then inverted into a signature
 \[
 \sigma(f)=(I,O,C,R,D,X),
 \]
-covering inputs, outputs, resource constraints, characteristic relations, dynamics/control behavior and intervention/failure signatures. Search routes are then generated independently across exact terminology, lexical variants, function-only descriptions, historical precursors, mathematical equivalents, implementation analogues, methodological inspiration, citation neighborhoods, literature bridges, adversarial alternatives, cross-language variants where applicable and a final freshness scan. At least one route must be lexically independent of the current core vocabulary. This requirement operationalizes the classic vocabulary problem in information retrieval \cite{furnas1987} and complements recent methodology-inspiration retrieval, which explicitly targets transferable methods beyond superficial topical similarity \cite{garikaparthi2025}.
+covering inputs, outputs, resource constraints, characteristic relations, dynamics/control behaviour and intervention or failure signatures. The discovery protocol branches from that description across exact terminology, lexical variants, function-only search, historical precursors, mathematical equivalents, implementation analogues, methodological inspiration, citation neighbourhoods, literature bridges, adversarial alternatives, cross-language variants when applicable, and a final freshness scan. At least one completed route must be lexically independent of the core vocabulary. The requirement follows a familiar retrieval lesson: different communities often use different words for the same function \cite{furnas1987}. It also complements methodology-inspiration retrieval, which explicitly searches for transferable methods rather than relying on topical similarity alone \cite{garikaparthi2025}.
 
-Retrieved mechanisms retain source and route provenance and are assimilated as equivalent, subsumed, complementary, conflicting, novel residual or unresolved. A bounded Discovery Workspace reserves capacity for remote, challenging, historical and fresh candidates before ordinary relevance fill. Its function is to prevent local-fiber myopia, not to decide truth.
+Retrieved mechanisms keep both source and route provenance. They are classified as equivalent, subsumed, complementary, conflicting, novel residual or unresolved. Equivalent and subsuming prior work narrows the novelty boundary instead of being relabelled as a framework invention. A bounded Discovery Workspace then reserves attention for remote, challenging, historical and fresh candidates before ordinary relevance fill. Its role is comparison and search control, not truth assignment.
 
-\paragraph{Bounded discovery closure, never absolute completeness.}
-A function can receive a bounded discovery-closure certificate only after the required expansion routes are complete or explicitly inapplicable, a vocabulary-independent route has run, citation-neighborhood stability and freshness are recorded, an omission review and nearest-work equivalence audit are complete, and every unresolved candidate remains an explicit fiber. The terminal condition is therefore scoped to a route set, source universe, budget and time cutoff. RAKL makes no claim that finite search proves the non-existence of an unknown concept in an unrestricted open world.
+\paragraph{A bounded closure claim.}
+A function can receive a bounded discovery-closure certificate only after the required routes are complete or explicitly inapplicable, a vocabulary-independent route has run, citation-neighbourhood stability and a freshness cutoff are recorded, omission and nearest-work equivalence audits are complete, and unresolved candidates remain explicit fibers. The certificate is therefore indexed by route set, source universe, budget and time. It does not claim that finite search proves the non-existence of a relevant concept in an unrestricted open world.
 
 \paragraph{GWT-OMISSION-01.}
-The regression withholds the strings ``global workspace'', ``consciousness'', ``J-space'', ``blackboard'' and author names. The input describes only many parallel processes, bounded competitive selection of a small active set, broad downstream reuse, persistence/eviction, causal sensitivity to interventions and the rule that computational prominence does not establish truth. A scored retrieval run must recover blackboard architectures, Global Workspace/Global Neuronal Workspace, the Consciousness Prior, shared neural workspaces and the J-space work through at least one ontology-independent route. The software test included in this release validates the scoring and leakage contract; prospective recall on fresh hidden concepts remains an empirical coordinate rather than being inferred from this retrospective case.
+The regression test withholds the strings ``global workspace'', ``consciousness'', ``J-space'', ``blackboard'' and relevant author names. It exposes only function: many parallel processes, competitive admission of a small active set, bounded capacity, broad downstream reuse, persistence and eviction, causal sensitivity to interventions, and the rule that prominence does not establish truth. A scored retrieval run must reach blackboard architectures, Global Workspace/Global Neuronal Workspace, the Consciousness Prior, shared neural workspaces and the J-space study through at least one ontology-independent route. The current test validates the scoring, route-provenance and name-leakage contract. Prospective recall on genuinely fresh hidden concepts remains an empirical evaluation rather than a conclusion drawn from this retrospective case.
 """
     text = _insert_before_once(
         text,
@@ -82,7 +89,6 @@ The regression withholds the strings ``global workspace'', ``consciousness'', ``
     text = _insert_before_once(text, r"\end{thebibliography}", bib_delta, "owmd-bibliography")
 
     forbidden = (
-        "J-space = RAKL lattice",
         "phenomenal consciousness established",
         "absolute open-world completeness",
     )
