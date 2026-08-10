@@ -94,6 +94,56 @@ def test_union_normalization_preserves_all_tiny_covered_fibres() -> None:
                     )
 
 
+def test_perfect_matching_ceiling_construction_for_all_n3_supersets() -> None:
+    # C009 construction. Exhaust every 3x3 complement graph containing the
+    # diagonal perfect matching. Two code coordinates must cover every
+    # canonical G-edge, regardless of which extra complement edges are added.
+    n_vertices = 3
+    matching = {(i, i) for i in range(n_vertices)}
+    off_diagonal = [
+        (u, v)
+        for u in range(n_vertices)
+        for v in range(n_vertices)
+        if u != v
+    ]
+
+    for extra_size in range(len(off_diagonal) + 1):
+        for extra in combinations(off_diagonal, extra_size):
+            complement = matching | set(extra)
+            ordered_u, row_fibers, column_fibers, canonical_edges = (
+                oracle._canonical_edge_data(n_vertices, complement)
+            )
+            index = {edge: i for i, edge in enumerate(ordered_u)}
+            matching_indices = {row: index[(row, row)] for row in range(n_vertices)}
+            nonmatching_indices = frozenset(
+                i for i, edge in enumerate(ordered_u) if edge not in matching
+            )
+
+            pairs: list[tuple[frozenset[int], frozenset[int]]] = []
+            for bit in range(2):
+                p_set = frozenset(
+                    matching_indices[row]
+                    for row in range(n_vertices)
+                    if ((row >> bit) & 1) == 0
+                )
+                m_set = frozenset(
+                    matching_indices[row]
+                    for row in range(n_vertices)
+                    if ((row >> bit) & 1) == 1
+                )
+                pairs.append(
+                    (p_set | nonmatching_indices, m_set | nonmatching_indices)
+                )
+
+            for u, v in canonical_edges:
+                assert any(
+                    oracle.pair_covers_canonical_edge(
+                        row_fibers[u], column_fibers[v], e_set, h_set
+                    )
+                    for e_set, h_set in pairs
+                )
+
+
 def test_neq_source_calibration_on_powers_of_two() -> None:
     assert oracle.neq_calibration(2).minimum_pairs == 1
     assert oracle.neq_calibration(4).minimum_pairs == 2
