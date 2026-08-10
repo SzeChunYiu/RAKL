@@ -127,7 +127,7 @@ active_obligations:
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection constructions first"
+    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
   - id: O9d4
     target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
     route: R004-full-cover
@@ -138,15 +138,22 @@ active_obligations:
   - id: O9d5
     target: "construct or refute growing-global-constraint correlated complements whose best known membership intersection-complexity upper bound is superlinear in coordinate count"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C013
     depends_on: [O9d4]
-    residual: C012-R1
-    discriminator: "test linear-code syndrome/check-rank families; record the exact D_intersection upper bound of graph membership before lower-bound search"
+    artifacts: [C013, blowup_cover]
+    result: "full cover complexity cannot increase under vertex blow-up; rank-k linear syndrome inequality/equality graphs have rho <= k and rho <= 2k-1 respectively, independent of check density"
+  - id: O9d6
+    target: "construct or refute nonlinear globally correlated graph families that do not collapse to a low-cover quotient under identical-neighbourhood/twin compression"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d5]
+    residual: C013-R1
+    discriminator: "quotient by row/column neighbourhood types first; then attack the quotient with exact cover search, D_intersection/cyclic upper bounds, and pair multiplexing before any asymptotic lower-bound attempt"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d5]
+    depends_on: [O9d6]
 
 negative_checkpoints:
   - id: C002
@@ -165,6 +172,8 @@ negative_checkpoints:
     result: "coordinate-factorized complement tensor powers cannot amplify full cover complexity beyond t*sigma(base); fixed-base products therefore stay O(log N)"
   - id: C012
     result: "fixed-local parity aggregation remains easy under source transference: rho <= t(a+b)+2(t-1)=O(log N); in particular the mod-2 inner-product graph has rho <= 3t-2"
+  - id: C013
+    result: "full graph cover complexity is non-increasing under vertex blow-up; linear syndrome equality/inequality graphs collapse to their rank-k quotient and remain O(log N)"
 
 finite_checkpoints:
   - id: C008
