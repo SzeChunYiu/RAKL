@@ -1,25 +1,35 @@
+from __future__ import annotations
+
+import importlib.util
 from pathlib import Path
 
-from paper.finalize_release_layout import (
-    NEW_BIBLIOGRAPHY_LAYOUT,
-    OLD_BIBLIOGRAPHY_LAYOUT,
-    finalize_release_layout,
-)
+
+ROOT = Path(__file__).resolve().parents[1]
+HELPER = ROOT / "paper" / "finalize_release_layout.py"
+
+
+def _module():
+    spec = importlib.util.spec_from_file_location("rakl_finalize_release_layout", HELPER)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_release_layout_adjustment_is_exact_and_fails_on_second_application(tmp_path: Path):
+    module = _module()
     manuscript = tmp_path / "main.tex"
     manuscript.write_text(
-        "before\n" + OLD_BIBLIOGRAPHY_LAYOUT + "\nafter\n",
+        "before\n" + module.OLD_BIBLIOGRAPHY_LAYOUT + "\nafter\n",
         encoding="utf-8",
     )
-    finalize_release_layout(manuscript)
+    module.finalize_release_layout(manuscript)
     text = manuscript.read_text(encoding="utf-8")
-    assert OLD_BIBLIOGRAPHY_LAYOUT not in text
-    assert text == "before\n" + NEW_BIBLIOGRAPHY_LAYOUT + "\nafter\n"
+    assert module.OLD_BIBLIOGRAPHY_LAYOUT not in text
+    assert text == "before\n" + module.NEW_BIBLIOGRAPHY_LAYOUT + "\nafter\n"
 
     try:
-        finalize_release_layout(manuscript)
+        module.finalize_release_layout(manuscript)
     except RuntimeError as error:
         assert "observed 0" in str(error)
     else:
