@@ -111,14 +111,27 @@ active_obligations:
   - id: O9d1
     target: "construct or refute a composition theorem for C008-like gadgets that forces full cover growth without collapsing under cross-gadget pair reuse"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C010
     depends_on: [O9d]
-    residual: C008-R1
+    artifacts: [C010, block_sum_cover]
+    result: "fixed-gadget block-diagonal complement sums admit rho <= sigma(base)+ceil(log2 t); C008 copies admit rho <= 2+ceil(log2 t)"
+  - id: O9d2
+    target: "construct or refute coupled full-cover products/tensors whose cross-coordinate complement structure defeats global pair multiplexing"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d1]
+    residual: C010-R1
+  - id: O9d3
+    target: "develop an upper-bound adversary for any proposed coupled composition before attempting an asymptotic lower bound"
+    route: R004-full-cover
+    status: ACTIVE_SUPPORT
+    depends_on: [O9d1]
+    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, and non-disjoint overlap reuse first"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d1]
+    depends_on: [O9d2]
 
 negative_checkpoints:
   - id: C002
@@ -131,6 +144,8 @@ negative_checkpoints:
     result: "if the complement graph contains a perfect matching then canonical cover complexity is at most ceil(log2 N); regular balanced bipartite complements are therefore dead as super-logarithmic canonical targets"
   - id: C009
     result: "for every square graph, rho_can(G) <= ceil(log2 nu(G^c)) <= ceil(log2 N); the entire super-log canonical lane is impossible"
+  - id: C010
+    result: "fixed-gadget block-diagonal complement sums cannot amplify full cover complexity beyond sigma(base)+ceil(log2 t); for C008 this is at most 2+ceil(log2 t)"
 
 finite_checkpoints:
   - id: C008
