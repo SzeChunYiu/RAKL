@@ -1,0 +1,729 @@
+{
+  "authority_status": "fresh_label_blind_source_items",
+  "frozen_at_utc": "2026-08-10T21:08:00Z",
+  "items": [
+    {
+      "candidate_load_bearing_boundary": "Finite-capacity network or graph representation with an additive cut objective and explicit terminals.",
+      "candidate_load_bearing_invariant": "A separating cut bounds any feasible source-to-sink throughput, and a minimum admissible cut identifies the tight capacity certificate.",
+      "family": "bottleneck_min_cut",
+      "qoi": "Can the source cut certificate be reused to characterize the target optimum?",
+      "source_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "source_domain": "rail capacity networks",
+      "source_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "source_item_id": "p3src-001",
+      "source_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "source_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ],
+      "target_dependencies": [
+        "pixel graph",
+        "pairwise penalties",
+        "terminal labels"
+      ],
+      "target_domain": "image labelling",
+      "target_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "target_skill_tags": [
+        "graph cut",
+        "energy minimization"
+      ],
+      "target_surface_terms": [
+        "pixels",
+        "labels",
+        "energy",
+        "cut"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Steady or discretized flow with fixed edge capacities; congestion dynamics and behavioral feedback must be outside the claimed QoI.",
+      "candidate_load_bearing_invariant": "A separating cut bounds the maximum simultaneous throughput between registered origins and exits.",
+      "family": "bottleneck_min_cut",
+      "qoi": "Does the source bottleneck certificate bound evacuation throughput under the target model?",
+      "source_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "source_domain": "rail capacity networks",
+      "source_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "source_item_id": "p3src-002",
+      "source_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "source_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ],
+      "target_dependencies": [
+        "space graph",
+        "door capacities",
+        "origins and exits"
+      ],
+      "target_domain": "building evacuation",
+      "target_evidence": [
+        "DOI:10.1007/978-3-030-04651-4_16 | Min-Max-Flow Based Algorithm for Evacuation Network Planning in Restricted Spaces | https://doi.org/10.1007/978-3-030-04651-4_16"
+      ],
+      "target_skill_tags": [
+        "evacuation planning",
+        "route capacity"
+      ],
+      "target_surface_terms": [
+        "rooms",
+        "exits",
+        "evacuees",
+        "routes"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Capacitated network abstraction with compatible conservation assumptions and without unmodelled substitution or inventory dynamics.",
+      "candidate_load_bearing_invariant": "End-to-end throughput cannot exceed the capacity of a separating bottleneck set.",
+      "family": "bottleneck_min_cut",
+      "qoi": "Can the supply-chain bottleneck object certify rail-network throughput?",
+      "source_dependencies": [
+        "multi-echelon network",
+        "random or fixed capacities"
+      ],
+      "source_domain": "supply chain networks",
+      "source_evidence": [
+        "DOI:10.1080/00207543.2012.695878 | Bottleneck identification in supply chain networks | https://doi.org/10.1080/00207543.2012.695878"
+      ],
+      "source_item_id": "p3src-003",
+      "source_skill_tags": [
+        "bottleneck identification",
+        "supply network"
+      ],
+      "source_surface_terms": [
+        "suppliers",
+        "plants",
+        "inventory",
+        "bottleneck"
+      ],
+      "target_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "target_domain": "rail capacity networks",
+      "target_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "target_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "target_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Target objective may include higher-order or non-submodular terms that violate the graph-cut construction assumptions.",
+      "candidate_load_bearing_invariant": "A minimum cut is an exact or bounded optimizer only when the target energy admits the required graph-representable form.",
+      "family": "bottleneck_min_cut",
+      "qoi": "Does the source graph-cut certificate remain licensed for the target image objective?",
+      "source_dependencies": [
+        "pairwise penalties",
+        "terminal labels"
+      ],
+      "source_domain": "image labelling",
+      "source_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "source_item_id": "p3src-004",
+      "source_skill_tags": [
+        "graph cut",
+        "energy minimization"
+      ],
+      "source_surface_terms": [
+        "pixels",
+        "labels",
+        "energy",
+        "cut"
+      ],
+      "target_dependencies": [
+        "higher-order nonlocal constraints",
+        "no guaranteed cut representation"
+      ],
+      "target_domain": "image labelling",
+      "target_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "target_skill_tags": [
+        "non-submodular labelling",
+        "global topology"
+      ],
+      "target_surface_terms": [
+        "pixels",
+        "labels",
+        "nonlocal loss",
+        "topology"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Preferences or priorities and capacities are fixed for the run; stability is the QoI rather than welfare or truthfulness in an altered mechanism.",
+      "candidate_load_bearing_invariant": "Deferred acceptance yields a stable assignment relative to the registered preference and priority relation.",
+      "family": "matching_allocation",
+      "qoi": "Can the source stability argument certify absence of blocking pairs in the target assignment?",
+      "source_dependencies": [
+        "two-sided preferences",
+        "blocking pairs"
+      ],
+      "source_domain": "two-sided marriage matching",
+      "source_evidence": [
+        "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827"
+      ],
+      "source_item_id": "p3src-005",
+      "source_skill_tags": [
+        "stable matching",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "men",
+        "women",
+        "marriage",
+        "preferences"
+      ],
+      "target_dependencies": [
+        "student preferences",
+        "school priorities",
+        "capacities"
+      ],
+      "target_domain": "public high-school assignment",
+      "target_evidence": [
+        "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+      ],
+      "target_skill_tags": [
+        "school assignment",
+        "deferred acceptance"
+      ],
+      "target_surface_terms": [
+        "students",
+        "schools",
+        "priorities",
+        "choices"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "The target algorithm, capacities, couples constraints and preference semantics must match the stability theorem actually invoked.",
+      "candidate_load_bearing_invariant": "The assignment is stable when no admissible applicant-program pair blocks it under the registered priorities.",
+      "family": "matching_allocation",
+      "qoi": "Does the school-assignment stability object transfer to the registered residency mechanism?",
+      "source_dependencies": [
+        "student preferences",
+        "school priorities",
+        "capacities"
+      ],
+      "source_domain": "public high-school assignment",
+      "source_evidence": [
+        "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+      ],
+      "source_item_id": "p3src-006",
+      "source_skill_tags": [
+        "school assignment",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "students",
+        "schools",
+        "priorities",
+        "choices"
+      ],
+      "target_dependencies": [
+        "applicant ranks",
+        "program ranks",
+        "capacities"
+      ],
+      "target_domain": "medical residency assignment",
+      "target_evidence": [
+        "DOI:10.1097/00001888-199506000-00007 | A reexamination of the NRMP matching algorithm | https://doi.org/10.1097/00001888-199506000-00007"
+      ],
+      "target_skill_tags": [
+        "resident matching",
+        "deferred acceptance"
+      ],
+      "target_surface_terms": [
+        "applicants",
+        "programs",
+        "rank lists",
+        "positions"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Two-sided pair stability and directed cycle packing are distinct unless a mapping preserves feasibility and the registered QoI.",
+      "candidate_load_bearing_invariant": "A reusable matching argument must preserve the feasible-set object and the property optimized or certified.",
+      "family": "matching_allocation",
+      "qoi": "Can the source matching certificate license the target exchange allocation?",
+      "source_dependencies": [
+        "two-sided preferences",
+        "blocking pairs"
+      ],
+      "source_domain": "two-sided marriage matching",
+      "source_evidence": [
+        "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827"
+      ],
+      "source_item_id": "p3src-007",
+      "source_skill_tags": [
+        "stable matching",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "men",
+        "women",
+        "marriage",
+        "preferences"
+      ],
+      "target_dependencies": [
+        "directed compatibility graph",
+        "cycle length constraints"
+      ],
+      "target_domain": "kidney exchange",
+      "target_evidence": [
+        "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+      ],
+      "target_skill_tags": [
+        "kidney exchange",
+        "cycle packing"
+      ],
+      "target_surface_terms": [
+        "donors",
+        "recipients",
+        "compatibility",
+        "cycles"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "A waiting-list allocation may share medical vocabulary while lacking reciprocal exchange cycles.",
+      "candidate_load_bearing_invariant": "Transfer requires preservation of exchange cycles, feasibility constraints and the allocation QoI.",
+      "family": "matching_allocation",
+      "qoi": "Does the kidney-exchange structural object certify the target allocation?",
+      "source_dependencies": [
+        "directed compatibility graph",
+        "cycle length constraints"
+      ],
+      "source_domain": "kidney exchange",
+      "source_evidence": [
+        "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+      ],
+      "source_item_id": "p3src-008",
+      "source_skill_tags": [
+        "kidney exchange",
+        "cycle packing"
+      ],
+      "source_surface_terms": [
+        "donors",
+        "recipients",
+        "compatibility",
+        "cycles"
+      ],
+      "target_dependencies": [
+        "one-way allocation",
+        "medical priority",
+        "compatibility constraints"
+      ],
+      "target_domain": "deceased-donor organ allocation",
+      "target_evidence": [
+        "DOI:10.1001/archsurg.2011.147 | HLA-DR Matching in Organ Allocation | https://doi.org/10.1001/archsurg.2011.147"
+      ],
+      "target_skill_tags": [
+        "organ allocation",
+        "compatibility scoring"
+      ],
+      "target_surface_terms": [
+        "donors",
+        "recipients",
+        "HLA",
+        "waiting list"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Constant or registered diffusivity and compatible boundary/initial conditions; advection, jumps and reactions are excluded unless represented.",
+      "candidate_load_bearing_invariant": "The diffusion generator produces a parabolic evolution with variance or spatial spread proportional to elapsed time.",
+      "family": "diffusion_transport",
+      "qoi": "Can the source diffusion object determine the target spreading law?",
+      "source_dependencies": [
+        "independent increments",
+        "diffusion coefficient"
+      ],
+      "source_domain": "suspended-particle Brownian motion",
+      "source_evidence": [
+        "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806"
+      ],
+      "source_item_id": "p3src-009",
+      "source_skill_tags": [
+        "stochastic diffusion",
+        "mean-square displacement"
+      ],
+      "source_surface_terms": [
+        "particles",
+        "liquid",
+        "displacement",
+        "temperature"
+      ],
+      "target_dependencies": [
+        "temperature field",
+        "thermal diffusivity",
+        "initial boundary data"
+      ],
+      "target_domain": "heat conduction",
+      "target_evidence": [
+        "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+      ],
+      "target_skill_tags": [
+        "heat equation",
+        "parabolic PDE"
+      ],
+      "target_surface_terms": [
+        "temperature",
+        "heat",
+        "space",
+        "time"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Continuous diffusion, registered volatility and hedging assumptions; jumps, transaction costs and incomplete markets are outside the boundary.",
+      "candidate_load_bearing_invariant": "A diffusion generator can be mapped into a parabolic evolution after the target variables and measure are specified.",
+      "family": "diffusion_transport",
+      "qoi": "Can the Brownian diffusion representation support the registered option-pricing evolution?",
+      "source_dependencies": [
+        "independent increments",
+        "diffusion coefficient"
+      ],
+      "source_domain": "suspended-particle Brownian motion",
+      "source_evidence": [
+        "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806"
+      ],
+      "source_item_id": "p3src-010",
+      "source_skill_tags": [
+        "stochastic diffusion",
+        "mean-square displacement"
+      ],
+      "source_surface_terms": [
+        "particles",
+        "liquid",
+        "displacement",
+        "temperature"
+      ],
+      "target_dependencies": [
+        "price process",
+        "volatility",
+        "self-financing hedge"
+      ],
+      "target_domain": "option pricing",
+      "target_evidence": [
+        "DOI:10.1086/260062 | Black and Scholes (1973), The Pricing of Options and Corporate Liabilities | https://doi.org/10.1086/260062"
+      ],
+      "target_skill_tags": [
+        "stochastic pricing",
+        "hedging PDE"
+      ],
+      "target_surface_terms": [
+        "option",
+        "stock",
+        "volatility",
+        "price"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Advection, reaction, anisotropy and source terms must be absent, negligible or explicitly mapped before using a heat-diffusion solution.",
+      "candidate_load_bearing_invariant": "A diffusion-only mapping requires conservation and a compatible second-order spreading operator.",
+      "family": "diffusion_transport",
+      "qoi": "Can the source transport equation be reduced to the target heat-spreading object?",
+      "source_dependencies": [
+        "porous flow",
+        "dispersion tensor",
+        "source terms"
+      ],
+      "source_domain": "groundwater contaminant transport",
+      "source_evidence": [
+        "DOI:10.1201/9780203719763 | Groundwater Contaminant Transport | https://doi.org/10.1201/9780203719763"
+      ],
+      "source_item_id": "p3src-011",
+      "source_skill_tags": [
+        "transport PDE",
+        "dispersion"
+      ],
+      "source_surface_terms": [
+        "aquifer",
+        "solute",
+        "advection",
+        "dispersion"
+      ],
+      "target_dependencies": [
+        "temperature field",
+        "thermal diffusivity",
+        "initial boundary data"
+      ],
+      "target_domain": "heat conduction",
+      "target_evidence": [
+        "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+      ],
+      "target_skill_tags": [
+        "heat equation",
+        "parabolic PDE"
+      ],
+      "target_surface_terms": [
+        "temperature",
+        "heat",
+        "space",
+        "time"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Long-range jumps, network rewiring or intervention feedback can invalidate a fixed local-diffusion representation.",
+      "candidate_load_bearing_invariant": "A local diffusion operator licenses reuse only when the target propagation kernel and reaction boundary are preserved.",
+      "family": "diffusion_transport",
+      "qoi": "Does the source diffusion mechanism license the target propagation forecast?",
+      "source_dependencies": [
+        "local diffusion operator",
+        "reaction term",
+        "fixed network"
+      ],
+      "source_domain": "spatial epidemic diffusion",
+      "source_evidence": [
+        "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+      ],
+      "source_item_id": "p3src-012",
+      "source_skill_tags": [
+        "reaction-diffusion",
+        "epidemic dynamics"
+      ],
+      "source_surface_terms": [
+        "infection",
+        "network",
+        "diffusion",
+        "pattern"
+      ],
+      "target_dependencies": [
+        "nonlocal mobility kernel",
+        "policy feedback",
+        "changing contacts"
+      ],
+      "target_domain": "spatial epidemic propagation",
+      "target_evidence": [
+        "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+      ],
+      "target_skill_tags": [
+        "nonlocal epidemic spread",
+        "time-varying control"
+      ],
+      "target_surface_terms": [
+        "infection",
+        "network",
+        "long-range jumps",
+        "interventions"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Positive reinforcement and limited switching must remain active; strong resets or dominant intrinsic fitness require separate modelling.",
+      "candidate_load_bearing_invariant": "Early random increments alter later transition probabilities, so ordering can affect long-run shares.",
+      "family": "path_dependence_reinforcement",
+      "qoi": "Can the urn reinforcement object explain sensitivity of target adoption shares to early events?",
+      "source_dependencies": [
+        "state-dependent sampling",
+        "positive reinforcement"
+      ],
+      "source_domain": "Polya urn reinforcement",
+      "source_evidence": [
+        "DOI:10.1016/j.orl.2014.06.012 | Weighing the heaviest Polya urn | https://doi.org/10.1016/j.orl.2014.06.012"
+      ],
+      "source_item_id": "p3src-013",
+      "source_skill_tags": [
+        "reinforcement process",
+        "history dependence"
+      ],
+      "source_surface_terms": [
+        "urn",
+        "balls",
+        "colours",
+        "draws"
+      ],
+      "target_dependencies": [
+        "adoption share",
+        "increasing returns",
+        "early events"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "Reinforcement, decay and exploration terms must be mapped; centralized optimization is not the same mechanism.",
+      "candidate_load_bearing_invariant": "Local use increases future selection probability, creating a feedback path through accumulated traces or installed base.",
+      "family": "path_dependence_reinforcement",
+      "qoi": "Can the trail-reinforcement object support the target lock-in explanation?",
+      "source_dependencies": [
+        "local trace deposition",
+        "follow probability",
+        "evaporation"
+      ],
+      "source_domain": "ant trail reinforcement",
+      "source_evidence": [
+        "DOI:10.7554/eLife.20185 | A locally-blazed ant trail achieves efficient collective navigation despite limited information | https://doi.org/10.7554/eLife.20185"
+      ],
+      "source_item_id": "p3src-014",
+      "source_skill_tags": [
+        "local reinforcement",
+        "collective navigation"
+      ],
+      "source_surface_terms": [
+        "ants",
+        "pheromone",
+        "trail",
+        "navigation"
+      ],
+      "target_dependencies": [
+        "adoption share",
+        "network returns",
+        "switching cost"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "The target must exhibit endogenous reinforcement rather than only stable heterogeneity or geography.",
+      "candidate_load_bearing_invariant": "Existing adoption or connectivity changes the probability of future adoption or attachment.",
+      "family": "path_dependence_reinforcement",
+      "qoi": "Does the source lock-in representation identify path dependence in target network formation?",
+      "source_dependencies": [
+        "installed base",
+        "coordination returns",
+        "switching cost"
+      ],
+      "source_domain": "keyboard technology standards",
+      "source_evidence": [
+        "DOI:10.1016/j.respol.2013.03.009 | QWERTY is dead; long live path dependence | https://doi.org/10.1016/j.respol.2013.03.009"
+      ],
+      "source_item_id": "p3src-015",
+      "source_skill_tags": [
+        "technology path dependence",
+        "switching cost"
+      ],
+      "source_surface_terms": [
+        "keyboard",
+        "standard",
+        "switching",
+        "history"
+      ],
+      "target_dependencies": [
+        "existing degree or proximity",
+        "new edge probability"
+      ],
+      "target_domain": "intercity venture-capital networks",
+      "target_evidence": [
+        "DOI:10.1016/j.cities.2024.104874 | Evolution of China intercity venture capital network: Preferential attachment vs. path dependence | https://doi.org/10.1016/j.cities.2024.104874"
+      ],
+      "target_skill_tags": [
+        "preferential attachment",
+        "network path dependence"
+      ],
+      "target_surface_terms": [
+        "cities",
+        "venture capital",
+        "network",
+        "attachment"
+      ]
+    },
+    {
+      "candidate_load_bearing_boundary": "A target dominated by an external reset, mandate or cost discontinuity may break the inherited reinforcement path.",
+      "candidate_load_bearing_invariant": "Historical lock-in requires endogenous state dependence in later transition probabilities.",
+      "family": "path_dependence_reinforcement",
+      "qoi": "Does the source historical-lock-in object license the target adoption explanation after intervention?",
+      "source_dependencies": [
+        "adoption share",
+        "increasing returns",
+        "early events"
+      ],
+      "source_domain": "technology adoption",
+      "source_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "source_item_id": "p3src-016",
+      "source_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "source_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ],
+      "target_dependencies": [
+        "external intervention",
+        "reset or forced migration"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "policy-driven switching",
+        "exogenous coordination"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "subsidy",
+        "migration"
+      ]
+    }
+  ],
+  "label_blind_attestation": {
+    "benchmark_author_ids": [
+      "rakl-author-01"
+    ],
+    "curator_id": "rakl-curator-ai-01",
+    "frozen_before_annotation": true,
+    "no_outcome_or_diagnostic_access_during_construction": true,
+    "no_v1_item_copying": true
+  },
+  "protocol_id": "paper3-confirmatory-gate-v2",
+  "protocol_sha256": "9472908f1b663b09bc5ece34ab1a6d12b8b5e5daaa203e52f1c1a989ad456039",
+  "rubric_id": "paper3-annotation-rubric-v2-20260810",
+  "rubric_sha256": "50daa3144fd066170678b0c08afda8cd0347274844233c2505a4c07caa261c6e",
+  "schema_version": "paper3-label-blind-source-set-v2",
+  "source_set_id": "paper3-natural-cross-domain-source-set-v2-1-20260810"
+}
