@@ -61,9 +61,8 @@ jobs:
             echo "::error title=Paper 1 preflight::Page count $PAGES is below required 20"
             exit 1
           fi
-          warnings="$(grep -E 'Overfull \[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log || true)"
-          if [ -n "$warnings" ]; then
-            printf '%s\n' "$warnings" | head -60 | while IFS= read -r line; do
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+            grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log | head -60 | while IFS= read -r line; do
               safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
               echo "::error title=Paper 1 production preflight::$safe"
             done
