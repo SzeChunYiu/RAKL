@@ -1,0 +1,16 @@
+% Formal/reference-engineering schematics; no new empirical measurements.
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[node distance=7mm,>=Latex,every node/.style={draw,rounded corners,align=center,inner sep=4pt,font=\small}]
+\node (raw) {Immutable evidence\\archive}; \node[right=of raw] (atlas) {Contextual\\Knowledge Atlas}; \node[right=of atlas] (work) {Bounded\\workspace}; \node[right=of work] (prop) {LLM proposal};
+\node[below=of atlas] (gate) {Typed promotion\\and falsification gates};
+\draw[->] (raw)--(atlas);\draw[->](atlas)--(work);\draw[->](work)--(prop);\draw[->](prop)|-(gate);\draw[->](gate)--(atlas);
+\end{tikzpicture}
+\caption{RAKL system architecture. The model proposes actions inside a bounded workspace; canonical state changes occur through typed evidence-governed gates.}\label{fig:p2-architecture}\end{figure}
+
+\begin{figure}[htbp]\centering
+\fbox{\begin{minipage}{0.91\linewidth}\centering
+TEXT $\neq$ MEANING $\neq$ CLAIM $\neq$ EVIDENCE $\neq$ KNOWLEDGE\\[3pt]
+Claim atom $\rightarrow$ source snapshot $\rightarrow$ evidence relation $\rightarrow$ authority decision\\[3pt]
+Residual/falsifier $\rightarrow$ reopen implicated fiber $\rightarrow$ new discriminating action
+\end{minipage}}
+\caption{Claim--evidence discipline and recursive reopening rule. Workflow completion alone never licenses a scientific claim.}\label{fig:p2-evidence-flow}\end{figure}
