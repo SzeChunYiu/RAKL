@@ -1,66 +1,113 @@
-# C007 — partition normalization and the one-dimensional support-recursion ceiling
+# C007 — the partition-normalization generalization fails for non-singleton canonical fibres
 
-**Status:** PROOF_DRAFT_NEGATIVE_CHECKPOINT / NOVELTY_UNRESOLVED
+**Status:** REFUTED_DRAFT_NEGATIVE_CHECKPOINT / PARTITION_SUBMODEL_ANALYZED / NOVELTY_UNRESOLVED
 
-This checkpoint sharpens residual `C006-R1`. It generalizes the pair-normalization step used in the published `G_NEQ` calibration argument and then identifies a limitation of any attempted super-logarithmic proof that measures recursive progress only through the smaller retained row/column dimension.
+This checkpoint records a failed attempt to generalize the recursive `G_NEQ` proof pattern from Cavalar–Oliveira to arbitrary canonical semi-filters. The failure is mathematically useful: it identifies **pair overlap** `E intersect H` as a load-bearing degree of freedom that disappears in the singleton-fibre `G_NEQ` calibration.
 
 It is **not** a P-versus-NP solution and is not currently claimed novel.
 
 ## Setup
 
-Let `G subseteq [N] x [N]` be a bipartite graph and let
+Let `G subseteq [N] x [N]` and let
 
 `U = G^c`.
 
-For a row `u` and column `v`, define the complement fibres
+For a row `u` and column `v`, define complement fibres
 
 `A_u = R_u intersect U`,
 `B_v = C_v intersect U`.
 
-For a canonical edge `e=(u,v) in G`, both `A_u` and `B_v` are nonempty and
+For a canonical edge `e=(u,v) in G`, both fibres are nonempty and
 
 `F_e = {W subseteq U : A_u subseteq W or B_v subseteq W}`.
 
-C005 states the exact condition under which a pair `(E,H)` covers `F_e`.
+C005 gives the exact criterion for a pair `(E,H)` to cover `F_e`.
 
-## Lemma C007-L1 — arbitrary canonical-cover pairs may be normalized to partitions
+## Refuted claim C007-X1
 
-If `(E,H)` covers a canonical semi-filter `F_e`, then
+The first attempted generalization asserted:
 
-`(E \ H, H \ E)`
+> if `(E,H)` covers an arbitrary canonical semi-filter, then `(E\H,H\E)` also covers it.
+
+This is false when a canonical generator has more than one element.
+
+### Exact counterexample
+
+Take a canonical edge `e=(0,0)` and a complement containing
+
+`x=(0,1)`, `y=(0,2)`, `z=(1,0)`,
+
+with no other complement edge in row 0 or column 0. Then
+
+`A_0 = {x,y}`,
+`B_0 = {z}`.
+
+Let
+
+`E = {x,y}`,
+`H = {y,z}`.
+
+Then
+
+- `A_0 subseteq E`;
+- `B_0 subseteq H`;
+- `A_0 not subseteq H` because `x notin H`;
+- `B_0 not subseteq E` because `z notin E`.
+
+By C005, `(E,H)` covers `F_e`. Equivalently, `E in F_e`, `H in F_e`, while
+
+`E intersect H = {y}`
+
+contains neither full generator and therefore is not in `F_e`.
+
+But after deleting the overlap,
+
+`E\H = {x}`,
+`H\E = {z}`.
+
+The set `{x}` contains neither `A_0` nor `B_0`, so `{x} notin F_e`. Hence the disjoint pair does **not** cover `F_e`.
+
+Therefore the proposed arbitrary-fibre analogue of the singleton normalization step is refuted.
+
+## Why the published NEQ normalization survives
+
+For `G_NEQ`, each relevant complement row fibre and complement column fibre is a singleton. If a singleton generator is contained in `E` but not contained in `H`, its unique element lies in `E\H`. It cannot straddle the common part `E intersect H` and an exclusive part.
+
+A larger fibre can straddle exactly this way. In the counterexample, the row generator `{x,y}` uses `x` as an `E`-exclusive witness while `y` sits in the overlap. Removing the overlap destroys full containment of the row generator.
+
+Thus the singleton structure is not cosmetic. It is load-bearing in the direct normalization argument.
+
+## Valid lemma C007-L1 — completion works once a covering pair is already disjoint
+
+Suppose `E intersect H` is empty and `(E,H)` covers a canonical semi-filter `F_e`. Then
+
+`(E, U\E)`
 
 also covers `F_e`.
-
-If `E` and `H` are disjoint and `(E,H)` covers `F_e`, then
-
-`(E, U \ E)`
-
-also covers `F_e`.
-
-Consequently, every family of pairs covering a collection of canonical semi-filters can be replaced, pair by pair and without increasing its size, by a family in which each pair is a partition of `U`.
 
 ### Proof
 
-By C005, suppose without loss of generality that
+By C005, suppose without loss of generality
 
-`A_u subseteq E`, `B_v subseteq H`, `A_u not subseteq H`, and `B_v not subseteq E`.
+`A_u subseteq E`,
+`B_v subseteq H`,
+`A_u not subseteq H`,
+`B_v not subseteq E`.
 
-Because `A_u subseteq E` while `A_u not subseteq H`, every element of `A_u` that lies outside `H` remains in `E \ H`, and in fact `A_u subseteq E` plus the coverage condition implies the normalized orientation required by C005 after common elements are deleted from both sides. The same argument applies symmetrically to `B_v`.
+Disjointness gives `H subseteq U\E`, so `B_v subseteq U\E`. Since `A_u` is nonempty and `A_u subseteq E`, it is not a subset of `U\E`. Together with `B_v not subseteq E`, C005 shows that `(E,U\E)` covers `F_e`.
 
-More directly, canonical membership of `E` or `H` depends on containing an entire generator, while failure of `E intersect H` to belong to `F_e` says neither generator is contained in the common part. Removing that common part therefore leaves the two complete generators on opposite sides.
+The opposite orientation is symmetric.
 
-Now assume `E` and `H` are disjoint. From the displayed orientation, `H subseteq U \ E`, hence `B_v subseteq U \ E`. Since `A_u` is nonempty and `A_u subseteq E`, we have `A_u not subseteq U \ E`; and `B_v not subseteq E` already holds. C005 therefore shows that `(E,U\E)` covers `F_e`. The opposite orientation is symmetric.
+**Boundary:** this does not show that an arbitrary overlapping cover pair can first be made disjoint.
 
-Applying this replacement separately to every pair preserves every canonical filter that the original pair covered, so a canonical cover has a partition witness of the same cardinality.
+## Valid lemma C007-L2 — partition-side support gives an untouched residual rectangle
 
-## Lemma C007-L2 — support of one partition side is an untouched residual rectangle
+For the **partition-only submodel**, let `(S,U\S)` be one cover pair and define
 
-Let `(S,U\S)` be a partition pair. Define
+`X_S = {u : A_u intersect S is nonempty}`,
+`Y_S = {v : B_v intersect S is nonempty}`.
 
-`X_S = {u in [N] : A_u intersect S is nonempty}`,
-`Y_S = {v in [N] : B_v intersect S is nonempty}`.
-
-Then no canonical semi-filter `F_(u,v)` with
+Then no canonical filter `F_(u,v)` with
 
 `(u,v) in G intersect (X_S x Y_S)`
 
@@ -68,109 +115,85 @@ is covered by `(S,U\S)`.
 
 ### Proof
 
-For `u in X_S`, the row fibre `A_u` contains an element of `S`, so `A_u` is not a subset of `U\S`. Likewise, for `v in Y_S`, `B_v` is not a subset of `U\S`.
+For `u in X_S`, `A_u` contains an element of `S`, so `A_u` is not a subset of `U\S`. Likewise `B_v` is not a subset of `U\S` for `v in Y_S`.
 
-C005 says coverage by the partition requires one of `A_u,B_v` to lie entirely in `S` and the other entirely in `U\S`. The second requirement is impossible for both possible orientations because both fibres intersect `S`. Hence the pair does not cover the canonical filter.
+Coverage by a partition requires one complete generator on `S` and the other complete generator on `U\S`. Both possible orientations fail because neither fibre can lie entirely in `U\S`.
 
-## C007-P — a one-dimensional support recurrence cannot beat the `log_2 N` coefficient
+## Valid method barrier C007-P — minimum-dimension recursion cannot beat the NEQ coefficient inside the partition-only submodel
 
-Consider any lower-bound strategy that repeatedly uses C007-L2 as follows.
+Assume a proof method has already justified restriction to partition pairs and recursively measures progress only through
 
-1. Normalize the next cover pair to a partition `(S,U\S)`.
-2. Choose one side `Z in {S,U\S}`.
-3. Retain only the residual rectangle `X_Z x Y_Z` guaranteed to be untouched by that pair.
-4. Measure recursive progress solely by
+`m = min(number of active rows, number of active columns)`.
 
-   `m = min(|X|,|Y|)`.
-
-No graph family with every active row incident to at least one complement edge can support a universal asymptotic retention guarantee
-
-`m_next > (1/2 + epsilon) m_current`
-
-for any fixed `epsilon>0` against all partition pairs.
+No such method can obtain a universal retention factor strictly larger than `1/2` against all partitions.
 
 ### Proof
 
-At an active state with row set `X` of size `r`, choose a subset `A subseteq X` with `|A|=floor(r/2)`. Partition the complement edges by their row endpoint:
+At an active state with row set `X`, split `X` into two parts `A` and `X\A` as evenly as possible. Put every complement edge whose row endpoint lies in `A` into `S` and every complement edge whose active row endpoint lies in `X\A` into `U\S`.
 
-`S = { (u,v) in U : u in A }`,
-`U\S = { (u,v) in U : u in X\A }`
+If every active row has a nonempty complement fibre, then the row supports of the two partition sides are exactly `A` and `X\A`. Hence whichever side is selected has at most `ceil(|X|/2)` active rows. The scalar minimum of row and column support therefore cannot enjoy an asymptotic guarantee above `1/2`.
 
-(with edges outside the active rows assigned arbitrarily if the state is embedded in a larger ambient instance).
+A recurrence based solely on this scalar support must retain more than half the dimension per removed pair to improve the coefficient beyond `log_2 N`; the balanced row partition prevents that.
 
-Because each active row has a nonempty complement fibre,
+### Scope
 
-`X_S = A`,
-`X_(U\S) = X\A`.
+This is a barrier only for the **partition-only proof architecture**. Because C007-X1 is false, it is not yet a barrier for full canonical cover complexity.
 
-Thus every choice of side has row support at most `ceil(r/2)`. Since the recurrence uses the smaller of row and column support, its retained value satisfies
+## The actual obstruction exposed by the refutation
 
-`m_next <= ceil(r/2)`
+For a general pair, every complement edge has four states:
 
-for this legal partition. In the balanced asymptotic regime, no universal retention factor strictly larger than `1/2` is possible.
+1. `E` only;
+2. `H` only;
+3. both `E` and `H`;
+4. neither.
 
-A recurrence of the form `m_next >= delta m_current` yields a logarithmic lower-bound coefficient larger than the NEQ `log_2 N` baseline only when `delta>1/2`. The row-split partition above rules this out for any proof whose sole progress invariant is the minimum retained side dimension.
+Under the C005 orientation
 
-## What C007 rules out
+`A_u subseteq E`, `B_v subseteq H`, `A_u not subseteq H`, `B_v not subseteq E`,
 
-C007 does **not** upper-bound canonical cover complexity. It blocks only a proof architecture.
+a covered edge needs
 
-Retire attempts whose entire super-logarithmic argument is:
+- at least one `E`-only witness in the row fibre `A_u`;
+- at least one `H`-only witness in the column fibre `B_v`;
+- but all remaining elements of either fibre are allowed to sit in the shared `both` state.
 
-- normalize each pair to a partition;
-- pick one colour class;
-- show that both its row support and column support retain more than half the current vertices;
-- recurse using only the smaller support dimension.
+The `both` state is exactly what defeats partition normalization. Any super-logarithmic lower-bound argument for arbitrary canonical fibres must control how much simultaneous row/column containment can be hidden in this overlap while still supplying exclusive witnesses.
 
-No amount of ordinary vertex expansion can make the `>1/2` guarantee hold against the row-split partition.
+This is naturally compatible with the ternary signature formulation in C006: a nonzero row/column sign records existence of the required exclusive witness plus full containment in one side, but the underlying edge-state realization can still use the overlap heavily.
 
-## The two-dimensional escape route
+## Successor target C007-R1 — overlap-sensitive two-dimensional potential
 
-The row-split adversary exposes information that the scalar `min(row_support,column_support)` throws away. A side may touch only half the rows while still touching almost all columns.
+> Construct a potential for realizable C006 signature systems that charges the shared `E intersect H` state and proves that every cover pair loses less than one bit of normalized two-dimensional potential on an explicit graph family.
 
-This suggests tracking a genuinely two-dimensional potential such as
+Possible coordinates include:
 
-`P(S) = |X_S| * |Y_S|`
+- overlap mass and its row/column incidence profile;
+- entropy of the four-state edge colouring;
+- support product of exclusive witnesses;
+- private-neighbour counts for `E`-only and `H`-only witnesses;
+- a compression bound for simultaneously realizable ternary row/column signatures.
 
-or an entropy/refinement analogue.
+A useful potential must work for arbitrary overlapping pairs. A theorem proved only after silently replacing pairs by partitions does not address full canonical cover complexity.
 
-For any partition `U=S disjoint_union T`, one side has at least `|U|/2` edges. Since
+## Conditional partition-model design equation
 
-`|Z| <= |X_Z| * |Y_Z|`,
-
-that side satisfies the elementary bound
-
-`|X_Z| * |Y_Z| >= |U|/2`.
-
-If an explicit recursive family could additionally maintain a hereditary complement density
-
-`|U| >= p |X| |Y|`
-
-with `p>1/2`, while guaranteeing that the retained support rectangle contains a valid residual canonical subproblem and preserves the density condition, then the product potential would retain at least a `p/2` fraction per removed pair. Formally iterating such a closed recurrence would suggest a lower-bound scale
-
-`k >= log_(2/p)(|X_0||Y_0|)`.
-
-For a square `N x N` start this coefficient is
+The earlier support-product idea remains valid only as a **partition-submodel heuristic**. If one had a recursively closed partition-only family with complement density `p>1/2`, residual canonical validity, and support-product retention at least `p/2` per pair, then a formal recurrence would suggest a coefficient
 
 `2 / log_2(2/p)`
 
-times `log_2 N`, which exceeds 1 exactly when `p>1/2`.
+multiplying `log_2 N`, which is greater than 1 for `p>1/2`.
 
-**This is a design equation, not a proved cover lower bound.** The difficult unresolved obligations are precisely the ones hidden by the conditional sentence: residual canonical validity, hereditary density or an entropy substitute, and enough surviving `G`-edges after each adaptive partition.
-
-## Typed residual C007-R1
-
-> Replace one-dimensional support retention by a closed two-dimensional potential that survives every adaptive partition of `U`, leaves a nonempty canonical-edge residual, and loses strictly less than one bit of normalized potential per cover pair on an explicit family.
-
-Candidate potentials include support product, bipartite entropy, neighbourhood-profile entropy, and multi-coordinate realizable-signature capacity from C006.
+Because full cover pairs may overlap, this does not currently transfer to `rho_can`. It is retained only as a clue for designing an overlap-sensitive replacement.
 
 ## Source relation
 
-Cavalar and Oliveira, ECCC TR25-033 (2025), prove the `G_NEQ` `log N` lower bound by normalizing cover pairs and recursively restricting to the row/column support of a large partition side. C007-L1 and C007-L2 isolate the corresponding algebra for arbitrary canonical semi-filters, while C007-P explains why the direct one-dimensional strengthening of that recursion cannot by itself yield a coefficient above 1.
+Cavalar and Oliveira, ECCC TR25-033 (2025), establish the `G_NEQ` `log N` bound using canonical filters with singleton complement fibres and normalize the pairs in that special setting before recursion. The source also defines canonical cover complexity for arbitrary bipartite graphs. The failed C007-X1 attempt shows that the singleton normalization mechanism cannot simply be copied to the arbitrary-fibre setting.
 
 ## Assurance notes
 
-- C007 is a method-level negative checkpoint, not an asymptotic circuit lower bound.
-- The arbitrary-graph normalization and support-ceiling formulation require novelty review against fusion-method and graph-complexity literature.
-- The product-potential paragraph is an explicitly conditional research program, not a theorem.
+- The false generalization is preserved explicitly rather than deleted.
+- C007-L1, C007-L2, and C007-P are bounded statements whose assumptions are visible.
+- No asymptotic full-cover or circuit lower bound is claimed.
+- Novelty of the overlap-obstruction formulation is unresolved.
 - Root status remains `OPEN_NO_SOLUTION_CERTIFICATE`.
