@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import hashlib
 import json
+import platform
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator, FormatChecker
 
 from rakl.paper2_pendulum_microtrial import (
     _encode_prompt_for_generation,
     BackendGeneration,
+    ExecutionCheckoutState,
     MicrotrialPreflightVerdict,
     audit_execution_packet,
     execute_microtrial,
@@ -118,6 +121,12 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
         "environment_id": "TEST_ENV_V1",
         "python": "3.11.13",
         "packages": {"torch": "2.8.0", "transformers": "4.55.0"},
+        "platform": {
+            "os": platform.system(),
+            "architecture": platform.machine(),
+            "execution_device": "CPU",
+            "network_during_execution": "disabled",
+        },
     }
 
     snapshot = tmp_path / "snapshot"
@@ -144,6 +153,19 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
             {"path": "tokenizer.json", "sha256": _sha256(tokenizer_file), "bytes": tokenizer_file.stat().st_size}
         ],
     }
+    execution_contract = {
+        "schema_version": "paper2-lunarc-execution-contract-v1",
+        "execution_site": "TEST_LUNARC_FIXTURE",
+        "forbidden_login_host_prefix": "test-cosmos",
+        "fs9_root": "/",
+        "repo_path": str(ROOT),
+        "output_root": str(tmp_path),
+        "model_snapshot_path": str(snapshot),
+        "require_clean_checkout": True,
+        "require_subject_ancestor": True,
+        "require_exact_bound_artifacts": True,
+        "require_slurm_job_id": True,
+    }
 
     values = {
         "task": task,
@@ -155,6 +177,7 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
         "environment": environment,
         "model_manifest": model_manifest,
         "tokenizer_manifest": tokenizer_manifest,
+        "execution_contract": execution_contract,
     }
     paths: dict[str, Path] = {"system_prompt": system_prompt}
     for name, value in values.items():
@@ -167,8 +190,7 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
     paths["direct_prompt"].write_text(prompts["DIRECT_CORPUS"], encoding="utf-8")
     paths["rakl_prompt"].write_text(prompts["RAKL_CONTEXT"], encoding="utf-8")
 
-    runner = tmp_path / "runner.py"
-    runner.write_text("# frozen runner\n", encoding="utf-8")
+    runner = ROOT / "src" / "rakl" / "paper2_pendulum_microtrial.py"
     result_schema = tmp_path / "result.schema.json"
     _write_json(result_schema, {"$schema": "https://json-schema.org/draft/2020-12/schema"})
     paths["runner"] = runner
@@ -259,6 +281,51 @@ def test_semantic_preflight_rejects_mutated_evaluator_source(tmp_path: Path) -> 
     assert "evaluator_implementation_sha256_mismatch" in report.invalid_bindings
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "expected"),
+    [
+        ("output_root", "DOTDOT", "execution_contract_path_contains_dotdot:output_root"),
+        ("repo_path", "/tmp/outside-checkout", "execution_contract_assets_outside_fs9_root"),
+    ],
+)
+def test_semantic_preflight_rejects_execution_path_escape(
+    tmp_path: Path, field: str, value: str, expected: str
+) -> None:
+    _, packet = _complete_fixture(tmp_path)
+    contract_path = Path(packet["bindings"]["execution_contract"]["path"])
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    contract[field] = (
+        str(tmp_path / "runs" / ".." / "escape") if value == "DOTDOT" else value
+    )
+    if field == "repo_path":
+        contract["fs9_root"] = str(tmp_path)
+    _write_json(contract_path, contract)
+    packet["bindings"]["execution_contract"]["sha256"] = _sha256(contract_path)
+
+    report = audit_execution_packet(packet, base_dir=tmp_path, runtime_versions={})
+
+    assert report.verdict is MicrotrialPreflightVerdict.REJECT
+    assert expected in report.invalid_bindings
+
+
+def test_semantic_preflight_blocks_runtime_platform_mismatch(tmp_path: Path) -> None:
+    _, packet = _complete_fixture(tmp_path)
+    environment_path = Path(packet["bindings"]["environment"]["path"])
+    environment = json.loads(environment_path.read_text(encoding="utf-8"))
+    environment["platform"]["os"] = "ImpossibleOS"
+    _write_json(environment_path, environment)
+    packet["bindings"]["environment"]["sha256"] = _sha256(environment_path)
+
+    report = audit_execution_packet(
+        packet,
+        base_dir=tmp_path,
+        runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+    )
+
+    assert report.verdict is MicrotrialPreflightVerdict.CANNOT_CHECK
+    assert any(item.startswith("runtime_platform_mismatch:os:") for item in report.blockers)
+
+
 def test_materializers_change_only_registered_context_intervention(tmp_path: Path) -> None:
     _, packet = _complete_fixture(tmp_path)
     bindings = packet["bindings"]
@@ -337,11 +404,24 @@ def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(t
         created_at_utc="2026-08-10T23:00:00Z",
         backend=fake_backend,
         runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+        checkout_probe=lambda *_: ExecutionCheckoutState(
+            repo_path=str(ROOT),
+            head_sha="b" * 40,
+            tree_sha="c" * 40,
+            clean=True,
+            subject_ancestor=True,
+        ),
+        execution_host="test-compute-01",
+        scheduler_job_id="123456",
     )
 
     raw_records = [json.loads(path.read_text(encoding="utf-8")) for path in sorted((output / "raw_outputs").glob("*.json"))]
     blinded = json.loads((output / "blinded_scores.json").read_text(encoding="utf-8"))
     result = json.loads((output / "result_receipt.json").read_text(encoding="utf-8"))
+    Draft202012Validator(
+        json.loads(RESULT_SCHEMA.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    ).validate(result)
     assert len(raw_records) == 2
     assert all(record["raw_text"] == answer for record in raw_records)
     assert all("condition" not in record for record in raw_records)
@@ -352,6 +432,19 @@ def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(t
     assert all(record["provider_receipt"]["repo_access_exposed_to_model"] is False for record in result["records"])
     assert all(record["resource_receipt"]["tool_calls"] == 0 for record in result["records"])
     assert all(record["resource_receipt"]["retrieval_calls"] == 0 for record in result["records"])
+    run_manifest = json.loads((output / "run_manifest.json").read_text(encoding="utf-8"))
+    run_manifest_sha = _sha256(output / "run_manifest.json")
+    assert run_manifest["model_outputs_opened_before_manifest"] is False
+    assert run_manifest["execution_checkout"]["clean"] is True
+    assert run_manifest["execution_checkout"]["head_sha"] == "b" * 40
+    assert run_manifest["execution_checkout"]["tree_sha"] == "c" * 40
+    assert run_manifest["scheduler_job_id"] == "123456"
+    assert result["run_manifest_sha256"] == run_manifest_sha
+    assert blinded["run_manifest_sha256"] == run_manifest_sha
+    assert result["execution_checkout"] == run_manifest["execution_checkout"]
+    assert all(record["raw_output"]["run_manifest_sha256"] == run_manifest_sha for record in result["records"])
+    assert all(record["provider_receipt"]["run_manifest_sha256"] == run_manifest_sha for record in result["records"])
+    assert all(record["resource_receipt"]["run_manifest_sha256"] == run_manifest_sha for record in result["records"])
     assert result["claim_boundary"]["confirmatory"] is False
     assert result["claim_boundary"]["general_superiority_permitted"] is False
 
@@ -376,7 +469,101 @@ def test_execution_rejects_resource_receipt_above_frozen_memory_ceiling(tmp_path
             created_at_utc="2026-08-10T23:00:00Z",
             backend=excessive_backend,
             runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+            checkout_probe=lambda *_: ExecutionCheckoutState(
+                repo_path=str(ROOT),
+                head_sha="b" * 40,
+                tree_sha="c" * 40,
+                clean=True,
+                subject_ancestor=True,
+            ),
+            execution_host="test-compute-01",
+            scheduler_job_id="123456",
         )
+
+
+def test_execution_refuses_dirty_checkout_before_model_or_output_access(tmp_path: Path) -> None:
+    packet_path, _ = _complete_fixture(tmp_path)
+    backend_calls: list[str] = []
+
+    def forbidden_backend(prompt: str, **_: object) -> BackendGeneration:
+        backend_calls.append(prompt)
+        raise AssertionError("backend must not be called")
+
+    output = tmp_path / "dirty-run"
+    with pytest.raises(RuntimeError, match="execution checkout is not clean"):
+        execute_microtrial(
+            packet_path,
+            output,
+            created_at_utc="2026-08-10T23:00:00Z",
+            backend=forbidden_backend,
+            runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+            checkout_probe=lambda *_: ExecutionCheckoutState(
+                repo_path=str(ROOT),
+                head_sha="b" * 40,
+                tree_sha="c" * 40,
+                clean=False,
+                subject_ancestor=True,
+            ),
+            execution_host="test-compute-01",
+            scheduler_job_id="123456",
+        )
+
+    assert backend_calls == []
+    assert not output.exists()
+
+
+def test_execution_refuses_when_runner_is_not_loaded_from_registered_checkout(tmp_path: Path) -> None:
+    packet_path, packet = _complete_fixture(tmp_path)
+    execution_path = Path(packet["bindings"]["execution_contract"]["path"])
+    execution = json.loads(execution_path.read_text(encoding="utf-8"))
+    execution["repo_path"] = str(tmp_path / "different-checkout")
+    _write_json(execution_path, execution)
+    packet["bindings"]["execution_contract"]["sha256"] = _sha256(execution_path)
+    _write_json(packet_path, packet)
+
+    with pytest.raises(RuntimeError, match="runner checkout path"):
+        execute_microtrial(
+            packet_path,
+            tmp_path / "wrong-runner",
+            created_at_utc="2026-08-10T23:00:00Z",
+            backend=lambda *_args, **_kwargs: pytest.fail("backend must not be called"),
+            runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+            checkout_probe=lambda *_: ExecutionCheckoutState(
+                repo_path=str(tmp_path / "different-checkout"),
+                head_sha="b" * 40,
+                tree_sha="c" * 40,
+                clean=True,
+                subject_ancestor=True,
+            ),
+            execution_host="test-compute-01",
+            scheduler_job_id="123456",
+        )
+
+
+def test_execution_refuses_lunarc_login_node_or_missing_slurm_allocation(tmp_path: Path) -> None:
+    packet_path, _ = _complete_fixture(tmp_path)
+    checkout = lambda *_: ExecutionCheckoutState(
+        repo_path=str(ROOT),
+        head_sha="b" * 40,
+        tree_sha="c" * 40,
+        clean=True,
+        subject_ancestor=True,
+    )
+    for output, host, job, expected in (
+        (tmp_path / "login", "test-cosmos-01", "123456", "login host"),
+        (tmp_path / "no-slurm", "test-compute-01", None, "SLURM job"),
+    ):
+        with pytest.raises(RuntimeError, match=expected):
+            execute_microtrial(
+                packet_path,
+                output,
+                created_at_utc="2026-08-10T23:00:00Z",
+                backend=lambda *_args, **_kwargs: pytest.fail("backend must not be called"),
+                runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+                checkout_probe=checkout,
+                execution_host=host,
+                scheduler_job_id=job,
+            )
 
 
 def test_preflight_receipt_never_claims_empirical_authority(tmp_path: Path) -> None:
@@ -413,6 +600,7 @@ def test_repository_packet_binds_every_mandatory_microtrial_identity() -> None:
         "evaluator",
         "model_manifest",
         "tokenizer_manifest",
+        "execution_contract",
         "environment",
         "resources",
         "prices",
@@ -448,6 +636,7 @@ def test_repository_task_model_seed_and_blinding_are_frozen_as_registered() -> N
     evaluator = bound_json("evaluator")
     model = bound_json("model_manifest")
     tokenizer = bound_json("tokenizer_manifest")
+    execution = bound_json("execution_contract")
     blinding = bound_json("blinding")
     assert [source["source_id"] for source in task["sources"]] == [f"S{i}" for i in range(1, 9)]
     assert task["mandatory_evidence_ids"] == [f"S{i}" for i in range(1, 9)]
@@ -457,6 +646,17 @@ def test_repository_task_model_seed_and_blinding_are_frozen_as_registered() -> N
     assert model["model_id"] == "Qwen/Qwen2.5-0.5B-Instruct"
     assert model["revision"] == "7ae557604adf67be50417f59c2c2f167def9a775"
     assert tokenizer["revision"] == model["revision"]
+    revision = model["revision"]
+    assert execution["fs9_root"] == "/projects/hep/fs9/users/scyiu/RAKL-paper2"
+    assert execution["repo_path"] == "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo"
+    assert execution["output_root"] == "/projects/hep/fs9/users/scyiu/RAKL-paper2/runs"
+    assert execution["forbidden_login_host_prefix"] == "cosmos"
+    assert execution["require_slurm_job_id"] is True
+    assert model["snapshot_path"] == (
+        "/projects/hep/fs9/users/scyiu/RAKL-paper2/models/"
+        f"Qwen--Qwen2.5-0.5B-Instruct/{revision}"
+    )
+    assert execution["model_snapshot_path"] == model["snapshot_path"]
     evaluator_source = ROOT / evaluator["implementation_source_path"]
     assert evaluator_source.is_file()
     assert _sha256(evaluator_source) == evaluator["implementation_source_sha256"]
@@ -469,6 +669,10 @@ def test_repository_result_schema_requires_receipt_lineage_and_raw_output() -> N
     run_required = set(schema["$defs"]["run"]["required"])
 
     assert {"blind_id", "condition", "raw_output", "provider_receipt", "resource_receipt", "score"} <= run_required
+    assert {"run_manifest_sha256", "execution_checkout"} <= set(schema["required"])
+    assert "run_manifest_sha256" in schema["$defs"]["raw_output"]["required"]
+    assert "run_manifest_sha256" in schema["$defs"]["provider_receipt"]["required"]
+    assert "run_manifest_sha256" in schema["$defs"]["resource_receipt"]["required"]
     assert schema["properties"]["claim_boundary"]["properties"]["confirmatory"]["const"] is False
     assert schema["properties"]["claim_boundary"]["properties"]["general_superiority_permitted"]["const"] is False
 

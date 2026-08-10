@@ -10,31 +10,68 @@
     "subject_sha",
     "created_at_utc",
     "packet_sha256",
+    "run_manifest_sha256",
+    "execution_checkout",
     "seed",
     "records",
     "claim_boundary"
   ],
   "properties": {
-    "schema_version": {"const": "paper2-pendulum-microtrial-result-v1"},
-    "experiment_id": {"type": "string", "minLength": 1},
-    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "created_at_utc": {"type": "string", "format": "date-time"},
-    "packet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "seed": {"const": 17},
+    "schema_version": {
+      "const": "paper2-pendulum-microtrial-result-v1"
+    },
+    "experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packet_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "execution_checkout": {
+      "$ref": "#/$defs/execution_checkout"
+    },
+    "seed": {
+      "const": 17
+    },
     "records": {
       "type": "array",
       "minItems": 2,
       "maxItems": 2,
-      "items": {"$ref": "#/$defs/run"}
+      "items": {
+        "$ref": "#/$defs/run"
+      }
     },
     "claim_boundary": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["confirmatory", "general_superiority_permitted", "allowed"],
+      "required": [
+        "confirmatory",
+        "general_superiority_permitted",
+        "allowed"
+      ],
       "properties": {
-        "confirmatory": {"const": false},
-        "general_superiority_permitted": {"const": false},
-        "allowed": {"const": "non-confirmatory engineering microtrial only"}
+        "confirmatory": {
+          "const": false
+        },
+        "general_superiority_permitted": {
+          "const": false
+        },
+        "allowed": {
+          "const": "non-confirmatory engineering microtrial only"
+        }
       }
     }
   },
@@ -51,22 +88,54 @@
         "score"
       ],
       "properties": {
-        "blind_id": {"type": "string", "minLength": 8},
-        "condition": {"enum": ["DIRECT_CORPUS", "RAKL_CONTEXT"]},
-        "raw_output": {"$ref": "#/$defs/raw_output"},
-        "provider_receipt": {"$ref": "#/$defs/provider_receipt"},
-        "resource_receipt": {"$ref": "#/$defs/resource_receipt"},
-        "score": {"$ref": "#/$defs/blinded_score"}
+        "blind_id": {
+          "type": "string",
+          "minLength": 8
+        },
+        "condition": {
+          "enum": [
+            "DIRECT_CORPUS",
+            "RAKL_CONTEXT"
+          ]
+        },
+        "raw_output": {
+          "$ref": "#/$defs/raw_output"
+        },
+        "provider_receipt": {
+          "$ref": "#/$defs/provider_receipt"
+        },
+        "resource_receipt": {
+          "$ref": "#/$defs/resource_receipt"
+        },
+        "score": {
+          "$ref": "#/$defs/blinded_score"
+        }
       }
     },
     "raw_output": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["blind_id", "prompt_sha256", "raw_text"],
+      "required": [
+        "blind_id",
+        "prompt_sha256",
+        "run_manifest_sha256",
+        "raw_text"
+      ],
       "properties": {
-        "blind_id": {"type": "string"},
-        "prompt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "raw_text": {"type": "string"}
+        "blind_id": {
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "run_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "raw_text": {
+          "type": "string"
+        }
       }
     },
     "provider_receipt": {
@@ -83,20 +152,50 @@
         "trust_remote_code",
         "tools_enabled",
         "repo_access_exposed_to_model",
-        "provider_api_transaction"
+        "provider_api_transaction",
+        "run_manifest_sha256"
       ],
       "properties": {
-        "provider": {"const": "local_transformers"},
-        "model_id": {"type": "string"},
-        "model_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "model_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "tokenizer_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "backend_version": {"type": "string"},
-        "local_files_only": {"const": true},
-        "trust_remote_code": {"const": false},
-        "tools_enabled": {"const": false},
-        "repo_access_exposed_to_model": {"const": false},
-        "provider_api_transaction": {"const": false}
+        "provider": {
+          "const": "local_transformers"
+        },
+        "model_id": {
+          "type": "string"
+        },
+        "model_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "model_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "tokenizer_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "backend_version": {
+          "type": "string"
+        },
+        "local_files_only": {
+          "const": true
+        },
+        "trust_remote_code": {
+          "const": false
+        },
+        "tools_enabled": {
+          "const": false
+        },
+        "repo_access_exposed_to_model": {
+          "const": false
+        },
+        "provider_api_transaction": {
+          "const": false
+        },
+        "run_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
     "resource_receipt": {
@@ -112,30 +211,113 @@
         "peak_rss_bytes",
         "provider_api_cost_usd",
         "price_sheet_sha256",
-        "unpriced_coordinates"
+        "unpriced_coordinates",
+        "run_manifest_sha256"
       ],
       "properties": {
-        "seed": {"const": 17},
-        "input_tokens": {"type": "integer", "minimum": 0},
-        "output_tokens": {"type": "integer", "minimum": 0},
-        "tool_calls": {"const": 0},
-        "retrieval_calls": {"const": 0},
-        "wall_time_ms": {"type": "integer", "minimum": 0},
-        "peak_rss_bytes": {"type": "integer", "minimum": 0},
-        "provider_api_cost_usd": {"const": 0},
-        "price_sheet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "unpriced_coordinates": {"type": "array", "items": {"type": "string"}}
+        "seed": {
+          "const": 17
+        },
+        "input_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_calls": {
+          "const": 0
+        },
+        "retrieval_calls": {
+          "const": 0
+        },
+        "wall_time_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "peak_rss_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "provider_api_cost_usd": {
+          "const": 0
+        },
+        "price_sheet_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "unpriced_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "run_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "execution_checkout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repo_path",
+        "head_sha",
+        "tree_sha",
+        "clean",
+        "subject_ancestor"
+      ],
+      "properties": {
+        "repo_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "tree_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "clean": {
+          "const": true
+        },
+        "subject_ancestor": {
+          "const": true
+        }
       }
     },
     "blinded_score": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["blind_id", "parse_valid", "parse_error", "score"],
+      "required": [
+        "blind_id",
+        "parse_valid",
+        "parse_error",
+        "score"
+      ],
       "properties": {
-        "blind_id": {"type": "string"},
-        "parse_valid": {"type": "boolean"},
-        "parse_error": {"type": ["string", "null"]},
-        "score": {"type": ["object", "null"]}
+        "blind_id": {
+          "type": "string"
+        },
+        "parse_valid": {
+          "type": "boolean"
+        },
+        "parse_error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "score": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
       }
     }
   }

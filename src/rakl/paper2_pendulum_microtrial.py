@@ -10,6 +10,8 @@ import os
 from pathlib import Path
 import platform
 import resource
+import socket
+import subprocess
 import sys
 import time
 from typing import Callable, Mapping
@@ -27,6 +29,7 @@ _REQUIRED_BINDINGS = (
     "evaluator",
     "model_manifest",
     "tokenizer_manifest",
+    "execution_contract",
     "environment",
     "resources",
     "prices",
@@ -77,6 +80,15 @@ class BackendGeneration:
     backend_version: str
     wall_time_ms: int
     peak_rss_bytes: int
+
+
+@dataclass(frozen=True)
+class ExecutionCheckoutState:
+    repo_path: str
+    head_sha: str
+    tree_sha: str
+    clean: bool
+    subject_ancestor: bool
 
 
 def _sha256_bytes(payload: bytes) -> str:
@@ -297,6 +309,7 @@ def audit_execution_packet(
         "evaluator",
         "model_manifest",
         "tokenizer_manifest",
+        "execution_contract",
         "environment",
         "resources",
         "prices",
@@ -422,6 +435,7 @@ def audit_execution_packet(
 
     model_manifest = parsed.get("model_manifest")
     tokenizer_manifest = parsed.get("tokenizer_manifest")
+    execution_contract = parsed.get("execution_contract")
     if isinstance(model_manifest, Mapping) and isinstance(tokenizer_manifest, Mapping):
         if model_manifest.get("provider") != "local_transformers":
             invalid.append("provider_must_be_local_transformers")
@@ -475,6 +489,61 @@ def audit_execution_packet(
                     if _sha256_bytes(candidate.read_bytes()) != expected_hash:
                         invalid.append(f"local_{owner}_file_sha256_mismatch:{relative}")
 
+    if isinstance(execution_contract, Mapping):
+        if execution_contract.get("schema_version") != "paper2-lunarc-execution-contract-v1":
+            invalid.append("execution_contract_schema_invalid")
+        for field in (
+            "execution_site",
+            "forbidden_login_host_prefix",
+            "fs9_root",
+            "repo_path",
+            "output_root",
+            "model_snapshot_path",
+        ):
+            if not isinstance(execution_contract.get(field), str) or not str(execution_contract[field]).strip():
+                invalid.append(f"execution_contract_field_missing:{field}")
+        for field in (
+            "require_clean_checkout",
+            "require_subject_ancestor",
+            "require_exact_bound_artifacts",
+            "require_slurm_job_id",
+        ):
+            if execution_contract.get(field) is not True:
+                invalid.append(f"execution_contract_gate_not_enabled:{field}")
+        if isinstance(model_manifest, Mapping) and (
+            execution_contract.get("model_snapshot_path") != model_manifest.get("snapshot_path")
+        ):
+            invalid.append("execution_contract_model_snapshot_mismatch")
+        fs9_root = execution_contract.get("fs9_root")
+        repo_path = execution_contract.get("repo_path")
+        output_root = execution_contract.get("output_root")
+        model_snapshot = execution_contract.get("model_snapshot_path")
+        if all(
+            isinstance(item, str) and item
+            for item in (fs9_root, repo_path, output_root, model_snapshot)
+        ):
+            fs9 = Path(str(fs9_root))
+            repo = Path(str(repo_path))
+            output = Path(str(output_root))
+            snapshot = Path(str(model_snapshot))
+            for field, path in (
+                ("fs9_root", fs9),
+                ("repo_path", repo),
+                ("output_root", output),
+                ("model_snapshot_path", snapshot),
+            ):
+                if ".." in path.parts:
+                    invalid.append(f"execution_contract_path_contains_dotdot:{field}")
+            if not all(path.is_absolute() for path in (fs9, repo, output, snapshot)):
+                invalid.append("execution_contract_paths_must_be_absolute")
+            else:
+                try:
+                    repo.relative_to(fs9)
+                    output.relative_to(fs9)
+                    snapshot.relative_to(fs9)
+                except ValueError:
+                    invalid.append("execution_contract_assets_outside_fs9_root")
+
     environment = parsed.get("environment")
     observed_versions = dict(_default_runtime_versions() if runtime_versions is None else runtime_versions)
     if isinstance(environment, Mapping):
@@ -491,6 +560,23 @@ def audit_execution_packet(
                 blockers.append(
                     f"runtime_version_mismatch:{name}:{observed_versions.get(name, 'MISSING')}!={required}"
                 )
+        platform_contract = environment.get("platform")
+        if not isinstance(platform_contract, Mapping):
+            invalid.append("environment_platform_contract_missing")
+        else:
+            if platform_contract.get("execution_device") != "CPU":
+                invalid.append("execution_device_must_remain_frozen_cpu")
+            if platform_contract.get("network_during_execution") != "disabled":
+                invalid.append("execution_network_must_remain_disabled")
+            observed_platform = {
+                "os": platform.system(),
+                "architecture": platform.machine(),
+                "execution_device": "CPU",
+            }
+            for name, observed in observed_platform.items():
+                required = platform_contract.get(name)
+                if required != observed:
+                    blockers.append(f"runtime_platform_mismatch:{name}:{observed}!={required}")
 
     prices = parsed.get("prices")
     if isinstance(prices, Mapping):
@@ -581,6 +667,48 @@ def _encode_prompt_for_generation(tokenizer: object, prompt: str) -> object:
     )
 
 
+def _git_checkout_state(repo_path: Path, subject_sha: str) -> ExecutionCheckoutState:
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=True,
+        shell=False,
+    ).stdout.strip()
+    tree_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD^{tree}"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=True,
+        shell=False,
+    ).stdout.strip()
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=all"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=True,
+        shell=False,
+    ).stdout
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", subject_sha, head_sha],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=False,
+        shell=False,
+    ).returncode == 0
+    return ExecutionCheckoutState(
+        repo_path=str(repo_path.resolve()),
+        head_sha=head_sha,
+        tree_sha=tree_sha,
+        clean=not status.strip(),
+        subject_ancestor=ancestor,
+    )
+
+
 def _local_transformers_backend(
     prompt: str,
     *,
@@ -638,6 +766,9 @@ def execute_microtrial(
     created_at_utc: str,
     backend: Callable[..., BackendGeneration] | None = None,
     runtime_versions: Mapping[str, str] | None = None,
+    checkout_probe: Callable[[Path, str], ExecutionCheckoutState] | None = None,
+    execution_host: str | None = None,
+    scheduler_job_id: str | None = None,
 ) -> None:
     packet = json.loads(packet_path.read_text(encoding="utf-8"))
     repository_root = Path.cwd()
@@ -666,8 +797,62 @@ def execute_microtrial(
     resources = load_json("resources")
     prices = load_json("prices")
     model_manifest = load_json("model_manifest")
+    execution_contract = load_json("execution_contract")
     generator = _local_transformers_backend if backend is None else backend
+    host = socket.gethostname() if execution_host is None else execution_host
+    if host.startswith(str(execution_contract["forbidden_login_host_prefix"])):
+        raise RuntimeError("execution is forbidden on the LUNARC login host")
+    job_id = os.environ.get("SLURM_JOB_ID") if scheduler_job_id is None else scheduler_job_id
+    if not isinstance(job_id, str) or not job_id.isdigit():
+        raise RuntimeError("a numeric SLURM job id is required for execution")
+    registered_repo = Path(str(execution_contract["repo_path"]))
+    if repository_root.resolve() != registered_repo.resolve():
+        raise RuntimeError("runner checkout path does not match frozen execution contract")
+    bound_runner = _resolve(str(bindings["runner"]["path"]), repository_root)
+    if Path(__file__).resolve() != bound_runner.resolve():
+        raise RuntimeError("runner module is not loaded from the bound execution checkout")
+    state_probe = _git_checkout_state if checkout_probe is None else checkout_probe
+    checkout_state = state_probe(registered_repo, str(packet["subject_sha"]))
+    if Path(checkout_state.repo_path).resolve() != registered_repo.resolve():
+        raise RuntimeError("execution checkout path does not match frozen contract")
+    if not checkout_state.clean:
+        raise RuntimeError("execution checkout is not clean")
+    if not checkout_state.subject_ancestor:
+        raise RuntimeError("frozen packet subject is not an ancestor of execution checkout")
+    for label, value in (("head", checkout_state.head_sha), ("tree", checkout_state.tree_sha)):
+        if len(value) != 40 or any(character not in "0123456789abcdef" for character in value):
+            raise RuntimeError(f"execution checkout {label} identity is invalid")
+    output_root = Path(str(execution_contract["output_root"]))
+    resolved_output = output_dir.resolve()
+    if resolved_output.parent != output_root.resolve():
+        raise RuntimeError("output directory must be exactly one new child of frozen FS9 output root")
+    if output_dir.exists():
+        raise RuntimeError("output directory already exists")
     output_dir.mkdir(parents=True, exist_ok=False)
+
+    execution_checkout = asdict(checkout_state)
+    run_manifest = {
+        "schema_version": "paper2-pendulum-microtrial-run-manifest-v1",
+        "created_at_utc": created_at_utc,
+        "protocol_id": packet["protocol_id"],
+        "subject_sha": packet["subject_sha"],
+        "packet_file_sha256": _sha256_bytes(packet_path.read_bytes()),
+        "packet_canonical_sha256": _canonical_sha256(packet),
+        "bound_artifact_sha256": {
+            name: binding["sha256"] for name, binding in sorted(bindings.items())
+        },
+        "execution_contract_sha256": bindings["execution_contract"]["sha256"],
+        "execution_host": host,
+        "scheduler_job_id": job_id,
+        "execution_checkout": execution_checkout,
+        "model_snapshot_path": model_manifest["snapshot_path"],
+        "output_dir": str(resolved_output),
+        "model_outputs_opened_before_manifest": False,
+        "claim_boundary": "non-confirmatory engineering microtrial only",
+    }
+    run_manifest_path = output_dir / "run_manifest.json"
+    _json_dump(run_manifest_path, run_manifest)
+    run_manifest_sha256 = _sha256_bytes(run_manifest_path.read_bytes())
 
     blinded_scores: list[dict[str, object]] = []
     intermediate: dict[str, dict[str, object]] = {}
@@ -692,6 +877,7 @@ def execute_microtrial(
         raw_record = {
             "blind_id": blind_id,
             "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
+            "run_manifest_sha256": run_manifest_sha256,
             "raw_text": generation.raw_text,
         }
         provider_receipt = {
@@ -706,6 +892,7 @@ def execute_microtrial(
             "tools_enabled": False,
             "repo_access_exposed_to_model": False,
             "provider_api_transaction": False,
+            "run_manifest_sha256": run_manifest_sha256,
         }
         resource_receipt = {
             "seed": resources["seed"],
@@ -718,6 +905,7 @@ def execute_microtrial(
             "provider_api_cost_usd": 0,
             "price_sheet_sha256": bindings["prices"]["sha256"],
             "unpriced_coordinates": prices["unpriced_coordinates"],
+            "run_manifest_sha256": run_manifest_sha256,
         }
         _json_dump(output_dir / "raw_outputs" / f"{blind_id}.json", raw_record)
         _json_dump(output_dir / "provider_receipts" / f"{blind_id}.json", provider_receipt)
@@ -746,6 +934,7 @@ def execute_microtrial(
         "schema_version": "paper2-pendulum-blinded-score-v1",
         "protocol_id": packet["protocol_id"],
         "evaluator_sha256": bindings["evaluator"]["sha256"],
+        "run_manifest_sha256": run_manifest_sha256,
         "scores": blinded_scores,
         "arm_conditions_visible_during_scoring": False,
     }
@@ -770,6 +959,8 @@ def execute_microtrial(
         "subject_sha": packet["subject_sha"],
         "created_at_utc": created_at_utc,
         "packet_sha256": _sha256_bytes(packet_path.read_bytes()),
+        "run_manifest_sha256": run_manifest_sha256,
+        "execution_checkout": execution_checkout,
         "seed": resources["seed"],
         "records": records,
         "claim_boundary": {

@@ -31,6 +31,16 @@ This microtrial does not supersede those obligations.
   exposed to the model;
 - raw outputs and separate provider/resource receipts saved by opaque blind id;
   scoring occurs before the blind-id map is joined;
+- execution is restricted to the exact LUNARC FS9 contract under
+  `/projects/hep/fs9/users/scyiu/RAKL-paper2`; the immutable model snapshot,
+  checkout and output roots are frozen there rather than referring to a local
+  macOS cache;
+- model inference is forbidden on `cosmos` login hosts and requires a numeric
+  `SLURM_JOB_ID`, so the eventual call must run inside an allocated batch job;
+- before either output is opened, the runner requires a clean Git checkout,
+  verifies that the packet subject is an ancestor, records the exact checkout
+  commit and tree identities, and writes a pre-output run manifest whose hash is
+  carried by every raw, provider, resource and final result receipt;
 - semantic preflight rejects placeholders, missing mandatory source identities,
   hash drift, evaluator drift, unmatched model/tokenizer revisions and resource
   policies that permit tools or retrieval.
@@ -52,8 +62,8 @@ unpriced and prohibit a monetary efficiency conclusion.
 
 The model has **not been downloaded or executed** in this construction pass. The
 checked-in preflight receipt is therefore `CANNOT_CHECK`, with zero evaluated
-result records. It identifies the absent local snapshot and execution-environment
-version mismatches rather than fabricating outputs or treating missing execution
+result records. It identifies the absent registered FS9 snapshot and execution-environment
+version, operating-system and architecture mismatches rather than fabricating outputs or treating missing execution
 as a null result.
 
 After the exact snapshot and frozen environment are staged, rerun preflight. Only
@@ -61,3 +71,9 @@ a `PASS` permits the runner to create model output. Any material change requires
 new packet before output access. The manuscript remains open for empirical closure
 after this engineering lane because a one-task diagnostic cannot replace the
 matched confirmatory programme.
+
+The registered execution checkout is
+`/projects/hep/fs9/users/scyiu/RAKL-paper2/repo`, the model snapshot is under its
+sibling `models/` tree and each output must be exactly one new child of
+`/projects/hep/fs9/users/scyiu/RAKL-paper2/runs`. These paths are execution
+contracts only; their presence is not asserted by the construction receipt.
