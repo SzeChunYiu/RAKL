@@ -21,7 +21,12 @@ def growth_tex(data: dict) -> str:
     for value in novelty:
         total += value
         cumulative.append(total)
-    paths = [0, data["target_support_paths_after_new_evidence"], data["target_support_paths_after_new_evidence"], data["target_support_paths_after_new_evidence"]]
+    paths = [
+        0,
+        data["target_support_paths_after_new_evidence"],
+        data["target_support_paths_after_new_evidence"],
+        data["target_support_paths_after_new_evidence"],
+    ]
 
     bars = []
     annotations = []
@@ -40,11 +45,11 @@ def growth_tex(data: dict) -> str:
         "% GENERATED FROM research/MINI_RESEARCH_DEMO_043_RECEIPT.json. DO NOT HAND EDIT.",
         "\\begin{tikzpicture}[x=1cm,y=1cm]",
         "\\draw[->] (-0.25,0) -- (5.35,0) node[right,font=\\sffamily\\scriptsize]{research round};",
-        "\\draw[->] (0,-0.05) -- (0,3.35) node[above,font=\\sffamily\\scriptsize,align=center]{cumulative\\ semantic objects};",
+        "\\draw[->] (0,-0.05) -- (0,3.35) node[above,font=\\sffamily\\scriptsize,align=center]{cumulative semantic objects};",
         *bars,
         *annotations,
         "\\draw[dashed] (1.71,0) -- (1.71,3.05);",
-        "\\node[font=\\sffamily\\scriptsize,align=left,anchor=west] at (2.00,3.0) {new finite-amplitude evidence\\closes the target cut};",
+        "\\node[font=\\sffamily\\scriptsize,align=left,anchor=west] at (2.00,3.0) {new finite-amplitude evidence; target cut closes};",
         "\\end{tikzpicture}",
         "",
     ])
