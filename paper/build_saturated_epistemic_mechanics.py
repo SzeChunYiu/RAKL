@@ -7,6 +7,28 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "paper" / "saturated_epistemic_mechanics" / "source"
+GENERATED_FIGURES = ROOT / "paper" / "figures" / "generated"
+RECEIPT_BOUND_FIGURES = ("fig5_demo_growth.pdf", "fig6_demo_context.pdf")
+
+
+def _stage_receipt_bound_figures(destination: Path) -> tuple[str, ...]:
+    """Prefer freshly regenerated receipt-bound figures over bundled release binaries.
+
+    The publication workflow runs ``paper/generate_demo_figures.py`` before staging the
+    manuscript.  When those exact generated PDFs are available, they are the stronger
+    provenance object and replace the convenience copies stored beside the chaptered
+    source.  Source-only tests may stage without regenerated figures, in which case the
+    checked-in source assets remain available and the manifest records that no override
+    occurred.
+    """
+
+    overridden: list[str] = []
+    for name in RECEIPT_BOUND_FIGURES:
+        generated = GENERATED_FIGURES / name
+        if generated.exists():
+            shutil.copy2(generated, destination / name)
+            overridden.append(name)
+    return tuple(overridden)
 
 
 def stage_saturated_paper(
@@ -23,6 +45,7 @@ def stage_saturated_paper(
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(SOURCE, destination)
+    receipt_bound_overrides = _stage_receipt_bound_figures(destination)
 
     identity = destination / "build_identity.tex"
     identity.write_text(
@@ -39,6 +62,7 @@ def stage_saturated_paper(
             "implementation_subject_sha": subject_sha,
             "software_tests": software_tests,
             "build_identity": "build_identity.tex",
+            "receipt_bound_figure_overrides": list(receipt_bound_overrides),
         }
     )
     manifest_path.write_text(json.dumps(source_manifest, indent=2) + "\n", encoding="utf-8")
