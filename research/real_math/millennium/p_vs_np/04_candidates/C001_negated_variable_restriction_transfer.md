@@ -8,11 +8,11 @@ This candidate is an intermediate bridge lemma. It is **not** a P-versus-NP solu
 
 Let `CLIQUE_{n,k}` be the monotone Boolean function on the `binom(n,2)` edge variables of a simple undirected graph on vertex set `[n]`. The output is 1 exactly when the graph contains a `k`-clique.
 
-A De Morgan circuit here has AND/OR gates and permits negation only at input literals. Constants are allowed after restrictions.
+A De Morgan circuit here has AND/OR gates and permits complemented variables only as input literals. The size `s` counts internal AND/OR gates; input literals are leaves. Constants may appear after restrictions and are allowed in the monotone comparison model.
 
-For such a circuit `C`, let `T(C)` be the set of edge variables that occur negated anywhere in `C`, and let `t = |T(C)|`.
+For such a circuit `C`, let `T(C)` be the set of edge variables that occur complemented anywhere in `C`, and let `t = |T(C)|`.
 
-Let `M(r,k)` denote the minimum size of a **monotone** AND/OR circuit computing `CLIQUE_{r,k}`.
+Let `M(r,k)` denote the minimum number of internal AND/OR gates in a monotone circuit, with constants allowed, computing `CLIQUE_{r,k}`.
 
 ## Claim C001
 
@@ -24,7 +24,7 @@ such that, whenever `r >= k`,
 
 `s >= M(r,k)`.
 
-Equivalently, every known lower bound on monotone circuit size for `CLIQUE_{r,k}` transfers immediately to De Morgan circuits for `CLIQUE_{n,k}` whose set of negated edge variables is small enough to leave such an `r` at least `k`.
+Equivalently, every lower bound on monotone circuit size for `CLIQUE_{r,k}` transfers immediately to De Morgan circuits for `CLIQUE_{n,k}` whose set of complemented edge variables is small enough to leave such an `r` at least `k`.
 
 ## Proof draft
 
@@ -42,7 +42,7 @@ Now restrict the original CLIQUE variables as follows.
 2. Set every remaining edge variable that is not internal to `U` to 0.
 3. Leave the edge variables internal to `U` free.
 
-Because `U` is independent in `H`, no internal edge variable of `U` belongs to `T(C)`. Therefore every negated input literal appearing in `C` has been fixed to a constant by step 1. After simplifying constants, the restricted circuit is a monotone AND/OR circuit in the free internal-edge variables of `U`, and its size is at most `s`.
+Because `U` is independent in `H`, no internal edge variable of `U` belongs to `T(C)`. Therefore every complemented input literal appearing in `C` has been fixed to a constant by step 1. Positive occurrences of the same variables are also fixed, which is harmless. After simplifying constants, the restricted circuit is a monotone AND/OR circuit in the free internal-edge variables of `U`, and its number of internal gates is at most `s`.
 
 Under the same restriction, the target function becomes exactly `CLIQUE_{r,k}` when `r >= k`. All edges outside `U` are absent, while every possible edge inside `U` remains a free variable. Hence a `k`-clique exists in the restricted graph exactly when the free graph on `U` contains one.
 
@@ -62,15 +62,15 @@ No complexity-theoretic assumption is used in this sublemma.
 
 ## What C001 buys
 
-C001 converts the vague phrase "negation is the gap" into a quantitative parameter. If the negated-variable set is sparse, a large negation-free vertex subset survives and monotone CLIQUE hardness can be inherited on that subset.
+C001 converts the vague phrase "negation is the gap" into a quantitative parameter. If the complemented-variable set is sparse, a large complement-free vertex subset survives and monotone CLIQUE hardness can be inherited on that subset.
 
 ## What C001 does not buy
 
-A general circuit can, after De Morgan normalization, depend on negated literals for a large fraction or all of the `binom(n,2)` edge variables. Then `n^2/(2t+n)` may be constant, and C001 gives no asymptotic general-circuit lower bound.
+A general circuit can, after standard De Morgan normalization, depend on complemented literals for a large fraction or all of the `binom(n,2)` edge variables. Then `n^2/(2t+n)` may be constant, and C001 gives no asymptotic general-circuit lower bound.
 
 Therefore the residual is precise:
 
-> control the usefulness of **dense negative-literal access**, or replace cardinality `t` by a structural parameter that remains small even when many negated variables occur.
+> control the usefulness of **dense negative-literal access**, or replace cardinality `t` by a structural parameter that remains small even when many complemented variables occur.
 
 Potential next parameters include vertex cover number, degeneracy, arboricity, matching structure, locality of negative literals in the circuit DAG, or target-relative cancellation rank. Each must be tested against counterexamples before proof search.
 
@@ -85,6 +85,7 @@ Potential next parameters include vertex cover number, degeneracy, arboricity, m
 - formal theorem-prover artifact absent;
 - primary-literature novelty search absent;
 - isolated independent reviews absent;
-- strongest monotone lower-bound parent theorem not yet bound to an exact source/version.
+- strongest monotone lower-bound parent theorem not yet bound to an exact source/version;
+- parent-theorem circuit conventions, including constants, must be aligned before importing any quantitative bound.
 
 Until those are resolved, authority remains `PROOF_DRAFT`.
