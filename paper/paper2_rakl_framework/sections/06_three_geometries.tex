@@ -1,0 +1,119 @@
+\section{Three geometries of scientific memory: Obsidian, J-space and RAKL}
+A useful user-interface analogy is the note graph in Obsidian. Its Graph view visualizes notes as nodes and internal links as edges, offers global and local graphs, filters and a chronological animation; its Backlinks view surfaces incoming references to the active note \cite{obsidiangraph2026,obsidianbacklinks2026}. Those interaction patterns are attractive for RAKL: a global atlas gives orientation, a local target view can expose the support corridor, and backlinks resemble incoming provenance or derivation ancestry.
+
+The epistemic semantics are nevertheless different. A generic note link means that one author linked two documents. A RAKL edge is a typed scientific witness carrying relation type, context, assumptions, evidence lineage and authority scope. Nodes are not only notes: they may be claims, measurements, assumptions, mechanisms, refutations, identified sets, methods, residuals or experiments. The atlas additionally needs overlays for negative history, contradictions, mechanism ancestry, epistemic cuts, saturation state and active-context token cost. We therefore view an Obsidian-like graph as a promising interface layer, not as the scientific method itself.
+
+A future RAKL Atlas UI could expose: (i) a time slider for lattice growth, (ii) global and target-local graphs, (iii) relation filters such as `IDENTICAL\_TO', `DERIVED\_FROM', `CONTRADICTS', `REFUTES', `GLUE' and exploratory `JUMP', (iv) node filters by context and authority coordinate, (v) epistemic-cut and negative-history overlays, (vi) a highlight of the exact records compiled into the current LLM prompt, and (vii) click-through from every compact view to exact source evidence.
+
+\paragraph{The Obsidian miss as an external-discovery failure mode.}
+The analogy above also exposed a failure in the method-development search process: the earlier external-framework atlas already contained a ``knowledge map'' facet, yet it did not independently surface Obsidian or the broader personal-knowledge-graph neighborhood before an externally supplied candidate made the connection obvious. Personal knowledge graphs are themselves an established research area concerned with representation, management and use of structured personal knowledge \cite{skjaeveland2023}. Round~44 therefore records this incident as an \texttt{EXOGENOUS\_CONCEPT\_MISS}, not as evidence that the knowledge was unavailable. External-method and novelty searches now distinguish in-domain, function-first, adjacent-discipline, interaction-analogy and adversarial-prior-art routes. If a later candidate overlaps registered target functions but was missed after a route ensemble declared saturation, external-discovery saturation reopens. The retrospective Obsidian recovery validates the guard mechanism only; it is not prospective transfer evidence for a generally improved discovery skill.
+
+\subsection{The comparison is useful only if the mathematical objects stay distinct}
+
+The three systems are often drawn with similar visual metaphors: nodes, neighborhoods, salient regions and links. That visual resemblance is precisely why a formal comparison is needed. Obsidian's Graph view is a user-facing node--link visualization in which notes are nodes and internal links are edges; its Backlinks view exposes incoming references to an active note \cite{obsidiangraph2026,obsidianbacklinks2026}. J-space is a geometric object inside a language model, identified through the Jacobian lens and associated with representations poised for verbalization and flexible downstream use \cite{gurnee2026}. \RAKL{} canonical state is neither of these. It is a family of typed scientific objects coupled to context, evidence, compatibility, authority, provenance, residuals and governance.
+
+A compact way to state the difference is
+\[
+\underbrace{G_O=(V_O,E_O)}_{\text{navigation graph}}
+\qquad
+\underbrace{J_{k,\ell}\subseteq\mathbb R^{d_\ell}}_{\text{representation geometry}}
+\qquad
+\underbrace{K_t=(\mathcal A_t,\mathfrak C_t,\mathsf{Auth}_t,\Pi_t,\ldots)}_{\text{epistemic state}} .
+\]
+The symbols are deliberately heterogeneous. \(G_O\) supports adjacency and navigation. \(J_{k,\ell}\) supports geometric statements about a selected family of internal representations. \(K_t\) is a product of several structures, none of which should be collapsed into one global vector space.
+
+Table~\ref{tab:three-geometries} makes the category boundary explicit. The comparison is intentionally operational rather than metaphorical: it asks what the primitive objects are, which transformations are native, what counts as an invariant, and which scientific inferences are unavailable without an added bridge.
+
+\begin{table}[t]
+\centering
+\small
+\caption{\textbf{Three geometries that should not be identified.} Similar visual language hides different primitive objects, native operations and authority semantics.}
+\label{tab:three-geometries}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.18\textwidth}XXX}
+\toprule
+Property & Obsidian / PKG navigation & J-space / model workspace & RAKL epistemic state \\
+\midrule
+Primitive object & note or graph-visible document & internal model representation / J-lens direction & contextual scientific object, witness, evidence, authority certificate or residual \\
+Native relation & hyperlink / backlink adjacency & geometric combination, sparsity and intervention & typed compatibility, derivation, contradiction, provenance, ancestry and support \\
+Geometry & graph topology plus display embedding & union of sparse non-negative cones in a representation space & coupled atlas, compatibility complex, authority poset, provenance graphs, identified sets and cut structures \\
+Primary job & human navigation and associative recall & bounded computational access and broadcast & canonical scientific state and licensed update \\
+Typical invariant & link identity under graph rendering & layer/model-relative representational structure & source identity, scope, proof obligation, authority non-escalation and negative-history lineage \\
+What proximity means & easy navigation / author-created connection & representation-level similarity or shared access geometry & nothing by default; a typed witness is required \\
+Can salience imply truth? & no & no & no; authority changes only through verification and promotion \\
+Legitimate ``lattice'' claim & not from links alone & not from cone geometry alone & only on a scoped order/closure system with meet--join obligations proved \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The table prevents a recurring category error in AI-system design: treating every useful memory representation as if it lived in one universal semantic space. A graph edge, a vector direction and an epistemic relation can all be encoded numerically, but a common encoding does not make their semantics identical. Converting a typed contradiction into an embedding vector may be useful for retrieval, for example, but the vector does not retain the proof obligation that makes the relation a contradiction. Likewise, rendering two evidence objects next to each other in a graph can make them easier to inspect without creating evidential dependence or independence.
+
+The comparison also clarifies where interfaces can be shared safely. A RAKL user interface may borrow Obsidian-style local graphs, backlinks, filtering and time animation because those operations change navigation, not canonical authority. A RAKL proposer may exploit J-space-like selection and broadcast because those operations change which internal representations influence computation, not which claims are externally established. What cannot be borrowed silently is the semantics of promotion. Any map from navigation prominence or model accessibility to scientific authority would need its own empirical calibration, scope and falsifier. In the absence of that bridge, the map is undefined rather than merely low-confidence.
+
+Finally, the geometry comparison gives a practical debugging rule. If a failure appears as ``the model did not see the relevant claim'', inspect retrieval and workspace geometry. If the model saw two claims but merged them despite incompatible contexts, inspect atlas projection and compatibility. If the system had the right evidence but still issued a mechanism claim without identification, inspect authority and verification. Similar surface errors can therefore localize to different geometric layers, which is precisely why the layers should not be compressed into one representation.
+
+\subsection{Obsidian: topology for navigation, not scientific semantics}
+
+For the purpose of comparison, the minimal Obsidian object can be modeled as a directed graph \(G_O\). A vertex corresponds to a note or other graph-visible vault object; an edge corresponds to an internal link. The rendered force layout adds coordinates for visualization, but those coordinates are a display embedding rather than semantic ground truth. Node size, graph position and number of backlinks can be useful cues for navigation. They are not certificates of truth, causal mechanism, evidence independence or identification.
+
+That limitation is not a criticism of Obsidian. It reflects the product's job. A general note link deliberately has weak semantics so authors can connect ideas freely. That flexibility is valuable during exploratory research. The problem arises only if a navigation graph is treated as a scientific knowledge graph without adding relation types and evidential constraints. In an epistemic atlas, ``supports,'' ``contradicts under aligned context,'' ``is a coordinate transform of,'' ``is derived from,'' ``refutes,'' ``is a mechanism parent of'' and ``was merely co-retrieved with'' cannot all be represented by the same untyped edge without losing information needed for scientific updates.
+
+Obsidian is therefore best interpreted as a \emph{human navigation projection} of richer state. Let
+\[
+N:K_t\rightarrow G_O
+\]
+forget most scientific types while preserving objects and selected relationships useful for browsing. \(N\) is intentionally lossy. A reviewer should be able to click from a result to its source, move from a claim to its counterevidence, or inspect a local neighborhood around an unresolved fiber. But no inference is licensed because two nodes look close in the force layout. The direction of authority runs from canonical state to visualization, not from visualization back to canonical truth.
+
+The personal-knowledge-graph literature further narrows any novelty claim based on linked personal research notes \cite{skjaeveland2023}. ORKG and related scholarly knowledge-graph work narrow it from the machine-actionable scholarly side \cite{jaradeh2019orkg}. The \RAKL{} distinction is thus not ``a graph for papers.'' It is the authority-preserving transition system behind whatever graph interface is used.
+
+\subsection{J-space: sparse cone geometry for computational access}
+
+Gurnee et al. use the Jacobian lens to identify representations a language model is poised to verbalize, and report functional properties associated with a global workspace, including reportability, directed modulation, persistence through reasoning and broad downstream use \cite{gurnee2026}. At fixed layer \(\ell\) and sparsity \(k\), their J-space can be viewed geometrically through sparse non-negative combinations of J-lens directions, giving a union of low-dimensional cones inside a model representation space. The salient mathematical operations are therefore vector combination, sparsity selection, geometric neighborhood and intervention on model representations.
+
+None of those operations supplies an epistemic order. A vector can be highly accessible without being true. Two active representations can be jointly present without being scientifically compatible. A representation can causally influence the model's answer without being evidential support for the external claim. Thus
+\[
+A_t(a)\not\Rightarrow C_t(a),\qquad
+A_t(a)\not\Rightarrow \operatorname{True}(a),\qquad
+A_t(a)\not\Rightarrow \alpha_t(a)\text{ increases},
+\]
+where \(A_t\) denotes computational accessibility, \(C_t\) atlas coherence and \(\alpha_t\) scientific authority. The first implication separates workspace access from compatibility; the second separates cognition from external truth; the third separates salience from scientific state transition.
+
+This comparison also sets a consciousness boundary. The cited J-space work is framed in terms of functional properties of access and does not license a scientific claim about phenomenal consciousness. \RAKL{} therefore uses the global-workspace literature as a source of computational mechanisms for bounded selection, broadcast and intervention, not as evidence that a research agent is conscious. Anthropomorphic terminology is avoided when a functional description is available.
+
+\subsection{RAKL: a coupled geometry rather than a single space}
+
+The canonical \RAKL{} object is better described as a coupled family of geometries. The contextual atlas \(\mathcal A_t\) organizes local scientific charts and overlap relations. The constructive candidate layer currently uses a typed compatibility complex
+\[
+\mathfrak C_t=(A_t,\kappa_t,\mathcal P_t),
+\]
+with atoms, witnessed compatibility and admissible paths. The scientific-authority layer is a scoped partial order \(\mathsf{Auth}_t\). Provenance and evidence lineage are graph-like. Identified sets live in parameter or model spaces appropriate to the scientific question. Residuals and epistemic cuts live in a target-support structure. The transient workspace is a bounded computational selection over projections of these objects. Calling all of this ``a lattice'' without qualification would erase exactly the distinctions the method is meant to preserve.
+
+Formal Concept Analysis provides the clean counterexample to loose lattice terminology. From an object--attribute incidence relation, FCA constructs concepts ordered into a genuine concept lattice \cite{ganterwille2024}. \RAKL{} can use such a construction when a scientific subproblem naturally supplies a formal context and closure operator. But the generic atom--compatibility structure does not become an FCA concept lattice merely because it has ``knowledge'' in its name. The reference API therefore exposes \texttt{TypedCompatibilityComplex} as the semantically accurate generic term while retaining \texttt{TypedKnowledgeLattice} for backward compatibility.
+
+Sheaf-like structure enters at another layer. Local scientific charts may carry restriction or transition maps on overlaps, and failed gluing can expose an obstruction \cite{abramsky2011,gibson2026,olivieri2026sheaf}. A genuine sheaf claim requires the relevant locality, restriction and gluing obligations. \RAKL{} uses atlas and obstruction language as an explicit proof obligation rather than declaring every graph of contextual claims a sheaf. The same rule applies to lattice terminology. Mathematical names are authority-bearing claims too.
+
+\subsection{Maps between the spaces are lossy and directional}
+
+The three geometries interact through maps that deliberately forget structure. A navigation renderer \(N\) maps canonical state into a human-browsable graph. A context compiler \(C_o\) maps canonical state into the mandatory and useful material for operation \(o\). A prompt/materialization map \(M_o\) converts that bounded set into text, structured tool inputs or other model-visible representations. The model then produces internal activations, some of which may occupy J-space, and finally a proposal:
+\[
+K_t
+\overset{C_o}{\longrightarrow}
+C_t(o)
+\overset{M_o}{\longrightarrow}
+\text{model input}
+\longrightarrow
+J_{k,\ell}
+\longrightarrow
+p .
+\]
+There is no inverse arrow that promotes \(p\) to \(K_{t+1}\). The return path passes through evidence acquisition, verification and governance:
+\[
+p,e,\gamma
+\overset{V}{\longrightarrow}
+v
+\overset{\mathcal U}{\longrightarrow}
+K_{t+1}.
+\]
+
+These directional maps explain several non-equivalences. Obsidian can display an authority relation without encoding its proof obligations in the graph geometry. J-space can make a claim computationally accessible without preserving the source object that licensed it. \RAKL{} can retain an authoritative claim in cold storage without placing it in the current workspace. No natural isomorphism exists among the spaces because their objects, invariants and permitted transformations differ.
+
+The comparison is nevertheless productive. Obsidian emphasizes human navigability and local exploration. J-space emphasizes bounded, broadcast computational access. \RAKL{} emphasizes scientific state and update authority. A mature research system plausibly needs all three functions: a human-facing navigation projection, a bounded computational workspace, and a canonical evidence-governed substrate. The mistake would be to ask one geometry to do the job of the others.
