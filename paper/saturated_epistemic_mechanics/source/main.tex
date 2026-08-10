@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,tabularx,array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\setlist{nosep}
+\setlength{\emergencystretch}{2em}
+\captionsetup{font=small,labelfont=bf}
+\AtEndEnvironment{thebibliography}{\input{sections/99_round050_latest_refs.tex}}
+
+\title{RAKL for Evidence-Governed AI-Assisted Scientific Research}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
+
+\newcommand{\RAKL}{\textsc{RAKL}}
+\newcommand{\CannotCheck}{\texttt{CANNOT\_CHECK}}
+\newcommand{\CannotCompile}{\texttt{CANNOT\_COMPILE}}
+\IfFileExists{build_identity.tex}{%
+  \input{build_identity.tex}%
+}{%
+  \newcommand{\SoftwareTests}{UNBOUND}%
+  \newcommand{\ImplementationSHA}{\texttt{UNBOUND}}%
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+AI research agents can search literature, generate hypotheses and execute analyses, but workflow completion does not determine which statements are licensed to change a scientific record. We present \RAKL{}, an evidence-governed architecture that represents research as controlled updates to an external contextual Knowledge Atlas. Scientific objects carry evidence, context, provenance and multi-axis authority; typed transitions distinguish representation, prediction, mechanism, identification and decision claims; incompatible views may remain separate rather than being forcibly merged. \RAKL{} also separates immutable evidence from reconstructable working views, uses a bounded workspace for prompt compilation, and treats open-world mechanism discovery as function-first retrieval with explicit closure obligations. A 17-stage executable lifecycle specifies where language models may propose information and where external checks are required. In a deterministic pendulum trace, context alignment prevented two false contradictions, preserved a refuted mass-dependence claim as negative history, and opened a previously blocked support path when the missing finite-amplitude prerequisite was added. The active working context used 52 of a 270-token archive estimate while retaining source rehydration pointers. These results demonstrate reference-engineering behavior, not scientific superiority. We therefore preregister matched comparisons that vary control architecture and evidence access separately and evaluate valid scientific success jointly with tokens, tools, cost and blocking failures.
+\end{abstract}
+
+\input{sections/01_introduction.tex}
+\input{sections/01_latest_evidence.tex}
+\input{sections/02_intellectual_lineage.tex}
+\input{sections/03_formal_method.tex}
+\input{sections/04_scientific_memory.tex}
+\input{sections/05_atomic_lifecycle.tex}
+\input{sections/06_three_geometries.tex}
+\input{sections/07_workspace_open_world.tex}
+\input{sections/08_known_answer_trace.tex}
+\input{sections/09_bounded_cognition.tex}
+\input{sections/10_method_evolution.tex}
+\input{sections/11_reference_implementation.tex}
+\input{sections/12_self_rakl_evidence.tex}
+\input{sections/13_preregistered_evaluation.tex}
+\input{sections/13_coordination_comparator.tex}
+\input{sections/13b_evaluation_landscape.tex}
+\input{sections/13c_empirical_reporting_contract.tex}
+\input{sections/14_manuscript_saturation.tex}
+\input{sections/15_discussion_falsifiers.tex}
+\input{sections/16_reproducibility_ai_use.tex}
+\input{sections/17_structural_proof_obligations.tex}
+\input{sections/99_references.tex}
+
+\end{document}

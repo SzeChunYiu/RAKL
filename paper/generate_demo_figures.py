@@ -18,7 +18,7 @@ FIGURES = ROOT / "paper" / "figures"
 GENERATED = FIGURES / "generated"
 
 FIGURE_WIDTH_IN = 7.0
-FIGURE_HEIGHT_IN = 2.45
+FIGURE_HEIGHT_IN = 2.55
 DPI = 300
 
 
@@ -30,12 +30,13 @@ def _style() -> None:
     plt.rcParams.update(
         {
             "font.family": "sans-serif",
-            "font.size": 7.5,
-            "axes.titlesize": 8.0,
-            "axes.labelsize": 7.5,
-            "xtick.labelsize": 7.0,
-            "ytick.labelsize": 7.0,
-            "legend.fontsize": 7.0,
+            "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
+            "font.size": 6.5,
+            "axes.titlesize": 7.0,
+            "axes.labelsize": 6.5,
+            "xtick.labelsize": 6.0,
+            "ytick.labelsize": 6.0,
+            "legend.fontsize": 6.0,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "svg.fonttype": "none",
@@ -83,7 +84,9 @@ def figure_source_data() -> dict[str, dict[str, Any]]:
 
 
 def _panel_label(ax: plt.Axes, label: str) -> None:
-    ax.text(-0.14, 1.06, label, transform=ax.transAxes, fontweight="bold", fontsize=8.5, va="top")
+    # Use Matplotlib's dedicated left-title slot so the panel label remains
+    # outside the data region and cannot collide with marks or uncertainty.
+    ax.set_title(label, loc="left", fontweight="bold", fontsize=7.0, pad=4.0)
 
 
 def _save_all(fig: plt.Figure, stem: Path) -> None:
@@ -142,26 +145,21 @@ def render_context(data: dict[str, Any], output_dir: Path) -> None:
     ax = axes[0]
     values = [data["archive_tokens"], data["active_tokens"]]
     labels = ["Archive", "Active context"]
-    bars = ax.barh(labels, values)
+    ax.barh(labels, values)
     ax.invert_yaxis()
     ax.set_title("Prompt working set")
     ax.set_xlabel("Token estimate")
-    ax.set_xlim(0, max(values) * 1.22)
-    for bar, value in zip(bars, values, strict=True):
-        ax.text(value + max(values) * 0.025, bar.get_y() + bar.get_height() / 2, f"{value}", va="center")
-    ax.text(0.98, 0.05, f"active/archive = {100.0 * data['active_ratio']:.1f}%", transform=ax.transAxes, ha="right", va="bottom")
+    ax.set_xlim(0, max(values) * 1.08)
     _panel_label(ax, "a")
 
     ax = axes[1]
     storage_labels = ["Raw unique", "Lossless stored", "Hot tier"]
     storage_values = [data["raw_unique_bytes"], data["lossless_stored_bytes"], data["hot_stored_bytes"]]
-    bars = ax.barh(storage_labels, storage_values)
+    ax.barh(storage_labels, storage_values)
     ax.invert_yaxis()
     ax.set_title("Physical evidence storage")
     ax.set_xlabel("Bytes")
-    ax.set_xlim(0, max(storage_values) * 1.22)
-    for bar, value in zip(bars, storage_values, strict=True):
-        ax.text(value + max(storage_values) * 0.025, bar.get_y() + bar.get_height() / 2, f"{value}", va="center")
+    ax.set_xlim(0, max(storage_values) * 1.08)
     _panel_label(ax, "b")
 
     ax = axes[2]
@@ -176,7 +174,7 @@ def render_context(data: dict[str, Any], output_dir: Path) -> None:
     ax.set_ylabel("Bytes")
     ax.set_xticks(x, categories)
     ax.set_ylim(0, max(logical) * 1.18)
-    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=1)
+    ax.legend(frameon=False, loc="upper left")
     _panel_label(ax, "c")
 
     _save_all(fig, output_dir / "fig6_demo_context")

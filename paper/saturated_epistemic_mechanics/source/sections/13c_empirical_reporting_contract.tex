@@ -1,0 +1,19 @@
+\section{Empirical reporting contract}
+
+The matched evaluation must be legible as a scientific-process and AI-systems result. The primary question is not whether \RAKL{} uses fewer tokens in isolation, but whether it changes the frontier between valid scientific success and the resources consumed to obtain it. A run counts as a \emph{valid scientific success} only when the final task outcome is correct and all preregistered hard scientific-process gates pass. These include, where applicable, absence of unsupported authority upgrades, mandatory evidence retention, context/estimand alignment, negative-history preservation, correct handling of hidden scientific defects and valid evaluator/corpus identity.
+
+Provider-reported input and output tokens are summed over all model calls in an arm, including planning, retrieval, criticism, recovery and verification. Cached input is separated when exposed by the provider; hidden chain-of-thought counts that are not exposed are not invented. Retrieval/tool calls, retrieved volume, preprocessing, provider cost and wall time remain separate coordinates. For a matched stratum $s$, a headline resource quantity is
+\[
+\operatorname{TPVS}(s)=
+\frac{\sum_{i\in s}\text{billable tokens}_i}
+{\sum_{i\in s}\mathbf 1[\text{valid scientific success}_i]}.
+\]
+Zero valid successes therefore yield an infinite rather than missing cost-per-success value. When several budget levels are run, token reduction is additionally reported at a capability target frozen before outcomes are inspected.
+
+The main empirical figures are organized by reader question. A reliability--cost frontier plots valid scientific success against billable tokens, provider cost and wall time. A process-risk figure reports task-level effect sizes for hidden-defect misses, unsupported authority upgrades, mandatory-evidence omission, failed counterevidence uptake, negative-history loss and false/missed blocks. An architecture-by-evidence-access interaction figure separates gains from better control architecture from gains due merely to public, curated or complete-sealed evidence access. A prospective OWMD figure reports valid hidden-mechanism recall and false discovery versus a frozen search/tool budget, including hidden-name and lexical-distance strata.
+
+All empirical aggregates retain numerator/denominator counts and task-level uncertainty. Repeated generations within a task are nested replicates rather than independent samples. Confirmatory comparisons are paired by task, base model/version, evidence-access arm, resource ceiling, evaluator and seed schedule, with effect sizes and 95\% intervals reported alongside any registered inferential test. The manuscript remains vector-valued: a token saving accompanied by more authority leakage or scientific-defect misses is not a positive result.
+
+Quantitative figures use editable vector text, final-size uncertainty definitions and exact source receipts. They contain no arrows pointing to data, no opaque text boxes over the plotting region and no point-by-point prose annotations. Panel letters remain outside the data region; method names are carried by axes or a shared legend. Per-model replications, token decomposition, latency tails, calibration, ablations and threshold sensitivity are reserved for Extended Data unless an outcome makes them load bearing.
+
+The full metric, figure and QA contract is frozen before outcome inspection in \path{research/PAPER2_EMPIRICAL_FIGURE_CONTRACT_20260810.md}. Result receipts conform to \path{schemas/paper2-empirical-result.schema.json}.
