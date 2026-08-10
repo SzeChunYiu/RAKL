@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/workspace-frame.schema.json",
+  "title": "RAKL Transient Workspace Frame",
+  "type": "object",
+  "required": ["selected_items", "broadcast_map", "selection_ledger", "capacity", "lifetime_steps"],
+  "properties": {
+    "selected_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "content_ref", "partition", "priority"],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 1},
+          "content_ref": {"type": "string", "minLength": 1},
+          "partition": {"enum": ["CORE", "CHALLENGE", "NOVEL", "HISTORY"]},
+          "priority": {"type": "number", "minimum": 0},
+          "broadcast_targets": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "broadcast_map": {"type": "array"},
+    "selection_ledger": {"type": "array"},
+    "capacity": {"type": "integer", "minimum": 1},
+    "lifetime_steps": {"type": "integer", "minimum": 1}
+  },
+  "not": {"anyOf": [{"required": ["authority"]}, {"required": ["authority_certificate"]}, {"required": ["canonical_update"]}]},
+  "additionalProperties": false
+}

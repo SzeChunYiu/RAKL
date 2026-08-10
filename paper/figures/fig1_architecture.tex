@@ -18,14 +18,14 @@
 \draw[arrow] (evidence) -- (proposer);
 \draw[arrow] (proposer) -- (proposal);
 \draw[arrow] (proposal) -- (verify);
-\draw[arrow] (evidence.south east) to[bend right=18] node[below,sloped]{external evidence} (verify.south west);
-\draw[arrow] (verify) -- node[above]{licensed update $\mathcal U$} (state);
+\draw[arrow] (evidence.south east) to[bend right=18] (verify.south west);
+\draw[arrow] (verify) -- (state);
 
 \node[box,text width=26mm,below=11mm of state] (residual) {Residual / obstruction /\\epistemic cut};
 \node[box,text width=25mm,left=12mm of residual] (action) {Next atomic fiber\\or discriminator};
 \draw[arrow] (state) -- (residual);
 \draw[arrow] (residual) -- (action);
-\draw[dashedarrow] (action.west) to[bend left=18] node[below,sloped]{new operation} (proposer.south);
+\draw[dashedarrow] (action.west) to[bend left=18] (proposer.south);
 
 \node[strong,text width=31mm,below=22mm of proposal] (meta) {Challenge Learning /\\Self-RAKL};
 \node[box,text width=29mm,left=of meta] (methodres) {Method residual\\$e^{\mathrm{method}}$};
@@ -36,9 +36,11 @@
 \draw[arrow] (methodres) -- (meta);
 \draw[arrow] (meta) -- (candidate);
 \draw[arrow] (candidate) -- (assure);
-\draw[dashedarrow] (assure.north) to[bend right=18] node[right]{only after protected gates} (state.south);
+\draw[dashedarrow] (assure.north) to[bend right=18] (state.south);
 
 \node[font=\sffamily\scriptsize,anchor=north west,text width=66mm] at ([yshift=-7mm]methodres.south west) {
 \textbf{Authority firewall.} Proposal fluency, support-module success, or self-reflection cannot directly mint scientific authority. Nulls, refutations, failed mappings, and failed method generations remain addressable negative history.};
+\node[font=\sffamily\scriptsize,anchor=north west,text width=64mm] at ([xshift=73mm,yshift=-7mm]methodres.south west) {
+\textbf{Flow semantics.} Solid paths carry registered evidence/proposal/update flow. Dashed paths reopen or recycle work. Canonical promotion still requires verification and protected assurance at the relevant gate.};
 
 \end{tikzpicture}

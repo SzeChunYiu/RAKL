@@ -1,0 +1,165 @@
+{
+  "round": 44,
+  "date": "2026-08-10",
+  "trial_id": "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001",
+  "status": "PREREGISTERED_NOT_EXECUTED",
+  "purpose": "Bridge the deterministic RAKL software-contract demo to the first real LLM-in-the-loop comparison without changing the model, evidence corpus, evaluator, question set, output schema, tool policy or registered resource ceiling between arms.",
+  "scientific_authority": {
+    "engineering_claim_allowed_after_execution": "The same registered LLM/corpus/evaluator can be run under a direct-corpus arm and a RAKL-context arm with mechanically checked matching constraints, one common resource ceiling and auditable RAKL execution traces.",
+    "scientific_superiority_claim_allowed": false,
+    "reason": "One tiny known-answer domain is a diagnostic microtrial, not sufficient evidence of general scientific superiority."
+  },
+  "arms": [
+    {
+      "condition": "DIRECT_CORPUS",
+      "intervention": "Provide the frozen raw evidence corpus directly in a deterministic canonical source order plus the registered questions and output schema. No RAKL projection, atlas, context compiler or RAKL-derived annotations are included in the model prompt."
+    },
+    {
+      "condition": "RAKL_CONTEXT",
+      "intervention": "Ingest the identical frozen raw evidence corpus through the registered RAKL lifecycle; compile the bounded target-conditioned working context; provide that context plus the identical registered questions and output schema to the same model."
+    }
+  ],
+  "must_match_exactly_between_arms": [
+    "model_id",
+    "model_revision",
+    "temperature",
+    "max_output_tokens",
+    "seed",
+    "system_prompt_hash",
+    "raw_evidence_corpus_hash",
+    "source_ids_and_source_hashes",
+    "resource_ceiling",
+    "question_set_hash",
+    "tool_policy_id",
+    "output_schema_id",
+    "evaluator_protocol_hash"
+  ],
+  "intervention_allowed_to_differ": [
+    "prompt materialization caused by RAKL projection/normalization/identity/provenance/atlas/context compilation",
+    "RAKL internal deterministic execution trace and state updates",
+    "actual resource usage within the identical preregistered resource ceiling"
+  ],
+  "resource_ceiling": {
+    "max_model_input_tokens": 4096,
+    "max_model_output_tokens": 512,
+    "max_preprocessing_model_tokens": 4096,
+    "max_preprocessing_tool_calls": 32,
+    "max_external_retrieval_calls": 0,
+    "max_wall_time_ms": 60000,
+    "semantics": "This is a common maximum envelope, not an instruction that both arms must consume identical resources. Preprocessing is part of the RAKL intervention, so actual usage may differ but must be reported and remain below the same ceiling."
+  },
+  "actual_usage_receipt_required_for_each_arm": [
+    "model_input_tokens",
+    "model_output_tokens",
+    "preprocessing_model_tokens",
+    "preprocessing_tool_calls",
+    "external_retrieval_calls",
+    "wall_time_ms"
+  ],
+  "resource_validity_rule": "Each arm is validated independently by src/rakl/matched_microtrial.py::validate_resource_usage against the identical TrialResourceCeiling. If any coordinate exceeds the ceiling, that execution is invalid for the matched comparison.",
+  "tool_policy": {
+    "id": "NO_EXTERNAL_TOOLS_AFTER_PROMPT_BUILD_V1",
+    "rule": "Neither arm may search the web, call retrieval, use calculators or invoke external tools after its final model prompt is frozen. All evidence must come from the identical preregistered source corpus."
+  },
+  "model_fields": {
+    "model_id": "TO_BE_PINNED_BEFORE_EXECUTION",
+    "model_revision": "TO_BE_PINNED_BEFORE_EXECUTION",
+    "temperature": 0.0,
+    "max_output_tokens": 512,
+    "seed": 17,
+    "system_prompt": "Answer the registered scientific questions using only supplied evidence. Return the registered structured schema and a concise evidence-grounded explanation."
+  },
+  "question_set": [
+    {
+      "question_id": "Q1",
+      "prompt": "For the supplied simple-pendulum evidence, state whether the usual small-angle period law is exact for arbitrary amplitude or is an approximation/asymptotic relation, and state whether the first finite-amplitude correction increases or decreases the period."
+    },
+    {
+      "question_id": "Q2",
+      "prompt": "Can S4, which states amplitude independence inside the small-angle approximation, or S5, which concerns Moon gravity, be treated as direct contradictions of the 1 m, 20-degree Earth finite-amplitude conclusion? State the context/regime alignment requirement before declaring contradiction."
+    },
+    {
+      "question_id": "Q3",
+      "prompt": "At fixed length, gravity and ideal/simple-pendulum regime, state whether period depends on bob mass. Identify the source id containing the mass-dependence claim that should remain refuted and identify evidence supporting the mass-invariance conclusion."
+    },
+    {
+      "question_id": "Q4",
+      "prompt": "Return source ids that support one or more registered conclusions in this mini-world, source ids that are informative but context-misaligned for a direct contradiction of the Earth/moderate-amplitude target, and source ids whose scientific claim is refuted by the frozen evidence."
+    }
+  ],
+  "output_schema": {
+    "id": "PENDULUM_STRUCTURED_ANSWER_V2",
+    "fields": [
+      "small_angle_is_asymptotic:boolean",
+      "finite_amplitude_increases_period:boolean",
+      "context_distinct_claims_not_direct_contradictions:boolean",
+      "ideal_period_is_mass_invariant:boolean",
+      "context_alignment_required_before_contradiction:boolean",
+      "supporting_source_ids:list[string]",
+      "rejected_as_misaligned_source_ids:list[string]",
+      "refuted_source_ids:list[string]"
+    ]
+  },
+  "sealed_known_answer_evaluator": {
+    "implementation": "src/rakl/matched_microtrial.py::score_pendulum_answer",
+    "source_contract_validator": "src/rakl/matched_microtrial.py::validate_pendulum_evaluator_sources",
+    "required_support_source_ids": ["S1", "S2", "S3", "S4", "S5", "S7", "S8"],
+    "allowed_support_source_ids": ["S1", "S2", "S3", "S4", "S5", "S7", "S8"],
+    "misaligned_for_direct_target_contradiction_source_ids": ["S4", "S5"],
+    "required_refuted_source_ids": ["S6"],
+    "role_note": "Source roles are scoped and need not be disjoint. S4 and S5 can support registered context/regime conclusions while simultaneously being invalid direct comparators for the Earth/moderate-amplitude target. S6 is excluded from allowed support and must be identified as refuted.",
+    "conceptual_coordinates": [
+      "small_angle_is_asymptotic",
+      "finite_amplitude_increases_period",
+      "context_distinct_claims_not_direct_contradictions",
+      "ideal_period_is_mass_invariant",
+      "context_alignment_required_before_contradiction"
+    ]
+  },
+  "primary_endpoints": [
+    "conceptual_correct / 5",
+    "exact_conceptual_pass",
+    "required_support_recall",
+    "support_precision",
+    "misalignment_recall",
+    "refutation_recall",
+    "refutation_precision",
+    "unsupported_source_count"
+  ],
+  "engineering_endpoints": [
+    "sealed evaluator source contract validates against the exact frozen source ids before any model call",
+    "same-model matching validation passes before any model call",
+    "same evidence-corpus fingerprint in both arms",
+    "same resource ceiling in both arms",
+    "resource usage for each arm is inside the registered ceiling",
+    "RAKL arm emits the complete registered atomic lifecycle trace",
+    "RAKL canonical state changes only through registered authority gates",
+    "input token count",
+    "output token count",
+    "preprocessing model-token and tool-call count",
+    "wall time",
+    "active-context/archive ratio",
+    "lattice transition metrics"
+  ],
+  "reporting_rules": [
+    "Report every registered endpoint for both arms; do not cherry-pick only favorable coordinates.",
+    "Report the exact model id/revision, seed, temperature, prompts, corpus hashes, raw model outputs, common resource ceiling and actual resource usage.",
+    "Do not interpret lower token use as scientific correctness.",
+    "Do not interpret lattice growth as scientific value without the sealed target-conditioned endpoints.",
+    "Do not claim general RAKL superiority from this microtrial regardless of outcome.",
+    "If the evaluator source contract fails, the arms fail the matching validator, or either arm exceeds the resource ceiling, label the run INVALID_MATCHED_COMPARISON and do not score it as evidence."
+  ],
+  "implementation": {
+    "harness": "src/rakl/matched_microtrial.py",
+    "tests": "tests/test_matched_microtrial.py",
+    "raw_corpus_source": "src/rakl/mini_research_demo.py::_sources",
+    "deterministic_rakl_reference": "research/MINI_RESEARCH_DEMO_043_RECEIPT.json",
+    "lattice_metrology_reference": "research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json"
+  },
+  "execution_blockers": [
+    "Pin one exact model id and immutable/reproducible revision before execution.",
+    "Freeze the exact raw source-payload hashes and final question/evaluator protocol hashes into the execution receipt.",
+    "Use a provider/runtime that can return or preserve raw outputs and complete resource accounting for both arms under the same settings."
+  ],
+  "result": "PENDING"
+}
