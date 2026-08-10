@@ -61,3 +61,10 @@ def test_epistemic_mechanics_exact_subject_binding():
     assert rf"\newcommand{{\SoftwareTests}}{{702}}" in text
     assert "UNBOUND" not in text
     assert "Git commit \\ImplementationSHA" not in text
+
+
+def test_epistemic_mechanics_has_no_dropped_backslash_text_commands():
+    module = _module()
+    text = module.build_epistemic_mechanics_source(subject_sha="d" * 40, software_tests=1)
+    assert "\t" + "ext{aligned contradiction}" not in text
+    assert "\\text{aligned contradiction}" in text
