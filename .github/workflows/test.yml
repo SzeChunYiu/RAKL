@@ -24,3 +24,5 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test]"
       - run: pytest
+      - name: Emit deterministic lattice metrology receipt
+        run: python -m rakl.mini_research_metrology
