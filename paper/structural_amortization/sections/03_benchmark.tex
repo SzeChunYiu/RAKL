@@ -19,6 +19,23 @@ Q2 and Q3 are the load-bearing cells. Q2 asks whether the system can transfer wh
 
 The deterministic scaffold in \path{src/rakl/structural_benchmark.py} now exercises this requirement across three distinct mechanism families rather than one illustrative analogy. For \emph{queue stability}, a computer network and an emergency department use different entity vocabularies but share a continual-arrival/finite-service/backlog structure for the registered QoI; the high-semantic decoy instead uses queue language in a finite-batch regime, so the steady-flow stability invariant is invalid. For \emph{positive feedback}, viral adoption and a bank-run withdrawal loop share the sign structure required for perturbation amplification, while a semantically similar control-feedback target reverses one loop edge and becomes stabilizing negative feedback. For a \emph{threshold cascade}, epidemic spread and cascading grid outage share a supercritical propagation structure, while a same-domain subcritical cascade decoy removes the load-bearing reproduction relation and violates the threshold/connectivity boundary. The original Q4 case remains a semantically and structurally unrelated queue-to-feedback mapping.
 
+\subsection{Deterministic conformance result}
+
+The exact-subject executable receipt contains six load-bearing Q2/Q3 cases: one Q2 and one Q3 case in each of the three mechanism families. The deliberately semantic-only decision rule licenses high-semantic candidates and rejects low-semantic candidates; it is therefore wrong on all six hard cases by construction. The structural gate instead checks the registered directional witness, QoI, load-bearing relations, invariants and target boundaries. It licenses all three Q2 transfers and rejects all three Q3 decoys.
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Decision rule & Q2 valid transfers licensed & Q3 invalid transfers accepted & Hard-case correctness \\
+\midrule
+Semantic-only control & 0/3 & 3/3 & 0/6 \\
+Structural witness gate & 3/3 & 0/3 & 6/6 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This table is a software-conformance result, not a statistical generalization result. The cases were deliberately constructed to separate semantic and structural similarity; their role is to establish that the implementation can express the intended distinction before model-level experiments are authorized. They provide no estimate of performance on naturally occurring cross-domain mappings.
+
 These cases are deterministic conformance worlds, not an empirical claim that the representation generalizes. Their purpose is to prevent a one-family implementation from earning an expensive training run merely by memorizing queue-specific details. The confirmatory dataset will still require independent annotations and broader families such as flow conservation, bottlenecks, delayed negative feedback, diffusion/contagion, matching, scheduling, concentration fragility, path dependence and search/backtracking. Each family should span multiple surface domains and include adversarial near-misses.
 
 \subsection{Structural score must add information beyond semantic score}
