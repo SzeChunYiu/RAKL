@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from enum import Enum
 import hashlib
 from importlib import metadata
@@ -9,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import resource
 import socket
 import subprocess
@@ -47,6 +49,17 @@ _ANSWER_FIELDS = (
     "rejected_as_misaligned_source_ids",
     "refuted_source_ids",
 )
+_SCORE_FIELDS = (
+    "conceptual_correct",
+    "conceptual_total",
+    "required_support_recall",
+    "support_precision",
+    "misalignment_recall",
+    "refutation_recall",
+    "refutation_precision",
+    "unsupported_source_count",
+    "exact_conceptual_pass",
+)
 _PLACEHOLDER_MARKERS = (
     "TO_BE_PINNED",
     "TO_BE_FILLED",
@@ -54,6 +67,9 @@ _PLACEHOLDER_MARKERS = (
     "TBD",
     "FIXME",
     "EXAMPLE.INVALID",
+)
+_RFC3339_UTC = re.compile(
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z"
 )
 
 
@@ -79,7 +95,7 @@ class BackendGeneration:
     output_tokens: int
     backend_version: str
     wall_time_ms: int
-    peak_rss_bytes: int
+    process_high_water_rss_bytes_after_arm: int
 
 
 @dataclass(frozen=True)
@@ -104,6 +120,35 @@ def _canonical_sha256(value: object) -> str:
 def _json_dump(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _parse_rfc3339_utc(value: object, field: str) -> datetime:
+    """Parse an explicit UTC RFC3339 timestamp or fail closed."""
+
+    if not isinstance(value, str) or _RFC3339_UTC.fullmatch(value) is None:
+        raise ValueError(f"{field}_invalid_rfc3339_utc")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as exc:
+        raise ValueError(f"{field}_invalid_rfc3339_utc") from exc
+    if parsed.utcoffset() != timezone.utc.utcoffset(parsed):
+        raise ValueError(f"{field}_invalid_rfc3339_utc")
+    return parsed
+
+
+def _validate_created_at_chronology(
+    packet: Mapping[str, object],
+    created_at_utc: str,
+    *,
+    observed_at: datetime | None = None,
+) -> None:
+    freeze_at = _parse_rfc3339_utc(packet.get("freeze_created_at_utc"), "freeze_created_at_utc")
+    created_at = _parse_rfc3339_utc(created_at_utc, "created_at_utc")
+    if created_at < freeze_at:
+        raise ValueError("created_at_utc_precedes_packet_freeze")
+    now = datetime.now(timezone.utc) if observed_at is None else observed_at
+    if created_at > now:
+        raise ValueError("created_at_utc_is_future_dated")
 
 
 def _resolve(path: str, base_dir: Path) -> Path:
@@ -264,6 +309,7 @@ def audit_execution_packet(
     *,
     base_dir: Path | None = None,
     runtime_versions: Mapping[str, str] | None = None,
+    observed_at_utc: str | None = None,
 ) -> MicrotrialPreflightReport:
     """Fail closed before model access and report zero evaluated records."""
 
@@ -271,6 +317,25 @@ def audit_execution_packet(
     blockers: list[str] = []
     invalid: list[str] = []
     checks: list[dict[str, str]] = []
+
+    freeze_at: datetime | None = None
+    try:
+        freeze_at = _parse_rfc3339_utc(
+            packet.get("freeze_created_at_utc"), "freeze_created_at_utc"
+        )
+    except ValueError as exc:
+        invalid.append(str(exc))
+    try:
+        observed_at = (
+            datetime.now(timezone.utc)
+            if observed_at_utc is None
+            else _parse_rfc3339_utc(observed_at_utc, "observed_at_utc")
+        )
+    except ValueError as exc:
+        invalid.append(str(exc))
+        observed_at = None
+    if freeze_at is not None and observed_at is not None and freeze_at > observed_at:
+        invalid.append("freeze_created_at_utc_is_future_dated")
 
     if packet.get("schema_version") != "paper2-pendulum-microtrial-execution-v1":
         invalid.append("unsupported_packet_schema")
@@ -325,6 +390,13 @@ def audit_execution_packet(
 
     task = parsed.get("task")
     if isinstance(task, Mapping):
+        sealed_at: datetime | None = None
+        try:
+            sealed_at = _parse_rfc3339_utc(task.get("sealed_at_utc"), "task_sealed_at_utc")
+        except ValueError as exc:
+            invalid.append(str(exc))
+        if sealed_at is not None and freeze_at is not None and sealed_at > freeze_at:
+            invalid.append("task_sealed_at_utc_after_packet_freeze")
         sources = task.get("sources")
         mandatory = task.get("mandatory_evidence_ids")
         if task.get("sealed_before_model_execution") is not True:
@@ -420,7 +492,7 @@ def audit_execution_packet(
             "max_input_tokens",
             "max_output_tokens",
             "max_wall_time_ms_per_arm",
-            "max_peak_rss_bytes_per_arm",
+            "max_process_high_water_rss_bytes",
         ):
             if not isinstance(resources.get(field), int) or int(resources[field]) <= 0:
                 invalid.append(f"resource_ceiling_invalid:{field}")
@@ -566,8 +638,13 @@ def audit_execution_packet(
         else:
             if platform_contract.get("execution_device") != "CPU":
                 invalid.append("execution_device_must_remain_frozen_cpu")
-            if platform_contract.get("network_during_execution") != "disabled":
-                invalid.append("execution_network_must_remain_disabled")
+            if platform_contract.get("network_state_observed") is not False:
+                invalid.append("network_state_must_remain_unobserved")
+            if (
+                platform_contract.get("transformers_network_policy")
+                != "offline_environment_and_local_files_only"
+            ):
+                invalid.append("transformers_offline_policy_missing")
             observed_platform = {
                 "os": platform.system(),
                 "architecture": platform.machine(),
@@ -607,6 +684,7 @@ def write_preflight_receipt(
     output_path: Path,
     created_at_utc: str,
 ) -> None:
+    _validate_created_at_chronology(packet, created_at_utc)
     receipt = {
         "schema_version": "paper2-pendulum-microtrial-preflight-receipt-v1",
         "receipt_type": "paper2_microtrial_execution_preflight_not_result",
@@ -655,6 +733,118 @@ def _parse_answer(raw_text: str) -> PendulumStructuredAnswer:
         rejected_as_misaligned_source_ids=tuple(value["rejected_as_misaligned_source_ids"]),
         refuted_source_ids=tuple(value["refuted_source_ids"]),
     )
+
+
+def _score_blinded_outputs(raw_outputs: Mapping[str, str]) -> list[dict[str, object]]:
+    """Score records whose only identity is an opaque blind id.
+
+    The prompt-dispatch map is intentionally not an argument.  This is narrow
+    deterministic scorer-input blinding, not human or process-level blinding.
+    """
+
+    scores: list[dict[str, object]] = []
+    for blind_id in sorted(raw_outputs):
+        try:
+            answer = _parse_answer(raw_outputs[blind_id])
+        except ValueError as exc:
+            score_record = {
+                "blind_id": blind_id,
+                "parse_valid": False,
+                "parse_error": str(exc),
+                "score": None,
+            }
+        else:
+            score_record = {
+                "blind_id": blind_id,
+                "parse_valid": True,
+                "parse_error": None,
+                "score": asdict(score_pendulum_answer(answer)),
+            }
+        scores.append(score_record)
+    return scores
+
+
+def verify_result_receipt(
+    result: Mapping[str, object],
+    *,
+    packet: Mapping[str, object],
+    expected_blinding: Mapping[str, str],
+    expected_prompt_sha256: Mapping[str, str],
+    run_manifest_sha256: str,
+) -> None:
+    """Fail closed on cross-record identities that JSON Schema cannot express."""
+
+    problems: list[str] = []
+    if result.get("experiment_id") != packet.get("protocol_id"):
+        problems.append("result_protocol_mismatch")
+    if result.get("subject_sha") != packet.get("subject_sha"):
+        problems.append("result_subject_mismatch")
+    if result.get("run_manifest_sha256") != run_manifest_sha256:
+        problems.append("result_run_manifest_mismatch")
+    records = result.get("records")
+    if not isinstance(records, list) or len(records) != len(_CONDITIONS):
+        problems.append("result_record_count_invalid")
+        records = []
+    observed_blind_ids: list[str] = []
+    observed_conditions: list[str] = []
+    for index, record in enumerate(records):
+        if not isinstance(record, Mapping):
+            problems.append(f"result_record_invalid:{index}")
+            continue
+        blind_id = record.get("blind_id")
+        condition = record.get("condition")
+        if not isinstance(blind_id, str) or blind_id not in expected_blinding:
+            problems.append(f"result_blind_id_invalid:{index}")
+            continue
+        observed_blind_ids.append(blind_id)
+        observed_conditions.append(str(condition))
+        if condition != expected_blinding[blind_id]:
+            problems.append(f"result_condition_mapping_mismatch:{blind_id}")
+        raw_output = record.get("raw_output")
+        provider = record.get("provider_receipt")
+        resources = record.get("resource_receipt")
+        score = record.get("score")
+        for owner, value in (
+            ("raw_output", raw_output),
+            ("provider_receipt", provider),
+            ("resource_receipt", resources),
+            ("score", score),
+        ):
+            if not isinstance(value, Mapping):
+                problems.append(f"result_{owner}_invalid:{blind_id}")
+        if not all(isinstance(value, Mapping) for value in (raw_output, provider, resources, score)):
+            continue
+        if raw_output.get("blind_id") != blind_id or score.get("blind_id") != blind_id:
+            problems.append(f"nested_blind_id_mismatch:{blind_id}")
+        expected_prompt = expected_prompt_sha256.get(str(condition))
+        if raw_output.get("prompt_sha256") != expected_prompt:
+            problems.append(f"prompt_identity_mismatch:{blind_id}")
+        for owner, value in (
+            ("raw_output", raw_output),
+            ("provider_receipt", provider),
+            ("resource_receipt", resources),
+        ):
+            if value.get("run_manifest_sha256") != run_manifest_sha256:
+                problems.append(f"nested_run_manifest_mismatch:{owner}:{blind_id}")
+        parse_valid = score.get("parse_valid")
+        parsed_score = score.get("score")
+        parse_error = score.get("parse_error")
+        if parse_valid is True:
+            if parse_error is not None or not isinstance(parsed_score, Mapping):
+                problems.append(f"valid_parse_score_state_invalid:{blind_id}")
+            elif set(parsed_score) != set(_SCORE_FIELDS):
+                problems.append(f"known_answer_score_fields_invalid:{blind_id}")
+        elif parse_valid is False:
+            if not isinstance(parse_error, str) or not parse_error or parsed_score is not None:
+                problems.append(f"invalid_parse_score_state_invalid:{blind_id}")
+        else:
+            problems.append(f"parse_valid_not_boolean:{blind_id}")
+    if len(set(observed_blind_ids)) != len(_CONDITIONS):
+        problems.append("result_blind_ids_not_unique_or_complete")
+    if set(observed_conditions) != set(_CONDITIONS):
+        problems.append("result_conditions_not_unique_or_complete")
+    if problems:
+        raise RuntimeError("result receipt verification failed:" + ",".join(problems))
 
 
 def _encode_prompt_for_generation(tokenizer: object, prompt: str) -> object:
@@ -755,7 +945,7 @@ def _local_transformers_backend(
         output_tokens=int(new_tokens.numel()),
         backend_version=f"transformers-{transformers.__version__}/torch-{torch.__version__}",
         wall_time_ms=round((time.perf_counter() - started) * 1000),
-        peak_rss_bytes=int(max(before_rss, after_rss) * rss_multiplier),
+        process_high_water_rss_bytes_after_arm=int(max(before_rss, after_rss) * rss_multiplier),
     )
 
 
@@ -771,6 +961,7 @@ def execute_microtrial(
     scheduler_job_id: str | None = None,
 ) -> None:
     packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    _validate_created_at_chronology(packet, created_at_utc)
     repository_root = Path.cwd()
     report = audit_execution_packet(packet, base_dir=repository_root, runtime_versions=runtime_versions)
     if report.verdict is not MicrotrialPreflightVerdict.PASS:
@@ -854,7 +1045,6 @@ def execute_microtrial(
     _json_dump(run_manifest_path, run_manifest)
     run_manifest_sha256 = _sha256_bytes(run_manifest_path.read_bytes())
 
-    blinded_scores: list[dict[str, object]] = []
     intermediate: dict[str, dict[str, object]] = {}
     for blind_id in sorted(blinding):
         condition = blinding[blind_id]
@@ -871,8 +1061,11 @@ def execute_microtrial(
             raise RuntimeError(f"output token ceiling exceeded:{blind_id}")
         if generation.wall_time_ms > resources["max_wall_time_ms_per_arm"]:
             raise RuntimeError(f"wall time ceiling exceeded:{blind_id}")
-        if generation.peak_rss_bytes > resources["max_peak_rss_bytes_per_arm"]:
-            raise RuntimeError(f"peak memory ceiling exceeded:{blind_id}")
+        if (
+            generation.process_high_water_rss_bytes_after_arm
+            > resources["max_process_high_water_rss_bytes"]
+        ):
+            raise RuntimeError(f"process high-water RSS ceiling exceeded:{blind_id}")
 
         raw_record = {
             "blind_id": blind_id,
@@ -901,7 +1094,9 @@ def execute_microtrial(
             "tool_calls": 0,
             "retrieval_calls": 0,
             "wall_time_ms": generation.wall_time_ms,
-            "peak_rss_bytes": generation.peak_rss_bytes,
+            "process_high_water_rss_bytes_after_arm": (
+                generation.process_high_water_rss_bytes_after_arm
+            ),
             "provider_api_cost_usd": 0,
             "price_sheet_sha256": bindings["prices"]["sha256"],
             "unpriced_coordinates": prices["unpriced_coordinates"],
@@ -911,24 +1106,17 @@ def execute_microtrial(
         _json_dump(output_dir / "provider_receipts" / f"{blind_id}.json", provider_receipt)
         _json_dump(output_dir / "resource_receipts" / f"{blind_id}.json", resource_receipt)
 
-        try:
-            answer = _parse_answer(generation.raw_text)
-        except ValueError as exc:
-            score_record = {"blind_id": blind_id, "parse_valid": False, "parse_error": str(exc), "score": None}
-        else:
-            score_record = {
-                "blind_id": blind_id,
-                "parse_valid": True,
-                "parse_error": None,
-                "score": asdict(score_pendulum_answer(answer)),
-            }
-        blinded_scores.append(score_record)
         intermediate[blind_id] = {
             "raw_output": raw_record,
             "provider_receipt": provider_receipt,
             "resource_receipt": resource_receipt,
-            "score": score_record,
         }
+
+    blinded_scores = _score_blinded_outputs(
+        {blind_id: str(row["raw_output"]["raw_text"]) for blind_id, row in intermediate.items()}
+    )
+    for score_record in blinded_scores:
+        intermediate[str(score_record["blind_id"])]["score"] = score_record
 
     blinded_receipt = {
         "schema_version": "paper2-pendulum-blinded-score-v1",
@@ -936,7 +1124,10 @@ def execute_microtrial(
         "evaluator_sha256": bindings["evaluator"]["sha256"],
         "run_manifest_sha256": run_manifest_sha256,
         "scores": blinded_scores,
-        "arm_conditions_visible_during_scoring": False,
+        "condition_labels_present_in_scoring_records": False,
+        "condition_labels_passed_to_scoring_function": False,
+        "orchestrator_loaded_blinding_map_for_prompt_dispatch_before_scoring": True,
+        "human_or_process_level_blinding_claimed": False,
     }
     _json_dump(output_dir / "blinded_scores.json", blinded_receipt)
 
@@ -969,6 +1160,16 @@ def execute_microtrial(
             "allowed": "non-confirmatory engineering microtrial only",
         },
     }
+    verify_result_receipt(
+        result,
+        packet=packet,
+        expected_blinding=blinding,
+        expected_prompt_sha256={
+            condition: _sha256_bytes(prompt.encode("utf-8"))
+            for condition, prompt in prompts.items()
+        },
+        run_manifest_sha256=run_manifest_sha256,
+    )
     _json_dump(output_dir / "result_receipt.json", result)
 
 

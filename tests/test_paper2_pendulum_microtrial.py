@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,7 @@ from rakl.paper2_pendulum_microtrial import (
     audit_execution_packet,
     execute_microtrial,
     materialize_prompts,
+    verify_result_receipt,
     write_preflight_receipt,
 )
 
@@ -47,6 +49,7 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
     task = {
         "task_id": "PENDULUM_SEALED_001",
         "sealed_before_model_execution": True,
+        "sealed_at_utc": "2026-08-10T20:00:00Z",
         "mandatory_evidence_ids": ["S1", "S2"],
         "sources": [
             {
@@ -108,7 +111,7 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
         "max_tool_calls": 0,
         "max_retrieval_calls": 0,
         "max_wall_time_ms_per_arm": 900000,
-        "max_peak_rss_bytes_per_arm": 1000000,
+        "max_process_high_water_rss_bytes": 1000000,
     }
     prices = {
         "price_sheet_id": "LOCAL_ONLY_V1",
@@ -128,7 +131,8 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
             "os": platform.system(),
             "architecture": platform.machine(),
             "execution_device": "CPU",
-            "network_during_execution": "disabled",
+            "network_state_observed": False,
+            "transformers_network_policy": "offline_environment_and_local_files_only",
         },
     }
 
@@ -207,6 +211,7 @@ def _complete_fixture(tmp_path: Path) -> tuple[Path, dict[str, object]]:
         "schema_version": "paper2-pendulum-microtrial-execution-v1",
         "protocol_id": "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V1",
         "subject_sha": "a" * 40,
+        "freeze_created_at_utc": "2026-08-10T21:00:00Z",
         "evaluated_results_opened_before_freeze": False,
         "status": "FROZEN_READY_NOT_EXECUTED",
         "claim_boundary": "Non-confirmatory engineering microtrial; no general superiority claim.",
@@ -231,6 +236,36 @@ def test_complete_hash_bound_local_packet_passes_semantic_preflight(tmp_path: Pa
     assert report.blockers == ()
     assert report.invalid_bindings == ()
     assert report.evaluated_result_record_count == 0
+
+
+@pytest.mark.parametrize(
+    ("seal", "freeze", "expected"),
+    [
+        ("2026-08-10T20:00:00+00:00", "2026-08-10T21:00:00Z", "task_sealed_at_utc_invalid_rfc3339_utc"),
+        ("2026-08-10T22:00:00Z", "2026-08-10T21:00:00Z", "task_sealed_at_utc_after_packet_freeze"),
+        ("2026-08-10T20:00:00Z", "2026-08-10T23:00:00Z", "freeze_created_at_utc_is_future_dated"),
+    ],
+)
+def test_semantic_preflight_rejects_invalid_or_impossible_chronology(
+    tmp_path: Path, seal: str, freeze: str, expected: str
+) -> None:
+    _, packet = _complete_fixture(tmp_path)
+    task_path = Path(packet["bindings"]["task"]["path"])
+    task = json.loads(task_path.read_text(encoding="utf-8"))
+    task["sealed_at_utc"] = seal
+    _write_json(task_path, task)
+    packet["bindings"]["task"]["sha256"] = _sha256(task_path)
+    packet["freeze_created_at_utc"] = freeze
+
+    report = audit_execution_packet(
+        packet,
+        base_dir=tmp_path,
+        runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+        observed_at_utc="2026-08-10T22:30:00Z",
+    )
+
+    assert report.verdict is MicrotrialPreflightVerdict.REJECT
+    assert expected in report.invalid_bindings
 
 
 def test_semantic_preflight_rejects_placeholders_before_model_access(tmp_path: Path) -> None:
@@ -375,7 +410,7 @@ def test_local_backend_wraps_registered_prompt_in_model_chat_template() -> None:
 
 
 def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(tmp_path: Path) -> None:
-    packet_path, _ = _complete_fixture(tmp_path)
+    packet_path, packet = _complete_fixture(tmp_path)
     answer = json.dumps(
         {
             "small_angle_is_asymptotic": True,
@@ -397,14 +432,14 @@ def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(t
             output_tokens=len(answer.split()),
             backend_version="fake-local-v1",
             wall_time_ms=7,
-            peak_rss_bytes=123456,
+            process_high_water_rss_bytes_after_arm=123456,
         )
 
     output = tmp_path / "run"
     execute_microtrial(
         packet_path,
         output,
-        created_at_utc="2026-08-10T23:00:00Z",
+        created_at_utc="2026-08-10T21:30:00Z",
         backend=fake_backend,
         runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
         checkout_probe=lambda *_: ExecutionCheckoutState(
@@ -429,6 +464,11 @@ def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(t
     assert all(record["raw_text"] == answer for record in raw_records)
     assert all("condition" not in record for record in raw_records)
     assert all("condition" not in item for item in blinded["scores"])
+    assert blinded["condition_labels_present_in_scoring_records"] is False
+    assert blinded["condition_labels_passed_to_scoring_function"] is False
+    assert blinded["orchestrator_loaded_blinding_map_for_prompt_dispatch_before_scoring"] is True
+    assert blinded["human_or_process_level_blinding_claimed"] is False
+    assert "arm_conditions_visible_during_scoring" not in blinded
     assert {record["condition"] for record in result["records"]} == {"DIRECT_CORPUS", "RAKL_CONTEXT"}
     assert all(record["provider_receipt"]["local_files_only"] is True for record in result["records"])
     assert all(record["provider_receipt"]["tools_enabled"] is False for record in result["records"])
@@ -451,6 +491,35 @@ def test_offline_execution_preserves_raw_outputs_resources_and_blinded_scoring(t
     assert result["claim_boundary"]["confirmatory"] is False
     assert result["claim_boundary"]["general_superiority_permitted"] is False
 
+    tampered = json.loads(json.dumps(result))
+    tampered["records"][1]["raw_output"]["blind_id"] = tampered["records"][0]["blind_id"]
+    blinding = json.loads(Path(packet["bindings"]["blinding"]["path"]).read_text())["mapping"]
+    expected_prompts = {
+        condition: hashlib.sha256(
+            Path(packet["bindings"][binding]["path"]).read_bytes()
+        ).hexdigest()
+        for condition, binding in (
+            ("DIRECT_CORPUS", "direct_prompt"),
+            ("RAKL_CONTEXT", "rakl_prompt"),
+        )
+    }
+    with pytest.raises(RuntimeError, match="nested_blind_id_mismatch"):
+        verify_result_receipt(
+            tampered,
+            packet=packet,
+            expected_blinding=blinding,
+            expected_prompt_sha256=expected_prompts,
+            run_manifest_sha256=run_manifest_sha,
+        )
+
+    malformed_score = json.loads(json.dumps(result))
+    del malformed_score["records"][0]["score"]["score"]["conceptual_total"]
+    with pytest.raises(jsonschema.ValidationError):
+        Draft202012Validator(
+            json.loads(RESULT_SCHEMA.read_text(encoding="utf-8")),
+            format_checker=FormatChecker(),
+        ).validate(malformed_score)
+
 
 def test_execution_rejects_resource_receipt_above_frozen_memory_ceiling(tmp_path: Path) -> None:
     packet_path, _ = _complete_fixture(tmp_path)
@@ -462,14 +531,14 @@ def test_execution_rejects_resource_receipt_above_frozen_memory_ceiling(tmp_path
             output_tokens=1,
             backend_version="fake-local-v1",
             wall_time_ms=1,
-            peak_rss_bytes=1000001,
+            process_high_water_rss_bytes_after_arm=1000001,
         )
 
-    with pytest.raises(RuntimeError, match="peak memory ceiling exceeded"):
+    with pytest.raises(RuntimeError, match="process high-water RSS ceiling exceeded"):
         execute_microtrial(
             packet_path,
             tmp_path / "too-large",
-            created_at_utc="2026-08-10T23:00:00Z",
+            created_at_utc="2026-08-10T21:30:00Z",
             backend=excessive_backend,
             runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
             checkout_probe=lambda *_: ExecutionCheckoutState(
@@ -497,7 +566,7 @@ def test_execution_refuses_dirty_checkout_before_model_or_output_access(tmp_path
         execute_microtrial(
             packet_path,
             output,
-            created_at_utc="2026-08-10T23:00:00Z",
+            created_at_utc="2026-08-10T21:30:00Z",
             backend=forbidden_backend,
             runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
             checkout_probe=lambda *_: ExecutionCheckoutState(
@@ -528,7 +597,7 @@ def test_execution_refuses_when_runner_is_not_loaded_from_registered_checkout(tm
         execute_microtrial(
             packet_path,
             tmp_path / "wrong-runner",
-            created_at_utc="2026-08-10T23:00:00Z",
+            created_at_utc="2026-08-10T21:30:00Z",
             backend=lambda *_args, **_kwargs: pytest.fail("backend must not be called"),
             runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
             checkout_probe=lambda *_: ExecutionCheckoutState(
@@ -560,7 +629,7 @@ def test_execution_refuses_lunarc_login_node_or_missing_slurm_allocation(tmp_pat
             execute_microtrial(
                 packet_path,
                 output,
-                created_at_utc="2026-08-10T23:00:00Z",
+                created_at_utc="2026-08-10T21:30:00Z",
                 backend=lambda *_args, **_kwargs: pytest.fail("backend must not be called"),
                 runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
                 checkout_probe=checkout,
@@ -580,7 +649,7 @@ def test_preflight_receipt_never_claims_empirical_authority(tmp_path: Path) -> N
         report,
         packet=packet,
         output_path=output,
-        created_at_utc="2026-08-10T22:30:00Z",
+        created_at_utc="2026-08-10T21:30:00Z",
     )
 
     receipt = json.loads(output.read_text(encoding="utf-8"))
@@ -588,6 +657,34 @@ def test_preflight_receipt_never_claims_empirical_authority(tmp_path: Path) -> N
     assert receipt["verdict"] == "CANNOT_CHECK"
     assert receipt["evaluated_result_record_count"] == 0
     assert receipt["empirical_claim_permitted"] is False
+
+
+def test_preflight_and_execution_reject_pre_freeze_receipt_time_before_output_or_backend(
+    tmp_path: Path,
+) -> None:
+    packet_path, packet = _complete_fixture(tmp_path)
+    preflight_output = tmp_path / "impossible-preflight.json"
+    with pytest.raises(ValueError, match="created_at_utc_precedes_packet_freeze"):
+        write_preflight_receipt(
+            audit_execution_packet(packet, base_dir=tmp_path, runtime_versions={}),
+            packet=packet,
+            output_path=preflight_output,
+            created_at_utc="2026-08-10T20:59:59Z",
+        )
+    assert not preflight_output.exists()
+
+    backend_calls: list[str] = []
+    execution_output = tmp_path / "impossible-run"
+    with pytest.raises(ValueError, match="created_at_utc_precedes_packet_freeze"):
+        execute_microtrial(
+            packet_path,
+            execution_output,
+            created_at_utc="2026-08-10T20:59:59Z",
+            backend=lambda prompt, **_: backend_calls.append(prompt),
+            runtime_versions={"python": "3.11.13", "torch": "2.8.0", "transformers": "4.55.0"},
+        )
+    assert backend_calls == []
+    assert not execution_output.exists()
 
 
 def test_repository_packet_binds_every_mandatory_microtrial_identity() -> None:
@@ -615,6 +712,24 @@ def test_repository_packet_binds_every_mandatory_microtrial_identity() -> None:
         path = ROOT / binding["path"]
         assert path.is_file()
         assert _sha256(path) == binding["sha256"]
+
+
+def test_repository_packet_and_preflight_chronology_is_ordered_and_not_future_dated() -> None:
+    packet = json.loads(FROZEN_PACKET.read_text(encoding="utf-8"))
+    task = json.loads((ROOT / packet["bindings"]["task"]["path"]).read_text(encoding="utf-8"))
+    preflight = json.loads(FROZEN_PREFLIGHT.read_text(encoding="utf-8"))
+
+    def parse(value: str) -> datetime:
+        assert value.endswith("Z")
+        return datetime.fromisoformat(value[:-1] + "+00:00")
+
+    sealed_at = parse(task["sealed_at_utc"])
+    freeze_at = parse(packet["freeze_created_at_utc"])
+    preflight_at = parse(preflight["created_at_utc"])
+    assert sealed_at <= freeze_at <= preflight_at <= datetime.now(timezone.utc)
+    assert preflight["packet_canonical_sha256"] == hashlib.sha256(
+        json.dumps(packet, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
 
 
 def test_repository_packet_has_no_semantic_placeholder_or_missing_evidence() -> None:

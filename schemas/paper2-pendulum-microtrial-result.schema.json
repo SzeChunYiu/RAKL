@@ -208,7 +208,7 @@
         "tool_calls",
         "retrieval_calls",
         "wall_time_ms",
-        "peak_rss_bytes",
+        "process_high_water_rss_bytes_after_arm",
         "provider_api_cost_usd",
         "price_sheet_sha256",
         "unpriced_coordinates",
@@ -236,7 +236,7 @@
           "type": "integer",
           "minimum": 0
         },
-        "peak_rss_bytes": {
+        "process_high_water_rss_bytes_after_arm": {
           "type": "integer",
           "minimum": 0
         },
@@ -307,16 +307,123 @@
           "type": "boolean"
         },
         "parse_error": {
-          "type": [
-            "string",
-            "null"
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "score": {
-          "type": [
-            "object",
-            "null"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/known_answer_score"
+            },
+            {
+              "type": "null"
+            }
           ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "parse_valid": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parse_error": {
+                "type": "null"
+              },
+              "score": {
+                "$ref": "#/$defs/known_answer_score"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parse_valid": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parse_error": {
+                "type": "string",
+                "minLength": 1
+              },
+              "score": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "known_answer_score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conceptual_correct",
+        "conceptual_total",
+        "required_support_recall",
+        "support_precision",
+        "misalignment_recall",
+        "refutation_recall",
+        "refutation_precision",
+        "unsupported_source_count",
+        "exact_conceptual_pass"
+      ],
+      "properties": {
+        "conceptual_correct": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "conceptual_total": {
+          "const": 5
+        },
+        "required_support_recall": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "support_precision": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "misalignment_recall": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "refutation_recall": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "refutation_precision": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unsupported_source_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exact_conceptual_pass": {
+          "type": "boolean"
         }
       }
     }

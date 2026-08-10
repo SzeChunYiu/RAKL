@@ -1,7 +1,7 @@
 # Paper 2 sealed pendulum microtrial status
 
 Date: 2026-08-10  
-Protocol: `PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V1`
+Protocol: `PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V2`
 
 ## Evidence boundary
 
@@ -28,15 +28,22 @@ This microtrial does not supersede those obligations.
   boundary;
 - offline `transformers` inference with `local_files_only=true`,
   `trust_remote_code=false`, no model tools, no retrieval and no repository access
-  exposed to the model;
+  exposed to the model; these controls constrain Transformers artifact access but
+  do not constitute an observed host-level network-isolation receipt;
 - raw outputs and separate provider/resource receipts saved by opaque blind id;
-  scoring occurs before the blind-id map is joined;
+  the deterministic scoring function receives only opaque blind ids and raw
+  text, and condition labels are joined only after the blinded-score receipt is
+  written; the orchestration process necessarily loads the blinding map earlier
+  to dispatch the registered prompts, so no process-level or human-blinding
+  claim is made;
 - execution is restricted to the exact LUNARC FS9 contract under
   `/projects/hep/fs9/users/scyiu/RAKL-paper2`; the immutable model snapshot,
   checkout and output roots are frozen there rather than referring to a local
   macOS cache;
-- model inference is forbidden on `cosmos` login hosts and requires a numeric
-  `SLURM_JOB_ID`, so the eventual call must run inside an allocated batch job;
+- model inference is forbidden on `cosmos` login hosts and requires a
+  syntactically numeric `SLURM_JOB_ID`; this is a guard, not scheduler-backed
+  batch attestation. A separately reviewed, byte-bound `sbatch` wrapper and
+  scheduler metadata receipt remain required before native execution;
 - before either output is opened, the runner requires a clean Git checkout,
   verifies that the packet subject is an ancestor, records the exact checkout
   commit and tree identities, and writes a pre-output run manifest whose hash is
@@ -44,6 +51,13 @@ This microtrial does not supersede those obligations.
 - semantic preflight rejects placeholders, missing mandatory source identities,
   hash drift, evaluator drift, unmatched model/tokenizer revisions and resource
   policies that permit tools or retrieval.
+- resource receipts report process-lifetime high-water RSS observed after each
+  arm, not an isolated per-arm peak; the frozen ceiling and manuscript language
+  use that narrower quantity.
+- before writing the final result receipt, a production verifier rejects duplicate
+  or incomplete arm identities, cross-record blind-id/prompt/run-manifest drift and
+  invalid parse/score states; the bound JSON Schema requires all nine evaluator
+  score fields when parsing succeeds.
 
 ## Model footprint and monetary boundary
 
@@ -65,6 +79,14 @@ checked-in preflight receipt is therefore `CANNOT_CHECK`, with zero evaluated
 result records. It identifies the absent registered FS9 snapshot and execution-environment
 version, operating-system and architecture mismatches rather than fabricating outputs or treating missing execution
 as a null result.
+
+The packet was re-frozen after a hostile chronology audit found that the prior
+checked-in packet and preflight asserted times later than their introducing
+commit. The superseding packet records observed UTC times, binds the repaired
+runner, enforces strict UTC order (`task seal <= packet freeze <= receipt/run`),
+rejects future-dated or reversed event times before output/backend access, and
+retains the prior packet hash as supersession lineage. This is a provenance
+repair, not an empirical result.
 
 After the exact snapshot and frozen environment are staged, rerun preflight. Only
 a `PASS` permits the runner to create model output. Any material change requires a
