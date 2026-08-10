@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from itertools import combinations
 from pathlib import Path
 import sys
 
@@ -22,6 +23,15 @@ assert spec is not None and spec.loader is not None
 oracle = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = oracle
 spec.loader.exec_module(oracle)
+
+
+def _subsets(universe: frozenset[int]) -> list[frozenset[int]]:
+    items = tuple(sorted(universe))
+    return [
+        frozenset(choice)
+        for size in range(len(items) + 1)
+        for choice in combinations(items, size)
+    ]
 
 
 def test_c005_pair_coverage_orientations() -> None:
@@ -58,6 +68,30 @@ def test_overlap_deletion_can_destroy_canonical_coverage() -> None:
         e_set - h_set,
         h_set - e_set,
     )
+
+
+def test_union_normalization_preserves_all_tiny_covered_fibres() -> None:
+    # Exhaustively regression-test C008-L1 on every nonempty row/column fibre
+    # and every pair (E,H) over a four-element universe.
+    universe = frozenset(range(4))
+    subsets = _subsets(universe)
+    nonempty = [subset for subset in subsets if subset]
+
+    for row in nonempty:
+        for column in nonempty:
+            for e_set in subsets:
+                for h_set in subsets:
+                    if not oracle.pair_covers_canonical_edge(
+                        row, column, e_set, h_set
+                    ):
+                        continue
+                    e_norm, h_norm = oracle.union_normalize_pair(
+                        universe, e_set, h_set
+                    )
+                    assert e_norm | h_norm == universe
+                    assert oracle.pair_covers_canonical_edge(
+                        row, column, e_norm, h_norm
+                    )
 
 
 def test_neq_source_calibration_on_powers_of_two() -> None:
