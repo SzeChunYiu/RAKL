@@ -20,7 +20,8 @@ def _module():
 
 
 def test_epistemic_mechanics_is_longform_and_contains_required_results():
-    text = (ROOT / "paper" / "epistemic_mechanics" / "main.tex").read_text(encoding="utf-8")
+    module = _module()
+    text = module.build_epistemic_mechanics_source(subject_sha="a" * 40, software_tests=700)
     for needle in (
         "Foundations and the gap between them",
         "Three-context parity obstruction",
@@ -38,6 +39,7 @@ def test_epistemic_mechanics_is_longform_and_contains_required_results():
     assert r"\section{Implementation correspondence and scope}" not in text
     assert r"\appendix" in text
     assert r"\section{Reproducibility and implementation correspondence}" in text
+    assert r"\input{" not in text
 
     words = re.findall(r"\b[A-Za-z][A-Za-z'-]*\b", text.split(r"\begin{thebibliography}", 1)[0])
     assert len(words) >= 9000
