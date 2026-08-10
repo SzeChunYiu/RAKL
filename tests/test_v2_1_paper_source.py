@@ -98,7 +98,7 @@ def test_v2_1_quantitative_figures_use_receipt_bound_wrappers_without_old_resize
     assert source.count("\\begin{figure}") == 6
 
 
-def test_v2_1_adds_four_scoped_prior_art_references_and_keeps_citations_resolvable():
+def test_v2_1_adds_four_scoped_prior_art_references_and_uses_compact_reference_typography():
     source = _module().build_v2_1_source(subject_sha=DUMMY_SHA, software_tests=DUMMY_TESTS)
     assert source.count("\\bibitem{") == 63
     for key in ("rissanen1978", "tishby2000", "w3cprov2013", "skjaeveland2023"):
@@ -107,6 +107,7 @@ def test_v2_1_adds_four_scoped_prior_art_references_and_keeps_citations_resolvab
     assert "PROV-O" in source
     assert "information bottleneck method" in source.lower()
     assert "Personal Knowledge Graphs" in source
+    assert "\\sloppy\n\\small\n\\begin{thebibliography}{99}" in source
 
 
 def test_v2_1_public_source_preserves_evidence_boundary_and_no_result_placeholders():
