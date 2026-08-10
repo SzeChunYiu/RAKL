@@ -13,8 +13,10 @@ from rakl.matched_microtrial import (
     canonical_protocol_hash,
     score_pendulum_answer,
     validate_matched_arms,
+    validate_pendulum_evaluator_sources,
     validate_resource_usage,
 )
+from rakl.mini_research_demo import _sources
 
 
 def _model() -> MatchedModelConfig:
@@ -42,8 +44,8 @@ def _ceiling() -> TrialResourceCeiling:
 def _evidence() -> EvidenceCorpusFingerprint:
     return EvidenceCorpusFingerprint.from_payloads(
         {
-            "S1": b"small-angle pendulum law",
-            "S2": b"finite-amplitude correction",
+            source.source_id: source.text.encode("utf-8")
+            for source in _sources()
         }
     )
 
@@ -54,9 +56,9 @@ def _arms() -> tuple[MatchedTrialArm, MatchedTrialArm]:
         evidence=_evidence(),
         resource_ceiling=_ceiling(),
         tool_policy_id="NO_EXTERNAL_TOOLS_AFTER_PROMPT_BUILD_V1",
-        output_schema_id="PENDULUM_STRUCTURED_ANSWER_V1",
-        question_set_hash=canonical_protocol_hash(["Q1", "Q2"]),
-        evaluator_protocol_hash=canonical_protocol_hash({"evaluator": "sealed-known-answer-v1"}),
+        output_schema_id="PENDULUM_STRUCTURED_ANSWER_V2",
+        question_set_hash=canonical_protocol_hash(["Q1", "Q2", "Q3", "Q4"]),
+        evaluator_protocol_hash=canonical_protocol_hash({"evaluator": "sealed-known-answer-v2"}),
     )
     return (
         MatchedTrialArm(condition=TrialCondition.DIRECT_CORPUS, **common),
@@ -108,37 +110,94 @@ def test_evidence_fingerprint_is_order_invariant_but_byte_sensitive():
     assert left != changed
 
 
-def test_sealed_pendulum_score_rewards_context_alignment_and_source_grounding():
+def test_sealed_pendulum_evaluator_is_defined_only_on_frozen_corpus_source_ids():
+    report = validate_pendulum_evaluator_sources(_evidence())
+    assert report.valid
+    assert report.problems == ()
+
+
+def test_evaluator_source_validation_fails_if_required_frozen_source_is_missing():
+    corpus = EvidenceCorpusFingerprint.from_payloads(
+        {
+            source.source_id: source.text.encode("utf-8")
+            for source in _sources()
+            if source.source_id != "S6"
+        }
+    )
+    report = validate_pendulum_evaluator_sources(corpus)
+    assert not report.valid
+    assert "evaluator_required_refuted_source_missing:S6" in report.problems
+
+
+def test_frozen_pendulum_corpus_contains_every_registered_conceptual_distinction():
+    texts = {source.source_id: source.text.lower() for source in _sources()}
+    assert "small angle" in texts["S1"]
+    assert "finite-amplitude correction" in texts["S3"]
+    assert "small-angle approximation" in texts["S4"]
+    assert "moon" in texts["S5"] and "lunar" in texts["S5"]
+    assert "increasing the bob mass increases" in texts["S6"]
+    assert "does not materially change" in texts["S7"]
+    assert "independent derivation" in texts["S8"]
+
+
+def test_sealed_pendulum_score_rewards_context_alignment_grounding_and_refutation():
     answer = PendulumStructuredAnswer(
         small_angle_is_asymptotic=True,
         finite_amplitude_increases_period=True,
-        period_differs_from_time_to_angle=True,
+        context_distinct_claims_not_direct_contradictions=True,
+        ideal_period_is_mass_invariant=True,
         context_alignment_required_before_contradiction=True,
-        supporting_source_ids=("S2", "S3", "S7"),
+        supporting_source_ids=("S1", "S2", "S3", "S4", "S5", "S7", "S8"),
         rejected_as_misaligned_source_ids=("S4", "S5"),
+        refuted_source_ids=("S6",),
     )
     score = score_pendulum_answer(answer)
-    assert score.conceptual_correct == 4
-    assert score.conceptual_total == 4
+    assert score.conceptual_correct == 5
+    assert score.conceptual_total == 5
     assert score.required_support_recall == 1.0
     assert score.support_precision == 1.0
     assert score.misalignment_recall == 1.0
+    assert score.refutation_recall == 1.0
+    assert score.refutation_precision == 1.0
     assert score.unsupported_source_count == 0
     assert score.exact_conceptual_pass
 
 
-def test_sealed_score_does_not_turn_unknown_source_ids_into_credit():
+def test_same_source_may_support_one_claim_and_be_misaligned_for_another_comparison():
+    answer = PendulumStructuredAnswer(
+        small_angle_is_asymptotic=True,
+        finite_amplitude_increases_period=True,
+        context_distinct_claims_not_direct_contradictions=True,
+        ideal_period_is_mass_invariant=True,
+        context_alignment_required_before_contradiction=True,
+        supporting_source_ids=("S4", "S5"),
+        rejected_as_misaligned_source_ids=("S4", "S5"),
+        refuted_source_ids=("S6",),
+    )
+    score = score_pendulum_answer(answer)
+    assert score.support_precision == 1.0
+    assert score.misalignment_recall == 1.0
+    assert score.refutation_recall == 1.0
+    assert score.required_support_recall < 1.0
+
+
+def test_sealed_score_does_not_turn_unknown_or_false_support_ids_into_credit():
     answer = PendulumStructuredAnswer(
         small_angle_is_asymptotic=False,
         finite_amplitude_increases_period=False,
-        period_differs_from_time_to_angle=False,
+        context_distinct_claims_not_direct_contradictions=False,
+        ideal_period_is_mass_invariant=False,
         context_alignment_required_before_contradiction=False,
-        supporting_source_ids=("S999",),
+        supporting_source_ids=("S6", "S999"),
         rejected_as_misaligned_source_ids=(),
+        refuted_source_ids=("S999",),
     )
     score = score_pendulum_answer(answer)
     assert score.conceptual_correct == 0
     assert score.required_support_recall == 0.0
     assert score.support_precision == 0.0
-    assert score.unsupported_source_count == 1
+    assert score.misalignment_recall == 0.0
+    assert score.refutation_recall == 0.0
+    assert score.refutation_precision == 0.0
+    assert score.unsupported_source_count == 2
     assert not score.exact_conceptual_pass
