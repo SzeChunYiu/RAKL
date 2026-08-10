@@ -76,25 +76,26 @@ active_obligations:
   - id: O9a
     target: "calibrate exact canonical-cover search against G_NEQ"
     route: R004
-    status: IMPLEMENTED_PENDING_CI
-    artifacts: [C005, canonical_cover_oracle]
+    status: CI_VERIFIED_CALIBRATION
+    artifacts: [C005, C006, canonical_cover_oracle]
   - id: O9b
     target: "find an explicit graph family with canonical/full cover lower bound exceeding the log N NEQ baseline"
     route: R004
     status: ACTIVE
     depends_on: [O9a]
   - id: O9c
-    target: "control the load-bearing E-intersect-H overlap state in arbitrary-fibre canonical covers; partition normalization is invalid in general"
+    target: "normalize arbitrary canonical-cover pairs without deleting load-bearing overlap"
+    route: R004
+    status: PROOF_DRAFT
+    depends_on: [O9a]
+    artifacts: [C006, C007, C008]
+    result: "partition normalization is false in general, but union normalization E union H = U is valid, yielding an exact E-only/H-only/both state space"
+  - id: O9d
+    target: "upper-bound the multi-coordinate edge-separation capacity of realizable three-state overlap signatures on an explicit family"
     route: R004
     status: ACTIVE
-    depends_on: [O9a]
-    artifacts: [C006, C007]
-    residual: C007-R1
-  - id: O9d
-    target: "construct an overlap-sensitive two-dimensional potential for realizable ternary signatures and test it on explicit graph families"
-    route: R004
-    status: OPEN
     depends_on: [O9c]
+    residual: C008-R1
 
 negative_checkpoints:
   - id: C002
