@@ -63,15 +63,31 @@ jobs:
             --output /tmp/PAPER3_CHEAP_GATE_RESULT.json
           python - <<'PY'
           import json
+          import math
           checked = json.load(open('research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json'))
           rerun = json.load(open('/tmp/PAPER3_CHEAP_GATE_RESULT.json'))
+          def assert_reproducible(left, right, path='receipt'):
+              if isinstance(left, bool) or isinstance(right, bool):
+                  assert left is right, path
+              elif isinstance(left, (int, float)) and isinstance(right, (int, float)):
+                  assert math.isclose(left, right, rel_tol=0.0, abs_tol=1e-12), path
+              elif isinstance(left, dict) and isinstance(right, dict):
+                  assert left.keys() == right.keys(), path
+                  for key in left:
+                      assert_reproducible(left[key], right[key], f'{path}.{key}')
+              elif isinstance(left, list) and isinstance(right, list):
+                  assert len(left) == len(right), path
+                  for index, (a, b) in enumerate(zip(left, right)):
+                      assert_reproducible(a, b, f'{path}[{index}]')
+              else:
+                  assert left == right, path
           for key in (
               'subject_sha', 'protocol_sha256', 'benchmark_sha256', 'split',
               'family_count', 'case_count', 'arm_metrics', 'predictions',
               'annotation_gate', 'diagnostic_signal_gate',
               'overall_cheap_gate_passed', 'expensive_training_authorized',
               'gate_verdict', 'negative_history'):
-              assert checked[key] == rerun[key], key
+              assert_reproducible(checked[key], rerun[key], key)
           assert checked['gate_verdict'] == 'FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION'
           assert checked['expensive_training_authorized'] is False
           print('frozen cheap-gate receipt: PASS (fail closed as registered)')
