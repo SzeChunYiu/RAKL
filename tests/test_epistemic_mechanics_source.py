@@ -35,7 +35,7 @@ def test_epistemic_mechanics_is_longform_and_contains_required_results():
     ):
         assert needle in text
 
-    assert r"\title{Epistemic Mechanics: From Linguistic Claims to Evidence-Governed Scientific State}" in text
+    assert r"\title{Epistemic Mechanics for Evidence-Governed Scientific Research}" in text
     assert r"\section{Implementation correspondence and scope}" not in text
     assert r"\appendix" in text
     assert r"\section{Reproducibility and implementation correspondence}" in text
