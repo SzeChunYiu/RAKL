@@ -1,0 +1,28 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newtheorem{definition}{Definition}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{proposition}{Proposition}
+\title{A Shared Structural Substrate for Data-Efficient Learning and Reasoning}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Large language models can encounter many surface-distinct examples that instantiate the same underlying reasoning structure and can repeatedly rediscover similar procedures at inference time. Prior work already shows that skill graphs can improve training-data selection, that reusable reasoning primitives can be induced from agent traces, and that agent workflows can be transferred as structural priors. We therefore do not ask whether abstraction or reuse is useful in isolation. We ask a stricter question: can the same context- and quantity-of-interest-scoped structural object predict when knowledge should transfer across surface-disjoint domains, reject semantically tempting but structurally invalid transfers, and be reused across both learning and reasoning? We introduce a directional structural-witness formalism that records role mappings, preserved invariants, non-preserved properties, target boundary conditions, evidence and uncertainty. We define a four-quadrant benchmark that independently varies semantic and structural similarity, and a total cost-to-capability accounting that includes one-time structure induction, retrieval, adaptation and verification. The present paper is a preregistered formalism and executable benchmark scaffold, not yet an efficiency result. Its central hypotheses are falsified if structural information adds no predictive value beyond semantic similarity, if high-semantic structural decoys are transferred, or if induction cost eliminates any realistic amortization advantage.
+\end{abstract}
+\input{sections/01_problem_and_parents}
+\input{sections/02_structural_formalism}
+\input{sections/03_benchmark}
+\input{sections/04_cost_and_hypotheses}
+\input{sections/05_evaluation_plan}
+\input{sections/99_references}
+\end{document}
