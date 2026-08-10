@@ -3,12 +3,30 @@
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/open-world-discovery.schema.json",
   "title": "RAKL Open-World Discovery Closure Record",
   "type": "object",
-  "required": ["function_id", "status", "routes", "lexical_independence_passed", "independent_omission_review", "nearest_work_equivalence_audit"],
+  "required": ["function_id", "status", "routes", "lexical_independence_passed", "omission_review", "nearest_work_audit"],
+  "$defs": {
+    "auditEvidence": {
+      "type": "object",
+      "required": ["audit_id", "function_id", "kind", "reviewer_context_id", "evidence_ids", "completed", "independent"],
+      "properties": {
+        "audit_id": {"type": "string", "minLength": 1},
+        "function_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["OMISSION_REVIEW", "NEAREST_WORK_EQUIVALENCE"]},
+        "reviewer_context_id": {"type": "string", "minLength": 1},
+        "evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "completed": {"type": "boolean"},
+        "independent": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
   "properties": {
     "function_id": {"type": "string", "minLength": 1},
     "status": {"enum": ["OPEN", "BOUNDED_CLOSED"]},
     "owner_mechanism_id": {"type": ["string", "null"]},
     "explicit_open_fiber": {"type": ["string", "null"]},
+    "omission_review": {"$ref": "#/$defs/auditEvidence"},
+    "nearest_work_audit": {"$ref": "#/$defs/auditEvidence"},
     "routes": {
       "type": "array",
       "items": {
@@ -29,11 +47,51 @@
       }
     },
     "lexical_independence_passed": {"type": "boolean"},
-    "independent_omission_review": {"type": "boolean"},
-    "nearest_work_equivalence_audit": {"type": "boolean"},
     "freshness_cutoff": {"type": ["string", "null"], "format": "date"},
-    "unresolved_candidate_ids": {"type": "array", "items": {"type": "string"}}
+    "unresolved_candidate_ids": {"type": "array", "items": {"type": "string"}},
+    "unresolved_fibers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "fiber_id", "reason"],
+        "properties": {
+          "candidate_id": {"type": "string", "minLength": 1},
+          "fiber_id": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
   },
-  "allOf": [{"if": {"properties": {"status": {"const": "BOUNDED_CLOSED"}}}, "then": {"anyOf": [{"required": ["owner_mechanism_id"], "properties": {"owner_mechanism_id": {"type": "string", "minLength": 1}}}, {"required": ["explicit_open_fiber"], "properties": {"explicit_open_fiber": {"type": "string", "minLength": 1}}}]}}],
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "BOUNDED_CLOSED"}}},
+      "then": {
+        "anyOf": [
+          {"required": ["owner_mechanism_id"], "properties": {"owner_mechanism_id": {"type": "string", "minLength": 1}}},
+          {"required": ["explicit_open_fiber"], "properties": {"explicit_open_fiber": {"type": "string", "minLength": 1}}}
+        ]
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "BOUNDED_CLOSED"}}},
+      "then": {
+        "properties": {
+          "omission_review": {
+            "allOf": [
+              {"$ref": "#/$defs/auditEvidence"},
+              {"properties": {"kind": {"const": "OMISSION_REVIEW"}, "completed": {"const": true}, "independent": {"const": true}}}
+            ]
+          },
+          "nearest_work_audit": {
+            "allOf": [
+              {"$ref": "#/$defs/auditEvidence"},
+              {"properties": {"kind": {"const": "NEAREST_WORK_EQUIVALENCE"}, "completed": {"const": true}}}
+            ]
+          }
+        }
+      }
+    }
+  ],
   "additionalProperties": false
 }
