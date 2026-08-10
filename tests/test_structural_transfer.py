@@ -1,4 +1,8 @@
-from rakl.structural_benchmark import SimilarityQuadrant, make_quadrant_cases
+from rakl.structural_benchmark import (
+    SimilarityQuadrant,
+    make_multifamily_cases,
+    make_quadrant_cases,
+)
 from rakl.structural_transfer import assess_transfer, structural_overlap_score
 from rakl.structural_types import BoundaryCondition, StructuralWitness, TransferDecision
 
@@ -72,3 +76,66 @@ def test_endpoint_identity_mismatch_fails_as_cannot_check_not_transfer() -> None
         evidence_ids=("evidence:wrong",),
     )
     assert assess_transfer(case.source, case.target, wrong).decision is TransferDecision.CANNOT_CHECK
+
+
+def test_multifamily_q2_cases_are_all_licensed() -> None:
+    q2_cases = [
+        case
+        for case in make_multifamily_cases()
+        if case.quadrant is SimilarityQuadrant.Q2_LOW_SEM_HIGH_STRUCT
+    ]
+    assert {case.family for case in q2_cases} == {"queue", "positive-feedback", "threshold-cascade"}
+    for case in q2_cases:
+        assessment = assess_transfer(case.source, case.target, case.witness)
+        assert case.semantic_similarity_label == "low"
+        assert case.structural_match_expected
+        assert assessment.decision is TransferDecision.LICENSED, (case.case_id, assessment.reasons)
+        assert assessment.structurally_complete
+
+
+def test_multifamily_q3_semantic_decoys_are_all_rejected() -> None:
+    q3_cases = [
+        case
+        for case in make_multifamily_cases()
+        if case.quadrant is SimilarityQuadrant.Q3_HIGH_SEM_LOW_STRUCT
+    ]
+    assert {case.family for case in q3_cases} == {"queue", "positive-feedback", "threshold-cascade"}
+    for case in q3_cases:
+        assessment = assess_transfer(case.source, case.target, case.witness)
+        assert case.semantic_similarity_label == "high"
+        assert not case.structural_match_expected
+        assert assessment.decision is TransferDecision.REJECTED, case.case_id
+        assert not assessment.structurally_complete
+        assert any(
+            reason.startswith("relation_not_preserved")
+            or reason.startswith("boundary_mismatch")
+            or reason == "declared_invariant_missing_in_target"
+            or reason == "source_invariants_not_fully_preserved"
+            for reason in assessment.reasons
+        )
+
+
+def test_semantic_only_rule_fails_exactly_on_the_hard_q2_q3_pairs() -> None:
+    hard_cases = [
+        case
+        for case in make_multifamily_cases()
+        if case.quadrant
+        in {
+            SimilarityQuadrant.Q2_LOW_SEM_HIGH_STRUCT,
+            SimilarityQuadrant.Q3_HIGH_SEM_LOW_STRUCT,
+        }
+    ]
+    semantic_only_correct = 0
+    structural_gate_correct = 0
+    for case in hard_cases:
+        semantic_prediction = case.semantic_similarity_label == "high"
+        semantic_only_correct += semantic_prediction == case.structural_match_expected
+
+        decision = assess_transfer(case.source, case.target, case.witness).decision
+        structural_prediction = decision is TransferDecision.LICENSED
+        structural_gate_correct += structural_prediction == case.structural_match_expected
+
+    # The benchmark is constructed so semantic similarity points in the wrong direction
+    # for every hard case.  This is a sanity check, not an empirical result.
+    assert semantic_only_correct == 0
+    assert structural_gate_correct == len(hard_cases)
