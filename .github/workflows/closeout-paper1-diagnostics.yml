@@ -66,6 +66,12 @@ jobs:
               safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
               echo "::error title=Paper 1 production preflight::$safe"
             done
+            for range in '170,184' '488,503' '615,630'; do
+              sed -n "${range}p" main.tex | nl -ba | while IFS= read -r line; do
+                safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+                echo "::error title=Paper 1 overfull source window::$safe"
+              done
+            done
             exit 1
           fi
           mkdir -p renders
