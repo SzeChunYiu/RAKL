@@ -32,3 +32,12 @@ jobs:
         run: python paper/generate_demo_figures.py
       - name: Inspect exact reviewed V2 source anchors
         run: python paper/build_v2_1_source.py --inspect
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v2-1-figure-previews-${{ github.sha }}
+          path: |
+            paper/figures/generated/*.pdf
+            paper/figures/generated/*.svg
+            paper/figures/generated/*.png
+            paper/figures/generated/*.source.json
+          if-no-files-found: error
