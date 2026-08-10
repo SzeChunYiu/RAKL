@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-contract-v3.schema.json",
+  "title": "Paper 2 CPU staging V3 contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "contract_id", "authority_status", "construction_parent_sha",
+    "created_at_utc", "fs9_root", "candidate_root", "final_root", "receipt_root",
+    "failure_root", "model_execution_permitted", "bootstrap_policy", "submission_policy",
+    "promotion_policy", "staging_attestation_policy", "failure_policy", "bindings",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper2-cpu-staging-contract-v3"},
+    "contract_id": {"const": "PAPER2_CPU_STAGING_V3"},
+    "authority_status": {"const": "frozen_ready_not_submitted"},
+    "construction_parent_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "fs9_root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2"},
+    "candidate_root": {"type": "string", "pattern": "^/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/\\.paper2-cpu-v3-candidate$"},
+    "final_root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3"},
+    "receipt_root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3"},
+    "failure_root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/failures/v3"},
+    "model_execution_permitted": {"const": false},
+    "bootstrap_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exact_repo_sha_required", "exact_origin_url_required", "detached_checkout_required", "clean_tree_required", "atomic_candidate_promotion_required", "successful_bootstrap_receipt_required_before_submission", "existing_repo_never_silently_mutated"],
+      "properties": {
+        "exact_repo_sha_required": {"const": true},
+        "exact_origin_url_required": {"const": true},
+        "detached_checkout_required": {"const": true},
+        "clean_tree_required": {"const": true},
+        "atomic_candidate_promotion_required": {"const": true},
+        "successful_bootstrap_receipt_required_before_submission": {"const": true},
+        "existing_repo_never_silently_mutated": {"const": true}
+      }
+    },
+    "submission_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exact_repo_sha_required", "clean_checkout_required", "lunarc_login_host_required", "observed_account_partition_association_required", "network_probe_must_precede_staging", "default_operator_mode"],
+      "properties": {
+        "exact_repo_sha_required": {"const": true},
+        "clean_checkout_required": {"const": true},
+        "lunarc_login_host_required": {"const": true},
+        "observed_account_partition_association_required": {"const": true},
+        "network_probe_must_precede_staging": {"const": true},
+        "default_operator_mode": {"const": "READY_NOT_SUBMITTED"}
+      }
+    },
+    "promotion_policy": {
+      "type": "object", "additionalProperties": {"type": "boolean", "const": true},
+      "required": ["same_filesystem_candidate_and_final_required", "final_must_not_exist", "atomic_rename_required", "all_artifacts_hash_and_size_verified_before_promotion", "offline_hash_locked_install_required", "installed_version_equality_required"]
+    },
+    "staging_attestation_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["minimum_free_bytes", "pip_check_required", "full_distribution_set_equality_required", "pip_freeze_all_required", "torch_version", "torch_cuda_must_be_null", "tensor_device", "platform_architecture", "repository_tree_sha_required", "construction_parent_ancestor_required"],
+      "properties": {
+        "minimum_free_bytes": {"type": "integer", "minimum": 6000000000},
+        "pip_check_required": {"const": true},
+        "full_distribution_set_equality_required": {"const": true},
+        "pip_freeze_all_required": {"const": true},
+        "torch_version": {"const": "2.8.0+cpu"},
+        "torch_cuda_must_be_null": {"const": true},
+        "tensor_device": {"const": "cpu"},
+        "platform_architecture": {"const": "x86_64"},
+        "repository_tree_sha_required": {"const": true},
+        "construction_parent_ancestor_required": {"const": true}
+      }
+    },
+    "failure_policy": {
+      "type": "object", "additionalProperties": {"type": "boolean", "const": true},
+      "required": ["preserve_failed_candidate_and_receipt", "never_reuse_existing_candidate_or_final", "partial_submission_job_id_must_be_receipted"]
+    },
+    "bindings": {
+      "type": "array", "minItems": 8, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["role", "path", "sha256"],
+        "properties": {
+          "role": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

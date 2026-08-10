@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-construction-receipt-v3.schema.json",
+  "title": "Paper 2 CPU staging V3 construction receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "created_at_utc", "construction_parent_sha", "contract_file_sha256",
+    "contract_canonical_sha256", "asset_manifest_file_sha256", "wheel_lock_file_sha256",
+    "requirements_lock_file_sha256", "artifact_count", "total_download_bytes", "wheel_count",
+    "wheel_dependency_closure_failures", "jobs_submitted", "model_execution_performed",
+    "evaluated_result_record_count", "failures", "verdict", "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper2-cpu-staging-construction-receipt-v3"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "construction_parent_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "contract_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "contract_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "asset_manifest_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "wheel_lock_file_sha256": {"const": "e06c27464d15b46617b1b8c8f79544f6173267b080189257b2d0e28d006afff3"},
+    "requirements_lock_file_sha256": {"const": "291752036b264369795967b2599ca401a1707750a213b0992c2ef4a3b55c87b0"},
+    "artifact_count": {"const": 38},
+    "total_download_bytes": {"const": 1281513075},
+    "wheel_count": {"const": 29},
+    "wheel_dependency_closure_failures": {"type": "array", "maxItems": 0},
+    "jobs_submitted": {"const": 0},
+    "model_execution_performed": {"const": false},
+    "evaluated_result_record_count": {"const": 0},
+    "failures": {"type": "array", "maxItems": 0},
+    "verdict": {"const": "READY_NOT_SUBMITTED"},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

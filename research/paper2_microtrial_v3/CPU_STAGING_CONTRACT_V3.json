@@ -1,0 +1,113 @@
+{
+  "authority_status": "frozen_ready_not_submitted",
+  "bindings": [
+    {
+      "path": "research/paper2_microtrial_v3/CPU_STAGING_ASSET_MANIFEST_V3.json",
+      "role": "asset_manifest",
+      "sha256": "8c24f0bcdb45357ea79c3d8cfe4c0d73d2741df5b64348a860f776b7e9480b7c"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/CP311_LINUX_X86_64_WHEEL_LOCK_AUDIT.json",
+      "role": "wheel_lock",
+      "sha256": "e06c27464d15b46617b1b8c8f79544f6173267b080189257b2d0e28d006afff3"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/requirements-cp311-linux-x86_64-v3.lock",
+      "role": "requirements_lock",
+      "sha256": "291752036b264369795967b2599ca401a1707750a213b0992c2ef4a3b55c87b0"
+    },
+    {
+      "path": "experiments/paper2/lunarc/network_probe.sbatch",
+      "role": "network_probe_batch",
+      "sha256": "d950b5289e607c03a0e9f3b8f59b4f8669eb9db065443f4008edb780bca5db9f"
+    },
+    {
+      "path": "experiments/paper2/lunarc/stage_cpu_assets.sbatch",
+      "role": "staging_batch",
+      "sha256": "428165c126ba1de19a0d48d99a637059d039a6c90f599f32fd1861df91b90f4f"
+    },
+    {
+      "path": "experiments/paper2/lunarc/bootstrap_repo_v3.sh",
+      "role": "repo_bootstrap_script",
+      "sha256": "191fcaa24ea3aa246f7d763a2d1f679f308de18ae43f903fe0833f63aac29ce7"
+    },
+    {
+      "path": "experiments/paper2/lunarc/submit_cpu_staging_v3.sh",
+      "role": "submission_script",
+      "sha256": "8bcae4feb43aa19b83b38a38b8fa980f67e7e87c4ae437acbcedbc5fd7ad4003"
+    },
+    {
+      "path": "experiments/paper2/lunarc/harvest_cpu_staging_v3.sh",
+      "role": "harvest_script",
+      "sha256": "44cb5f7da07291dc7f13619b307acc92b1e8d30d06c7d3f57ee03e5ee2bb3440"
+    },
+    {
+      "path": "src/rakl/paper2_cpu_staging.py",
+      "role": "staging_runtime",
+      "sha256": "73195a4368fcabef68520a5b666eb8cc2a96f26ceed0e1f62199060e96de62fb"
+    },
+    {
+      "path": "schemas/paper2-cpu-staging-contract-v3.schema.json",
+      "role": "contract_schema",
+      "sha256": "2a50e007d848ebb8e1d12867503ce771f328f9504d0e72e107a1dda4283a8d3c"
+    },
+    {
+      "path": "schemas/paper2-cpu-staging-construction-receipt-v3.schema.json",
+      "role": "construction_receipt_schema",
+      "sha256": "28f5dc691b53f477b5122c643dddd29687705760b798ea9006506c0c3c7ea513"
+    }
+  ],
+  "bootstrap_policy": {
+    "atomic_candidate_promotion_required": true,
+    "clean_tree_required": true,
+    "detached_checkout_required": true,
+    "exact_origin_url_required": true,
+    "exact_repo_sha_required": true,
+    "existing_repo_never_silently_mutated": true,
+    "successful_bootstrap_receipt_required_before_submission": true
+  },
+  "candidate_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/.paper2-cpu-v3-candidate",
+  "claim_boundary": "Construction, bootstrap, and staging readiness only; zero jobs submitted, zero model executions, and zero evaluated result records. A later V3 execution packet remains blocked until successful native staging and harvest receipts exist and the exact merged checkout is attested.",
+  "construction_parent_sha": "f272a6f964a58f5308f1584a9bfb8902452cf677",
+  "contract_id": "PAPER2_CPU_STAGING_V3",
+  "created_at_utc": "2026-08-10T23:15:47Z",
+  "failure_policy": {
+    "never_reuse_existing_candidate_or_final": true,
+    "partial_submission_job_id_must_be_receipted": true,
+    "preserve_failed_candidate_and_receipt": true
+  },
+  "failure_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/failures/v3",
+  "final_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3",
+  "fs9_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2",
+  "model_execution_permitted": false,
+  "promotion_policy": {
+    "all_artifacts_hash_and_size_verified_before_promotion": true,
+    "atomic_rename_required": true,
+    "final_must_not_exist": true,
+    "installed_version_equality_required": true,
+    "offline_hash_locked_install_required": true,
+    "same_filesystem_candidate_and_final_required": true
+  },
+  "receipt_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3",
+  "schema_version": "paper2-cpu-staging-contract-v3",
+  "staging_attestation_policy": {
+    "construction_parent_ancestor_required": true,
+    "full_distribution_set_equality_required": true,
+    "minimum_free_bytes": 6000000000,
+    "pip_check_required": true,
+    "pip_freeze_all_required": true,
+    "platform_architecture": "x86_64",
+    "repository_tree_sha_required": true,
+    "tensor_device": "cpu",
+    "torch_cuda_must_be_null": true,
+    "torch_version": "2.8.0+cpu"
+  },
+  "submission_policy": {
+    "clean_checkout_required": true,
+    "default_operator_mode": "READY_NOT_SUBMITTED",
+    "exact_repo_sha_required": true,
+    "lunarc_login_host_required": true,
+    "network_probe_must_precede_staging": true,
+    "observed_account_partition_association_required": true
+  }
+}
