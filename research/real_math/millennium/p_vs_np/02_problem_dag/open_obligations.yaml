@@ -127,19 +127,26 @@ active_obligations:
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, low-dimensional feature codes, non-disjoint overlap reuse, and restrictions/projections first"
+    discriminator: "attempt globally multiplexed disjoint pairs, generator-separating pairs, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection constructions first"
   - id: O9d4
     target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C012
     depends_on: [O9d2]
-    residual: C011-R1
-    discriminator: "test code/parity-constrained complements first against low-dimensional feature-code generator separation"
+    artifacts: [C012, local_parity_cover_ceiling]
+    result: "fixed-local parity-correlated families satisfy rho <= t(a+b)+2(t-1)=O(log N); mod-2 inner product satisfies rho <= 3t-2"
+  - id: O9d5
+    target: "construct or refute growing-global-constraint correlated complements whose best known membership intersection-complexity upper bound is superlinear in coordinate count"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d4]
+    residual: C012-R1
+    discriminator: "test linear-code syndrome/check-rank families; record the exact D_intersection upper bound of graph membership before lower-bound search"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d4]
+    depends_on: [O9d5]
 
 negative_checkpoints:
   - id: C002
@@ -156,6 +163,8 @@ negative_checkpoints:
     result: "fixed-gadget block-diagonal complement sums cannot amplify full cover complexity beyond sigma(base)+ceil(log2 t); for C008 this is at most 2+ceil(log2 t)"
   - id: C011
     result: "coordinate-factorized complement tensor powers cannot amplify full cover complexity beyond t*sigma(base); fixed-base products therefore stay O(log N)"
+  - id: C012
+    result: "fixed-local parity aggregation remains easy under source transference: rho <= t(a+b)+2(t-1)=O(log N); in particular the mod-2 inner-product graph has rho <= 3t-2"
 
 finite_checkpoints:
   - id: C008
