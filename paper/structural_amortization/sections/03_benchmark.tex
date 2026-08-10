@@ -24,14 +24,14 @@ The deterministic scaffold in \path{src/rakl/structural_benchmark.py} now exerci
 The exact-subject executable receipt contains six load-bearing Q2/Q3 cases: one Q2 and one Q3 case in each of the three mechanism families. The deliberately semantic-only decision rule licenses high-semantic candidates and rejects low-semantic candidates; it is therefore wrong on all six hard cases by construction. The structural gate instead checks the registered directional witness, QoI, load-bearing relations, invariants and target boundaries. It licenses all three Q2 transfers and rejects all three Q3 decoys.
 
 \begin{center}
-\begin{tabular}{lccc}
+\begin{tabularx}{\linewidth}{@{}lYYY@{}}
 \toprule
-Decision rule & Q2 valid transfers licensed & Q3 invalid transfers accepted & Hard-case correctness \\
+Decision rule & Q2 valid licensed & Q3 invalid accepted & Hard cases correct \\
 \midrule
 Semantic-only control & 0/3 & 3/3 & 0/6 \\
 Structural witness gate & 3/3 & 0/3 & 6/6 \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 This table is a software-conformance result, not a statistical generalization result. The cases were deliberately constructed to separate semantic and structural similarity; their role is to establish that the implementation can express the intended distinction before model-level experiments are authorized. They provide no estimate of performance on naturally occurring cross-domain mappings.
