@@ -47,13 +47,14 @@ jobs:
           latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
+            for n in 1312 1313 1314 1315 1316 1317; do
+              line="$(sed -n "${n}p" main.tex)"
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 1 source line ${n}::$safe"
+            done
             { grep -n -E '^!|LaTeX Error|Undefined control sequence|Emergency stop|Fatal error|^[^ ]+\.tex:[0-9]+:' main.log || true; } | head -40 | while IFS= read -r line; do
               safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
               echo "::error title=Paper 1 LaTeX::$safe"
-            done
-            nl -ba main.tex | sed -n '1304,1320p' | while IFS= read -r line; do
-              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
-              echo "::error title=Paper 1 source context::$safe"
             done
             tail -80 main.log
             exit "$status"
