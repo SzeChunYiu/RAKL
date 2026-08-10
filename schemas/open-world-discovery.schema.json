@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/open-world-discovery.schema.json",
+  "title": "RAKL Open-World Discovery Closure Record",
+  "type": "object",
+  "required": ["function_id", "status", "routes", "lexical_independence_passed", "independent_omission_review", "nearest_work_equivalence_audit"],
+  "properties": {
+    "function_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["OPEN", "BOUNDED_CLOSED"]},
+    "owner_mechanism_id": {"type": ["string", "null"]},
+    "explicit_open_fiber": {"type": ["string", "null"]},
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["route_id", "kind", "query", "completed"],
+        "properties": {
+          "route_id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["EXACT_TERMINOLOGY", "LEXICAL_VARIANTS", "FUNCTION_ONLY", "HISTORICAL_PRECURSOR", "MATHEMATICAL_EQUIVALENT", "IMPLEMENTATION_ANALOG", "METHODOLOGICAL_INSPIRATION", "CITATION_NEIGHBORHOOD", "LITERATURE_BRIDGE", "ADVERSARIAL_ALTERNATIVE", "CROSS_LANGUAGE", "FRESHNESS"]},
+          "query": {"type": "string", "minLength": 1},
+          "completed": {"type": "boolean"},
+          "candidate_ids": {"type": "array", "items": {"type": "string"}},
+          "lexically_independent": {"type": "boolean"},
+          "stable": {"type": "boolean"},
+          "searched_through": {"type": ["string", "null"], "format": "date"},
+          "inapplicable_reason": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "lexical_independence_passed": {"type": "boolean"},
+    "independent_omission_review": {"type": "boolean"},
+    "nearest_work_equivalence_audit": {"type": "boolean"},
+    "freshness_cutoff": {"type": ["string", "null"], "format": "date"},
+    "unresolved_candidate_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [{"if": {"properties": {"status": {"const": "BOUNDED_CLOSED"}}}, "then": {"anyOf": [{"required": ["owner_mechanism_id"], "properties": {"owner_mechanism_id": {"type": "string", "minLength": 1}}}, {"required": ["explicit_open_fiber"], "properties": {"explicit_open_fiber": {"type": "string", "minLength": 1}}}]}}],
+  "additionalProperties": false
+}
