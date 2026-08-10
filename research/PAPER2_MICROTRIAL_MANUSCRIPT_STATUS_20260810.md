@@ -88,14 +88,29 @@ rejects future-dated or reversed event times before output/backend access, and
 retains the prior packet hash as supersession lineage. This is a provenance
 repair, not an empirical result.
 
-After the exact snapshot and frozen environment are staged, rerun preflight. Only
-a `PASS` permits the runner to create model output. Any material change requires a
-new packet before output access. The manuscript remains open for empirical closure
-after this engineering lane because a one-task diagnostic cannot replace the
-matched confirmatory programme.
+After the exact snapshot and frozen environment are staged, do not reinterpret
+the V2 packet as executable. Freeze a chronology-fresh V3 packet and rerun its
+semantic preflight. Only a `PASS` may permit model output. The manuscript remains
+open for empirical closure after this engineering lane because a one-task
+diagnostic cannot replace the matched confirmatory programme.
 
 The registered execution checkout is
 `/projects/hep/fs9/users/scyiu/RAKL-paper2/repo`, the model snapshot is under its
 sibling `models/` tree and each output must be exactly one new child of
 `/projects/hep/fs9/users/scyiu/RAKL-paper2/runs`. These paths are execution
 contracts only; their presence is not asserted by the construction receipt.
+
+## V3 CPU staging preparation
+
+A separate staging-only V3 contract now binds the exact standalone CPython
+archive, a 29-wheel offline hash lock with `torch==2.8.0+cpu`, and all eight
+model/tokenizer files. It adds fail-closed repository bootstrap, network-probe,
+dependent staging, submission and harvest scripts with exact-repository-SHA
+lineage, atomic promotion and preserved failure/refusal receipts. The checked-in
+construction verdict is `READY_NOT_SUBMITTED`: zero jobs, zero model executions
+and zero evaluated result records.
+
+This staging iteration does not mutate or supersede the V2 execution packet and
+does not authorize inference. A chronology-fresh V3 packet and semantic preflight
+may be frozen only after successful native staging and harvest receipts exist.
+See `research/PAPER2_CPU_STAGING_V3_STATUS_20260810.md`.
