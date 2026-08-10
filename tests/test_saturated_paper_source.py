@@ -34,6 +34,11 @@ def _expand_tex(path: Path, seen: set[Path] | None = None) -> str:
         candidate = (path.parent / rel).with_suffix(".tex")
         if not candidate.exists():
             candidate = path.parent / rel
+        if not candidate.exists():
+            # build_identity.tex is intentionally injected only for exact-subject release builds.
+            if rel == "build_identity.tex":
+                return ""
+            raise AssertionError(f"missing TeX input: {candidate}")
         return _expand_tex(candidate, seen.copy())
 
     return re.sub(r"\\input\{([^}]+)\}", repl, text)
