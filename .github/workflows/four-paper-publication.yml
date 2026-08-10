@@ -21,8 +21,10 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with: {python-version: '3.11'}
       - run: pip install -e ".[test]"
-      - name: Normalize Paper IV into section files
-        run: python paper/tools/normalize_paper4_sections.py
+      - name: Normalize publication source
+        run: |
+          python paper/tools/normalize_paper4_sections.py
+          python paper/tools/fix_publication_typography.py
       - name: Full software and formal-conformance suite
         shell: bash
         run: |
@@ -71,13 +73,14 @@ jobs:
           grep -F 'RAKL for Evidence-Governed AI-Assisted Scientific Research' paper/paper2_rakl_framework/final.txt
           grep -F 'Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer' paper/paper3_structural_amortization/final.txt
           grep -F 'Verified Discovery' paper/paper4_verified_discovery/final.txt
-      - name: Commit normalized Paper IV and final PDFs on closeout branch
+      - name: Commit normalized publication sources and final PDFs on closeout branch
         if: github.event_name == 'push'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add paper/paper1_epistemic_mechanics/sections/01_introduction_foundations_state.tex paper/paper1_epistemic_mechanics/sections/03_workspace.tex
           git add paper/paper4_verified_discovery/main.tex paper/paper4_verified_discovery/sections paper/paper4_verified_discovery/build.py
           git add paper/paper1_epistemic_mechanics/final.pdf paper/paper2_rakl_framework/final.pdf paper/paper3_structural_amortization/final.pdf paper/paper4_verified_discovery/final.pdf
           git diff --cached --quiet || git commit -m "Materialize four-paper publication packages and final PDFs [skip ci]"
