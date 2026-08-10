@@ -18,10 +18,18 @@ Use for a new scientific, mathematical, engineering, or modelling problem.
 12. Use residuals to recurse.
 13. Synthesize a global object portrait and, only if required, derive a new formalism that contains surviving prior descriptions as projections/special cases.
 
+## Mathematical-research handoff
+
+If any target is a conjecture, theorem, proof, formalization, or claim of new mathematics, compose this workflow with `mathematical-research.md` before granting mathematical authority. In particular, generated derivations, numerical examples, CAS output, or absence of a counterexample remain proposals/evidence until the mathematical assurance gates classify them.
+
 ## Required question at every step
 
 > What aspect of the object does this step preserve, and what does it throw away?
 
+For mathematical proof edges also ask:
+
+> What exact proposition is claimed, what assumptions does it depend on, and what independent checker or refuter can attack it?
+
 ## Failure rule
 
-If all models fail, do not immediately broaden model complexity. Reopen source, observation, target, identifiability, decomposition, and scale fibers first.
+If all models fail, do not immediately broaden model complexity. Reopen source, observation, target, identifiability, decomposition, and scale fibers first. For mathematical research, resource exhaustion or failed proof search is nonterminal and is never evidence that the conjecture is false.
