@@ -86,6 +86,18 @@ jobs:
           grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/epistemic_mechanics/main.tex
           grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/epistemic_mechanics/main.tex
           grep -F "\\begin{proposition}[Authority-preservation invariant]" paper/build/epistemic_mechanics/main.tex
+      - name: Stage exact-subject saturated chaptered manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/build_saturated_epistemic_mechanics.py \
+            --stage paper/build/saturated_epistemic_mechanics \
+            --subject-sha "$RAKL_SUBJECT_SHA" \
+            --software-tests "$RAKL_SOFTWARE_TESTS"
+          grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/saturated_epistemic_mechanics/build_identity.tex
+          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/saturated_epistemic_mechanics/build_identity.tex
+          grep -F "\\section{Three geometries of scientific memory: Obsidian, J-space and RAKL}" paper/build/saturated_epistemic_mechanics/sections/06_three_geometries.tex
+          grep -F "\\section{Manuscript saturation as a framework specialization}" paper/build/saturated_epistemic_mechanics/sections/14_manuscript_saturation.tex
       - name: Install manuscript build tools
         shell: bash
         run: |
@@ -146,6 +158,24 @@ jobs:
           mkdir -p renders
           pdftoppm -png -r 160 main.pdf renders/page >/dev/null
           test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -gt 0
+      - name: Compile and preflight saturated chaptered PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd paper/build/saturated_epistemic_mechanics
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
+          test -s main.pdf
+          pdfinfo main.pdf | tee pdfinfo.txt
+          pdffonts main.pdf | tee pdffonts.txt
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+            echo "Blocking saturated-paper LaTeX/PDF warning detected" >&2
+            exit 1
+          fi
+          PAGES="$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')"
+          test "$PAGES" -ge 1
+          mkdir -p renders
+          pdftoppm -png -r 160 main.pdf renders/page >/dev/null
+          test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -eq "$PAGES"
       - name: Upload publication review artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -174,6 +204,16 @@ jobs:
             paper/build/epistemic_mechanics/pdfinfo.txt
             paper/build/epistemic_mechanics/pdffonts.txt
             paper/build/epistemic_mechanics/renders/*.png
+            paper/build/saturated_epistemic_mechanics/**/*.tex
+            paper/build/saturated_epistemic_mechanics/BUILD_MANIFEST.json
+            paper/build/saturated_epistemic_mechanics/main.pdf
+            paper/build/saturated_epistemic_mechanics/main.log
+            paper/build/saturated_epistemic_mechanics/latexmk.stdout.log
+            paper/build/saturated_epistemic_mechanics/pdfinfo.txt
+            paper/build/saturated_epistemic_mechanics/pdffonts.txt
+            paper/build/saturated_epistemic_mechanics/fig5_demo_growth.pdf
+            paper/build/saturated_epistemic_mechanics/fig6_demo_context.pdf
+            paper/build/saturated_epistemic_mechanics/renders/*.png
             paper/figures/generated/*.svg
             paper/figures/generated/*.source.json
           if-no-files-found: error
