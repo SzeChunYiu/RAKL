@@ -1,0 +1,94 @@
+name: four-paper-publication
+
+on:
+  push:
+    branches: [publication/four-paper-nature-closeout-20260810]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Bind evaluated source
+        run: echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with: {python-version: '3.11'}
+      - run: pip install -e ".[test]"
+      - name: Normalize Paper IV into section files
+        run: python paper/tools/normalize_paper4_sections.py
+      - name: Full software and formal-conformance suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          pytest | tee pytest.log
+          COUNT=$(python - <<'PY'
+          import re
+          t=open('pytest.log',encoding='utf-8').read(); m=re.findall(r'(\d+) passed',t)
+          if len(m)!=1: raise SystemExit(m)
+          print(m[0])
+          PY
+          )
+          echo "TEST_COUNT=$COUNT" >> "$GITHUB_ENV"
+      - name: Verify four internal Nature-style reviewer gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          for p in paper/paper{1_epistemic_mechanics,2_rakl_framework,3_structural_amortization,4_verified_discovery}; do
+            grep -F 'Blocking concerns after revision: **0**' "$p/review/PUBLICATION_READINESS.md"
+            grep -F 'SATURATED_WITH_BOUNDED_OPEN_WORLD' "$p/review/PUBLICATION_READINESS.md"
+          done
+      - name: Install publication toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Build all four release PDFs
+        run: |
+          python paper/paper1_epistemic_mechanics/build.py --subject-sha "$SOURCE_SHA" --software-tests "$TEST_COUNT"
+          python paper/paper2_rakl_framework/build.py --subject-sha "$SOURCE_SHA" --software-tests "$TEST_COUNT"
+          python paper/paper3_structural_amortization/build.py
+          python paper/paper4_verified_discovery/build.py --subject-sha "$SOURCE_SHA" --software-tests "$TEST_COUNT"
+      - name: Publication PDF preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          for p in paper/paper{1_epistemic_mechanics,2_rakl_framework,3_structural_amortization,4_verified_discovery}; do
+            test -s "$p/final.pdf"
+            pdfinfo "$p/final.pdf" > "$p/pdfinfo.txt"
+            pdffonts "$p/final.pdf" > "$p/pdffonts.txt"
+            pdftotext "$p/final.pdf" "$p/final.txt"
+            if find "$p" -maxdepth 1 -name '*.log' -print0 | xargs -0 -r grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined'; then
+              echo "Blocking LaTeX warning in $p" >&2; exit 1
+            fi
+          done
+          grep -F 'Epistemic Mechanics for Evidence-Governed Scientific Research' paper/paper1_epistemic_mechanics/final.txt
+          grep -F 'RAKL for Evidence-Governed AI-Assisted Scientific Research' paper/paper2_rakl_framework/final.txt
+          grep -F 'Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer' paper/paper3_structural_amortization/final.txt
+          grep -F 'Verified Discovery' paper/paper4_verified_discovery/final.txt
+      - name: Commit normalized Paper IV and final PDFs on closeout branch
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add paper/paper4_verified_discovery/main.tex paper/paper4_verified_discovery/sections paper/paper4_verified_discovery/build.py
+          git add paper/paper1_epistemic_mechanics/final.pdf paper/paper2_rakl_framework/final.pdf paper/paper3_structural_amortization/final.pdf paper/paper4_verified_discovery/final.pdf
+          git diff --cached --quiet || git commit -m "Materialize four-paper publication packages and final PDFs"
+          git push origin HEAD:publication/four-paper-nature-closeout-20260810
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-paper-publication-${{ env.SOURCE_SHA }}
+          path: |
+            paper/paper1_epistemic_mechanics/final.pdf
+            paper/paper2_rakl_framework/final.pdf
+            paper/paper3_structural_amortization/final.pdf
+            paper/paper4_verified_discovery/final.pdf
+            paper/paper*/review/PUBLICATION_READINESS.md
+            paper/PUBLICATION_MANIFEST.json
