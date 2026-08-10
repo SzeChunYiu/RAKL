@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-lunarc-preflight-receipt.schema.json",
+  "title": "Paper 3 LUNARC preflight receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "created_at_utc", "manifest_sha256", "gate_receipt_sha256", "subject_sha", "execution_host", "account", "partition", "fs9_output_dir", "batch_script_sha256", "repo_path", "failures", "submitted", "slurm_job_id", "verdict"],
+  "properties": {
+    "schema_version": {"const": "paper3-lunarc-preflight-receipt-v1"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gate_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "execution_host": {"type": "string", "minLength": 1},
+    "account": {"type": "string", "minLength": 1},
+    "partition": {"type": "string", "minLength": 1},
+    "fs9_output_dir": {"type": "string", "minLength": 1},
+    "batch_script_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "repo_path": {"type": ["string", "null"], "minLength": 1},
+    "failures": {"type": "array", "items": {"type": "string"}},
+    "submitted": {"type": "boolean"},
+    "slurm_job_id": {"type": ["string", "null"]},
+    "verdict": {"enum": ["REFUSE_GATE_CLOSED", "REFUSE_PREFLIGHT_VALIDATION", "READY_NOT_SUBMITTED", "SUBMISSION_FAILED", "SUBMITTED_AFTER_EXACT_GATE_PASS"]},
+    "sbatch_argv": {"type": "array", "items": {"type": "string"}},
+    "submission_error_type": {"type": "string", "minLength": 1}
+  }
+}

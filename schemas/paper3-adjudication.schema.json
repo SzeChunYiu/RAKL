@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-adjudication.schema.json",
+  "title": "Paper 3 external adjudication v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "packet_id", "packet_sha256", "protocol_id", "protocol_sha256", "rubric_id", "rubric_sha256", "adjudicator_id", "input_submission_sha256", "attestation", "items"],
+  "properties": {
+    "schema_version": {"const": "paper3-external-adjudication-v2"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "packet_sha256": {"$ref": "#/$defs/sha256"},
+    "protocol_id": {"const": "paper3-confirmatory-gate-v2"},
+    "protocol_sha256": {"$ref": "#/$defs/sha256"},
+    "rubric_id": {"type": "string", "minLength": 1},
+    "rubric_sha256": {"$ref": "#/$defs/sha256"},
+    "adjudicator_id": {"type": "string", "minLength": 1},
+    "input_submission_sha256": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_or_domain_expert", "independent_of_benchmark_author", "no_result_access_before_resolution", "conflicts_disclosed", "completed_at_utc"],
+      "properties": {
+        "human_or_domain_expert": {"const": true},
+        "independent_of_benchmark_author": {"const": true},
+        "no_result_access_before_resolution": {"const": true},
+        "conflicts_disclosed": {"const": true},
+        "completed_at_utc": {"$ref": "#/$defs/utcTimestamp"}
+      }
+    },
+    "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/adjudicatedJudgement"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utcTimestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "adjudicatedJudgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_id", "semantic_similarity_high", "structural_match", "roles_preserved", "typed_relations_preserved", "invariant_preserved", "boundary_matched", "qoi_matched", "directional_mapping_complete", "transfer_valid", "cannot_assess", "rationale", "evidence_refs", "resolution_rationale"],
+      "properties": {
+        "item_id": {"type": "string", "pattern": "^p3item-[0-9a-f]{20}$"},
+        "semantic_similarity_high": {"type": "boolean"},
+        "structural_match": {"type": "boolean"},
+        "roles_preserved": {"type": "boolean"},
+        "typed_relations_preserved": {"type": "boolean"},
+        "invariant_preserved": {"type": "boolean"},
+        "boundary_matched": {"type": "boolean"},
+        "qoi_matched": {"type": "boolean"},
+        "directional_mapping_complete": {"type": "boolean"},
+        "transfer_valid": {"type": "boolean"},
+        "cannot_assess": {"const": false},
+        "rationale": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "resolution_rationale": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

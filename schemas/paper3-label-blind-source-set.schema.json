@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-label-blind-source-set.schema.json",
+  "title": "Paper 3 fresh label-blind source-item set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_set_id", "authority_status", "frozen_at_utc", "protocol_id", "protocol_sha256", "rubric_id", "rubric_sha256", "label_blind_attestation", "items"],
+  "properties": {
+    "schema_version": {"const": "paper3-label-blind-source-set-v2"},
+    "source_set_id": {"type": "string", "minLength": 1},
+    "authority_status": {"const": "fresh_label_blind_source_items"},
+    "frozen_at_utc": {"$ref": "#/$defs/utcTimestamp"},
+    "protocol_id": {"const": "paper3-confirmatory-gate-v2"},
+    "protocol_sha256": {"$ref": "#/$defs/sha256"},
+    "rubric_id": {"type": "string", "minLength": 1},
+    "rubric_sha256": {"$ref": "#/$defs/sha256"},
+    "label_blind_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["curator_id", "benchmark_author_ids", "no_v1_item_copying", "no_outcome_or_diagnostic_access_during_construction", "frozen_before_annotation"],
+      "properties": {
+        "curator_id": {"type": "string", "minLength": 1},
+        "benchmark_author_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "no_v1_item_copying": {"const": true},
+        "no_outcome_or_diagnostic_access_during_construction": {"const": true},
+        "frozen_before_annotation": {"const": true}
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/sourceItem"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utcTimestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "nonEmptyStrings": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "sourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_item_id", "family", "source_domain", "target_domain", "qoi", "source_evidence", "target_evidence"],
+      "properties": {
+        "source_item_id": {"type": "string", "minLength": 1},
+        "family": {"type": "string", "minLength": 1},
+        "source_domain": {"type": "string", "minLength": 1},
+        "target_domain": {"type": "string", "minLength": 1},
+        "source_surface_terms": {"$ref": "#/$defs/nonEmptyStrings"},
+        "target_surface_terms": {"$ref": "#/$defs/nonEmptyStrings"},
+        "source_skill_tags": {"$ref": "#/$defs/nonEmptyStrings"},
+        "target_skill_tags": {"$ref": "#/$defs/nonEmptyStrings"},
+        "source_dependencies": {"$ref": "#/$defs/nonEmptyStrings"},
+        "target_dependencies": {"$ref": "#/$defs/nonEmptyStrings"},
+        "candidate_load_bearing_invariant": {"type": "string", "minLength": 1},
+        "candidate_load_bearing_boundary": {"type": "string", "minLength": 1},
+        "qoi": {"type": "string", "minLength": 1},
+        "source_evidence": {"$ref": "#/$defs/nonEmptyStrings"},
+        "target_evidence": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    }
+  }
+}

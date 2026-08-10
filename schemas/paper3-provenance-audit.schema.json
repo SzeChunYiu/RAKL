@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-provenance-audit.schema.json",
+  "title": "Paper 3 external provenance audit v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "packet_id", "packet_sha256", "protocol_id", "protocol_sha256", "rubric_id", "rubric_sha256", "coordinator_id", "auditor_id", "verified_source_curator_id", "verified_benchmark_author_ids", "auditor_is_external_human", "auditor_independent_of_benchmark_author", "auditor_verified_input_hashes", "verified_distinct_human_identities", "verified_domain_expertise", "verified_independence_from_benchmark_author", "verified_access_chronology", "verified_person_ids", "submission_sha256", "adjudication_sha256", "audited_at_utc"],
+  "properties": {
+    "schema_version": {"const": "paper3-external-provenance-audit-v2"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "packet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "protocol_id": {"const": "paper3-confirmatory-gate-v2"},
+    "protocol_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rubric_id": {"type": "string", "minLength": 1},
+    "rubric_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "coordinator_id": {"type": "string", "minLength": 1},
+    "auditor_id": {"type": "string", "minLength": 1},
+    "verified_source_curator_id": {"type": "string", "minLength": 1},
+    "verified_benchmark_author_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "auditor_is_external_human": {"const": true},
+    "auditor_independent_of_benchmark_author": {"const": true},
+    "auditor_verified_input_hashes": {"const": true},
+    "verified_distinct_human_identities": {"const": true},
+    "verified_domain_expertise": {"const": true},
+    "verified_independence_from_benchmark_author": {"const": true},
+    "verified_access_chronology": {"const": true},
+    "verified_person_ids": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "submission_sha256": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "adjudication_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "audited_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"}
+  }
+}
