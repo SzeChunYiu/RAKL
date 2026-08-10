@@ -1,0 +1,27 @@
+candidate_id: C001
+claim: "Sparse negated-variable De Morgan circuits for CLIQUE inherit a monotone CLIQUE lower bound on a large independent vertex subset."
+status: PROOF_DRAFT
+route: R001
+
+proof_dependencies:
+  - D1: definition of CLIQUE_{n,k}
+  - D2: De Morgan circuit with negation only at inputs
+  - L1: "alpha(H) >= n^2/(2|E(H)|+n)"
+  - L2: "restriction fixing all negated variables removes every negative literal"
+  - L3: "if U is independent in the negated-variable graph, the registered restriction leaves exactly CLIQUE_{|U|,k} on U"
+
+residuals:
+  - id: C001-R1
+    text: "For dense negative-literal access, the surviving independent set can be too small to transfer a meaningful monotone lower bound."
+  - id: C001-R2
+    text: "Find a structural parameter stronger than raw negated-variable count that limits cancellation while allowing many negative literals."
+  - id: C001-R3
+    text: "Bind the strongest applicable monotone CLIQUE lower bound to exact (r,k) regimes from primary literature."
+
+promotion_blockers:
+  - theorem_prover_artifact_missing
+  - novelty_search_missing
+  - isolated_reviews_missing
+  - primary_parent_source_binding_missing
+
+root_impact: "INTERMEDIATE_ONLY"
