@@ -45,6 +45,11 @@ jobs:
             done
             exit "$status"
           fi
+      - name: Generate fresh receipt-bound figures
+        run: |
+          python -m rakl.mini_research_metrology
+          python -m rakl.mini_archive_demo
+          python paper/generate_demo_figures.py
       - name: Install manuscript build tools
         run: |
           sudo apt-get update -qq
@@ -57,6 +62,7 @@ jobs:
             --stage paper/build/closeout_saturated_epistemic \
             --subject-sha "$(git rev-parse HEAD)" \
             --software-tests 1
+          grep -F '"fig5_demo_growth.pdf"' paper/build/closeout_saturated_epistemic/BUILD_MANIFEST.json
           cd paper/build/closeout_saturated_epistemic
           set +e
           latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
