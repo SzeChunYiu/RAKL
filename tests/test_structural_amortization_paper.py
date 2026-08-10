@@ -68,7 +68,8 @@ def test_paper3_claim_boundary_remains_preregistered_not_result_claim() -> None:
 
 def test_paper3_has_directional_and_boundary_aware_transfer_language() -> None:
     manuscript = _manuscript()
-    assert "directional structural witness" in manuscript
-    assert "non-preserved" in manuscript
-    assert "boundary" in manuscript.lower()
-    assert "need not be transitive" in manuscript
+    lower = manuscript.lower()
+    assert "directional structural witness" in lower
+    assert "non-preserved" in lower
+    assert "boundary" in lower
+    assert "need not be transitive" in lower
