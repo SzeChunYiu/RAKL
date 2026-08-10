@@ -86,7 +86,7 @@ def figure_source_data() -> dict[str, dict[str, Any]]:
 def _panel_label(ax: plt.Axes, label: str) -> None:
     # Use Matplotlib's dedicated left-title slot so the panel label remains
     # outside the data region and cannot collide with marks or uncertainty.
-    ax.set_title(label, loc="left", fontweight="bold", fontsize=8.0, pad=4.0)
+    ax.set_title(label, loc="left", fontweight="bold", fontsize=7.0, pad=4.0)
 
 
 def _save_all(fig: plt.Figure, stem: Path) -> None:
