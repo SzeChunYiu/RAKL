@@ -20,7 +20,7 @@ The relation is directional because a transformation useful in $A$ may require i
 
 \subsection{Transfer gate}
 
-The reference implementation in \path{src/rakl/structural_transfer.py} checks four non-compensatory conditions. First, the source and target endpoints must match the witnessed objects. Second, every required source relation must survive under the role mapping in the target. Third, the source invariants required for the intended operation must be declared and present in the target. Fourth, every required target boundary must match. QoI mismatch is itself a rejection. Domain labels and semantic similarity are not positive license conditions.
+The reference transfer-gate module checks four non-compensatory conditions. First, the source and target endpoints must match the witnessed objects. Second, every required source relation must survive under the role mapping in the target. Third, the source invariants required for the intended operation must be declared and present in the target. Fourth, every required target boundary must match. QoI mismatch is itself a rejection. Domain labels and semantic similarity are not positive license conditions.
 
 This gate is conservative by design. It can return \texttt{CANNOT\_CHECK} for an invalid witness identity and \texttt{REJECTED} for an examined but failed mapping. A low semantic similarity is not a reason to reject when the relations and boundaries are witnessed; a high semantic similarity is not a reason to accept when the load-bearing invariant fails.
 

@@ -10,7 +10,7 @@ For training efficiency, let $T_m(q^*)$ be the minimum cumulative training-token
 \[
 \Delta_T(q^*)=1-\frac{T_{\rm RAKL}(q^*)}{T_p(q^*)}.
 \]
-We report the same target-based comparison for examples and, where measurable, training compute, together with a normalized area under the learning curve over a frozen token range. Structural-OOD is split into structure-known/domain-new tasks and the harder structure-family-held-out boundary; ordinary in-domain performance is retained as a safety check.
+We report the same target-based comparison for examples and, where measurable, training compute, together with a normalized area under the learning curve over a frozen token range. Structural-OOD is split into tasks with known structure but a new domain and the harder boundary in which whole structure families are held out; ordinary in-domain performance is retained as a safety check.
 
 For inference efficiency, a \emph{valid solve} requires task correctness plus the registered transfer and verification gates. Billable inference tokens sum provider-reported input and output tokens across retrieval planning, adaptation, criticism and verification calls. For stratum $s$,
 \[
@@ -22,9 +22,11 @@ Zero valid solves therefore produce an infinite rather than missing cost-per-suc
 
 The amortization claim uses cumulative total cost rather than online tokens alone:
 \[
-C_{\rm total}(n)=C_{\rm induction}+C_{\rm training\ delta}+C_{\rm storage}
-+C_{\rm retrieval}(n)+C_{\rm adaptation}(n)+C_{\rm reasoning}(n)
-+C_{\rm tools}(n)+C_{\rm verification}(n).
+\begin{aligned}
+C_{\rm total}(n)={}&C_{\rm induction}+C_{\rm training\ delta}+C_{\rm storage}\\
+&+C_{\rm retrieval}(n)+C_{\rm adaptation}(n)+C_{\rm reasoning}(n)\\
+&+C_{\rm tools}(n)+C_{\rm verification}(n).
+\end{aligned}
 \]
 The empirical break-even count is the smallest registered reuse count for which RAKL is no more costly than the comparator while the capability target and invalid-transfer ceiling remain satisfied. A workload with no break-even in the registered horizon is reported as such.
 
