@@ -34,18 +34,21 @@ def inspection_report(text: str) -> str:
         "ImplementationSHA",
         "Known-answer engineering trace",
         "Obsidian analogy",
-        "fig1_architecture",
-        "fig2_atlas",
-        "fig3_context",
-        "fig4_self_evolution",
         "fig5_demo_growth",
         "fig6_demo_context",
-        "\\section{Discussion}",
-        "\\section{Limitations",
+        "Current evidence boundary",
+        "Limitations",
+        "Reproducibility",
         "\\begin{thebibliography}",
+        "\\end{thebibliography}",
     )
     lines = text.splitlines()
-    output: list[str] = []
+    output: list[str] = ["=== SECTION HEADINGS ==="]
+    output.extend(
+        f"{index + 1:04d}: {line}"
+        for index, line in enumerate(lines)
+        if line.lstrip().startswith(("\\section", "\\subsection", "\\paragraph"))
+    )
     for needle in needles:
         matches = [index for index, line in enumerate(lines) if needle in line]
         output.append(f"=== {needle} ===")
@@ -53,9 +56,14 @@ def inspection_report(text: str) -> str:
             output.append("NOT FOUND")
             continue
         for index in matches[:3]:
-            start = max(0, index - 2)
-            stop = min(len(lines), index + 4)
+            start = max(0, index - 3)
+            stop = min(len(lines), index + 5)
             output.extend(f"{line_no + 1:04d}: {lines[line_no]}" for line_no in range(start, stop))
+
+    for start, stop in ((292, 370), (430, 491)):
+        output.append(f"=== LINES {start}-{stop} ===")
+        for line_no in range(start - 1, min(len(lines), stop)):
+            output.append(f"{line_no + 1:04d}: {lines[line_no]}")
     return "\n".join(output) + "\n"
 
 
