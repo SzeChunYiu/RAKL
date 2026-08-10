@@ -2,7 +2,7 @@
 
 **State:** ACTIVE INDEPENDENT FRONTIER
 
-This route is intentionally independent of the MCSP threshold-transport lane. It is source-bound to Cavalar and Oliveira, *Boolean Circuit Complexity and Two-Dimensional Cover Problems*, ECCC TR25-033 (2025).
+This route is intentionally independent of the MCSP threshold-transport lane. It is source-bound to Bruno Pasqualotto Cavalar and Igor Oliveira, *Boolean Circuit Complexity and Two-Dimensional Cover Problems*, ECCC TR25-033 (2025).
 
 ## Why this route is active
 
@@ -24,9 +24,9 @@ Construct an explicit polynomial-time decidable graph family `H_N` and prove, fo
 
 or more strongly the same bound for full cover complexity `rho` or intersection complexity `D_cap`.
 
-Because canonical cover complexity is a lower bound on full cover complexity, a canonical lower bound already provides a valid certificate.
+Because canonical cover complexity is a lower bound on full cover complexity, a canonical lower bound would provide a valid certificate. C007 now shows that this canonical subroute has a large forbidden region: if `H_N^c` has a perfect matching, then `rho_can(H_N) <= ceil(log_2 N)`.
 
-This would not solve P versus NP, but it would be a quantitatively new unrestricted-circuit lower-bound checkpoint if it exceeds the strongest source-equivalent baseline after novelty review.
+A super-logarithmic result would not solve P versus NP, but after novelty review it could be a quantitatively new unrestricted-circuit lower-bound checkpoint through the source transference program.
 
 ## Source baseline
 
@@ -42,19 +42,30 @@ for `N=2^n`.
 
 This is the calibration target for every exact-search implementation.
 
-## Candidate graph fibers
+## Candidate graph fibers after C007
 
-No lower bound is claimed for the following families. They are generators only.
+### Retired as super-log canonical targets
 
-- complements of constant-degree bipartite expanders;
-- finite-field inner-product / orthogonality graphs;
-- projective-plane or affine-plane incidence-derived graphs;
-- quadratic-residue / Paley-type bipartite graphs;
-- error-correcting-code incidence graphs;
-- Cayley graphs with strong spectral mixing;
-- recursively composed NEQ-like graphs designed to frustrate pair reuse.
+C007 gives an explicit `ceil(log_2 N)` canonical cover whenever the complement contains a perfect matching. Therefore the following previously proposed families are rejected **for the canonical-cover objective whenever their complement is always perfect-matchable**:
 
-Every family must be rejected early if an explicit small cover construction gives `O(log N)`.
+- constant-degree regular bipartite expanders;
+- regular bipartite Cayley graphs;
+- other regular balanced bipartite complement families.
+
+This retirement does not apply to full cover complexity or graph intersection complexity.
+
+### Still admissible generators
+
+No lower bound is claimed for these families. They are research generators only.
+
+- complements deliberately violating Hall's condition while retaining explicit structure;
+- finite-field incidence constructions with controlled Hall deficiency;
+- projective/affine incidence-derived graphs after an explicit no-perfect-matching audit;
+- irregular code-incidence graphs;
+- recursively composed NEQ-like graphs designed to frustrate pair reuse but also destroy the C007 matching witness;
+- full semi-filter families on explicit regular/expanding complements, where C007 does not provide an upper bound.
+
+Every canonical candidate must first run a perfect-matching/Hall audit. If a perfect matching exists, the super-log canonical route is closed immediately by C007.
 
 ## Canonical semi-filter reduction
 
@@ -67,23 +78,30 @@ When both are nonempty, the canonical semi-filter is
 
 `F_e = {W subseteq U : A_u subseteq W or B_v subseteq W}`.
 
-Candidate C005 records an exact criterion for when a pair `(E,H)` covers `F_e`. This turns the canonical lower-bound subproblem into a finite set-cover problem and supports exact small-instance search.
+C005 records an exact criterion for when a pair `(E,H)` covers `F_e`. C006 recasts a family of pairs as realizable ternary row/column signatures. C007 uses a perfect matching in `U` to realize unconstrained binary label codes and thereby supplies an explicit logarithmic cover.
 
 ## Counterexample-first program
 
 1. Reproduce `rho_can(G_NEQ)=ceil(log_2 N)` on tiny non-power-of-two and power-of-two cases.
-2. Enumerate/symmetry-reduce small structured complements `U` and search for graphs with canonical cover number strictly above `ceil(log_2 N)`.
-3. For any apparent winner, search aggressively for a human-readable short cover before extrapolating.
-4. Only after a stable finite pattern exists, formulate an asymptotic family and a lower-bound invariant.
-5. Check whether the invariant is merely communication complexity, rank, fooling-set size, or another known quantity in disguise.
-6. Bind any asymptotic proof through the source transference theorem before making a circuit-complexity claim.
+2. Before exact canonical search, test whether `U` has a perfect matching. If yes, record the C007 logarithmic ceiling and do not spend asymptotic lower-bound effort on that family.
+3. Enumerate/symmetry-reduce small **Hall-deficient** structured complements and search for canonical cover number strictly above `ceil(log_2 N)`.
+4. In parallel, implement a bounded exact oracle for **full** semi-filter cover complexity on very small graphs, because C007 does not constrain that source-relevant quantity.
+5. For any apparent winner, search aggressively for a human-readable short cover before extrapolating.
+6. Only after a stable finite pattern exists, formulate an asymptotic family and lower-bound invariant.
+7. Check whether the invariant is merely communication complexity, rank, fooling-set size, Hall deficiency, or another known quantity in disguise.
+8. Bind any asymptotic proof through the source transference theorem before making a circuit-complexity claim.
 
-## Important barrier
+## Important barriers
 
 A finite graph with high exact cover number is not an asymptotic circuit lower bound. Random graphs already have linear cover complexity by the source theorem. The scientific burden is **explicitness plus an asymptotic proof**.
 
+C007 adds another barrier specific to the canonical subfamily: expansion often helps guarantee perfect matchings, but a perfect matching gives the explicit logarithmic canonical cover. Therefore a naive plan to combine strong complement expansion with a canonical-cover lower bound was directionally wrong.
+
 ## Current research question
 
-Can canonical semi-filter coverage be bounded using an expansion/spectral property of the complement graph `U`, in a way that forces each pair `(E,H)` to cover only a controlled fraction of edges and therefore requires more than `log N` pairs?
+The primary R004 question is now bifurcated.
 
-The first step is to make pair coverage exact and executable. That is C005 plus the tiny canonical-cover oracle.
+1. **Canonical lane:** can a deliberately Hall-deficient explicit complement force super-logarithmic canonical cover complexity without making the underlying graph trivial or easy to cover by another construction?
+2. **Full-cover lane:** can the source's full semi-filter family exploit structural information that the canonical family discards, yielding an explicit super-logarithmic lower bound even when the complement has a perfect matching?
+
+The second lane currently has higher source-level value because it survives C007 and remains directly connected to the unrestricted-circuit transference theorem.
