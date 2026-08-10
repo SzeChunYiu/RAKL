@@ -1,16 +1,12 @@
 """Exact tiny oracle for canonical graph cover complexity.
 
-This implements the C005 pair-coverage criterion for the canonical
+This implements the C005 pair-coverage criterion, the C007 perfect-matching
+constructor, and the C008 exact three-state normal form for the canonical
 semi-filters used in the R004 two-dimensional cover-complexity route.
 
 The oracle is deliberately tiny and exhaustive. It is a conjecture and
 counterexample generator only. It does not prove asymptotic cover or
 Boolean-circuit lower bounds.
-
-C007 additionally supplies an explicit logarithmic canonical cover whenever
-the complement graph contains a perfect matching. That constructor is an
-executable proof witness for the finite combinatorial lemma, not a substitute
-for theorem-prover formalization or novelty review.
 """
 
 from __future__ import annotations
@@ -87,6 +83,16 @@ def pair_covers_canonical_edge(
     return orientation_1 or orientation_2
 
 
+def union_normalize_pair(
+    universe: frozenset[int],
+    e_set: frozenset[int],
+    h_set: frozenset[int],
+) -> Pair:
+    """C008-L1: add every neither element to both sides."""
+    neither = universe.difference(e_set | h_set)
+    return e_set | neither, h_set | neither
+
+
 def _validate_perfect_matching(
     n_vertices_per_side: int, complement: set[Edge], matching: set[Edge]
 ) -> dict[int, int]:
@@ -161,6 +167,13 @@ def exact_canonical_cover_number(
     *,
     max_complement_edges: int = 10,
 ) -> CanonicalCoverResult:
+    """Return the exact tiny canonical cover number.
+
+    C008 proves that every useful pair can be union-normalized. Each complement
+    edge therefore needs only three states: E-only, H-only, or both. The oracle
+    enumerates all 3^|U| normalized states, deduplicates coverage masks, removes
+    dominated masks, and solves the remaining set-cover instance exactly.
+    """
     if n_vertices_per_side < 2:
         raise ValueError("n_vertices_per_side must be at least 2")
     limit = n_vertices_per_side * n_vertices_per_side
@@ -177,9 +190,11 @@ def exact_canonical_cover_number(
     if not canonical_edges:
         return CanonicalCoverResult(n_vertices_per_side, len(ordered_u), 0, 0, 0)
     masks: set[int] = set()
-    for states in product(range(4), repeat=len(ordered_u)):
-        e_set = frozenset(i for i, state in enumerate(states) if state & 1)
-        h_set = frozenset(i for i, state in enumerate(states) if state & 2)
+    # C008 exact normal form:
+    # 0 = E-only, 1 = H-only, 2 = both/overlap.
+    for states in product(range(3), repeat=len(ordered_u)):
+        e_set = frozenset(i for i, state in enumerate(states) if state in (0, 2))
+        h_set = frozenset(i for i, state in enumerate(states) if state in (1, 2))
         mask = 0
         for bit, (u, v) in enumerate(canonical_edges):
             if pair_covers_canonical_edge(row_fibers[u], column_fibers[v], e_set, h_set):

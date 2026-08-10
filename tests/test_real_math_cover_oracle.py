@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from itertools import combinations
 from pathlib import Path
 import sys
 
@@ -24,6 +25,15 @@ sys.modules[spec.name] = oracle
 spec.loader.exec_module(oracle)
 
 
+def _subsets(universe: frozenset[int]) -> list[frozenset[int]]:
+    items = tuple(sorted(universe))
+    return [
+        frozenset(choice)
+        for size in range(len(items) + 1)
+        for choice in combinations(items, size)
+    ]
+
+
 def test_c005_pair_coverage_orientations() -> None:
     row = frozenset({0})
     column = frozenset({1})
@@ -31,6 +41,32 @@ def test_c005_pair_coverage_orientations() -> None:
     assert oracle.pair_covers_canonical_edge(row, column, frozenset({1}), frozenset({0}))
     assert not oracle.pair_covers_canonical_edge(row, column, frozenset({0, 1}), frozenset({1}))
     assert not oracle.pair_covers_canonical_edge(row, column, frozenset({0}), frozenset({0}))
+
+
+def test_c008_overlap_deletion_can_destroy_coverage() -> None:
+    row = frozenset({0, 1})
+    column = frozenset({2})
+    e_set = frozenset({0, 1})
+    h_set = frozenset({1, 2})
+    assert oracle.pair_covers_canonical_edge(row, column, e_set, h_set)
+    assert not oracle.pair_covers_canonical_edge(
+        row, column, e_set - h_set, h_set - e_set
+    )
+
+
+def test_c008_union_normalization_preserves_all_tiny_covered_fibres() -> None:
+    universe = frozenset(range(4))
+    subsets = _subsets(universe)
+    nonempty = [subset for subset in subsets if subset]
+    for row in nonempty:
+        for column in nonempty:
+            for e_set in subsets:
+                for h_set in subsets:
+                    if not oracle.pair_covers_canonical_edge(row, column, e_set, h_set):
+                        continue
+                    e_norm, h_norm = oracle.union_normalize_pair(universe, e_set, h_set)
+                    assert e_norm | h_norm == universe
+                    assert oracle.pair_covers_canonical_edge(row, column, e_norm, h_norm)
 
 
 def test_neq_source_calibration_on_powers_of_two() -> None:
@@ -65,6 +101,15 @@ def test_c007_rejects_nonperfect_matching() -> None:
     complement = {(0, 0), (1, 1), (2, 2)}
     with pytest.raises(ValueError, match="exactly one edge per row and column"):
         oracle.perfect_matching_canonical_cover_pairs(3, complement, {(0, 0), (1, 1)})
+
+
+def test_c009_hall_deficient_star_biclique_example_has_one_pair_cover() -> None:
+    # Maximum matching size is 2, with star-biclique partition
+    # L0={0,1}, R0={0} and L1={2}, R1={1,2}. C009 predicts <=1 pair.
+    complement = {(0, 0), (1, 0), (2, 1), (2, 2)}
+    result = oracle.exact_canonical_cover_number(3, complement)
+    assert result.canonical_edges > 0
+    assert result.minimum_pairs == 1
 
 
 def test_exhaustive_guard_is_fail_closed() -> None:
