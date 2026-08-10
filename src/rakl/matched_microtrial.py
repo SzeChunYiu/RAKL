@@ -221,20 +221,22 @@ def validate_matched_arms(
 
 @dataclass(frozen=True)
 class PendulumStructuredAnswer:
-    """Sealed machine-scoreable answer schema for the known-answer microtrial.
+    """Sealed machine-scoreable answer schema for the frozen pendulum corpus.
 
-    The LLM may explain its reasoning in a separate text field at execution time,
-    but authority-bearing scores are computed only from these registered fields and
-    source ids. The schema intentionally asks about the contextual distinctions that
-    the deterministic pendulum world was built to test.
+    Source-role fields are intentionally separate.  A source can support one scoped
+    conclusion while being context-misaligned for a different direct comparison
+    (for example S4 supports the small-angle approximation statement but cannot be
+    used as a direct contradiction of the 20-degree finite-amplitude target).
     """
 
     small_angle_is_asymptotic: bool
     finite_amplitude_increases_period: bool
-    period_differs_from_time_to_angle: bool
+    context_distinct_claims_not_direct_contradictions: bool
+    ideal_period_is_mass_invariant: bool
     context_alignment_required_before_contradiction: bool
     supporting_source_ids: tuple[str, ...]
     rejected_as_misaligned_source_ids: tuple[str, ...]
+    refuted_source_ids: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -244,34 +246,73 @@ class PendulumKnownAnswerScore:
     required_support_recall: float
     support_precision: float
     misalignment_recall: float
+    refutation_recall: float
+    refutation_precision: float
     unsupported_source_count: int
     exact_conceptual_pass: bool
 
 
-_PENDULUM_REQUIRED_SUPPORT = frozenset({"S2", "S3", "S7"})
+# Every non-refuted source contributes to at least one registered conclusion in the
+# sealed mini-world.  Role sets are not required to be disjoint: S4 and S5 can be
+# scientifically informative while still being invalid direct comparators for the
+# Earth/moderate-amplitude target.
+_PENDULUM_REQUIRED_SUPPORT = frozenset({"S1", "S2", "S3", "S4", "S5", "S7", "S8"})
+_PENDULUM_ALLOWED_SUPPORT = _PENDULUM_REQUIRED_SUPPORT
 _PENDULUM_MISALIGNED = frozenset({"S4", "S5"})
-_PENDULUM_ALLOWED_SUPPORT = frozenset({"S1", "S2", "S3", "S6", "S7", "S8"})
+_PENDULUM_REQUIRED_REFUTED = frozenset({"S6"})
+
+
+@dataclass(frozen=True)
+class PendulumEvaluatorSourceValidation:
+    valid: bool
+    problems: tuple[str, ...]
+
+
+def validate_pendulum_evaluator_sources(
+    corpus: EvidenceCorpusFingerprint,
+) -> PendulumEvaluatorSourceValidation:
+    """Fail before any model call if the sealed evaluator names absent evidence."""
+
+    corpus_ids = frozenset(corpus.source_ids)
+    problems: list[str] = []
+    for role, ids in (
+        ("required_support", _PENDULUM_REQUIRED_SUPPORT),
+        ("misaligned", _PENDULUM_MISALIGNED),
+        ("required_refuted", _PENDULUM_REQUIRED_REFUTED),
+    ):
+        missing = ids - corpus_ids
+        for source_id in sorted(missing):
+            problems.append(f"evaluator_{role}_source_missing:{source_id}")
+    overlap = _PENDULUM_ALLOWED_SUPPORT & _PENDULUM_REQUIRED_REFUTED
+    for source_id in sorted(overlap):
+        problems.append(f"source_cannot_be_both_allowed_support_and_refuted:{source_id}")
+    return PendulumEvaluatorSourceValidation(not problems, tuple(problems))
 
 
 def score_pendulum_answer(answer: PendulumStructuredAnswer) -> PendulumKnownAnswerScore:
     conceptual_vector = (
         answer.small_angle_is_asymptotic,
         answer.finite_amplitude_increases_period,
-        answer.period_differs_from_time_to_angle,
+        answer.context_distinct_claims_not_direct_contradictions,
+        answer.ideal_period_is_mass_invariant,
         answer.context_alignment_required_before_contradiction,
     )
     conceptual_correct = sum(bool(item) for item in conceptual_vector)
     support = frozenset(answer.supporting_source_ids)
     misaligned = frozenset(answer.rejected_as_misaligned_source_ids)
+    refuted = frozenset(answer.refuted_source_ids)
     required_hits = support & _PENDULUM_REQUIRED_SUPPORT
     supported_hits = support & _PENDULUM_ALLOWED_SUPPORT
     unsupported = support - _PENDULUM_ALLOWED_SUPPORT
+    refuted_hits = refuted & _PENDULUM_REQUIRED_REFUTED
     return PendulumKnownAnswerScore(
         conceptual_correct=conceptual_correct,
         conceptual_total=len(conceptual_vector),
         required_support_recall=len(required_hits) / len(_PENDULUM_REQUIRED_SUPPORT),
         support_precision=(len(supported_hits) / len(support) if support else 0.0),
         misalignment_recall=len(misaligned & _PENDULUM_MISALIGNED) / len(_PENDULUM_MISALIGNED),
+        refutation_recall=len(refuted_hits) / len(_PENDULUM_REQUIRED_REFUTED),
+        refutation_precision=(len(refuted_hits) / len(refuted) if refuted else 0.0),
         unsupported_source_count=len(unsupported),
         exact_conceptual_pass=conceptual_correct == len(conceptual_vector),
     )
