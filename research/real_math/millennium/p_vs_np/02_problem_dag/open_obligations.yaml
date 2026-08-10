@@ -77,17 +77,39 @@ active_obligations:
     target: "calibrate exact canonical-cover search against G_NEQ"
     route: R004
     status: IMPLEMENTED_PENDING_CI
-    artifacts: [C005, canonical_cover_oracle]
+    artifacts: [C005, C006, canonical_cover_oracle]
   - id: O9b
     target: "find an explicit graph family with canonical/full cover lower bound exceeding the log N NEQ baseline"
     route: R004
-    status: ACTIVE
+    status: REFINED_BY_C007
     depends_on: [O9a]
+    residuals: [C007-R1]
+  - id: O9b1
+    target: "prune canonical candidates whose complement has a perfect matching"
+    route: R004
+    status: PROOF_DRAFT_NEGATIVE_CHECKPOINT
+    artifacts: [C007, perfect_matching_canonical_cover_pairs]
+  - id: O9b2
+    target: "search Hall-deficient explicit complement families for super-logarithmic canonical cover complexity"
+    route: R004
+    status: OPEN
+    depends_on: [O9b1]
   - id: O9c
     target: "derive an expansion/spectral invariant that upper-bounds the number of canonical edge semi-filters covered by one pair"
     route: R004
-    status: OPEN
+    status: RETIRED_IN_ORIGINAL_FORM
     depends_on: [O9a]
+    reason: "balanced expansion often yields perfect matchings, while C007 then gives an explicit ceil(log2 N) canonical cover"
+  - id: O9d
+    target: "implement a tiny full-semi-filter cover oracle and search for explicit super-logarithmic full cover candidates not constrained by C007"
+    route: R004
+    status: OPEN_HIGH_PRIORITY
+    depends_on: [O9a, O9b1]
+  - id: O9e
+    target: "propagate any surviving full/intersection cover lower bound through the exact source transference theorem"
+    route: R004
+    status: OPEN
+    depends_on: [O9d]
 
 negative_checkpoints:
   - id: C002
@@ -96,5 +118,7 @@ negative_checkpoints:
     result: "streamable single-copy restriction-recoverable wrappers cannot improve the exponential threshold/length ratio beyond the same cancellation"
   - id: C004
     result: "subexponential black-box copying, including ordinary direct-product/XOR/AND/OR composition, cannot repair the MCSP threshold/length exponent mismatch; even ideal additive direct-sum growth is insufficient"
+  - id: C007
+    result: "if the complement graph contains a perfect matching then canonical cover complexity is at most ceil(log2 N); regular balanced bipartite complements are therefore dead as super-logarithmic canonical targets"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
