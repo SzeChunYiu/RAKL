@@ -1,7 +1,8 @@
 """Exact tiny oracle for canonical graph cover complexity.
 
-This implements the C005 pair-coverage criterion for the canonical
-semi-filters used in the R004 two-dimensional cover-complexity route.
+This implements the C005 pair-coverage criterion and C008 three-state normal
+form for the canonical semi-filters used in the R004 two-dimensional
+cover-complexity route.
 
 The oracle is deliberately tiny and exhaustive. It is a conjecture and
 counterexample generator only. It does not prove asymptotic cover or
@@ -85,6 +86,16 @@ def pair_covers_canonical_edge(
     return orientation_1 or orientation_2
 
 
+def union_normalize_pair(
+    universe: frozenset[int],
+    e_set: frozenset[int],
+    h_set: frozenset[int],
+) -> tuple[frozenset[int], frozenset[int]]:
+    """C008-L1: add every neither element to both sides."""
+    neither = universe.difference(e_set | h_set)
+    return e_set | neither, h_set | neither
+
+
 def _maximal_masks(masks: Iterable[int]) -> list[int]:
     """Discard pair masks contained in another pair mask."""
     maximal: list[int] = []
@@ -102,10 +113,11 @@ def exact_canonical_cover_number(
 ) -> CanonicalCoverResult:
     """Return the exact canonical cover number for a tiny bipartite graph.
 
-    Each complement element has four membership states with respect to a pair
-    (E,H): neither, E only, H only, or both. We enumerate all 4^|U| states,
-    deduplicate the induced canonical-edge coverage masks, remove dominated
-    masks, then solve the remaining set-cover instance exactly by BFS.
+    C008 proves that every useful pair can be union-normalized, so each
+    complement element needs only three states: E-only, H-only, or both.
+    We enumerate all 3^|U| normalized pairs, deduplicate the induced
+    canonical-edge coverage masks, remove dominated masks, then solve the
+    remaining set-cover instance exactly by BFS.
     """
     if n_vertices_per_side < 2:
         raise ValueError("n_vertices_per_side must be at least 2")
@@ -136,10 +148,15 @@ def exact_canonical_cover_number(
         )
 
     masks: set[int] = set()
-    # state 0: neither, 1: E, 2: H, 3: both
-    for states in product(range(4), repeat=len(ordered_u)):
-        e_set = frozenset(i for i, state in enumerate(states) if state & 1)
-        h_set = frozenset(i for i, state in enumerate(states) if state & 2)
+    # C008 exact normal form:
+    # state 0: E-only, state 1: H-only, state 2: both.
+    for states in product(range(3), repeat=len(ordered_u)):
+        e_set = frozenset(
+            i for i, state in enumerate(states) if state in (0, 2)
+        )
+        h_set = frozenset(
+            i for i, state in enumerate(states) if state in (1, 2)
+        )
         mask = 0
         for bit, (u, v) in enumerate(canonical_edges):
             if pair_covers_canonical_edge(
