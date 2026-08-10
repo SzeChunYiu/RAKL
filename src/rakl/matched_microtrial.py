@@ -46,6 +46,83 @@ class MatchedModelConfig:
 
 
 @dataclass(frozen=True)
+class TrialResourceCeiling:
+    """Matched *ceiling*, not matched usage, for a fair workflow comparison.
+
+    RAKL is allowed to spend its budget differently from the direct arm because the
+    preprocessing is the intervention.  The arms must nevertheless face the same
+    externally registered resource envelope.  Actual usage is reported separately.
+    """
+
+    max_model_input_tokens: int
+    max_model_output_tokens: int
+    max_preprocessing_model_tokens: int
+    max_preprocessing_tool_calls: int
+    max_external_retrieval_calls: int
+    max_wall_time_ms: int
+
+    def __post_init__(self) -> None:
+        if min(
+            self.max_model_input_tokens,
+            self.max_model_output_tokens,
+            self.max_preprocessing_model_tokens,
+            self.max_preprocessing_tool_calls,
+            self.max_external_retrieval_calls,
+            self.max_wall_time_ms,
+        ) < 0:
+            raise ValueError("resource ceilings cannot be negative")
+        if self.max_model_input_tokens < 1 or self.max_model_output_tokens < 1 or self.max_wall_time_ms < 1:
+            raise ValueError("model token and wall-time ceilings must be positive")
+
+
+@dataclass(frozen=True)
+class TrialResourceUsage:
+    model_input_tokens: int
+    model_output_tokens: int
+    preprocessing_model_tokens: int
+    preprocessing_tool_calls: int
+    external_retrieval_calls: int
+    wall_time_ms: int
+
+    def __post_init__(self) -> None:
+        if min(
+            self.model_input_tokens,
+            self.model_output_tokens,
+            self.preprocessing_model_tokens,
+            self.preprocessing_tool_calls,
+            self.external_retrieval_calls,
+            self.wall_time_ms,
+        ) < 0:
+            raise ValueError("resource usage cannot be negative")
+
+
+@dataclass(frozen=True)
+class ResourceUsageValidation:
+    within_ceiling: bool
+    problems: tuple[str, ...]
+
+
+def validate_resource_usage(
+    usage: TrialResourceUsage,
+    ceiling: TrialResourceCeiling,
+) -> ResourceUsageValidation:
+    checks = (
+        ("model_input_tokens", usage.model_input_tokens, ceiling.max_model_input_tokens),
+        ("model_output_tokens", usage.model_output_tokens, ceiling.max_model_output_tokens),
+        ("preprocessing_model_tokens", usage.preprocessing_model_tokens, ceiling.max_preprocessing_model_tokens),
+        ("preprocessing_tool_calls", usage.preprocessing_tool_calls, ceiling.max_preprocessing_tool_calls),
+        ("external_retrieval_calls", usage.external_retrieval_calls, ceiling.max_external_retrieval_calls),
+        ("wall_time_ms", usage.wall_time_ms, ceiling.max_wall_time_ms),
+    )
+    problems = tuple(
+        f"resource_ceiling_exceeded:{name}:{actual}>{maximum}"
+        for name, actual, maximum in checks
+        if actual > maximum
+    )
+    return ResourceUsageValidation(not problems, problems)
+
+
+@dataclass(frozen=True)
 class EvidenceCorpusFingerprint:
     source_ids: tuple[str, ...]
     source_hashes: tuple[str, ...]
@@ -91,6 +168,7 @@ class MatchedTrialArm:
     condition: TrialCondition
     model: MatchedModelConfig
     evidence: EvidenceCorpusFingerprint
+    resource_ceiling: TrialResourceCeiling
     tool_policy_id: str
     output_schema_id: str
     question_set_hash: str
@@ -105,6 +183,8 @@ class MatchedTrialArm:
         )
         if any(not item for item in required):
             raise ValueError("trial arm protocol identifiers cannot be empty")
+        if self.resource_ceiling.max_model_output_tokens != self.model.max_output_tokens:
+            raise ValueError("model output-token setting must equal the registered workflow ceiling")
 
 
 @dataclass(frozen=True)
@@ -126,6 +206,8 @@ def validate_matched_arms(
         problems.append("model_configuration_mismatch")
     if direct.evidence != rakl.evidence:
         problems.append("evidence_corpus_mismatch")
+    if direct.resource_ceiling != rakl.resource_ceiling:
+        problems.append("resource_ceiling_mismatch")
     if direct.tool_policy_id != rakl.tool_policy_id:
         problems.append("tool_policy_mismatch")
     if direct.output_schema_id != rakl.output_schema_id:
