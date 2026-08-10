@@ -23,7 +23,7 @@ NEW_BIBLIOGRAPHY_LAYOUT = "\n".join(
 SCHMIDT_REFERENCE_ANCHOR = (
     "M. Schmidt and H. Lipson. Distilling free-form natural laws from experimental data."
 )
-SCHMIDT_REFERENCE_WRAPPED = SCHMIDT_REFERENCE_ANCHOR + r"\linebreak[1]"
+SCHMIDT_REFERENCE_WRAPPED = SCHMIDT_REFERENCE_ANCHOR + r"\linebreak"
 
 
 def _replace_exactly_once(text: str, old: str, new: str, label: str, path: Path) -> str:
