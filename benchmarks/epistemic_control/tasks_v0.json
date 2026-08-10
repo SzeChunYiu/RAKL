@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "status": "deterministic_conformance_pilot_not_confirmatory_llm_benchmark",
+  "tasks": [
+    {
+      "task_id": "epi-context-001",
+      "failure_class": "CONTEXT_MISMATCH",
+      "topology": "CONTRADICTION_RICH",
+      "context_id": "population-A",
+      "target_qoi": "effect-A",
+      "evidence_ids": ["ctx-a", "ctx-b"],
+      "independent_evidence_roots": ["ctx-a", "ctx-b"],
+      "mandatory_evidence_ids": ["ctx-a", "ctx-b"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-estimand-001",
+      "failure_class": "ESTIMAND_MISMATCH",
+      "topology": "SINGLE_DOMINANT_SIGNAL",
+      "context_id": "same-population",
+      "target_qoi": "future-displacement",
+      "expected_qoi": "future-displacement",
+      "evidence_ids": ["estimand-def", "result"],
+      "independent_evidence_roots": ["estimand-def", "result"],
+      "mandatory_evidence_ids": ["estimand-def"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-alias-001",
+      "failure_class": "IDENTITY_ALIAS_FALSE_MERGE",
+      "topology": "PROVENANCE_DEPENDENT",
+      "context_id": "identity-world",
+      "target_qoi": "entity-specific-effect",
+      "evidence_ids": ["entity-a-record", "entity-b-record"],
+      "independent_evidence_roots": ["entity-a-record", "entity-b-record"],
+      "mandatory_evidence_ids": ["entity-a-record", "entity-b-record"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-lineage-001",
+      "failure_class": "EVIDENCE_LINEAGE_DUPLICATION",
+      "topology": "PROVENANCE_DEPENDENT",
+      "context_id": "shared-dataset",
+      "target_qoi": "independent-support-count",
+      "evidence_ids": ["root-dataset", "paper-a", "paper-b"],
+      "independent_evidence_roots": ["root-dataset"],
+      "mandatory_evidence_ids": ["root-dataset"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-pred-mech-001",
+      "failure_class": "PREDICTION_TO_MECHANISM",
+      "topology": "MECHANISM_DISCRIMINATION",
+      "context_id": "heldout-prediction",
+      "target_qoi": "prediction",
+      "evidence_ids": ["predictive-test"],
+      "independent_evidence_roots": ["predictive-test"],
+      "mandatory_evidence_ids": ["predictive-test"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-mech-ident-001",
+      "failure_class": "MECHANISM_TO_IDENTIFICATION",
+      "topology": "MECHANISM_DISCRIMINATION",
+      "context_id": "nonidentified-regime",
+      "target_qoi": "parameter-identification",
+      "evidence_ids": ["mechanism-evidence", "observational-equivalence"],
+      "independent_evidence_roots": ["mechanism-evidence", "observational-equivalence"],
+      "mandatory_evidence_ids": ["observational-equivalence"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-negative-001",
+      "failure_class": "NEGATIVE_HISTORY_ERASURE",
+      "topology": "SINGLE_DOMINANT_SIGNAL",
+      "context_id": "method-search",
+      "target_qoi": "valid-method",
+      "evidence_ids": ["current-evidence"],
+      "independent_evidence_roots": ["current-evidence"],
+      "mandatory_evidence_ids": ["current-evidence"],
+      "negative_history_ids": ["failed-method-v1"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-evaluator-001",
+      "failure_class": "EVALUATOR_CAPTURE",
+      "topology": "PROVENANCE_DEPENDENT",
+      "context_id": "self-improvement",
+      "target_qoi": "fresh-assurance",
+      "evidence_ids": ["development-result", "fresh-test"],
+      "independent_evidence_roots": ["development-result", "fresh-test"],
+      "mandatory_evidence_ids": ["fresh-test"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-mandatory-001",
+      "failure_class": "MANDATORY_EVIDENCE_OMISSION",
+      "topology": "DISTRIBUTED",
+      "context_id": "bounded-context",
+      "target_qoi": "scientific-conclusion",
+      "evidence_ids": ["support", "counterevidence", "scope-note"],
+      "independent_evidence_roots": ["support", "counterevidence", "scope-note"],
+      "mandatory_evidence_ids": ["counterevidence", "scope-note"],
+      "protected_evaluator_id": "epistemic-control-v0"
+    },
+    {
+      "task_id": "epi-owmd-001",
+      "failure_class": "ONTOLOGY_DISCOVERY_MISS",
+      "topology": "DISTRIBUTED",
+      "context_id": "hidden-function",
+      "target_qoi": "mechanism-owner",
+      "evidence_ids": ["functional-signature", "remote-literature"],
+      "independent_evidence_roots": ["functional-signature", "remote-literature"],
+      "mandatory_evidence_ids": ["functional-signature"],
+      "hidden_mechanism_id": "hidden-owner-001",
+      "protected_evaluator_id": "epistemic-control-v0"
+    }
+  ]
+}

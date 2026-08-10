@@ -1,0 +1,281 @@
+[
+  {
+    "id": "many_cases_are_not_proof",
+    "record": {
+      "claim_id": "C1",
+      "computational_support": true
+    },
+    "expected_stage": "COMPUTATIONALLY_SUPPORTED"
+  },
+  {
+    "id": "formalization_roundtrip_failure_blocks_promotion",
+    "record": {
+      "claim_id": "C2",
+      "formalization": {
+        "informal_claim_hash": "i2",
+        "formal_statement_hash": "f2",
+        "accepted": true,
+        "roundtrip_checked": false,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      }
+    },
+    "expected_stage": "FORMALIZED_UNPROVEN",
+    "expected_reason": "formalization_roundtrip_not_checked"
+  },
+  {
+    "id": "proof_for_neighboring_statement_is_rejected",
+    "record": {
+      "claim_id": "C3",
+      "formalization": {
+        "informal_claim_hash": "i3",
+        "formal_statement_hash": "f3",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T3",
+        "theorem_statement_hash": "different-formal-statement",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p3"
+      }
+    },
+    "expected_stage": "BLOCKED_PROOF_ASSURANCE",
+    "expected_reason": "proof_receipt_not_bound_to_formalization_hash"
+  },
+  {
+    "id": "sorry_cannot_close_theorem",
+    "record": {
+      "claim_id": "C4",
+      "formalization": {
+        "informal_claim_hash": "i4",
+        "formal_statement_hash": "f4",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T4",
+        "theorem_statement_hash": "f4",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": ["sorryAx"],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p4"
+      }
+    },
+    "expected_stage": "BLOCKED_PROOF_ASSURANCE",
+    "expected_reason": "proof_depends_on_sorryAx"
+  },
+  {
+    "id": "custom_axiom_cannot_sneak_into_strict_profile",
+    "record": {
+      "claim_id": "C5",
+      "formalization": {
+        "informal_claim_hash": "i5",
+        "formal_statement_hash": "f5",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T5",
+        "theorem_statement_hash": "f5",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": ["MyProject.magic"],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p5"
+      }
+    },
+    "expected_stage": "BLOCKED_PROOF_ASSURANCE",
+    "expected_reason": "proof_depends_on_custom_axiom:MyProject.magic"
+  },
+  {
+    "id": "proof_without_isolated_recheck_is_blocked",
+    "record": {
+      "claim_id": "C6",
+      "formalization": {
+        "informal_claim_hash": "i6",
+        "formal_statement_hash": "f6",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T6",
+        "theorem_statement_hash": "f6",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": false,
+        "source_hash": "p6"
+      }
+    },
+    "expected_stage": "BLOCKED_PROOF_ASSURANCE",
+    "expected_reason": "independent_recheck_not_isolated"
+  },
+  {
+    "id": "machine_proof_does_not_mint_novelty",
+    "record": {
+      "claim_id": "C7",
+      "formalization": {
+        "informal_claim_hash": "i7",
+        "formal_statement_hash": "f7",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T7",
+        "theorem_statement_hash": "f7",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p7"
+      }
+    },
+    "expected_stage": "MACHINE_PROVEN_NOVELTY_UNRESOLVED"
+  },
+  {
+    "id": "known_equivalent_is_rediscovery_not_new_math",
+    "record": {
+      "claim_id": "C8",
+      "formalization": {
+        "informal_claim_hash": "i8",
+        "formal_statement_hash": "f8",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T8",
+        "theorem_statement_hash": "f8",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p8"
+      },
+      "novelty": {
+        "corpus_cutoff": "2026-08-10",
+        "corpora": ["registered-test-corpus"],
+        "search_routes": ["exact", "normalized", "structural"],
+        "canonical_fingerprint": "fp8",
+        "equivalent_found": true,
+        "candidate_matches": ["known-parent-theorem"],
+        "independent_reviewers": 1
+      }
+    },
+    "expected_stage": "VERIFIED_REDISCOVERY"
+  },
+  {
+    "id": "bounded_novel_result_is_not_automatically_new_math_candidate",
+    "record": {
+      "claim_id": "C9",
+      "formalization": {
+        "informal_claim_hash": "i9",
+        "formal_statement_hash": "f9",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T9",
+        "theorem_statement_hash": "f9",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p9"
+      },
+      "novelty": {
+        "corpus_cutoff": "2026-08-10",
+        "corpora": ["registered-test-corpus"],
+        "search_routes": ["exact", "normalized", "structural"],
+        "canonical_fingerprint": "fp9",
+        "equivalent_found": false,
+        "independent_reviewers": 1
+      }
+    },
+    "expected_stage": "BOUNDED_NOVEL_RESULT"
+  },
+  {
+    "id": "all_noncompensatory_gates_are_required_for_new_math_candidate",
+    "record": {
+      "claim_id": "C10",
+      "interestingness_screened": true,
+      "external_mathematical_review": true,
+      "formalization": {
+        "informal_claim_hash": "i10",
+        "formal_statement_hash": "f10",
+        "accepted": true,
+        "roundtrip_checked": true,
+        "boundary_cases_checked": true,
+        "independent_reviewers": 1
+      },
+      "proof": {
+        "theorem_id": "T10",
+        "theorem_statement_hash": "f10",
+        "checker": "lean",
+        "checker_version": "pinned",
+        "accepted": true,
+        "axioms": [],
+        "independent_checker": "comparator",
+        "independent_checker_version": "pinned",
+        "independent_accepted": true,
+        "isolated_recheck": true,
+        "source_hash": "p10"
+      },
+      "novelty": {
+        "corpus_cutoff": "2026-08-10",
+        "corpora": ["registered-test-corpus"],
+        "search_routes": ["exact", "normalized", "structural"],
+        "canonical_fingerprint": "fp10",
+        "equivalent_found": false,
+        "independent_reviewers": 1
+      }
+    },
+    "expected_stage": "NEW_MATHEMATICS_CANDIDATE"
+  }
+]
