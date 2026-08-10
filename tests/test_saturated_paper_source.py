@@ -91,3 +91,15 @@ def test_geometry_and_saturation_boundaries_are_explicit():
     )
     for phrase in required:
         assert phrase in expanded, phrase
+
+
+def test_failed_closed_empirical_preflight_is_not_reported_as_performance_evidence():
+    expanded = _expand_tex(SOURCE / "main.tex")
+    required = (
+        "execution preflight, not an empirical result",
+        "No evaluated task-run record was created",
+        r"\CannotCheck{}",
+        "does not establish model efficiency or scientific superiority",
+    )
+    for phrase in required:
+        assert phrase in expanded, phrase
