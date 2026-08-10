@@ -30,9 +30,11 @@ Fix an alphabet
 
 `A = {0,1}^d`
 
-for a constant `d >= 1`, and a fixed local Boolean predicate
+for a constant `d >= 1`, and a fixed **nonconstant** local Boolean predicate
 
 `q : A x A -> {0,1}`.
+
+The nonconstant assumption guarantees that both local truth values occur. Hence every parity graph below is non-trivial, which is the source-side hypothesis needed for Proposition 38.
 
 For `t >= 1`, define a square bipartite graph `G_t` with left and right vertex sets `A^t` by
 
@@ -46,7 +48,7 @@ The side size is
 
 `N = |A|^t = 2^(d t)`.
 
-Its complement is the even-parity relation. Except in degenerate local predicates, this complement is globally correlated and is not a Cartesian product `U_0^t`; graph/complement membership cannot be certified by inspecting one coordinate independently.
+Its complement is the even-parity relation. In general this complement is globally correlated and is not a Cartesian product `U_0^t`; graph/complement membership cannot be certified by inspecting one coordinate independently.
 
 Let
 
@@ -123,7 +125,7 @@ Therefore
 
 `D_intersection(f_{G_t}^{-1}(1) | B_{2dt}) <= t(a+b) + 2(t-1)`.
 
-Apply Proposition 38 from the primary source to obtain
+Because `q` is nonconstant, `G_t` is non-trivial: choose one local input with `q=1` and one with `q=0`; assigning all coordinates the latter gives even parity, while replacing one coordinate by the former gives odd parity. Proposition 38 therefore applies and gives
 
 `rho(G_t, G_{N,N}) <= t(a+b) + 2(t-1)`.
 
@@ -172,7 +174,7 @@ This also exposes a limitation in the auxiliary `sigma(G)` screening parameter f
 
 ### Adversarial proof review
 
-**Vote: ACCEPT PROOF DRAFT / SOURCE-DERIVED COROLLARY.** The critical checks are that both the local predicate and its complement are explicitly constructed, the recurrence maintains complementary sets, and Proposition 38 applies because `N=2^(dt)`. All are explicit. The theorem must not be extended to aggregators whose intersection complexity is superlinear in `t`.
+**Vote: ACCEPT PROOF DRAFT / SOURCE-DERIVED COROLLARY.** The critical checks are that `q` is nonconstant so the graph is non-trivial, both the local predicate and its complement are explicitly constructed, the recurrence maintains complementary sets, and Proposition 38 applies because `N=2^(dt)`. All are explicit. The theorem must not be extended to aggregators whose intersection complexity is superlinear in `t`.
 
 ### Formal methods
 
