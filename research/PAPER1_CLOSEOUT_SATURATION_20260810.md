@@ -2,7 +2,8 @@
 
 Date: 2026-08-10  
 Branch: `paper/closeout-epistemic-mechanics-20260810`  
-Status: **same-context bounded-saturation candidate; release blocked on exact-source CI and independent external review**.
+Validated implementation/manuscript head: `f558b1d7194d4a1c4c388e2ee260a58ff60b903f`  
+Status: **same-context bounded-saturation and public closeout candidate; independent external review remains open**.
 
 ## Why the previous certificate was reopened
 
@@ -25,7 +26,7 @@ The closeout branch adds an executable authority ledger that distinguishes:
 - append-only certificate/challenge history from the non-monotone currently valid authority view;
 - revocation and supersession from deletion.
 
-The targeted Python/source tests for the new authority object passed in the closeout diagnostic workflow. This is conformance evidence only.
+The targeted Python/source tests for the new authority object pass. The exact long-form manuscript also passes the production publication preflight, including source binding, PDF compilation, minimum-page guard, blocking-warning scan and page rendering. This is formal/software/artifact conformance evidence, not evidence of empirical scientific superiority.
 
 ## Current residual claim after assimilation
 
@@ -84,17 +85,30 @@ Growth vector:
 
 `(0,0,0,0,0,0,0,0,0)`.
 
-## Why this is not yet a release certificate
+## Exact-source closeout evidence
 
-Two independent gates remain blocking:
+Validated head: `f558b1d7194d4a1c4c388e2ee260a58ff60b903f`.
 
-1. **exact-source CI**: the targeted code/source tests are green, but the closeout PDF currently has/had a LaTeX build failure under diagnosis. A broken artifact cannot be saturated for release;
-2. **independent external review**: all closeout saturation passes here are same-context and do not establish independent peer review, novelty completeness or scientific truth.
+At that exact head:
 
-Therefore:
+- repository workflow `test`, run `31411838247`: **SUCCESS**;
+- closeout workflow `closeout-paper1-diagnostics`, run `31411837632`: **SUCCESS**.
+
+The closeout sequence also exposed and repaired several artifact-level faults instead of suppressing them: an unescaped DOI underscore, a long OWMD assimilation-status display, and a layout-test import that incorrectly assumed `paper/` was an installed Python package. None changed the scientific formalism, but each blocked exact-source release until repaired.
+
+## Remaining independent gates
+
+The same-context release gate is no longer blocked by code or artifact conformance. The remaining open coordinates are evidentially different:
+
+1. **independent novelty/formal review** by a process not adaptively authored by the closeout process;
+2. **independent peer/expert review** if a stronger public-review authority claim is desired;
+3. later external criticism or new nearest work, either of which can reopen the saturation suffix.
+
+Therefore, under the present same-context basis:
 
 - `same_context_semantic_flatness_candidate = true`
-- `bounded_saturation_release_ready = false`
+- `exact_source_ci_green = true`
+- `bounded_saturation_release_candidate = true`
 - `independent_saturation = false`
 - `independent_peer_review = false`
 - `empirical_scientific_superiority = false`
