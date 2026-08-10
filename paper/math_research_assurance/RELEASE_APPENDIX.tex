@@ -1,0 +1,32 @@
+\section{Typed discovery search and reference implementation}
+
+The assurance layer controls promotion, but a research system also needs a disciplined way to choose what to try next. We therefore couple theorem assurance to a typed problem-solving transition system. A problem state is represented as
+\[
+S=(\sigma,F,O,R,B,H,\tau),
+\]
+where $\sigma$ is a problem signature, $F$ the current planning facts, $O$ open obligations, $R$ registered representations, $B$ explicit obstructions, $H$ operator history and $\tau$ terminal status. A reusable research operator carries typed preconditions, state effects, targeted blockers, cost, verification debt, boundary risk and failure modes.
+
+The operational structure is deliberately not claimed to be one global lattice. Method composition is partial and generally non-commutative. For example, formal proof search may require a formal-statement fact produced by a prior formalization operator, so the reverse ordering is not licensed. Local lattices or partial orders are used only for relations whose meet/join or comparison obligations are separately established.
+
+The reference planner performs bounded best-first search over candidate operator paths. For a path $\pi$, the current transparent planning score is
+\[
+J(\pi)=C(\pi)+2D(\pi)+2R(\pi)+|B_{\mathrm{remain}}|-3|B_{\mathrm{relieved}}|,
+\]
+where $C$ is modeled cost, $D$ verification debt and $R$ boundary risk. This score is not a probability of correctness. It only prioritizes candidate research actions according to explicit blockers and costs.
+
+Crucially, planning transitions have no terminal write authority. A symbolic operator may propose a representation, lemma, auxiliary object or proof artifact, but only a separately verified terminal certificate may close a problem as a proof, counterexample, relative-independence result, reformulation or partial result. The planner therefore cannot turn path completion into theorem truth by construction.
+
+The implementation surfaces are:
+\begin{itemize}[leftmargin=*]
+\item \texttt{src/rakl/problem\_solving\_algebra.py}: typed problem signatures, obstructions, partial operators, bounded path search and certificate-gated terminal closure;
+\item \texttt{src/rakl/math\_research\_runtime.py}: compilation of theorem-assurance state into blockers and candidate paths;
+\item \texttt{src/rakl/math\_research\_assurance.py}: specification, proof, trust, novelty and value promotion gates;
+\item \texttt{benchmarks/math\_research\_assurance/tasks\_v0.json}: hostile conformance worlds;
+\item \texttt{docs/MATH\_RESEARCH\_QUICKSTART.md}: executable usage path.
+\end{itemize}
+
+\paragraph{Exact release identity.}
+The publication build is bound to implementation candidate \ImplementationSHA{} and records \SoftwareTests{} passing repository tests before PDF construction. The hostile packet checks, among other cases, that finite computation is not promoted to proof, a proof of a neighbouring formal statement is rejected, \texttt{sorryAx} and unregistered custom axioms are blocked, missing isolated rechecking is detected, proof does not mint novelty, rediscovery is not called new mathematics, and research value cannot compensate for missing assurance coordinates. These are implementation-conformance results, not evidence of autonomous-discovery superiority.
+
+\paragraph{Usability boundary.}
+The reference runtime is ready to be used as an auditable planning and promotion layer: users can construct a problem signature and claim record, inspect explicit blockers, obtain candidate operator paths, attach formalization/proof/novelty receipts and query the resulting authority stage. It does not include a universal theorem prover, a complete mathematical literature index or a guarantee that its current operator basis is discovery-optimal. External LLMs, CAS/SAT/SMT tools, proof assistants and literature systems remain replaceable proposal/evaluation backends behind the typed contracts.
