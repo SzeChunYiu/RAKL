@@ -10,8 +10,8 @@ class RuntimeGuardContract:
     """Supplemental invariant bound to an existing atomic research stage.
 
     Round 044 does not add hidden stages to the canonical 17-stage lifecycle. It
-    makes new metrology/discovery checks explicit as guards on already registered
-    stage transitions so execution traces remain machine-auditable.
+    makes new metrology/discovery/storage checks explicit as guards on already
+    registered stage transitions so execution traces remain machine-auditable.
     """
 
     guard_id: str
@@ -46,6 +46,15 @@ def round044_guard_contracts() -> tuple[RuntimeGuardContract, ...]:
     G = RuntimeGuardContract
     S = ResearchStage
     return (
+        G(
+            "CONTENT_ADDRESSED_EVIDENCE_ARCHIVE",
+            S.INGEST_EVIDENCE,
+            "bind canonical source identity to raw-content hash, losslessly compress when smaller, and deduplicate physical bytes without collapsing logical provenance records",
+            ("source_payload", "raw_evidence_archive"),
+            ("raw_evidence_archive", "archive_storage_metrics"),
+            ("CONTENT_HASH_MISMATCH", "CANONICAL_RECORD_REBIND_FORBIDDEN", "ARCHIVE_CAPACITY_UNSATISFIABLE"),
+            "content_addressed_archive.py",
+        ),
         G(
             "LATTICE_PRE_POST_METROLOGY",
             S.UPDATE_ATLAS,
@@ -97,6 +106,7 @@ def validate_round044_guard_contracts(
         seen.add(contract.guard_id)
         problems.extend(f"{contract.guard_id}:{item}" for item in contract.problems())
     required = {
+        "CONTENT_ADDRESSED_EVIDENCE_ARCHIVE",
         "LATTICE_PRE_POST_METROLOGY",
         "ACTIVE_LATTICE_CAPACITY",
         "EXOGENOUS_DISCOVERY_ROUTE_EXPANSION",
