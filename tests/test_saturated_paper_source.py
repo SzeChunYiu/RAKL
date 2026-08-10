@@ -1,13 +1,24 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 from pathlib import Path
-
-from paper.build_v2_2_source import build_v2_2_source
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "paper" / "saturated_epistemic_mechanics" / "source"
+
+
+def _v22_module():
+    sys.path.insert(0, str(ROOT / "paper"))
+    spec = importlib.util.spec_from_file_location(
+        "round050_build_v2_2_source", ROOT / "paper" / "build_v2_2_source.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _expand_tex(path: Path, seen: set[Path] | None = None) -> str:
@@ -51,7 +62,7 @@ def test_all_manuscript_citations_have_unique_bibliography_entries():
 
 def test_saturated_manuscript_is_approximately_three_times_v22_depth():
     expanded = _expand_tex(SOURCE / "main.tex")
-    baseline = build_v2_2_source(subject_sha="0" * 40, software_tests=1)
+    baseline = _v22_module().build_v2_2_source(subject_sha="0" * 40, software_tests=1)
     ratio = len(expanded.split()) / len(baseline.split())
     assert ratio >= 2.95, ratio
 
