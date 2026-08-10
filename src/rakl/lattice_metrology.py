@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
+import json
 from math import comb
 
 from .typed_lattice import TypedKnowledgeLattice
@@ -22,6 +24,50 @@ class LatticeGrowthClass(str, Enum):
     MIXED_DENSIFICATION = "MIXED_DENSIFICATION"
     FLAT = "FLAT"
     CONTRACTION_OR_VIEW_CHANGE = "CONTRACTION_OR_VIEW_CHANGE"
+    COMPARISON_INVALID_BASIS = "COMPARISON_INVALID_BASIS"
+
+
+@dataclass(frozen=True)
+class LatticeMeasurementBasis:
+    """Frozen semantics required for longitudinal lattice-size comparisons.
+
+    Counting occupied ``(fiber, atom-kind)`` cells is meaningful only while the
+    partition itself is stable.  A refactor that renames, splits, merges or changes
+    the semantics of fibers can otherwise manufacture apparent expansion or
+    contraction without any scientific change.  This object fingerprints the
+    measurement convention separately from the measured lattice state.
+    """
+
+    basis_id: str
+    fiber_partition_semantics: str
+    kind_schema_version: str
+    identity_policy_id: str
+    context_schema_id: str
+
+    def __post_init__(self) -> None:
+        if any(
+            not value.strip()
+            for value in (
+                self.basis_id,
+                self.fiber_partition_semantics,
+                self.kind_schema_version,
+                self.identity_policy_id,
+                self.context_schema_id,
+            )
+        ):
+            raise ValueError("all lattice measurement-basis coordinates are required")
+
+    @property
+    def fingerprint(self) -> str:
+        payload = {
+            "basis_id": self.basis_id,
+            "context_schema_id": self.context_schema_id,
+            "fiber_partition_semantics": self.fiber_partition_semantics,
+            "identity_policy_id": self.identity_policy_id,
+            "kind_schema_version": self.kind_schema_version,
+        }
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -51,6 +97,9 @@ class LatticeTransitionMetrics:
     distinct_evidence_source_delta: int
     atom_cell_density_delta: float
     relation_density_delta: float
+    basis_comparable: bool = True
+    basis_fingerprint: str | None = None
+    comparison_issues: tuple[str, ...] = ()
 
     @property
     def flat(self) -> bool:
@@ -58,7 +107,62 @@ class LatticeTransitionMetrics:
 
     @property
     def adds_semantic_volume(self) -> bool:
-        return self.volume_delta_cells > 0
+        return self.basis_comparable and self.volume_delta_cells > 0
+
+
+@dataclass(frozen=True)
+class EpistemicStateSummary:
+    """Target-conditioned coordinates that metrology is not allowed to replace."""
+
+    blocking_epistemic_cuts: int
+    target_support_paths: int
+    distinct_independent_evidence_roots: int
+    negative_history_objects: int
+
+    def __post_init__(self) -> None:
+        if min(
+            self.blocking_epistemic_cuts,
+            self.target_support_paths,
+            self.distinct_independent_evidence_roots,
+            self.negative_history_objects,
+        ) < 0:
+            raise ValueError("epistemic-state coordinates cannot be negative")
+
+
+@dataclass(frozen=True)
+class EpistemicGainVector:
+    """Non-compensatory scientific-progress vector for one registered target.
+
+    It is intentionally not reduced to one scalar.  More nodes or edges are not a
+    scientific benefit unless a target-conditioned coordinate changes in a licensed
+    direction.  Negative-history growth is recorded as learning, not treated as a
+    failure to maximize a positive score.
+    """
+
+    blocking_cuts_closed: int
+    support_paths_opened: int
+    independent_evidence_roots_added: int
+    negative_history_objects_added: int
+
+    @property
+    def target_access_improved(self) -> bool:
+        return self.blocking_cuts_closed > 0 or self.support_paths_opened > 0
+
+    @property
+    def evidential_robustness_improved(self) -> bool:
+        return self.independent_evidence_roots_added > 0
+
+    @property
+    def completely_flat(self) -> bool:
+        return all(
+            value == 0
+            for value in (
+                self.blocking_cuts_closed,
+                self.support_paths_opened,
+                self.independent_evidence_roots_added,
+                self.negative_history_objects_added,
+            )
+        )
 
 
 class ActiveCapacityAction(str, Enum):
@@ -142,7 +246,41 @@ def measure_lattice(lattice: TypedKnowledgeLattice) -> LatticeSnapshotMetrics:
 def compare_lattices(
     before: TypedKnowledgeLattice,
     after: TypedKnowledgeLattice,
+    *,
+    before_basis: LatticeMeasurementBasis | None = None,
+    after_basis: LatticeMeasurementBasis | None = None,
 ) -> LatticeTransitionMetrics:
+    if (before_basis is None) != (after_basis is None):
+        return LatticeTransitionMetrics(
+            growth_class=LatticeGrowthClass.COMPARISON_INVALID_BASIS,
+            volume_delta_cells=0,
+            atom_delta=0,
+            witness_delta=0,
+            evidence_binding_delta=0,
+            distinct_evidence_source_delta=0,
+            atom_cell_density_delta=0.0,
+            relation_density_delta=0.0,
+            basis_comparable=False,
+            comparison_issues=("measurement_basis_missing_on_one_snapshot",),
+        )
+    if before_basis is not None and after_basis is not None:
+        if before_basis.fingerprint != after_basis.fingerprint:
+            return LatticeTransitionMetrics(
+                growth_class=LatticeGrowthClass.COMPARISON_INVALID_BASIS,
+                volume_delta_cells=0,
+                atom_delta=0,
+                witness_delta=0,
+                evidence_binding_delta=0,
+                distinct_evidence_source_delta=0,
+                atom_cell_density_delta=0.0,
+                relation_density_delta=0.0,
+                basis_comparable=False,
+                comparison_issues=("measurement_basis_fingerprint_changed",),
+            )
+        basis_fingerprint = before_basis.fingerprint
+    else:
+        basis_fingerprint = None
+
     left = measure_lattice(before)
     right = measure_lattice(after)
 
@@ -182,6 +320,26 @@ def compare_lattices(
         distinct_evidence_source_delta=source_delta,
         atom_cell_density_delta=right.atom_cell_density - left.atom_cell_density,
         relation_density_delta=right.relation_density - left.relation_density,
+        basis_comparable=True,
+        basis_fingerprint=basis_fingerprint,
+    )
+
+
+def compare_epistemic_state(
+    before: EpistemicStateSummary,
+    after: EpistemicStateSummary,
+) -> EpistemicGainVector:
+    return EpistemicGainVector(
+        blocking_cuts_closed=max(0, before.blocking_epistemic_cuts - after.blocking_epistemic_cuts),
+        support_paths_opened=max(0, after.target_support_paths - before.target_support_paths),
+        independent_evidence_roots_added=max(
+            0,
+            after.distinct_independent_evidence_roots - before.distinct_independent_evidence_roots,
+        ),
+        negative_history_objects_added=max(
+            0,
+            after.negative_history_objects - before.negative_history_objects,
+        ),
     )
 
 
@@ -190,6 +348,11 @@ def evaluate_active_capacity(
     transition: LatticeTransitionMetrics,
     policy: ActiveLatticeCapacityPolicy,
 ) -> ActiveCapacityDecision:
+    if not transition.basis_comparable:
+        return ActiveCapacityDecision(
+            ActiveCapacityAction.COMPACT_OR_DEMOTE_ACTIVE_VIEW,
+            ("lattice_metrology_basis_invalid_remeasure_before_capacity_decision",),
+        )
     if transition.flat:
         return ActiveCapacityDecision(
             ActiveCapacityAction.REJECT_REDUNDANT_ACTIVE_UPDATE,
