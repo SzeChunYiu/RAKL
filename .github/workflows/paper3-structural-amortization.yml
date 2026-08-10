@@ -117,6 +117,10 @@ jobs:
             exit "$status"
           fi
           test -s main.pdf
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+            echo "Blocking Paper 3 LaTeX/PDF warning detected" >&2
+            exit 1
+          fi
       - name: Upload Paper 3 conformance artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
