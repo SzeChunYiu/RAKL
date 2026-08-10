@@ -1,8 +1,25 @@
-from paper.build_epistemic_mechanics import build_epistemic_mechanics_source
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _builder():
+    spec = importlib.util.spec_from_file_location(
+        "epistemic_mechanics_layout_builder",
+        ROOT / "paper" / "build_epistemic_mechanics.py",
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.build_epistemic_mechanics_source
 
 
 def test_release_builder_breaks_long_formal_displays() -> None:
-    text = build_epistemic_mechanics_source(
+    text = _builder()(
         subject_sha="a" * 40,
         software_tests=1,
     )
@@ -12,7 +29,7 @@ def test_release_builder_breaks_long_formal_displays() -> None:
 
 
 def test_release_layout_repairs_leave_formal_terms_present() -> None:
-    text = build_epistemic_mechanics_source(
+    text = _builder()(
         subject_sha="b" * 40,
         software_tests=1,
     )
