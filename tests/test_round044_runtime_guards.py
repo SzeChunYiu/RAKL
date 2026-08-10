@@ -7,8 +7,17 @@ from rakl.round044_runtime_guards import round044_guard_contracts, validate_roun
 def test_round044_runtime_guards_are_complete_and_valid():
     assert validate_round044_guard_contracts() == ()
     guards = round044_guard_contracts()
-    assert len(guards) == 4
+    assert len(guards) == 5
     assert all(not guard.llm_has_authority for guard in guards)
+
+
+def test_archive_guard_binds_lossless_storage_to_evidence_ingestion():
+    by_id = {guard.guard_id: guard for guard in round044_guard_contracts()}
+    archive = by_id["CONTENT_ADDRESSED_EVIDENCE_ARCHIVE"]
+    assert archive.stage is ResearchStage.INGEST_EVIDENCE
+    assert archive.implementation_owner == "content_addressed_archive.py"
+    assert "CANONICAL_RECORD_REBIND_FORBIDDEN" in archive.failure_semantics
+    assert archive.llm_has_authority is False
 
 
 def test_lattice_guards_bind_to_atlas_update_and_context_compile():
