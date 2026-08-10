@@ -1,0 +1,121 @@
+name: paper4-release
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Bind checkout to evaluated subject
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "RAKL_SUBJECT_SHA=$EXPECTED_SHA" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[test]"
+      - name: Run exact-source repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          pytest | tee pytest.log
+          TEST_COUNT="$(python - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path('pytest.log').read_text(encoding='utf-8')
+          matches = re.findall(r'(\d+) passed', text)
+          if len(matches) != 1:
+              raise SystemExit(f'could not identify unique passing-test count: {matches}')
+          print(matches[0])
+          PY
+          )"
+          echo "RAKL_SOFTWARE_TESTS=$TEST_COUNT" >> "$GITHUB_ENV"
+      - name: Run hostile mathematical-research conformance packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee math_assurance_benchmark.json
+          import json
+          from rakl.math_research_benchmark import run_benchmark
+          result = run_benchmark('benchmarks/math_research_assurance/tasks_v0.json')
+          print(json.dumps(result, indent=2, sort_keys=True))
+          if not result['all_passed']:
+              raise SystemExit('mathematical-research hostile benchmark failed')
+          PY
+      - name: Stage exact-subject Paper IV manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/build_math_research_assurance.py \
+            --output paper/build/math_research_assurance/main.tex \
+            --subject-sha "$RAKL_SUBJECT_SHA" \
+            --software-tests "$RAKL_SOFTWARE_TESTS"
+          grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/math_research_assurance/main.tex
+          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/math_research_assurance/main.tex
+          grep -F "\\begin{proposition}[Assurance decomposition for a verifier-gated proof DAG]" paper/build/math_research_assurance/main.tex
+          grep -F "\\section{Typed discovery search and reference implementation}" paper/build/math_research_assurance/main.tex
+          grep -F "\\emph{Nature} 651, 607--613 (2026)" paper/build/math_research_assurance/main.tex
+      - name: Install manuscript build tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-science \
+            lmodern \
+            poppler-utils
+      - name: Compile and preflight Paper IV PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd paper/build/math_research_assurance
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
+          test -s main.pdf
+          pdfinfo main.pdf | tee pdfinfo.txt
+          pdffonts main.pdf | tee pdffonts.txt
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+            echo "Blocking Paper IV LaTeX/PDF warning detected" >&2
+            exit 1
+          fi
+          if grep -F 'UNBOUND' main.tex; then
+            echo "Unbound release identity detected" >&2
+            exit 1
+          fi
+          pdftotext main.pdf main.txt
+          grep -F 'Verified Discovery' main.txt
+          grep -F 'Assurance decomposition for a verifier-gated proof DAG' main.txt
+          grep -F 'Typed discovery search and reference implementation' main.txt
+          mkdir -p renders
+          pdftoppm -png -r 160 main.pdf renders/page >/dev/null
+          PAGES="$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')"
+          test "$PAGES" -ge 1
+          test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -eq "$PAGES"
+      - name: Upload Paper IV publication artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper4-publication-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          path: |
+            paper/build/math_research_assurance/main.tex
+            paper/build/math_research_assurance/main.pdf
+            paper/build/math_research_assurance/main.log
+            paper/build/math_research_assurance/latexmk.stdout.log
+            paper/build/math_research_assurance/pdfinfo.txt
+            paper/build/math_research_assurance/pdffonts.txt
+            paper/build/math_research_assurance/main.txt
+            paper/build/math_research_assurance/renders/*.png
+            math_assurance_benchmark.json
+            pytest.log
+          if-no-files-found: error
