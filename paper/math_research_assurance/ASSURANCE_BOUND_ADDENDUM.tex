@@ -1,0 +1,38 @@
+% Paper IV addendum: long-horizon assurance decomposition.
+% Intended for insertion after the verified-checkpointing proposition.
+
+\subsection{A long-horizon assurance decomposition}
+
+The difference between an unchecked derivation and a verifier-gated research process can be stated as a simple event bound. Let $F$ be the event that a promoted result is false \emph{as the intended mathematical claim}. Let $E_{\mathrm{spec}}$ denote failure of the informal--formal specification alignment gate, and let $E_{\mathrm{trust}}$ denote failure of the proof-checking trust chain, including unsound checker behaviour, unregistered axioms, incorrect dependency identity or artifact substitution. Assume canonical promotion is fail-closed: a result is promoted only when the alignment witness and the exact proof receipt pass their respective gates.
+
+\begin{proposition}[Assurance decomposition for a verifier-gated proof DAG]
+Under the fail-closed promotion rule above,
+\[
+F\subseteq E_{\mathrm{spec}}\cup E_{\mathrm{trust}}.
+\]
+Consequently, for any probability measure describing the deployment environment,
+\[
+\Pr(F)\leq
+\Pr(E_{\mathrm{spec}})+\Pr(E_{\mathrm{trust}}).
+\]
+In particular, local proposal errors made by the LLM do not appear as an additional additive term merely because the research horizon contains many generated steps, provided rejected proposals never enter the trusted proof DAG.
+\end{proposition}
+
+\begin{proof}
+Consider a promoted result outside $E_{\mathrm{spec}}\cup E_{\mathrm{trust}}$. Since $E_{\mathrm{spec}}$ does not occur, the checked formal statement faithfully represents the intended claim under the declared alignment criterion. Since $E_{\mathrm{trust}}$ does not occur, the exact admitted proof artifact is valid under the registered assumptions and verifier semantics. Therefore the intended claim is not false, so $F$ cannot occur. This proves the set inclusion. The probability inequality follows from the union bound. \qed
+\end{proof}
+
+\begin{remark}
+This is an assurance decomposition, not a calibrated numerical guarantee. Estimating either term is a separate empirical problem. The important structural point is that, once every accepted dependency is verifier-gated, a thousand hallucinated candidate moves need not create a thousand hidden logical liabilities. They can create substantial search cost, and they can indirectly increase pressure on formalization or infrastructure, but they acquire truth authority only by passing the explicit gates.
+\end{remark}
+
+For novelty, a distinct error event $E_{\mathrm{novel}}$ must be tracked. A promoted \texttt{NEW\_MATHEMATICS\_CANDIDATE} therefore has a broader research-level risk decomposition,
+\[
+\Pr(F_{\mathrm{research}})
+\leq
+\Pr(E_{\mathrm{spec}})
++\Pr(E_{\mathrm{trust}})
++\Pr(E_{\mathrm{novel}})
++\Pr(E_{\mathrm{value}}),
+\]
+where $E_{\mathrm{value}}$ denotes failure of the declared research-value review criterion. This second expression is likewise a union-bound decomposition, not an assumption that the events are independent.
