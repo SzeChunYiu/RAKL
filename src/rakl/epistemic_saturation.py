@@ -16,13 +16,7 @@ class SaturationStatus(str, Enum):
 
 @dataclass(frozen=True)
 class SaturationBasis:
-    """Frozen semantics for deciding whether substantive epistemic growth has stopped.
-
-    Saturation is meaningful only relative to a fixed scope, identity policy, route
-    family, novelty policy, evidence policy and freshness horizon.  Changing any of
-    these coordinates changes the question and invalidates a longitudinal flatness
-    comparison rather than manufacturing a new saturation claim.
-    """
+    """Frozen semantics for deciding whether substantive epistemic growth has stopped."""
 
     basis_id: str
     scope: str
@@ -61,13 +55,7 @@ class SaturationBasis:
 
 @dataclass(frozen=True)
 class EpistemicGrowthVector:
-    """Non-compensatory marginal knowledge growth in one research/review round.
-
-    Every coordinate records a scientifically meaningful state change.  Negative or
-    adversarial findings count as growth because they narrow the admissible theory
-    space.  Representation-only edits are deliberately excluded and recorded on the
-    round instead, so rewriting or ontology bookkeeping cannot reset saturation.
-    """
+    """Non-compensatory marginal knowledge growth in one research/review round."""
 
     mechanisms_added: int = 0
     derivations_added: int = 0
@@ -116,6 +104,40 @@ class EpistemicGrowthVector:
 
 
 @dataclass(frozen=True)
+class OperatorOrderAudit:
+    """Provenance-bearing perturbation check for expansion/consolidation order.
+
+    The audit does not require Euclidean state equality.  It asks whether swapping
+    expansion and consolidation changes any registered substantive epistemic-growth
+    coordinate under the saturation basis.  Different representation digests are
+    allowed when the substantive difference vector remains flat.
+    """
+
+    audit_id: str
+    expand_then_consolidate_digest: str
+    consolidate_then_expand_digest: str
+    substantive_difference: EpistemicGrowthVector
+    evidence_ids: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if any(
+            not value.strip()
+            for value in (
+                self.audit_id,
+                self.expand_then_consolidate_digest,
+                self.consolidate_then_expand_digest,
+            )
+        ):
+            raise ValueError("operator-order audit identity and endpoint digests are required")
+        if not self.evidence_ids or any(not item.strip() for item in self.evidence_ids):
+            raise ValueError("operator-order audit requires non-empty evidence ids")
+
+    @property
+    def substantively_stable(self) -> bool:
+        return self.substantive_difference.completely_flat
+
+
+@dataclass(frozen=True)
 class SaturationRound:
     round_id: str
     basis_fingerprint: str
@@ -124,6 +146,7 @@ class SaturationRound:
     route_coverage_stable: bool
     omission_audit_passed: bool
     nearest_work_audit_passed: bool
+    operator_order_audit: OperatorOrderAudit
     freshness_cutoff: str
     blocking_fibers: tuple[str, ...] = ()
     representation_only_changes: int = 0
@@ -160,12 +183,7 @@ def audit_bounded_epistemic_saturation(
     required_consecutive_flat_rounds: int = 2,
     required_freshness_cutoff: str | None = None,
 ) -> SaturationReport:
-    """Return a bounded saturation certificate only after repeated substantive flatness.
-
-    The final ``required_consecutive_flat_rounds`` must all be substantively flat and
-    must independently satisfy discovery, audit, route-stability, freshness and
-    blocking-fiber obligations.  Any basis change invalidates the comparison.
-    """
+    """Return bounded saturation only after repeated flat, perturbation-stable rounds."""
 
     if required_consecutive_flat_rounds < 1:
         raise ValueError("required_consecutive_flat_rounds must be positive")
@@ -219,6 +237,8 @@ def audit_bounded_epistemic_saturation(
             reasons.append(f"{item.round_id}:omission_audit_open")
         if not item.nearest_work_audit_passed:
             reasons.append(f"{item.round_id}:nearest_work_audit_open")
+        if not item.operator_order_audit.substantively_stable:
+            reasons.append(f"{item.round_id}:operator_order_perturbation_unstable")
         if item.blocking_fibers:
             reasons.append(f"{item.round_id}:blocking_fibers_open")
         if required_date is not None and date.fromisoformat(item.freshness_cutoff) < required_date:
