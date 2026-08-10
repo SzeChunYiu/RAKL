@@ -1,0 +1,35 @@
+{
+  "output_schema": {
+    "fields": [
+      "small_angle_is_asymptotic:boolean",
+      "finite_amplitude_increases_period:boolean",
+      "context_distinct_claims_not_direct_contradictions:boolean",
+      "ideal_period_is_mass_invariant:boolean",
+      "context_alignment_required_before_contradiction:boolean",
+      "supporting_source_ids:list[string]",
+      "rejected_as_misaligned_source_ids:list[string]",
+      "refuted_source_ids:list[string]"
+    ],
+    "id": "PENDULUM_STRUCTURED_ANSWER_V2"
+  },
+  "question_set_id": "PENDULUM_REGISTERED_QUESTIONS_001",
+  "questions": [
+    {
+      "prompt": "For the supplied simple-pendulum evidence, state whether the usual small-angle period law is exact for arbitrary amplitude or is an approximation/asymptotic relation, and state whether the first finite-amplitude correction increases or decreases the period.",
+      "question_id": "Q1"
+    },
+    {
+      "prompt": "Can S4, which states amplitude independence inside the small-angle approximation, or S5, which concerns Moon gravity, be treated as direct contradictions of the 1 m, 20-degree Earth finite-amplitude conclusion? State the context/regime alignment requirement before declaring contradiction.",
+      "question_id": "Q2"
+    },
+    {
+      "prompt": "At fixed length, gravity and ideal/simple-pendulum regime, state whether period depends on bob mass. Identify the source id containing the mass-dependence claim that should remain refuted and identify evidence supporting the mass-invariance conclusion.",
+      "question_id": "Q3"
+    },
+    {
+      "prompt": "Return source ids that support one or more registered conclusions in this mini-world, source ids that are informative but context-misaligned for a direct contradiction of the Earth/moderate-amplitude target, and source ids whose scientific claim is refuted by the frozen evidence.",
+      "question_id": "Q4"
+    }
+  ],
+  "schema_version": "paper2-pendulum-question-set-v1"
+}
