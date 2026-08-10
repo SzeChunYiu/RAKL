@@ -18,6 +18,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "RAKL_SUBJECT_SHA=$EXPECTED_SHA" >> "$GITHUB_ENV"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
@@ -51,20 +52,20 @@ jobs:
           set -euo pipefail
           python paper/build_v2_1_source.py \
             --stage paper/build/v2_1 \
-            --subject-sha "$GITHUB_SHA" \
+            --subject-sha "$RAKL_SUBJECT_SHA" \
             --software-tests "$RAKL_SOFTWARE_TESTS"
           grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/v2_1/main.tex
-          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$GITHUB_SHA}}" paper/build/v2_1/main.tex
+          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/v2_1/main.tex
       - name: Stage exact-subject V2.2 framework manuscript
         shell: bash
         run: |
           set -euo pipefail
           python paper/build_v2_2_source.py \
             --stage paper/build/v2_2 \
-            --subject-sha "$GITHUB_SHA" \
+            --subject-sha "$RAKL_SUBJECT_SHA" \
             --software-tests "$RAKL_SOFTWARE_TESTS"
           grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/v2_2/main.tex
-          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$GITHUB_SHA}}" paper/build/v2_2/main.tex
+          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/v2_2/main.tex
           grep -F "\\section{Workspace-gated research cognition and open-world discovery}" paper/build/v2_2/main.tex
       - name: Finalize deterministic release typography
         shell: bash
@@ -80,11 +81,11 @@ jobs:
           set -euo pipefail
           python paper/build_epistemic_mechanics.py \
             --output paper/build/epistemic_mechanics/main.tex \
-            --subject-sha "$GITHUB_SHA" \
+            --subject-sha "$RAKL_SUBJECT_SHA" \
             --software-tests "$RAKL_SOFTWARE_TESTS"
           grep -F "\\newcommand{\\SoftwareTests}{$RAKL_SOFTWARE_TESTS}" paper/build/epistemic_mechanics/main.tex
-          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$GITHUB_SHA}}" paper/build/epistemic_mechanics/main.tex
-          grep -F "\\begin{theorem}[Workspace non-authority]" paper/build/epistemic_mechanics/main.tex
+          grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/epistemic_mechanics/main.tex
+          grep -F "\\begin{proposition}[Authority-preservation invariant]" paper/build/epistemic_mechanics/main.tex
       - name: Install manuscript build tools
         shell: bash
         run: |
@@ -148,7 +149,7 @@ jobs:
       - name: Upload publication review artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: publication-review-${{ github.sha }}
+          name: publication-review-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
             paper/build/v2_1/main.tex
             paper/build/v2_1/main.pdf
