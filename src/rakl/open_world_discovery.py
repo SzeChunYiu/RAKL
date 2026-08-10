@@ -152,12 +152,46 @@ class DiscoveryRouteRecord:
     def __post_init__(self) -> None:
         if not self.route_id or not self.query.strip():
             raise ValueError("route identity and query are required")
-        if not self.completed and not self.inapplicable_reason:
-            return
         if self.kind is OWMDRouteKind.FRESHNESS and self.completed:
             if self.searched_through is None:
                 raise ValueError("completed freshness route requires searched_through")
             date.fromisoformat(self.searched_through)
+
+
+class DiscoveryAuditKind(str, Enum):
+    OMISSION_REVIEW = "OMISSION_REVIEW"
+    NEAREST_WORK_EQUIVALENCE = "NEAREST_WORK_EQUIVALENCE"
+
+
+@dataclass(frozen=True)
+class DiscoveryAuditEvidence:
+    audit_id: str
+    function_id: str
+    kind: DiscoveryAuditKind
+    reviewer_context_id: str
+    evidence_ids: tuple[str, ...]
+    completed: bool
+    independent: bool = False
+
+    def __post_init__(self) -> None:
+        if any(
+            not value.strip()
+            for value in (self.audit_id, self.function_id, self.reviewer_context_id)
+        ):
+            raise ValueError("discovery audit identity, function and reviewer context are required")
+        if not self.evidence_ids or any(not value.strip() for value in self.evidence_ids):
+            raise ValueError("discovery audit requires non-empty evidence identifiers")
+
+
+@dataclass(frozen=True)
+class UnresolvedCandidateFiber:
+    candidate_id: str
+    fiber_id: str
+    reason: str
+
+    def __post_init__(self) -> None:
+        if any(not value.strip() for value in (self.candidate_id, self.fiber_id, self.reason)):
+            raise ValueError("unresolved-candidate fiber requires candidate, fiber and reason")
 
 
 class DiscoveryClosureStatus(str, Enum):
@@ -171,11 +205,14 @@ class DiscoveryClosureReport:
     function_id: str
     owner_mechanism_id: Optional[str]
     explicit_open_fiber: Optional[str]
+    omission_review_id: Optional[str]
+    nearest_work_audit_id: Optional[str]
     missing_route_kinds: tuple[str, ...]
     lexical_independence_passed: bool
     citation_neighborhood_stable: bool
     freshness_cutoff: Optional[str]
     unresolved_candidate_ids: tuple[str, ...]
+    unresolved_fiber_ids: tuple[str, ...]
     reasons: tuple[str, ...]
 
     @property
@@ -205,6 +242,22 @@ def _lexically_independent(
     return False
 
 
+def _valid_audit(
+    audit: Optional[DiscoveryAuditEvidence],
+    *,
+    kind: DiscoveryAuditKind,
+    function_id: str,
+    require_independent: bool,
+) -> bool:
+    return bool(
+        audit is not None
+        and audit.kind is kind
+        and audit.function_id == function_id
+        and audit.completed
+        and (audit.independent or not require_independent)
+    )
+
+
 def audit_bounded_discovery_closure(
     requirement: CapabilityRequirement,
     routes: Iterable[DiscoveryRouteRecord],
@@ -212,9 +265,9 @@ def audit_bounded_discovery_closure(
     owner: Optional[CapabilityOwnerRecord] = None,
     explicit_open_fiber: Optional[str] = None,
     candidates: Iterable[MechanismCandidate] = (),
-    independent_omission_review: bool,
-    nearest_work_equivalence_audit: bool,
-    unresolved_preserved: bool,
+    omission_review: Optional[DiscoveryAuditEvidence],
+    nearest_work_audit: Optional[DiscoveryAuditEvidence],
+    unresolved_fibers: Iterable[UnresolvedCandidateFiber] = (),
     cross_language_applicable: bool = False,
 ) -> DiscoveryClosureReport:
     observed = tuple(routes)
@@ -256,9 +309,26 @@ def audit_bounded_discovery_closure(
             if candidate.assimilation is AssimilationStatus.UNRESOLVED
         )
     )
+    fiber_tuple = tuple(unresolved_fibers)
+    if len({fiber.candidate_id for fiber in fiber_tuple}) != len(fiber_tuple):
+        raise ValueError("unresolved candidate cannot be bound to multiple closure fibers")
+    preserved_by_candidate = {fiber.candidate_id: fiber.fiber_id for fiber in fiber_tuple}
+    unresolved_preserved = all(candidate_id in preserved_by_candidate for candidate_id in unresolved)
 
     owner_ok = owner is not None and owner.function_id == requirement.function_id
     open_fiber_ok = bool(explicit_open_fiber and explicit_open_fiber.strip())
+    omission_ok = _valid_audit(
+        omission_review,
+        kind=DiscoveryAuditKind.OMISSION_REVIEW,
+        function_id=requirement.function_id,
+        require_independent=True,
+    )
+    nearest_ok = _valid_audit(
+        nearest_work_audit,
+        kind=DiscoveryAuditKind.NEAREST_WORK_EQUIVALENCE,
+        function_id=requirement.function_id,
+        require_independent=False,
+    )
     reasons: list[str] = []
 
     if owner is not None and owner.function_id != requirement.function_id:
@@ -273,10 +343,10 @@ def audit_bounded_discovery_closure(
         reasons.append("citation_neighborhood_not_stable")
     if freshness_cutoff is None:
         reasons.append("freshness_scan_missing")
-    if not independent_omission_review:
-        reasons.append("independent_omission_review_missing")
-    if not nearest_work_equivalence_audit:
-        reasons.append("nearest_work_equivalence_audit_missing")
+    if not omission_ok:
+        reasons.append("independent_omission_review_missing_or_unverifiable")
+    if not nearest_ok:
+        reasons.append("nearest_work_equivalence_audit_missing_or_unverifiable")
     if unresolved and not unresolved_preserved:
         reasons.append("unresolved_candidates_not_preserved_as_fibers")
 
@@ -286,11 +356,18 @@ def audit_bounded_discovery_closure(
         function_id=requirement.function_id,
         owner_mechanism_id=owner.mechanism_id if owner_ok and owner else None,
         explicit_open_fiber=explicit_open_fiber if open_fiber_ok else None,
+        omission_review_id=omission_review.audit_id if omission_ok and omission_review else None,
+        nearest_work_audit_id=nearest_work_audit.audit_id if nearest_ok and nearest_work_audit else None,
         missing_route_kinds=missing,
         lexical_independence_passed=lexical_ok,
         citation_neighborhood_stable=citation_stable,
         freshness_cutoff=freshness_cutoff,
         unresolved_candidate_ids=unresolved,
+        unresolved_fiber_ids=tuple(
+            preserved_by_candidate[candidate_id]
+            for candidate_id in unresolved
+            if candidate_id in preserved_by_candidate
+        ),
         reasons=tuple(reasons),
     )
 
