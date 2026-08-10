@@ -33,7 +33,7 @@ def _validate_n(n_vertices_per_side: int) -> None:
 
 def _validate_matching(n_vertices_per_side: int, matching: Iterable[Edge]) -> tuple[Edge, ...]:
     _validate_n(n_vertices_per_side)
-    edges = tuple(matching)
+    edges = tuple(sorted(matching))
     if not edges:
         raise ValueError("matching must be non-empty")
     for u, v in edges:
