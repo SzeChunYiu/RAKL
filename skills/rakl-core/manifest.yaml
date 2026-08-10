@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.5.0
 
 always_load:
   - static/core/principles.md
@@ -8,6 +8,7 @@ axes:
   workflow:
     allowed:
       - problem-solving
+      - mathematical-research
       - perspective-discovery
       - literature-absorption
       - failure-diagnosis
@@ -17,6 +18,8 @@ axes:
     mappings:
       problem-solving:
         - workflows/problem-solving.md
+      mathematical-research:
+        - workflows/mathematical-research.md
       perspective-discovery:
         - workflows/perspective-discovery.md
       literature-absorption:
@@ -32,7 +35,9 @@ axes:
 
 routing_hints:
   problem-solving:
-    detect: "new question, derive, explain, build model, solve, prove, formalize"
+    detect: "new question, derive, explain, build model, solve"
+  mathematical-research:
+    detect: "theorem, conjecture, proof, formalize mathematics, Lean, Isabelle, Coq, new mathematics, mathematical discovery"
   perspective-discovery:
     detect: "missing perspectives, blind spots, broaden viewpoint, repeated search vocabulary, global picture, what facets are missing"
   literature-absorption:
@@ -51,19 +56,30 @@ workflow_composition:
     recommended_pre_steps:
       - perspective-discovery
     conditional_steps:
+      - mathematical-research
       - mechanism-invention
+  mathematical-research:
+    recommended_pre_steps:
+      - perspective-discovery
+      - literature-absorption
+    conditional_steps:
+      - failure-diagnosis
+      - mechanism-invention
+      - self-rakl
   literature-absorption:
     recommended_pre_steps:
       - perspective-discovery
   failure-diagnosis:
     conditional_steps:
       - perspective-discovery
+      - mathematical-research
       - mechanism-invention
   mechanism-invention:
     recommended_pre_steps:
       - failure-diagnosis
       - perspective-discovery
     conditional_steps:
+      - mathematical-research
       - self-rakl
 
 invention_resources:
@@ -74,6 +90,7 @@ invention_resources:
   search_controller: src/rakl/search_controller.py
   dimensional_oracle: src/rakl/math_oracles.py
   formal_oracles: src/rakl/formal_oracles.py
+  mathematical_research_assurance: src/rakl/math_research_assurance.py
   hard_gates: src/rakl/hard_gates.py
   hidden_world_benchmark: src/rakl/invention_benchmark.py
 
@@ -101,6 +118,14 @@ invariants:
   - semantic_saturation_not_paper_count
   - knowledge_saturation_is_not_problem_closure
   - native_residual_reopens_relevant_fiber
+  - computational_support_never_promotes_to_theorem
+  - formal_proof_requires_statement_alignment
+  - proof_dependencies_must_be_audited
+  - generated_proofs_require_isolated_recheck_for_strict_assurance
+  - machine_proven_never_implies_novel
+  - new_math_claim_requires_bounded_novelty_certificate
+  - novelty_is_defeasible_as_corpus_expands
+  - verified_checkpoints_convert_generator_error_into_search_cost_not_truth_authority
 
 schemas:
   projection: ../../schemas/projection.schema.json
