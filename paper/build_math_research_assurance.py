@@ -58,6 +58,32 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         1,
     )
 
+    # The semantic promotion chain is intentionally long.  Render it as a
+    # two-row aligned relation rather than a single unbreakable display on A4.
+    promotion_old = """\\[
+\\texttt{CONJECTURE}
+\\rightarrow
+\\texttt{FORMALIZED\\_UNPROVEN}
+\\rightarrow
+\\texttt{MACHINE\\_PROVEN}
+\\rightarrow
+\\texttt{BOUNDED\\_NOVEL\\_RESULT}
+\\rightarrow
+\\texttt{NEW\\_MATHEMATICS\\_CANDIDATE}.
+\\]"""
+    promotion_new = """\\[
+\\begin{aligned}
+\\texttt{CONJECTURE}
+&\\rightarrow \\texttt{FORMALIZED\\_UNPROVEN}
+\\rightarrow \\texttt{MACHINE\\_PROVEN}\\\\
+&\\rightarrow \\texttt{BOUNDED\\_NOVEL\\_RESULT}
+\\rightarrow \\texttt{NEW\\_MATHEMATICS\\_CANDIDATE}.
+\\end{aligned}
+\\]"""
+    if text.count(promotion_old) != 1:
+        raise RuntimeError("Paper IV promotion-chain anchor changed")
+    text = text.replace(promotion_old, promotion_new, 1)
+
     # Normalize AlphaProof to the Nature version-of-record metadata while using
     # the DOI as the stable anchor, rather than relying on TeX line formatting.
     alpha_old = "(2025). doi:10.1038/s41586-025-09833-y."
@@ -74,6 +100,7 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         r"\section{Preregistered evaluation}",
         r"\section{Limitations}",
         r"\begin{thebibliography}{9}",
+        r"\begin{aligned}",
         "Nature} 651, 607--613 (2026). doi:10.1038/s41586-025-09833-y.",
     )
     for fragment in required_fragments:
