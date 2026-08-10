@@ -82,7 +82,25 @@ proof = ProofReceipt(
 )
 ```
 
-The strict profile blocks `sorryAx`, unregistered custom axioms, mismatched theorem hashes and missing isolated rechecks.
+The strict profile blocks `sorryAx`, unregistered custom axioms, missing proof/checker identities, mismatched theorem hashes and missing isolated rechecks.
+
+### Optional: persist the theorem/lemma as a verified proof-DAG checkpoint
+
+```python
+from rakl.proof_dag import ProofDAG, ProofNode, ProofNodeKind, add_node, verify_checkpoint
+
+dag = add_node(
+    ProofDAG(),
+    ProofNode(
+        node_id="lemma-001",
+        kind=ProofNodeKind.LEMMA,
+        statement_hash=formalization.formal_statement_hash,
+    ),
+)
+dag = verify_checkpoint(dag, node_id="lemma-001", receipt=proof)
+```
+
+A failed or refuted node should remain in the DAG as negative history. Dependency cycles in proof-bearing relations fail closed.
 
 ## 5. Attach a bounded novelty certificate
 
