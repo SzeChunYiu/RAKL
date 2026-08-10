@@ -45,3 +45,28 @@ jobs:
             done
             exit "$status"
           fi
+      - name: Install manuscript build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
+      - name: Build chaptered Paper 2 and expose LaTeX failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/build_saturated_epistemic_mechanics.py \
+            --stage paper/build/closeout_saturated_epistemic \
+            --subject-sha "$(git rev-parse HEAD)" \
+            --software-tests 1
+          cd paper/build/closeout_saturated_epistemic
+          set +e
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { grep -n -E '^!|LaTeX Error|Undefined control sequence|Emergency stop|Fatal error|Missing \\$ inserted|^[^ ]+\.tex:[0-9]+:' main.log || true; } | head -60 | while IFS= read -r line; do
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 2 LaTeX::$safe"
+            done
+            tail -100 main.log
+            exit "$status"
+          fi
+          test -s main.pdf
