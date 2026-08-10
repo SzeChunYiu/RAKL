@@ -1,0 +1,76 @@
+{
+  "blocking_code_or_artifact_findings_remaining": [],
+  "claim_boundary": "This same-context review is not independent review, peer review, external annotation or evidence that Paper 3 is submission-ready.",
+  "created_at_utc": "2026-08-10T21:10:00Z",
+  "external_evidence_gate": {
+    "open_concern_ids": [
+      "P3-V2S-R4-EXTERNAL-EVIDENCE"
+    ],
+    "passed": false,
+    "required_next": "Merge the neutral source set, then generate a new subject-bound packet before soliciting external annotators."
+  },
+  "internal_verdict": "INTERNALLY_READY_TO_REGENERATE_EXTERNAL_PACKET_AFTER_MERGE",
+  "lenses": [
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R4-SCOPE",
+          "finding": "The repair is disclosed as chronology hygiene and negative history, not scientific evidence.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "editor_novelty_significance"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R4-SOURCE-ID-LEAKAGE",
+          "finding": "All 16 identifiers are neutral p3src-NNN codes and all non-identifier item payloads remain unchanged.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2S-R4-DISCARDED-PACKET",
+          "finding": "The precommit packet was never committed and its mode-0600 FS9 linkage was removed.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2S-R4-EXTERNAL-EVIDENCE",
+          "finding": "Zero external judgements exist; class support and signal remain cannot-check.",
+          "status": "open_external_gate"
+        }
+      ],
+      "lens": "methods_statistics_mechanism"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R4-FIGURE",
+          "finding": "No quantitative outcome or figure is added.",
+          "status": "not_applicable"
+        },
+        {
+          "concern_id": "P3-V2S-R4-LINEAGE",
+          "finding": "The superseded and repaired source hashes, discarded packet/linkage hashes, manuscript and exact workflow are retained.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "figures_reproducibility_claim_boundary"
+    }
+  ],
+  "object": "pre-annotation neutralization of Paper 3 v2 curator source identifiers",
+  "qoi": "whether the repaired source artifact is ready for a new opaque packet without carrying avoidable outcome hints",
+  "review_class": "same_context_internal_review_not_independent_peer_review",
+  "review_id": "paper3-v2-source-id-repair-internal-review-20260810",
+  "schema_version": "paper3-v2-source-id-repair-internal-review-v1",
+  "subject_artifact_sha256": {
+    ".github/workflows/paper3-v2-source-id-repair.yml": "0b064ae5ddb67ad7edad9e92db1750093af2e539009db1ecf08c486ed3c59642",
+    "paper/structural_amortization/README_V4.md": "c01da4aeea429f788b63b35987e5cf41b64c7144d08ba9b4f34686e0f0ca12c2",
+    "paper/structural_amortization/main_v4.tex": "3d24626cf400ba0b9db9d33e777793ad45608b6f08b8726aed28c9eaef546c66",
+    "paper/structural_amortization/sections/03_benchmark_v4.tex": "afbfc41e2c45a4b0c4915fc09f60d821b157eb80d952fe03935f2dfed8646c20",
+    "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json": "e4f32f267b013fc008902b90194d7195f4feb01fa3ac391110c25ad574ece7d3",
+    "research/receipts/PAPER3_V2_SOURCE_ID_REPAIR_20260810.json": "cf86304df5e3b87b36bbed78ef412fa992404b76581ee91d26391568854b3050",
+    "tests/test_paper3_v2_source_set_repair.py": "5fdc100c8728a830644733c4be8bbbbcf5cf965f7d0ad1fef85a7653696c8190"
+  },
+  "subject_parent_sha": "69cadfd8cba5bd55cab52caab09c40c60c283a1b",
+  "training_inference_authorized": false
+}
