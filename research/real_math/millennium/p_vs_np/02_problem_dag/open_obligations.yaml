@@ -71,38 +71,48 @@ active_obligations:
   - id: O9
     target: "attack unrestricted circuit lower bounds through two-dimensional graph cover complexity"
     route: R004
-    status: ACTIVE
+    status: ACTIVE_FULL_COVER_ONLY
     source: "Cavalar-Oliveira ECCC TR25-033"
   - id: O9a
     target: "calibrate exact canonical-cover search against G_NEQ"
-    route: R004
+    route: R004-canonical
     status: CI_VERIFIED_CALIBRATION
     artifacts: [C005, C006, canonical_cover_oracle]
   - id: O9b
-    target: "find an explicit graph family with canonical/full cover lower bound exceeding the log N NEQ baseline"
-    route: R004
-    status: CONDITIONED_ON_HALL_DEFICIENCY
-    depends_on: [O9a, O9e]
+    target: "find an explicit graph family with canonical cover lower bound exceeding the log N NEQ baseline"
+    route: R004-canonical
+    status: REFUTED_BY_C010
+    depends_on: [O9a]
   - id: O9c
     target: "normalize arbitrary canonical-cover pairs without deleting load-bearing overlap"
-    route: R004
+    route: R004-canonical
     status: PROOF_DRAFT
     depends_on: [O9a]
     artifacts: [C006, C007, C008]
     result: "partition normalization is false in general, but union normalization E union H = U is valid, yielding an exact E-only/H-only/both state space"
   - id: O9d
-    target: "upper-bound the multi-coordinate edge-separation capacity of realizable three-state overlap signatures on an explicit Hall-deficient family"
-    route: R004
-    status: ACTIVE
-    depends_on: [O9c, O9e]
-    residual: C008-R1
-  - id: O9e
-    target: "decide whether Hall-deficient complements can exceed ceil(log2 N) canonical cover complexity or whether ceil(log2 N) is a universal canonical upper bound"
-    route: R004
-    status: ACTIVE_DISCRIMINATOR
+    target: "upper-bound canonical edge-separation capacity of realizable three-state overlap signatures"
+    route: R004-canonical
+    status: SUPERSEDED_BY_C010
     depends_on: [O9c]
-    artifacts: [C009]
-    residual: C009-R1
+  - id: O9e
+    target: "decide whether Hall-deficient complements can exceed ceil(log2 N) canonical cover complexity"
+    route: R004-canonical
+    status: RESOLVED_NO
+    depends_on: [O9c]
+    artifacts: [C009, C010]
+    result: "rho_can(G) <= ceil(log2 nu(G^c)) <= ceil(log2 N); Hall deficiency decreases rather than escapes the ceiling"
+  - id: O9f
+    target: "lift exact overlap/realizability analysis to noncanonical semi-filters that can witness full cover complexity"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9e]
+    residual: C010-R1
+  - id: O9g
+    target: "identify a compact source-complete noncanonical filter family or invariant that avoids exponential unconstrained enumeration"
+    route: R004-full-cover
+    status: OPEN
+    depends_on: [O9f]
 
 negative_checkpoints:
   - id: C002
@@ -113,9 +123,7 @@ negative_checkpoints:
     result: "subexponential black-box copying, including ordinary direct-product/XOR/AND/OR composition, cannot repair the MCSP threshold/length exponent mismatch; even ideal additive direct-sum growth is insufficient"
   - id: C007
     result: "the NEQ singleton-fibre disjoint/partition normalization step does not generalize to arbitrary canonical fibres; E-intersect-H overlap can be load-bearing"
-
-structural_ceiling_checkpoints:
-  - id: C009
-    result: "if the complement graph contains a perfect matching, canonical cover complexity is at most ceil(log2 N); any super-log canonical example must therefore be Hall-deficient"
+  - id: C010
+    result: "canonical cover complexity is universally at most ceil(log2 nu(G^c)), hence at most ceil(log2 N); super-log canonical lower bounds are impossible and full cover complexity requires noncanonical semi-filters"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
