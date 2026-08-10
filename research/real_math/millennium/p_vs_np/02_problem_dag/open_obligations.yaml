@@ -1,0 +1,50 @@
+root:
+  id: R0
+  claim: "P != NP"
+  status: OPEN
+
+bridges:
+  - id: B1
+    claim: "SAT notin P/poly implies P != NP"
+    status: ESTABLISHED_STANDARD_BRIDGE_PENDING_FORMALIZATION
+  - id: B2
+    claim: "an explicit NP-complete language with superpolynomial general circuit complexity implies P != NP"
+    status: ESTABLISHED_STANDARD_BRIDGE_PENDING_FORMALIZATION
+
+active_obligations:
+  - id: O1
+    target: "refresh primary-source frontier through the current cutoff"
+    route: literature-absorption
+    status: OPEN
+  - id: O2
+    target: "formalize B1 and B2 in the proof DAG with exact uniform/nonuniform definitions"
+    route: mathematical-research
+    status: OPEN
+  - id: O3
+    target: "validate exact small-circuit state-graph oracle"
+    route: R003
+    status: ACTIVE
+  - id: O4
+    target: "synthesize and falsify compressed 1-Lipschitz state potentials"
+    route: R003
+    status: OPEN
+    depends_on: [O3]
+  - id: O5
+    target: "apply surviving potentials to small structured monotone targets and measure negation advantage"
+    route: R001+R003
+    status: OPEN
+    depends_on: [O4]
+  - id: O6
+    target: "freeze one exact MCSP variant and one hardness-magnification bridge theorem"
+    route: R002
+    status: OPEN
+  - id: O7
+    target: "formalize any nontrivial surviving lemma and produce an exact proof receipt"
+    route: assurance
+    status: OPEN
+  - id: O8
+    target: "three isolated mathematical reviews on any candidate promoted above VERIFIED_LEMMA"
+    route: review
+    status: OPEN
+
+terminal_rule: "Only a verified certificate bound to R0 closes the root."
