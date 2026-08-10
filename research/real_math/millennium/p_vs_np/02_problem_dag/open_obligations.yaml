@@ -39,18 +39,24 @@ active_obligations:
     route: R002
     status: SOURCE_BOUND
   - id: O6a
-    target: "prune threshold transports that preserve absolute circuit complexity while only expanding variables"
+    target: "prune threshold transports that preserve exponential circuit complexity while expanding variables"
     route: R002
     status: PROOF_DRAFT_NEGATIVE_CHECKPOINT
     artifacts: [C002, C003]
   - id: O6b
-    target: "construct or refute a multi-copy/direct-product MCSP transport with threshold gain exceeding truth-table expansion cost"
+    target: "construct or refute ordinary multi-copy/direct-product MCSP transports"
     route: R002
-    status: ACTIVE
+    status: PROOF_DRAFT_NEGATIVE_CHECKPOINT
     depends_on: [O6a]
-    residual: C003-R1
+    artifacts: [C004]
+    residual: C004-R1
   - id: O6c
-    target: "if exact MCSP boundary control fails, move explicitly to a Gap-MCSP transport with frozen completeness/soundness slack"
+    target: "investigate genuinely non-black-box or Gap-MCSP complexity amplification with a frozen two-sided boundary theorem"
+    route: R002
+    status: OPEN
+    depends_on: [O6b]
+  - id: O6d
+    target: "investigate direct high-threshold hardness magnification using a non-local technique"
     route: R002
     status: OPEN
     depends_on: [O6b]
@@ -62,11 +68,33 @@ active_obligations:
     target: "three isolated mathematical reviews on any candidate promoted above VERIFIED_LEMMA"
     route: review
     status: OPEN
+  - id: O9
+    target: "attack unrestricted circuit lower bounds through two-dimensional graph cover complexity"
+    route: R004
+    status: ACTIVE
+    source: "Cavalar-Oliveira ECCC TR25-033"
+  - id: O9a
+    target: "calibrate exact canonical-cover search against G_NEQ"
+    route: R004
+    status: IMPLEMENTED_PENDING_CI
+    artifacts: [C005, canonical_cover_oracle]
+  - id: O9b
+    target: "find an explicit graph family with canonical/full cover lower bound exceeding the log N NEQ baseline"
+    route: R004
+    status: ACTIVE
+    depends_on: [O9a]
+  - id: O9c
+    target: "derive an expansion/spectral invariant that upper-bounds the number of canonical edge semi-filters covered by one pair"
+    route: R004
+    status: OPEN
+    depends_on: [O9a]
 
 negative_checkpoints:
   - id: C002
     result: "dummy-variable padding cannot bridge the MCSP threshold gap because threshold gain and time-exponent expansion cancel"
   - id: C003
     result: "streamable single-copy restriction-recoverable wrappers cannot improve the exponential threshold/length ratio beyond the same cancellation"
+  - id: C004
+    result: "subexponential black-box copying, including ordinary direct-product/XOR/AND/OR composition, cannot repair the MCSP threshold/length exponent mismatch; even ideal additive direct-sum growth is insufficient"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
