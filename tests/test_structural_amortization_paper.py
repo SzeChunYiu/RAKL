@@ -73,3 +73,13 @@ def test_paper3_has_directional_and_boundary_aware_transfer_language() -> None:
     assert "non-preserved" in lower
     assert "boundary" in lower
     assert "need not be transitive" in lower
+
+
+def test_paper3_reports_fail_closed_cheap_gate_without_upgrading_authority() -> None:
+    manuscript = _manuscript()
+    assert "FAIL\\_CLOSED\\_MISSING\\_INDEPENDENT\\_ANNOTATION" in manuscript
+    assert "44 constructed proposal pairs" in manuscript
+    assert "11 proposed mechanism families" in manuscript
+    assert "no foundation-model judgement" in manuscript
+    assert "no training or inference run was launched" in manuscript
+    assert "figures/paper3_cheap_gate_internal.pdf" in manuscript

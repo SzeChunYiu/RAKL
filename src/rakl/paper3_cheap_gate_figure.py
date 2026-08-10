@@ -37,7 +37,7 @@ def generate_cheap_gate_figure(
     positions = np.arange(len(arm_order))
     width = 0.36
     colors = ("#4C78A8", "#F58518")
-    figure, axes = plt.subplots(1, 3, figsize=(7.2, 2.45), constrained_layout=True)
+    figure, axes = plt.subplots(1, 3, figsize=(7.2, 3.15), constrained_layout=True)
 
     axes[0].bar(
         positions - width / 2,
@@ -56,7 +56,7 @@ def generate_cheap_gate_figure(
     axes[0].set_title("a   Held-out discrimination", loc="left", pad=8, fontweight="bold")
     axes[0].set_ylabel("Score")
     axes[0].set_ylim(0, 1.05)
-    axes[0].legend(frameon=False, loc="lower right")
+    axes[0].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.53))
 
     axes[1].bar(
         positions - width / 2,
@@ -74,7 +74,7 @@ def generate_cheap_gate_figure(
     )
     axes[1].set_title("b   Probabilistic error", loc="left", pad=8, fontweight="bold")
     axes[1].set_ylabel("Loss (lower is better)")
-    axes[1].legend(frameon=False, loc="upper right")
+    axes[1].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.53))
 
     axes[2].bar(
         positions - width / 2,
@@ -93,7 +93,7 @@ def generate_cheap_gate_figure(
     axes[2].set_title("c   Transfer safety", loc="left", pad=8, fontweight="bold")
     axes[2].set_ylabel("Rate")
     axes[2].set_ylim(0, 1.05)
-    axes[2].legend(frameon=False, loc="center right")
+    axes[2].legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.53))
 
     for axis in axes:
         axis.set_xticks(positions, labels, rotation=35, ha="right")

@@ -50,6 +50,38 @@ jobs:
               'structural_gate_hard_case_accuracy',
               'cheap_mechanism_gate_passed')}, indent=2))
           PY
+      - name: Verify frozen Paper 3 cheap-gate receipt and figure
+        shell: bash
+        run: |
+          set -euo pipefail
+          checked=research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json
+          subject="$(python -c 'import json; print(json.load(open("research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json"))["subject_sha"])')"
+          python -m rakl.paper3_cheap_gate \
+            --benchmark research/PAPER3_CHEAP_GATE_BENCHMARK_PROPOSAL_20260810.json \
+            --protocol research/PAPER3_CHEAP_GATE_PROTOCOL_20260810.json \
+            --subject-sha "$subject" \
+            --output /tmp/PAPER3_CHEAP_GATE_RESULT.json
+          python - <<'PY'
+          import json
+          checked = json.load(open('research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json'))
+          rerun = json.load(open('/tmp/PAPER3_CHEAP_GATE_RESULT.json'))
+          for key in (
+              'subject_sha', 'protocol_sha256', 'benchmark_sha256', 'split',
+              'family_count', 'case_count', 'arm_metrics', 'predictions',
+              'annotation_gate', 'diagnostic_signal_gate',
+              'overall_cheap_gate_passed', 'expensive_training_authorized',
+              'gate_verdict', 'negative_history'):
+              assert checked[key] == rerun[key], key
+          assert checked['gate_verdict'] == 'FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION'
+          assert checked['expensive_training_authorized'] is False
+          print('frozen cheap-gate receipt: PASS (fail closed as registered)')
+          PY
+          python -m rakl.paper3_cheap_gate_figure \
+            --receipt "$checked" \
+            --output-prefix /tmp/paper3_cheap_gate_internal
+          test -s /tmp/paper3_cheap_gate_internal.pdf
+          test -s /tmp/paper3_cheap_gate_internal.svg
+          test -s /tmp/paper3_cheap_gate_internal.png
       - name: Install manuscript build tools
         run: |
           sudo apt-get update -qq
@@ -75,6 +107,11 @@ jobs:
           name: paper3-structural-conformance-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
             research/receipts/PAPER3_STRUCTURAL_BENCHMARK.json
+            research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json
+            research/receipts/PAPER3_CHEAP_GATE_INTERNAL_REVIEW_20260810.json
+            paper/structural_amortization/figures/paper3_cheap_gate_internal.pdf
+            paper/structural_amortization/figures/paper3_cheap_gate_internal.svg
+            paper/structural_amortization/figures/paper3_cheap_gate_internal.png
             paper/structural_amortization/main.pdf
             paper/structural_amortization/main.log
             paper/structural_amortization/latexmk.stdout.log

@@ -38,6 +38,21 @@ This table is a software-conformance result, not a statistical generalization re
 
 These cases are deterministic conformance worlds, not an empirical claim that the representation generalizes. Their purpose is to prevent a one-family implementation from earning an expensive training run merely by memorizing queue-specific details. The confirmatory dataset will still require independent annotations and broader families such as flow conservation, bottlenecks, delayed negative feedback, diffusion/contagion, matching, scheduling, concentration fragility, path dependence and search/backtracking. Each family should span multiple surface domains and include adversarial near-misses.
 
+\subsection{A broader internal diagnostic fails closed at the annotation gate}
+
+Before inspecting predictor outcomes, we froze a balanced Q1--Q4 proposal set, leave-one-family-out split, predictor family, metrics and stopping thresholds at Git subject \texttt{f2701f732f83}. The resulting diagnostic contains 44 constructed proposal pairs across 11 proposed mechanism families. Every coordinate was proposed in the same assistant session that assembled the benchmark. None has two independent human/expert annotations or adjudication, so all 44 are explicitly marked ineligible for confirmatory use.
+
+The local pilot fits deterministic L2-regularized logistic predictors using successively richer feature sets: calibrated surface overlap, skill-tag overlap, dependency-pattern overlap and witnessed structure. It is a cheap predictive diagnostic with no foundation-model judgement. Leave-one-family-out outcomes crossed the frozen incremental-signal thresholds: relative to the strongest non-witness control, the dependency-aware model, witnessed structure increased ROC-AUC from 0.914 to 1.000 and average precision from 0.903 to 1.000, while reducing Brier loss from 0.166 to 0.039. Its Q2 true-accept rate was 1.00 and Q3 false-accept rate was 0.00. These point estimates measure discrimination of labels encoded in an internally constructed proposal set; they do not estimate human agreement or natural transfer performance.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/paper3_cheap_gate_internal.pdf}
+\caption{Receipt-bound internal cheap-gate diagnostic. The unit is a constructed source--target pair ($n=44$) and each prediction is out-of-family under a deterministic leave-one-family-out fit. Bars are aggregate point estimates; there are no repeated seeds, sampling intervals or independent annotations. Panel a reports ROC-AUC and average precision, panel b Brier and log loss, and panel c Q2 true accept with Q3 false accept. The figure is generated only from the checked machine-readable result receipt; values are not hand-entered into the plot.}
+\label{fig:cheap-gate-internal}
+\end{figure}
+
+The independent-annotation gate nevertheless has authority over the diagnostic-signal gate. Its exact verdict is \texttt{FAIL\_CLOSED\_MISSING\_INDEPENDENT\_ANNOTATION}: zero of 44 items are confirmatory-eligible. Consequently, no training or inference run was launched. The unresolved residual is evidence acquisition, not a license to substitute same-session agreement or spend compute defending the original shared-substrate headline.
+
 \subsection{Structural score must add information beyond semantic score}
 
 For a transfer outcome $Y$, the confirmatory analysis compares models such as

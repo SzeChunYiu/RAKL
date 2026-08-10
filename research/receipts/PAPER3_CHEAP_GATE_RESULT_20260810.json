@@ -1,0 +1,2668 @@
+{
+  "annotation_gate": {
+    "confirmatory_item_count": 0,
+    "missing_or_ineligible_case_count": 44,
+    "missing_or_ineligible_case_ids": [
+      "queue_flow__q1",
+      "queue_flow__q2",
+      "queue_flow__q3",
+      "queue_flow__q4",
+      "positive_feedback__q1",
+      "positive_feedback__q2",
+      "positive_feedback__q3",
+      "positive_feedback__q4",
+      "delayed_negative_feedback__q1",
+      "delayed_negative_feedback__q2",
+      "delayed_negative_feedback__q3",
+      "delayed_negative_feedback__q4",
+      "threshold_cascade__q1",
+      "threshold_cascade__q2",
+      "threshold_cascade__q3",
+      "threshold_cascade__q4",
+      "diffusion__q1",
+      "diffusion__q2",
+      "diffusion__q3",
+      "diffusion__q4",
+      "bottleneck_min_cut__q1",
+      "bottleneck_min_cut__q2",
+      "bottleneck_min_cut__q3",
+      "bottleneck_min_cut__q4",
+      "matching__q1",
+      "matching__q2",
+      "matching__q3",
+      "matching__q4",
+      "scheduling__q1",
+      "scheduling__q2",
+      "scheduling__q3",
+      "scheduling__q4",
+      "concentration_fragility__q1",
+      "concentration_fragility__q2",
+      "concentration_fragility__q3",
+      "concentration_fragility__q4",
+      "path_dependence__q1",
+      "path_dependence__q2",
+      "path_dependence__q3",
+      "path_dependence__q4",
+      "search_backtracking__q1",
+      "search_backtracking__q2",
+      "search_backtracking__q3",
+      "search_backtracking__q4"
+    ],
+    "passed": false,
+    "reason": "independent annotations and adjudication unavailable",
+    "requirement": {
+      "adjudication_required": true,
+      "all_evaluated_items_confirmatory_eligible": true,
+      "minimum_independent_human_or_expert_annotations_per_confirmatory_item": 2
+    }
+  },
+  "arm_metrics": {
+    "dependency_aware": {
+      "accuracy_at_0_5": 0.8181818181818182,
+      "average_precision": 0.902775576913508,
+      "brier": 0.1659193221678349,
+      "ece_5bin": 0.18572316561450347,
+      "log_loss": 0.5143345827345016,
+      "n": 44,
+      "q2_true_accept": 1.0,
+      "q3_false_accept": 0.7272727272727273,
+      "roc_auc": 0.9142561983471075
+    },
+    "semantic_calibrated": {
+      "accuracy_at_0_5": 0.5,
+      "average_precision": 0.5,
+      "brier": 0.25000082457817385,
+      "ece_5bin": 3.7352489748399e-05,
+      "log_loss": 0.6931488297214066,
+      "n": 44,
+      "q2_true_accept": 0.09090909090909091,
+      "q3_false_accept": 0.7272727272727273,
+      "roc_auc": 0.5
+    },
+    "skill_aware": {
+      "accuracy_at_0_5": 0.75,
+      "average_precision": 0.866560164802884,
+      "brier": 0.19909101992224879,
+      "ece_5bin": 0.16221698973904392,
+      "log_loss": 0.5882853393179333,
+      "n": 44,
+      "q2_true_accept": 1.0,
+      "q3_false_accept": 1.0,
+      "roc_auc": 0.875
+    },
+    "witnessed_structure": {
+      "accuracy_at_0_5": 1.0,
+      "average_precision": 1.0,
+      "brier": 0.03892957217317843,
+      "ece_5bin": 0.18667014927856537,
+      "log_loss": 0.20975588604908504,
+      "n": 44,
+      "q2_true_accept": 1.0,
+      "q3_false_accept": 0.0,
+      "roc_auc": 1.0
+    }
+  },
+  "benchmark_id": "paper3-cheap-gate-internal-proposal-20260810",
+  "benchmark_sha256": "831fa5804efca457f0c9763ec6efd4913c569068aa5ba3ae0b9b4f1f982e9db4",
+  "case_count": 44,
+  "claim_boundary": "Internal constructed diagnostic only; not independent annotation, natural generalization, training efficiency, or inference efficiency evidence.",
+  "created_at_utc": "2026-08-10T18:48:48Z",
+  "diagnostic_signal_gate": {
+    "checks": {
+      "average_precision_gain": true,
+      "brier_improvement": true,
+      "q2_true_accept": true,
+      "q3_false_accept": true,
+      "roc_auc_gain": true
+    },
+    "observed_deltas": {
+      "average_precision_gain": 0.09722442308649204,
+      "brier_reduction": 0.12698974999465645,
+      "roc_auc_gain": 0.08574380165289253
+    },
+    "passed": true,
+    "strongest_control": "dependency_aware",
+    "thresholds": {
+      "maximum_q3_false_accept": 0.2,
+      "minimum_average_precision_gain": 0.05,
+      "minimum_q2_true_accept": 0.8,
+      "minimum_roc_auc_gain": 0.05,
+      "require_brier_improvement": true
+    }
+  },
+  "execution_cost": {
+    "external_model_calls": 0,
+    "gpu_seconds": 0.0,
+    "provider_cost_usd": 0.0,
+    "wall_time_ms": 3999
+  },
+  "expensive_training_authorized": false,
+  "experiment_id": "paper3-cheap-gate-lofo-v1-20260810",
+  "family_count": 11,
+  "frozen_protocol_id": "paper3-cheap-gate-lofo-v1-20260810",
+  "gate_verdict": "FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION",
+  "negative_history": [
+    {
+      "reason": "independent annotations and adjudication unavailable",
+      "residual_id": "P3-EMP-01",
+      "status": "OPEN_FAIL_CLOSED",
+      "supersession_rule": "retain until genuinely independent annotations and adjudication are received"
+    }
+  ],
+  "overall_cheap_gate_passed": false,
+  "predictions": [
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "bottleneck_min_cut__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "bottleneck_min_cut__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "bottleneck_min_cut__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "bottleneck_min_cut__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "bottleneck_min_cut__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.555157488342309,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "bottleneck_min_cut__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.5700133107417306,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "bottleneck_min_cut__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.555157488342309,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "bottleneck_min_cut__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.32463147361315325,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "bottleneck_min_cut__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "bottleneck_min_cut__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.6264169183032844,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "bottleneck_min_cut__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "bottleneck_min_cut__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.22760006495381138,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "bottleneck_min_cut__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.8109484561226638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "bottleneck_min_cut__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.81872378205355,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "bottleneck_min_cut__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.2958129039514908,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "bottleneck_min_cut__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "bottleneck_min_cut",
+      "probability": 0.09845261450743573,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "concentration_fragility__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "concentration_fragility__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "concentration_fragility__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "concentration_fragility__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "concentration_fragility__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "concentration_fragility__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5692025426554017,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "concentration_fragility__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "concentration_fragility__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.3242012816820581,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "concentration_fragility__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "concentration_fragility__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.6249555809446602,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "concentration_fragility__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "concentration_fragility__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.22708276994251078,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "concentration_fragility__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.8066171555311268,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "concentration_fragility__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.8182105063541565,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "concentration_fragility__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.2898228808554603,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "concentration_fragility__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "concentration_fragility",
+      "probability": 0.09827511950683561,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "delayed_negative_feedback__q1",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "delayed_negative_feedback__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "delayed_negative_feedback__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "delayed_negative_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "delayed_negative_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "delayed_negative_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.5707390319887764,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "delayed_negative_feedback__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "delayed_negative_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.3250168580139347,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "delayed_negative_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.6147410062924756,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "delayed_negative_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.6276981825995415,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "delayed_negative_feedback__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.6147410062924756,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "delayed_negative_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.2280579652582135,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "delayed_negative_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.8144613848693593,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "delayed_negative_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.8191657582033522,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "delayed_negative_feedback__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.3008130510253236,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "delayed_negative_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "delayed_negative_feedback",
+      "probability": 0.09860693015968522,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "diffusion__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "diffusion__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "diffusion__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "diffusion__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "diffusion__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "diffusion__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5692025426554017,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "diffusion__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "diffusion__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.3242012816820581,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "diffusion__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "diffusion__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.6249555809446602,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "diffusion__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "diffusion__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.22708276994251078,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "diffusion__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.8066171555311268,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "diffusion__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.8182105063541565,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "diffusion__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.28982288085546026,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "diffusion__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "diffusion",
+      "probability": 0.09827511950683561,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "matching__q1",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "matching",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "matching__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "matching__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "matching",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "matching__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "matching__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "matching__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.5707390319887764,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "matching__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "matching__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.3250168580139347,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "matching__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.6082543656603644,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "matching__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.6209544446595083,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "matching__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.5,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.4891763235110567,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "matching__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.23189584952350273,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "matching__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.8132895442909704,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "matching__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.8179070899757901,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "matching__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.5,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.25250257129679454,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "matching__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "matching",
+      "probability": 0.0992952836269534,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "path_dependence__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "path_dependence__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "path_dependence__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "path_dependence__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "path_dependence__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "path_dependence__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5692025426554017,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "path_dependence__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "path_dependence__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.3242012816820581,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "path_dependence__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "path_dependence__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.6249555809446602,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "path_dependence__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.5933268262691638,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "path_dependence__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.22708276994251078,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "path_dependence__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.8066171555311268,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "path_dependence__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.8182105063541565,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "path_dependence__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.2898228808554603,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "path_dependence__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "path_dependence",
+      "probability": 0.09827511950683561,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "positive_feedback__q1",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "positive_feedback__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "positive_feedback__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.25
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.4999695565200504,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "positive_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.4990977517174779,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "positive_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "positive_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.5707390319887764,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "positive_feedback__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.5617692351923674,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "positive_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.3250168580139347,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "positive_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.6064504457110995,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "positive_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.6190848305172071,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "positive_feedback__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.3333333333333333,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.44961232950805563,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "positive_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.23265715237694642,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "positive_feedback__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.8129689243596884,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "positive_feedback__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.8175628177721368,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "positive_feedback__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.3333333333333333,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.25,
+        "skill": 1.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.2390203981705853,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "positive_feedback__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "positive_feedback",
+      "probability": 0.09946638040207076,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "queue_flow__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "queue_flow__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "queue_flow__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "queue_flow__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "queue_flow__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.555157488342309,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "queue_flow__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.5700133107417306,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "queue_flow__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.555157488342309,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "queue_flow__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.32463147361315325,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "queue_flow__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "queue_flow__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.6264169183032844,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "queue_flow__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "queue_flow__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.22760006495381144,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "queue_flow__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.8109484561226638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "queue_flow__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.81872378205355,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "queue_flow__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.2958129039514908,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "queue_flow__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "queue_flow",
+      "probability": 0.09845261450743573,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "scheduling__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "scheduling__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "scheduling__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.5006257961369939,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "scheduling__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.4991255543178392,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "scheduling__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.555157488342309,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "scheduling__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.5700133107417306,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "scheduling__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.555157488342309,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "scheduling__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.32463147361315325,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "scheduling__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "scheduling__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.6264169183032844,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "scheduling__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.6051071057958802,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "scheduling__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.22760006495381144,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "scheduling__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.8109484561226638,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "scheduling__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.8187237820535501,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "scheduling__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.42857142857142855,
+        "skill": 1.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.2958129039514908,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "scheduling__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "scheduling",
+      "probability": 0.0984526145074357,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "search_backtracking__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "search_backtracking__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.1111111111111111
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "search_backtracking__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "search_backtracking__q4",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "search_backtracking__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5455647513869492,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "search_backtracking__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.1111111111111111,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5658722011452381,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "search_backtracking__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5455647513869492,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "search_backtracking__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.3245763741417001,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "search_backtracking__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.5818890598688797,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "search_backtracking__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.1111111111111111,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.611814533543367,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "search_backtracking__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.25,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.4059657971895066,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "search_backtracking__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.2324136640121232,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "search_backtracking__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.8043521632851969,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "search_backtracking__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.1111111111111111,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.8149376427276629,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "search_backtracking__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.25,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.22291277752476793,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "search_backtracking__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "search_backtracking",
+      "probability": 0.09936067455220442,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "threshold_cascade__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "threshold_cascade__q2",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "threshold_cascade__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5015288022427965,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "semantic_calibrated",
+      "case_id": "threshold_cascade__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.49915176504431613,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "threshold_cascade__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "threshold_cascade__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5692025426554017,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "threshold_cascade__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5468937129116176,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "skill_aware",
+      "case_id": "threshold_cascade__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.3242012816820581,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "threshold_cascade__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5883226613582734,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "threshold_cascade__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.62101575396119,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "threshold_cascade__q3",
+      "decision_at_0_5": true,
+      "features": {
+        "dependency": 0.6666666666666666,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.5073179808349572,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "dependency_aware",
+      "case_id": "threshold_cascade__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "dependency": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.23001574304903227,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "threshold_cascade__q1",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.8057002631781952,
+      "quadrant": "Q1",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "threshold_cascade__q2",
+      "decision_at_0_5": true,
+      "features": {
+        "boundary": 1.0,
+        "dependency": 1.0,
+        "directional": 1.0,
+        "invariant": 1.0,
+        "qoi": 1.0,
+        "semantic": 0.0,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.817524835985789,
+      "quadrant": "Q2",
+      "transfer_valid": true
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "threshold_cascade__q3",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.6666666666666666,
+        "directional": 1.0,
+        "invariant": 0.0,
+        "qoi": 1.0,
+        "semantic": 0.6666666666666666,
+        "skill": 1.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.25698464501288776,
+      "quadrant": "Q3",
+      "transfer_valid": false
+    },
+    {
+      "arm": "witnessed_structure",
+      "case_id": "threshold_cascade__q4",
+      "decision_at_0_5": false,
+      "features": {
+        "boundary": 0.0,
+        "dependency": 0.0,
+        "directional": 0.0,
+        "invariant": 0.0,
+        "qoi": 0.0,
+        "semantic": 0.0,
+        "skill": 0.0
+      },
+      "held_out_family": "threshold_cascade",
+      "probability": 0.09880342485456838,
+      "quadrant": "Q4",
+      "transfer_valid": false
+    }
+  ],
+  "predictor": "deterministic local L2 logistic regression; no foundation-model judgement",
+  "protocol_sha256": "3614e03324586b0df4b5876bf90f43b4788f8ab041db3eedd70b11fbe3df5ced",
+  "schema_version": "paper3-cheap-gate-result-v1",
+  "split": "leave_one_family_out",
+  "subject_sha": "f2701f732f832698508fa5310e9b309b20e10734"
+}

@@ -2,6 +2,7 @@
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{booktabs,tabularx,array}
+\usepackage{graphicx}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 \usepackage[T1]{fontenc}
@@ -11,13 +12,13 @@
 \newtheorem{definition}{Definition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{proposition}{Proposition}
-\title{A Shared Structural Substrate for Data-Efficient Learning and Reasoning}
+\title{Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer}
 \author{Sze Chun Yiu}
 \date{10 August 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
-Large language models can encounter surface-distinct examples that instantiate the same reasoning structure and can repeatedly rediscover similar procedures at inference time. Prior work already shows benefits from skill graphs, reusable reasoning primitives and structural workflow priors, so we ask a stricter question: can one context- and quantity-of-interest-scoped structural object license cross-domain transfer, reject semantically tempting structural decoys, and serve both learning and reasoning? We introduce a directional structural witness that records role mappings, preserved invariants, non-preserved properties, target boundary conditions, evidence and uncertainty. A four-quadrant benchmark independently varies semantic and structural similarity. In the current deterministic conformance suite, the structural gate makes the intended decision on all six load-bearing Q2/Q3 cases across queue stability, positive feedback and threshold cascades, whereas a deliberately semantic-only rule makes the wrong decision on all six; all three low-semantic/high-structural transfers are licensed and all three high-semantic/low-structural decoys are rejected. This constructed result tests implementation logic, not cross-domain generalization, and the paper is not yet an efficiency result. We therefore preregister held-out transfer, training-selection and frozen-model inference experiments under a total cost-to-capability accounting that charges structure induction, retrieval, adaptation and verification. The shared-substrate claim is falsified if witnessed structure adds no value beyond strong semantic/skill controls, if Q3 false transfer remains high, if training and inference require unrelated representations, or if total cost never reaches a realistic break-even point.
+Large language models can encounter surface-distinct examples that instantiate the same reasoning structure, yet semantic analogy can also invite unsafe transfer across load-bearing boundary changes. We ask whether a context- and quantity-of-interest-scoped structural object can license cross-domain transfer while rejecting semantic decoys. We introduce a directional structural witness that records role mappings, preserved invariants, non-preserved properties, target boundaries, evidence and uncertainty. In a deterministic conformance suite, its gate makes the intended decision on all six constructed Q2/Q3 cases across queue stability, positive feedback and threshold cascades; a deliberately semantic-only rule fails all six. We then froze and ran a leave-one-family-out diagnostic on 44 internally proposed Q1--Q4 pairs across 11 families. Witness features improved ROC-AUC by 0.086 and average precision by 0.097 over the strongest dependency-aware control, with Q2 true accept 1.00 and Q3 false accept 0.00. These are constructed, same-session proposal labels: zero items have the required independent human/expert annotations or adjudication. The overall gate therefore fails closed, no expensive training or inference was authorized, and the paper is not yet an efficiency result. The result supports a reproducible diagnostic formalism, not natural cross-domain generalization or a shared learning--reasoning substrate; that stronger claim remains falsified unless the independent-annotation, training, inference and total cost-to-capability gates pass.
 \end{abstract}
 \input{sections/01_problem_and_parents}
 \input{sections/01b_shared_experience_nearest_work}

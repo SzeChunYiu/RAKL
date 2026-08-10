@@ -1,8 +1,8 @@
 # Structural Amortization paper
 
-Working title: **A Shared Structural Substrate for Data-Efficient Learning and Reasoning**
+Working title: **Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**
 
-Status: formalism + benchmark + preregistration scaffold. No large-model training or matched inference result is claimed yet.
+Status: formalism + deterministic conformance + internal cheap diagnostic. The cheap gate fails closed because independent human/expert annotations and adjudication are absent; no large-model training or matched inference result is claimed.
 
 ## Scientific question
 

@@ -138,3 +138,17 @@ def test_figure_is_receipt_driven_vector_output_without_data_callouts(tmp_path: 
     assert ".annotate(" not in source
     assert ".text(" not in source
     assert "arrow" not in source.lower()
+
+
+def test_checked_receipt_preserves_fail_closed_scale_decision() -> None:
+    receipt = json.loads(
+        (ROOT / "research" / "receipts" / "PAPER3_CHEAP_GATE_RESULT_20260810.json").read_text()
+    )
+    assert receipt["subject_sha"] == "f2701f732f832698508fa5310e9b309b20e10734"
+    assert receipt["family_count"] == 11
+    assert receipt["case_count"] == 44
+    assert receipt["diagnostic_signal_gate"]["passed"] is True
+    assert receipt["annotation_gate"]["confirmatory_item_count"] == 0
+    assert receipt["overall_cheap_gate_passed"] is False
+    assert receipt["expensive_training_authorized"] is False
+    assert receipt["gate_verdict"] == "FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION"
