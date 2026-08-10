@@ -1,0 +1,38 @@
+\section{A semantic--structural factorial benchmark}
+
+The central benchmark independently manipulates surface-semantic similarity and structural similarity. Let $S_{\mathrm{sem}}\in\{\mathrm{low},\mathrm{high}\}$ and $S_{\mathrm{str}}\in\{\mathrm{low},\mathrm{high}\}$. The four cells are:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Cell & Semantic relation & Structural relation \\
+\midrule
+Q1 & high & high \\
+Q2 & low & high \\
+Q3 & high & low \\
+Q4 & low & low \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Q2 and Q3 are the load-bearing cells. Q2 asks whether the system can transfer when vocabulary and domain semantics are deliberately distant but the relevant relation/invariant structure is preserved. Q3 is a semantic decoy: vocabulary is similar and embedding similarity should be high, but the causal/dynamical structure or boundary condition that justifies transfer is changed. A useful structural system should accept Q2 and reject Q3.
+
+The current deterministic scaffold in \path{src/rakl/structural_benchmark.py} instantiates the idea with queue stability. A computer network and an emergency department use different entity vocabularies but share a continual-arrival/finite-service/backlog structure for the registered QoI. The semantic-decoy target instead uses queue language in a finite-batch regime: the relevant steady-flow stability invariant no longer holds. The witness therefore fails on both a relation and a boundary condition. The benchmark also includes a structurally and semantically unrelated feedback case as Q4.
+
+These examples are conformance worlds rather than a final empirical benchmark. The confirmatory dataset will contain multiple independently annotated families such as flow conservation, bottlenecks, positive and delayed negative feedback, threshold transitions, diffusion/contagion, matching, scheduling, concentration fragility, path dependence and search/backtracking. Each family will span multiple surface domains and include adversarial near-misses.
+
+\subsection{Structural score must add information beyond semantic score}
+
+For a transfer outcome $Y$, the confirmatory analysis compares models such as
+\[
+\operatorname{logit}P(Y=1)=\beta_0+\beta_1 S_{\mathrm{sem}}
+\]
+against
+\[
+\operatorname{logit}P(Y=1)=\beta_0+\beta_1 S_{\mathrm{sem}}+\beta_2 S_{\mathrm{str}}+\beta_3S_{\mathrm{sem}}S_{\mathrm{str}}+u_{\mathrm{family}}.
+\]
+The central mechanism requires material incremental predictive value from the structural term and, operationally, a low invalid-transfer rate in Q3. If a strong semantic retriever or LLM analogy judge already predicts valid transfer as well as the witnessed structure, the proposed representation does not earn an additional layer.
+
+\subsection{Annotation and leakage}
+
+A human-curated version will record role graphs, typed relations, invariants, boundary conditions and QoI with at least two independent annotations plus adjudication. Inter-annotator agreement is reported separately for roles, relations, class assignment and boundaries. The final domain split must prevent a surface domain from appearing in both training and target evaluation for the same structure family. Synthetic generation can expand coverage, but held-out human adjudication is required to show that the structural labels are not merely artifacts of the generator.
