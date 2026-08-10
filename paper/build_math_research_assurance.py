@@ -58,18 +58,13 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         1,
     )
 
-    # Correct the bibliographic year/volume to the Nature version of record.
-    old_alpha_proof = (
-        r'T. Hubert et al., ``Olympiad-level formal mathematical reasoning with reinforcement learning,'' '
-        r'\emph{Nature} (2025). doi:10.1038/s41586-025-09833-y.'
-    )
-    new_alpha_proof = (
-        r'T. Hubert et al., ``Olympiad-level formal mathematical reasoning with reinforcement learning,'' '
-        r'\emph{Nature} 651, 607--613 (2026). doi:10.1038/s41586-025-09833-y.'
-    )
-    if text.count(old_alpha_proof) != 1:
-        raise RuntimeError("AlphaProof bibliography anchor changed")
-    text = text.replace(old_alpha_proof, new_alpha_proof, 1)
+    # Normalize AlphaProof to the Nature version-of-record metadata while using
+    # the DOI as the stable anchor, rather than relying on TeX line formatting.
+    alpha_old = "(2025). doi:10.1038/s41586-025-09833-y."
+    alpha_new = "651, 607--613 (2026). doi:10.1038/s41586-025-09833-y."
+    if text.count(alpha_old) != 1:
+        raise RuntimeError("AlphaProof DOI/year anchor changed")
+    text = text.replace(alpha_old, alpha_new, 1)
 
     required_fragments = (
         subject_sha,
@@ -79,6 +74,7 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         r"\section{Preregistered evaluation}",
         r"\section{Limitations}",
         r"\begin{thebibliography}{9}",
+        "Nature} 651, 607--613 (2026). doi:10.1038/s41586-025-09833-y.",
     )
     for fragment in required_fragments:
         if fragment not in text:
