@@ -1,0 +1,133 @@
+{
+  "authority": "sealed known-answer engineering task; not fresh confirmatory evidence",
+  "context": "one 1 m Earth pendulum target at 20 degrees plus small-angle, Moon and ideal-mass comparison contexts",
+  "mandatory_evidence_ids": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8"
+  ],
+  "object": "ideal simple pendulum claims under aligned length, gravity, amplitude and mass contexts",
+  "qoi": "correct scoped synthesis, context alignment, evidence support and refutation over the frozen eight-source mini-world",
+  "rakl_relations": [
+    {
+      "left": "S1",
+      "reason": "finite-amplitude representation reduces to the small-angle law as amplitude approaches zero",
+      "relation": "CONDITIONAL",
+      "right": "S3"
+    },
+    {
+      "left": "S4",
+      "reason": "S4 is scoped to the small-angle approximation",
+      "relation": "CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION",
+      "right": "Earth_20_degree_target"
+    },
+    {
+      "left": "S5",
+      "reason": "Moon and Earth gravity contexts differ",
+      "relation": "CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION",
+      "right": "Earth_20_degree_target"
+    },
+    {
+      "left": "S6",
+      "reason": "at fixed ideal context the controlled evidence and law support mass invariance",
+      "relation": "ALIGNED_REFUTATION",
+      "right": "S2+S7"
+    },
+    {
+      "left": "S3",
+      "reason": "both give the same positive first correction with distinct registered lineage",
+      "relation": "INDEPENDENT_CORROBORATION",
+      "right": "S8"
+    }
+  ],
+  "schema_version": "paper2-sealed-pendulum-task-v1",
+  "sealed_at_utc": "2026-08-10T21:40:00Z",
+  "sealed_before_model_execution": true,
+  "sources": [
+    {
+      "context": [
+        "Earth",
+        "small_angle",
+        "ideal"
+      ],
+      "projection": "small-angle period representation",
+      "source_id": "S1",
+      "text": "For a simple pendulum at small angle on Earth, T = 2*pi*sqrt(L/g)."
+    },
+    {
+      "context": [
+        "Earth",
+        "small_angle",
+        "ideal",
+        "L=1m"
+      ],
+      "projection": "normalized small-angle law and mass invariance",
+      "source_id": "S2",
+      "text": "At small amplitude, a 100 cm pendulum follows T = 2*pi*sqrt(1 m/g); the ideal period does not depend on bob mass."
+    },
+    {
+      "context": [
+        "moderate_amplitude",
+        "first_order"
+      ],
+      "projection": "positive first finite-amplitude correction",
+      "source_id": "S3",
+      "text": "For moderate amplitude, the first finite-amplitude correction is T approximately T0*(1 + theta0^2/16)."
+    },
+    {
+      "context": [
+        "small_angle",
+        "approximation"
+      ],
+      "projection": "amplitude independence restricted to small-angle regime",
+      "source_id": "S4",
+      "text": "Within the small-angle approximation, pendulum period is approximately independent of amplitude."
+    },
+    {
+      "context": [
+        "Moon",
+        "small_angle"
+      ],
+      "projection": "gravity-context change",
+      "source_id": "S5",
+      "text": "On the Moon the same length pendulum uses lunar gravitational acceleration rather than Earth gravity."
+    },
+    {
+      "context": [
+        "ideal",
+        "fixed_length",
+        "fixed_gravity"
+      ],
+      "projection": "mass-dependence claim retained as negative history",
+      "source_id": "S6",
+      "text": "Claim: increasing the bob mass increases the ideal simple-pendulum period at fixed length and gravity."
+    },
+    {
+      "context": [
+        "ideal",
+        "fixed_length",
+        "fixed_gravity",
+        "small_angle"
+      ],
+      "projection": "controlled support for mass invariance",
+      "source_id": "S7",
+      "text": "Controlled ideal-pendulum check: changing bob mass at fixed length, gravity and small amplitude does not materially change the period."
+    },
+    {
+      "context": [
+        "moderate_amplitude",
+        "first_order",
+        "independent_derivation"
+      ],
+      "projection": "independent support for positive finite-amplitude correction",
+      "source_id": "S8",
+      "text": "Independent derivation reproduces the same first finite-amplitude correction T/T0 approximately 1 + theta0^2/16."
+    }
+  ],
+  "task_id": "PENDULUM_SEALED_KNOWN_ANSWER_001"
+}
