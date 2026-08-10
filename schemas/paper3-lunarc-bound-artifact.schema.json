@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-lunarc-bound-artifact.schema.json",
+  "title": "Paper 3 content-bound LUNARC experiment artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "artifact_type",
+    "authority_status",
+    "subject_sha",
+    "created_at_utc",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "paper3-task-set-v1",
+        "paper3-environment-v1",
+        "paper3-seed-schedule-v1",
+        "paper3-model-artifact-v1"
+      ]
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_type": {
+      "enum": [
+        "task_set",
+        "environment",
+        "seed_schedule",
+        "model_artifact"
+      ]
+    },
+    "authority_status": {
+      "const": "frozen_before_run"
+    },
+    "subject_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_type": {
+            "const": "task_set"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": "paper3-task-set-v1"
+          },
+          "payload": {
+            "$ref": "#/$defs/taskSet"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_type": {
+            "const": "environment"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": "paper3-environment-v1"
+          },
+          "payload": {
+            "$ref": "#/$defs/environment"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_type": {
+            "const": "seed_schedule"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": "paper3-seed-schedule-v1"
+          },
+          "payload": {
+            "$ref": "#/$defs/seedSchedule"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "artifact_type": {
+            "const": "model_artifact"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": "paper3-model-artifact-v1"
+          },
+          "payload": {
+            "$ref": "#/$defs/model"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "taskSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tasks"
+      ],
+      "properties": {
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "python_version",
+        "locked_environment_sha256"
+      ],
+      "properties": {
+        "python_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "locked_environment_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "seedSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seeds"
+      ],
+      "properties": {
+        "seeds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_revision",
+        "weights_artifact_sha256",
+        "source_uri",
+        "license"
+      ],
+      "properties": {
+        "model_revision": {
+          "type": "string",
+          "pattern": "^[^@\\s]+@[0-9a-f]{40}$"
+        },
+        "weights_artifact_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

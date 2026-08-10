@@ -1,0 +1,127 @@
+{
+  "annotation_gate": {
+    "adjudication_required": true,
+    "all_evaluated_items_confirmatory_eligible": true,
+    "external_provenance_audit_required": true,
+    "minimum_independent_human_or_expert_annotations_per_confirmatory_item": 2,
+    "unresolved_or_cannot_check_fails_closed": true
+  },
+  "chronology": {
+    "adjudication_after_submission_freeze_required": true,
+    "benchmark_labels_visible_during_construction": false,
+    "confirmatory_use_permitted_after_gate": true,
+    "evaluated_results_visible_before_protocol_freeze": false,
+    "fresh_label_blind_item_set_required": true,
+    "v1_confirmatory_use_permitted": false
+  },
+  "controls": [
+    {
+      "arm": "semantic_calibrated",
+      "features": [
+        "calibrated_surface_jaccard"
+      ]
+    },
+    {
+      "arm": "skill_aware",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard"
+      ]
+    },
+    {
+      "arm": "dependency_aware",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard",
+        "dependency_pattern_jaccard"
+      ]
+    },
+    {
+      "arm": "witnessed_structure",
+      "features": [
+        "calibrated_surface_jaccard",
+        "skill_tag_jaccard",
+        "dependency_pattern_jaccard",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete"
+      ]
+    }
+  ],
+  "diagnostic_thresholds": {
+    "maximum_q3_false_accept": 0.2,
+    "minimum_average_precision_gain": 0.05,
+    "minimum_q2_true_accept": 0.8,
+    "minimum_roc_auc_gain": 0.05,
+    "require_brier_improvement": true
+  },
+  "evaluator": "src/rakl/paper3_confirmatory_gate.py:build_confirmatory_gate_receipt",
+  "evaluator_binding": {
+    "evaluator_path": "src/rakl/paper3_confirmatory_gate.py",
+    "evaluator_source_sha256": "b3c91216ff5be9f1927c70affdba0665356fcf3e92e9286c6264e33d51ec1aa8",
+    "fit_hyperparameters": {
+      "initialization": "all_zero",
+      "intercept_regularized": false,
+      "iterations": 4000,
+      "l2": 0.08,
+      "learning_rate": 0.12
+    },
+    "fit_source_path": "src/rakl/paper3_cheap_gate.py",
+    "fit_source_sha256": "cc00be7a39eddaf61ab9770cc1b9f7bb93f113624b0d1257ff765bdffb349eb8"
+  },
+  "family_split": "leave one entire mechanism family out",
+  "frozen_before_evaluated_result_access": true,
+  "frozen_parent_subject_sha": "367a539cc1e13e408fad996651236878d375b2a1",
+  "metrics": [
+    "roc_auc",
+    "average_precision",
+    "brier",
+    "log_loss",
+    "ece_5bin",
+    "q2_true_accept",
+    "q3_false_accept"
+  ],
+  "model": {
+    "classification_threshold": 0.5,
+    "family_split": "leave-one-family-out",
+    "strongest_control_selection": "maximum held-out ROC-AUC among non-structural controls; ties broken by PR-AUC then fixed arm order",
+    "training": "deterministic batch gradient descent",
+    "type": "L2-regularized logistic regression"
+  },
+  "negative_lineage": {
+    "v1_items_may_authorize_compute": false,
+    "v1_protocol_id": "paper3-cheap-gate-lofo-v1-20260810",
+    "v1_receipt": "research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json",
+    "v1_verdict": "FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION",
+    "why": "v1 labels were visible during construction and confirmatory use was frozen false"
+  },
+  "object": "directional validity of context/QoI-scoped transfer between fresh source and target structural descriptions",
+  "plot_policy": {
+    "editable_vector_text": true,
+    "no_annotate": true,
+    "no_arrows_to_data": true,
+    "no_ax_text": true,
+    "no_text_boxes_over_data": true,
+    "panel_letters_outside_axes": true,
+    "source": "exact receipt only"
+  },
+  "positive_goal": {
+    "failure_or_block": "retain v1 negative history and do not submit training or inference",
+    "state": "registered",
+    "success": "fresh independently annotated structural signal beyond strong controls with acceptable Q3 false accept"
+  },
+  "protocol_id": "paper3-confirmatory-gate-v2",
+  "qoi": "incremental held-out discrimination of valid transfer beyond semantic, skill and dependency-aware controls",
+  "rubric_id": "paper3-annotation-rubric-v2-20260810",
+  "scale_rule": "Authorize LUNARC training only if the v2 annotation and diagnostic-signal gates both pass; missing evidence fails closed.",
+  "support_requirements": {
+    "minimum_cases_per_family": 4,
+    "minimum_family_count": 3,
+    "minimum_negative_cases_per_family": 1,
+    "minimum_negative_training_cases_per_fold": 2,
+    "minimum_positive_cases_per_family": 1,
+    "minimum_positive_training_cases_per_fold": 2
+  },
+  "schema_version": "paper3-confirmatory-gate-protocol-v2"
+}

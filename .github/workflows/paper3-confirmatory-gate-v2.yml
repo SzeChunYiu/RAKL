@@ -1,0 +1,97 @@
+name: paper3-confirmatory-gate-v2
+
+on:
+  push:
+    branches:
+      - publication/paper3-annotation-packet-20260810
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  v2-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Bind checkout to evaluated subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -e ".[test]"
+          pip install "jsonschema==4.25.1"
+      - name: Verify immutable v1 and hostile v2 annotation/LUNARC gates
+        run: |
+          pytest -q \
+            tests/test_paper3_external_annotation.py \
+            tests/test_paper3_confirmatory_gate_v2.py \
+            tests/test_paper3_lunarc_preflight.py \
+            tests/test_paper3_cheap_gate.py \
+            tests/test_paper3_publication_repair.py \
+            tests/test_paper3_v2_publication.py
+      - name: Validate machine-readable v2 contracts and closed compute gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          for path in sorted(Path('schemas').glob('paper3-*.schema.json')):
+              schema = json.loads(path.read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+          protocol = json.loads(Path('research/PAPER3_CONFIRMATORY_GATE_PROTOCOL_V2_20260810.json').read_text())
+          assert protocol['chronology']['fresh_label_blind_item_set_required'] is True
+          assert protocol['chronology']['benchmark_labels_visible_during_construction'] is False
+          assert protocol['chronology']['v1_confirmatory_use_permitted'] is False
+          receipt = json.loads(Path('research/receipts/PAPER3_V2_GATE_PREPARATION_20260810.json').read_text())
+          assert receipt['gate_state']['fresh_v2_source_set_received'] is False
+          assert receipt['gate_state']['genuine_external_annotation_count'] == 0
+          assert receipt['gate_state']['training_inference_authorized'] is False
+          print('Paper 3 v2 gate remains correctly closed pending external evidence')
+          PY
+      - name: Install Paper 3 v2 manuscript build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
+      - name: Compile exact Paper 3 v2 manuscript and reject blocking PDF warnings
+        shell: bash
+        run: |
+          set +e
+          cd paper/structural_amortization
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main_v2.tex | tee latexmk_v2.stdout.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { grep -n -E '^!|LaTeX Error|Undefined control sequence|Emergency stop|Fatal error|^[^ ]+\.tex:[0-9]+:' main_v2.log || true; } | head -40 | while IFS= read -r line; do
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 3 v2 LaTeX::$safe"
+            done
+            exit "$status"
+          fi
+          test -s main_v2.pdf
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main_v2.log; then
+            echo "Blocking Paper 3 v2 LaTeX/PDF warning detected" >&2
+            exit 1
+          fi
+      - name: Upload Paper 3 v2 gate-preparation artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper3-v2-gate-preparation-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          path: |
+            research/PAPER3_CONFIRMATORY_GATE_PROTOCOL_V2_20260810.json
+            research/paper3/annotation/RUBRIC_V2.md
+            research/paper3/annotation/SOURCE_ITEM_SET_V2_TEMPLATE.json
+            research/receipts/PAPER3_V2_GATE_PREPARATION_20260810.json
+            research/receipts/PAPER3_V2_GATE_INTERNAL_REVIEW_20260810.json
+            schemas/paper3-*.schema.json
+            paper/structural_amortization/main_v2.pdf
+            paper/structural_amortization/main_v2.log
+            paper/structural_amortization/latexmk_v2.stdout.log
+          if-no-files-found: error
