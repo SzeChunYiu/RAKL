@@ -99,6 +99,10 @@ def audit_formalization(witness: FormalizationWitness | None) -> AssuranceReport
             ("formal_statement_not_bound_to_informal_claim",),
         )
     reasons: list[str] = []
+    if not witness.informal_claim_hash:
+        reasons.append("informal_claim_hash_missing")
+    if not witness.formal_statement_hash:
+        reasons.append("formal_statement_hash_missing")
     if not witness.accepted:
         reasons.append("formalization_not_accepted")
     if not witness.roundtrip_checked:
@@ -143,6 +147,16 @@ def audit_proof_receipt(
             ("proof_receipt_missing",),
         )
     reasons: list[str] = []
+    if not receipt.theorem_id:
+        reasons.append("theorem_id_missing")
+    if not receipt.theorem_statement_hash:
+        reasons.append("theorem_statement_hash_missing")
+    if not receipt.source_hash:
+        reasons.append("proof_source_hash_missing")
+    if not receipt.checker:
+        reasons.append("primary_checker_identity_missing")
+    if not receipt.checker_version:
+        reasons.append("primary_checker_version_missing")
     if not receipt.accepted:
         reasons.append("primary_checker_rejected_or_incomplete")
     for axiom in receipt.axioms:
@@ -157,6 +171,8 @@ def audit_proof_receipt(
     if require_independent_recheck:
         if not receipt.independent_checker:
             reasons.append("independent_checker_missing")
+        if not receipt.independent_checker_version:
+            reasons.append("independent_checker_version_missing")
         if not receipt.independent_accepted:
             reasons.append("independent_checker_did_not_accept")
         if not receipt.isolated_recheck:
@@ -181,12 +197,6 @@ def audit_novelty(certificate: NoveltyCertificate | None) -> AssuranceReport:
             MathClaimStage.MACHINE_PROVEN_NOVELTY_UNRESOLVED,
             ("novelty_certificate_missing",),
         )
-    if certificate.equivalent_found:
-        return AssuranceReport(
-            AssuranceVerdict.FAIL,
-            MathClaimStage.VERIFIED_REDISCOVERY,
-            ("prior_equivalent_result_found",),
-        )
     reasons: list[str] = []
     if not certificate.corpus_cutoff:
         reasons.append("novelty_corpus_cutoff_missing")
@@ -198,11 +208,19 @@ def audit_novelty(certificate: NoveltyCertificate | None) -> AssuranceReport:
         reasons.append("canonical_theorem_fingerprint_missing")
     if certificate.independent_reviewers < 1:
         reasons.append("novelty_has_no_independent_reviewer")
+    if certificate.equivalent_found and not certificate.candidate_matches:
+        reasons.append("prior_equivalent_flag_has_no_candidate_match")
     if reasons:
         return AssuranceReport(
             AssuranceVerdict.CANNOT_CHECK,
             MathClaimStage.MACHINE_PROVEN_NOVELTY_UNRESOLVED,
             tuple(reasons),
+        )
+    if certificate.equivalent_found:
+        return AssuranceReport(
+            AssuranceVerdict.FAIL,
+            MathClaimStage.VERIFIED_REDISCOVERY,
+            ("prior_equivalent_result_found",),
         )
     return AssuranceReport(
         AssuranceVerdict.PASS,
@@ -218,6 +236,13 @@ def classify_math_record(record: MathResearchRecord) -> AssuranceReport:
     formalization alignment or proof assurance.  Likewise, proof validity cannot
     silently mint novelty authority.
     """
+
+    if not record.claim_id:
+        return AssuranceReport(
+            AssuranceVerdict.CANNOT_CHECK,
+            MathClaimStage.CONJECTURE,
+            ("claim_id_missing",),
+        )
 
     if record.formalization is None:
         return AssuranceReport(
