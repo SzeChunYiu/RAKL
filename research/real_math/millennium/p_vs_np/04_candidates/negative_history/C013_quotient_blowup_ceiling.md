@@ -18,7 +18,7 @@ The proof uses only their Definitions 18–21 of semi-filters, preservation, and
 
 when `K` is a power of two, and Theorem 22 / Proposition 38 for a simple equality upper bound.
 
-## Definition C013-D1 — vertex blow-up of a quotient graph
+## Definition C013-D1 — square vertex blow-up of a quotient graph
 
 Let
 
@@ -26,21 +26,21 @@ Let
 
 be a non-trivial square bipartite graph. Let
 
-`lambda_L : [N_L] -> [K]`
+`lambda_L : [N] -> [K]`
 
 and
 
-`lambda_R : [N_R] -> [K]`
+`lambda_R : [N] -> [K]`
 
-be surjective maps. Define the blow-up graph
+be surjective maps. Define the square blow-up graph
 
 `G = BlowUp(Q; lambda_L, lambda_R)`
 
-by
+on `[N] x [N]` by
 
 `(u,v) in G  iff  (lambda_L(u), lambda_R(v)) in Q`.
 
-Thus every base vertex is replaced by a nonempty class, and adjacency depends only on the two quotient labels. The class sizes need not be uniform.
+Thus every base vertex is replaced by a nonempty class, and adjacency depends only on the two quotient labels. The class sizes need not be uniform and the left/right partitions need not coincide.
 
 Let `U_0 = Q^c` and `U = G^c`. For every set `S subseteq U_0`, define its lift
 
@@ -50,13 +50,11 @@ Lifting commutes with inclusion and intersections:
 
 `Lift(S intersect T) = Lift(S) intersect Lift(T)`.
 
-## Theorem C013 — full cover complexity is non-increasing under vertex blow-up
+## Theorem C013 — full cover complexity is non-increasing under square vertex blow-up
 
 With the notation above,
 
-`rho(G, G_{N_L,N_R}) <= rho(Q, G_{K,K})`.
-
-For the square R004 setting `N_L=N_R=N`, this is the same full graph-cover measure used throughout the current programme.
+`rho(G, G_{N,N}) <= rho(Q, G_{K,K})`.
 
 ### Proof
 
@@ -116,11 +114,11 @@ We have produced a quotient semi-filter above a quotient graph edge that preserv
 
 Therefore the lifted `k` pairs cover the blow-up, proving
 
-`rho(G,G_{N_L,N_R}) <= k`.
+`rho(G,G_{N,N}) <= k`.
 
 ## Corollary C013-C1 — cloning cannot amplify a hard gadget
 
-Any construction obtained only by replacing vertices of a fixed quotient graph by larger nonempty twin classes has cover complexity at most the cover complexity of the quotient. In particular, no amount of cloning can turn a constant-size quotient into a growing full-cover lower bound.
+Any square construction obtained only by replacing vertices of a fixed quotient graph by larger nonempty twin classes has cover complexity at most the cover complexity of the quotient. In particular, no amount of cloning can turn a constant-size quotient into a growing full-cover lower bound.
 
 This is a stronger screening rule than looking only for disjoint pair multiplexing. It applies to arbitrary full semi-filters and arbitrary base cover pairs.
 
@@ -134,7 +132,7 @@ have rank `k >= 1`. On left and right vertex sets `F_2^t`, define
 
 `G_H^neq = { (x,y) : Hx != Hy }`.
 
-The syndrome map has image size `K=2^k`, and every image element has a nonempty fibre. Therefore `G_H^neq` is a vertex blow-up of `G_NEQ` on the `K` syndrome classes.
+The syndrome map has image size `K=2^k`, and every image element has a nonempty fibre. Therefore `G_H^neq` is a square vertex blow-up of `G_NEQ` on the `K` syndrome classes.
 
 By C013 and Proposition 40 of the primary source,
 
@@ -148,7 +146,7 @@ Define
 
 `G_H^eq = { (x,y) : Hx = Hy }`.
 
-This is a blow-up of the equality graph on `K=2^k` quotient labels.
+This is a square vertex blow-up of the equality graph on `K=2^k` quotient labels.
 
 For `k`-bit labels, each bit equality can be written as
 
