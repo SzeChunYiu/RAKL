@@ -1,0 +1,146 @@
+{
+  "schema_version": "paper2-matched-study-freeze-v1",
+  "protocol_id": "paper2-matched-architecture-evidence-v1-20260810",
+  "subject_sha": "4ecd4ac3f1ef9783409b24b952f2aa5859dd012e",
+  "freeze_created_at_utc": "2026-08-10T18:45:00Z",
+  "evaluated_results_opened_before_freeze": false,
+  "status": "BLOCKED_MISSING_CONFIRMATORY_TASK_PAYLOADS_PROMPTS_EVIDENCE_EVALUATOR_AND_PRICE_SHEET",
+  "object": "LLM-mediated scientific research workflow under matched model capability and evidence access",
+  "qoi": "valid-scientific-success versus total-resource-cost frontier",
+  "context": "paired scientific task worlds stratified by evidence topology and evaluated under protected task-level scoring",
+  "population": "fresh confirmatory scientific task worlds not used to design the architecture prompts or evaluator",
+  "primary_estimand": "within-model within-evidence-access difference in valid scientific success and resource cost between each strong parent and RAKL_FIXED",
+  "primary_denominator": "valid_scientific_success",
+  "task_set": {
+    "confirmatory": false,
+    "path": "benchmarks/epistemic_control/tasks_v0.json",
+    "sha256": "73defb516801de9f9395e3f0f2bfda27974f1fbc47d7b6e586514d17f1536049",
+    "declared_status": "deterministic_conformance_pilot_not_confirmatory_llm_benchmark",
+    "blocking_reason": "The repository contains task metadata but no task prompts, evidence payloads, hidden outcomes, or confirmatory split."
+  },
+  "model": {
+    "provider": "headroom",
+    "model_id": "gpt-5.6-sol",
+    "model_revision": null,
+    "architecture_neutral_interface": false,
+    "interface_type": "Codex agent CLI with provider-managed system context rather than a neutral model API",
+    "reasoning_effort": "high",
+    "service_tier": "priority",
+    "adapter_command": "codex",
+    "adapter_version": "codex-cli 0.147.0",
+    "credential_mode": "local_codex_authenticated_session_no_secret_copied_to_packet",
+    "config_path": "/Users/billy/.codex/config.toml",
+    "config_sha256_at_freeze": "ae2e65985056a214a9d2a61245a7f0f5665452667f5e5425c6d359058094a67a"
+  },
+  "registered_architecture_arm_ids": [
+    "DIRECT_STRONG",
+    "RAG_STRONG",
+    "GENERIC_AGENT",
+    "HYPOTHESIS_EVIDENCE_LOOP",
+    "RAKL_FIXED"
+  ],
+  "excluded_from_primary_execution": {
+    "RAKL_EVOLVING": "Requires a separately frozen fresh-assurance transaction and cannot share this confirmatory evaluator."
+  },
+  "architecture_arms": [],
+  "registered_evidence_access_arm_ids": [
+    "public",
+    "curated",
+    "complete_sealed"
+  ],
+  "evidence_access_arms": [],
+  "evidence_topology_strata": [
+    "SINGLE_DOMINANT_SIGNAL",
+    "DISTRIBUTED",
+    "CONTRADICTION_RICH",
+    "PROVENANCE_DEPENDENT",
+    "MECHANISM_DISCRIMINATION"
+  ],
+  "resources": {
+    "seed_schedule": [
+      104729,
+      130363,
+      155921
+    ],
+    "active_context_token_budgets": [
+      512,
+      1024,
+      2048,
+      4096,
+      8192
+    ],
+    "max_billable_tokens_per_run": 32768,
+    "max_tool_calls_per_run": 24,
+    "max_retrieval_calls_per_run": 24,
+    "max_wall_time_seconds_per_run": 900,
+    "budget_interpolation": "none",
+    "note": "These ceilings are frozen for protocol v1 before outcome access; infeasibility requires a superseding packet before any evaluated result is opened."
+  },
+  "mandatory_evidence_coverage_experiment": {
+    "status": "FROZEN_DESIGN_BLOCKED_MISSING_PAYLOADS",
+    "budget_grid": [
+      512,
+      1024,
+      2048,
+      4096,
+      8192
+    ],
+    "arms": [
+      "naive_truncation",
+      "embedding_top_k",
+      "strong_rag_selection",
+      "rakl_context_compiler"
+    ],
+    "outcome": "fraction of preregistered mandatory evidence identities present in active context",
+    "secondary_outcome": "valid_scientific_success at the same active-context token budget"
+  },
+  "evaluator": {
+    "id": "epistemic-control-v0-conformance-only",
+    "path": "src/rakl/epistemic_benchmark.py",
+    "sha256": "a531b34d799e74e7a6609736767ab7664eb8a6e2ee9b70d9979dfdc27adbf4dc",
+    "final_task_correctness_executable": false,
+    "arm_identity_blinded": false,
+    "blocking_reason": "The available evaluator scores structured process records but does not score final task correctness on a protected confirmatory corpus."
+  },
+  "provider_price_sheet": null,
+  "price_sheet": null,
+  "statistics": {
+    "experimental_unit": "task",
+    "pairing": [
+      "task",
+      "model",
+      "evidence_access_arm",
+      "resource_ceiling",
+      "evaluator",
+      "seed"
+    ],
+    "binary_contrasts": "paired risk difference with task-level bootstrap interval; McNemar only after nondegenerate discordant counts",
+    "continuous_contrasts": "paired task-level bootstrap",
+    "architecture_evidence_interaction": "preregistered hierarchical model after confirmatory task count supports estimation",
+    "multiplicity": "Holm across registered primary failure coordinates"
+  },
+  "hard_process_gates": [
+    "unsupported_authority_upgrade_absent",
+    "mandatory_evidence_present",
+    "context_and_qoi_aligned",
+    "negative_history_preserved_where_applicable",
+    "hidden_defect_detected_or_explicitly_blocked",
+    "protected_evaluator_identity_valid"
+  ],
+  "frozen_source_documents": [
+    {
+      "path": "research/PAPER2_MATCHED_EVALUATION_PREREGISTRATION_20260810.md",
+      "sha256": "4bae83f08603c423227ac053fba145c09b75934a1c7ead10a43a64d4e026121d"
+    },
+    {
+      "path": "research/PAPER2_EMPIRICAL_FIGURE_CONTRACT_20260810.md",
+      "sha256": "f7c32ca9dc567f02ca8be119727b8ddd476c1bb231b4f343437558e0473a664d"
+    },
+    {
+      "path": "schemas/paper2-empirical-result.schema.json",
+      "sha256": "c43c2206b1d231971d8c37368a5922e2181f660da1eab42062f59adea4ab0f68"
+    }
+  ],
+  "result_access_policy": "No evaluated result may be generated until a superseding packet passes preflight with all task, prompt, evidence, evaluator, provider, resource, seed, and price bindings present.",
+  "claim_boundary": "This packet freezes an execution design and its current blockers. It contains no evaluated outcomes and supports no empirical comparative claim."
+}
