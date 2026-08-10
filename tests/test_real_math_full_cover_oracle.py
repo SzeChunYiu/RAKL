@@ -54,6 +54,8 @@ def test_c008_strict_canonical_full_separation() -> None:
     full_result = full.exact_full_cover_number(3, complement)
 
     assert canonical_result.minimum_pairs == 1
+    assert full_result.relevant_semifilters == 759
+    assert full_result.distinct_maximal_pair_masks == 17
     assert full_result.minimum_pairs == 2
 
 
