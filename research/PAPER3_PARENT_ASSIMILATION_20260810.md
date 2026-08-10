@@ -57,6 +57,54 @@ The structural-amortization programme treats prior work as reusable parent mecha
 
 **Challenge.** Report induction/compilation cost and break-even reuse count; do not claim net efficiency from runtime compression alone.
 
+## ReX — reusable latent experience bank
+
+**Parent strength.** A shared Experience Bank stores latent skill vectors and dynamically composes them into input-conditioned lightweight adapters across tasks without explicit task identifiers.
+
+**Assimilate.** Persistent reusable experience and dynamic task-conditioned composition.
+
+**Residual.** ReX does not by itself establish an externally inspectable scientific structural object, cross-domain training-data redundancy, directional transfer boundaries or semantic-decoy rejection.
+
+**Challenge.** Compare shared latent experience against explicit witnessed structure on Q2/Q3 and on training-data selection.
+
+## SkillGraph / SKILLGRAPH / GraSP / SkillDAG — dependency and execution graphs
+
+**Parent strength.** These systems move beyond flat semantic skill retrieval. They encode prerequisites, enhancement/co-occurrence/conflict or precondition-effect edges, retrieve ordered subgraphs, compile executable DAGs, verify nodes, evolve structure from trajectories and in some cases couple the graph to reinforcement-learning policy improvement.
+
+**Assimilate.** Typed dependency edges, structural retrieval, graph evolution, precondition/effect contracts, node-level verification and conservative repair.
+
+**Residual.** A graph shared by policy learning and execution already exists, so Paper 3 cannot claim ``one graph across learning and inference.'' The remaining candidate is specifically cross-domain scientific structural redundancy used for **training-data selection** and inference transfer with QoI/context/evidence/boundary semantics.
+
+**Challenge.** Use the strongest graph/skill parents as inference controls; test whether the RAKL scientific witness adds safe transfer and whether its same persistent object also improves training selection.
+
+## SkillSight — calibrated semantic skill retrieval
+
+**Parent strength.** Shows that shared descriptive boilerplate biases dense and lexical skill retrieval and removes much of that bias through semantic/lexical background calibration without extra training.
+
+**Assimilate.** Strong semantic retrieval control that discounts shared background.
+
+**Residual.** Paper 3 cannot use a weak embedding retriever as the semantic baseline. Structural gains must survive calibrated semantic retrieval.
+
+**Challenge.** Q3 semantic decoys should remain a structural failure after SkillSight-style background calibration; otherwise the apparent structural gain was just semantic calibration.
+
+## AgentGL — graph-conditioned learning and graph-native inference
+
+**Parent strength.** Uses graph-native tools at inference and a graph-conditioned curriculum during reinforcement learning, demonstrating one structural substrate can influence both training and execution.
+
+**Assimilate.** Graph-conditioned curriculum and graph-native inference as a cross-phase parent mechanism.
+
+**Residual.** AgentGL is a graph-learning system rather than a general cross-domain scientific equivalence/redundancy representation. It substantially narrows, but does not automatically subsume, the Paper-3 training-data-selection plus safe cross-domain transfer claim.
+
+**Challenge.** The RAKL shared-substrate claim must be phrased in terms of structural classes/witnesses that transfer across different surface domains and that directly alter data selection as well as inference.
+
+## Asymmetric structural transfer between language and biology
+
+**Parent strength.** Controlled results report stronger structural transfer from language models to biological sequence tasks than the reverse under several matched conditions.
+
+**Assimilate.** Directionality as a first-class transfer property; reverse-direction perturbation in the benchmark.
+
+**Residual.** Shared structure does not justify symmetric equivalence. RAKL's witness is therefore directional and retains direction-specific failure history.
+
 ## Structural information in LLMs (ACL 2026)
 
 **Parent strength.** Controlled evidence that language models can learn abstract structural information and that structural learning is related to later compositional use, while test-time structural use remains a separate challenge.
@@ -75,8 +123,10 @@ The structural-amortization programme treats prior work as reusable parent mecha
 
 ## Current residual novelty candidate
 
-The candidate contribution after parent assimilation is:
+After this assimilation pass the candidate contribution is deliberately narrow:
 
-> A shared, context/QoI-scoped and evidence-bearing structural object with directional mapping witnesses is used both to estimate cross-domain training redundancy and to license/reject test-time transfer; its economic value is measured by total cost-to-capability including induction and verification.
+> A persistent, context/QoI-scoped and evidence-bearing structural object with directional mapping witnesses is used both to estimate **cross-domain training-data redundancy/selection value** and to license or reject inference-time transfer across surface-disjoint domains; its value is measured by total cost-to-capability including induction and verification.
 
-This candidate is false or uninteresting if a strong parent method supplies the same transfer signal/cost frontier without the extra structural machinery.
+The words ``shared substrate,'' ``skill graph,'' ``structural prior,'' ``amortization,'' ``experience bank,'' ``graph across learning and execution,'' and ``semantic retrieval is insufficient'' are all occupied parent territory and must not be presented as standalone novelty.
+
+This candidate is false or uninteresting if a strong parent method supplies the same cross-domain transfer signal and training-selection/inference cost frontier without the extra scientific witness machinery.
