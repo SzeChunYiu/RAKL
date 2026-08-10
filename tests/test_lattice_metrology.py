@@ -51,15 +51,11 @@ def test_new_atom_in_existing_cell_is_semantic_densification():
     assert change.atom_cell_density_delta > 0
 
 
-def test_relation_and_evidence_growth_without_new_cell_is_mixed_densification():
+def test_existing_relation_can_gain_evidence_without_fake_volume():
     before = _base()
-    after = _base()
-    after.add_witness(
-        CompatibilityWitness("a1", "a2", LatticeCompatibility.COMPATIBLE, "same scope", evidence_ids=("s1", "s2", "s3"))
-    )
 
-    # Existing witness identities are immutable, so construct a fresh snapshot with
-    # the same atoms but a stronger evidence-bearing witness.
+    # Typed witness identities are immutable within one snapshot. Build the later
+    # snapshot explicitly with the same relation semantics plus a new source pin.
     after = TypedKnowledgeLattice.empty()
     for atom in before.atoms.values():
         after.add_atom(atom)
