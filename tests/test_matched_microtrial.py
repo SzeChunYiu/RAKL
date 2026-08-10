@@ -8,9 +8,12 @@ from rakl.matched_microtrial import (
     MatchedTrialArm,
     PendulumStructuredAnswer,
     TrialCondition,
+    TrialResourceCeiling,
+    TrialResourceUsage,
     canonical_protocol_hash,
     score_pendulum_answer,
     validate_matched_arms,
+    validate_resource_usage,
 )
 
 
@@ -22,6 +25,17 @@ def _model() -> MatchedModelConfig:
         max_output_tokens=512,
         seed=17,
         system_prompt="Answer the registered scientific question using only supplied evidence.",
+    )
+
+
+def _ceiling() -> TrialResourceCeiling:
+    return TrialResourceCeiling(
+        max_model_input_tokens=4096,
+        max_model_output_tokens=512,
+        max_preprocessing_model_tokens=4096,
+        max_preprocessing_tool_calls=32,
+        max_external_retrieval_calls=0,
+        max_wall_time_ms=60_000,
     )
 
 
@@ -38,6 +52,7 @@ def _arms() -> tuple[MatchedTrialArm, MatchedTrialArm]:
     common = dict(
         model=_model(),
         evidence=_evidence(),
+        resource_ceiling=_ceiling(),
         tool_policy_id="NO_EXTERNAL_TOOLS_AFTER_PROMPT_BUILD_V1",
         output_schema_id="PENDULUM_STRUCTURED_ANSWER_V1",
         question_set_hash=canonical_protocol_hash(["Q1", "Q2"]),
@@ -49,22 +64,40 @@ def _arms() -> tuple[MatchedTrialArm, MatchedTrialArm]:
     )
 
 
-def test_matched_arms_require_same_model_corpus_tools_questions_and_evaluator():
+def test_matched_arms_require_same_model_corpus_resources_tools_questions_and_evaluator():
     direct, rakl = _arms()
     result = validate_matched_arms(direct, rakl)
     assert result.matched
     assert result.problems == ()
 
 
-def test_model_or_corpus_drift_is_detected_before_trial_execution():
+def test_model_corpus_or_resource_drift_is_detected_before_trial_execution():
     direct, rakl = _arms()
     drifted_model = replace(rakl.model, temperature=0.2)
     drifted_evidence = EvidenceCorpusFingerprint.from_payloads({"S1": b"different"})
+    drifted_ceiling = replace(rakl.resource_ceiling, max_preprocessing_tool_calls=64)
 
     model_result = validate_matched_arms(direct, replace(rakl, model=drifted_model))
     corpus_result = validate_matched_arms(direct, replace(rakl, evidence=drifted_evidence))
+    resource_result = validate_matched_arms(direct, replace(rakl, resource_ceiling=drifted_ceiling))
     assert "model_configuration_mismatch" in model_result.problems
     assert "evidence_corpus_mismatch" in corpus_result.problems
+    assert "resource_ceiling_mismatch" in resource_result.problems
+
+
+def test_preprocessing_usage_may_differ_but_each_arm_must_stay_within_same_ceiling():
+    ceiling = _ceiling()
+    direct_usage = TrialResourceUsage(1500, 200, 0, 0, 0, 700)
+    rakl_usage = TrialResourceUsage(700, 220, 1800, 12, 0, 3200)
+    assert validate_resource_usage(direct_usage, ceiling).within_ceiling
+    assert validate_resource_usage(rakl_usage, ceiling).within_ceiling
+
+
+def test_resource_ceiling_violation_invalidates_that_execution_receipt():
+    usage = TrialResourceUsage(700, 220, 5000, 12, 0, 3200)
+    report = validate_resource_usage(usage, _ceiling())
+    assert not report.within_ceiling
+    assert any("preprocessing_model_tokens" in problem for problem in report.problems)
 
 
 def test_evidence_fingerprint_is_order_invariant_but_byte_sensitive():
