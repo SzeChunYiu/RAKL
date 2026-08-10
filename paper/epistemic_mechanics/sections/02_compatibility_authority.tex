@@ -1,0 +1,178 @@
+\section{Compatibility, gluing, and when a lattice exists}
+
+The persistent state becomes scientifically useful only if it can express relations between claims that were produced in different representations or under different regimes. The difficult part is not storing an edge. It is deciding what an edge means and what, if anything, follows from several edges taken together.
+
+\subsection{Typed transition maps and aligned contradiction}
+
+For overlapping charts \(C_i\) and \(C_j\), let
+\[
+T_{ij}^{\tau,\sigma}:\phi_i(U_i\cap U_j)\longrightarrow\phi_j(U_i\cap U_j)
+\]
+be a transition with relation type \(\tau\) and scope \(\sigma\). The transition record contains assumptions, a validity regime, error semantics, evidence and a failure mode. Examples include coordinate conversion, unit conversion, approximation, calibration transfer, model reduction, causal mapping or an explicitly conjectural bridge.
+
+A contradiction predicate should be evaluated only after the relevant overlap and alignment obligations are satisfied. For comparison level \(\ell\), define
+\[
+\Contradict_{\ell}(C_i,C_j)=
+\Overlap(C_i,C_j)\land
+\Align_{\ell}(C_i,C_j)\land
+\neg\Compat_{\ell}(C_i,C_j).
+\]
+If the contexts cannot be aligned, the correct state is not necessarily ``contradiction.'' It may be ``not comparable under the registered map.'' This distinction prevents a common scientific error: treating two statements as rivals when they refer to different observables, scales, interventions or approximation regimes.
+
+The context literature anticipated the need for explicit lifting between local theories \cite{mccarthy1993,giunchiglia1993}. The sheaf-theoretic viewpoint makes the local-to-global obligation especially sharp: local compatibility data can fail to assemble into a global section even when every pairwise overlap looks harmless \cite{abramsky2011,curry2014,robinson2017}. RAKL uses this as a structural warning rather than claiming that its current atlas implements all sheaf axioms.
+
+\subsection{The current object: a typed compatibility complex}
+
+The historical implementation name \texttt{TypedKnowledgeLattice} is stronger than the operations it actually provides. The reference object stores typed atoms, pairwise compatibility witnesses and constructive paths. Let its abstract content be
+\[
+\mathfrak C=(A,W,\mathcal P),
+\]
+where \(A\) is a typed set of atoms, \(W\) a partial map assigning a witnessed compatibility status to selected unordered pairs, and \(\mathcal P\) a family of finite constructive paths admitted by the registered witness policy.
+
+This object is useful. It can reject a path containing an explicitly incompatible pair, preserve conditions attached to a conditional witness, and aggregate evidence associated with the participating atoms and relations. But none of those operations defines a partial order, a meet or a join.
+
+\begin{proposition}[Pairwise compatibility does not imply an order-theoretic lattice]
+The data \((A,W,\mathcal P)\) does not, solely by virtue of containing pairwise compatibility witnesses and admissible paths, define an order-theoretic lattice.
+\end{proposition}
+
+\begin{proof}
+A lattice requires a partial order \(\preceq\) such that every relevant pair has a greatest lower bound and a least upper bound. A witnessed compatibility relation is generally symmetric, whereas a nontrivial partial order is antisymmetric. Moreover, the existence of a compatibility witness for \(a\) and \(b\) does not construct an element representing either \(a\wedge b\) or \(a\vee b\), much less prove the universal properties of those elements. Therefore additional structure is required.
+\end{proof}
+
+The software now exposes \texttt{TypedCompatibilityComplex} as the semantically conservative name while retaining the historical class as a compatibility alias. The word ``complex'' is used here in the broad engineering sense of a structured family of atoms, witnesses and finite paths. If one wants a simplicial complex, higher-order admissibility must additionally be downward closed under taking subsets.
+
+\subsection{A three-context parity obstruction}
+
+Pairwise compatibility can fail even more strongly than the preceding proposition suggests. Consider three binary variables \(x,y,z\in\Bool\) and three local contexts:
+\[
+U_{xy}=\{x,y\},\qquad U_{yz}=\{y,z\},\qquad U_{xz}=\{x,z\}.
+\]
+Define the locally allowed assignments by
+\[
+\begin{aligned}
+S_{xy}&=\{(x,y):x\oplus y=0\},\\
+S_{yz}&=\{(y,z):y\oplus z=0\},\\
+S_{xz}&=\{(x,z):x\oplus z=1\},
+\end{aligned}
+\]
+where \(\oplus\) denotes addition modulo two.
+
+Every pair of contexts is compatible on its intersection. For example, both \(S_{xy}\) and \(S_{yz}\) restrict to the full set \(\{0,1\}\) on the shared variable \(y\); the same is true for the other two overlaps. Nevertheless there is no global assignment \((x,y,z)\) satisfying all three constraints.
+
+\begin{proposition}[Three-context parity obstruction]
+The three local charts above are pairwise compatible on every overlap but possess no global section.
+\end{proposition}
+
+\begin{proof}
+The first two parity constraints imply \(x=y\) and \(y=z\), hence \(x=z\). The third constraint requires \(x\ne z\). Thus the conjunction is inconsistent. Pairwise restrictions do not expose the obstruction because each single-variable overlap admits both values.
+\end{proof}
+
+This is the finite pattern that the phrase ``coactivation is not gluing'' will later echo for the workspace. The obstruction is also closely related to the local-to-global failures studied in sheaf-theoretic contextuality \cite{abramsky2011}. The scientific lesson is simple: a graph in which every edge is individually admissible can still contain a higher-order inconsistency. A mature implementation should therefore support certificates attached to larger covers or explicit obstruction objects, not only pairwise edge labels.
+
+\subsection{From compatibility to closure}
+
+There is, however, a principled route to a genuine lattice. Let \(A\) be a universe of typed scientific atoms and let
+\[
+\cl:\powerset(A)\longrightarrow\powerset(A)
+\]
+be a closure operator satisfying, for all \(X,Y\subseteq A\),
+\[
+X\subseteq\cl(X),\qquad
+X\subseteq Y\Rightarrow\cl(X)\subseteq\cl(Y),\qquad
+\cl(\cl(X))=\cl(X).
+\]
+These are extensivity, monotonicity and idempotence. Closure operators are classical objects in lattice theory, formal concept analysis and abstract interpretation \cite{birkhoff1940,ganter1999,cousot1977}. Let
+\[
+\mathcal L_{\cl}=\{X\subseteq A:\cl(X)=X\}
+\]
+be the family of closed scientific states under the declared operator.
+
+\begin{theorem}[Closure-system lattice]
+Ordered by set inclusion, \((\mathcal L_{\cl},\subseteq)\) is a complete lattice. For any family \(\{X_i\}_{i\in I}\subseteq\mathcal L_{\cl}\),
+\[
+\bigwedge_{i\in I}X_i=\bigcap_{i\in I}X_i,
+\qquad
+\bigvee_{i\in I}X_i=\cl\!\left(\bigcup_{i\in I}X_i\right).
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(M=\bigcap_i X_i\). Since \(M\subseteq X_i\), monotonicity gives \(\cl(M)\subseteq\cl(X_i)=X_i\) for every \(i\); hence \(\cl(M)\subseteq M\). Extensivity gives \(M\subseteq\cl(M)\), so \(M\) is closed. It is plainly the greatest closed lower bound.
+
+Let \(J=\cl(\bigcup_i X_i)\). Idempotence makes \(J\) closed, and extensivity gives \(X_i\subseteq J\) for every \(i\). If \(Y\) is any closed upper bound, then \(\bigcup_i X_i\subseteq Y\), so monotonicity yields \(J=\cl(\bigcup_i X_i)\subseteq\cl(Y)=Y\). Thus \(J\) is the least closed upper bound. Arbitrary meets and joins therefore exist.
+\end{proof}
+
+This theorem gives a mathematically honest meaning to a ``knowledge lattice'' provided the closure operator itself is declared and justified. It also clarifies the role of saturation. A saturated state, relative to a fixed closure operator and universe, is a fixed point. Tarski's fixed-point theorem places such constructions in the broader theory of monotone operators on complete lattices \cite{tarski1955}. Section~8 will add the crucial scientific qualification: in open-world research, the effective universe and discovery operator can expand, so a fixed point can only be certified relative to a bounded basis and horizon.
+
+\subsection{Two layers rather than one overloaded object}
+
+The resulting architecture has two mathematical layers. The \emph{compatibility layer} stores typed scientific atoms, witnessed relations, obstructions and admissible paths. It is designed to preserve local detail and to refuse unjustified gluing. The \emph{closure layer}, when supplied with a valid closure operator, organizes closed epistemic states into a genuine lattice. Conflating the two loses useful distinctions: a compatibility edge is not an order relation, while a lattice join is not merely ``put these two claims in the same memory.''
+
+This layered interpretation is also consistent with formal concept analysis, where closure operators generate concept lattices \cite{ganter1999}, and with abstract interpretation, where closure-like operators and Galois connections organize sound abstractions \cite{cousot1977}. RAKL's contribution is not the lattice theorem. The contribution is the discipline of requiring the theorem's hypotheses before using lattice language in a scientific-agent architecture.
+
+\section{Authority, uncertainty, and scalar inadequacy}
+
+A second mathematical hazard arises when a rich epistemic state is compressed to one ``confidence'' or ``quality'' number. Scalar scores are convenient for ranking, but they can silently convert a governance policy into a claim about epistemic structure.
+
+\subsection{Authority as a product order}
+
+For simplicity let each authority coordinate \(Q\in\{G,R,M,I,D\}\) carry a local partial order \(\preceq_Q\). The product order is
+\[
+\alpha\preceq\beta
+\quad\Longleftrightarrow\quad
+\alpha^{(Q)}\preceq_Q\beta^{(Q)}\quad\text{for every }Q.
+\]
+This construction permits incomparable states. One claim may be strongly grounded but mechanistically weak; another may have a persuasive mechanism but poor identification. Neither need dominate the other.
+
+\begin{example}
+Let
+\[
+\alpha=(3,1,0,2,1),\qquad \beta=(2,1,3,1,1)
+\]
+under coordinatewise numerical orders used only for illustration. Then \(\alpha\) is stronger in grounding and identification, while \(\beta\) is stronger in mechanism. Neither \(\alpha\preceq\beta\) nor \(\beta\preceq\alpha\).
+\end{example}
+
+A scalar score \(s(\alpha)\) can still be introduced for a specific decision policy, just as multi-objective optimization can apply a utility function. What it cannot do is faithfully represent the partial order as though the underlying epistemic structure were itself one-dimensional.
+
+\begin{theorem}[No faithful scalarization of incomparability]
+Let \((P,\preceq)\) be a partial order containing distinct incomparable elements \(x\) and \(y\). There is no map \(s:P\to\mathbb R\) such that for all \(a,b\in P\),
+\[
+a\preceq b\quad\Longleftrightarrow\quad s(a)\le s(b).
+\]
+\end{theorem}
+
+\begin{proof}
+Because the usual order on \(\mathbb R\) is total, either \(s(x)\le s(y)\) or \(s(y)\le s(x)\). Under the stated biconditional, the first case implies \(x\preceq y\) and the second implies \(y\preceq x\). Both contradict incomparability.
+\end{proof}
+
+The theorem is intentionally elementary because the design consequence is often obscured by sophisticated scoring machinery. A scalar can be a \emph{policy projection}; it cannot preserve every relation in a genuinely partial epistemic order. If a system needs the distinction between ``more evidence'' and ``more mechanism'' later, collapsing the coordinates early is information loss.
+
+\subsection{Uncertainty and authority occupy different axes}
+
+Probability theory and structural causal modeling supply principled methods for uncertainty and causal questions \cite{pearl2009,halpern2016}. They do not remove the need for provenance or scope. A posterior probability can be sharply concentrated because a likelihood is strong under a misspecified model. A causal effect can be identifiable under assumptions that do not hold in a target population. An observational result can be numerically precise while mechanistically agnostic. For that reason uncertainty objects \(u(c)\) are not embedded into the authority tuple by default.
+
+Conversely, authority need not mean certainty. A well-calibrated measurement with a wide interval may have excellent grounding and representation certificates. The correct system state can therefore be ``high authority, high uncertainty.'' This is another pair that a single confidence score tends to obscure.
+
+\subsection{Contradiction without explosion}
+
+Scientific archives must also tolerate unresolved contradiction. Argumentation frameworks explicitly model attack and defense rather than treating the knowledge base as a single classical theory \cite{dung1995}; four-valued logics provide semantics in which inconsistent information can be represented without trivializing every proposition \cite{belnap1977}. RAKL adopts the engineering lesson: conflicting claims can coexist as typed objects while their contradiction is recorded as an obstruction. The canonical state does not infer arbitrary consequences from the presence of a conflict.
+
+A useful distinction is
+\[
+\text{raw conflict}\;\supseteq\;	ext{aligned contradiction}\;\supseteq\;	ext{decisive refutation}.
+\]
+Raw conflict may be textual. Aligned contradiction requires compatible scope and representation. Decisive refutation additionally requires evidence of sufficient authority for the target claim and regime. By making these transitions explicit, the archive can preserve the history of a theory without granting all historical statements equal current standing.
+
+\subsection{Authority update and revocation}
+
+Authority is not assumed to be globally monotone. New evidence can invalidate a calibration, expose data leakage or show that a previously claimed regime was too broad. What is append-only is the \emph{history of certificates and challenges}; current valid authority is a view over that history. If \(\mathcal C_t(c)\) is the set of certificates ever attached to claim \(c\), then ordinary archival policy can preserve
+\[
+\mathcal C_t(c)\subseteq \mathcal C_{t+1}(c),
+\]
+while a validity predicate \(\nu_t:\mathcal C_t(c)\to\Bool\) determines which certificates currently contribute to \(\alpha_t(c)\). Revocation therefore changes validity, not the historical fact that a certificate once existed.
+
+This pattern parallels the distinction between provenance and current query semantics in data systems \cite{buneman2001,green2007,prov2013}. It also makes re-analysis possible: if a later policy changes the admissibility of a calibration, the system can recompute the authority view without erasing the record that produced the earlier conclusion.
+
+\subsection{Why the geometry/value distinction matters for saturation}
+
+The scalarization problem reappears in the stopping rule. ``Number of nodes stopped increasing'' is not enough. ``Average confidence stopped increasing'' is worse because it can hide counterexamples and negative results. The saturation vector in Section~8 therefore counts multiple kinds of substantive change separately: new mechanisms, derivations, independent evidence roots, contradictions/counterexamples, negative results, novelty-boundary updates, assumption-scope changes, unresolved-fiber updates and discovery-route changes. Flatness means every coordinate is zero under a stable basis. It is a product condition, not a weighted average.
