@@ -1,0 +1,87 @@
+{
+  "blocking_code_or_artifact_findings_remaining": [],
+  "claim_boundary": "This same-context review is not independent review, peer review, external annotation or evidence that Paper 3 is submission-ready.",
+  "created_at_utc": "2026-08-10T20:56:00Z",
+  "external_evidence_gate": {
+    "open_concern_ids": [
+      "P3-V2S-R2-EXTERNAL-LABELS",
+      "P3-V2S-R2-CLASS-SUPPORT"
+    ],
+    "passed": false,
+    "required_next": "Generate the opaque subject-bound packet after merge, then collect two genuinely independent human or domain-expert submissions per item, distinct adjudication and external provenance audit."
+  },
+  "internal_verdict": "INTERNALLY_READY_FOR_EXTERNAL_ANNOTATION_PACKET",
+  "lenses": [
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R1-SCOPE",
+          "finding": "The new artifact is described as curation and chronology, not as evidence that structural transfer works.",
+          "status": "resolved"
+        },
+        {
+          "concern_id": "P3-V2S-R1-FAMILY-COVERAGE",
+          "finding": "Sixteen items cover four fresh natural-domain families, exceeding the three-family protocol minimum without reusing v1 item fingerprints.",
+          "status": "resolved_for_packet"
+        }
+      ],
+      "lens": "editor_novelty_significance"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R2-CITATION-IDENTITY",
+          "finding": "All 19 DOI records returned HTTP 200 from the Crossref works registry; registry identity is not treated as full-text reproduction or mechanism validation.",
+          "status": "resolved_for_curation"
+        },
+        {
+          "concern_id": "P3-V2S-R2-EXTERNAL-LABELS",
+          "finding": "Zero genuine external judgements, no adjudication and no external provenance audit exist.",
+          "status": "open_external_gate"
+        },
+        {
+          "concern_id": "P3-V2S-R2-CLASS-SUPPORT",
+          "finding": "Per-family positive and negative support cannot be established without opening external labels; thresholds remain frozen and may not be rescued post-result.",
+          "status": "cannot_check_before_labels"
+        },
+        {
+          "concern_id": "P3-V2S-R2-LUNARC",
+          "finding": "FS9 is ready, but zero SLURM jobs were submitted because the confirmatory gate is closed.",
+          "status": "resolved_fail_closed"
+        }
+      ],
+      "lens": "methods_statistics_mechanism"
+    },
+    {
+      "findings": [
+        {
+          "concern_id": "P3-V2S-R3-FIGURE",
+          "finding": "No quantitative outcome or figure is introduced in this tranche.",
+          "status": "not_applicable"
+        },
+        {
+          "concern_id": "P3-V2S-R3-LINEAGE",
+          "finding": "The source set, protocol, rubric, negative history, receipt, manuscript status and dedicated exact-CI workflow are hash-bound or test-bound.",
+          "status": "resolved"
+        }
+      ],
+      "lens": "figures_reproducibility_claim_boundary"
+    }
+  ],
+  "object": "fresh label-blind Paper 3 v2 source-set and its fail-closed execution boundary",
+  "qoi": "internal readiness to generate a subject-bound packet for genuinely external annotation",
+  "review_class": "same_context_internal_review_not_independent_peer_review",
+  "review_id": "paper3-v2-source-set-internal-review-20260810",
+  "schema_version": "paper3-v2-source-set-internal-review-v1",
+  "subject_artifact_sha256": {
+    ".github/workflows/paper3-v2-source-set.yml": "ca63b8a62b379105785b1e992ffea0ad16effebea270c5c669f3cf3bc94fc56a",
+    "paper/structural_amortization/README_V3.md": "b6c63f0d2a6d8db8a2733d8290886e0497dd50d8c50c06e75d2e54285c06b7f0",
+    "paper/structural_amortization/main_v3.tex": "508aa72570430b132994551c144784b39a2813b3c2dd91eb11a6241094250f97",
+    "paper/structural_amortization/sections/03_benchmark_v3.tex": "8dd8e382f2b10fa7e13535a4794a86ba07484b723ac43a743b1931dc13940a41",
+    "research/paper3/annotation/SOURCE_ITEM_SET_V2_20260810.json": "a1bf09921dd85b6cf2dd6bf91f2285ff2253495bc251b3cf88a46242d65b5a2e",
+    "research/receipts/PAPER3_V2_SOURCE_SET_FREEZE_20260810.json": "d0cc4803e493fcd39f8e36d6c3c5c596da4a34ec6d05a60175be2233bf309d93",
+    "tests/test_paper3_v2_source_set.py": "2e8436792230fe1ed36315aa4f39ed28473492de3d2064a4c38f44493db6be27"
+  },
+  "subject_parent_sha": "16c602245cdba89ff1109792b3ccd0b72a6ced93",
+  "training_inference_authorized": false
+}
