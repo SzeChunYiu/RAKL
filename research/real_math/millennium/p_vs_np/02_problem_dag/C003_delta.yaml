@@ -1,0 +1,41 @@
+candidate_id: C003
+claim: "For high-threshold-to-low-threshold MCSP transport, exponent accounting requires threshold compression or an equivalent reduction advantage; ordinary exponent-preserving or amplifying circuit transformations do not repair the mismatch."
+status: PROOF_DRAFT_NEGATIVE_CHECKPOINT
+route: R002
+
+source_dependencies:
+  - SRC-STACS2021-MCSP: "Cheraghchi-Hirahara-Myrisiotis-Yoshida, STACS 2021"
+
+formal_parameters:
+  source_threshold: "S_H(n)=2^(mu_H*n)"
+  target_threshold: "S_L(m)=2^(mu_L*m)"
+  variable_expansion: "m=c*n+o(n)"
+  complexity_exponent_map: "log2(CC(A(f)))=alpha*log2(CC(f))+o(n) on the threshold boundary"
+  target_algorithm_exponent: a
+  source_forbidden_exponent: beta_H
+
+necessary_transport_condition: "a*alpha*mu_H/mu_L < beta_H"
+approx_high_threshold_envelope: "beta_H ~= 2*mu_H"
+simplified_condition: "alpha < 2*mu_L/a"
+
+route_corrections:
+  - "Replace generic 'complexity amplification' language with threshold compression / efficient high-to-low reduction language."
+  - "Treat alpha=1 transforms such as padding as exponent-neutral baselines."
+  - "Treat alpha>1 amplification as directionally adverse for this specific high-to-low transport objective unless another part of the reduction changes the accounting."
+
+residuals:
+  - id: C003-R1
+    text: "Search for threshold-compressing transforms with exact or gap-preserving YES/NO circuit-size control."
+  - id: C003-R2
+    text: "Investigate implicit-output reductions that avoid explicit 2^m truth-table materialization."
+  - id: C003-R3
+    text: "Investigate direct high-threshold hardness magnification with a non-local proof ingredient."
+  - id: C003-R4
+    text: "Audit self-reducibility lower-bound amplification literature for a source-bound transform matching the required direction."
+
+promotion_blockers:
+  - formalization_missing
+  - novelty_search_missing
+  - isolated_reviews_missing
+
+root_impact: "ROUTE_CORRECTION_AND_PRUNING_ONLY"
