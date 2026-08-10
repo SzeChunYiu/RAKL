@@ -16,7 +16,7 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{lemma}{Lemma}
 
-\title{Epistemic Mechanics: From Linguistic Claims to Evidence-Governed Knowledge Lattices}
+\title{Epistemic Mechanics: From Linguistic Claims to Evidence-Governed Scientific State}
 \author{Sze Chun Yiu}
 \date{10 August 2026}
 
@@ -25,18 +25,23 @@
 \maketitle
 
 \begin{abstract}
-Large-language-model research systems can generate fluent claims faster than they can establish what those claims are allowed to change. We develop an epistemic-mechanics view in which scientific knowledge is an external, typed state subject to evidence-governed transitions. Local scientific charts retain context, measurement, provenance and multi-axis authority; compatibility and gluing are separate from mere linguistic similarity; negative evidence remains persistent; and proposal-generating operators possess no canonical write authority. We then formalize two controls motivated by a concrete discovery failure. Open-World Mechanism Discovery (OWMD) inverts unowned system functions into vocabulary-independent signatures and requires independent lexical, historical, mathematical, implementation, citation, adversarial and freshness routes before asserting bounded discovery closure. A transient capacity-bounded workspace selects and broadcasts computationally relevant material while remaining formally distinct from atlas coherence and epistemic authority. This yields non-authority and coactivation-non-gluing results, countermodels separating access, coherence and authority, a conservative-extension result for workspace metadata, and a finite-budget termination result for OWMD. We also audit the word ``lattice'': the reference implementation's atom/witness/path object is a typed compatibility complex unless a scoped order and meet/join obligations are separately established. The resulting framework is a formal/software discipline, not evidence of phenomenal consciousness, universal completeness or scientific superiority.
+Research agents built around large language models can make a claim easy to retrieve, repeat and act on long before the claim deserves scientific trust. We study this mismatch as a problem of state transition. In \RAKL{}, scientific objects live in an external typed state that records context, evidence, uncertainty, compatibility and scoped authority; proposal-generating models do not write to that state directly. Two additions address failures that arise even under this discipline. A transient workspace gives selected material broad computational access without granting either cross-context coherence or epistemic authority. Open-World Mechanism Discovery (OWMD) starts from unowned functions rather than framework vocabulary, forcing retrieval through function-only, historical, mathematical, implementation, citation, adversarial and freshness routes before a bounded closure claim is permitted. We prove the corresponding non-implications and the impossibility of certifying unrestricted open-world completeness from a finite search transcript. We also narrow the framework's mathematical terminology: the current atom--witness--path structure is a typed compatibility complex unless a scoped order and meet/join obligations are established separately. The contribution is therefore a formal and executable discipline for governing scientific state, not evidence of phenomenal consciousness, universal discovery or empirical scientific superiority.
 \end{abstract}
 
 \section{Introduction}
 
-A language model can make a sentence globally available to its own downstream computation without making the sentence globally coherent with a scientific evidence base, and it can make a coherent sentence salient without giving that sentence scientific authority. Treating these events as one scalar ``confidence'' collapses distinct questions: what is computationally active, what is mutually compatible under context, and what a body of evidence licenses us to assert.
+A research agent can place the same claim in every downstream context and still be wrong. It can also hold two individually plausible claims in active memory even when they cannot be reconciled under the same experimental conditions. These cases look similar if the system records only a scalar confidence score, yet they concern different questions: what is computationally available, what is coherent across context, and what the evidence licenses us to assert.
 
-\RAKL{} treats scientific inquiry as controlled state transition rather than unconstrained text accumulation. The motivating failure for the present extension was an omission: recursive research within the framework's current ontology failed to retrieve a remote but functionally relevant global-workspace literature until that literature was supplied from outside. The defect was therefore not lack of recursive depth. It was \emph{ontology-conditioned closure}: all descendants of a search could inherit the same vocabulary and disciplinary neighborhood.
+\RAKL{} was developed around that separation. Scientific objects are stored outside the language model in a typed, provenance-bearing state; model outputs enter as proposals and acquire authority only through explicit verification and promotion. That design solved one class of failure but exposed another. During development, recursive search repeatedly refined concepts inside the vocabulary already present in the framework and missed a functionally relevant global-workspace literature until that literature was introduced from outside. More recursion had not created a broader search space. It had deepened the same one.
 
-This paper develops the formal consequences. First, we distinguish the persistent epistemic substrate from a transient selection-and-broadcast workspace. Second, we make open-world mechanism discovery an explicit function-owner and route-coverage problem. Third, we state exactly what ``lattice'' can mean in this architecture, refusing to infer order-theoretic structure from pairwise compatibility or from unrelated vector-space geometry.
+This failure motivates the two mechanisms studied here. The first is a transient workspace for bounded selection and broadcast. It is deliberately weaker than a truth-maintenance system: selection changes which objects can influence computation, not which objects are scientifically licensed. The second is Open-World Mechanism Discovery (OWMD), which turns missing functions into vocabulary-independent search signatures and requires routes that can escape the framework's current terminology. Together they make a distinction that is easy to blur in agent architectures:
+\[
+\boxed{\text{computational access}\neq\text{cross-context coherence}\neq\text{epistemic authority}.}
+\]
 
-The contributions are scoped. We prove properties of the declared transition types and finite route semantics. We do not prove that an unrestricted open world has been exhaustively searched, that workspace-like processing constitutes phenomenal consciousness, or that the current \RAKL{} implementation improves real scientific outcomes. Those are separate empirical or philosophical questions.
+The paper also audits a word inherited from the implementation. The historical class `TypedKnowledgeLattice' stores typed atoms, compatibility witnesses and admissible constructive paths. Those objects are useful, but they do not by themselves supply an order-theoretic lattice. We therefore state the weaker structure explicitly and reserve lattice language for scopes in which the required order and meet/join laws are actually proved.
+
+The results below are intentionally narrow. They concern transition permissions, compatibility witnesses and finite discovery protocols. They do not establish that an unrestricted literature has been exhausted, that workspace-like processing implies phenomenal consciousness, or that the present system improves scientific outcomes in real domains. Those questions require evidence of a different kind.
 
 \section{Epistemic state and authority}
 
@@ -44,42 +49,42 @@ Let a local scientific chart be
 \[
 C_i=(U_i,\phi_i,\gamma_i,e_i,\alpha_i),
 \]
-where \(U_i\) is a scientific subdomain, \(\phi_i\) a representation, \(\gamma_i\) context and observation conditions, \(e_i\) evidence/provenance, and \(\alpha_i\) scoped scientific authority.
+where \(U_i\) is a scientific subdomain, \(\phi_i\) a representation, \(\gamma_i\) the relevant context and observation conditions, \(e_i\) evidence and provenance, and \(\alpha_i\) scoped scientific authority.
 
 For a claim \(c\), authority is a coordinate tuple
 \[
 \alpha(c)=(G_c,R_c,M_c,I_c,D_c),
 \]
-for grounding/provenance, representation/relation, mechanism ancestry, identification/bounding and decision/QoI usability. Coordinates are certificate sets, not one confidence score. Under compatible scope, \(\alpha_1\preceq\alpha_2\) only when every relevant certificate coordinate of \(\alpha_1\) is contained in or entailed by the corresponding coordinate of \(\alpha_2\).
+covering grounding/provenance, representation/relation, mechanism ancestry, identification/bounding and decision or quantity-of-interest usability. The coordinates are certificate sets rather than a single confidence value. Under compatible scope, \(\alpha_1\preceq\alpha_2\) only when every relevant certificate coordinate in \(\alpha_1\) is contained in, or entailed by, the corresponding coordinate in \(\alpha_2\).
 
 Canonical state is
 \[
 K_t=(\mathcal A_t,\mathcal T_t,\mathcal V_t,\mathcal E_t,\mathcal U_t,
 \mathcal O_t,\mathcal F_t,\mathcal H_t^{-},\mathcal S_t,\mathcal G_t^K),
 \]
-containing atlas charts, typed transitions, surviving models, evidence/provenance, uncertainty objects, obstructions/residuals, research fibers, immutable negative history, saturation/discovery state and protected governance identities.
+containing atlas charts, typed transitions, surviving models, evidence and provenance, uncertainty objects, obstructions and residuals, research fibers, immutable negative history, discovery state and protected governance identities.
 
-Proposal generation is separated from update:
+A model proposes rather than commits:
 \[
 G_\theta(K_t,a_t)\to\mathcal P_t.
 \]
-Verification returns a typed outcome:
+Verification then returns a typed outcome,
 \[
 \begin{aligned}
 V(p,e,\gamma)\in\{&
 \text{SUPPORTED},\ \text{REFUTED},\ \text{PARTIALLY IDENTIFIED},\\
-&\text{BLOCKED},\ \text{CANNOT CHECK}\}.
+&\text{BLOCKED},\ \text{CANNOT CHECK}\},
 \end{aligned}
 \]
-followed, when licensed, by a canonical update \(\mathcal U\). A proposer is therefore computationally powerful but epistemically non-sovereign.
+and only a licensed update \(\mathcal U\) changes canonical state. The distinction is architectural rather than rhetorical: the proposer has no direct authority write path.
 
-\section{Compatibility, gluing and the lattice audit}
+\section{Compatibility, gluing and the lattice boundary}
 
 For overlapping charts, typed transitions
 \[
 T_{ij}^{\tau,\sigma}:\phi_i(U_i\cap U_j)\to\phi_j(U_i\cap U_j)
 \]
-carry relation type \(\tau\), scope \(\sigma\), assumptions, evidence and error semantics. Contradiction is tested only after relevant context alignment:
+carry a relation type \(\tau\), scope \(\sigma\), assumptions, evidence and error semantics. Contradiction is assessed only after the relevant context has been aligned:
 \[
 \operatorname{Contradict}_{\ell}(C_i,C_j)=
 \operatorname{Overlap}(C_i,C_j)\land
@@ -87,188 +92,166 @@ carry relation type \(\tau\), scope \(\sigma\), assumptions, evidence and error 
 \neg\operatorname{Compatible}_{\ell}(C_i,C_j).
 \]
 
-The implementation historically calls its atom/witness/path structure `TypedKnowledgeLattice'. Its implemented operations are weaker: typed atoms, pairwise compatibility witnesses and constructive paths.
+The historical `TypedKnowledgeLattice' implementation does not add an order relation to these objects. Its operative content is more modest: typed atoms, pairwise compatibility witnesses and finite constructive paths.
 
 \begin{definition}[Typed compatibility complex]
 A typed compatibility complex is a triple
 \[
 \mathfrak C=(A,\kappa,\mathcal P),
 \]
-where \(A\) is a typed set of atoms, \(\kappa\) is a partial compatibility relation carrying explicit witnesses, and \(\mathcal P\) is a family of finite constructive paths whose pairwise obligations are witnessed under declared conditions.
+where \(A\) is a typed set of atoms, \(\kappa\) is a partial compatibility relation carrying explicit witnesses, and \(\mathcal P\) is a family of finite constructive paths whose declared pairwise obligations are witnessed.
 \end{definition}
 
-\begin{proposition}[Compatibility does not imply lattice structure]
-A typed compatibility complex is not, solely from the data in the definition, an order-theoretic lattice.
+\begin{proposition}[Compatibility is not lattice structure]
+The data of a typed compatibility complex is insufficient, by itself, to make \(\mathfrak C\) an order-theoretic lattice.
 \end{proposition}
 
 \begin{proof}
-A lattice requires a partial order in which every relevant pair has a greatest lower bound and least upper bound. The data \((A,\kappa,\mathcal P)\) supplies neither a partial order nor meet/join operations. In particular, pairwise compatibility is generally symmetric, while a nontrivial order relation is antisymmetric, and compatible atoms need not have any unique least upper bound. Additional structure is therefore required.
+A lattice requires a partial order in which every relevant pair has a greatest lower bound and least upper bound. The data \((A,\kappa,\mathcal P)\) supplies neither such an order nor meet and join operations. Pairwise compatibility is also generally symmetric, whereas a non-trivial order is antisymmetric. Compatible atoms therefore need not possess a unique least upper bound. Any lattice claim requires additional structure.
 \end{proof}
 
-A future local lattice claim is admissible only if a scoped order \(\preceq_{\gamma,r}\) and its meet/join laws are established, or if a closure operator is defined whose fixed points carry the required lattice structure. The historical public class name is retained for compatibility, while the reference API also exposes `TypedCompatibilityComplex'.
+A local lattice interpretation remains possible when a scoped order \(\preceq_{\gamma,r}\) and its meet/join laws are established, or when a suitable closure operator is defined and its fixed points are shown to have the required lattice structure. The reference API consequently exposes `TypedCompatibilityComplex' as the semantically precise name while retaining the historical class for compatibility.
 
-\section{Transient workspace}
+\section{A transient workspace for research cognition}
 
-For a current target, residual and context, let \(C_t\) be a candidate set derived from \(K_t\). A capacity-constrained gate selects
+Persistent scientific state and active computational context solve different problems. At any step, only a small part of the archive can be useful to a bounded proposer, critic or search process. Let \(C_t\) be the candidates relevant to the current target and residual. A capacity-constrained gate selects
 \[
 W_t=G_{\kappa,\Pi_t^x}(C_t),\qquad |W_t|\le\kappa.
 \]
-A workspace frame stores selected content \(S_t\), a typed broadcast map \(B_t\), a selection ledger \(L_t\), intervention handles \(X_t\), and lifetime/capacity state \(T_t\):
+The resulting frame records selected content \(S_t\), a typed broadcast map \(B_t\), a selection ledger \(L_t\), intervention handles \(X_t\), and lifetime/capacity state \(T_t\):
 \[
 W_t=(S_t,B_t,L_t,X_t,T_t).
 \]
-Downstream operators consume projections of \(W_t\) and emit proposals. The default reference policy reserves capacity for challenge, novelty and negative/history material rather than allocating all capacity by current relevance.
+Downstream operators receive projections of \(W_t\) and return proposals. The default policy reserves capacity for challenge, novelty and negative-history material before filling the remaining slots by priority. This reservation is a simple guard against an attention mechanism that merely amplifies the system's current beliefs.
 
-Define three notions of globality:
+It is useful to name three kinds of ``global'' state separately:
 \[
 A_t(a)=\text{computational accessibility},\quad
 C_t(a)=\text{atlas coherence},\quad
 \alpha_t(a)=\text{epistemic authority}.
 \]
 
-\begin{theorem}[Workspace non-authority]
-Assume (i) workspace transitions can write only workspace metadata and proposals, and (ii) an authority increase can occur only through canonical verification/promotion carrying the required authority certificate. Then any workspace-only transition \(\tau_W\) cannot increase \(\alpha_t(a)\).
-\end{theorem}
-
-\begin{proof}
-By assumption (i), the codomain of \(\tau_W\) excludes the canonical authority coordinates and excludes the certificate-producing verification/promotion transition. Therefore the projection of canonical state onto authority is invariant under \(\tau_W\). Assumption (ii) rules out an alternative write path. Hence \(\alpha_{t+1}(a)\not\succ\alpha_t(a)\) for a workspace-only transition.
-\end{proof}
-
-\begin{proposition}[Coactivation non-gluing]
-For arbitrary \(a,b\),
-\[
-a,b\in W_t\not\Rightarrow a\bowtie b
-\quad\text{and}\quad
-a,b\in W_t\not\Rightarrow a\vee b\text{ exists}.
-\]
+\begin{proposition}[Authority-preservation invariant]
+Suppose workspace transitions may write only workspace metadata and proposals, while increases in \(\alpha_t\) require the canonical verification/promotion path. Then a workspace-only transition cannot increase the authority of any scientific object.
 \end{proposition}
 
 \begin{proof}
-The gate is defined over capacity, partitions and computational priority, not over atlas compatibility witnesses. Choose two context-aligned but contradictory claims and assign both to reserved/selected partitions. They may be coactive while their compatibility predicate is false; consequently no gluing witness or join follows from coactivation.
+The workspace transition has no write target in the authority coordinates and cannot create the certificate required by canonical promotion. Its projection onto canonical authority is therefore invariant. Hence \(\alpha_{t+1}(a)\not\succ\alpha_t(a)\) under a workspace-only transition.
 \end{proof}
 
-\subsection{Countermodels for the three globalities}
+This is an invariant by construction, not evidence that a particular selection policy is scientifically optimal.
 
-The non-implications are constructive.
-
-\paragraph{Access \(\not\Rightarrow\) coherence.}
-Select two contradictory candidate claims into \(W_t\) for adversarial comparison. Both are globally accessible to downstream critics, while their atlas transition remains obstructed.
-
-\paragraph{Coherence \(\not\Rightarrow\) authority increase.}
-Two source projections may be exactly coordinate-compatible and glue without contradiction, while both remain weakly grounded or observational only. Coherence supplies no missing mechanism or identification certificate.
-
-\paragraph{Access \(\not\Rightarrow\) truth.}
-A deliberately injected false claim can be assigned the highest computational priority for falsification. Its access can increase precisely because the system needs to challenge it.
-
-\begin{theorem}[Conservative workspace extension]
-Let \(K_t^+=(K_t,W_t,\Pi_t^{\mathrm{cog}})\) extend canonical state with workspace and cognitive-provenance metadata. If no canonical update transition is executed, the projection \(\pi_K(K_t^+)=K_t\) is invariant under any finite sequence of workspace selection, broadcast and intervention operations.
-\end{theorem}
+\begin{proposition}[Coactivation does not imply compatibility]
+For arbitrary \(a,b\),
+\[
+a,b\in W_t\not\Rightarrow a\bowtie b.
+\]
+If a join operation is defined only for compatible objects in a scoped local lattice, then coactivation alone also does not establish that \(a\vee b\) exists.
+\end{proposition}
 
 \begin{proof}
-Each workspace operation has codomain restricted to \(W\), cognitive provenance, or proposals. Composition of functions that leave the \(K\)-projection unchanged also leaves the \(K\)-projection unchanged. Therefore workspace metadata is a conservative extension of canonical semantic/evidential state until a separately verified update is applied.
+Workspace admission depends on capacity, partition and computational priority rather than on an atlas compatibility witness. Two context-aligned but contradictory claims can therefore be selected simultaneously for adversarial comparison. Their coactivation leaves the compatibility predicate false and supplies no gluing witness.
 \end{proof}
 
-\section{Cognitive and evidential provenance}
+Three small counterexamples make the separation concrete. First, a critic may deliberately place two contradictory claims in the same workspace; access then increases while coherence fails. Second, two observational claims may glue cleanly across coordinates while still lacking the mechanism or identification evidence needed to increase authority. Third, a false claim may receive the highest workspace priority precisely because the system is trying to falsify it. Computational prominence is therefore not a proxy for truth.
 
-For selected item \(a\), controlled interventions may include
+\begin{proposition}[Conservative workspace metadata]
+Let \(K_t^+=(K_t,W_t,\Pi_t^{\mathrm{cog}})\) extend canonical state with workspace and cognitive-provenance metadata. If no canonical update transition is executed, then any finite sequence of workspace selection, broadcast and intervention operations leaves \(\pi_K(K_t^+)=K_t\) unchanged.
+\end{proposition}
+
+\begin{proof}
+Each workspace operation writes only to \(W\), cognitive provenance or proposal objects. Composition preserves that restriction. The canonical projection is therefore unchanged until a separately verified update is applied.
+\end{proof}
+
+\section{Cognitive influence is not evidential support}
+
+Workspace interventions can be useful even when the selected item is wrong. For an item \(a\), consider
 \[
 do(a\notin W_t),\qquad do(a\mapsto a'),\qquad do(w_t(a)=\lambda).
 \]
-If downstream proposals or decisions change, the intervention establishes a form of computational load-bearing influence. It does not establish that \(a\) is scientifically true or independently evidenced.
+If such an intervention changes later proposals or decisions, it establishes that \(a\) was computationally load-bearing for that process. It does not establish that \(a\) was true, independently observed or causally responsible for the phenomenon under study.
 
-Accordingly we maintain distinct graph types:
+The implementation therefore keeps two provenance types separate:
 \[
 \Pi^{\mathrm{cog}}\neq\Pi^{\mathrm{evid}}.
 \]
-A cognitive edge records which selected item influenced which proposal, optionally under an intervention. An evidential edge records evidence-to-claim lineage through a verification identity. Converting one to the other requires a new evidential operation; there is no default coercion.
+A cognitive edge records which active item influenced which downstream proposal, optionally under an intervention. An evidential edge records evidence-to-claim lineage through a verification identity. There is no default coercion from the first graph to the second.
 
 \section{Open-World Mechanism Discovery}
 
-A subsystem \(M\) declares required functions
+The motivating search failure suggested a more general diagnostic. Before asking whether a subsystem is well implemented, ask which functions it must own. For subsystem \(M\), let
 \[
 \mathcal F_{\mathrm{req}}(M)=\{f_1,\ldots,f_n\}.
 \]
-A capability is owned only by a record containing
-\[
-(\text{mechanism},\text{scope},\text{preconditions},\text{postconditions},
-\text{evidence},\text{tests},\text{failure semantics}).
-\]
-This prevents a label from masquerading as an implemented function.
+A function counts as owned only when the corresponding record names a mechanism and its scope, preconditions, postconditions, evidence, executable tests and failure semantics. A subsystem name alone is not an ownership argument.
 
-For each unowned or contested function, form a function signature
+For an unowned or contested function, OWMD constructs a signature
 \[
 \sigma(f)=(I,O,C,R,D,X),
 \]
-for inputs, outputs, constraints, relations, dynamics/control and failure/intervention signatures. OWMD generates independent route families from this signature: exact terminology, lexical variants, a function-only route with current core labels masked, historical precursors, mathematical equivalents, implementation analogues, methodology-inspiration retrieval, backward/forward citation expansion, literature bridges, adversarial substitutes, cross-language variants where relevant, and a final freshness scan.
+covering inputs, outputs, constraints, characteristic relations, dynamics or control behaviour, and intervention/failure signatures. Search then branches from this signature rather than from a single framework label. The mandatory ensemble includes exact and lexical variants, a function-only route with core labels masked, historical precursors, mathematical equivalents, implementation analogues, methodology-inspiration retrieval, backward and forward citation expansion, literature bridges, adversarial alternatives, cross-language routes when relevant, and a final freshness scan.
 
-The motivation is not speculative. The vocabulary problem demonstrates that users frequently choose different words for the same objects and functions \cite{furnas1987}. Literature-based discovery shows that useful bridges can exist across literatures that are not directly connected \cite{swanson1986}. Methodology Inspiration Retrieval explicitly distinguishes transferable methodological inspiration from ordinary topical similarity and uses methodological lineage to improve retrieval \cite{garikaparthi2025}.
+This design has familiar antecedents. The vocabulary problem shows how often people use different names for the same object or function \cite{furnas1987}. Literature-based discovery exploits useful connections between bodies of work that are not directly linked \cite{swanson1986}. Methodology Inspiration Retrieval makes a related distinction between topical similarity and methods that can transfer across research problems \cite{garikaparthi2025}. OWMD adopts the narrower engineering lesson: at least one search route should be able to succeed without repeating the vocabulary that defined the current ontology.
 
-Candidate mechanisms are assimilated as equivalent, subsumed, complementary, conflicting, novel residual or unresolved. Equivalent or subsuming prior art narrows the novelty boundary rather than becoming a renamed RAKL invention.
+Retrieved mechanisms keep their source and route provenance. They are then classified as equivalent, subsumed, complementary, conflicting, novel residual or unresolved. Equivalent or subsuming prior work narrows the novelty claim; unresolved work remains visible rather than being forced into an existing category. A bounded discovery workspace additionally reserves slots for remote, challenging, historical and fresh candidates before ordinary relevance fill.
 
 \begin{definition}[Bounded discovery closure]
-For declared route family \(\mathcal R_Q\), source universe \(\mathcal D\), budget \(B\) and cutoff \(t^\star\), a function is bounded-discovery-closed when (i) it has a complete owner or explicit unresolved fiber; (ii) all mandatory routes are complete or explicitly inapplicable; (iii) at least one route satisfies lexical independence; (iv) citation expansion is stable under its declared rule; (v) the freshness scan reaches \(t^\star\); (vi) omission and nearest-work equivalence audits are complete; and (vii) unresolved candidates are preserved.
+For a declared route family \(\mathcal R_Q\), source universe \(\mathcal D\), budget \(B\) and cutoff \(t^\star\), a function is bounded-discovery-closed when: it has a complete owner or an explicit unresolved fiber; every mandatory route is complete or explicitly inapplicable; at least one route satisfies lexical independence; citation expansion satisfies its declared stability rule; the freshness scan reaches \(t^\star\); omission and nearest-work equivalence audits are complete; and unresolved candidates are preserved.
 \end{definition}
 
-\begin{theorem}[No finite certificate of unrestricted open-world completeness]
-Assume the concept/source universe is unrestricted and not supplied by a complete membership oracle. No finite OWMD run can certify that no relevant undiscovered mechanism exists outside all queried results.
+The qualifier ``bounded'' matters. A finite search procedure can establish that a declared protocol has been completed; it cannot establish that nothing relevant exists outside the protocol.
+
+\begin{theorem}[Unrestricted open-world completeness is not finitely certifiable]
+Assume the concept and source universe is unrestricted and no complete membership oracle is available. A finite OWMD transcript cannot certify that no relevant undiscovered mechanism exists outside all returned results.
 \end{theorem}
 
 \begin{proof}
-A finite run observes a finite set of queries and returned objects. Under an unrestricted universe, construct an additional relevant mechanism described only by a vocabulary/source not returned by those finite routes. The observed transcript is unchanged whether that mechanism exists or not. Therefore the transcript cannot distinguish the world containing the omitted mechanism from the world without it. A universal non-existence claim is not identifiable from the finite transcript.
+A finite run observes finitely many queries and returned objects. Consider a second world that produces the same transcript but also contains a relevant mechanism described only in a vocabulary or source never reached by those routes. The finite transcript is identical in the two worlds, so it cannot distinguish the existence of the omitted mechanism. Universal non-existence is therefore not identifiable from that transcript.
 \end{proof}
 
-\begin{theorem}[Finite-budget OWMD termination]
-If the mandatory route set is finite, each route invocation terminates within its allocated finite budget, and candidate-assimilation work is finite per retrieved object, then a bounded OWMD audit terminates.
-\end{theorem}
+Bounded execution does terminate under ordinary engineering assumptions. If the mandatory route set is finite, every route has a finite budget and terminates within it, and assimilation performs finite work per retrieved object, then the audit is a finite sum of finite computations. It ends either with `BOUNDED\_CLOSED' or with explicit open obligations. We treat this as a protocol property rather than as a substantive theorem about discovery.
 
-\begin{proof}
-The total computation is a finite sum over finitely many route budgets plus finite assimilation work over the finite retrieval result produced within those budgets. Therefore the audit terminates, either with `BOUNDED\_CLOSED' or with explicit open obligations.
-\end{proof}
+\section{Workspace lineage and the J-space boundary}
 
-\section{Global Workspace lineage and the J-space boundary}
+The selection-and-broadcast idea is not new. Blackboard architectures coordinated heterogeneous knowledge sources through shared control structures \cite{hayesroth1985,nii1986}; Global Workspace and Global Neuronal Workspace accounts emphasize limited capacity and broad availability \cite{dehaene2001,mashour2020}. The Consciousness Prior similarly proposes selecting a small subset from a larger pool and broadcasting it \cite{bengio2017}, while Shared Global Workspace architectures let specialist modules compete for a bandwidth-limited communication channel \cite{goyal2021}. These traditions are prior art for workspace selection and broadcast, not components for which we claim novelty.
 
-Global-workspace mechanisms are prior art, not a RAKL novelty claim. Blackboard architectures already framed intelligent control as coordinating heterogeneous knowledge sources through a shared structure \cite{hayesroth1985,nii1986}. Global Workspace and Global Neuronal Workspace accounts emphasize broad availability, competition and limited capacity \cite{dehaene2001,mashour2020}. The Consciousness Prior proposes attention-mediated selection of a few elements from a larger pool followed by broadcast \cite{bengio2017}; Shared Global Workspace neural architectures make specialist modules compete for a bandwidth-limited channel \cite{goyal2021}.
+Recent work by Gurnee et al. uses the Jacobian lens to identify language-model representations with functional properties associated with a global workspace, including verbal report, directed modulation, internal reasoning, flexible generalization and selectivity \cite{gurnee2026}. Their result is useful here for two reasons, both narrower than an identity claim.
 
-Gurnee et al. identify a set of language-model representations using the Jacobian lens and report properties connected to verbal report, directed modulation, internal reasoning, flexible generalization, selectivity and broad broadcast \cite{gurnee2026}. Two boundaries are essential.
+First, the study concerns a functional notion of access and explicitly does not take a position on phenomenal consciousness. Workspace-like computation is therefore not, on its own, evidence of subjective experience. Second, its J-space construction is geometric rather than order-theoretic. At fixed sparsity \(k\), J-space is generated by sparse non-negative combinations of J-lens vectors and has the geometry of a union of \(k\)-dimensional cones. That construction supplies neither a partial order nor meet/join laws. The study also leaves open the mechanism by which representations enter J-space. We use it as motivation for selective-access and intervention tests, not as a theorem about the \RAKL{} epistemic substrate.
 
-First, their framing concerns the functional notion of access consciousness and explicitly takes no position on phenomenal consciousness. Workspace-like computation is therefore not evidence, by itself, that an artificial system has subjective experience.
+\section{A hidden-name regression}
 
-Second, J-space is not an order-theoretic lattice. At a fixed sparsity \(k\), it is defined by sparse non-negative combinations of J-lens vectors and has the geometry of a union of \(k\)-dimensional cones. That geometric statement supplies neither a partial order nor meet/join laws. The study further states that it does not yet characterize the mechanism that causes a representation to enter J-space. RAKL uses these results as empirical motivation for selective-access and causal-intervention tests, not as an identity theorem for its epistemic substrate.
+`GWT-OMISSION-01' turns the motivating miss into a software contract. The benchmark withholds the terms `global workspace', `consciousness', `J-space', `blackboard' and the relevant author names. Instead, it exposes a functional description: many background processes operate in parallel; a small set is admitted competitively under a capacity bound; active material is broadly reusable; contents can persist or be evicted; interventions on active material can change later decisions; and prominence does not establish truth.
 
-\section{GWT-OMISSION-01}
+A scored retrieval run passes only if a lexically independent route carries provenance to the registered family containing blackboard architectures, GWT/GNW, the Consciousness Prior, shared neural workspaces and the J-space study, without leaking the withheld names into the independent query. The present software tests the scoring, provenance and leakage rules. It does not yet constitute a prospective demonstration that the retriever will recover a genuinely unknown future concept; that remains an empirical evaluation.
 
-The regression benchmark withholds the names `global workspace', `consciousness', `J-space', `blackboard' and relevant authors. It exposes only a functional signature: many background processes operate in parallel; a small active set is admitted competitively; capacity is bounded; active material is broadly reusable; contents can persist, be displaced or be evicted; interventions on active material change later decisions; and computational prominence does not establish truth.
+\section{Why one scalar is not enough}
 
-A scored retrieval run must recover the family containing blackboard architectures, GWT/GNW, the Consciousness Prior, shared neural workspace architectures and the J-space study through at least one lexically independent route. The reference software currently validates the scoring, route-provenance and name-leakage contract. Prospective recall on fresh hidden concepts remains an empirical test and is not inferred from retrospectively constructing this benchmark.
-
-\section{Scalar inadequacy}
-
-Workspace prominence and epistemic authority are vectors with different semantics. Let
+The same separation appears in the quantities used to describe a workspace. Let
 \[
 \mathbf w_t(a)=(o_t,b_t,p_t,i_t,e_t)
 \]
-denote occupancy, broadcast breadth, persistence, intervention influence and eviction sensitivity. There is no default monotone map \(\mathbf w_t(a)\mapsto\alpha_t(a)\).
+denote occupancy, broadcast breadth, persistence, intervention influence and eviction sensitivity. These are computational coordinates. There is no default monotone map \(\mathbf w_t(a)\mapsto\alpha_t(a)\).
 
-To see why, consider a false but adversarially important claim given maximal workspace priority for falsification, and a well-established calibration fact omitted from the current workspace because it is irrelevant to the immediate QoI. The first may dominate every workspace coordinate while having low or negative epistemic standing; the second may have high authority while zero current occupancy. Any monotone scalarization that treats computational prominence as authority will misorder at least one such pair.
+A simple counterexample is enough. Give a false but adversarially important claim maximal workspace priority so that critics repeatedly inspect it. At the same time, omit a well-established calibration fact because it is irrelevant to the immediate quantity of interest. The false claim can dominate the workspace coordinates while having low epistemic standing; the calibration fact can have high authority while having zero occupancy. Any scalarization that interprets computational prominence as authority will misorder at least one such pair.
 
 \section{Implementation correspondence and scope}
 
-The reference implementation exposes the present contracts in:
+The reference implementation exposes the formal contracts in \path{src/rakl/open_world_discovery.py}, \path{src/rakl/workspace.py} and \path{src/rakl/compatibility_complex.py}, with executable invariants in the corresponding test modules. Publication builds are generated from the same checkout that runs those tests.
 
-\begin{itemize}
-\item \path{src/rakl/open_world_discovery.py}: functional signatures, complete owner records, route ledgers, bounded-closure audit, discovery workspace and hidden-name benchmark scoring;
-\item \path{src/rakl/workspace.py}: capacity gate, reserved adversarial/novel/history slots, broadcast-to-proposal, interventions and separated provenance types;
-\item \path{src/rakl/compatibility_complex.py}: semantically honest alias for the historical atom/witness/path object;
-\item the corresponding open-world, workspace and compatibility-complex test modules: executable invariants.
-\end{itemize}
+For auditability, the exact source subject is printed separately rather than embedded in prose:
+\begin{center}
+\ImplementationSHA
+\end{center}
+The same checkout reports \SoftwareTests{} passing software tests. These tests establish reference-mechanics behaviour; they are not a substitute for validation on real scientific tasks.
 
-The exact public build binds this manuscript to Git commit \ImplementationSHA{} and the same checkout reports \SoftwareTests{} passing software tests. Those tests demonstrate reference-mechanics behavior, not real-world scientific validity.
-
-The remaining open coordinates are explicit: prospective hidden-concept retrieval, matched same-model scientific workflows, fresh self-evolution transfer, at least two substantially different real scientific case studies, external domain-expert review, and independent peer review. Same-context reviewer roles are internal audits only.
+Several empirical coordinates therefore remain open: prospective hidden-concept retrieval, matched same-model scientific workflows, fresh self-evolution transfer, substantially different real-domain case studies, domain-expert assessment and independent peer review. Internal reviewer roles used during development are explicitly not counted as independent review.
 
 \section{Conclusion}
 
-Evidence-governed scientific reasoning needs more than persistent memory and more than a mechanism for making information globally available. It needs typed barriers between computational salience, cross-context coherence and scientific authority. A transient workspace can improve bounded coordination without becoming a truth channel, while OWMD can force search to leave the vocabulary that created the current ontology without pretending that finite search closes the open world. The resulting architecture is deliberately conservative: unresolved mechanisms remain fibers, negative history persists, prior art narrows novelty, and mathematical words such as ``lattice'' are licensed only where their defining obligations are actually met.
+The difficult part of an agentic research system is not only generating candidate explanations. It is controlling what those explanations are allowed to change. The architecture studied here keeps three operations apart: making an object computationally available, establishing that it is coherent with other context-bound objects, and granting it scientific authority. A transient workspace handles the first without inheriting the permissions of the other two. OWMD addresses a complementary failure mode by forcing important searches to leave the vocabulary that produced the current ontology, while making the limits of finite search explicit.
+
+The resulting discipline is deliberately conservative. Prior work narrows novelty rather than disappearing behind new names; unresolved mechanisms remain open fibers; negative history persists; and mathematical terminology is licensed only where its defining obligations are met. That conservatism is a feature of the scientific state, not a limitation to be hidden by fluent text.
 
 \begin{thebibliography}{99}
 \small
