@@ -103,3 +103,16 @@ def test_failed_closed_empirical_preflight_is_not_reported_as_performance_eviden
     )
     for phrase in required:
         assert phrase in expanded, phrase
+
+
+def test_preflight_artifact_paths_are_not_packed_into_one_overfull_paragraph():
+    section = (SOURCE / "sections" / "13c_empirical_reporting_contract.tex").read_text(
+        encoding="utf-8"
+    )
+    path_names = (
+        "PAPER2_MATCHED_STUDY_EXECUTION_PACKET_20260810.json",
+        "PAPER2_MATCHED_STUDY_PREFLIGHT_RECEIPT_20260810.json",
+        "PAPER2_MODEL_CONNECTIVITY_RECEIPT_20260810.json",
+    )
+    paragraphs = section.split("\n\n")
+    assert not any(all(name in paragraph for name in path_names) for paragraph in paragraphs)
