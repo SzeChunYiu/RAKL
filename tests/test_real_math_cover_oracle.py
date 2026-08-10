@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -19,6 +20,7 @@ MODULE_PATH = (
 spec = importlib.util.spec_from_file_location("canonical_cover_oracle", MODULE_PATH)
 assert spec is not None and spec.loader is not None
 oracle = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = oracle
 spec.loader.exec_module(oracle)
 
 
