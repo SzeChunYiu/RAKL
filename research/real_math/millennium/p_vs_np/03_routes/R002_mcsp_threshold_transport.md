@@ -8,10 +8,11 @@ For an `n`-variable Boolean function represented by a truth table of length `N=2
 
 `MCSP_mu(n) := MCSP[2^(mu n)]`.
 
-The STACS 2021 MCSP lower-bound paper records two facts that nearly meet but use different threshold regimes.
+Cheraghchi, Hirahara, Myrisiotis, and Yoshida (STACS 2021) make the near-miss explicit.
 
-1. A barely superlinear one-tape lower bound for `MCSP[2^(mu n)]` at a sufficiently small `mu>0` would imply `P != NP` via the McKay–Murray–Williams hardness-magnification route.
-2. At larger threshold constants the paper proves much stronger one-tape lower bounds and explicitly identifies the circuit-size threshold as the missing bridge.
+1. Their Theorem 1 states that for some small constant `mu>0`, an `N^1.01` one-tape lower bound for `MCSP[2^(mu n)]` would imply `P != NP`.
+2. Their Theorem 2 proves an `N^1.99` randomized one-tape lower bound for a much larger size parameter, chosen close to the maximum exponential scale.
+3. Their Theorem 16 gives an oracle-robust parameterized barrier for every `1/2 < mu < 1`, with forbidden time exponents approaching `2 mu` from below, and their discussion says the missing bridge is the circuit-size threshold.
 
 The current route therefore treats **threshold transport** as the atomic object rather than attempting another unrelated MCSP lower bound.
 
@@ -63,15 +64,15 @@ Exact alignment of high and low exponential thresholds gives
 
 `c = alpha * mu_high / mu_low + o(1)`.
 
-If the target algorithm runs in time `M^a`, the induced source exponent is at least
+If the target algorithm runs in time `M^a`, then, ignoring only lower-order and additional reduction overhead, the induced source algorithm runs in
 
-`a * alpha * mu_high / mu_low`
+`O(N^(a * alpha * mu_high / mu_low + o(1)))`.
 
-before additional overhead. Against a high-threshold lower-bound envelope near `2 mu_high`, a necessary condition is approximately
+Against the STACS 2021 oracle-robust lower-bound envelope, whose forbidden exponent can approach `2 mu_high` from below for `mu_high>1/2`, a necessary envelope-level condition is
 
 `alpha < 2 mu_low / a`.
 
-For a barely-superlinear target exponent and `mu_low <= 1/2`, this requires `alpha<1`. Thus exponent-preserving transports such as padding are insufficient, and pure amplification `alpha>1` points in the wrong direction unless another component of the reduction changes the accounting.
+For a barely-superlinear target exponent and `mu_low <= 1/2`, this requires `alpha<1`. Thus exponent-preserving transports such as padding are insufficient under explicit-output accounting, and pure amplification `alpha>1` points in the wrong direction unless another component of the reduction changes the accounting.
 
 ### T4. Boundary robustness
 
