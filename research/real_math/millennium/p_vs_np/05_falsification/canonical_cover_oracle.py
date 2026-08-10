@@ -6,6 +6,11 @@ semi-filters used in the R004 two-dimensional cover-complexity route.
 The oracle is deliberately tiny and exhaustive. It is a conjecture and
 counterexample generator only. It does not prove asymptotic cover or
 Boolean-circuit lower bounds.
+
+C007 additionally supplies an explicit logarithmic canonical cover whenever
+the complement graph contains a perfect matching. That constructor is an
+executable proof witness for the finite combinatorial lemma, not a substitute
+for theorem-prover formalization or novelty review.
 """
 
 from __future__ import annotations
@@ -18,6 +23,7 @@ from typing import Iterable
 
 
 Edge = tuple[int, int]
+Pair = tuple[frozenset[int], frozenset[int]]
 
 
 @dataclass(frozen=True)
@@ -83,6 +89,91 @@ def pair_covers_canonical_edge(
         and not column_fiber <= h_set
     )
     return orientation_1 or orientation_2
+
+
+def _validate_perfect_matching(
+    n_vertices_per_side: int,
+    complement: set[Edge],
+    matching: set[Edge],
+) -> dict[int, int]:
+    if len(matching) != n_vertices_per_side:
+        raise ValueError("matching must contain exactly one edge per row and column")
+    if not matching <= complement:
+        raise ValueError("matching must be a subset of the complement graph")
+
+    row_to_column: dict[int, int] = {}
+    columns: set[int] = set()
+    for u, v in matching:
+        if not (0 <= u < n_vertices_per_side and 0 <= v < n_vertices_per_side):
+            raise ValueError("matching edge lies outside the requested bipartite ground set")
+        if u in row_to_column or v in columns:
+            raise ValueError("matching must contain exactly one edge per row and column")
+        row_to_column[u] = v
+        columns.add(v)
+
+    if set(row_to_column) != set(range(n_vertices_per_side)) or columns != set(
+        range(n_vertices_per_side)
+    ):
+        raise ValueError("matching must contain exactly one edge per row and column")
+    return row_to_column
+
+
+def perfect_matching_canonical_cover_pairs(
+    n_vertices_per_side: int,
+    complement: set[Edge],
+    matching: set[Edge],
+) -> list[Pair]:
+    """Construct the C007 logarithmic canonical cover from a perfect matching.
+
+    Every nonmatching complement edge is placed in both members of each pair.
+    A matching edge is placed exclusively in E or H according to one bit of a
+    distinct binary row code. This realizes the row code on each row and the
+    same code on its matched column.
+    """
+    if n_vertices_per_side < 2:
+        raise ValueError("n_vertices_per_side must be at least 2")
+    row_to_column = _validate_perfect_matching(
+        n_vertices_per_side, complement, matching
+    )
+
+    ordered_u = sorted(complement)
+    index = {edge: i for i, edge in enumerate(ordered_u)}
+    matching_indices = {index[edge] for edge in matching}
+    nonmatching_indices = set(range(len(ordered_u))) - matching_indices
+
+    pairs: list[Pair] = []
+    for bit in range(expected_neq_cover(n_vertices_per_side)):
+        e_set = set(nonmatching_indices)
+        h_set = set(nonmatching_indices)
+        for u in range(n_vertices_per_side):
+            edge_index = index[(u, row_to_column[u])]
+            if (u >> bit) & 1:
+                e_set.add(edge_index)
+            else:
+                h_set.add(edge_index)
+        pairs.append((frozenset(e_set), frozenset(h_set)))
+    return pairs
+
+
+def canonical_pairs_cover_all_edges(
+    n_vertices_per_side: int,
+    complement: set[Edge],
+    pairs: Iterable[Pair],
+) -> bool:
+    """Check directly whether the supplied pairs cover every canonical edge."""
+    _, row_fibers, column_fibers, canonical_edges = _canonical_edge_data(
+        n_vertices_per_side, complement
+    )
+    materialized = tuple(pairs)
+    return all(
+        any(
+            pair_covers_canonical_edge(
+                row_fibers[u], column_fibers[v], e_set, h_set
+            )
+            for e_set, h_set in materialized
+        )
+        for u, v in canonical_edges
+    )
 
 
 def _maximal_masks(masks: Iterable[int]) -> list[int]:
