@@ -193,8 +193,8 @@ Two additional falsifiers follow from the hardening pass. First, longitudinal at
     text = _replace_once(
         text,
         "\\sloppy\n\\begin{thebibliography}{99}",
-        "\\sloppy\n\\small\n\\begin{thebibliography}{99}",
-        "bibliography-size",
+        "\\sloppy\n\\small\n\\setlength{\\emergencystretch}{1em}\n\\begin{thebibliography}{99}",
+        "bibliography-layout",
     )
 
     # Public source must remain a scoped methods/preregistration manuscript.
