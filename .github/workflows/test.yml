@@ -76,7 +76,7 @@ jobs:
           test -s main.pdf
           pdfinfo main.pdf | tee pdfinfo.txt
           pdffonts main.pdf | tee pdffonts.txt
-          if grep -E "Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined" main.log; then
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
             echo "Blocking LaTeX/PDF warning detected" >&2
             exit 1
           fi
