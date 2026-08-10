@@ -1,5 +1,6 @@
 from rakl.epistemic_saturation import (
     EpistemicGrowthVector,
+    OperatorOrderAudit,
     SaturationBasis,
     SaturationRound,
     SaturationStatus,
@@ -18,6 +19,16 @@ def _basis() -> SaturationBasis:
     )
 
 
+def _order_audit(*, difference: EpistemicGrowthVector | None = None) -> OperatorOrderAudit:
+    return OperatorOrderAudit(
+        audit_id="order-audit:expand-consolidate-v1",
+        expand_then_consolidate_digest="digest:expand-then-consolidate",
+        consolidate_then_expand_digest="digest:consolidate-then-expand",
+        substantive_difference=difference or EpistemicGrowthVector(),
+        evidence_ids=("audit:operator-order",),
+    )
+
+
 def _round(round_id: str, *, growth: EpistemicGrowthVector | None = None, **overrides) -> SaturationRound:
     values = dict(
         round_id=round_id,
@@ -27,6 +38,7 @@ def _round(round_id: str, *, growth: EpistemicGrowthVector | None = None, **over
         route_coverage_stable=True,
         omission_audit_passed=True,
         nearest_work_audit_passed=True,
+        operator_order_audit=_order_audit(),
         freshness_cutoff="2026-08-10",
         blocking_fibers=(),
         representation_only_changes=0,
@@ -62,6 +74,20 @@ def test_any_new_knowledge_reopens_saturation():
     assert report.status is SaturationStatus.OPEN
     assert report.consecutive_flat_rounds == 0
     assert "insufficient_consecutive_substantive_flat_rounds" in report.reasons
+
+
+def test_operator_order_difference_blocks_saturation_even_when_observed_rounds_are_flat():
+    unstable = _order_audit(
+        difference=EpistemicGrowthVector(assumption_scope_updates=1)
+    )
+    rounds = (
+        _round("R1"),
+        _round("R2", operator_order_audit=unstable),
+    )
+    report = audit_bounded_epistemic_saturation(rounds, basis=_basis())
+    assert report.status is SaturationStatus.OPEN
+    assert report.consecutive_flat_rounds == 2
+    assert "R2:operator_order_perturbation_unstable" in report.reasons
 
 
 def test_representation_only_edits_do_not_manufacture_epistemic_growth():
@@ -103,6 +129,7 @@ def test_saturation_is_invalid_across_basis_change():
             route_coverage_stable=True,
             omission_audit_passed=True,
             nearest_work_audit_passed=True,
+            operator_order_audit=_order_audit(),
             freshness_cutoff="2026-08-10",
         ),
     )
