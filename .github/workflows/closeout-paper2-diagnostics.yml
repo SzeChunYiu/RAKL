@@ -1,0 +1,34 @@
+name: closeout-paper2-diagnostics
+
+on:
+  push:
+    branches:
+      - paper/closeout-rakl-framework-20260810
+  pull_request:
+    branches:
+      - paper/round050-saturated-epistemic-mechanics
+
+jobs:
+  targeted:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[test]"
+      - name: Run affected Paper 2 tests
+        shell: bash
+        run: |
+          set +e
+          pytest -q tests/test_epistemic_benchmark.py tests/test_saturated_paper_source.py tests/test_saturated_paper_build.py | tee targeted-pytest.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -E 'FAILED|ERROR|E   |AssertionError|ValueError|RuntimeError' targeted-pytest.log | head -60 | while IFS= read -r line; do
+              safe="${line//'%'/'%25'}"; safe="${safe//$'\r'/'%0D'}"; safe="${safe//$'\n'/'%0A'}"
+              echo "::error title=Paper 2 targeted pytest::$safe"
+            done
+            exit "$status"
+          fi
