@@ -2,6 +2,8 @@ from rakl.open_world_discovery import (
     AssimilationStatus,
     CapabilityOwnerRecord,
     CapabilityRequirement,
+    DiscoveryAuditEvidence,
+    DiscoveryAuditKind,
     DiscoveryClosureStatus,
     DiscoveryRouteRecord,
     DiscoveryWorkspaceCandidate,
@@ -10,6 +12,7 @@ from rakl.open_world_discovery import (
     HiddenNameBenchmark,
     MechanismCandidate,
     OWMDRouteKind,
+    UnresolvedCandidateFiber,
     audit_bounded_discovery_closure,
     evaluate_hidden_name_benchmark,
     select_discovery_workspace,
@@ -48,6 +51,29 @@ def _owner() -> CapabilityOwnerRecord:
         evidence_ids=("spec:workspace",),
         test_ids=("test_workspace_gate",),
         failure_semantics=("fail closed when reservations cannot be met",),
+    )
+
+
+def _omission_review(*, independent: bool = True) -> DiscoveryAuditEvidence:
+    return DiscoveryAuditEvidence(
+        audit_id="audit:omission:1",
+        function_id="workspace-selection-broadcast",
+        kind=DiscoveryAuditKind.OMISSION_REVIEW,
+        reviewer_context_id="review-context:independent-a",
+        evidence_ids=("ledger:omission-search",),
+        completed=True,
+        independent=independent,
+    )
+
+
+def _nearest_work_audit() -> DiscoveryAuditEvidence:
+    return DiscoveryAuditEvidence(
+        audit_id="audit:nearest:1",
+        function_id="workspace-selection-broadcast",
+        kind=DiscoveryAuditKind.NEAREST_WORK_EQUIVALENCE,
+        reviewer_context_id="review-context:prior-art",
+        evidence_ids=("ledger:nearest-work",),
+        completed=True,
     )
 
 
@@ -108,9 +134,8 @@ def test_bounded_discovery_closure_requires_ontology_escape_and_freshness():
         _requirement(),
         routes,
         owner=_owner(),
-        independent_omission_review=True,
-        nearest_work_equivalence_audit=True,
-        unresolved_preserved=True,
+        omission_review=_omission_review(),
+        nearest_work_audit=_nearest_work_audit(),
     )
     assert report.status is DiscoveryClosureStatus.OPEN
     assert "FRESHNESS" in report.missing_route_kinds
@@ -118,22 +143,36 @@ def test_bounded_discovery_closure_requires_ontology_escape_and_freshness():
     assert "freshness_scan_missing" in report.reasons
 
 
+def test_closure_rejects_self_certified_omission_review():
+    report = audit_bounded_discovery_closure(
+        _requirement(),
+        _routes(),
+        owner=_owner(),
+        omission_review=_omission_review(independent=False),
+        nearest_work_audit=_nearest_work_audit(),
+    )
+    assert report.status is DiscoveryClosureStatus.OPEN
+    assert "independent_omission_review_missing_or_unverifiable" in report.reasons
+    assert report.omission_review_id is None
+
+
 def test_bounded_discovery_closure_can_close_with_owner_but_never_absolute():
     report = audit_bounded_discovery_closure(
         _requirement(),
         _routes(),
         owner=_owner(),
-        independent_omission_review=True,
-        nearest_work_equivalence_audit=True,
-        unresolved_preserved=True,
+        omission_review=_omission_review(),
+        nearest_work_audit=_nearest_work_audit(),
     )
     assert report.status is DiscoveryClosureStatus.BOUNDED_CLOSED
     assert report.owner_mechanism_id == "workspace-gate-v1"
+    assert report.omission_review_id == "audit:omission:1"
+    assert report.nearest_work_audit_id == "audit:nearest:1"
     assert report.freshness_cutoff == "2026-08-10"
     assert report.absolute_complete is False
 
 
-def test_explicit_open_fiber_preserves_unresolved_function_without_fake_owner():
+def test_explicit_open_fiber_requires_unresolved_candidate_fiber_provenance():
     candidate = MechanismCandidate(
         candidate_id="remote-mechanism",
         mechanism_class="remote",
@@ -151,14 +190,32 @@ def test_explicit_open_fiber_preserves_unresolved_function_without_fake_owner():
         _routes(),
         explicit_open_fiber="fiber:workspace-selection-unresolved",
         candidates=(candidate,),
-        independent_omission_review=True,
-        nearest_work_equivalence_audit=True,
-        unresolved_preserved=True,
+        omission_review=_omission_review(),
+        nearest_work_audit=_nearest_work_audit(),
     )
-    assert report.status is DiscoveryClosureStatus.BOUNDED_CLOSED
-    assert report.owner_mechanism_id is None
-    assert report.explicit_open_fiber == "fiber:workspace-selection-unresolved"
-    assert report.unresolved_candidate_ids == ("remote-mechanism",)
+    assert report.status is DiscoveryClosureStatus.OPEN
+    assert "unresolved_candidates_not_preserved_as_fibers" in report.reasons
+
+    closed = audit_bounded_discovery_closure(
+        _requirement(),
+        _routes(),
+        explicit_open_fiber="fiber:workspace-selection-unresolved",
+        candidates=(candidate,),
+        omission_review=_omission_review(),
+        nearest_work_audit=_nearest_work_audit(),
+        unresolved_fibers=(
+            UnresolvedCandidateFiber(
+                candidate_id="remote-mechanism",
+                fiber_id="fiber:remote-mechanism",
+                reason="assimilation remains unresolved after nearest-work audit",
+            ),
+        ),
+    )
+    assert closed.status is DiscoveryClosureStatus.BOUNDED_CLOSED
+    assert closed.owner_mechanism_id is None
+    assert closed.explicit_open_fiber == "fiber:workspace-selection-unresolved"
+    assert closed.unresolved_candidate_ids == ("remote-mechanism",)
+    assert closed.unresolved_fiber_ids == ("fiber:remote-mechanism",)
 
 
 def test_discovery_workspace_reserves_remote_challenge_history_and_freshness():
