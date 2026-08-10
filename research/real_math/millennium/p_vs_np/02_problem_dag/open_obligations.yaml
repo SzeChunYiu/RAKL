@@ -76,8 +76,8 @@ active_obligations:
   - id: O9a
     target: "calibrate exact canonical-cover search against G_NEQ"
     route: R004
-    status: IMPLEMENTED_PENDING_CI
-    artifacts: [C005, C006, canonical_cover_oracle]
+    status: CI_VERIFIED_CALIBRATION
+    artifacts: [C005, C006, C007, canonical_cover_oracle]
   - id: O9b
     target: "find an explicit graph family with canonical/full cover lower bound exceeding the log N NEQ baseline"
     route: R004
@@ -92,8 +92,9 @@ active_obligations:
   - id: O9b2
     target: "search Hall-deficient explicit complement families for super-logarithmic canonical cover complexity"
     route: R004
-    status: OPEN
+    status: DEPRIORITIZED_AFTER_C008
     depends_on: [O9b1]
+    reason: "C008 shows canonical cover can be strictly weaker than full cover even at N=3; full semi-filter composition has higher direct information value"
   - id: O9c
     target: "derive an expansion/spectral invariant that upper-bounds the number of canonical edge semi-filters covered by one pair"
     route: R004
@@ -101,15 +102,23 @@ active_obligations:
     depends_on: [O9a]
     reason: "balanced expansion often yields perfect matchings, while C007 then gives an explicit ceil(log2 N) canonical cover"
   - id: O9d
-    target: "implement a tiny full-semi-filter cover oracle and search for explicit super-logarithmic full cover candidates not constrained by C007"
+    target: "implement a tiny exact full-semi-filter cover oracle and test whether full cover can exceed canonical cover"
     route: R004
-    status: OPEN_HIGH_PRIORITY
+    status: PROOF_DRAFT_FINITE_EXACT_CHECKPOINT
     depends_on: [O9a, O9b1]
+    artifacts: [C008, full_cover_oracle]
+    result: "explicit 3x3 graph has rho_can=1 and full rho=2"
+  - id: O9d1
+    target: "construct or refute a composition theorem for C008-like gadgets that forces full cover growth without collapsing under cross-gadget pair reuse"
+    route: R004
+    status: ACTIVE
+    depends_on: [O9d]
+    residual: C008-R1
   - id: O9e
-    target: "propagate any surviving full/intersection cover lower bound through the exact source transference theorem"
+    target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004
     status: OPEN
-    depends_on: [O9d]
+    depends_on: [O9d1]
 
 negative_checkpoints:
   - id: C002
@@ -120,5 +129,11 @@ negative_checkpoints:
     result: "subexponential black-box copying, including ordinary direct-product/XOR/AND/OR composition, cannot repair the MCSP threshold/length exponent mismatch; even ideal additive direct-sum growth is insufficient"
   - id: C007
     result: "if the complement graph contains a perfect matching then canonical cover complexity is at most ceil(log2 N); regular balanced bipartite complements are therefore dead as super-logarithmic canonical targets"
+
+finite_checkpoints:
+  - id: C008
+    result: "an explicit five-complement-edge 3x3 graph has exact canonical cover number 1 and exact full graph cover number 2"
+    authority: "PROOF_DRAFT_FINITE_EXACT / NOVELTY_UNRESOLVED"
+    root_impact: "representation discrimination only; no asymptotic circuit lower bound"
 
 terminal_rule: "Only a verified certificate bound to R0 closes the root."
