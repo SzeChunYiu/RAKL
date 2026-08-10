@@ -7,10 +7,11 @@ The oracle is deliberately tiny and exhaustive. It is a conjecture and
 counterexample generator only. It does not prove asymptotic cover or
 Boolean-circuit lower bounds.
 
-C007 additionally supplies an explicit logarithmic canonical cover whenever
-the complement graph contains a perfect matching. That constructor is an
-executable proof witness for the finite combinatorial lemma, not a substitute
-for theorem-prover formalization or novelty review.
+C007 supplies an explicit logarithmic canonical cover when the complement
+contains a perfect matching. C009 generalizes this to every complement by
+coding biclique classes induced by a maximum matching. These constructors
+are executable proof witnesses for finite combinatorial lemmas, not
+substitutes for theorem-prover formalization or novelty review.
 """
 
 from __future__ import annotations
@@ -128,6 +129,107 @@ def perfect_matching_canonical_cover_pairs(
             if (u >> bit) & 1:
                 e_set.add(edge_index)
             else:
+                h_set.add(edge_index)
+        pairs.append((frozenset(e_set), frozenset(h_set)))
+    return pairs
+
+
+def _maximum_bipartite_matching(
+    n_vertices_per_side: int, complement: set[Edge]
+) -> set[Edge]:
+    """Return a deterministic maximum-cardinality matching of the complement."""
+    neighbors = {
+        u: tuple(sorted(v for x, v in complement if x == u))
+        for u in range(n_vertices_per_side)
+    }
+    matched_right: dict[int, int] = {}
+
+    def augment(u: int, seen_right: set[int]) -> bool:
+        for v in neighbors[u]:
+            if v in seen_right:
+                continue
+            seen_right.add(v)
+            if v not in matched_right or augment(matched_right[v], seen_right):
+                matched_right[v] = u
+                return True
+        return False
+
+    for u in range(n_vertices_per_side):
+        augment(u, set())
+    return {(u, v) for v, u in matched_right.items()}
+
+
+def matching_number_canonical_cover_pairs(
+    n_vertices_per_side: int, complement: set[Edge]
+) -> list[Pair]:
+    """Construct the C009 canonical cover from a maximum matching.
+
+    The proof partitions active vertices into star-biclique classes indexed by
+    the matching edges. Internal class complement edges carry one exclusive
+    bit value; cross-class complement edges are placed in both sides.
+    """
+    if n_vertices_per_side < 2:
+        raise ValueError("n_vertices_per_side must be at least 2")
+    for u, v in complement:
+        if not (0 <= u < n_vertices_per_side and 0 <= v < n_vertices_per_side):
+            raise ValueError("complement edge lies outside the requested bipartite ground set")
+    if not complement:
+        return []
+
+    matching = sorted(_maximum_bipartite_matching(n_vertices_per_side, complement))
+    matching_size = len(matching)
+    if matching_size <= 1:
+        return []
+
+    row_class: dict[int, int] = {}
+    column_class: dict[int, int] = {}
+    for class_id, (u, v) in enumerate(matching):
+        row_class[u] = class_id
+        column_class[v] = class_id
+
+    active_rows = {u for u, _ in complement}
+    active_columns = {v for _, v in complement}
+
+    for u in sorted(active_rows - row_class.keys()):
+        candidates = sorted(
+            (column_class[v], v)
+            for x, v in complement
+            if x == u and v in column_class
+        )
+        if not candidates:
+            raise RuntimeError("maximum matching invariant failed for unmatched active row")
+        row_class[u] = candidates[0][0]
+
+    for v in sorted(active_columns - column_class.keys()):
+        candidates = sorted(
+            (row_class[u], u)
+            for u, y in complement
+            if y == v and u in row_class
+        )
+        if not candidates:
+            raise RuntimeError("maximum matching invariant failed for unmatched active column")
+        column_class[v] = candidates[0][0]
+
+    # Executable assertion for the C009-L1 star-biclique invariant.
+    for u in active_rows:
+        for v in active_columns:
+            if row_class[u] == column_class[v] and (u, v) not in complement:
+                raise RuntimeError("maximum-matching class is not a complement biclique")
+
+    ordered_u = sorted(complement)
+    pairs: list[Pair] = []
+    bit_count = ceil(log2(matching_size))
+    for bit in range(bit_count):
+        e_set: set[int] = set()
+        h_set: set[int] = set()
+        for edge_index, (u, v) in enumerate(ordered_u):
+            if row_class[u] == column_class[v]:
+                if (row_class[u] >> bit) & 1:
+                    e_set.add(edge_index)
+                else:
+                    h_set.add(edge_index)
+            else:
+                e_set.add(edge_index)
                 h_set.add(edge_index)
         pairs.append((frozenset(e_set), frozenset(h_set)))
     return pairs
