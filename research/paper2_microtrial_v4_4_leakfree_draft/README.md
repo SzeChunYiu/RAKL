@@ -4,14 +4,15 @@ Status: **DRAFT / NOT EXECUTABLE**. No batch contract, no LUNARC job authority.
 
 ## Why this exists
 
-Issue #283 / session `4eb6591f` P0: live `RAKL_CONTEXT_PROMPT.txt` arms in
-`paper2_microtrial_v1`, `v4_2`, and `v4_3_1` encode graded answers
-(`misaligned_source_ids={S4,S5}`, `required_refuted_source_ids={S6}`) via
-treatment-only markers (`CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION`,
-`ALIGNED_REFUTATION`, "retained as negative history", and the S4/S5→target /
-S6→S2+S7 outcome edges). Historical runs using those prompts are
-**NOT_INFORMATIVE** for RAKL-vs-DIRECT comparisons on the affected fields.
-Preserve their bytes as negative history; do not mutate them.
+Issue #283: live `RAKL_CONTEXT_PROMPT.txt` arms in `paper2_microtrial_v1`,
+`v4_2`, and `v4_3_1` encode graded answers (`misaligned_source_ids={S4,S5}`,
+`required_refuted_source_ids={S6}`) via treatment-only markers
+(`CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION`, "retained as negative history",
+and the S4/S5→target / S6→S2+S7 outcome edges). Historical runs using those
+prompts are **NOT_INFORMATIVE** for RAKL-vs-DIRECT comparisons on the affected
+fields. Their prompt bytes and sealed ingest receipts are hash-locked by
+`TYPE_B_LEAK_DISPOSITION_283.json` in each generation directory — preserved as
+negative history, not mutated and not silently re-scored.
 
 ## What this draft keeps / drops
 
