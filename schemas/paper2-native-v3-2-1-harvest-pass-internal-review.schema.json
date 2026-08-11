@@ -1,0 +1,253 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-native-v3-2-1-harvest-pass-internal-review.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blocking_concerns": {
+      "const": []
+    },
+    "checks": {
+      "const": {
+        "chronology_metadata_error_preserved": true,
+        "combined_v3_2_1_tests": {
+          "failed": 0,
+          "passed": 22
+        },
+        "evaluated_result_record_count": 0,
+        "jobs_submitted_by_governed_repair": 0,
+        "model_execution_performed": false,
+        "native_focused_tests": {
+          "failed": 0,
+          "passed": 8
+        },
+        "native_harvest_schema_valid": true,
+        "prior_negative_history_preserved": true,
+        "quantitative_figure_generated": false,
+        "wrapper_mode_fix_state": "candidate_prepared_not_yet_canonical"
+      }
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "concern_ledger": {
+      "const": [
+        {
+          "concern_id": "P2-V321-NH-B01",
+          "finding": "A new job could be hidden as read-only harvest.",
+          "resolution": "Governed repair bootstrap/harvest bind zero new jobs, exact old ids and zero model/results; claim is scoped to the governed invocation.",
+          "severity": "blocking",
+          "state": "closed"
+        },
+        {
+          "concern_id": "P2-V321-NH-B02",
+          "finding": "The positive successor could erase the original cannot-check.",
+          "resolution": "Exact prior hash and preservation flag are bound; old bytes remain.",
+          "severity": "blocking",
+          "state": "closed"
+        },
+        {
+          "concern_id": "P2-V321-NH-B03",
+          "finding": "Wrong source or repair checkout could produce the pass.",
+          "resolution": "Exact source and repair SHA/tree identities are receipt-bound and tested.",
+          "severity": "blocking",
+          "state": "closed"
+        },
+        {
+          "concern_id": "P2-V321-NH-B04",
+          "finding": "The direct Permission denied report lacks a raw machine log and the mode-only fix is not yet a canonical commit.",
+          "resolution": "Observation is narrowed to same-session reported_not_machine_logged; mode fix is candidate_prepared_not_yet_canonical and is not used to warrant the native result.",
+          "severity": "nonblocking",
+          "state": "open_until_candidate_merge"
+        },
+        {
+          "concern_id": "P2-V321-NH-B05",
+          "finding": "Staging success could be overstated as empirical success.",
+          "resolution": "All artifacts record zero models/results, no figure, and block empirical claims until a new packet.",
+          "severity": "blocking",
+          "state": "closed"
+        },
+        {
+          "concern_id": "P2-V321-NH-B06",
+          "finding": "Pre-reharvest created_at metadata contradicts actual Git/result chronology.",
+          "resolution": "Additive discrepancy receipt preserves invalid fields and binds exact pre-result Git commit inclusion as chronology authority.",
+          "severity": "blocking",
+          "state": "closed"
+        },
+        {
+          "concern_id": "P2-V321-NH-B07",
+          "finding": "Evidence paths, schemas and cumulative counts could be self-asserted or mutation-open.",
+          "resolution": "Exact paths/roles/pass semantics are schema-bound and tests derive hashes, source submissions and cumulative counts from declared artifacts.",
+          "severity": "blocking",
+          "state": "closed"
+        }
+      ]
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "nonblocking_concerns": {
+      "const": [
+        "P2-V321-NH-B04"
+      ]
+    },
+    "object": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "passes": {
+      "const": [
+        {
+          "concerns": [
+            "P2-V321-NH-B01",
+            "P2-V321-NH-B02",
+            "P2-V321-NH-B03",
+            "P2-V321-NH-B04",
+            "P2-V321-NH-B05",
+            "P2-V321-NH-B06",
+            "P2-V321-NH-B07"
+          ],
+          "pass_id": "native_result_and_receipt_hostile_audits",
+          "verdict": "BLOCKED"
+        },
+        {
+          "concerns": [],
+          "pass_id": "post_disposition_recursive_review",
+          "verdict": "PASS"
+        }
+      ]
+    },
+    "review_class": {
+      "const": "internal_recursive_hostile_review_not_independent_not_peer_review"
+    },
+    "review_id": {
+      "const": "paper2-native-v3-2-1-harvest-pass-internal-review-20260811"
+    },
+    "reviewed_artifacts": {
+      "const": [
+        {
+          "path": "research/paper2_microtrial_v3/native_receipts/BOOTSTRAP_NATIVE_V3_2_1_3DB76E3.json",
+          "role": "native_bootstrap",
+          "sha256": "e9285276c28718ea7fac60fba4cbe358d554377bccc99f49aad1ab225d9302f6"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/native_receipts/HARVEST_PASS_NATIVE_V3_2_1_JOBS_3475123_3475124.json",
+          "role": "native_harvest",
+          "sha256": "8dc6207f771943cc4597ba2504e11e886e55af9ae1901b131100f6baf439824a"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/native_receipts/HARVEST_CANNOT_CHECK_NATIVE_V3_2_JOBS_3475123_3475124.json",
+          "role": "prior_native_harvest",
+          "sha256": "2e2ecd6f5cb2ad84f17352fea598b30210de225f745e1d9c13154b8872a03e96"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/CPU_STAGING_HARVEST_REPAIR_CONTRACT_V3_2_1.json",
+          "role": "repair_contract",
+          "sha256": "9c58fc3dbf7538ac4390376e3da7caafcf2c1d21c1333a948e5820674049d9c3"
+        },
+        {
+          "path": "src/rakl/paper2_cpu_staging_v3_2_1.py",
+          "role": "repair_runtime",
+          "sha256": "eba95fea6fd3bd2f982ece0a8d2a37742c8e496c50070bb0e3d84ee80478e985"
+        },
+        {
+          "path": "experiments/paper2/lunarc/harvest_cpu_staging_v3_2_1.sh",
+          "role": "wrapper_mode_candidate",
+          "sha256": "39c21da2e45d21bd526c020eed0dbb0a1a973786ff6b8c4eb40595d98262b107"
+        },
+        {
+          "path": "schemas/paper2-cpu-staging-harvest-receipt-v3-2-1.schema.json",
+          "role": "harvest_schema",
+          "sha256": "e2816127e0dbd15161169d416f93eaf1ae986cd2136827f430a56551c189ed40"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_1_HARVEST_PASS_RECEIPT_20260811.json",
+          "role": "post_harvest_synthesis",
+          "sha256": "969f7dc5109d66e77b0649c89d749adf16e62cc14d4d7d9816bb3369481c81ab"
+        },
+        {
+          "path": "schemas/paper2-native-v3-2-1-harvest-pass-receipt.schema.json",
+          "role": "post_harvest_schema",
+          "sha256": "8711029c079fe86159ed01d4d6b6c3e750afeebfb2da2be386c283ce30abecb8"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_V3_2_1_PRE_REHARVEST_CHRONOLOGY_DISCREPANCY_20260811.json",
+          "role": "chronology_discrepancy",
+          "sha256": "c85206d37657bcfb728e5c280cc350e9e1be0e3edeae3f944c9c328e4ba3646e"
+        },
+        {
+          "path": "schemas/paper2-v3-2-1-pre-reharvest-chronology-discrepancy.schema.json",
+          "role": "chronology_schema",
+          "sha256": "0af1af1eb59e463241efb50f69592ad9a8c3a0e9fb0007c11a8d35789da1fdc0"
+        },
+        {
+          "path": "tests/test_paper2_cpu_staging_v3_2_1_native.py",
+          "role": "native_tests",
+          "sha256": "a5856be9037ca3cbc2c1bd02cf0adbe333d6f323e8bd9ea933116e66d051ddaf"
+        },
+        {
+          "path": "research/PAPER2_CPU_STAGING_V3_2_1_NATIVE_HARVEST_HOSTILE_REVIEW_20260811.md",
+          "role": "human_review",
+          "sha256": "14d4863a444a6438d5c57c07810cfbd95b66bf26489c8dbac001dc14f50f209c"
+        },
+        {
+          "path": "research/PAPER2_CPU_STAGING_V3_2_1_NATIVE_HARVEST_STATUS_20260811.md",
+          "role": "status",
+          "sha256": "1eab32bd65a55449e5b62c9bbf4b5197a3c4b3c458f81bb46742f46b62b4d76c"
+        },
+        {
+          "path": "research/PAPER2_MICROTRIAL_MANUSCRIPT_STATUS_V3_2_1_NATIVE_20260811.md",
+          "role": "manuscript_status",
+          "sha256": "51e82a7ae05190914256bbbf62bf8f4585d4ee012aa819b9eb496eddcd58a3ac"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_SUCCESS_HARVEST_REPAIR_INTERNAL_REVIEW_20260811.json",
+          "role": "pre_reharvest_internal_review",
+          "sha256": "a5bb7f323016e3146e776c6c041894145b2d96cd71e619ce220a6d94ceb9b6cb"
+        }
+      ]
+    },
+    "schema_binding": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-native-v3-2-1-harvest-pass-internal-review.schema.json"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "paper2-native-v3-2-1-harvest-pass-internal-review-v1"
+    },
+    "verdict": {
+      "const": "PASS__NATIVE_HARVEST_STAGING_PASS__EXECUTION_PACKET_NOT_YET_FROZEN"
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "review_id",
+    "object",
+    "claim_boundary",
+    "review_class",
+    "schema_binding",
+    "reviewed_artifacts",
+    "passes",
+    "concern_ledger",
+    "blocking_concerns",
+    "nonblocking_concerns",
+    "checks",
+    "verdict"
+  ],
+  "title": "Paper 2 native V3.2.1 harvest pass internal review",
+  "type": "object"
+}

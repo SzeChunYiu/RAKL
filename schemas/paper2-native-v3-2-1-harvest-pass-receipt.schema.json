@@ -1,0 +1,284 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-native-v3-2-1-harvest-pass-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "chronology_discrepancy": {
+      "const": {
+        "path": "research/paper2_microtrial_v3/PAPER2_V3_2_1_PRE_REHARVEST_CHRONOLOGY_DISCREPANCY_20260811.json",
+        "schema_path": "schemas/paper2-v3-2-1-pre-reharvest-chronology-discrepancy.schema.json",
+        "schema_sha256": "0af1af1eb59e463241efb50f69592ad9a8c3a0e9fb0007c11a8d35789da1fdc0",
+        "sha256": "c85206d37657bcfb728e5c280cc350e9e1be0e3edeae3f944c9c328e4ba3646e",
+        "verdict": "METADATA_ERROR_PRESERVED__FREEZE_CHRONOLOGY_VERIFIED_BY_GIT_OBJECTS"
+      }
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "cumulative_native_staging_counts": {
+      "const": {
+        "evaluated_result_records": 0,
+        "jobs_submitted": 6,
+        "model_executions": 0
+      }
+    },
+    "cumulative_source_submissions": {
+      "const": [
+        {
+          "evaluated_result_records": 0,
+          "generation": "v3",
+          "job_ids": [
+            "3475080",
+            "3475081"
+          ],
+          "model_executions": 0,
+          "path": "research/paper2_microtrial_v3/native_receipts/SUBMISSION_NATIVE_1A9D307.json",
+          "sha256": "b0201f857b0602609f9a60263838d8b8a7dc6dc30d2b80adc86f556393a7e11a"
+        },
+        {
+          "evaluated_result_records": 0,
+          "generation": "v3.1",
+          "job_ids": [
+            "3475098",
+            "3475099"
+          ],
+          "model_executions": 0,
+          "path": "research/paper2_microtrial_v3/native_receipts/SUBMISSION_NATIVE_V3_1_9D6EE25.json",
+          "sha256": "156921b1624923208dfa3f0499a1dcaff3b274e80fe52e6deb4b864599935527"
+        },
+        {
+          "evaluated_result_records": 0,
+          "generation": "v3.2",
+          "job_ids": [
+            "3475123",
+            "3475124"
+          ],
+          "model_executions": 0,
+          "path": "research/paper2_microtrial_v3/native_receipts/SUBMISSION_NATIVE_V3_2_C10BA7A.json",
+          "sha256": "2813079769ed8d0530eacc7199cf5dad067561897568a056a8dd095dba21c5d4"
+        }
+      ]
+    },
+    "current_authority": {
+      "const": "HARVEST_STAGING_PASS__NO_MODEL_EXECUTION__NO_EVALUATED_RESULT"
+    },
+    "native_harvest": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluated_result_record_count": {
+          "const": 0
+        },
+        "failures": {
+          "maxItems": 0,
+          "type": "array"
+        },
+        "job_ids": {
+          "const": [
+            "3475123",
+            "3475124"
+          ]
+        },
+        "jobs_submitted_by_repair": {
+          "const": 0
+        },
+        "model_execution_performed": {
+          "const": false
+        },
+        "path": {
+          "const": "research/paper2_microtrial_v3/native_receipts/HARVEST_PASS_NATIVE_V3_2_1_JOBS_3475123_3475124.json"
+        },
+        "prior_harvest_receipt_sha256": {
+          "const": "2e2ecd6f5cb2ad84f17352fea598b30210de225f745e1d9c13154b8872a03e96"
+        },
+        "repair_contract_canonical_sha256": {
+          "const": "de981911df24d5b3384e58794b84acf5474dcac3a5b787c315df1a417be6ca94"
+        },
+        "scheduler_rows": {
+          "const": [
+            {
+              "elapsed": "00:00:04",
+              "exit_code": "0:0",
+              "job_id": "3475123",
+              "max_rss": "",
+              "node_list": "cn004",
+              "state": "COMPLETED"
+            },
+            {
+              "elapsed": "00:02:05",
+              "exit_code": "0:0",
+              "job_id": "3475124",
+              "max_rss": "",
+              "node_list": "cn004",
+              "state": "COMPLETED"
+            }
+          ]
+        },
+        "sha256": {
+          "const": "8dc6207f771943cc4597ba2504e11e886e55af9ae1901b131100f6baf439824a"
+        },
+        "source_staging_bootstrap_receipt_sha256": {
+          "const": "9cfd7785adfda06c4d31f6f100ec6808e2beae31c7020b802cb4e6c40fa1ad93"
+        },
+        "verdict": {
+          "const": "HARVEST_STAGING_PASS"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "verdict",
+        "failures",
+        "repair_contract_canonical_sha256",
+        "prior_harvest_receipt_sha256",
+        "job_ids",
+        "scheduler_rows",
+        "jobs_submitted_by_repair",
+        "model_execution_performed",
+        "evaluated_result_record_count",
+        "source_staging_bootstrap_receipt_sha256"
+      ],
+      "type": "object"
+    },
+    "negative_history": {
+      "const": {
+        "superseded_or_deleted": false,
+        "v3_2_harvest_cannot_check_preserved": true,
+        "v3_2_harvest_cannot_check_sha256": "2e2ecd6f5cb2ad84f17352fea598b30210de225f745e1d9c13154b8872a03e96"
+      }
+    },
+    "next_discriminator": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "object": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "pre_reharvest_synthesis_binding": {
+      "const": {
+        "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_SUCCESS_HARVEST_REPAIR_READINESS_RECEIPT_20260811.json",
+        "sha256": "bf8f20c9468a21abcd4bd2718c2e97211c9649c41e8f377a2e8cf9ad0097f1be"
+      }
+    },
+    "qoi": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "quantitative_figure_generated": {
+      "const": false
+    },
+    "receipt_id": {
+      "const": "paper2-native-v3-2-1-harvest-pass-3475123-3475124-20260811"
+    },
+    "repair_checkout_bootstrap": {
+      "additionalProperties": false,
+      "properties": {
+        "jobs_submitted": {
+          "const": 0
+        },
+        "model_execution_performed": {
+          "const": false
+        },
+        "path": {
+          "const": "research/paper2_microtrial_v3/native_receipts/BOOTSTRAP_NATIVE_V3_2_1_3DB76E3.json"
+        },
+        "sha256": {
+          "const": "e9285276c28718ea7fac60fba4cbe358d554377bccc99f49aad1ab225d9302f6"
+        },
+        "verdict": {
+          "const": "BOOTSTRAP_PASS_ATOMICALLY_PROMOTED"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "verdict",
+        "jobs_submitted",
+        "model_execution_performed"
+      ],
+      "type": "object"
+    },
+    "repair_subject_sha": {
+      "const": "3db76e37c6e8a72fad32a38bc28aef2f093a5152"
+    },
+    "repair_subject_tree": {
+      "const": "80e961f4db739914b773c999034ae3ea1d7f6733"
+    },
+    "review_class": {
+      "const": "same_context_internal_native_evidence_synthesis_not_independent_peer_review"
+    },
+    "schema_binding": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-native-v3-2-1-harvest-pass-receipt.schema.json"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "paper2-native-v3-2-1-harvest-pass-receipt-v1"
+    },
+    "source_subject_sha": {
+      "const": "c10ba7a261af02cc42690022226555a3197351ae"
+    },
+    "source_subject_tree": {
+      "const": "4f8053958d9ed4ea6e506ffa6dc8e60ee36715a5"
+    },
+    "verdict": {
+      "const": "NATIVE_V3_2_1_HARVEST_STAGING_PASS__EXECUTION_PACKET_NOT_YET_FROZEN"
+    },
+    "wrapper_invocation": {
+      "const": {
+        "candidate_mode": "100755",
+        "direct_execution_observation_class": "same_session_reported_not_machine_logged",
+        "governed_invocation_jobs_submitted": 0,
+        "governed_invocation_model_execution_performed": false,
+        "mode_fix_state": "candidate_prepared_not_yet_canonical",
+        "reported_shell_message": "Permission denied",
+        "successful_invocation_mode": "explicit_bash_interpreter"
+      }
+    }
+  },
+  "required": [
+    "claim_boundary",
+    "created_at_utc",
+    "cumulative_native_staging_counts",
+    "current_authority",
+    "native_harvest",
+    "negative_history",
+    "next_discriminator",
+    "object",
+    "qoi",
+    "quantitative_figure_generated",
+    "receipt_id",
+    "repair_subject_sha",
+    "repair_subject_tree",
+    "review_class",
+    "schema_binding",
+    "schema_version",
+    "source_subject_sha",
+    "source_subject_tree",
+    "verdict",
+    "wrapper_invocation",
+    "repair_checkout_bootstrap",
+    "pre_reharvest_synthesis_binding",
+    "cumulative_source_submissions",
+    "chronology_discrepancy"
+  ],
+  "title": "Paper 2 native V3.2.1 harvest pass synthesis",
+  "type": "object"
+}

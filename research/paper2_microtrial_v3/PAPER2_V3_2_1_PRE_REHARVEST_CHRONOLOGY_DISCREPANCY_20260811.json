@@ -1,0 +1,30 @@
+{
+  "affected_artifacts": [
+    {
+      "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_SUCCESS_HARVEST_REPAIR_READINESS_RECEIPT_20260811.json",
+      "recorded_created_at_utc": "2026-08-11T02:35:00Z",
+      "sha256": "bf8f20c9468a21abcd4bd2718c2e97211c9649c41e8f377a2e8cf9ad0097f1be"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_SUCCESS_HARVEST_REPAIR_INTERNAL_REVIEW_20260811.json",
+      "recorded_created_at_utc": "2026-08-11T02:55:00Z",
+      "sha256": "a5bb7f323016e3146e776c6c041894145b2d96cd71e619ce220a6d94ceb9b6cb"
+    }
+  ],
+  "authority_rule": "Exact Git object inclusion and commit time establish that the candidate bytes were frozen before merge and before native result access. The erroneous created_at_utc fields remain preserved as negative metadata history and are not silently edited.",
+  "chronology_result": "EXACT_ARTIFACT_BYTES_FROZEN_BEFORE_NATIVE_RESULT__CREATED_AT_FIELDS_INVALID",
+  "created_at_utc": "2026-08-11T02:42:19.753852Z",
+  "finding": "The two pre-reharvest artifacts contain manually assigned created_at_utc values 02:35Z and 02:55Z, even though their exact bytes were already frozen in candidate commit 98228ce at 02:25:24Z; those metadata fields are invalid and must not establish chronology.",
+  "git_freeze": {
+    "candidate_commit": "98228ceb42be3aa7e86a3b9ed5ff24cf4fd30406",
+    "candidate_committed_at_utc": "2026-08-11T02:25:24Z",
+    "candidate_tree": "80e961f4db739914b773c999034ae3ea1d7f6733",
+    "merge_commit": "3db76e37c6e8a72fad32a38bc28aef2f093a5152",
+    "merged_at_utc": "2026-08-11T02:30:54Z"
+  },
+  "native_harvest_created_at_utc": "2026-08-11T02:31:55Z",
+  "negative_history_preserved": true,
+  "object": "Paper 2 V3.2.1 pre-reharvest receipt created_at metadata versus Git freeze chronology",
+  "schema_version": "paper2-v3-2-1-pre-reharvest-chronology-discrepancy-v1",
+  "verdict": "METADATA_ERROR_PRESERVED__FREEZE_CHRONOLOGY_VERIFIED_BY_GIT_OBJECTS"
+}
