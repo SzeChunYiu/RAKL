@@ -169,6 +169,30 @@ def test_proposal_only_episode_is_not_a_viable_shortcut() -> None:
     assert candidates.jump_matches == ()
 
 
+def test_proposal_only_episode_cannot_crow_verified_top_k_slot() -> None:
+    memory = _memory(
+        _episode(
+            "A-proposal",
+            "biology",
+            authority=TransformationEpisodeAuthority.PROPOSAL_ONLY,
+        ),
+        _episode("Z-verified", "biology"),
+    )
+    candidates = discover_shortcut_candidates(_target(), memory, top_k=1)
+    assert [item.episode_id for item in candidates.jump_matches] == ["Z-verified"]
+
+
+def test_partial_effect_episode_is_glue_fragment_not_search_or_jump_route() -> None:
+    memory = _memory(
+        _episode("A-partial", "mathematics", effects=("global_object_exposed",)),
+        _episode("B-partial", "engineering", effects=("search_reduced",)),
+    )
+    candidates = discover_shortcut_candidates(_target(), memory)
+    assert candidates.direct_matches == ()
+    assert candidates.jump_matches == ()
+    assert candidates.glue_episode_sets == (("A-partial", "B-partial"),)
+
+
 def test_search_requires_bound_episode_and_applicability_mapping() -> None:
     memory = _memory(_episode("D", "mathematics"))
     review = _base_review(
