@@ -14,17 +14,19 @@ The context packet must precede candidate generation and contain the atom's stru
 
 Every retained cross-domain analogy must have an explicit abstraction and role mapping, shared constraints, disanalogies and a falsifiable mathematical validation obligation. An attractive everyday story is proposal material only.
 
-### Gate B — auditable research trace
+### Gate B — auditable research trace and dual experience memory
+
+Freeze a `ResearchMemoryReview` satisfying `audit_research_memory_review`, bound to the exact active atom/context and exact success-tool/failure-lattice snapshot hashes. Relevant prior successes remain scoped `ResearchTool` planning aids and relevant failures remain conditional warnings unless their registered authority proves more; neither memory surface mints theorem truth.
 
 Freeze/append a `MathResearchTrace` satisfying `schemas/math-research-trace.schema.json`, `audit_research_trace` and `audit_pre_candidate_trace`.
 
-Before the first candidate for an atom, the trace must record `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW` and `NEXT_STEP_PROPOSED` in chronological order. The next-step entry must record alternatives considered, a concise evidence-grounded selection rationale, uncertainty and expected discriminator.
+Before the first candidate for an atom, the trace must record `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, `EXPERIENCE_MEMORY_REVIEW` and `NEXT_STEP_PROPOSED` in chronological order. The next-step entry must record alternatives considered, a concise evidence-grounded selection rationale, uncertainty and expected discriminator.
 
 `EXPERT_CONTEXT_REVIEW` is a role-separated same-context review across at least domain/theory, analogy/method transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. Preserve disagreements and unresolved uncertainty. These roles do not satisfy any independent-review requirement.
 
 The trace must be tamper-evident: except for the first event, each `previous_event_hash` must equal the prior event's `artifact_hash`.
 
-A paper list, generic literature summary, after-the-fact explanation or reconstructed narrative does not pass these gates. If `plan_math_research(..., context_fiber=..., research_trace=...)` reports `candidate_generation_allowed: false`, only `pre_candidate_actions` may be executed.
+A paper list, generic literature summary, after-the-fact explanation or reconstructed narrative does not pass these gates. If `plan_math_research(..., context_fiber=..., memory_review=..., research_trace=...)` reports `candidate_generation_allowed: false`, only `pre_candidate_actions` may be executed.
 
 The public trace is a reproducible scientific decision ledger, not a raw private chain-of-thought transcript.
 
@@ -32,11 +34,11 @@ The public trace is a reproducible scientific decision ledger, not a raw private
 
 Candidates and negative checkpoints created before these gates existed remain valid historical research artifacts at their already recorded authority levels. They must **not** be relabeled as strict context-first discoveries by backfilling packets or trace events after the fact.
 
-After these gates are merged, any materially new successor candidate must begin from a freshly frozen context fiber and trace. Existing residuals may be reused as the atomic obstruction, but the analogue/method-transfer/analogy analysis, expert review, decision record and chronology must be newly frozen before the successor candidate is generated.
+After these gates are merged, any materially new successor candidate must begin from a freshly frozen context fiber and trace. Existing residuals may be reused as the atomic obstruction, but the analogue/method-transfer/analogy analysis, expert review, dual experience-memory review, decision record and chronology must be newly frozen before the successor candidate is generated.
 
 ## Non-compensatory gates
 
-1. **Discovery-process compliance**. If the work is claimed as strict RAKL-mediated discovery, the pre-candidate context, analogy, expert-review and trace chronology must pass. This gate does not substitute for mathematical truth.
+1. **Discovery-process compliance**. If the work is claimed as strict RAKL-mediated discovery, the pre-candidate context, analogy, expert-review, dual-memory and trace chronology must pass. This gate does not substitute for mathematical truth.
 2. **Specification**. The exact mathematical claim must be frozen and round-trip checked.
 3. **Truth**. Every proof-critical edge must be justified from registered premises.
 4. **Verifier trust**. Proof checker, versions, dependencies, axioms, source hashes, and isolated recheck are explicit.
@@ -49,7 +51,7 @@ No aggregate score can compensate for failure of one gate.
 
 A Millennium-scale root claim may advance to `CANDIDATE_ROOT_SOLUTION` only if all of the following are true.
 
-- If the root candidate is generated after adoption of these gates, its exact parent obstruction has a pre-candidate context packet and hash-chained auditable trace with valid chronology and `EXPERT_CONTEXT_REVIEW`.
+- If the root candidate is generated after adoption of these gates, its exact parent obstruction has a pre-candidate context packet, bound dual-memory review and hash-chained auditable trace with valid chronology and `EXPERT_CONTEXT_REVIEW`.
 - The root statement is exactly the intended problem, not a stronger/weaker neighboring statement accidentally substituted without disclosure.
 - The proof DAG closes every dependency from axioms/registered parent theorems to the root.
 - No `sorryAx`, placeholder, unregistered custom axiom, unchecked numerical leap, hidden oracle, or unstated regularity/complexity assumption occurs transitively.
