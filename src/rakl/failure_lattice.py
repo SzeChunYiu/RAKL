@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from typing import Tuple
 
@@ -40,6 +41,7 @@ class FailureExperience:
     atom_id: str
     candidate_id: str
     context_packet_hash: str
+    research_trace_event_id: str
     method_family: str
     failure_mode: str
     residual_signature: Tuple[str, ...]
@@ -52,6 +54,8 @@ class FailureExperience:
     falsifier_or_attempt: str
     observed_result: str
     artifact_hash: str
+    timestamp: str
+    local_repair_attempts: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -89,6 +93,19 @@ class FailureReuseAssessment:
     reasons: Tuple[str, ...]
 
 
+def _parse_time(value: str) -> datetime | None:
+    if not value:
+        return None
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
+
+
 def validate_failure_experience(experience: FailureExperience) -> Tuple[str, ...]:
     reasons: list[str] = []
     for field_name in (
@@ -96,6 +113,7 @@ def validate_failure_experience(experience: FailureExperience) -> Tuple[str, ...
         "atom_id",
         "candidate_id",
         "context_packet_hash",
+        "research_trace_event_id",
         "method_family",
         "failure_mode",
         "falsifier_or_attempt",
@@ -104,6 +122,8 @@ def validate_failure_experience(experience: FailureExperience) -> Tuple[str, ...
     ):
         if not getattr(experience, field_name):
             reasons.append(f"failure:{field_name}_missing")
+    if _parse_time(experience.timestamp) is None:
+        reasons.append("failure:timestamp_missing_or_invalid")
     if not experience.residual_signature:
         reasons.append("failure:residual_signature_missing")
     if not experience.scope_conditions:
