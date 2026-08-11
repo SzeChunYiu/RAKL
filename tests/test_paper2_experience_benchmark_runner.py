@@ -4,30 +4,46 @@ import json
 from pathlib import Path
 
 from rakl.paper2_experience_benchmark_runner import (
+    PACKET_REL_V1,
+    PACKET_REL_V1_1,
     PROTOCOL_SUBJECT_HASH,
+    PROTOCOL_SUBJECT_HASH_V1,
+    PROTOCOL_SUBJECT_HASH_V1_1,
+    build_user_prompt,
     execute_experience_benchmark,
+    require_verdict_enum_prompt,
     score_structured_answer,
 )
+from rakl.experience_benchmark import ExperienceBenchmarkArm
 from rakl.paper2_pendulum_microtrial import BackendGeneration
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKET_DIR = ROOT / "research" / "paper2_experience_benchmark_v1"
+PACKET_DIR_V1 = ROOT / "research" / "paper2_experience_benchmark_v1"
+PACKET_DIR_V1_1 = ROOT / "research" / "paper2_experience_benchmark_v1_1"
 
 
-def test_protocol_subject_hash_binding() -> None:
-    packet = json.loads((PACKET_DIR / "PROTOCOL_FREEZE_PACKET.json").read_text(encoding="utf-8"))
-    contract = json.loads((PACKET_DIR / "BATCH_CONTRACT_V1.json").read_text(encoding="utf-8"))
-    assert packet["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH
-    assert contract["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH
+def test_default_runner_binds_v1_1_not_v1() -> None:
+    assert PROTOCOL_SUBJECT_HASH == PROTOCOL_SUBJECT_HASH_V1_1
+    assert PROTOCOL_SUBJECT_HASH != PROTOCOL_SUBJECT_HASH_V1
+    assert PACKET_REL_V1_1.as_posix().endswith("v1_1")
+    assert PACKET_REL_V1.as_posix().endswith("v1")
+
+
+def test_v1_1_protocol_subject_hash_binding() -> None:
+    packet = json.loads((PACKET_DIR_V1_1 / "PROTOCOL_FREEZE_PACKET.json").read_text(encoding="utf-8"))
+    contract = json.loads((PACKET_DIR_V1_1 / "BATCH_CONTRACT_V1_1.json").read_text(encoding="utf-8"))
+    assert packet["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH_V1_1
+    assert contract["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH_V1_1
     assert contract["v4_1_score_reuse_allowed"] is False
     assert contract["paper3_issue_217_path"] is False
     assert {3476520, 3476521, 3476524}.issubset(set(contract["v4_1_jobs_not_evidence"]))
+    assert contract["parent_v1_negative_job"] == 3476542
 
 
-def test_batch_contract_bindings_match_bytes() -> None:
+def test_v1_1_batch_contract_bindings_match_bytes() -> None:
     import hashlib
 
-    contract = json.loads((PACKET_DIR / "BATCH_CONTRACT_V1.json").read_text(encoding="utf-8"))
+    contract = json.loads((PACKET_DIR_V1_1 / "BATCH_CONTRACT_V1_1.json").read_text(encoding="utf-8"))
     for binding in contract["bindings"]:
         path = ROOT / binding["path"]
         assert path.is_file(), binding["role"]
@@ -35,9 +51,53 @@ def test_batch_contract_bindings_match_bytes() -> None:
         assert digest == binding["sha256"], binding["role"]
 
 
+def test_v1_batch_contract_still_matches_historical_bytes() -> None:
+    import hashlib
+
+    contract = json.loads((PACKET_DIR_V1 / "BATCH_CONTRACT_V1.json").read_text(encoding="utf-8"))
+    # Runner bytes changed for v1.1; historical v1 contract binding for runner may drift.
+    # Keep non-runner historical bindings exact; runner role is allowed to diverge after repair.
+    for binding in contract["bindings"]:
+        if binding["role"] == "runner":
+            continue
+        path = ROOT / binding["path"]
+        assert path.is_file(), binding["role"]
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert digest == binding["sha256"], binding["role"]
+
+
+def test_verdict_enum_prompt_markers_present() -> None:
+    system = (PACKET_DIR_V1_1 / "protocol" / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8")
+    require_verdict_enum_prompt(system, label="system")
+    task = json.loads((PACKET_DIR_V1_1 / "tasks" / "D1.json").read_text(encoding="utf-8"))
+    prompt = build_user_prompt(
+        arm=ExperienceBenchmarkArm.RESET_BASELINE,
+        task=task,
+        state={"state_kind": "S0", "episodes": []},
+    )
+    require_verdict_enum_prompt(prompt, label="user")
+    assert "REJECT" in prompt
+
+
+def test_score_rejects_illegal_verdict_token() -> None:
+    evaluator = json.loads((PACKET_DIR_V1_1 / "protocol" / "EVALUATOR_PROTOCOL.json").read_text(encoding="utf-8"))
+    task = json.loads((PACKET_DIR_V1_1 / "tasks" / "D1.json").read_text(encoding="utf-8"))
+    predicted = dict(task["sealed_answer"])
+    predicted["verdict"] = "REJECT"
+    score, success, failures = score_structured_answer(
+        predicted,
+        task["sealed_answer"],
+        evaluator,
+        known_evidence_ids={item["id"] for item in task["evidence"]},
+    )
+    assert score == 0.0
+    assert success is False
+    assert "schema_violation" in failures
+
+
 def test_score_structured_answer_exact() -> None:
-    evaluator = json.loads((PACKET_DIR / "protocol" / "EVALUATOR_PROTOCOL.json").read_text(encoding="utf-8"))
-    task = json.loads((PACKET_DIR / "tasks" / "D1.json").read_text(encoding="utf-8"))
+    evaluator = json.loads((PACKET_DIR_V1_1 / "protocol" / "EVALUATOR_PROTOCOL.json").read_text(encoding="utf-8"))
+    task = json.loads((PACKET_DIR_V1_1 / "tasks" / "D1.json").read_text(encoding="utf-8"))
     score, success, failures = score_structured_answer(
         task["sealed_answer"],
         task["sealed_answer"],
@@ -50,14 +110,13 @@ def test_score_structured_answer_exact() -> None:
 
 
 def test_execute_experience_benchmark_with_mock_backend(tmp_path: Path, monkeypatch) -> None:
-    # Avoid requiring a real git clean origin/main by stubbing checkout probes inside execute.
-    # Use a fake backend that returns sealed answers so chronology/wiring can be checked.
     tasks = {
-        tid: json.loads((PACKET_DIR / "tasks" / f"{tid}.json").read_text(encoding="utf-8"))
+        tid: json.loads((PACKET_DIR_V1_1 / "tasks" / f"{tid}.json").read_text(encoding="utf-8"))
         for tid in ("D1", "D2", "D3", "T1", "T2", "T3")
     }
 
     def backend(prompt: str, *, snapshot_path: Path, seed: int, max_output_tokens: int) -> BackendGeneration:
+        assert "SUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK" in prompt
         task_id = None
         for tid in ("D1", "D2", "D3", "T1", "T2", "T3"):
             if f"Task id: {tid}" in prompt:
@@ -74,8 +133,6 @@ def test_execute_experience_benchmark_with_mock_backend(tmp_path: Path, monkeypa
             process_high_water_rss_bytes_after_arm=1,
         )
 
-    # Patch git checks by running from a temporary clone-like layout is heavy; instead
-    # monkeypatch subprocess.run used by the runner for git.
     import rakl.paper2_experience_benchmark_runner as runner
 
     expected_sha = "a" * 40
@@ -98,15 +155,12 @@ def test_execute_experience_benchmark_with_mock_backend(tmp_path: Path, monkeypa
     monkeypatch.setattr(runner.subprocess, "run", fake_run)
     monkeypatch.setattr(runner.socket, "gethostname", lambda: "compute-node-1")
 
-    # Snapshot path must exist as a directory for the preflight check.
     snap = tmp_path / "snap"
     snap.mkdir()
-    # Rewrite model config snapshot via monkeypatch of load path: easiest is to
-    # temporarily point MODEL_CONFIG snapshot_path using a patched load_frozen_protocol.
     original_load = runner.load_frozen_protocol
 
-    def patched_load(repo: Path):
-        bundle = original_load(repo)
+    def patched_load(repo: Path, *, packet_rel=None, protocol_subject_hash=None):
+        bundle = original_load(repo, packet_rel=packet_rel, protocol_subject_hash=protocol_subject_hash)
         bundle["model"] = dict(bundle["model"])
         bundle["model"]["snapshot_path"] = str(snap)
         return bundle
@@ -122,7 +176,7 @@ def test_execute_experience_benchmark_with_mock_backend(tmp_path: Path, monkeypa
         created_at_utc="2026-08-11T20:00:00Z",
         backend=backend,
     )
-    assert manifest["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH
+    assert manifest["protocol_subject_hash"] == PROTOCOL_SUBJECT_HASH_V1_1
     assert manifest["run_count"] == 12
     assert manifest["v4_1_score_reuse_allowed"] is False
     assert manifest["paper3_issue_217_path"] is False

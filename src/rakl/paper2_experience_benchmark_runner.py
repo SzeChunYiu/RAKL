@@ -1,7 +1,7 @@
 """Execute Paper-II ExperienceBenchmark RESET vs LEARNING under a frozen protocol.
 
 Issue #138 §B2 runner. Bound to ``protocol_subject_hash`` from
-``research/paper2_experience_benchmark_v1/``. Does **not** reuse V4.1/V4.2
+``research/paper2_experience_benchmark_v1_1/`` (v1 preserved as negative history). Does **not** reuse V4.1/V4.2
 pendulum scores or Paper-III (#217) paths.
 """
 
@@ -27,10 +27,26 @@ from .experience_benchmark import (
 from .paper2_pendulum_microtrial import BackendGeneration
 from .v3_authority import canonical_json_bytes
 
-PACKET_REL = Path("research/paper2_experience_benchmark_v1")
-PROTOCOL_SUBJECT_HASH = "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56"
+PACKET_REL_V1 = Path("research/paper2_experience_benchmark_v1")
+PROTOCOL_SUBJECT_HASH_V1 = "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56"
+PACKET_REL_V1_1 = Path("research/paper2_experience_benchmark_v1_1")
+# Bound after v1.1 protocol freeze; submit scripts require exact match.
+PROTOCOL_SUBJECT_HASH_V1_1 = "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb"
+# Default execution subject is the repaired verdict-enum packet (v1.1).
+PACKET_REL = PACKET_REL_V1_1
+PROTOCOL_SUBJECT_HASH = PROTOCOL_SUBJECT_HASH_V1_1
 FORBIDDEN_JOBS = frozenset({3476520, 3476521, 3476524})
+ALLOWED_VERDICTS = ("SUPPORT", "REFUTE", "CONTEXT_MISALIGNED", "CANNOT_CHECK")
+VERDICT_ENUM_MARKER = "SUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK"
+FORBIDDEN_VERDICT_SYNONYM_MARKER = "Do not emit REJECT, FAIL"
 JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
+
+
+def require_verdict_enum_prompt(text: str, *, label: str) -> None:
+    """Fail closed if the prompt interface omits the frozen verdict vocabulary."""
+    for marker in (VERDICT_ENUM_MARKER, FORBIDDEN_VERDICT_SYNONYM_MARKER, "selected_evidence_ids"):
+        if marker not in text:
+            raise RuntimeError(f"experience prompt missing verdict-enum marker:{label}:{marker}")
 
 
 def _utc_now() -> str:
@@ -108,7 +124,7 @@ def score_structured_answer(
         return 0.0, False, ("schema_violation",)
     if any(not isinstance(item, str) for item in selected + rejected + tags):
         return 0.0, False, ("schema_violation",)
-    if verdict not in ("SUPPORT", "REFUTE", "CONTEXT_MISALIGNED", "CANNOT_CHECK"):
+    if verdict not in ALLOWED_VERDICTS:
         return 0.0, False, ("schema_violation",)
     unknown = [item for item in selected + rejected if item not in known_evidence_ids]
     if unknown:
@@ -164,8 +180,11 @@ def build_user_prompt(
         "Sealed evidence (only these ids are valid):",
         evidence_lines,
         "",
-        "Return exactly one JSON object with keys:",
+        "Return exactly one JSON object with these exact keys and no leading spaces in key names:",
         "verdict, selected_evidence_ids, rejected_evidence_ids, rationale_tags.",
+        f"verdict MUST be exactly one of: {VERDICT_ENUM_MARKER}",
+        f"{FORBIDDEN_VERDICT_SYNONYM_MARKER}, ACCEPT, TRUE, FALSE, or any other verdict synonym.",
+        "Then stop. Do not wrap the JSON in markdown fences.",
     ]
     if arm is ExperienceBenchmarkArm.LEARNING_ENABLED:
         parts = [
@@ -180,7 +199,9 @@ def build_user_prompt(
             "",
             *parts,
         ]
-    return "\n".join(parts)
+    prompt = "\n".join(parts)
+    require_verdict_enum_prompt(prompt, label=f"user:{task['task_id']}")
+    return prompt
 
 
 def _encode_chat_prompt(tokenizer: object, system_prompt: str, user_prompt: str) -> object:
@@ -308,10 +329,12 @@ def _append_learning_state(
     return next_state
 
 
-def load_frozen_protocol(repo: Path) -> dict[str, Any]:
-    packet_dir = repo / PACKET_REL
+def load_frozen_protocol(repo: Path, *, packet_rel: Path | None = None, protocol_subject_hash: str | None = None) -> dict[str, Any]:
+    rel = packet_rel or PACKET_REL
+    expected_hash = protocol_subject_hash or PROTOCOL_SUBJECT_HASH
+    packet_dir = repo / rel
     freeze = _load_json(packet_dir / "PROTOCOL_FREEZE_PACKET.json")
-    if freeze.get("protocol_subject_hash") != PROTOCOL_SUBJECT_HASH:
+    if freeze.get("protocol_subject_hash") != expected_hash:
         raise RuntimeError("protocol_subject_hash mismatch versus authorized runner binding")
     if freeze.get("scientific_claim_status") != "NO_EMPIRICAL_RESULT":
         raise RuntimeError("freeze packet is not in pre-execution scientific status")
@@ -346,6 +369,8 @@ def execute_experience_benchmark(
     scheduler_job_id: str,
     created_at_utc: str | None = None,
     backend: Callable[..., BackendGeneration] | None = None,
+    packet_rel: Path | None = None,
+    protocol_subject_hash: str | None = None,
 ) -> dict[str, Any]:
     if not scheduler_job_id.isdigit():
         raise RuntimeError("numeric SLURM job id required")
@@ -370,7 +395,15 @@ def execute_experience_benchmark(
     if dirty:
         raise RuntimeError("checkout is dirty")
 
-    bundle = load_frozen_protocol(repo)
+    bound_packet_rel = packet_rel or PACKET_REL
+    bound_hash = protocol_subject_hash or PROTOCOL_SUBJECT_HASH
+    if bound_hash.startswith("PENDING_"):
+        raise RuntimeError("protocol_subject_hash is not frozen yet")
+    require_verdict_enum_prompt(
+        (repo / bound_packet_rel / "protocol" / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8"),
+        label="system_prompt",
+    )
+    bundle = load_frozen_protocol(repo, packet_rel=bound_packet_rel, protocol_subject_hash=bound_hash)
     freeze = bundle["freeze"]
     model_cfg = bundle["model"]
     ceiling = bundle["ceiling"]
@@ -568,7 +601,7 @@ def execute_experience_benchmark(
         "issue": 138,
         "section": "B2",
         "benchmark_id": freeze["benchmark_id"],
-        "protocol_subject_hash": PROTOCOL_SUBJECT_HASH,
+        "protocol_subject_hash": bound_hash,
         "freeze_packet_sha256": _sha256_file(bundle["packet_dir"] / "PROTOCOL_FREEZE_PACKET.json"),
         "expected_repo_sha": expected_repo_sha,
         "scheduler_job_id": scheduler_job_id,
@@ -599,6 +632,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-repo-sha", required=True)
     parser.add_argument("--scheduler-job-id", required=True)
     parser.add_argument("--created-at-utc", default=None)
+    parser.add_argument("--packet-rel", type=Path, default=None)
+    parser.add_argument("--protocol-subject-hash", default=None)
     args = parser.parse_args(argv)
     manifest = execute_experience_benchmark(
         args.repo.resolve(),
@@ -606,6 +641,8 @@ def main(argv: list[str] | None = None) -> int:
         expected_repo_sha=args.expected_repo_sha,
         scheduler_job_id=args.scheduler_job_id,
         created_at_utc=args.created_at_utc,
+        packet_rel=args.packet_rel,
+        protocol_subject_hash=args.protocol_subject_hash,
     )
     print(json.dumps({"verdict": "EXECUTED", "learned_state_after_development_hash": manifest["learned_state_after_development_hash"]}, indent=2))
     return 0

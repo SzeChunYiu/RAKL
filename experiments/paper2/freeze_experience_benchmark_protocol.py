@@ -62,6 +62,9 @@ def _refuse_if_results_present(packet_dir: Path) -> None:
     for path in packet_dir.rglob("*"):
         if not path.is_file():
             continue
+        # Harvested native job trees are post-execution receipts, not protocol inputs.
+        if any(part.startswith("native_job_") for part in path.parts):
+            continue
         name = path.name
         lower = name.lower()
         if any(fragment.lower() in lower for fragment in FORBIDDEN_NAME_FRAGMENTS):
@@ -75,7 +78,7 @@ def _refuse_if_results_present(packet_dir: Path) -> None:
         )
 
 
-def build_protocol_packet(packet_dir: Path, frozen_at: str) -> tuple[dict, ExperienceBenchmarkPacket, dict]:
+def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str) -> tuple[dict, ExperienceBenchmarkPacket, dict]:
     protocol = packet_dir / "protocol"
     tasks_dir = packet_dir / "tasks"
     model_cfg = _load_json(protocol / "MODEL_CONFIG.json")
@@ -138,7 +141,7 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str) -> tuple[dict, Exper
         raise SystemExit("model max_output_tokens must equal resource ceiling max_model_output_tokens")
 
     packet = ExperienceBenchmarkPacket(
-        benchmark_id="paper2-experience-benchmark-v1",
+        benchmark_id=benchmark_id,
         model=model,
         resource_ceiling=ceiling,
         tool_policy_id=tool_policy["tool_policy_id"],
@@ -281,8 +284,13 @@ def main() -> int:
     )
     parser.add_argument(
         "--frozen-at",
-        default="2026-08-11T18:21:15Z",
+        default=None,
         help="Timezone-aware freeze timestamp (UTC Z)",
+    )
+    parser.add_argument(
+        "--benchmark-id",
+        default=None,
+        help="Benchmark id (default derived from packet directory)",
     )
     parser.add_argument(
         "--check-only",
@@ -292,7 +300,18 @@ def main() -> int:
     args = parser.parse_args()
     packet_dir = args.packet_dir if args.packet_dir.is_absolute() else ROOT / args.packet_dir
     _refuse_if_results_present(packet_dir)
-    freeze_packet, _packet, receipt = build_protocol_packet(packet_dir, args.frozen_at)
+    if args.benchmark_id:
+        benchmark_id = args.benchmark_id
+    elif packet_dir.name.endswith("v1_1"):
+        benchmark_id = "paper2-experience-benchmark-v1_1"
+    else:
+        benchmark_id = "paper2-experience-benchmark-v1"
+    frozen_at = args.frozen_at or (
+        "2026-08-11T19:05:00Z" if benchmark_id.endswith("v1_1") else "2026-08-11T18:21:15Z"
+    )
+    freeze_packet, _packet, receipt = build_protocol_packet(
+        packet_dir, frozen_at, benchmark_id=benchmark_id
+    )
 
     out_packet = packet_dir / "PROTOCOL_FREEZE_PACKET.json"
     out_receipt = packet_dir / "PROTOCOL_FREEZE_RECEIPT.json"
@@ -302,7 +321,7 @@ def main() -> int:
         existing = _load_json(out_packet)
         if existing.get("protocol_subject_hash") != freeze_packet["protocol_subject_hash"]:
             raise SystemExit("protocol_subject_hash drift versus sealed artifacts")
-        if existing.get("packet_frozen_at") != args.frozen_at:
+        if existing.get("packet_frozen_at") != frozen_at:
             raise SystemExit("packet_frozen_at drift")
         print(json.dumps({"verdict": "PROTOCOL_FREEZE_CHECK_PASS", "protocol_subject_hash": freeze_packet["protocol_subject_hash"]}, indent=2))
         return 0
@@ -324,13 +343,13 @@ def main() -> int:
         "phases": freeze_packet["phases"],
         "development_task_ids": freeze_packet["development_task_ids"],
         "transfer_task_ids": freeze_packet["transfer_task_ids"],
-        "frozen_at_utc": args.frozen_at,
+        "frozen_at_utc": frozen_at,
         "evaluated_model_outputs_present": False,
         "learned_state_after_development_hash": PENDING_LEARNED,
         "protocol_subject_hash": freeze_packet["protocol_subject_hash"],
         "protocol_artifacts": {
             name: {
-                "path": f"research/paper2_experience_benchmark_v1/protocol/{name}",
+                "path": f"{packet_dir.relative_to(ROOT).as_posix()}/protocol/{name}",
                 "sha256": receipt["artifact_sha256"][name],
                 "bytes": (packet_dir / "protocol" / name).stat().st_size,
             }

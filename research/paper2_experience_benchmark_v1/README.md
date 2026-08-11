@@ -1,6 +1,8 @@
 # Paper II — ExperienceBenchmark protocol freeze (issue #138 §B1)
 
-Status: `PROTOCOL_FROZEN_AWAITING_EXECUTION` / `NO_EMPIRICAL_RESULT`
+Status: `EXECUTED_NEGATIVE_PROMPT_INTERFACE_DEFECT` / superseded by `paper2_experience_benchmark_v1_1`
+
+Job **3476542** completed full S0→Sn+transfer chronology but all scores were 0 due to missing verdict-enum prompt markers (`REJECT`/`FAIL`). See `native_job_3476542/ROOT_CAUSE_PROMPT_INTERFACE_DEFECT.json`. Do not use as promotional §B evidence.
 
 ## What this is
 

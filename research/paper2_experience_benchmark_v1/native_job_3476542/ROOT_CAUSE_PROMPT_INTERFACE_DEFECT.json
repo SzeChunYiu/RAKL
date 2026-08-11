@@ -1,0 +1,32 @@
+{
+  "schema_version": "paper2-experience-benchmark-root-cause-v1",
+  "issue": 138,
+  "section": "B2",
+  "slurm_job_id": "3476542",
+  "protocol_subject_hash": "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56",
+  "created_at_utc": "2026-08-11T19:05:00Z",
+  "supersedes_validation_receipt_classification": "HONEST_NEGATIVE_MODEL_SCHEMA_FAILURE_NOT_PIPELINE_BUG",
+  "classification": "PROMPT_INTERFACE_DEFECT_MISSING_VERDICT_ENUM",
+  "pipeline_bug": true,
+  "pipeline_bug_kind": "prompt_interface_incomplete_not_scorer_or_chronology",
+  "chronology_complete": true,
+  "s0_to_sn_executed": true,
+  "fresh_transfer_from_frozen_sn": true,
+  "score_all_zero": true,
+  "observed_illegal_verdicts": ["REJECT", "FAIL"],
+  "observed_malformed_keys": true,
+  "evidence_pointers": [
+    "research/paper2_experience_benchmark_v1/native_job_3476542/runs/experience_v1/paper2-experience-benchmark-v1-job-3476542/outputs/RESET_BASELINE_D1.json",
+    "research/paper2_experience_benchmark_v1/native_job_3476542/runs/experience_v1/paper2-experience-benchmark-v1-job-3476542/outputs/RESET_BASELINE_D2.json",
+    "research/paper2_experience_benchmark_v1/native_job_3476542/runs/experience_v1/paper2-experience-benchmark-v1-job-3476542/outputs/RESET_BASELINE_T1.json",
+    "research/paper2_experience_benchmark_v1/protocol/SYSTEM_PROMPT.txt",
+    "src/rakl/paper2_experience_benchmark_runner.py::build_user_prompt (pre-repair)"
+  ],
+  "summary": "v1 prompts asked for JSON keys but never listed allowed verdict tokens. 0.5B emitted REJECT/FAIL; scorer correctly schema_violation→0. Full S0→Sn+transfer chronology was valid. Repair is versioned v1.1 prompt-enum freeze without changing evaluator/tasks.",
+  "resubmit_recommended": true,
+  "resubmit_packet": "paper2-experience-benchmark-v1_1",
+  "resubmit_protocol_subject_hash": "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb",
+  "paper_numbers_allowed_from_3476542": false,
+  "v4_1_score_reuse_allowed": false,
+  "paper3_issue_217_path": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "paper2-experience-benchmark-difference-witness-v1",
+  "issue": 138,
+  "parent_packet": "paper2-experience-benchmark-v1",
+  "parent_protocol_subject_hash": "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56",
+  "parent_job_id": "3476542",
+  "challenger_packet": "paper2-experience-benchmark-v1_1",
+  "challenger_protocol_subject_hash": "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb",
+  "what_changed": [
+    "SYSTEM_PROMPT / MODEL_CONFIG enumerate exact verdict enum SUPPORT|REFUTE|CONTEXT_MISALIGNED|CANNOT_CHECK",
+    "User prompt forbids REJECT/FAIL synonyms and spaced JSON keys",
+    "Runner require_verdict_enum_prompt fail-closed gate"
+  ],
+  "what_did_not_change": [
+    "OUTPUT_SCHEMA.json enum and required fields",
+    "EVALUATOR_PROTOCOL.json scoring weights/thresholds",
+    "Task sealed answers D1–D3/T1–T3",
+    "Model identity Qwen2.5-0.5B-Instruct@7ae55760",
+    "Resource ceiling",
+    "RESET/LEARNING state chronology contract"
+  ],
+  "why_old_falsifier_may_no_longer_apply": "v1 all-zero scores were dominated by illegal verdict tokens caused by missing enum in the prompt interface; with the enum explicit, schema_violation from REJECT/FAIL is no longer the expected default failure mode.",
+  "cheapest_test_that_difference_is_illusory": "Re-run v1.1; if majority of runs still emit REJECT/FAIL despite explicit enum, residual is model capability under 0.5B, not interface omission.",
+  "v4_1_score_reuse_allowed": false,
+  "paper3_issue_217_path": false
+}
