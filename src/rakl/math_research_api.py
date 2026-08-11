@@ -1,10 +1,20 @@
 """Public facade for the RAKL mathematical-research reference profile.
 
-The modules behind this facade deliberately separate planning from authority.  Path
+The modules behind this facade deliberately separate planning from authority. Path
 search and strategy motifs generate candidate research routes; theorem, novelty and
-publication stages are still controlled by explicit assurance receipts.
+publication stages are still controlled by explicit assurance receipts. Strict RAKL
+mathematical discovery additionally requires a frozen context/analogue transfer
+packet before candidate generation.
 """
 
+from .math_context import (
+    REQUIRED_PRE_CANDIDATE_ACTIONS,
+    ContextGateReport,
+    ContextGateVerdict,
+    MathContextFiber,
+    MethodTransfer,
+    audit_math_context_fiber,
+)
 from .math_research_assurance import (
     AssuranceReport,
     AssuranceVerdict,
@@ -47,6 +57,7 @@ from .proof_dag import (
     ProofNode,
     ProofNodeKind,
     ProofNodeStatus,
+    ProofReceipt,
     ProofRelation,
     add_edge,
     add_node,
@@ -68,12 +79,16 @@ from .strategy_motifs import (
 __all__ = [
     "AssuranceReport",
     "AssuranceVerdict",
+    "ContextGateReport",
+    "ContextGateVerdict",
     "DEFAULT_OPERATOR_ATLAS",
     "DEFAULT_STRATEGY_MOTIFS",
     "FormalizationWitness",
     "MathClaimStage",
+    "MathContextFiber",
     "MathResearchPlan",
     "MathResearchRecord",
+    "MethodTransfer",
     "MotifInstantiation",
     "NoveltyCertificate",
     "ObstructionKind",
@@ -89,6 +104,7 @@ __all__ = [
     "ProofNodeStatus",
     "ProofReceipt",
     "ProofRelation",
+    "REQUIRED_PRE_CANDIDATE_ACTIONS",
     "ResearchOperator",
     "StrategyMotif",
     "TerminalCertificate",
@@ -98,6 +114,7 @@ __all__ = [
     "all_dependencies_verified",
     "apply_operator_symbolic",
     "audit_formalization",
+    "audit_math_context_fiber",
     "audit_novelty",
     "audit_proof_receipt",
     "classify_math_record",
