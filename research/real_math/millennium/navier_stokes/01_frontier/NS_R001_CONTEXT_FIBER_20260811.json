@@ -1,0 +1,115 @@
+{
+  "atom_id": "NS-R001",
+  "object_context": "First strict regularity atom for the three-dimensional incompressible Navier–Stokes Millennium problem: explain whether the Leray energy class can be upgraded, using exact Navier–Stokes structure rather than generic energy cancellation, to a scale-critical a priori control strong enough to invoke a known regularity criterion before a first singular time.",
+  "structural_coordinates": [
+    "equation on R^3 or the periodic 3-torus with viscosity nu>0 and divergence-free velocity",
+    "Navier–Stokes scaling u_lambda(x,t)=lambda u(lambda x,lambda^2 t), p_lambda=lambda^2 p(lambda x,lambda^2 t)",
+    "mixed velocity norm L_t^p L_x^q is scale critical when 2/p+3/q=1",
+    "the Leray energy class L_t^infinity L_x^2 intersect L_t^2 dot H_x^1 scales with exponent -1/2 and is supercritical",
+    "vorticity obeys partial_t omega + u dot grad omega = nu Delta omega + omega dot grad u, so three-dimensional stretching is the sign-indefinite production term absent in 2D",
+    "pressure is nonlocal through a Calderon-Zygmund relation and cannot be discarded in local regularity arguments",
+    "bounded L_t^infinity L_x^3 control is a critical endpoint regularity criterion, but energy bounds do not supply it",
+    "epsilon-regularity converts small scale-invariant local quantities into smoothness, but the root gap is obtaining such smallness uniformly from global data",
+    "concentration-compactness/rigidity can exclude blowup under bounded critical norms, but does not itself create the missing critical bound",
+    "generic energy cancellation plus broad harmonic-analysis estimates are insufficient in Tao's averaged Navier–Stokes model, so any successful positive route must exploit finer structure of the true bilinear nonlinearity"
+  ],
+  "equivalent_formulations": [
+    "derive an a priori bound in any established scale-critical Serrin/endpoint class from smooth finite-energy initial data",
+    "prove that a hypothetical first singular time forces a contradiction with an exact structure-derived critical quantity",
+    "upgrade global energy control into uniform epsilon-regularity at every concentration scale",
+    "show that every putative critical element/minimal blowup profile is impossible using a rigidity mechanism whose hypotheses follow from the energy class",
+    "find a scale-local geometric depletion law for vortex stretching strong enough to prevent critical concentration"
+  ],
+  "solved_analogues": [
+    "two-dimensional incompressible Navier–Stokes global regularity, where scalar vorticity has no vortex-stretching term",
+    "small-data global well-posedness in the critical BMO^{-1} framework of Koch–Tataru"
+  ],
+  "near_solved_analogues": [
+    "Caffarelli–Kohn–Nirenberg epsilon/partial regularity for suitable weak solutions",
+    "Escauriaza–Seregin–Sverak endpoint L_t^infinity L_x^3 regularity",
+    "Kenig–Koch concentration-compactness plus rigidity under bounded critical dot H^{1/2} control",
+    "Barker–Prange quantitative regularity/concentration results under critical Type-I bounds"
+  ],
+  "method_transfers": [
+    {
+      "source_context": "two-dimensional incompressible Navier–Stokes",
+      "method": "use a coercive vorticity/enstrophy budget whose nonlinear transport does not create enstrophy, then bootstrap parabolic smoothing",
+      "shared_structure": ["same viscous incompressible transport-diffusion skeleton", "energy dissipation and parabolic smoothing are available", "vorticity is the differentiated variable that exposes nonlinear production"],
+      "required_assumptions": ["the vorticity production term is absent or can be controlled by dissipation", "the estimate closes without a supercritical loss"],
+      "disanalogies": ["in 3D omega dot grad u produces vortex stretching and has no fixed sign", "the 2D enstrophy estimate does not transfer by dimensional interpolation"],
+      "repair_question": "Is there an exact three-dimensional geometric or multiscale replacement for the missing enstrophy cancellation that yields a scale-critical, not supercritical, bound?",
+      "source_anchors": ["Charles Fefferman, official Clay Navier–Stokes problem description, 2000/Clay PDF", "2D global regularity cited in Fefferman's official problem description"]
+    },
+    {
+      "source_context": "Koch–Tataru small-data global well-posedness in BMO^{-1}",
+      "method": "solve the mild equation in a scaling-critical function space where the bilinear map is contractive under small critical initial data",
+      "shared_structure": ["exact three-dimensional Navier–Stokes nonlinearity", "scale-critical representation", "heat-flow smoothing and bilinear estimates"],
+      "required_assumptions": ["smallness of the critical initial-data norm", "mild-solution framework and the Koch–Tataru solution space"],
+      "disanalogies": ["the Millennium problem permits arbitrarily large smooth finite-energy data", "large-data evolution need not remain perturbative in the critical norm"],
+      "repair_question": "Can the large-data flow be decomposed or renormalized into a controlled critical background plus genuinely small critical remainder without circularly assuming the desired bound?",
+      "source_anchors": ["H. Koch and D. Tataru, Well-posedness for the Navier-Stokes equations, Adv. Math. 157 (2001), 22-35, DOI 10.1006/aima.2000.1937"]
+    },
+    {
+      "source_context": "Escauriaza–Seregin–Sverak endpoint critical regularity",
+      "method": "combine blowup rescaling with backward uniqueness/unique continuation to rule out a singularity when the L_t^infinity L_x^3 norm stays bounded",
+      "shared_structure": ["same Cauchy problem in R^3", "scale-critical velocity control", "hypothetical first singular time is analyzed by rescaling"],
+      "required_assumptions": ["uniform boundedness of the critical L^3 velocity norm up to the candidate singular time", "sufficient solution class for suitable weak-solution and backward-uniqueness machinery"],
+      "disanalogies": ["the energy inequality controls L^2-based supercritical quantities, not L^3 uniformly", "backward uniqueness excludes a blowup profile only after the critical bound is supplied"],
+      "repair_question": "What exact Navier–Stokes mechanism can force a uniform critical bound, or an equivalent scale-invariant compactness hypothesis, from finite-energy smooth data?",
+      "source_anchors": ["L. Escauriaza, G. A. Seregin, V. Sverak, L_{3,infinity}-solutions of the Navier–Stokes equations and backward uniqueness, Russian Math. Surveys 58 (2003), 211-250, DOI 10.1070/RM2003v058n02ABEH000609"]
+    },
+    {
+      "source_context": "Caffarelli–Kohn–Nirenberg suitable weak-solution partial regularity",
+      "method": "prove epsilon-regularity from scale-invariant local quantities and use the local energy inequality to constrain the singular set",
+      "shared_structure": ["same three-dimensional Navier–Stokes equations", "scale-local parabolic cylinders", "regularity is reduced to a quantitative smallness condition"],
+      "required_assumptions": ["suitable weak solution/local energy inequality", "smallness of the relevant scale-invariant local quantities at a point/scale"],
+      "disanalogies": ["global finite energy does not force smallness at every possible concentration scale", "partial regularity permits an exceptional singular set and therefore does not close the Millennium statement"],
+      "repair_question": "Can one derive a monotone, packing, or geometry-sensitive mechanism that prevents persistent epsilon-regularity failure along a nested concentration sequence?",
+      "source_anchors": ["L. Caffarelli, R. Kohn, L. Nirenberg, Partial regularity of suitable weak solutions of the Navier-Stokes equations, Comm. Pure Appl. Math. 35 (1982), 771-831, DOI 10.1002/cpa.3160350604"]
+    },
+    {
+      "source_context": "Tao averaged Navier–Stokes finite-time blowup",
+      "method": "use a negative transfer: stress-test any proposed energy/harmonic-analysis proof against an averaged bilinear operator that preserves energy cancellation yet blows up",
+      "shared_structure": ["parabolic scaling and quadratic divergence-free bilinear evolution", "the same energy cancellation identity", "many order-zero harmonic-analysis symmetries/estimates are retained"],
+      "required_assumptions": ["the proposed proof uses only structural properties preserved by the averaged model"],
+      "disanalogies": ["the averaged bilinear operator is not the exact Navier–Stokes convection term", "a proof exploiting finer algebraic/geometric structure of the true nonlinearity need not transfer to the averaged model"],
+      "repair_question": "Which exact identity or geometry of the true convection/stretching term is indispensable to the proposed critical self-improvement and fails for the averaged operator?",
+      "source_anchors": ["T. Tao, Finite time blowup for an averaged three-dimensional Navier-Stokes equation, J. Amer. Math. Soc. 29 (2016), arXiv:1402.0290"]
+    }
+  ],
+  "explicit_disanalogies": [
+    "energy dissipation is dimensionally too weak to control the critical L^3 scale under arbitrary concentration",
+    "2D enstrophy closure fails in 3D because vortex stretching is present",
+    "small critical-data contraction does not cover large smooth data",
+    "epsilon-regularity assumes local scale-invariant smallness rather than deriving it globally",
+    "critical-norm rigidity theorems assume the bounded critical norm whose a priori control is the selected atom",
+    "the averaged blowup model blocks any proof that uses only energy cancellation and generic harmonic-analysis bounds while ignoring the exact nonlinear geometry"
+  ],
+  "source_anchors": [
+    "https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf",
+    "https://doi.org/10.1002/cpa.3160350604",
+    "https://doi.org/10.1070/RM2003v058n02ABEH000609",
+    "https://doi.org/10.1006/aima.2000.1937",
+    "https://arxiv.org/abs/0908.3349",
+    "https://arxiv.org/abs/1402.0290",
+    "https://arxiv.org/abs/2003.06717"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "control-theory/dissipative-feedback systems",
+      "source_situation": "A dissipative system with an amplifying feedback channel is stable when a dimensionless production-to-dissipation gain can be shown to stay below the threshold needed for runaway, often after choosing a representation that exposes the feedback loop.",
+      "common_abstraction": ["coercive dissipation competes with sign-indefinite nonlinear production", "instability requires sustained gain across a nested sequence of smaller scales", "a useful certificate must be dimensionless or scale compatible at the instability threshold"],
+      "source_to_target_mapping": ["stored state/energy -> kinetic energy or localized critical quantity", "damping -> viscous dissipation nu Delta u", "feedback production -> vortex stretching omega dot grad u and associated nonlinear transfer", "gain margin -> scale-local ratio/geometry describing how much stretching survives cancellation and dissipation"],
+      "shared_constraints": ["the certificate must be evaluated on the actual evolving state, not an external forcing surrogate", "the bound must compose across scales/times without assuming the desired regularity", "a stability margin must survive worst-case admissible states"],
+      "disanalogies": ["Navier–Stokes is an infinite-dimensional nonlocal PDE with no fixed finite-dimensional gain matrix", "pressure and incompressibility couple spatial regions nonlocally", "a control-theory analogy cannot supply an inequality or theorem without target-domain proof"],
+      "proposed_principle": "Before searching for another global energy inequality, expose the exact scale-local production-versus-dissipation feedback and ask whether true Navier–Stokes geometry forces a critical-scale gain deficit that the averaged blowup model does not share.",
+      "validation_obligation": "Any retained gain/depletion quantity must be dimensionless under Navier–Stokes scaling, must be computable on smooth divergence-free test fields without using future regularity, must fail or change character for Tao-type averaged interactions, and must survive adversarial high-strain/vorticity-alignment configurations before it can support a theorem candidate.",
+      "provenance_note": "Proposal-generation bridge from dissipativity/small-gain reasoning only; it creates no PDE authority."
+    }
+  ],
+  "analogy_scan_notes": "Scanned 2D/critical-space/epsilon-regularity/concentration-compactness mathematics plus control/dissipativity and cascade-style analogies. Retained only the production-versus-dissipation feedback bridge because it has a direct scale-compatible mapping and an explicit falsification obligation. No everyday analogy was retained because none improved the exact PDE transfer map.",
+  "frozen_at": "2026-08-11T06:03:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:9da1e8fc58757615355009df6eee4126c5a4314ea51973491b00ba6874dec209"
+}
