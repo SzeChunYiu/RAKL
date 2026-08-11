@@ -1,0 +1,172 @@
+{
+  "architecture_scope": [
+    "DIRECT_CORPUS",
+    "RAKL_CONTEXT"
+  ],
+  "bindings": [
+    {
+      "path": "experiments/paper2/lunarc/run_pendulum_microtrial_v4_1.sbatch",
+      "role": "batch_script",
+      "sha256": "0133f1a8ad6f4966e62093bd1f970d6719c44b80a195a3c5180100d071e8900e"
+    },
+    {
+      "path": "research/paper2_microtrial_v4_1/EXECUTION_CONTRACT_V4_1.json",
+      "role": "execution_contract",
+      "sha256": "f483f250e1b27c038c9d53ead5b6363ecec2ddf5c55afa40e9131eb5177f5a13"
+    },
+    {
+      "path": "research/paper2_microtrial_v4_1/EXECUTION_PACKET_V4_1_20260811.json",
+      "role": "execution_packet",
+      "sha256": "a818611e36ab8d94a8f895fb271291e3f5f46e008bbd867c04f75a8ee6184bf8"
+    },
+    {
+      "path": "experiments/paper2/lunarc/harvest_pendulum_microtrial_v4_1.sh",
+      "role": "harvest_wrapper",
+      "sha256": "da77a33a87134640215c36c7a69b14a4e74c073d0e443074a60a60c638f03351"
+    },
+    {
+      "path": "research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json",
+      "role": "negative_parent_v4_ingest",
+      "sha256": "cb73e662832f913264b999140443d061bdcd18e07d725aaf9da16362397abd48"
+    },
+    {
+      "path": "experiments/paper2/lunarc/build_native_harvest_receipt_v4_1.py",
+      "role": "native_harvest_builder",
+      "sha256": "1a57e120550a7d9a3a5baa27783c1ab06b148b951fb568c75f7fbcad3bf71a83"
+    },
+    {
+      "path": "schemas/paper2-pendulum-native-harvest-receipt-v4-1.schema.json",
+      "role": "native_harvest_receipt_schema",
+      "sha256": "321f99cd3e680801d7e4078302eb7fefbc4d9ea1a502a8619de84ea69ab2d43e"
+    },
+    {
+      "path": "research/paper2_microtrial_v4/MODEL_MANIFEST_V4.json",
+      "role": "model_manifest",
+      "sha256": "6e42fa2f34e2f18c73c50e10c8407b82c5298d4150c0a68f9dca98c4ccc13150"
+    },
+    {
+      "path": "research/paper2_microtrial_v4_1/OUTPUT_NORMALIZATION_CONTRACT_V4_1.json",
+      "role": "output_normalization_contract",
+      "sha256": "69ef7c0ce1c6d3dcfa8855c099fd7e9f7ff8c63ef5f4ea4b338fd2ac0ed33ae6"
+    },
+    {
+      "path": "src/rakl/paper2_pendulum_microtrial_v4_1.py",
+      "role": "output_normalizing_runner",
+      "sha256": "8dec8a60963bf6913f2c350fb63a597e773fb2e301edd53f8c89329590414052"
+    },
+    {
+      "path": "src/rakl/paper2_pendulum_microtrial.py",
+      "role": "parent_runner",
+      "sha256": "51f3e992206dcfeccceea98388fb799848c5f0b600361c7a52c1047dd9ce9590"
+    },
+    {
+      "path": "schemas/paper2-pendulum-microtrial-result.schema.json",
+      "role": "result_schema",
+      "sha256": "6b0f65c31383730204b64b96a6193aee66771db494527382e46a88c357684e42"
+    },
+    {
+      "path": "schemas/paper2-model-snapshot-attestation-v4.schema.json",
+      "role": "snapshot_attestation_schema",
+      "sha256": "eae4d081fecba7447a33f43a8e8973c50edeaa20e64a54799a6b3eec48648bcd"
+    },
+    {
+      "path": "experiments/paper2/lunarc/attest_model_snapshot_v4.py",
+      "role": "snapshot_attester",
+      "sha256": "612079d80abd078da53a6251a2902db69ec9c92b956b3d03cc5c41e756a7cf38"
+    },
+    {
+      "path": "schemas/paper2-pendulum-submission-receipt-v4-1.schema.json",
+      "role": "submission_receipt_schema",
+      "sha256": "6a6785d69967bab48391ce93779dc49103992028ca8cfda9ad92b495af39a598"
+    },
+    {
+      "path": "experiments/paper2/lunarc/submit_pendulum_microtrial_v4_1.sh",
+      "role": "submission_wrapper",
+      "sha256": "6e56aede6756628211b95cd74ae64a88a988151b84e47fde46adfa511f05a670"
+    },
+    {
+      "path": "experiments/paper2/lunarc/build_task_seed_receipt_v4_1.py",
+      "role": "task_seed_receipt_builder",
+      "sha256": "41236744c6e268e234a4435ea2a93feb6929ad0489ad386ab6d6c00e45730d61"
+    },
+    {
+      "path": "schemas/paper2-pendulum-task-seed-receipt-v4-1.schema.json",
+      "role": "task_seed_receipt_schema",
+      "sha256": "cdf8c2be1d7e644948f6707daba668b83359022ae0069b3df275c92768e3941c"
+    },
+    {
+      "path": "research/paper2_microtrial_v4/TOKENIZER_MANIFEST_V4.json",
+      "role": "tokenizer_manifest",
+      "sha256": "dc0d9d6339094052b7ae9f85cabdab16586213d5426eba8115501a0128c6ae4f"
+    }
+  ],
+  "adaptation_chronology": "Adaptive non-confirmatory replay fresh only to V4.1 outputs: V4 results and parser failures were known before V4.1 was frozen; no V4.1 model output existed at either the parser or batch freeze.",
+  "claim_boundary": "Adaptive non-confirmatory V4.1 serialization-repair replay fresh only to V4.1 outputs. It cannot reinterpret V4, estimate an arm effect, or support the matched Paper-2 architecture-by-evidence-access claim.",
+  "chronology_class": "ADAPTIVE_PARSER_REPLAY_FRESH_ONLY_TO_V4_1_OUTPUTS",
+  "construction_parent_sha": "1aea492c913c762758b3ca33beb62e0d040a3a9f",
+  "contract_id": "PAPER2_PENDULUM_TASK_SEED_BRIDGE_V4_1",
+  "created_at_utc": "2026-08-11T04:46:30Z",
+  "parent_v4_results_opened_before_batch_freeze": true,
+  "evidence_access_level": "COMPLETE_SEALED",
+  "execution_checkout_policy": {
+    "canonical_origin_required": true,
+    "clean_checkout_required": true,
+    "exact_operator_supplied_merged_sha_required": true,
+    "packet_parent_must_be_ancestor": true
+  },
+  "expected_output": {
+    "arm_records": 2,
+    "log_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/logs/v4_1",
+    "output_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/runs/v4_1",
+    "receipt_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v4_1",
+    "task_seed_units": 1
+  },
+  "minimum_execution_ancestor_sha": "3bf46b505af249802faa277d3ec865f4d9664853",
+  "model_execution_count_at_freeze": 0,
+  "object": "One fresh execution of the sealed pendulum task at seed 17 under two prompt materializations and the already frozen exact V4.1 output-normalization policy.",
+  "output_normalization_policy_id": "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1",
+  "packet_parent_sha": "3bf46b505af249802faa277d3ec865f4d9664853",
+  "post_merge_head_binding": {
+    "environment_variable": "EXPECTED_REPO_SHA",
+    "required_equal_refs": [
+      "HEAD",
+      "refs/remotes/origin/main"
+    ],
+    "sha_frozen_pre_merge": false
+  },
+  "provenance_identity_policy": {
+    "allocated_node_preflight_pass_required": true,
+    "checkout_must_remain_clean_across_attestations": true,
+    "executed_checkout_head_and_tree_retained_separately": true,
+    "packet_parent_sha_retained_separately": true,
+    "submission_receipt_must_match_executed_checkout_head": true
+  },
+  "qoi": "Can a fresh native V4.1 run produce schema-parseable task/seed receipts under the exact predeclared fence-only normalizer without heuristic extraction or changing V4?",
+  "resource_request": {
+    "account": "lu2026-2-51",
+    "cpus_per_task": 8,
+    "partition": "lu48",
+    "runner_process_high_water_rss_ceiling_bytes": 8589934592,
+    "runner_wall_time_ceiling_ms_per_arm": 900000,
+    "slurm_memory": "9G",
+    "wall_time": "01:00:00"
+  },
+  "schema_version": "paper2-pendulum-native-batch-contract-v4.1",
+  "seed_schedule": [
+    17
+  ],
+  "snapshot_immutability_policy": {
+    "bound_file_count": 8,
+    "post_attestation_must_bind_result_receipt": true,
+    "post_inference_attestation_required": true,
+    "pre_inference_attestation_required": true,
+    "pre_post_canonical_identity_required": true
+  },
+  "status": "FROZEN_READY_NOT_SUBMITTED",
+  "submission_count_at_freeze": 0,
+  "task_id": "PENDULUM_SEALED_KNOWN_ANSWER_001",
+  "v4_reinterpretation_permitted": false,
+  "v4_1_evaluated_arm_record_count_at_batch_freeze": 0,
+  "v4_1_evaluated_task_seed_unit_count_at_batch_freeze": 0,
+  "v4_1_outputs_opened_before_batch_freeze": false
+}
