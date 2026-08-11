@@ -102,24 +102,33 @@ An analogy can expand the proposal basis but never supplies truth authority. Sur
 
 For every unresolved atomic step record alternatives across the standard RAKL dimensions. Search broadly enough to expose missing perspectives, terminology and equivalent representations.
 
-## G. Normalize
+## G. Normalize and search obstruction-transformation memory
 
 Build terminology/ontology mappings and representation-equivalence relationships.
 
-Before a strict mathematical candidate, also perform the obstruction–transformation semantic-shortcut review after the dual experience-memory review. Ask:
+Before a strict mathematical candidate, and after the dual experience-memory review, compile or load a content-bound `ObstructionTransformationMemory`. Its reusable atom is not a topic or whole document but a source episode:
+
+```text
+relational obstruction O
+-> transformation T with explicit preconditions
+-> resulting relation/state O'
+```
+
+Bind the exact memory snapshot, then ask:
 
 > **Has this relational obstruction — and a transformation that breaks it — occurred anywhere in recorded knowledge?**
 
-Fingerprint roles, relations, constraints, failure mechanisms, invariants to preserve, desired transition and forbidden losses. Then route in invention-last order:
+Fingerprint roles, relations, constraints, failure mechanisms, invariants to preserve, desired transition and forbidden losses. Rank using obstruction morphology and the transformation's observed effects, not vocabulary similarity. Then route in invention-last order:
 
 ```text
-SEARCH direct reusable transformation
--> JUMP through an explicitly witnessed structural mapping
--> GLUE compatible partial transformations with interface obligations
--> LIFT only after bounded SEARCH/JUMP/GLUE exhaustion plus repeated residual structure
+SEARCH same-domain episode with complete precondition mapping
+-> JUMP cross-domain episode with an explicit structural/application witness
+-> GLUE partial transformations whose effects cover the target, with interface obligations
+-> LIFT only after bounded SEARCH/JUMP/GLUE exhaustion, candidate accounting,
+   cross-problem coverage binding and repeated residual structure
 ```
 
-`LIFT` produces a `MissingTransformationSpecification` describing what a downstream invented representation/operator must preserve, break, expose, reduce and validate. One failed candidate, an unbounded retrieval miss, or lexical similarity alone cannot justify LIFT.
+Proposal-only or superseded source episodes cannot become strict viable routes. SEARCH/JUMP must account for every enabling source precondition; an unrepaired one blocks transfer. `GLUE` must make operation order and incompatibility checks explicit. `LIFT` produces a `MissingTransformationSpecification` describing what a downstream invented representation/operator must preserve, break, expose, reduce and validate. One failed candidate, an unbounded retrieval miss, an asserted episode id, or lexical similarity alone cannot justify LIFT.
 
 ## H. Record the public decision trace
 
@@ -145,7 +154,7 @@ For strict mathematical research, the trace must conform to `schemas/math-resear
 
 `EXPERIENCE_MEMORY_REVIEW` records the dual experience-memory query over the scoped success-derived tool inventory and the global failure-experience lattice: method families searched, relevant tool/failure ids or explicit `NO_RELEVANT_MATCH`, applicability and reuse-scope warnings, and the memory-review artifact hash. Accumulated experience guides search; it never mints theorem truth.
 
-`OBSTRUCTION_TRANSFORMATION_REVIEW` records the active relational obstruction fingerprint, the exact obstruction–transformation episode-memory snapshot, SEARCH/JUMP/GLUE/LIFT statuses, structural mapping/composition/exhaustion witnesses, selected route, validation obligations and review artifact hash. It can license candidate routing only; it cannot mint theorem, novelty or method authority.
+`OBSTRUCTION_TRANSFORMATION_REVIEW` records the active relational obstruction fingerprint, the exact content-bound obstruction–transformation memory snapshot, SEARCH/JUMP/GLUE/LIFT statuses, structural mapping/composition/exhaustion witnesses, selected route, validation obligations and review artifact hash. It can license candidate routing only; it cannot mint theorem, novelty or method authority.
 
 Trace entries are tamper-evident: except for the first event, `previous_event_hash` must equal the preceding event's `artifact_hash`.
 
@@ -153,17 +162,17 @@ This is a reproducible scientific decision ledger, not a raw private chain-of-th
 
 ## I. Pre-candidate gate
 
-Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, dual experience-memory review, obstruction–transformation shortcut review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
+Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, dual experience-memory review, content-bound obstruction–transformation memory/review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
 
 When a runtime gate exists, obey it. For mathematical research, call:
 
 ```text
-plan_math_research(..., context_fiber=..., memory_review=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)
+plan_math_research(..., context_fiber=..., memory_review=..., transformation_memory=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)
 ```
 
 If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.
 
-Backfilling context, memory, shortcut review or trace after candidate generation does not repair discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
+Backfilling context, memory, transformation memory, shortcut review or trace after candidate generation does not repair discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
 
 ## J. Build constrained global paths
 
