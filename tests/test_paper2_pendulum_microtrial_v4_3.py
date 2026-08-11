@@ -3,6 +3,8 @@ import hashlib, json
 from pathlib import Path
 import pytest
 import rakl.paper2_pendulum_microtrial_v4_3 as runner
+
+from frozen_source_snapshots import execution_time_base_dir, resolve_frozen_binding
 ROOT = Path(__file__).resolve().parents[1]
 ANSWER = json.dumps({"small_angle_is_asymptotic": True, "finite_amplitude_increases_period": True, "context_distinct_claims_not_direct_contradictions": True, "ideal_period_is_mass_invariant": True, "context_alignment_required_before_contradiction": True, "supporting_source_ids": ["S1"], "rejected_as_misaligned_source_ids": ["S4"], "refuted_source_ids": ["S6"]}, sort_keys=True)
 
@@ -11,16 +13,18 @@ def test_v4_3_reuses_v4_2_normalizer_without_widening() -> None:
     with pytest.raises(ValueError, match="V4.1 output normalization rejected"):
         runner.normalize_pendulum_output_v4_3(f"```json\n{ANSWER}\n```\nExplanation: no")
 
-def test_v4_3_candidate_packet_validates() -> None:
+def test_v4_3_candidate_packet_validates(tmp_path) -> None:
     packet = json.loads((ROOT / "research/paper2_microtrial_v4_3/EXECUTION_PACKET_V4_3_20260811.json").read_text())
-    runner.validate_v4_3_candidate_packet(packet, base_dir=ROOT)
+    runner.validate_v4_3_candidate_packet(
+        packet, base_dir=execution_time_base_dir(ROOT, packet, tmp_path)
+    )
 
 def test_v4_3_batch_contract_bindings_match_bytes() -> None:
     batch = json.loads((ROOT / "research/paper2_microtrial_v4_3/BATCH_CONTRACT_V4_3.json").read_text())
     assert batch["chronology_class"] == runner.CHRONOLOGY_CLASS
     assert batch["threshold_or_score_change_permitted"] is False
     for binding in batch["bindings"]:
-        path = ROOT / binding["path"]
+        path = resolve_frozen_binding(ROOT, binding["path"], binding.get("sha256", ""))
         assert path.is_file(), binding["path"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == binding["sha256"]
 
@@ -41,7 +45,7 @@ def test_v4_3_staging_contract_model_only_overlay() -> None:
     assert contract["overlay_policy"]["model_only"] is True
     assert contract["overlay_policy"]["python_wheel_redownload_permitted"] is False
     for binding in contract["bindings"]:
-        path = ROOT / binding["path"]
+        path = resolve_frozen_binding(ROOT, binding["path"], binding.get("sha256", ""))
         assert path.is_file(), binding["path"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == binding["sha256"]
 

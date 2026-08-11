@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 
 import rakl.paper2_pendulum_microtrial_v4_2 as runner
+
+from frozen_source_snapshots import execution_time_base_dir, resolve_frozen_binding
 from rakl.paper2_pendulum_microtrial import BackendGeneration
 
 
@@ -60,15 +62,16 @@ def test_v4_2_stop_after_json_fence_clips_trailing_prose() -> None:
     assert "+v4_2_stop_after_json_fence" in out.backend_version
 
 
-def test_v4_2_candidate_packet_validates_and_binds_memory_review() -> None:
+def test_v4_2_candidate_packet_validates_and_binds_memory_review(tmp_path) -> None:
     packet = json.loads(
         (ROOT / "research/paper2_microtrial_v4_2/EXECUTION_PACKET_V4_2_20260811.json").read_text()
     )
-    runner.validate_v4_2_candidate_packet(packet, base_dir=ROOT)
+    base = execution_time_base_dir(ROOT, packet, tmp_path)
+    runner.validate_v4_2_candidate_packet(packet, base_dir=base)
     # Tampering the memory review hash must fail closed.
     packet["bindings"]["research_memory_review"]["sha256"] = "0" * 64
     with pytest.raises(RuntimeError, match="V4.2 binding mismatch:research_memory_review"):
-        runner.validate_v4_2_candidate_packet(packet, base_dir=ROOT)
+        runner.validate_v4_2_candidate_packet(packet, base_dir=base)
 
 
 def test_v4_2_batch_contract_bindings_match_bytes() -> None:
@@ -82,7 +85,7 @@ def test_v4_2_batch_contract_bindings_match_bytes() -> None:
         == "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
     )
     for binding in batch["bindings"]:
-        path = ROOT / binding["path"]
+        path = resolve_frozen_binding(ROOT, binding["path"], binding.get("sha256", ""))
         assert path.is_file(), binding["path"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == binding["sha256"]
 

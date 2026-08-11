@@ -13,6 +13,8 @@ jsonschema = pytest.importorskip("jsonschema")
 
 from rakl.paper2_pendulum_microtrial import MicrotrialPreflightVerdict, audit_execution_packet
 
+from frozen_source_snapshots import execution_time_base_dir, resolve_frozen_binding
+
 
 ROOT = Path(__file__).resolve().parents[1]
 V4 = ROOT / "research/paper2_microtrial_v4"
@@ -42,11 +44,11 @@ def test_v4_packet_is_chronology_fresh_and_narrowly_scoped() -> None:
     assert "cannot establish architecture superiority" in packet["claim_boundary"]
 
 
-def test_v4_packet_has_no_invalid_binding_and_fails_closed_off_lunarc() -> None:
+def test_v4_packet_has_no_invalid_binding_and_fails_closed_off_lunarc(tmp_path) -> None:
     packet = _load(PACKET)
     report = audit_execution_packet(
         packet,
-        base_dir=ROOT,
+        base_dir=execution_time_base_dir(ROOT, packet, tmp_path),
         runtime_versions={
             "python": "3.11.13",
             "torch": "2.8.0+cpu",
@@ -87,7 +89,7 @@ def test_v4_batch_contract_binds_every_executable_and_native_parent() -> None:
         "chronology_corrected_staging_synthesis",
     } <= roles
     for binding in contract["bindings"]:
-        path = ROOT / binding["path"]
+        path = resolve_frozen_binding(ROOT, binding["path"], binding.get("sha256", ""))
         assert path.is_file(), binding["role"]
         assert _sha256(path) == binding["sha256"], binding["role"]
 
