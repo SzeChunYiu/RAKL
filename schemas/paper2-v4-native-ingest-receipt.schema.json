@@ -1,0 +1,117 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-v4-native-ingest-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "native_execution": {
+      "type": "object"
+    },
+    "object": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "qoi": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "quantitative_figure_generated": {
+      "const": false
+    },
+    "receipt_id": {
+      "const": "PAPER2_V4_NATIVE_JOB_3475193_INGEST_20260811"
+    },
+    "schema_version": {
+      "const": "paper2-v4-native-ingest-receipt-v1"
+    },
+    "source_bundle": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "source_files": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "maxItems": 19,
+      "minItems": 19,
+      "type": "array"
+    },
+    "task_seed_outcome": {
+      "type": "object"
+    },
+    "typed_residual": {
+      "type": "object"
+    },
+    "verdict": {
+      "const": "NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_UNSCORABLE_PARSE_NULL"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "created_at_utc",
+    "verdict",
+    "object",
+    "qoi",
+    "source_bundle",
+    "source_files",
+    "native_execution",
+    "task_seed_outcome",
+    "typed_residual",
+    "quantitative_figure_generated",
+    "claim_boundary"
+  ],
+  "title": "Paper 2 V4 native task-seed ingestion receipt",
+  "type": "object"
+}

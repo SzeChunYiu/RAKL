@@ -44,12 +44,13 @@ eight-file Qwen2.5-0.5B-Instruct snapshot.  The chronology-corrected harvest
 authority is staging pass with zero model executions and zero evaluated result
 records.  Staging success is therefore not reported as model performance.
 
-The next frozen discriminator is deliberately narrower than the confirmatory
-factorial.  One sealed known-answer pendulum task at seed 17 will compare two
+The executed bridge is deliberately narrower than the confirmatory factorial.
+One sealed known-answer pendulum task at seed 17 compared two
 prompt materializations, \texttt{DIRECT\_CORPUS} and
 \texttt{RAKL\_CONTEXT}, using identical complete-sealed evidence, model,
-questions, evaluator, no-tool policy and resource ceiling.  A successful native
-job must emit two arm records plus one task--seed index binding the raw output,
+questions, evaluator, no-tool policy and resource ceiling.  Native job 3475193
+completed in 64 seconds with scheduler return code zero and emitted two arm
+records plus one task--seed index binding the raw output,
 resource receipt and deterministic score for both arms.  All eight staged
 model/tokenizer files are byte- and hash-attested immediately before and after
 inference; the post-inference attestation also binds the result receipt.  The
@@ -59,12 +60,24 @@ are schema validated, while the harvest parser follows the native nested
 \texttt{sacct --json} representation.  Scheduler or receipt ambiguity remains
 \CannotCheck{}.
 
+The receipt chain and eight-file pre/post snapshot identity passed, but both
+frozen evaluator parses failed and both scores are null.  The
+\texttt{RAKL\_CONTEXT} arm emitted exactly one lowercase JSON fence; the
+\texttt{DIRECT\_CORPUS} arm emitted fenced JSON followed by prose.  Their
+recorded input/output token counts are respectively 1,140/108 and 638/320, but
+with zero scorable arms these are execution coordinates rather than an
+efficiency comparison.  No arm win/loss, effect estimate, cost-per-success or
+quantitative figure is reported.
+
 This bridge cannot estimate the registered architecture--evidence-access
 interaction.  It omits the strong RAG, generic-agent and hypothesis--evidence
 parents; exposes only complete-sealed evidence; and contains one task, one small
-model and one deterministic seed.  Its only purpose is to test the real inference
-and receipt chain before expanding the task panel.  At the present source cutoff
-the V4 packet is frozen but not merged into the governed LUNARC checkout, no V4
-job has been submitted and no result or quantitative figure exists.  Exact status
-and fail-closed counts are recorded in
-\path{research/paper2_microtrial_v4/PAPER2_V4_FROZEN_BATCH_READINESS_RECEIPT_20260811.json}.
+model and one deterministic seed.  Its only purpose was to test the real
+inference and receipt chain before expanding the task panel.  The exact negative
+outcome is preserved in
+\path{research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json}.
+A chronology-fresh V4.1 successor freezes a non-heuristic serialization rule:
+bare JSON or exactly one lowercase \texttt{json} fence is admissible, while
+trailing prose, multiple/nonexact fences and substring extraction remain invalid.
+V4.1 does not reinterpret V4 and has not been submitted or executed.  The full
+matched empirical claim remains open.
