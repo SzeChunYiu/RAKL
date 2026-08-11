@@ -19,6 +19,9 @@ def _entry(
     timestamp: str | None = None,
     previous_event_hash: str = "",
 ) -> ResearchTraceEntry:
+    outputs = (f"output:{i}",)
+    if event_type is ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW:
+        outputs = ("sha256:shortcut",)
     return ResearchTraceEntry(
         event_id=f"e{i}",
         atom_id="atom-C",
@@ -31,7 +34,7 @@ def _entry(
         else (f"artifact:{i}",),
         alternatives_considered=("alternative A", "alternative B"),
         decision_rationale="selected because it best discriminates the current residual under the frozen context",
-        outputs=(f"output:{i}",),
+        outputs=outputs,
         uncertainties=("remaining uncertainty",),
         residuals=("residual",)
         if event_type is ResearchTraceEventType.RESIDUAL_OPENED
@@ -68,14 +71,18 @@ def _trace() -> MathResearchTrace:
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, None),
             (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, None),
             (6, ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW, None),
-            (7, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
+            (7, ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW, None),
+            (8, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
         )
     )
 
 
 def test_complete_pre_candidate_trace_passes() -> None:
     report = audit_pre_candidate_trace(
-        _trace(), atom_id="atom-C", context_packet_hash="sha256:context"
+        _trace(),
+        atom_id="atom-C",
+        context_packet_hash="sha256:context",
+        obstruction_transformation_review_hash="sha256:shortcut",
     )
     assert report.verdict is TraceGateVerdict.PASS
 
@@ -95,7 +102,8 @@ def test_missing_experience_memory_review_blocks_candidate_generation() -> None:
             (3, ResearchTraceEventType.ANALOGY_SCAN, None),
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, None),
             (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, None),
-            (6, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
+            (7, ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW, None),
+            (8, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
         )
     )
     report = audit_pre_candidate_trace(
@@ -103,6 +111,28 @@ def test_missing_experience_memory_review_blocks_candidate_generation() -> None:
     )
     assert report.verdict is TraceGateVerdict.FAIL
     assert "required_trace_event_missing:EXPERIENCE_MEMORY_REVIEW" in report.reasons
+
+
+def test_missing_obstruction_transformation_review_blocks_candidate_generation() -> None:
+    trace = _build_trace(
+        (
+            (1, ResearchTraceEventType.ATOMIZED, None),
+            (2, ResearchTraceEventType.CONTEXT_FROZEN, None),
+            (3, ResearchTraceEventType.ANALOGY_SCAN, None),
+            (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, None),
+            (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, None),
+            (6, ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW, None),
+            (8, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
+        )
+    )
+    report = audit_pre_candidate_trace(
+        trace, atom_id="atom-C", context_packet_hash="sha256:context"
+    )
+    assert report.verdict is TraceGateVerdict.FAIL
+    assert (
+        "required_trace_event_missing:OBSTRUCTION_TRANSFORMATION_REVIEW"
+        in report.reasons
+    )
 
 
 def test_context_trace_must_bind_context_hash() -> None:
@@ -117,17 +147,31 @@ def test_context_trace_must_bind_context_hash() -> None:
     assert "trace_context_event_not_bound_to_context_packet_hash" in report.reasons
 
 
+def test_shortcut_trace_must_bind_shortcut_review_hash() -> None:
+    entries = list(_trace().entries)
+    entries[6] = replace(entries[6], evidence_pointers=("wrong",), outputs=("wrong",))
+    report = audit_pre_candidate_trace(
+        MathResearchTrace(trace_id="trace-C", entries=tuple(entries)),
+        atom_id="atom-C",
+        context_packet_hash="sha256:context",
+        obstruction_transformation_review_hash="sha256:shortcut",
+    )
+    assert report.verdict is TraceGateVerdict.FAIL
+    assert "trace_shortcut_event_not_bound_to_review_hash" in report.reasons
+
+
 def test_candidate_before_trace_completion_is_rejected() -> None:
     trace = _build_trace(
         (
             (1, ResearchTraceEventType.ATOMIZED, "2026-08-11T04:01:00+00:00"),
             (2, ResearchTraceEventType.CONTEXT_FROZEN, "2026-08-11T04:02:00+00:00"),
-            (8, ResearchTraceEventType.CANDIDATE_PROPOSED, "2026-08-11T04:02:30+00:00"),
+            (9, ResearchTraceEventType.CANDIDATE_PROPOSED, "2026-08-11T04:02:30+00:00"),
             (3, ResearchTraceEventType.ANALOGY_SCAN, "2026-08-11T04:03:00+00:00"),
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, "2026-08-11T04:04:00+00:00"),
             (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, "2026-08-11T04:05:00+00:00"),
             (6, ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW, "2026-08-11T04:06:00+00:00"),
-            (7, ResearchTraceEventType.NEXT_STEP_PROPOSED, "2026-08-11T04:07:00+00:00"),
+            (7, ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW, "2026-08-11T04:07:00+00:00"),
+            (8, ResearchTraceEventType.NEXT_STEP_PROPOSED, "2026-08-11T04:08:00+00:00"),
         )
     )
     report = audit_pre_candidate_trace(
@@ -161,6 +205,6 @@ def test_next_step_requires_alternatives_rationale_and_next_action() -> None:
         MathResearchTrace(trace_id="trace-C", entries=tuple(entries))
     )
     assert report.verdict is TraceGateVerdict.FAIL
-    assert "trace_entry_6:alternatives_considered_missing" in report.reasons
-    assert "trace_entry_6:decision_rationale_missing" in report.reasons
-    assert "trace_entry_6:next_steps_missing" in report.reasons
+    assert "trace_entry_7:alternatives_considered_missing" in report.reasons
+    assert "trace_entry_7:decision_rationale_missing" in report.reasons
+    assert "trace_entry_7:next_steps_missing" in report.reasons
