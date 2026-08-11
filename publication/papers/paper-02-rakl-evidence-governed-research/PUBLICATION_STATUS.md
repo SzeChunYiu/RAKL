@@ -2,7 +2,8 @@
 
 **Title:** RAKL for Evidence-Governed AI-Assisted Scientific Research
 
-**Canonical source:** `publication/papers/paper-02-rakl-evidence-governed-research/source/main.tex`
+**Canonical source:** `publication/papers/paper-02-rakl-evidence-governed-research/main.tex`  
+**Chaptered source package:** `publication/papers/paper-02-rakl-evidence-governed-research/source/`
 
 **Publication track:** methodology / reference-architecture / preregistered-evaluation preprint.
 
@@ -15,7 +16,8 @@ The current manuscript supports reference-engineering behavior, formal control s
 - deterministic reference trace and bounded-context engineering evidence are explicitly scoped;
 - the manuscript already states that matched empirical comparisons are preregistered rather than completed;
 - reproducibility and AI-use disclosure is present;
-- failure-closed infrastructure for native matched evaluation is preserved.
+- failure-closed infrastructure for native matched evaluation is preserved;
+- the publication folder exposes a consistent root `main.tex` entry point while retaining the chaptered source tree.
 
 ## Open coordinates for an empirical-results paper
 
