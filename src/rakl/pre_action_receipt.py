@@ -47,7 +47,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Mapping, Tuple
 
-from .experience_substrate import TaskEpisode
+from .experience_substrate import EpisodeOutcome, TaskEpisode
 
 RECEIPT_SCHEMA_VERSION = "pre-action-fibre-receipt-v1"
 
@@ -206,6 +206,13 @@ class PreActionFibreReceipt:
             raise ValueError("pre-action receipt requires a receipt_id")
         if self.sequence_index < 0:
             raise ValueError("pre-action receipt sequence_index cannot be negative")
+        valid_outcomes = {e.value for e in EpisodeOutcome}
+        for branch in self.allowed_outcome_branches:
+            if branch not in valid_outcomes:
+                raise ValueError(
+                    f"invalid allowed_outcome_branch: {branch!r}; "
+                    f"must be one of {sorted(valid_outcomes)}"
+                )
 
     def content(self) -> Mapping[str, Any]:
         """Canonical hashed content. Every field that could be swapped is inside."""
