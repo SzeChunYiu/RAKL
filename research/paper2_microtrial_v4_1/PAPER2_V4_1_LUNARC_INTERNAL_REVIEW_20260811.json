@@ -1,0 +1,61 @@
+{
+  "blocking_concerns": [],
+  "checks": [
+    {
+      "check_id": "ADAPTIVE_CHRONOLOGY_EXPLICIT",
+      "finding": "V4 results are declared opened while V4.1 outputs are declared absent at parser and batch freeze.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "V4_NEGATIVE_HISTORY_IMMUTABLE",
+      "finding": "The batch binds the V4 ingest and prohibits V4 reinterpretation; only a fresh V4.1 output may be normalized.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "ALLOCATED_NODE_FULL_REVALIDATION",
+      "finding": "The allocated script requires HEAD, refs/remotes/origin/main and EXPECTED_REPO_SHA to be equal, then rechecks cleanliness, ancestry and every batch-contract binding before inference.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "NORMALIZATION_IDENTITY_BOUND",
+      "finding": "Contract, runner, task/seed, submission and harvest receipts share the exact frozen V4.1 policy identity and hashes.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "SEPARATE_FS9_LINEAGE",
+      "finding": "V4.1 run, receipt and log roots are separate from V4 and include the SLURM job id.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "MODEL_SNAPSHOT_IMMUTABILITY",
+      "finding": "All eight bound model/tokenizer files require pre/post attestations and the post attestation binds the result receipt.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "FAIL_CLOSED_HARVEST",
+      "finding": "Missing, ambiguous or mismatched scheduler, submission, preflight, packet, checkout, result, task/seed, run-manifest or attestation evidence yields CANNOT_CHECK.",
+      "verdict": "PASS"
+    },
+    {
+      "check_id": "NO_RESULT_OR_FIGURE_CLAIM",
+      "finding": "Readiness records zero submissions, executions, evaluated units and quantitative figures and leaves the matched claim open.",
+      "verdict": "PASS"
+    }
+  ],
+  "claim_boundary": "Internal protocol review only. It does not observe a native V4.1 result and is not independent review or peer review.",
+  "created_at_utc": "2026-08-11T04:47:15Z",
+  "residuals": [
+    "exact_packet_commit_must_pass_ci_and_merge",
+    "fresh_v4_1_batch_must_run_on_lunarc",
+    "terminal_scheduler_and_receipt_chain_must_be_harvested",
+    "one_adaptive_task_seed_unit_cannot_close_the_matched_study"
+  ],
+  "review_class": "same_context_internal_not_independent",
+  "review_id": "PAPER2_V4_1_LUNARC_PACKET_INTERNAL_REVIEW_20260811",
+  "schema_version": "paper2-v4-1-lunarc-internal-review-v1",
+  "subject": {
+    "path": "research/paper2_microtrial_v4_1/PAPER2_V4_1_LUNARC_BATCH_READINESS_RECEIPT_20260811.json",
+    "sha256": "4297ef57d84341cd844bbe81b932d0f39996cd7a4c5b83c988dc68ac8490fc53"
+  },
+  "verdict": "INTERNAL_PACKET_PASS_NATIVE_RESULT_ABSENT"
+}
