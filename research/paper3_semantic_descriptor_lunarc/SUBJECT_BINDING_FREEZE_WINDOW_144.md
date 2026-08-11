@@ -143,3 +143,16 @@ bash experiments/paper3/lunarc/harvest_semantic_descriptor.sh model-stage <STAGE
 Framework/execution-process documentation and a non-bound chain wrapper only.
 No semantic-descriptor scientific claim, no confirmatory-gate result, no training
 authorization, and no evaluator/schema/predicate change.
+
+## Process completeness (PR #190)
+
+Merged process fix for issue `#144`. Required artifacts on `main`:
+
+- `experiments/paper3/lunarc/subject_freeze_window.sh`
+- `experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh`
+- `experiments/paper3/lunarc/submit_and_harvest_semantic_descriptor.sh`
+- this document
+
+FS9 checkout may remain pinned at a prior harvested subject (e.g. `787c7e00…`)
+until the next intentional rebind; absence of the wrapper scripts on that old
+checkout is expected and does not reopen `#144`.
