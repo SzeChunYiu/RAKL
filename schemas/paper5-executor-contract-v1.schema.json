@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-executor-contract-v1.schema.json",
+  "title": "Paper 5 Executor Contract",
+  "description": "The frozen binding consumed by experiments/paper5/run_attribution_schedule.py. It pins the task packet, the execution schedule, the provider-specific adapter bytes, the per-arm evaluation-state identities, the resource ceiling and the model/evaluator/tool/source identities before any evaluated output is opened. This contract is an execution binding only and grants no scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "tasks_sha256",
+    "schedule_sha256",
+    "adapter_path",
+    "adapter_sha256",
+    "arm_state_hashes",
+    "resource_ceiling",
+    "model_id",
+    "model_revision",
+    "evaluator_protocol_hash",
+    "tool_policy_id",
+    "source_cutoff_id",
+    "grants_scientific_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-executor-contract-v1"},
+    "packet_id": {"type": "string", "minLength": 1},
+
+    "tasks_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "schedule_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "adapter_path": {"type": "string", "minLength": 1},
+    "adapter_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+
+    "arm_state_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Exactly one frozen evaluation-state identity per preregistered arm. The orchestrator requires state_before_hash == state_after_hash == this value, which is how evaluation-state non-mutation is enforced.",
+      "required": ["MODEL_ONLY", "RAKL_RESET", "RAKL_SHAM_MEMORY", "RAKL_LEARNING"],
+      "properties": {
+        "MODEL_ONLY": {"type": "string", "minLength": 1},
+        "RAKL_RESET": {"type": "string", "minLength": 1},
+        "RAKL_SHAM_MEMORY": {"type": "string", "minLength": 1},
+        "RAKL_LEARNING": {"type": "string", "minLength": 1}
+      }
+    },
+
+    "resource_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One ceiling shared by all four arms. Field names match the flat record layout in paper5-attribution-run-v1.",
+      "required": [
+        "model_input_tokens",
+        "model_output_tokens",
+        "preprocessing_model_tokens",
+        "tool_calls",
+        "retrieval_calls",
+        "wall_time_ms"
+      ],
+      "properties": {
+        "model_input_tokens": {"type": "integer", "minimum": 0},
+        "model_output_tokens": {"type": "integer", "minimum": 0},
+        "preprocessing_model_tokens": {"type": "integer", "minimum": 0},
+        "tool_calls": {"type": "integer", "minimum": 0},
+        "retrieval_calls": {"type": "integer", "minimum": 0},
+        "wall_time_ms": {"type": "integer", "minimum": 0}
+      }
+    },
+
+    "model_id": {"type": "string", "minLength": 1},
+    "model_revision": {"type": "string", "minLength": 1},
+    "evaluator_protocol_hash": {"type": "string", "minLength": 1},
+    "tool_policy_id": {"type": "string", "minLength": 1},
+    "source_cutoff_id": {"type": "string", "minLength": 1},
+
+    "sham_policy_hash": {
+      "type": ["string", "null"],
+      "description": "Required by ATTRIBUTION_PREREGISTRATION_V1 section 4 before any confirmatory RAKL_SHAM_MEMORY outcome is opened. Null is permitted only for a harness self-test contract."
+    },
+
+    "grants_scientific_authority": {"const": false},
+
+    "harness_self_test": {
+      "type": ["object", "null"],
+      "description": "Present only when this contract drives a non-model harness self-test. Any results produced under such a contract are instrument validation and must never be reported as a Paper 5 attribution result.",
+      "additionalProperties": false,
+      "required": ["adapter_id", "mode", "expected_outcome"],
+      "properties": {
+        "adapter_id": {"type": "string", "minLength": 1},
+        "mode": {"type": "string", "minLength": 1},
+        "expected_outcome": {"type": "string", "minLength": 1}
+      }
+    },
+
+    "frozen_at": {"type": ["string", "null"], "minLength": 1},
+    "notes": {"type": ["string", "null"]}
+  }
+}
