@@ -1,19 +1,21 @@
 # Closest-parent primary-source audit
 
-Issue #156 · 2026-08-11 · Detail file for
+Issue #156 · V2 full-text deepening 2026-08-12 · Detail file for
 [`PAPER2_CLOSEST_PARENT_ABLATION_MATRIX.md`](../PAPER2_CLOSEST_PARENT_ABLATION_MATRIX.md)
 
 Per-parent extraction of object, update rule, authority semantics, persistence,
 failure/repair, evidence and stated limitations. **Evidence level is recorded
 per parent and governs what any matrix row measured against it may claim.**
 
+V2 receipt: [`PRIMARY_SOURCE_AUDIT_V2_RECEIPT.json`](PRIMARY_SOURCE_AUDIT_V2_RECEIPT.json).
+
 | Parent | arXiv | Version | Evidence level |
 |---|---|---|---|
 | MemTX | 2607.23929 | v2, 2026-07-28 | `FULL_TEXT` |
 | PPMF | 2607.29167 | v1, 2026-07-31 | `FULL_TEXT_PARTIAL` (pp. 1–6 and 11–16; pp. 7–10 results narrative unread) |
-| AutoSci | 2605.31468 | v1, 2026-05-29 | `ABSTRACT_AND_REPO` |
-| MemClaw | 2606.24535 | v1, 2026-06-23 | `ABSTRACT_ONLY` |
-| AI-scientists audit | 2604.18805 | v1, 2026-04-20 | `ABSTRACT_ONLY` |
+| AutoSci | 2605.31468 | v1, 2026-05-29 | `FULL_TEXT` (V2) |
+| MemClaw | 2606.24535 | v1, 2026-06-23 | `FULL_TEXT` (V2) |
+| AI-scientists audit | 2604.18805 | v1, 2026-04-20 | `FULL_TEXT_PARTIAL` (V2: §§4.5–4.9) |
 
 ---
 
@@ -139,63 +141,78 @@ arguments.
 
 ---
 
-## AutoSci — `ABSTRACT_AND_REPO`
+## AutoSci — `FULL_TEXT` (V2)
 
-**Modules.** SciMem (Long-Term Knowledge Memory + Active Research Memory),
-SciFlow (five-stage lifecycle from literature understanding to rebuttal),
-SciDAG (DAG-structured multi-agent operators plus stage templates), SciEvolve
-(feedback from users, experiments, reviews and environment into versioned
-updates to memory organisation, skills and templates).
+**Modules.** SciMem (Long-Term Knowledge Memory typed entities
+Topic/Paper/Foundation/Concept/Method/People + Active Research Memory
+Idea/Experiment/Manuscript/Review with lifecycle states), SciFlow (five-stage
+harness Literature→Ideation→Experiment→Writing→Rebuttal with >30 skills),
+SciDAG (optional DAG multi-agent templates), SciEvolve (`/dream` SciMem
+organization, `/forge` SciFlow skills, `/morph` SciDAG templates).
 
-**Repository.** `github.com/skyllwt/AutoSci`, public, MIT, ~98 commits. The full
-four-module paper system is on the `paper` branch at tag `arxiv-v1`; `main` is a
-Claude-Code-oriented build. Requires an authenticated agent runtime; optional
-Semantic Scholar / LLM review keys.
+**Update / trust.** All SciMem writes pass Trust Guard (PASS/WARN/BLOCK on form
+validity and content/evidence consistency). Cross-region consolidation can write
+project findings back into Long-Term Knowledge Memory entity pages. SciFlow
+equips each skill with a tailored SciMem view; SciDAG retrieves templates with
+past execution experience.
 
-**Unread and needed.** `CANNOT_CHECK` on authority semantics, failure/repair
-semantics and stated limitations — the abstract page carries none of them.
+**Authority.** Trust Guard is a form/content admission gate. There is **no**
+multi-axis scientific-authority ledger and no claim-kind non-escalation rule
+(prediction↛mechanism↛identification).
 
-**Why this matters most.** AutoSci is the closest parent for four matrix rows.
-Its SciEvolve module is the direct counterexample candidate for RAKL's
-experience→authority noninterference residual. The decisive question is whether
-SciEvolve's versioned updates can alter Long-Term Knowledge Memory *records*, or
-only skills, templates and memory organisation. Read that first.
+**SciEvolve.** Feedback from user/task/open environments becomes versioned
+updates when recurring patterns are judged "stable enough". This is generic
+self-improvement over organization/skills/templates — not held-out fresh
+assurance generated after a challenger exists.
 
----
+**Adjudication (V2).** Experience-conditioned routing and open-world discovery
+routes are inherited. Experience→authority noninterference survives only as
+typed authority-coordinate noninterference (not "experience never updates
+knowledge"). Fresh-assurance self-evolution survives as the held-out
+post-challenger gate. Cascade repair remains MemTX's stronger parent.
 
-## MemClaw / Governed Shared Memory — `ABSTRACT_ONLY`
-
-Production multi-tenant memory service with scoped retrieval, temporal
-supersession, provenance tracking and policy-governed propagation, exercised by
-the ArgusFleet harness over four governance dimensions. Writes are admitted
-through a pipeline; conflicts resolve by temporal supersession with asynchronous
-contradiction detection. Tenant/sub-tenant scoping reports zero cross-fleet
-leakage and reconstruction of depth-four derivation chains.
-
-Two production defects are preserved in the paper: sub-tenant scope bypassed on
-direct GET-by-id for agent-scoped credentials, and a pipeline-ordering conflict
-where a synchronous near-duplicate filter rejects contradictory writes before
-the asynchronous contradiction detector sees them. The authors state it is a
-measurement of one live service, explicitly "rather than a baseline comparison".
-
-**Classification.** `CONCEPTUAL_COMPARISON_ONLY` — a proprietary service, not
-reproducible and not fairly comparable as an experimental arm.
+**Repository.** `github.com/skyllwt/AutoSci`, public MIT; paper system on
+`paper` / `arxiv-v1`. Runtime not re-executed in this literature lane.
 
 ---
 
-## AI scientists produce results without reasoning scientifically — `ABSTRACT_ONLY`
+## MemClaw / Governed Shared Memory — `FULL_TEXT` (V2)
 
-Not a system: an audit of >25,000 agent runs across eight domains. Base model
-explains 41.4% of variance versus 1.5% for the scaffold. Evidence disregarded in
-68% of traces; belief updated on refuting evidence in 26%. Deficits survive
-being handed near-complete successful trajectories.
+Fleet-memory system \(F=(A,M,G,P,T)\) with scoped retrieval, temporal
+supersession, provenance tracking and policy-governed propagation; ArgusFleet
+exercises the live REST API. Scope-soundness invariant Inv-Scope: no agent
+receives a memory outside nested agent⊑fleet⊑tenant entitlement.
 
-**Role.** Motivation and an external prior on baseline behaviour, and the
-closest parent for the scientific-transition-audit row. Adjudicating that row
-needs its trace coding scheme in full text — specifically whether its
-annotations distinguish *types* of belief update or only whether one occurred.
+Preserved production defects remain: initial GET-by-id sub-tenant bypass
+(remediated during study); near-duplicate filter can reject contradictory writes
+before asynchronous contradiction detection. Evaluation is explicitly one live
+service, not a baseline comparison.
 
-**Classification.** `CONCEPTUAL_COMPARISON_ONLY`.
+**Adjudication (V2).** Shared-memory governance, provenance reconstruction and
+per-record temporal supersession are inherited / conceptual parents.
+**Bounded freshness-expiring saturation** remains a narrow residual: MemClaw
+expires individual rows, not a route-indexed hypothesis-space coverage
+certificate.
+
+**Classification.** `CONCEPTUAL_COMPARISON_ONLY` as an experimental arm
+(proprietary service), but full-text sufficient for function adjudication.
+
+---
+
+## AI scientists produce results without reasoning scientifically — `FULL_TEXT_PARTIAL` (V2)
+
+Measurement study (>25,000 runs). Manual marker taxonomy over
+behavior-relevant nodes; epistemological graphs label nodes as hypothesis /
+test / evidence / judgment / update / commitment with testing / observing /
+using / contradicting / competing / updating edges (§§4.5–4.9).
+
+**Adjudication (V2).** Closest parent for scientific-transition-audit
+*measurement*. Coding distinguishes epistemic operations and failure modes, not
+G/R/M/I/D authority-axis escalations. Narrow residual retained; confirmatory
+rate comparison on the RAKL side remains separately blocked by the capability
+floor.
+
+**Classification.** `CONCEPTUAL_COMPARISON_ONLY` as a system ablation target.
 
 ---
 
@@ -206,6 +223,8 @@ annotations distinguish *types* of belief update or only whether one occurred.
 | AutoSci | `BLACK_BOX_PUBLIC_SYSTEM_FEASIBLE` | public MIT code, but needs an authenticated agent runtime and the paper system is on a separate frozen branch; exact reproduction of paper results is not established |
 | MemTX | `FUNCTION_MATCHED_ABLATION_FEASIBLE` | no public implementation located; the commit-discipline function is reproducible as a RAKL-internal arm |
 | PPMF | `FUNCTION_MATCHED_ABLATION_FEASIBLE` | no public implementation located; the non-amplification rule is simple enough to implement faithfully |
+| MemClaw | `CONCEPTUAL_COMPARISON_ONLY` | proprietary production service |
+| 2604.18805 | `CONCEPTUAL_COMPARISON_ONLY` | a measurement study, not a system |
 
 **Scope of the "no public implementation located" claim.** GitHub repository
 search for `MemTX transactional memory agent`, `PPMF provenance preserving
@@ -216,8 +235,6 @@ rather than a repository. An absence claim is only as good as the search behind
 it, so the search is recorded rather than asserted. If either implementation
 surfaces, MemTX moves toward `EXACT_REPRODUCTION_FEASIBLE` and Deliverable 4
 changes.
-| MemClaw | `CONCEPTUAL_COMPARISON_ONLY` | proprietary production service |
-| 2604.18805 | `CONCEPTUAL_COMPARISON_ONLY` | a measurement study, not a system |
 
 No RAKL arm may be labelled with any of these names. See
 [ABLATION_LADDER.md](ABLATION_LADDER.md).

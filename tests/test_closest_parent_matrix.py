@@ -57,16 +57,26 @@ def test_committed_matrix_covers_every_required_function() -> None:
 def test_matrix_is_not_self_serving() -> None:
     """A novelty-defence matrix that finds RAKL ahead everywhere is not a defence.
 
-    The committed matrix must concede functions to prior art, must record at
-    least one function where a parent is strictly stronger, and must report
-    CANNOT_CHECK where the closest parent was not read deeply enough.
+    The committed matrix must concede functions to prior art and must record at
+    least one function where a parent is strictly stronger. CANNOT_CHECK is
+    required only while some residual-candidate parent remains unread; after a
+    full-text adjudication pass the count may honestly be zero.
     """
 
     report = validate_matrix()
     counts = report.claim_counts
     assert counts.get("INHERITED_NO_CLAIM", 0) >= 5
     assert counts.get("PARENT_STRONGER_ADOPT", 0) >= 1
-    assert counts.get("CANNOT_CHECK", 0) >= 1
+    parents = {p["id"]: p for p in load_matrix()["parents"]}  # type: ignore[index]
+    unread_residual_parents = {
+        row["closest_parent"]
+        for row in load_matrix()["functions"]  # type: ignore[index]
+        if parents[row["closest_parent"]]["evidence_level"]
+        not in {"FULL_TEXT", "FULL_TEXT_PARTIAL"}
+        and row["claim_allowed_today"] in {"CANNOT_CHECK", "NARROW_RESIDUAL"}
+    }
+    if unread_residual_parents:
+        assert counts.get("CANNOT_CHECK", 0) >= 1
 
 
 def test_every_residual_row_rests_on_primary_full_text() -> None:
@@ -96,7 +106,10 @@ def test_rejects_residual_claimed_on_an_abstract_only_parent(
 ) -> None:
     """The central rule. Conceding is cheap; claiming needs the full text."""
 
-    row = _row(matrix, "CANNOT_CHECK")
+    row = _row(matrix, "NARROW_RESIDUAL")
+    parent = next(p for p in matrix["parents"] if p["id"] == row["closest_parent"])
+    parent["evidence_level"] = "ABSTRACT_ONLY"
+    row["evidence_level"] = "ABSTRACT_ONLY"
     row["claim_allowed_today"] = "NARROW_RESIDUAL"
     row["falsifier"] = "some falsifier"
     row["rakl_residual"] = "some residual"
@@ -116,7 +129,9 @@ def test_rejects_residual_without_a_discriminator(matrix: MutableMapping[str, An
 def test_rejects_cannot_check_without_a_next_reading(
     matrix: MutableMapping[str, Any],
 ) -> None:
-    _row(matrix, "CANNOT_CHECK")["required_discriminator"] = ""
+    row = _row(matrix, "INHERITED_NO_CLAIM")
+    row["claim_allowed_today"] = "CANNOT_CHECK"
+    row["required_discriminator"] = ""
     assert "cannot_check_needs_next_step" in _rules(matrix)
 
 
@@ -154,7 +169,7 @@ def test_rejects_a_row_with_no_rakl_pointer(matrix: MutableMapping[str, Any]) ->
 def test_rejects_evidence_level_inconsistent_with_the_parent(
     matrix: MutableMapping[str, Any],
 ) -> None:
-    matrix["functions"][0]["evidence_level"] = "FULL_TEXT"
+    matrix["functions"][0]["evidence_level"] = "ABSTRACT_ONLY"
     assert "evidence_level_consistent" in _rules(matrix)
 
 
