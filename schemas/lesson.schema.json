@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/lesson.schema.json",
+  "title": "RAKL Versioned Lesson",
+  "description": "Evidence-linked abstraction derived from immutable TaskEpisode roots.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lesson_id",
+    "kind",
+    "trigger_signature",
+    "context_scope",
+    "action",
+    "expected_effects",
+    "boundaries",
+    "supporting_episode_ids",
+    "contradicting_episode_ids",
+    "falsifier",
+    "authority",
+    "validation_obligations",
+    "evidence_pointers",
+    "artifact_hash"
+  ],
+  "properties": {
+    "lesson_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["OPERATOR", "BOUNDARY", "STRATEGY", "ROUTING", "DECOMPOSITION", "REPRESENTATION", "META_METHOD"]},
+    "trigger_signature": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "context_scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "action": {"type": "string", "minLength": 1},
+    "expected_effects": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "boundaries": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "supporting_episode_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "contradicting_episode_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "falsifier": {"type": "string", "minLength": 1},
+    "authority": {"enum": ["CANDIDATE", "VERIFIED_LOCAL", "CONDITIONALLY_REUSABLE", "PROOF_BACKED", "SUPERSEDED"]},
+    "validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "artifact_hash": {"type": "string", "minLength": 1},
+    "parent_lesson_id": {"type": ["string", "null"], "minLength": 1}
+  }
+}

@@ -313,3 +313,147 @@ QoI/decision implication
 Independent flat rounds are tracked separately.
 
 A new native residual reopens the relevant fiber.
+
+## 13. v3 recursive experience substrate
+
+RAKL v3 generalizes the architecture above into one persistent external cognitive substrate with overlapping typed views:
+
+```text
+Evidence / Information
+Epistemic / Knowledge
+Capability / Operators
+Experience / Trajectories
+Obstruction / Boundaries
+Strategies / Expertise
+Meta-method / RAKL variants
+```
+
+The substrate is not asserted to be one global order-theoretic lattice.  Specialized closure/lattice structures remain valid where their order/closure laws are actually established; the global software substrate is a typed relational/compatibility structure.
+
+### Four coupled loops
+
+```text
+information -> knowledge
+problem -> solution
+experience -> method
+RAKL -> better RAKL
+```
+
+For a replaceable LLM driver:
+
+\[
+(S_t,\tau_t)=Driver_\theta(P_t,R_t),
+\qquad
+R_{t+1}=Learn(R_t,\tau_t).
+\]
+
+The LLM weights may remain fixed while future behavior improves through persistent external state.
+
+### Task episodes
+
+Every consequential attempt freezes a `TaskEpisode` before consolidation.  Episodes are immutable evidence roots.  A failure episode is not automatically a causal diagnosis, and a diagnosis is not automatically a reusable obstruction.
+
+```text
+TaskEpisode
+-> observed outcome/residual
+-> competing diagnoses
+-> discriminating evidence
+-> candidate Lesson
+-> local verification
+-> fresh transfer/proof
+-> promoted lesson/tool/strategy/boundary
+```
+
+Derived memory never replaces the source episodes.
+
+### Problem-conditioned fibres
+
+The old knowledge-fiber idea is generalized.  For an atom `a` under problem/context `(P,c)`, a derived fibre may include:
+
+```text
+knowledge
+applicable operators
+analogous successful and failed episodes
+known failure boundaries
+strategy motifs
+expertise chunks
+unresolved warnings
+```
+
+The fibre is a query/view, not a new authority-bearing database.
+
+### Local-to-global solution condition
+
+A global solution requires more than solving each atom in isolation.  Selected local sections must:
+
+```text
+cover every required atom
+satisfy dependency requirements
+agree on shared interface assignments
+be individually verified
+```
+
+Failed gluing becomes a new residual/experience episode and may later support a reusable obstruction.
+
+### Experience-conditioned routing
+
+Prior episodes can alter the priority of applicable operators and operator paths using scoped empirical success/failure statistics, cost, verification debt, boundary risk, and a small exploration term.
+
+This affects search order only:
+
+```text
+experience-conditioned priority != scientific authority
+```
+
+### Learned strategy motifs
+
+Repeated successful operator sequences can be mined into candidate `StrategyMotif` objects while retaining failures containing the same sequence as contradiction/boundary evidence.  Induction alone does not promote the motif.
+
+### Vector saturation
+
+Saturation is tracked separately across:
+
+```text
+KNOWLEDGE
+OPERATOR
+EXPERIENCE_PATTERN
+OBSTRUCTION
+RELATION
+PATH
+META_METHOD
+```
+
+A native residual reopens only the implicated axis.  Bounded flatness never implies absolute completeness.
+
+### Invention gate
+
+Being stuck is insufficient to justify method invention.  Missing-representation or missing-operator escalation requires bounded flatness of relevant knowledge/operator/path routes, repeated stable residuals, exclusion of ordinary failure causes, bounded cross-domain transfer search, and explicit gap evidence.
+
+### Branching Self-RAKL
+
+Self-improvement is an archive of competing variants rather than destructive linear rewriting:
+
+```text
+incumbent
+├── challenger A
+├── challenger B
+└── challenger C
+```
+
+A protected assurance pass may mark a challenger `ASSURED`, but it does not become incumbent automatically.  Explicit governance is required, and the previous incumbent remains available as an assured rollback/alternative branch.
+
+### Executable v3 modules
+
+```text
+src/rakl/experience_substrate.py
+src/rakl/experience_learning.py
+src/rakl/problem_fibre.py
+src/rakl/experience_policy.py
+src/rakl/saturation_vector.py
+src/rakl/evolution_archive.py
+src/rakl/v3_runtime.py
+schemas/task-episode.schema.json
+schemas/lesson.schema.json
+```
+
+See `docs/RAKL_V3_EXPERIENCE_SUBSTRATE.md` for the full implementation contract and `tests/test_rakl_v3_experience_substrate.py` for executable invariants.

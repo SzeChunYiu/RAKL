@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/task-episode.schema.json",
+  "title": "RAKL Task Episode",
+  "description": "Immutable outcome-linked evidence root for one RAKL task/atom attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "task_id",
+    "atom_id",
+    "context_hash",
+    "problem_signature",
+    "fibre_snapshot_hash",
+    "operator_ids",
+    "action_trace",
+    "observation_ids",
+    "verification_ids",
+    "outcome",
+    "residual_signature",
+    "evidence_pointers",
+    "artifact_hash",
+    "timestamp",
+    "cost"
+  ],
+  "properties": {
+    "episode_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "atom_id": {"type": "string", "minLength": 1},
+    "context_hash": {"type": "string", "minLength": 1},
+    "problem_signature": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "fibre_snapshot_hash": {"type": "string", "minLength": 1},
+    "operator_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "action_trace": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "observation_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "verification_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "outcome": {"enum": ["SUCCESS", "PARTIAL_SUCCESS", "FAILURE", "BLOCKED", "UNKNOWN"]},
+    "residual_signature": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "artifact_hash": {"type": "string", "minLength": 1},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "cost": {"type": "number", "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"outcome": {"enum": ["FAILURE", "PARTIAL_SUCCESS", "BLOCKED"]}}},
+      "then": {"properties": {"residual_signature": {"minItems": 1}}}
+    }
+  ]
+}
