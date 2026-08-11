@@ -1,4 +1,4 @@
-# Paper 2 V4.1 LUNARC execution packet
+# Paper 2 V4.1 LUNARC execution and native result
 
 Date: 2026-08-11
 
@@ -48,20 +48,71 @@ hashes, resource coordinates and parse/score states.  The harvest fails closed
 on missing or ambiguous scheduler, submission, preflight, checkout, packet,
 normalizer, result, task/seed or attestation lineage.
 
-## Current authority and next action
+## Native result and current authority
 
-Verdict: `READY_AFTER_MERGE_NOT_SUBMITTED`.  This means the code packet is ready
-for post-merge execution; it is not a native readiness or result claim.  Counts
-remain one planned job, zero submitted V4.1 jobs, zero V4.1 executions, zero
-evaluated V4.1 task/seed units and zero quantitative figures.
+The packet merged through PR 77.  The canonical FS9 checkout was then detached
+cleanly at merged `origin/main@4a8d5ff19e3e6b26b95cb7408bbf55475208989c`,
+whose tree is `1ba49edbf23d46fcc8105f96d0dc45c286c3a9c5` and which
+contains packet head `f3211f86d1b7665e44cfa08fa4ec6e257d77c9eb` as an
+ancestor.  Exactly one V4.1 batch was submitted.  Native LUNARC job `3475212`
+completed on `cn004` in 54 scheduler seconds with return code zero.  Its
+allocated-node preflight passed, the clean checkout coordinates agree across
+the run, result, task--seed and harvest records, and all eight staged
+model/tokenizer files have identical pre/post byte attestations.  The governed
+harvest verdict is `HARVEST_V4_1_TASK_SEED_PASS_NONCONFIRMATORY` with no receipt
+failure.
 
-After exact CI and merge, synchronize a new clean detached LUNARC checkout to
-the exact merged SHA, run the V4.1 submission wrapper once, wait for terminal
-SLURM state and harvest the exact receipts.  Preserve any parser null or other
-failure.  Do not report an arm comparison from this one adaptive task/seed
-replay.  The broader matched architecture-by-evidence-access study remains
-open.
+The result is a partial parser-engineering pass, not an arm comparison.  Of the
+two frozen arm records, `RAKL_CONTEXT` is parse-valid and scorable under the
+exact single-fence policy, but it answers only 3 of 5 conceptual fields
+correctly and therefore fails the exact conceptual gate.  `DIRECT_CORPUS`
+again emits a JSON fence followed by prose and remains parse-invalid with a
+null score.  Thus V4.1 has one evaluated task--seed unit, two arm records, one
+parse-valid/scorable arm and **zero exact conceptual passes**.  One scorable arm
+cannot identify a paired contrast.  The local provider API charge is recorded
+as zero for both arms, but electricity, hardware depreciation/opportunity cost,
+download network charge and operator labour are unpriced, so neither a fully
+costed result nor a fully costed cost-per-success comparison is estimable.  By
+the frozen zero-success convention, the observed token count per valid
+scientific success is infinite for each arm: both consumed positive token
+counts and neither produced a valid scientific success.
 
-The review in
-`PAPER2_V4_1_LUNARC_INTERNAL_REVIEW_20260811.json` is same-context internal
-review, not independent review or peer review.
+The admitted input/output-token and wall-time coordinates are 1,140/108 and
+15,789 ms for `RAKL_CONTEXT`, and 638/320 and 32,447 ms for
+`DIRECT_CORPUS`.  They are execution coordinates only: the latter arm has no
+score, neither arm is a valid scientific success, and no efficiency or
+superiority claim follows.  No quantitative figure is generated because a
+single scorable arm and one task/seed cannot support a comparison, uncertainty
+interval or frontier.
+
+The exact repository-ingest authority is
+`research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3475212_INGEST_RECEIPT_20260811.json`.
+It binds the submission (`186a71d0...`), scheduler (`6a47f867...`), harvest
+(`f4836e36...`), checkout, allocated preflight, pre/post snapshot, run,
+task--seed, raw-output, resource and result bytes plus the immutable V4 negative
+parent.  V4 job `3475193` remains two parse-invalid nulls; V4.1 does not rescore
+or reinterpret it.
+
+## Typed residual and pre-candidate memory gate
+
+The result leaves both an R1 serialization/interface residual and an R7
+scientific-output residual.  Prompt architecture may affect serialization
+independently of scientific content; the 0.5B model may be below the exact
+structured-reasoning requirement; and one deterministic task/seed cannot
+separate architecture effects from task-specific output variance.  Repeatedly
+relaxing the parser or rerunning these opened outputs would be a post-result
+rescue and is prohibited.
+
+No successor experiment or method candidate is proposed in this result-ingest
+iteration.  The V4 and V4.1 failures are now normalized in the global failure
+experience lattice and linked through a receipt-bound public research trace.
+Before any future Paper-2 candidate is proposed, a dual `ResearchMemoryReview`
+must query both that failure lattice and the success-derived research-tool
+inventory under the then-current object/context, preserve applicable warnings
+or explicit no-match results, and freeze the required pre-candidate review.
+Only after that gate may a later iteration select a discriminator.  The
+registered matched empirical claim remains open.
+
+The packet review in `PAPER2_V4_1_LUNARC_INTERNAL_REVIEW_20260811.json` and the
+result review in `PAPER2_V4_1_NATIVE_INTERNAL_REVIEW_20260811.json` are
+same-context internal reviews, not independent review or peer review.
