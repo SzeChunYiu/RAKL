@@ -222,7 +222,11 @@ def _parse_json_artifact(
         return None
 
 
-def _questions_block(questions: Mapping[str, object]) -> str:
+def _questions_block(
+    questions: Mapping[str, object],
+    *,
+    output_shape_policy: str | None = None,
+) -> str:
     entries = questions.get("questions")
     if not isinstance(entries, list):
         raise ValueError("questions must be a list")
@@ -235,15 +239,37 @@ def _questions_block(questions: Mapping[str, object]) -> str:
         if not isinstance(question_id, str) or not question_id or not isinstance(prompt, str) or not prompt:
             raise ValueError("question id and prompt are required")
         lines.append(f"{question_id}: {prompt}")
-    lines.append("OUTPUT SCHEMA")
-    lines.append(json.dumps(questions.get("output_schema"), sort_keys=True, ensure_ascii=False))
+    if output_shape_policy == "FLAT_OBJECT_SHAPE_V4_3_1":
+        lines.append(
+            "OUTPUT OBJECT SHAPE (flat top-level keys only; registered answer type id is "
+            "PENDULUM_STRUCTURED_ANSWER_V2 but must NOT appear as an output wrapper):"
+        )
+        lines.append(
+            '{"small_angle_is_asymptotic": <boolean>, "finite_amplitude_increases_period": <boolean>, '
+            '"context_distinct_claims_not_direct_contradictions": <boolean>, '
+            '"ideal_period_is_mass_invariant": <boolean>, '
+            '"context_alignment_required_before_contradiction": <boolean>, '
+            '"supporting_source_ids": [<string>, ...], '
+            '"rejected_as_misaligned_source_ids": [<string>, ...], '
+            '"refuted_source_ids": [<string>, ...]}'
+        )
+        lines.append(
+            'Do not emit {"fields": {...}, "id": "..."}. Emit exactly one flat JSON object '
+            "with those eight top-level keys."
+        )
+    else:
+        lines.append("OUTPUT SCHEMA")
+        lines.append(json.dumps(questions.get("output_schema"), sort_keys=True, ensure_ascii=False))
     return "\n".join(lines)
+
 
 
 def materialize_prompts(
     task: Mapping[str, object],
     questions: Mapping[str, object],
     system_prompt: str,
+    *,
+    output_shape_policy: str | None = None,
 ) -> dict[str, str]:
     """Materialize the only registered intervention while preserving the raw corpus.
 
@@ -286,7 +312,7 @@ def materialize_prompts(
         system_prompt.rstrip()
         + "\n\nTOOLS: disabled\nRETRIEVAL: disabled\nREPOSITORY ACCESS: not exposed to the model\n"
     )
-    common_suffix = "\n\n" + _questions_block(questions) + "\n"
+    common_suffix = "\n\n" + _questions_block(questions, output_shape_policy=output_shape_policy) + "\n"
     raw_block = "\n".join(raw_lines)
     return {
         "DIRECT_CORPUS": common_prefix + "\n" + raw_block + common_suffix,
@@ -466,10 +492,18 @@ def audit_execution_packet(
 
     if isinstance(task, Mapping) and isinstance(questions, Mapping) and "system_prompt" in payloads:
         try:
+            output_shape_policy = None
+            if (
+                isinstance(packet, Mapping)
+                and packet.get("prompt_interface_policy_id")
+                == "PENDULUM_FLAT_OUTPUT_OBJECT_SHAPE_V4_3_1"
+            ):
+                output_shape_policy = "FLAT_OBJECT_SHAPE_V4_3_1"
             observed_prompts = materialize_prompts(
                 task,
                 questions,
                 payloads["system_prompt"].decode("utf-8"),
+                output_shape_policy=output_shape_policy,
             )
         except (UnicodeDecodeError, ValueError) as exc:
             invalid.append(f"prompt_materialization_invalid:{type(exc).__name__}")
