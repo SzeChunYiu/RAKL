@@ -225,21 +225,44 @@ network-probe, staging and harvest paths now sets
 `PYTHONDONTWRITEBYTECODE=1`. The native refusal is retained as a falsifier and
 is not overwritten by the repair.
 
-**State:** repaired in the candidate scripts, pending exact CI and a new
-post-merge native bootstrap/dry-run. The dirty `2fc6457b...` remote checkout
-must be preserved and retired before the new exact merged subject is atomically
-bootstrapped; silently deleting its bytecode, cleaning it in place, or reusing
-its bootstrap lineage would erase negative history.
+**State:** resolved for exact merged subject `8184ed2...` by the native result in
+H15. The old refusal remains negative history rather than being rewritten.
+
+### P2-V3-H15 — repaired preflight still required native exact-subject evidence
+
+**Finding.** Local regression tests and a merged script repair could not prove
+that the exact LUNARC checkout would remain clean through the governed dry-run,
+that the contract hash would match, or that the earlier dirty checkout would be
+preserved rather than silently cleaned.
+
+**Evidence.** Exact subject `8184ed2960078102a6b5c25221dd26fc01f03a7a`
+produced atomic bootstrap PASS receipt SHA-256
+`fa6fe7b716da221419005001dd26d75a5ecf11f335168282c501e2bd81f0db02`
+and dry-run receipt SHA-256
+`b5120b4ff2179a962ab41c6a81861fcc6867b10176a7a97f594f346702065c09`
+with verdict `READY_NOT_SUBMITTED`, no failures and no submitted job ids. A
+read-only receipt with SHA-256
+`8635afd77787b809f1ea356479e38d8f103a0dc88154938b4971442761944efe`
+observed the old dirty checkout quarantined with 24 status entries and the new
+active checkout clean with zero status entries.
+
+**Resolution.** The machine synthesis binds all three receipts, the exact
+contract canonical hash, the planned-but-unexecuted `sbatch` vectors and the
+prior refusal/repair lineage. Jobs submitted, model executions and evaluated
+result records remain zero.
+
+**State:** resolved for native preflight readiness only. Native asset staging,
+harvest and the V3 execution packet remain blocked and cannot be inferred from a
+dry-run.
 
 ## Verdict
 
-`NATIVE_DRYRUN_FALSIFIER_PRESERVED__REPAIR_READY_NOT_SUBMITTED`
+`NATIVE_PREFLIGHT_READY_NOT_SUBMITTED__PRIOR_FALSIFIER_PRESERVED`
 
-This same-context review is internal and is not independent review or peer
-review. The bootstrap PASS and dry-run refusal establish only the bounded native
-behaviors described above. The repair must pass exact CI, review and merge before
-a later operator preserves/retires the old dirty checkout and tests the exact new
-merged subject. No job was submitted, no model was executed and no evaluated
-result was produced. A future successful harvest may permit a separate V3
-microtrial packet freeze; neither the bootstrap nor the repair is an empirical
-Paper 2 result.
+This recursive hostile review is internal same-context work, not independent
+review or peer review. The exact bootstrap and dry-run close the checkout-mutation
+preflight residual only. They do not establish asset staging, model execution,
+evaluated empirical evidence, performance or submission readiness. A separately
+reviewed and merged iteration is required before any staging-only submission,
+and successful staging plus harvest receipts are required before a V3 execution
+packet can be frozen.

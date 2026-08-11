@@ -129,15 +129,38 @@ allowing the changed checkout to reach `sbatch`.
 The repair applies `PYTHONDONTWRITEBYTECODE=1` to the repository-module
 invocations in the submission, network-probe, staging and harvest paths. The
 native refusal remains preserved negative evidence; it is not relabelled as
-staging success. Exact CI and a new post-merge native bootstrap/dry-run against
-the exact merged repair SHA are still required.
+staging success. Exact CI and the post-merge native bootstrap/dry-run were later
+completed against exact merged repair SHA `8184ed2...`, as reported below.
 
-The dirty remote checkout of `2fc6457b...` must be preserved and retired before
-that later atomic bootstrap. It must not be silently cleaned or mutated in place,
-and its bootstrap receipt cannot authorize a different repository subject.
+The dirty remote checkout of `2fc6457b...` was quarantined without cleaning or
+reuse before that atomic bootstrap. A later read-only exact observation matched
+all 24 status entries and bytecode hashes to the prior receipt.
 
 The manuscript evidence state is unchanged: **zero jobs submitted, zero model
 executions, and zero evaluated result records**. There is no V3 execution packet,
 no inference result, no quantitative Paper 2 figure to update and no empirical
 performance or efficiency claim. This status and its hostile review are internal
 same-context work, not independent review or independent peer review.
+
+## Post-repair native preflight result
+
+The exact merged repair subject
+`8184ed2960078102a6b5c25221dd26fc01f03a7a` passed atomic native bootstrap and
+then reached governed verdict `READY_NOT_SUBMITTED` in the submission dry-run.
+The active checkout was clean and detached, the contract hash matched, the
+failure list and submitted-job-id list were empty, and the planned two-job
+`sbatch` vectors were recorded without execution. The prior dirty `2fc6457b...`
+checkout remains quarantined with its negative-history status rather than being
+silently cleaned or reused.
+
+This closes only the bytecode-mutation preflight residual. It does not establish
+native asset staging, successful harvest, model availability, execution-packet
+readiness, inference correctness, performance or efficiency. Jobs submitted,
+model executions and evaluated result records remain **zero**. Therefore no
+quantitative figure or empirical manuscript claim changes. The next admissible
+step is a separately reviewed staging-only submission and receipt harvest after
+this readiness evidence merges; a chronology-fresh V3 execution packet remains
+blocked on successful native staging and harvest receipts.
+
+This update and its hostile review are internal same-context work, not
+independent review or peer review.
