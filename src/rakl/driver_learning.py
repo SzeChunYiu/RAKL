@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Protocol, Tuple
 
 from .breakthrough_learning import ExpertiseChunk
+from .core import KnowledgeFiber
 from .experience_substrate import EpisodeOutcome, TaskEpisode
 from .problem_fibre import FibreKnowledgeItem, ProblemAtom, ProblemFibre
 from .problem_solving_algebra import ProblemState, ResearchOperator
@@ -71,6 +72,7 @@ def run_learning_turn(
     *,
     episode_id: str,
     knowledge_items: Iterable[FibreKnowledgeItem] = (),
+    legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
     strategy_motifs: Iterable[StrategyMotif] = (),
     operators: Iterable[ResearchOperator] = (),
     problem_state: ProblemState | None = None,
@@ -83,7 +85,8 @@ def run_learning_turn(
 
     The driver is replaceable and receives only a derived fibre.  Its output is
     frozen into a TaskEpisode before any consolidation.  Optional failure
-    projection occurs only after the observed result exists.
+    projection occurs only after the observed result exists.  Existing RAKL
+    `KnowledgeFiber` objects can be supplied directly and are adapted read-only.
     """
 
     if not episode_id:
@@ -92,6 +95,7 @@ def run_learning_turn(
         state,
         task.atom,
         knowledge_items=knowledge_items,
+        legacy_knowledge_fibers=legacy_knowledge_fibers,
         strategy_motifs=strategy_motifs,
         operators=operators,
         problem_state=problem_state,
