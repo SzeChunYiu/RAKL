@@ -67,7 +67,8 @@ def _trace() -> MathResearchTrace:
             (3, ResearchTraceEventType.ANALOGY_SCAN, None),
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, None),
             (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, None),
-            (6, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
+            (6, ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW, None),
+            (7, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
         )
     )
 
@@ -86,21 +87,22 @@ def test_missing_trace_fails_closed() -> None:
     assert report.verdict is TraceGateVerdict.CANNOT_CHECK
 
 
-def test_missing_expert_context_review_blocks_candidate_generation() -> None:
+def test_missing_experience_memory_review_blocks_candidate_generation() -> None:
     trace = _build_trace(
         (
             (1, ResearchTraceEventType.ATOMIZED, None),
             (2, ResearchTraceEventType.CONTEXT_FROZEN, None),
             (3, ResearchTraceEventType.ANALOGY_SCAN, None),
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, None),
-            (5, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
+            (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, None),
+            (6, ResearchTraceEventType.NEXT_STEP_PROPOSED, None),
         )
     )
     report = audit_pre_candidate_trace(
         trace, atom_id="atom-C", context_packet_hash="sha256:context"
     )
     assert report.verdict is TraceGateVerdict.FAIL
-    assert "required_trace_event_missing:EXPERT_CONTEXT_REVIEW" in report.reasons
+    assert "required_trace_event_missing:EXPERIENCE_MEMORY_REVIEW" in report.reasons
 
 
 def test_context_trace_must_bind_context_hash() -> None:
@@ -120,11 +122,12 @@ def test_candidate_before_trace_completion_is_rejected() -> None:
         (
             (1, ResearchTraceEventType.ATOMIZED, "2026-08-11T04:01:00+00:00"),
             (2, ResearchTraceEventType.CONTEXT_FROZEN, "2026-08-11T04:02:00+00:00"),
-            (7, ResearchTraceEventType.CANDIDATE_PROPOSED, "2026-08-11T04:02:30+00:00"),
+            (8, ResearchTraceEventType.CANDIDATE_PROPOSED, "2026-08-11T04:02:30+00:00"),
             (3, ResearchTraceEventType.ANALOGY_SCAN, "2026-08-11T04:03:00+00:00"),
             (4, ResearchTraceEventType.METHOD_TRANSFER_REVIEW, "2026-08-11T04:04:00+00:00"),
             (5, ResearchTraceEventType.EXPERT_CONTEXT_REVIEW, "2026-08-11T04:05:00+00:00"),
-            (6, ResearchTraceEventType.NEXT_STEP_PROPOSED, "2026-08-11T04:06:00+00:00"),
+            (6, ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW, "2026-08-11T04:06:00+00:00"),
+            (7, ResearchTraceEventType.NEXT_STEP_PROPOSED, "2026-08-11T04:07:00+00:00"),
         )
     )
     report = audit_pre_candidate_trace(
@@ -158,6 +161,6 @@ def test_next_step_requires_alternatives_rationale_and_next_action() -> None:
         MathResearchTrace(trace_id="trace-C", entries=tuple(entries))
     )
     assert report.verdict is TraceGateVerdict.FAIL
-    assert "trace_entry_5:alternatives_considered_missing" in report.reasons
-    assert "trace_entry_5:decision_rationale_missing" in report.reasons
-    assert "trace_entry_5:next_steps_missing" in report.reasons
+    assert "trace_entry_6:alternatives_considered_missing" in report.reasons
+    assert "trace_entry_6:decision_rationale_missing" in report.reasons
+    assert "trace_entry_6:next_steps_missing" in report.reasons
