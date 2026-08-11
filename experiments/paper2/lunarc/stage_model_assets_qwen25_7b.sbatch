@@ -1,0 +1,26 @@
+#!/bin/bash
+#SBATCH --job-name=rakl_p2_stage_7b
+#SBATCH --account=lu2026-2-51
+#SBATCH --partition=lu48
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=8G
+#SBATCH --time=06:00:00
+#SBATCH --output=/projects/hep/fs9/users/scyiu/RAKL-paper2/logs/qwen25_7b_stage/stage_model_7b_%j.out
+
+set -euo pipefail
+: "${RAKL_STAGING_CONTRACT:?missing byte-bound staging contract}"
+: "${RAKL_EXPECTED_REPO_SHA:?missing exact repository SHA supplied at submission}"
+: "${RAKL_REPO_PATH:?missing exact repository path}"
+: "${RAKL_PROBE_JOB_ID:?missing prerequisite network-probe job id}"
+: "${SLURM_JOB_ID:?staging must run in a SLURM batch allocation}"
+
+mkdir -p /projects/hep/fs9/users/scyiu/RAKL-paper2/logs/qwen25_7b_stage \
+  /projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/qwen25_7b_stage
+probe_receipt="/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/qwen25_7b_stage/network-probe-${RAKL_PROBE_JOB_ID}.json"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${RAKL_REPO_PATH}/src" python3 -m rakl.paper2_model_staging_v4_3 stage-assets \
+  --contract "${RAKL_STAGING_CONTRACT}" \
+  --repo "${RAKL_REPO_PATH}" \
+  --expected-repo-sha "${RAKL_EXPECTED_REPO_SHA}" \
+  --probe-receipt "${probe_receipt}"
