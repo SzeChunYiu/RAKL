@@ -295,8 +295,20 @@ v1, v1.1 and v1.2 remain immutable process history. In particular, do not replac
 - protected verified-development lesson admission;
 - leakage guards on transfer IDs and task-local evidence IDs;
 - bounded selective lesson/failure materialization for diagnostic use;
-- the frozen oracle upper-bound procedure.
+- the frozen oracle upper-bound procedure;
+- `apply_development_learning_step` / `materialize_selective_experience` learning-loop APIs
+  with retrieval receipts (`retrieval_calls >= 1` when non-empty state is claimed selective).
 
-`tests/test_paper2_experience_root_cause.py` locks those semantics.
+`src/rakl/paper2_experience_benchmark_runner.py` exposes `learning_loop_mode`:
 
-No model execution is claimed by this slice.
+- `legacy_v1_2` (default): preserves frozen v1/v1.1/v1.2 behaviour, including RC1
+  pseudo-lessons and whole-state prompt dump;
+- `root_cause_v1`: RC1/RC2 repair. Refuses to bind frozen v1/v1.1/v1.2
+  `protocol_subject_hash` values so historical subjects cannot be silently reinterpreted.
+
+`tests/test_paper2_experience_root_cause.py` and
+`tests/test_paper2_experience_learning_loop_rc1_rc2.py` lock those semantics.
+
+No model execution is claimed by this slice. No ExperienceBenchmark 1.5B packet is
+authorized here. Localization of `MODEL_CAPABILITY_FLOOR` / lesson / retrieval failure
+classes remains a #247 residual after a successor packet is frozen and ORACLE is run.

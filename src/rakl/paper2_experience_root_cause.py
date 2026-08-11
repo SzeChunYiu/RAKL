@@ -228,3 +228,279 @@ def oracle_procedure_upper_bound() -> Tuple[str, ...]:
         "An exact registered unit transformation preserves the underlying measurement; calibration authority does not transfer to uncalibrated alternatives.",
         "Before declaring contradiction, align object, regime, time or aggregation, measurement operator, and quantity of interest; mismatched contexts do not directly refute each other.",
     )
+
+
+#: Frozen D-task method principles for verified development feedback.
+#: Keys are development task ids. Values contain no transfer-task labels and no
+#: task-local evidence IDs. These are method instructions only.
+FROZEN_DEVELOPMENT_PRINCIPLES: Mapping[str, str] = {
+    "D1": (
+        "For a quantitative claim, prefer evidence from the currently calibrated "
+        "instrument measuring the registered quantity of interest; reject "
+        "expired-calibration and wrong-instrument readings."
+    ),
+    "D2": (
+        "An exact registered unit transformation preserves the underlying "
+        "measurement; calibration authority does not transfer to uncalibrated "
+        "alternatives."
+    ),
+    "D3": (
+        "Before declaring contradiction, align object, regime, time or "
+        "aggregation, measurement operator, and quantity of interest; mismatched "
+        "contexts do not directly refute each other."
+    ),
+}
+
+
+@dataclass(frozen=True)
+class RetrievalMaterializationReceipt:
+    """Receipt that selective experience materialization actually ran."""
+
+    retrieval_calls: int
+    candidate_lesson_ids: Tuple[str, ...]
+    selected_lesson_ids: Tuple[str, ...]
+    rejected_lesson_ids: Tuple[str, ...]
+    selected_failure_task_ids: Tuple[str, ...]
+    rendered_state: Mapping[str, Any]
+    whole_state_dump: bool = False
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+
+def evaluator_receipt_hash(
+    *,
+    task_id: str,
+    output_hash: str,
+    score: float,
+    success: bool,
+    failure_signature: Tuple[str, ...],
+) -> str:
+    """Bind an evaluator receipt to frozen output + score bytes."""
+
+    if not _SHA256_RE.match(output_hash):
+        raise ValueError("invalid_output_hash")
+    payload = (
+        f"{task_id}|{output_hash}|{score:.6f}|{int(success)}|"
+        + ",".join(failure_signature)
+    ).encode("utf-8")
+    return sha256(payload).hexdigest()
+
+
+def apply_development_learning_step(
+    state: Mapping[str, Any],
+    *,
+    arm: RootCauseDiagnosticArm,
+    task: Mapping[str, Any],
+    predicted: Mapping[str, Any] | None,
+    score: float,
+    success: bool,
+    failure_signature: Tuple[str, ...],
+    output_hash: str,
+    output_frozen: bool,
+) -> dict[str, Any]:
+    """Apply one development-step learning update under root-cause semantics.
+
+    RC1: a failed episode never auto-mints a reusable Lesson. Verified lessons
+    enter only through the explicit post-freeze evaluator feedback path, and
+    only for arms that authorize them.
+    """
+
+    if not output_frozen:
+        raise ValueError("development_output_not_frozen")
+    if not _SHA256_RE.match(output_hash):
+        raise ValueError("invalid_output_hash")
+
+    task_id = str(task["task_id"])
+    phase = str(task["phase"])
+    if phase != "DEVELOPMENT_SEQUENCE" or not task_id.startswith("D"):
+        raise ValueError("development_learning_step_requires_development_task")
+
+    if arm is RootCauseDiagnosticArm.RESET:
+        raise ValueError("reset_arm_does_not_mutate_learning_state")
+    if arm is RootCauseDiagnosticArm.ORACLE_PROCEDURE_UPPER_BOUND:
+        raise ValueError("oracle_arm_does_not_mutate_learning_state")
+
+    if success:
+        next_state = copy.deepcopy(dict(state))
+        next_state["state_kind"] = "LEARNING_EXTERNAL_RAKL_STATE"
+        next_state.setdefault("episodes", []).append(
+            {
+                "task_id": task_id,
+                "phase": phase,
+                "stratum": str(task["stratum"]),
+                "title": str(task["title"]),
+                "success": True,
+                "score": float(score),
+                "failure_signature": [],
+                "model_verdict": None if predicted is None else predicted.get("verdict"),
+                "model_selected_evidence_ids": (
+                    [] if predicted is None else list(predicted.get("selected_evidence_ids", []))
+                ),
+                "model_rejected_evidence_ids": (
+                    [] if predicted is None else list(predicted.get("rejected_evidence_ids", []))
+                ),
+                "model_rationale_tags": (
+                    [] if predicted is None else list(predicted.get("rationale_tags", []))
+                ),
+                "output_hash": output_hash,
+                "sealed_answer_included": False,
+            }
+        )
+    else:
+        if not failure_signature:
+            raise ValueError("failure_signature_required")
+        next_state = append_failed_episode_without_lesson(
+            state,
+            task=task,
+            predicted=predicted,
+            score=score,
+            failure_signature=failure_signature,
+            output_hash=output_hash,
+        )
+
+    if arm is RootCauseDiagnosticArm.FAILURE_MEMORY_ONLY:
+        return next_state
+
+    if arm in {
+        RootCauseDiagnosticArm.VERIFIED_DEVELOPMENT_LESSONS,
+        RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE,
+    }:
+        principle = FROZEN_DEVELOPMENT_PRINCIPLES.get(task_id)
+        if principle is None:
+            raise ValueError(f"missing_frozen_development_principle:{task_id}")
+        receipt = evaluator_receipt_hash(
+            task_id=task_id,
+            output_hash=output_hash,
+            score=score,
+            success=success,
+            failure_signature=failure_signature,
+        )
+        feedback = VerifiedDevelopmentFeedback(
+            source_task_id=task_id,
+            source_output_hash=output_hash,
+            evaluator_receipt_hash=receipt,
+            principle=principle,
+            stratum=str(task["stratum"]),
+            output_frozen=True,
+            evaluator_verified=True,
+        )
+        return admit_verified_development_lesson(next_state, feedback)
+
+    raise ValueError(f"unsupported_learning_arm:{arm.value}")
+
+
+def materialize_selective_experience(
+    state: Mapping[str, Any],
+    *,
+    arm: RootCauseDiagnosticArm,
+    target_stratum: str,
+    max_lessons: int = 3,
+    max_failures: int = 3,
+) -> RetrievalMaterializationReceipt:
+    """Materialize experience for a prompt without whole-state dumping (RC2)."""
+
+    if arm is RootCauseDiagnosticArm.RESET:
+        return RetrievalMaterializationReceipt(
+            retrieval_calls=0,
+            candidate_lesson_ids=(),
+            selected_lesson_ids=(),
+            rejected_lesson_ids=(),
+            selected_failure_task_ids=(),
+            rendered_state={"state_kind": "RESET_BASELINE_STATE"},
+            whole_state_dump=False,
+        )
+
+    if arm is RootCauseDiagnosticArm.ORACLE_PROCEDURE_UPPER_BOUND:
+        procedure = oracle_procedure_upper_bound()
+        return RetrievalMaterializationReceipt(
+            retrieval_calls=1,
+            candidate_lesson_ids=(),
+            selected_lesson_ids=(),
+            rejected_lesson_ids=(),
+            selected_failure_task_ids=(),
+            rendered_state={
+                "state_kind": "ORACLE_PROCEDURE_UPPER_BOUND",
+                "oracle_procedure": list(procedure),
+            },
+            whole_state_dump=False,
+        )
+
+    all_lessons = [
+        item
+        for item in state.get("lessons", [])
+        if item.get("authority") == "VERIFIED_DEVELOPMENT_METHOD_ONLY"
+    ]
+    candidate_ids = tuple(str(item["lesson_id"]) for item in all_lessons)
+
+    if arm is RootCauseDiagnosticArm.FAILURE_MEMORY_ONLY:
+        failures = list(state.get("failure_lattice_entries", []))[-max_failures:]
+        rendered = {
+            "state_kind": state.get("state_kind"),
+            "recent_failure_history": failures,
+        }
+        retrieval_calls = 1 if (failures or state.get("episodes")) else 0
+        return RetrievalMaterializationReceipt(
+            retrieval_calls=retrieval_calls,
+            candidate_lesson_ids=(),
+            selected_lesson_ids=(),
+            rejected_lesson_ids=candidate_ids,
+            selected_failure_task_ids=tuple(str(item["task_id"]) for item in failures),
+            rendered_state=rendered,
+            whole_state_dump=False,
+        )
+
+    view = selective_experience_view(
+        state,
+        target_stratum=target_stratum,
+        max_lessons=max_lessons,
+        max_failures=max_failures,
+    )
+    selected = set(view.lesson_ids)
+    rejected = tuple(lesson_id for lesson_id in candidate_ids if lesson_id not in selected)
+    has_memory = bool(state.get("lessons")) or bool(state.get("failure_lattice_entries")) or bool(
+        state.get("episodes")
+    )
+    retrieval_calls = 1 if has_memory else 0
+    if has_memory and retrieval_calls < 1:
+        raise RuntimeError("selective_materialization_required_for_nonempty_state")
+    if arm is RootCauseDiagnosticArm.VERIFIED_DEVELOPMENT_LESSONS:
+        rendered = {
+            "state_kind": state.get("state_kind"),
+            "verified_development_lessons": list(
+                view.rendered_state.get("verified_development_lessons", [])
+            ),
+        }
+        return RetrievalMaterializationReceipt(
+            retrieval_calls=retrieval_calls,
+            candidate_lesson_ids=candidate_ids,
+            selected_lesson_ids=view.lesson_ids,
+            rejected_lesson_ids=rejected,
+            selected_failure_task_ids=(),
+            rendered_state=rendered,
+            whole_state_dump=False,
+        )
+
+    if arm is RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE:
+        return RetrievalMaterializationReceipt(
+            retrieval_calls=retrieval_calls,
+            candidate_lesson_ids=candidate_ids,
+            selected_lesson_ids=view.lesson_ids,
+            rejected_lesson_ids=rejected,
+            selected_failure_task_ids=view.failure_task_ids,
+            rendered_state=dict(view.rendered_state),
+            whole_state_dump=False,
+        )
+
+    raise ValueError(f"unsupported_materialization_arm:{arm.value}")
+
+
+def render_materialized_experience(receipt: RetrievalMaterializationReceipt) -> str:
+    """Serialize a selective receipt for prompt injection (never a whole-state dump)."""
+
+    if receipt.whole_state_dump:
+        raise ValueError("whole_state_dump_forbidden_in_root_cause_materialization")
+    import json
+
+    return json.dumps(dict(receipt.rendered_state), indent=2, sort_keys=True)

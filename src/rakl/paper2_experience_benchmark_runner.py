@@ -24,8 +24,21 @@ from .experience_benchmark import (
     ExperienceBenchmarkArm,
     ExperienceBenchmarkPhase,
 )
+from .paper2_experience_root_cause import (
+    RootCauseDiagnosticArm,
+    apply_development_learning_step,
+    materialize_selective_experience,
+    render_materialized_experience,
+)
 from .paper2_pendulum_microtrial import BackendGeneration
 from .v3_authority import canonical_json_bytes
+
+# Frozen v1/v1.1/v1.2 use legacy_v1_2 (pseudo-lessons + whole-state dump).
+# root_cause_v1 is the #238 successor learning loop; it must not be silently
+# rebound onto historical protocol subject hashes.
+LEARNING_LOOP_LEGACY_V1_2 = "legacy_v1_2"
+LEARNING_LOOP_ROOT_CAUSE_V1 = "root_cause_v1"
+ALLOWED_LEARNING_LOOP_MODES = frozenset({LEARNING_LOOP_LEGACY_V1_2, LEARNING_LOOP_ROOT_CAUSE_V1})
 
 PACKET_REL_V1 = Path("research/paper2_experience_benchmark_v1")
 PROTOCOL_SUBJECT_HASH_V1 = "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56"
@@ -177,7 +190,12 @@ def build_user_prompt(
     arm: ExperienceBenchmarkArm,
     task: Mapping[str, Any],
     state: Mapping[str, Any],
+    learning_loop_mode: str = LEARNING_LOOP_LEGACY_V1_2,
+    diagnostic_arm: RootCauseDiagnosticArm | None = None,
+    retrieval_receipt_out: dict[str, Any] | None = None,
 ) -> str:
+    if learning_loop_mode not in ALLOWED_LEARNING_LOOP_MODES:
+        raise ValueError(f"unsupported_learning_loop_mode:{learning_loop_mode}")
     evidence_lines = "\n".join(f"- {item['id']}: {item['text']}" for item in task["evidence"])
     parts = [
         f"Arm: {arm.value}",
@@ -201,12 +219,39 @@ def build_user_prompt(
         "Then stop. Do not wrap the JSON in markdown fences.",
     ]
     if arm is ExperienceBenchmarkArm.LEARNING_ENABLED:
-        parts = [
-            "Registered external RAKL experience state (may be empty at S0):",
-            _render_state_for_prompt(state),
-            "",
-            *parts,
-        ]
+        if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1:
+            diag = diagnostic_arm or RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE
+            receipt = materialize_selective_experience(
+                state,
+                arm=diag,
+                target_stratum=str(task["stratum"]),
+            )
+            if retrieval_receipt_out is not None:
+                retrieval_receipt_out.clear()
+                retrieval_receipt_out.update(
+                    {
+                        "retrieval_calls": receipt.retrieval_calls,
+                        "candidate_lesson_ids": list(receipt.candidate_lesson_ids),
+                        "selected_lesson_ids": list(receipt.selected_lesson_ids),
+                        "rejected_lesson_ids": list(receipt.rejected_lesson_ids),
+                        "selected_failure_task_ids": list(receipt.selected_failure_task_ids),
+                        "whole_state_dump": receipt.whole_state_dump,
+                        "diagnostic_arm": diag.value,
+                    }
+                )
+            parts = [
+                "Selective RAKL experience materialization (not a whole-state dump):",
+                render_materialized_experience(receipt),
+                "",
+                *parts,
+            ]
+        else:
+            parts = [
+                "Registered external RAKL experience state (may be empty at S0):",
+                _render_state_for_prompt(state),
+                "",
+                *parts,
+            ]
     else:
         parts = [
             "RESET_BASELINE: ignore any prior task memory; start from registered empty S0.",
@@ -296,7 +341,39 @@ def _append_learning_state(
     success: bool,
     failure_signature: tuple[str, ...],
     output_hash: str,
+    learning_loop_mode: str = LEARNING_LOOP_LEGACY_V1_2,
+    diagnostic_arm: RootCauseDiagnosticArm | None = None,
 ) -> dict[str, Any]:
+    """Mutate LEARNING state after a task.
+
+    ``legacy_v1_2`` preserves the frozen v1.2 behaviour (including RC1
+    pseudo-lessons) so historical packets remain re-executable as recorded.
+
+    ``root_cause_v1`` is the #238 repair: failures mint no Lesson; verified
+    development lessons require the explicit post-freeze feedback path.
+    """
+
+    if learning_loop_mode not in ALLOWED_LEARNING_LOOP_MODES:
+        raise ValueError(f"unsupported_learning_loop_mode:{learning_loop_mode}")
+
+    if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1:
+        phase = str(task["phase"])
+        if phase != "DEVELOPMENT_SEQUENCE":
+            # Transfer probes must not admit lessons or rewrite Sn.
+            return copy.deepcopy(dict(state))
+        diag = diagnostic_arm or RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE
+        return apply_development_learning_step(
+            state,
+            arm=diag,
+            task=task,
+            predicted=predicted,
+            score=score,
+            success=success,
+            failure_signature=failure_signature,
+            output_hash=output_hash,
+            output_frozen=True,
+        )
+
     next_state = copy.deepcopy(state)
     next_state["state_kind"] = "LEARNING_EXTERNAL_RAKL_STATE"
     episode = {
@@ -386,11 +463,27 @@ def execute_experience_benchmark(
     backend: Callable[..., BackendGeneration] | None = None,
     packet_rel: Path | None = None,
     protocol_subject_hash: str | None = None,
+    learning_loop_mode: str = LEARNING_LOOP_LEGACY_V1_2,
+    diagnostic_arm: RootCauseDiagnosticArm | None = None,
 ) -> dict[str, Any]:
     if not scheduler_job_id.isdigit():
         raise RuntimeError("numeric SLURM job id required")
     if int(scheduler_job_id) in FORBIDDEN_JOBS:
         raise RuntimeError("refusing to bind experience runs to forbidden V4.1 job ids")
+    if learning_loop_mode not in ALLOWED_LEARNING_LOOP_MODES:
+        raise ValueError(f"unsupported_learning_loop_mode:{learning_loop_mode}")
+    if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1 and diagnostic_arm is None:
+        diagnostic_arm = RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE
+    bound_subject = protocol_subject_hash or PROTOCOL_SUBJECT_HASH
+    if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1 and bound_subject in {
+        PROTOCOL_SUBJECT_HASH_V1,
+        PROTOCOL_SUBJECT_HASH_V1_1,
+        PROTOCOL_SUBJECT_HASH_V1_2,
+    }:
+        raise RuntimeError(
+            "root_cause_v1 learning loop cannot bind frozen v1/v1.1/v1.2 "
+            "protocol_subject_hash; freeze a successor packet first"
+        )
     if output_dir.exists():
         raise RuntimeError(f"output directory already exists: {output_dir}")
 
@@ -459,7 +552,15 @@ def execute_experience_benchmark(
     ) -> tuple[dict[str, Any], dict[str, Any], str]:
         task = bundle["tasks"][task_id]
         phase = ExperienceBenchmarkPhase(task["phase"])
-        user_prompt = build_user_prompt(arm=arm, task=task, state=state)
+        retrieval_receipt: dict[str, Any] = {}
+        user_prompt = build_user_prompt(
+            arm=arm,
+            task=task,
+            state=state,
+            learning_loop_mode=learning_loop_mode,
+            diagnostic_arm=diagnostic_arm,
+            retrieval_receipt_out=retrieval_receipt if arm is ExperienceBenchmarkArm.LEARNING_ENABLED else None,
+        )
         if backend is None:
             generation = generator(
                 bundle["system_prompt"],
@@ -507,7 +608,7 @@ def execute_experience_benchmark(
                 "model_output_tokens": generation.output_tokens,
                 "preprocessing_model_tokens": 0,
                 "preprocessing_tool_calls": 0,
-                "external_retrieval_calls": 0,
+                "external_retrieval_calls": int(retrieval_receipt.get("retrieval_calls", 0)),
                 "wall_time_ms": generation.wall_time_ms,
             },
             "backend_version": generation.backend_version,
@@ -531,6 +632,8 @@ def execute_experience_benchmark(
                 success=success,
                 failure_signature=failure_signature,
                 output_hash=output_hash,
+                learning_loop_mode=learning_loop_mode,
+                diagnostic_arm=diagnostic_arm,
             )
             state_after_hash = _state_hash(state_after)
             _write_json(states_dir / f"{arm.value}_{task_id}_after.json", state_after)
@@ -545,6 +648,8 @@ def execute_experience_benchmark(
                 success=success,
                 failure_signature=failure_signature,
                 output_hash=output_hash,
+                learning_loop_mode=learning_loop_mode,
+                diagnostic_arm=diagnostic_arm,
             )
             state_after_hash = _state_hash(state_after)
             _write_json(states_dir / f"{arm.value}_{task_id}_probe_after.json", state_after)
@@ -560,6 +665,8 @@ def execute_experience_benchmark(
             "score": score,
             "failure_signature": list(failure_signature),
             "resource_usage": raw_payload["resource_usage"],
+            "retrieval_receipt": dict(retrieval_receipt) if retrieval_receipt else None,
+            "learning_loop_mode": learning_loop_mode,
             "output_hash": output_hash,
             "output_artifact_id": output_artifact_id,
             "executed_at": executed_at,
@@ -629,6 +736,8 @@ def execute_experience_benchmark(
         "runs_path": "runs.jsonl",
         "v4_1_score_reuse_allowed": False,
         "paper3_issue_217_path": False,
+        "learning_loop_mode": learning_loop_mode,
+        "diagnostic_arm": None if diagnostic_arm is None else diagnostic_arm.value,
         "claim_boundary": (
             "Native ExperienceBenchmark execution artifacts only. "
             "Not manuscript authority until validate_experience_benchmark + analysis."
@@ -648,7 +757,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--created-at-utc", default=None)
     parser.add_argument("--packet-rel", type=Path, default=None)
     parser.add_argument("--protocol-subject-hash", default=None)
+    parser.add_argument(
+        "--learning-loop-mode",
+        default=LEARNING_LOOP_LEGACY_V1_2,
+        choices=sorted(ALLOWED_LEARNING_LOOP_MODES),
+    )
+    parser.add_argument("--diagnostic-arm", default=None)
     args = parser.parse_args(argv)
+    diag = None if args.diagnostic_arm is None else RootCauseDiagnosticArm(args.diagnostic_arm)
     manifest = execute_experience_benchmark(
         args.repo.resolve(),
         args.output_dir,
@@ -657,6 +773,8 @@ def main(argv: list[str] | None = None) -> int:
         created_at_utc=args.created_at_utc,
         packet_rel=args.packet_rel,
         protocol_subject_hash=args.protocol_subject_hash,
+        learning_loop_mode=args.learning_loop_mode,
+        diagnostic_arm=diag,
     )
     print(json.dumps({"verdict": "EXECUTED", "learned_state_after_development_hash": manifest["learned_state_after_development_hash"]}, indent=2))
     return 0
