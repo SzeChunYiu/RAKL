@@ -45,6 +45,18 @@ An analogy may generate a proposal but never supplies theorem authority. Surface
 
 Do not treat a list of papers or a literature summary as a context fiber. The required object is a **method-transfer matrix** explaining why a method works elsewhere and exactly what blocks its transfer here.
 
+## Role-separated pre-candidate review
+
+Before selecting the next mathematical action, run a same-context expert cell with at least these lenses:
+
+- **domain/theory lead** — exact definitions, known theorems, barriers and model scope;
+- **analogy/method-transfer lead** — structural equivalence, enabling assumptions and transfer repair questions;
+- **adversarial falsification lead** — cheapest counterexamples, degenerate cases and obstruction-renaming risks;
+- **formal-methods lead** — statement binding, proof obligations, checker/trust boundary and formalizability;
+- **novelty/research-value lead** — likely prior art, rediscovery risk, explanatory value and next-search information gain.
+
+These are role-separated same-context passes, not independent peer review. Preserve disagreements, strongest objection, unresolved uncertainty and the resulting next-action recommendation in `EXPERT_CONTEXT_REVIEW`.
+
 ## Public research trace
 
 Every material mathematical-research step must also be appended to a machine-readable trace conforming to `schemas/math-research-trace.schema.json` and `src/rakl/research_trace.py`.
@@ -55,9 +67,12 @@ Before the first candidate for an atom, the trace must contain, in chronological
 2. `CONTEXT_FROZEN` — current context snapshot and context-packet hash;
 3. `ANALOGY_SCAN` — retained/refuted cross-domain analogies or explicit no-safe-bridge result;
 4. `METHOD_TRANSFER_REVIEW` — solved/near-solved contexts, transferable methods, enabling assumptions and disanalogies;
-5. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator.
+5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties and recommendation;
+6. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator.
 
 After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash.
+
+Trace entries are hash-chained: except for the first event, `previous_event_hash` must equal the prior event's `artifact_hash`. This makes chronology tamper-evident and prevents silent insertion or rewriting from looking like an original discovery path.
 
 This trace is an **auditable scientific decision record**, not a raw private chain-of-thought transcript. Record reproducible state, alternatives, concise decision rationale, evidence, outputs, uncertainties, residuals and next actions. Do not claim that hidden model reasoning has been exposed.
 
