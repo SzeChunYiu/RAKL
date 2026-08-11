@@ -1,0 +1,88 @@
+{
+  "schema_version": "paper2-issue166-lunarc-harvest-receipt-v1",
+  "receipt_id": "paper2-issue166-lunarc-harvest-20260811",
+  "created_at_utc": "2026-08-11T18:00:00Z",
+  "issue": 166,
+  "related_issues": [152, 154, 155, 138, 181],
+  "object": "Paper II novelty/inference confirmatory gate — FS9 LUNARC validation harvest",
+  "quantity_of_interest": "Whether stdlib interval-excludes-null inference + Paper II novelty tests run on the frozen paper2 CPU runtime, and whether true-null FP rates match the #166 diagnosis",
+  "authority_boundary": "Software/methodology validation harvest only. No Paper II empirical RESET↔LEARNING or 2×2 factorial outcomes opened. Does not authorize #155/#157 manuscript promotion or capability claims. Same-session harvest is not independent review.",
+  "subject": {
+    "executed_repo_sha": "5816452992cdafa9d61aa5e821d71f7a562001ce",
+    "origin_main_at_submit": "5816452992cdafa9d61aa5e821d71f7a562001ce",
+    "checkout": "clean detached at expected SHA"
+  },
+  "fs9": {
+    "root": "/projects/hep/fs9/users/scyiu/RAKL-paper2",
+    "receipts_dir": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/novelty_inference_166",
+    "runs_dir": "/projects/hep/fs9/users/scyiu/RAKL-paper2/runs/novelty_inference_166",
+    "logs_dir": "/projects/hep/fs9/users/scyiu/RAKL-paper2/logs/novelty_inference_166"
+  },
+  "jobs": {
+    "3476530": {
+      "name": "p2-inf-166",
+      "state": "FAILED",
+      "verdict": "FAIL_TESTS",
+      "failure_mode": "frozen paper2 python with PYTHONNOUSERSITE=1 has no pytest module",
+      "null_simulation_completed": true,
+      "sign_test_false_positive_rate": 0.4875,
+      "interval_excludes_null_false_positive_rate": 0.05,
+      "local_pointers": [
+        "research/receipts/novelty_inference_166/submission-3476530.json",
+        "research/receipts/novelty_inference_166/validation-3476530.json",
+        "research/receipts/novelty_inference_166/job-3476530/sign_vs_interval_null_sim.json",
+        "research/receipts/novelty_inference_166/job-3476530/pytest.out"
+      ],
+      "sha256": {
+        "validation": "3476840fd5a42cc1e9797b3e6bc64b069640eed62e4356f1ddec0dcb24b00a46",
+        "null_sim": "5a2dd7051f488f43fb9e9a5cc96c6a0fb0b92638d86b96c9c105ecf1c5c1461c"
+      },
+      "preserve_as_negative_history": true
+    },
+    "3476533": {
+      "name": "p2-inf-166b",
+      "state": "COMPLETED",
+      "verdict": "PASS",
+      "supersedes_job_id": "3476530",
+      "repair": "job-local pytest staged at runs/novelty_inference_166/pydeps; frozen asset untouched",
+      "pytest_exit_code": 0,
+      "null_simulation": {
+        "n_tasks": 8,
+        "n_trials": 400,
+        "sign_test_false_positive_rate": 0.4875,
+        "interval_excludes_null_false_positive_rate": 0.05,
+        "sign_fp_count": 195,
+        "interval_fp_count": 20
+      },
+      "local_pointers": [
+        "research/receipts/novelty_inference_166/submission-3476533.json",
+        "research/receipts/novelty_inference_166/validation-3476533.json",
+        "research/receipts/novelty_inference_166/job-3476533/sign_vs_interval_null_sim.json",
+        "research/receipts/novelty_inference_166/job-3476533/pytest.out"
+      ],
+      "sha256": {
+        "validation": "d2f81fc55a16936ced6fdc464b7b5a724e85758e78a4b8814c9a7ed5494ba230",
+        "null_sim": "f6baceaa5350a61f2f319deb95e5b384266ef106e8abc9d98322acea9e404a18"
+      }
+    }
+  },
+  "methodology_note": {
+    "diagnosis_confirmed": "Under synthetic true-null paired diffs, bare sign-test (mean delta > 0) FP ≈ 0.4875; interval-excludes-null FP = 0.05 at alpha=0.05.",
+    "gate_redesign_status": "Executable repair already on main via #181 (stdlib inference helper + experience_benchmark interval gate). This harvest only confirms FS9 runtime behavior.",
+    "pytest_env_fix": "Reusable submit/sbatch under experiments/paper2/lunarc stages pytest into a job-local PYTHONPATH target when the frozen runtime lacks it; do not mutate assets/paper2-cpu-v3-2."
+  },
+  "claim_boundary": {
+    "grants": [
+      "FS9 confirmatory PASS for targeted novelty/inference tests on subject SHA",
+      "Documented true-null FP contrast for sign-test vs interval-excludes-null",
+      "Preserved negative history for 3476530 pytest-env miss"
+    ],
+    "does_not_grant": [
+      "Paper II empirical transfer_gain or capability authority",
+      "#138 B1 frozen RESET↔LEARNING / factorial packet",
+      "#155/#157 confirmatory empirical submits",
+      "Independent peer review"
+    ]
+  },
+  "ingest_note": "No native microtrial ingest/rebind applies to this confirmatory path. Artifacts are copied verbatim into research/receipts/novelty_inference_166/; sibling v4.1 native ingest --job-id tooling is intentionally unused to avoid packet conflict."
+}
