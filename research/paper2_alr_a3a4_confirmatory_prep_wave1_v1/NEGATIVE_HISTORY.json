@@ -1,0 +1,95 @@
+{
+  "capability_oracle_jobs": [
+    {
+      "job_id": "3476730",
+      "path": "research/paper2_experience_benchmark_v1_3/native_job_3476730/",
+      "role": "ORACLE_0_5B_PRIMARY",
+      "verdict": "MODEL_CAPABILITY_FLOOR_0_5B"
+    },
+    {
+      "job_id": "3476731",
+      "path": "research/paper2_experience_benchmark_v1_3/native_job_3476731/",
+      "role": "ORACLE_0_5B_DUPLICATE_RACE",
+      "verdict": "MODEL_CAPABILITY_FLOOR_0_5B"
+    },
+    {
+      "job_id": "3476742",
+      "path": "research/paper2_experience_benchmark_v1_3_1/native_job_3476742/",
+      "role": "ORACLE_1_5B_INSTRUMENT_DEFECT_PARENT",
+      "verdict": "INSTRUMENT_DEFECT"
+    },
+    {
+      "job_id": "3476756",
+      "landed_pr": 349,
+      "parse_valid": "3/3",
+      "path": "research/paper2_experience_benchmark_v1_3_1/native_job_3476756/",
+      "role": "ORACLE_1_5B_PRIMARY_AFTER_INSTRUMENT_REPAIR",
+      "success": "0/3",
+      "verdict": "MODEL_CAPABILITY_FLOOR_1_5B"
+    }
+  ],
+  "claim_boundary": "Negative-history pointer freeze only. Does not reinterpret prior floors as confirmatory successes.",
+  "grants_scientific_authority": false,
+  "parent_issue_terminals": [
+    {
+      "issue": 324,
+      "receipt": "research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json",
+      "terminal": "CANNOT_EXECUTE_CONFIRMATORY_MODEL_COMPARISON"
+    },
+    {
+      "issue": 156,
+      "receipt": "research/paper2_closest_parent/ISSUE_156_TERMINAL_RECEIPT.json",
+      "scientific_verdict": "MATCHED_EMPIRICAL_ABLATION_BLOCKED",
+      "terminal": "CANNOT_IDENTIFY"
+    },
+    {
+      "issue": 247,
+      "terminals": [
+        "MODEL_CAPABILITY_FLOOR_0_5B",
+        "MODEL_CAPABILITY_FLOOR_1_5B"
+      ]
+    }
+  ],
+  "preserve_as_immutable_negative_history": true,
+  "prior_a3_a4_jobs": [
+    {
+      "job_id": "3476733",
+      "path": "research/paper2_a3_a4_matched_empirical_156/native_job_3476733/",
+      "role": "A3_A4_FREEZE_PREREQUISITE"
+    },
+    {
+      "job_id": "3476734",
+      "note": "paired freeze prerequisite with 3476733",
+      "role": "A3_A4_FREEZE_PREREQUISITE"
+    },
+    {
+      "job_id": "3476749",
+      "path": "research/paper2_a3_a4_matched_empirical_156/native_job_3476749/",
+      "role": "A3_A4_SCORED_ARM_RESPONSES_NON_CONFIRMATORY",
+      "status_pointer": "research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_STATUS.json"
+    }
+  ],
+  "prior_alr_non_confirmatory_jobs": [
+    {
+      "job_id": "3476735",
+      "path": "research/paper2_alr_model_baselines_v1/native_job_3476735/",
+      "role": "ALR_BASELINE_NEGATIVE_OR_FAILED"
+    },
+    {
+      "job_id": "3476736",
+      "path": "research/paper2_alr_model_baselines_v1/native_job_3476736/",
+      "role": "ALR_BASELINE_NON_CONFIRMATORY"
+    },
+    {
+      "job_id": "3476737",
+      "path": "research/paper2_alr_model_baselines_v1/native_job_3476737/",
+      "role": "ALR_BASELINE_NON_CONFIRMATORY"
+    },
+    {
+      "job_id": "3476748",
+      "path": "research/paper2_alr_model_baselines_v1/native_job_3476748/",
+      "role": "ALR_BASELINE_NON_CONFIRMATORY"
+    }
+  ],
+  "schema_version": "paper2-alr-a3a4-wave1-negative-history-v1"
+}
