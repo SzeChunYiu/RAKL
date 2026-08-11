@@ -1,0 +1,16 @@
+\subsection{Current two-arm precursor result and what it does not establish}
+
+The earlier Paper-II matched experience benchmark now supplies a useful precursor measurement for this paper's four-arm attribution programme.  After two preserved response-interface failures, the frozen v1.2 RESET-versus-LEARNING packet completed native job 3476548 with twelve of twelve schema-valid records and the intended chronology: RESET tasks begin from the registered initial state; LEARNING development forms a single $S_0\rightarrow S_n$ chain; and every fresh-transfer LEARNING task starts independently from the same frozen $S_n$.
+
+On the staged Qwen2.5-0.5B-Instruct model, both arms achieved zero
+registered successes on both development and fresh-transfer tasks.  The
+development score delta is zero, and the small partial-score difference on
+fresh transfer does not satisfy the registered success criterion or grant a
+global capability claim.  The bound result is therefore a scoped negative:
+\path{NEGATIVE_NO_TRANSFER_SUCCESS_LIFT_UNDER_0_5B}.
+The earlier v1 and v1.1 executions remain in the lineage as prompt-interface
+failures rather than being pooled with the interpretable v1.2 result.
+
+This measurement is valuable to Paper~5 for two reasons.  First, it demonstrates that a frozen longitudinal state chronology can survive a real model execution while preserving null and interface-failure outcomes.  Second, the zero-success ceiling shows why repository growth, learned-state existence or a small partial-score delta cannot be used as evidence that the method improved.  A weak base model can place both RESET and LEARNING below the task's valid-success threshold, making a causal learning effect scientifically unidentifiable at that operating point.
+
+The result does not substitute for the four-arm Paper~5 study.  It contains no \texttt{MODEL\_ONLY} or \texttt{RAKL\_SHAM\_MEMORY} arm, does not estimate static architecture lift or memory-content-specific lift, and uses one small model and six registered tasks.  Paper~5 therefore retains the four-arm study as prospective confirmatory work and treats job 3476548 as a scoped negative precursor that constrains model/task selection and confirms the reporting discipline.
