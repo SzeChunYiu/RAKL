@@ -1,0 +1,90 @@
+{
+  "annotation_policy": {
+    "subjective_or_domain_cases": "OPEN_REQUIRES_INDEPENDENT_ANNOTATION_OR_EXPLICIT_DEVELOPMENT_ONLY",
+    "v2_synthetic_cases": "DETERMINISTIC_CONTRACT_NO_INDEPENDENT_ANNOTATION_REQUIRED"
+  },
+  "arms": [
+    {
+      "arm_id": "CTRL_ALWAYS_BLOCKED",
+      "description": "Refuse every transition; score-validation control.",
+      "kind": "DETERMINISTIC_CONTROL"
+    },
+    {
+      "arm_id": "CTRL_ALWAYS_ESCALATE",
+      "description": "Raise every authority axis; score-validation control.",
+      "kind": "DETERMINISTIC_CONTROL"
+    },
+    {
+      "arm_id": "BASE_DIRECT_STRONG_PROMPT",
+      "description": "Direct strong prompting on visible context only.",
+      "kind": "MODEL_BASELINE"
+    },
+    {
+      "arm_id": "BASE_RAG_STRONG_CONTEXT",
+      "description": "RAG / strong retrieved context baseline where feasible.",
+      "kind": "MODEL_BASELINE"
+    },
+    {
+      "arm_id": "BASE_STATEFUL_AGENTIC",
+      "description": "Generic stateful/agentic baseline where feasible.",
+      "kind": "MODEL_BASELINE"
+    },
+    {
+      "arm_id": "RAKL_AUTHORITY_GATES",
+      "description": "RAKL path with authority gates; not a superiority claim.",
+      "kind": "MODEL_BASELINE"
+    }
+  ],
+  "artifact_hash": "f0ae5dc94a7dc87136adbbd847adec26f825662a35273c59b75547648c69826a",
+  "capability_gate": {
+    "confirmatory_claims_require_capability_clearance": true,
+    "direct_static_baselines_may_proceed": true,
+    "issue": 247,
+    "status": "PENDING_FOR_CONFIRMATORY_MODEL_CLAIMS"
+  },
+  "claim_boundary": "Prereg + authorized non-confirmatory model baseline execution under frozen V2. No RAKL superiority, no novelty license, no manuscript headline from this packet alone.",
+  "execution_gates": {
+    "default_lunarc_status": "AUTHORIZED_WHEN_RECEIPT_PRESENT",
+    "lunarc_submit_requires_authorize_receipt": true,
+    "require_authorize_model_run_for_model_arms": true,
+    "require_clean_v2_degeneracy_audit": true
+  },
+  "first_job_arm": "BASE_DIRECT_STRONG_PROMPT",
+  "grants_scientific_authority": false,
+  "issue_refs": [
+    "https://github.com/SzeChunYiu/RAKL/issues/154"
+  ],
+  "novelty_licensed": false,
+  "packet_id": "paper2-alr-model-baselines-v1",
+  "panel_id": "scientific-transition-authority-v2",
+  "panel_source": "src/rakl/authority_leakage_panel_v2.py",
+  "power_design": {
+    "fine_grained_subtype_comparison": "UNDERPOWERED",
+    "inference_statuses_preserved": [
+      "UNDERPOWERED",
+      "MEASURED_BUT_INDISTINGUISHABLE",
+      "INSUFFICIENT_N"
+    ],
+    "mde_alr_absolute": 0.25,
+    "note": "n=16 adequate for gross control discrimination; UNDERPOWERED for fine subtype comparisons.",
+    "panel_n_cases": 16,
+    "primary_precision_target": "Distinguish refuse-everything vs escalate-everything and vs a gross leakage rate difference of at least 0.25 ALR on the frozen 16-case V2 panel."
+  },
+  "primary_metrics": [
+    "alr",
+    "valid_upgrade_recall",
+    "false_conservative_refusal_rate"
+  ],
+  "protocol_paths": [
+    "benchmarks/scientific_transition_authority/PROTOCOL_V1.md",
+    "benchmarks/scientific_transition_authority/PROTOCOL_V2.md"
+  ],
+  "schema_version": "paper2-alr-model-baseline-prereg-v1",
+  "status": "PREREG_FROZEN / MODEL_RUN_AUTHORIZED_NON_CONFIRMATORY / NO_AUTHORITY_CLAIM",
+  "still_open": [
+    "full-text coding/rubric reads for arXiv:2604.18805 and SciIntegrity-Bench 2605.10246",
+    "remaining model arms (RAG/agentic/RAKL gates)",
+    "subjective cases: independent annotation or explicit development-only mark",
+    "capability-floor clearance (#247) before confirmatory model claims"
+  ]
+}
