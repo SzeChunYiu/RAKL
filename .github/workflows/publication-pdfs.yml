@@ -8,11 +8,10 @@ on:
 
 
 concurrency:
-  # PRs still cancel superseded runs for the same PR number.
-  # workflow_dispatch uses run_id so tip-main harvests are not cancelled by
-  # concurrent same-ref dispatches during busy merge windows.
+  # Do not cancel in-progress PDF builds: busy multi-agent windows were
+  # aborting tip/PR harvests before artifact upload.
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
