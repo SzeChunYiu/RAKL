@@ -46,6 +46,8 @@ def test_structural_amortization_source_is_modular_and_complete() -> None:
         "sections/99_references",
     }
     assert required.issubset(set(INPUT_RE.findall(main)))
+    assert "sections/03_benchmark_v6" not in main
+    assert "sections/05_evaluation_plan_v4" not in main
     assert len(_manuscript()) > 14000
 
 
@@ -83,3 +85,10 @@ def test_paper3_reports_fail_closed_cheap_gate_without_upgrading_authority() -> 
     assert "no foundation-model judgement" in manuscript
     assert "no training or inference run was launched" in manuscript
     assert "figures/paper3_cheap_gate_internal.pdf" in manuscript
+
+
+def test_paper3_release_disclosure_is_explicit() -> None:
+    manuscript = _manuscript()
+    assert r"\section*{Code, materials and AI-use disclosure}" in manuscript
+    assert "publication/papers/paper-03-directional-structural-witnesses/main.tex" in manuscript
+    assert "no external judgement is represented as completed" in manuscript

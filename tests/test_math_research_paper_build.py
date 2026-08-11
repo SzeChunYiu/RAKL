@@ -28,6 +28,12 @@ def test_release_build_binds_exact_subject_and_includes_assurance_sections() -> 
     assert r"\begin{proposition}[Assurance decomposition for a verifier-gated proof DAG]" in text
     assert r"\section{Typed discovery search and reference implementation}" in text
     assert r"\emph{Nature} 651, 607--613 (2026)" in text
+    assert r"\cite{jiang2026frontier}" in text
+    assert r"\cite{pu2026maproof}" in text
+    assert "arXiv:2607.07779 (2026)" in text
+    assert "arXiv:2606.13782 (2026)" in text
+    assert r"\section*{Code, materials and AI-use disclosure}" in text
+    assert r"\begin{thebibliography}{11}" in text
     assert "UNBOUND" not in text
 
 
