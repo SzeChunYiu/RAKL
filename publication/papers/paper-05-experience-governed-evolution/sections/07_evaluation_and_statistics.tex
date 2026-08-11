@@ -18,7 +18,7 @@ Several ratios diagnose whether growth is useful rather than merely large. We pr
 \subsection{Experience conversion and failure learning}
 
 The fast v3 loop stores immutable \TaskEpisode{} records; the slow loop may propose lessons, diagnoses, tools and strategy motifs. We measure the conversion funnel rather than assuming that every stored episode is useful:
-\[
+\rakldisp{
 \text{episodes}
 \rightarrow
 \text{supported diagnoses or lessons}
@@ -26,7 +26,7 @@ The fast v3 loop stores immutable \TaskEpisode{} records; the slow loop may prop
 \text{reusable tools or motifs}
 \rightarrow
 \text{validated fresh reuse}.
-\]
+}
 
 Reported quantities include episode outcome rates and costs, lesson proposal and validation yields, tool reuse success and failure rates, failure-diagnosis maturation, time from observation to supported diagnosis, obstruction-resolution rate, and the repeated-failure rate
 \[
@@ -39,14 +39,14 @@ A useful experience system should reduce $R_F$ on fresh tasks without increasing
 \subsection{Process telemetry for the full method surface}
 
 \RAKL{} already declares canonical process surfaces in \texttt{method\_specs.py}. Paper 5 requires consequential invocations to be measurable. A proposal-only \texttt{ProcessTelemetry} record binds the method surface, input and output state identities, active task and fibre, outcome, registered cost, residual transformation, retrieved/selected/rejected object identities, verification artifacts and the retained novelty vector. The common aggregate for process $p$ reports
-\[
+\rakldisp{
 N_p,\quad
 P_p(\mathrm{success}),\quad
 P_p(\mathrm{blocked}),\quad
 P_p(\CANNOTCHECK),\quad
 \overline C_p,\quad
 \overline{\Delta |B|}_p,
-\]
+}
 plus axis-specific retained novelty and object-selection counts. Here $B$ denotes the registered residual set; raw residual-count contraction is descriptive because replacing one vague blocker by several precise obligations can represent epistemic progress despite increasing $|B|$.
 
 The process-specific dashboard covers decomposition, routing, search-query generation, source qualification, claim extraction, ontology normalization, context translation, equivalence/structural transfer, contextual gluing, contradiction diagnosis, gap discovery, discriminator selection, synthesis, memory, review, benchmarking, authority promotion, saturation stopping, context compilation, capability shaping, software execution, research-portfolio allocation, objective evolution and generator transport. The complete definitions are frozen in the metrology contract. Representative quantities include atom reopen rate and late interface discovery for decomposition; saturated-route retry rate for routing; retrieval precision and recall in a bound universe for memory; hostile-near-miss rejection and false-transfer rate for transfer; local-success/global-failure rate for gluing; pre-promotion defect capture for review; exact-subject replay for software execution; and invalid promotion rate, whose target is zero.
@@ -71,23 +71,23 @@ The key empirical question is whether \RAKL{} contributes anything beyond the ba
 \end{description}
 
 For registered metric $m$ we report separate lift vectors
-\[
+\rakldisp{
 \Delta_{\mathrm{architecture}}(m)
 =m(\texttt{RAKL\_RESET})-m(\texttt{MODEL\_ONLY}),
-\]
-\[
+}
+\rakldisp{
 \Delta_{\mathrm{experience}}(m)
 =m(\texttt{RAKL\_LEARNING})-m(\texttt{RAKL\_RESET}),
-\]
-\[
+}
+\rakldisp{
 \Delta_{\mathrm{content}}(m)
 =m(\texttt{RAKL\_LEARNING})-m(\texttt{RAKL\_SHAM\_MEMORY}),
-\]
+}
 and
-\[
+\rakldisp{
 \Delta_{\mathrm{total}}(m)
 =m(\texttt{RAKL\_LEARNING})-m(\texttt{MODEL\_ONLY}).
-\]
+}
 There is deliberately no scalar ``RAKL score''.
 
 For binary task success, each matched pair is also assigned to \texttt{BOTH\_SUCCESS}, \texttt{RAKL\_ONLY\_SUCCESS}, \texttt{BASELINE\_ONLY\_SUCCESS} or \texttt{BOTH\_FAIL}. The asymmetric counts are scientifically important. A \texttt{RAKL\_ONLY\_SUCCESS} is direct scoped evidence of assistance; a \texttt{BASELINE\_ONLY\_SUCCESS} is direct evidence that the framework interfered and must be reported with equal prominence.
@@ -117,7 +117,7 @@ Once a metric influences upgrades it becomes a target. We therefore prohibit one
 \subsection{What would demonstrate that RAKL is doing real work?}
 
 We preregister a minimum evidentiary chain for the statement that the framework learned or assisted:
-\[
+\rakldisp{
 \boxed{
 \text{retained semantic growth}
 +\text{traceable downstream reuse/decision effect}
@@ -125,5 +125,5 @@ We preregister a minimum evidentiary chain for the statement that the framework 
 +\text{fresh transfer when generalization is claimed}
 +\text{no compensating validity regression}
 }
-\]
+}
 Repository size, issue count, prose volume, proposed lesson count, or an agent's self-report that \RAKL{} was helpful do not satisfy this chain. The strongest version-level claim additionally requires protected fresh assurance and governed promotion under the upgrade protocol in Section~\ref{sec:upgrade}.

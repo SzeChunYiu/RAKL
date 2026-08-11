@@ -41,14 +41,14 @@ A legitimate evaluator evolution is possible only through a separate governed ch
 The first v3 integration audit identified a concrete defect class: caller-provided booleans and opaque string identifiers could be mistaken for high-authority evidence. The current implementation has since hardened the known lesson/tool, local-section/gluing, evolution/governance and benchmark authority paths with protected content-bound subject hashes, attestation resolution and fail-closed bindings. Thus the historical defect is retained as negative engineering evidence rather than presented as a property of the current code.
 
 The governing invariant is
-\[
+\rakldisp{
 \text{authority transition}
 \Rightarrow
 \text{resolved exact subject}
 +\text{licensed evidence type}
 +\text{protected gate}
 +\text{scope compatibility}.
-\]
+}
 Internal conformance and hostile tests can show that the implemented path enforces this contract for registered attacks. They do not prove that the trust roots themselves are uncompromised, that every future call site is correct, or that an external evaluator would reproduce the assurance claim. Residual risks therefore include stale or misbound registry entries, protected-key compromise, evaluator contamination, operator override and ordinary implementation defects. Paper 5 distinguishes implementation hardening from independent external assurance.
 
 \subsection{Chronology attacks and backfilling}

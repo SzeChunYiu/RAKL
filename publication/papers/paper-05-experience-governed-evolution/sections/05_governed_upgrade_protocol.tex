@@ -2,7 +2,7 @@
 \label{sec:upgrade}
 
 The central engineering risk in self-improvement is semantic collapse between four distinct events:
-\[
+\rakldisp{
 \text{code exists}
 \neq
 \text{code is deployed}
@@ -10,15 +10,15 @@ The central engineering risk in self-improvement is semantic collapse between fo
 \text{improvement is supported}
 \neq
 \text{the method is the governed incumbent}.
-\]
+}
 A software branch can be implemented and even merged for operational reasons while its scientific method claim remains unvalidated. The live v3 deployment supplies an instructive example: the v3 branch was merged into \texttt{main} under an explicit operator request before its pending CI had completed, and later commits repaired package/publication CI. That sequence is preserved as process history. It is not represented as evidence that v3 was superior merely because it was deployed.
 
 \subsection{Method identity is not the package version}
 
 The inspected Python package still reports software version \texttt{0.1.0}. We therefore separate software/API compatibility from research-method identity. A complete experimental citation should bind at least
-\[
+\rakldisp{
 V=(v_{\mathrm{pkg}},v_{\mathrm{method}},e_{\mathrm{constitution}},\Sigma_{\mathrm{schemas}},h_{\mathrm{git}},h_{\mathrm{validators}}).
-\]
+}
 We use \texttt{3.0.0} as the method identity for the deployed v3 architecture at the Paper 5 freeze, while the exact Git subject remains the decisive reproducibility identity. Patch-level method versions such as 3.0.x are reserved for implementation corrections that do not intentionally change research policy. Minor method versions such as 3.1 and 3.2 denote workflow/method challengers. A change to protected authority/governance semantics is constitutional and should advance a separately visible constitution epoch or major method generation rather than being hidden in an ordinary workflow patch.
 
 The Paper 5 branch introduces a proposal-only \texttt{RAKL\_VERSION.json} manifest to make these coordinates machine visible. Its presence does not promote itself to canonical governance.
@@ -69,21 +69,21 @@ This packet is intentionally stricter than an issue description. It converts the
 \subsection{Challenger lifecycle and variant DAG}
 
 We model evolution as a DAG rather than a destructive sequence:
-\[
-\begin{split}
-&\texttt{OBSERVED\_PATHOLOGY}
+\rakldisp{
+\begin{gathered}
+\texttt{OBSERVED\_PATHOLOGY}
 \rightarrow\texttt{UPGRADE\_HYPOTHESIS}
 \rightarrow\texttt{PREREGISTERED}
 \rightarrow\texttt{CHALLENGER\_IMPLEMENTED}\\
-&\rightarrow\texttt{DEVELOPMENT\_VALIDATED}
+\rightarrow\texttt{DEVELOPMENT\_VALIDATED}
 \rightarrow\texttt{FRESH\_ASSURANCE\_PENDING}
 \rightarrow\{\texttt{ASSURED},\texttt{REJECTED},\texttt{META\_OVERFIT},\CANNOTCHECK\}\\
-&\rightarrow\texttt{GOVERNANCE\_APPROVED}
+\rightarrow\texttt{GOVERNANCE\_APPROVED}
 \rightarrow\texttt{PROMOTED}
 \rightarrow\texttt{ACTIVE\_PROMOTION\_ATTESTED}
 \rightarrow\texttt{MONITORED}.
-\end{split}
-\]
+\end{gathered}
+}
 Rejected and superseded variants remain negative history. A previous incumbent remains a rollback target when compatible.
 
 The existing v3 \texttt{EvolutionArchive} already separates challenger, assured, rejected and incumbent states and does not auto-promote a challenger merely because an evolution trial passes. However, its current \texttt{promote\_incumbent} interface accepts a caller-provided \texttt{governance\_approved} Boolean. We regard that as an implementation gap, not as adequate promotion evidence. A future 3.1 challenger should replace declaration-bound governance with a content-bound attestation naming exact candidate, assurance verdict, constitution epoch and approving process.
