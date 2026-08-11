@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-semantic-lunarc-submission-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "phase",
+    "verdict",
+    "expected_repo_sha",
+    "frozen_parent_sha",
+    "contract_sha256",
+    "slurm_job_id",
+    "parent_stage_job_id",
+    "parent_stage_harvest_sha256",
+    "model_execution_observed_by_submitter",
+    "descriptor_record_count_observed_by_submitter",
+    "claim_boundary",
+    "stage_runtime_tree_sha256",
+    "pre_execution_label_observation_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "paper3-semantic-lunarc-submission-v1"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "phase": {
+      "enum": [
+        "MODEL_STAGE",
+        "DESCRIPTOR"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "SUBMITTED_MODEL_STAGE_BATCH",
+        "SUBMITTED_DESCRIPTOR_BATCH_AFTER_STAGE_PASS"
+      ]
+    },
+    "expected_repo_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "frozen_parent_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "contract_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "slurm_job_id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "parent_stage_job_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "parent_stage_harvest_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "model_execution_observed_by_submitter": {
+      "const": false
+    },
+    "descriptor_record_count_observed_by_submitter": {
+      "const": 0
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stage_runtime_tree_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pre_execution_label_observation_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "phase": {
+            "const": "MODEL_STAGE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "const": "SUBMITTED_MODEL_STAGE_BATCH"
+          },
+          "parent_stage_job_id": {
+            "type": "null"
+          },
+          "parent_stage_harvest_sha256": {
+            "type": "null"
+          },
+          "stage_runtime_tree_sha256": {
+            "type": "null"
+          },
+          "pre_execution_label_observation_sha256": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "phase": {
+            "const": "DESCRIPTOR"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "const": "SUBMITTED_DESCRIPTOR_BATCH_AFTER_STAGE_PASS"
+          },
+          "parent_stage_job_id": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "parent_stage_harvest_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "stage_runtime_tree_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "pre_execution_label_observation_sha256": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitsha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    }
+  }
+}

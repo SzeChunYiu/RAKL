@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-label-chronology-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "state",
+    "first_external_label_at_utc",
+    "counts",
+    "authority_source",
+    "label_payload_accessed",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "paper3-label-chronology-v1"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "state": {
+      "enum": [
+        "ZERO_LABELS_OBSERVED",
+        "FIRST_LABEL_RECORDED"
+      ]
+    },
+    "first_external_label_at_utc": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_annotations",
+        "adjudications",
+        "evaluated_results"
+      ],
+      "properties": {
+        "external_annotations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "adjudications": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluated_results": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "authority_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "issue_number"
+      ],
+      "properties": {
+        "repository": {
+          "const": "SzeChunYiu/RAKL"
+        },
+        "issue_number": {
+          "const": 43
+        }
+      }
+    },
+    "label_payload_accessed": {
+      "const": false
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "ZERO_LABELS_OBSERVED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "first_external_label_at_utc": {
+            "type": "null"
+          },
+          "counts": {
+            "properties": {
+              "external_annotations": {
+                "const": 0
+              },
+              "adjudications": {
+                "const": 0
+              },
+              "evaluated_results": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "FIRST_LABEL_RECORDED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "first_external_label_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "counts": {
+            "properties": {
+              "external_annotations": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
