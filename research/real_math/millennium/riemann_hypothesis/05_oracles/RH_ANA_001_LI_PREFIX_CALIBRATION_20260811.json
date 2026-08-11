@@ -1,0 +1,50 @@
+{
+  "calibration_id": "CAL-RH-LI-PREFIX-001",
+  "atom_id": "RH-ANA-001",
+  "criterion": "Li transform on a synthetic functional-equation/conjugation-symmetric zero quartet",
+  "source_scope": "Bombieri-Lagarias arbitrary-multiset Li framework; calibration only, not a zeta-zero model",
+  "parameters": {
+    "beta": "1/4",
+    "gamma": "100",
+    "rho": "1/4 + 100 i"
+  },
+  "quartet": [
+    "rho",
+    "conj(rho)",
+    "1-rho",
+    "1-conj(rho)"
+  ],
+  "z_transform": {
+    "definition": "z = 1 - 1/rho",
+    "real": "159997/160001",
+    "imag": "1600/160001",
+    "quartet_transforms": [
+      "z",
+      "conj(z)",
+      "1/z",
+      "1/conj(z)"
+    ]
+  },
+  "li_quartet_formula": "Lambda_n(Q)=4-2*Re(z^n+z^(-n))",
+  "exact_arithmetic": "fractions.Fraction recurrence; no floating-point sign decisions",
+  "checked_range": {
+    "start": 1,
+    "end": 627
+  },
+  "result": {
+    "all_1_through_626_positive": true,
+    "first_negative_index": 627,
+    "lambda_1_approx": 0.00019999125047653578,
+    "lambda_626_approx": 0.0005938592107227204,
+    "lambda_627_approx": -0.0001388087293121471,
+    "lambda_1_exact_fraction_sha256": "sha256:413d5f795d42918eed6e2b957a0c9d1a2e1ca65f08ce6d619f96204584ab5b70",
+    "lambda_626_exact_fraction_sha256": "sha256:9aa430cc12ce0200f2077ccf5e3a8668d990f21e2204aba8b09ad47586fd77c1",
+    "lambda_627_exact_fraction_sha256": "sha256:d230009b7e5bd913b5a48998b63d89045457e7656bc061bb5a3a31983b90162b"
+  },
+  "interpretation": [
+    "A long finite prefix of Li-type positivity can coexist with an explicitly off-critical symmetric quartet.",
+    "Therefore finite-prefix Li positivity alone is not a logically sufficient global RH certificate in the arbitrary symmetric-multiset calibration world.",
+    "Any Li-based RH route must supply additional zeta-specific structure and a genuinely uniform-in-n mechanism; the calibration says nothing about whether the actual zeta zero set contains an off-critical zero."
+  ],
+  "authority": "EXACT_SYNTHETIC_CALIBRATION / NO_ZETA_ZERO_EVIDENCE / NO_NOVELTY_CLAIM / ROOT_AUTHORITY_NONE"
+}
