@@ -124,3 +124,20 @@ Call `plan_math_research(..., context_fiber=..., memory_review=..., research_tra
 A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate context, experience-memory and trace gates passed.
 
 Use `python -m rakl` for project state, bounded task packets, exact receipts and reproducible execution where applicable.
+
+## Self-RAKL and framework-upgrade entrypoint
+
+For any task that may change RAKL framework behavior, research workflow, authority semantics, protected evaluators, self-evolution machinery, or method version:
+
+1. read `RAKL_VERSION.json` if present;
+2. read `docs/RAKL_UPGRADE_PROTOCOL.md`;
+3. inspect the affected contract in `src/rakl/method_specs.py` and the relevant protected gates;
+4. classify the change as Class A implementation, Class B workflow/method, or Class C constitution **before editing**;
+5. for Class B/C changes, freeze the upgrade hypothesis, predicted meta-QoIs, evaluator/benchmark identity, negative controls and rollback plan before evaluated outcomes;
+6. implement on a challenger branch/PR and preserve the exact parent/candidate identity;
+7. never interpret deployment, a green badge from another SHA, a caller-supplied authority Boolean, same-session review, or the candidate's own evaluation narrative as promotion evidence;
+8. never change a protected evaluator/threshold/assurance packet in the same challenger that it judges unless a separately governed evaluator migration has been frozen;
+9. require fresh assurance for a strong method-evolution claim and keep exposed assurance packets out of later strong claims;
+10. after any promotion, separately attest that active `main` contains the approved content and passes exact-active-main validation.
+
+A direct operator instruction may override this process operationally. Record such an event as an explicit operator/process override. It may move code, but it does not create Self-RAKL evolution evidence by itself.
