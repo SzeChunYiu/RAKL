@@ -20,9 +20,9 @@ Target research thesis:
 
 | Issue | Deliverable | Dependencies |
 |-------|-------------|--------------|
-| **#156** | Closest-parent function matrix + implementable ablation suite | None (can run in parallel with #152) |
+| **#156** | Function matrix + A0–A7; A3↔A4 cheap conformance; **cluster conformance re-validation authorized** | No matched empirical ablation | **No** | Matched A3 vs A4 empirics after #247/#154/#155; AutoSci/`CANNOT_CHECK` rows |
 | **#152** | Formal epistemic noninterference invariant + executable tests | None (can run in parallel with #156) |
-| **#154** | Scientific state-transition benchmark + Authority Leakage Rate | #152 (for authority semantics) |
+| **#154** | V2 panel + neighbour residual; **model-baseline prereg/runner + LUNARC authorize** | Non-confirmatory direct-prompt job authorized | **No** | Full-text parent reads; remaining arms; #247 before confirmatory claims; subjective cases for non-synthetic additions |
 | **#138** | Base RESET vs LEARNING experience benchmark | Frozen contracts (already specified) |
 | **#155** | 2x2 continual-learning × governance factorial | #152, #154, #138 |
 | **#157** | Experience-to-method promotion with fresh assurance | Stable experience/authority interfaces from #152/#154 |
