@@ -30,7 +30,7 @@ test "$(sha256sum "$REPO/$BATCH_CONTRACT_REL" | awk '{print $1}')" = "$BATCH_CON
 test "$(git -C "$REPO" rev-parse HEAD)" = "$EXPECTED_REPO_SHA"
 test "$(git -C "$REPO" rev-parse refs/remotes/origin/main)" = "$EXPECTED_REPO_SHA"
 test -z "$(git -C "$REPO" status --porcelain --untracked-files=all)"
-git -C "$REPO" merge-base --is-ancestor 8074b4f405d4943677c534190be48815489d2412 "$EXPECTED_REPO_SHA"
+git -C "$REPO" merge-base --is-ancestor 841bbe286de4c2ebb8cdd1e547256047ded3fd47 "$EXPECTED_REPO_SHA"
 test "$(git -C "$REPO" remote get-url origin)" = "https://github.com/SzeChunYiu/RAKL.git"
 "$PYTHON" - "$REPO" "$REPO/$BATCH_CONTRACT_REL" "$EXPECTED_REPO_SHA" <<'PY'
 import hashlib, json, pathlib, subprocess, sys
