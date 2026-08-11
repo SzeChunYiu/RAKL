@@ -211,6 +211,24 @@ def test_labels_and_booleans_cannot_claim_frozen_or_matched_without_receipts() -
     assert any("resolved_protected_attestation_missing" in item for item in report.validation.problems)
 
 
+def test_experience_benchmark_inference_surfaced_for_insufficient_n() -> None:
+    """Verify that INSUFFICIENT_N status is correctly surfaced to the report.
+
+    The inference module's bootstrap/perm logic is fully tested in test_inference.py.
+    This test verifies that experience_benchmark correctly propagates the edge-case
+    status when n<3 transfer tasks are provided.
+    """
+    packet, context = _packet()
+    report = assess_experience_benchmark(packet, context)
+    # 2 transfer tasks should trigger INSUFFICIENT_N
+    assert report.transfer_success_inference_status.value == "INSUFFICIENT_N"
+    assert report.transfer_score_inference_status.value == "INSUFFICIENT_N"
+    # INSUFFICIENT_N means excludes_null=False and transfer_gain_observed=False
+    assert report.transfer_success_excludes_null is False
+    assert report.transfer_score_excludes_null is False
+    assert not report.transfer_gain_observed
+
+
 def test_forged_output_bytes_and_posthoc_freeze_are_rejected() -> None:
     packet, context = _packet()
     first_output = next(item for item in context.artifacts if item.artifact_id == "output:b-d1")
