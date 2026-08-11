@@ -1,25 +1,26 @@
-# RAKL Publication
+# RAKL Publication Workspace
 
-This directory is the canonical home for RAKL publication artifacts. Research evidence, experimental data, frozen receipts, discovery logs, and research-status records remain under `research/` so publication material is separated from the research workspace without rewriting provenance history.
+This directory is the canonical publication workspace. Research evidence, experiments, frozen receipts, discovery logs and scientific working state remain under `research/`.
 
 ## Canonical papers
 
-1. **Paper I — Epistemic Mechanics for Evidence-Governed Scientific Research**  
-   Source: `publication/epistemic_mechanics_round050/main.tex`
+- `papers/paper-01-epistemic-mechanics/` — **Epistemic Mechanics for Evidence-Governed Scientific Research**
+- `papers/paper-02-rakl-evidence-governed-research/` — **RAKL for Evidence-Governed AI-Assisted Scientific Research**
+- `papers/paper-03-directional-structural-witnesses/` — **Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**
+- `papers/paper-04-verified-discovery/` — **Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research**
 
-2. **Paper II — RAKL for Evidence-Governed AI-Assisted Scientific Research**  
-   Source: `publication/saturated_epistemic_mechanics/source/main.tex`
+Each paper directory contains a `PUBLICATION_STATUS.md` that separates what can be published now from stronger claims that remain evidence-gated.
 
-3. **Paper III — Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**  
-   Source: `publication/structural_amortization/main_v7.tex`
+## Other publication material
 
-4. **Paper IV — Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research**  
-   Source: `publication/math_research_assurance/main.tex`
+- `reviews/` — active external-review/annotation solicitation packages.
+- `shared/` — current cross-paper editorial standards, figure guidance, references and terminology material.
+- `archive/` — superseded manuscript drafts, old arXiv/release packages, legacy sources and historical editorial/audit material. Archive contents remain immutable historical evidence; they are not canonical submission sources.
 
-Shared manuscript build scripts, release packages, figures, bibliographies, submission/reproducibility material, and publication-review artifacts are colocated here. Paper-review material previously stored at top-level `review/` is now under `publication/review/`.
+## Compatibility
 
-## Compatibility aliases
+Historical repository paths are retained as lightweight aliases where current CI, builders or frozen receipts still depend on them. New work must use the canonical `publication/papers/...`, `publication/reviews/...`, `publication/shared/...` and `publication/archive/...` paths.
 
-The repository retains lightweight Git symlinks `paper -> publication` and `review -> publication/review` so existing CI, scripts, frozen receipts, and historical references continue to resolve. New publication work should use the `publication/` paths above.
+## Publication policy
 
-Migration performed 11 August 2026.
+A public preprint may be released when its manuscript truthfully states its current evidence boundary and the exact-head build/CI package is clean. Stronger empirical or journal-level claims remain blocked whenever the corresponding result, independent-review or reproduction evidence does not exist. Missing evidence is never filled by prose.
