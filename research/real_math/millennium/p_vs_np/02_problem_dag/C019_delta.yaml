@@ -1,0 +1,57 @@
+candidate_id: C019
+route: R004-full-cover
+parent_obligation: O9d11
+claim_scope: "Quadratic-residue difference graphs QR_p for primes p == 3 mod 8 pass the current high-GF(2)-rank admission screen; no full-cover lower bound is claimed."
+status: CANDIDATE_FAMILY_SCREEN_PASS
+root_status: OPEN_NO_SOLUTION_CERTIFICATE
+
+proved_in_draft:
+  - id: C019-L1
+    statement: "For prime p == 3 mod 8, the p x p adjacency matrix A_p[x,y]=1_Q(y-x) has rank p over GF(2)."
+    authority: PROOF_DRAFT_EXECUTABLE_CALIBRATION
+  - id: C019-L2
+    statement: "All rows and all columns are distinct; any exact C018 pullback representation must use injective left/right vertex maps and cannot compress to K < p by vertex identification."
+    authority: PROOF_DRAFT
+  - id: C019-L3
+    statement: "QR_p has degree (p-1)/2 and density forces forest-partition count Omega(p), so C014/C015 do not give logarithmic ceilings on this family."
+    authority: PROOF_DRAFT
+
+executable_checks:
+  artifact: research/real_math/millennium/p_vs_np/05_falsification/quadratic_residue_rank_screen.py
+  tested_primes: [3, 11, 19, 43, 59]
+  finite_claim_only: true
+
+resolved_screens:
+  gf2_rank: "PASS: rank p"
+  twin_or_repeated_vertex_pullback: "PASS: distinct rows and columns"
+  bounded_degree_ceiling: "NOT_LOGARITHMIC: degree Theta(p)"
+  constant_arboricity_ceiling: "NOT_LOGARITHMIC: density lower bound Omega(p)"
+
+unresolved_screens:
+  - source_level_cyclic_or_intersection_upper_bound
+  - translation_character_pair_reuse
+  - alternative_finite_state_or_population_encoding
+  - power_of_two_transference_for_boolean_encoding
+  - full_cover_lower_bound
+  - formalization_and_proof_receipt
+  - novelty_search_beyond_bounded_packet
+  - isolated_independent_review
+
+next_obligation:
+  id: O9d12
+  target: "Construct or refute an O(log p) full-cover/cyclic-intersection certificate for QR_p using translation and quadratic-character structure."
+  status: ACTIVE
+  discriminator_order:
+    - compile_source_valid_upper_bound_first
+    - search_character_based_pair_multiplexing
+    - exact_small_preserving_semifilter_invariant_if_no_certificate
+    - only_then_attempt_superlog_lower_bound
+
+promotion_blockers:
+  - no_full_cover_lower_bound
+  - no_theorem_prover_artifact
+  - no_isolated_recheck
+  - novelty_unresolved_no_novelty_claim
+  - no_independent_review
+
+root_impact: "CANDIDATE_FAMILY_IDENTIFICATION_ONLY"
