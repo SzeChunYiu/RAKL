@@ -127,7 +127,7 @@ active_obligations:
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, maximum-degree/matching ceilings, forest/arboricity ceilings, finite-state aggregation, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
+    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, maximum-degree/matching ceilings, forest/arboricity ceilings, finite-state aggregation, population-count/symmetry compression, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
   - id: O9d4
     target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
     route: R004-full-cover
@@ -166,15 +166,22 @@ active_obligations:
   - id: O9d9
     target: "construct or refute globally coupled explicit graph families whose aggregation-state or local-symbol complexity grows with coordinate count and that survive all current logarithmic upper-bound screens"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C017
     depends_on: [O9d8]
-    residual: C016-R1
-    discriminator: "measure quotient size, degree, arboricity, finite-state/trellis width, local symbol cost, exact tiny full-cover complexity, D_intersection/cyclic constructions, low-dimensional codes, and pair multiplexing before any asymptotic lower-bound attempt"
+    artifacts: [C017, symmetric_hamming_cover_ceiling]
+    result: "growing automaton state is insufficient for XOR-symmetric relations: every arbitrary symmetric function of coordinatewise XOR bits has rho <= 80t=O(log N), including growing-modulus, exact-distance, threshold, and arbitrary Hamming-shell unions"
+  - id: O9d10
+    target: "construct or refute non-symmetric growing-width globally coupled graph families that preserve coordinate identity and survive quotient, degree, arboricity, finite-state, population-count, linear, product, and cyclic upper-bound adversaries"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d9]
+    residual: C017-R1
+    discriminator: "prefer nonlinear code/constraint or algebraic relations with growing trellis width; before lower-bound search measure quotient size, degree, arboricity, state/trellis width, population-statistic compressibility, local symbol cost, exact tiny full-cover complexity, D_intersection/cyclic constructions, low-dimensional codes, and pair multiplexing"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d9]
+    depends_on: [O9d10]
 
 negative_checkpoints:
   - id: C002
@@ -201,6 +208,8 @@ negative_checkpoints:
     result: "if a bipartite graph edge set can be partitioned into `a` forests then rho <= D_intersection <= 4a ceil(log2 N); constant-arboricity families remain O(log N) even with linearly growing maximum degree"
   - id: C016
     result: "fixed finite-state aggregation over fixed-cost local pair symbols gives rho <= t(C_h+|Q||Sigma|)=O(log N); Hamming-distance mod 3 has arboricity Omega(N) yet rho <= 8 log2 N"
+  - id: C017
+    result: "every XOR-symmetric graph G_t(x,y)=S_t(x XOR y), for arbitrary symmetric S_t, has rho <= 80t=O(log N) by explicit complement-carrying population count and weight decoding; growing Hamming moduli do not escape"
 
 finite_checkpoints:
   - id: C008
