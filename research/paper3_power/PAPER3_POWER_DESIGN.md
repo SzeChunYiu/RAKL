@@ -5,7 +5,7 @@ Status: `CONFIRMATORY_PACKET_POWER_LIMITED` (path C)
 ## Hard chronology
 
 - Zero-label status at decision: `ZERO_LABELS_VERIFIED`
-- Git subject: `a23cf23be5e4b85ccc6a88c21b2c7b5d53c0919b`
+- Git subject: `e10f2320b0ee38c45bcc57e76d07be5e6055e016`
 
 ## Registered primary quantity
 
