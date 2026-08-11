@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/research-tool-inventory.schema.json",
+  "title": "RAKL Scoped Research Tool Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tools"],
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tool_id",
+          "name",
+          "kind",
+          "abstraction",
+          "source_atom_id",
+          "source_candidate_id",
+          "source_result_ids",
+          "source_context_hash",
+          "authority",
+          "preconditions",
+          "structural_signature",
+          "operation",
+          "guaranteed_effects",
+          "non_guarantees",
+          "validation_obligations",
+          "evidence_pointers",
+          "artifact_hash"
+        ],
+        "properties": {
+          "tool_id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "abstraction": {"type": "string", "minLength": 1},
+          "source_atom_id": {"type": "string", "minLength": 1},
+          "source_candidate_id": {"type": "string", "minLength": 1},
+          "source_result_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "source_context_hash": {"type": "string", "minLength": 1},
+          "authority": {"enum": ["HEURISTIC", "VERIFIED_LOCAL", "CONDITIONALLY_REUSABLE", "PROOF_BACKED", "SUPERSEDED"]},
+          "preconditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "structural_signature": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "operation": {"type": "string", "minLength": 1},
+          "guaranteed_effects": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "non_guarantees": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "known_failure_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+          "successful_reuse_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+          "proof_backing": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+          "artifact_hash": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
