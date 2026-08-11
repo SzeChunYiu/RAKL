@@ -28,6 +28,8 @@ class ProblemAtom:
             raise ValueError("problem atom requires id, goal, and context_hash")
         if not self.structural_coordinates:
             raise ValueError("problem atom requires structural coordinates")
+        if len(set(self.interface_keys)) != len(self.interface_keys):
+            raise ValueError("problem atom interface_keys must be unique")
 
 
 @dataclass(frozen=True)
@@ -344,7 +346,12 @@ def glue_local_sections(
     decomposition: ProblemDecomposition,
     sections: Iterable[LocalSection],
 ) -> GluingReport:
-    """Check whether local atom solutions form one compatible global section."""
+    """Check whether local atom solutions form one compatible global section.
+
+    `interface_keys` lets an atom explicitly declare which assignments participate
+    in cross-atom gluing.  For backward compatibility, an empty declaration means
+    all assignments remain globally visible, matching the pre-v3-interface rule.
+    """
 
     section_tuple = tuple(sections)
     by_atom = {section.atom_id: section for section in section_tuple}
@@ -373,7 +380,28 @@ def glue_local_sections(
                         reason="dependent atom section is missing",
                     )
                 )
+
+        assignment_keys = {key for key, _ in section.assignments}
+        if atom.interface_keys:
+            missing_interfaces = set(atom.interface_keys) - assignment_keys
+            for key in sorted(missing_interfaces):
+                obstructions.append(
+                    GluingObstruction(
+                        left_atom_id=atom.atom_id,
+                        right_atom_id=atom.atom_id,
+                        key=key,
+                        left_value="declared_interface",
+                        right_value="missing_assignment",
+                        reason="declared atom interface key is absent from the selected local section",
+                    )
+                )
+            visible_keys = set(atom.interface_keys)
+        else:
+            visible_keys = assignment_keys
+
         for key, value in section.assignments:
+            if key not in visible_keys:
+                continue
             previous = global_values.get(key)
             if previous is None:
                 global_values[key] = (section.atom_id, value)
