@@ -1,0 +1,59 @@
+{
+  "bindings": {
+    "contract": {
+      "path": "research/paper3_semantic_descriptor_lunarc/CONTRACT_V1.json",
+      "sha256": "fe4bec2cdf1d48f7c90b310288eadd1955edade940de1b9ddb82973b7dd53777"
+    },
+    "frozen_descriptor_implementation": {
+      "path": "src/rakl/paper3_strong_control.py",
+      "sha256": "0f23f49b5cc385d156c42a7835ed76df6613bb5110762590dab93cdef95ce24b"
+    },
+    "frozen_parent_sha": "f86fb72eee1331fe083ce6de86bafe7fd727764f",
+    "frozen_protocol": {
+      "canonical_sha256": "89e2604a92e7f990a721e47d27d70478ca42d3a223372cc903b15a06af8fe6fd",
+      "path": "research/PAPER3_STRONG_CONTROL_PROTOCOL_V1_20260811.json"
+    },
+    "frozen_source_set": {
+      "canonical_sha256": "c1995bb0aef2a18c2bf48690cc346d551648aa8cb46b9eeb06220ce88911f623",
+      "path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json"
+    },
+    "zero_label_observation": {
+      "path": "research/receipts/PAPER3_ZERO_LABEL_OBSERVATION_20260811.json",
+      "sha256": "77fa6d0a0e848b817fe6c8dceca9223cb1ee7efc4d19c1b50a5f11fc1b262dd7"
+    }
+  },
+  "blockers": [
+    "iteration_not_merged_into_main",
+    "exact_clean_merged_lunarc_checkout_not_bound",
+    "allocated_model_stage_and_runtime_attestation_job_not_submitted",
+    "allocated_model_stage_harvest_absent",
+    "separate_allocated_descriptor_job_not_submitted",
+    "post_descriptor_label_chronology_absent",
+    "descriptor_execution_and_harvest_absent"
+  ],
+  "claim_boundary": "Pre-execution LUNARC contract readiness only. No model asset was downloaded, no runtime tree was natively attested, no model was executed and no semantic descriptor or scientific result was generated in this iteration.",
+  "counts": {
+    "descriptor_jobs_submitted": 0,
+    "descriptor_records": 0,
+    "model_executions": 0,
+    "model_stage_jobs_submitted": 0,
+    "quantitative_figures_generated": 0
+  },
+  "created_at_utc": "2026-08-11T04:48:47Z",
+  "label_access": {
+    "adjudication_accessed": false,
+    "evaluated_result_accessed": false,
+    "external_annotation_accessed": false
+  },
+  "next_execution_order": [
+    "merge verified contract and bind the exact clean merged checkout SHA",
+    "submit allocated CPU model-stage/runtime-attestation batch",
+    "harvest scheduler, model hashes and exact runtime-tree evidence",
+    "obtain a current payload-free zero-label preflight observation",
+    "submit separate allocated CPU descriptor batch only after stage harvest PASS",
+    "obtain a post-descriptor zero-label observation or first-label cutoff",
+    "harvest descriptor execution and preserve READY or typed CANNOT_CHECK"
+  ],
+  "schema_version": "paper3-semantic-lunarc-readiness-v1",
+  "verdict": "CANNOT_CHECK_NOT_MERGED_NOT_SUBMITTED"
+}

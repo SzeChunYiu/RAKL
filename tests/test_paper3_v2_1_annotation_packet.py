@@ -25,6 +25,11 @@ RECEIPT_PATH = ROOT / "research/receipts/PAPER3_V2_1_ANNOTATION_PACKET_FREEZE_20
 PARENT_SHA = "f4cee8313ec64d02873b87f92c51c35c113cd70d"
 PACKET_FILE_SHA = "9cf6d78962f2f2dc8db31f0e799f8aa23f7461b23d72d881837e7315caa74e0c"
 PACKET_CANONICAL_SHA = "1840e828a112dd51af03b50eaa8c486392213024b376ab9cd0aa68f511074a99"
+ISSUE_URL = "https://github.com/SzeChunYiu/RAKL/issues/43"
+IMMUTABLE_PACKET_URL = (
+    "https://github.com/SzeChunYiu/RAKL/tree/"
+    "c6f2639b0927566c473817b4ebaafaee3a35ad36/research/paper3/annotation"
+)
 
 
 def _load(path: Path) -> dict:
@@ -33,6 +38,29 @@ def _load(path: Path) -> dict:
 
 def _file_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_v2_1_solicitation_is_discoverable_without_minting_authority() -> None:
+    root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    packet_readme = (
+        ROOT / "research/paper3/annotation/README_V2_1.md"
+    ).read_text(encoding="utf-8")
+
+    for text in (root_readme, packet_readme):
+        assert ISSUE_URL in text
+        assert IMMUTABLE_PACKET_URL in text
+        assert "zero public responses" in text
+        assert "`CANNOT_CHECK` from the public repository" in text
+
+    assert (
+        "This solicitation is not annotation evidence, review, adjudication, "
+        "provenance-audit evidence, a gate pass, peer review, or publication."
+    ) in root_readme
+    assert (
+        "A solicitation or public comment is not an annotation submission, review, "
+        "adjudication, provenance-audit evidence, a gate pass, peer review, or publication."
+    ) in packet_readme
+    assert "Do not post response files" in packet_readme
 
 
 def test_v2_1_packet_is_exact_subject_bound_opaque_and_schema_valid() -> None:
