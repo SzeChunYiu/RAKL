@@ -2,32 +2,65 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-attribution-run-v1.schema.json",
   "title": "Paper 5 Attribution Run",
+  "description": "One normalized Paper 5 four-arm attribution run record. The field layout is flat because it is the layout jointly required by experiments/paper5/run_attribution_schedule.py (which validates records) and experiments/paper5/analyze_attribution_results.py (which consumes the resulting JSONL). This record grants no scientific authority; it is an execution observation only.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["run_id", "task_id", "arm", "state_before_hash", "state_after_hash", "success", "score", "failure_signature", "validity_failures", "resource_usage", "output_hash"],
+  "required": [
+    "run_id",
+    "task_id",
+    "repetition",
+    "arm",
+    "state_before_hash",
+    "state_after_hash",
+    "success",
+    "score",
+    "failure_signature",
+    "validity_failures",
+    "output_hash",
+    "model_input_tokens",
+    "model_output_tokens",
+    "preprocessing_model_tokens",
+    "tool_calls",
+    "retrieval_calls",
+    "wall_time_ms"
+  ],
   "properties": {
     "run_id": {"type": "string", "minLength": 1},
     "task_id": {"type": "string", "minLength": 1},
+    "repetition": {"type": "integer", "minimum": 1},
     "arm": {"enum": ["MODEL_ONLY", "RAKL_RESET", "RAKL_SHAM_MEMORY", "RAKL_LEARNING"]},
     "state_before_hash": {"type": "string", "minLength": 1},
     "state_after_hash": {"type": "string", "minLength": 1},
     "success": {"type": "boolean"},
     "score": {"type": "number", "minimum": 0, "maximum": 1},
-    "failure_signature": {"type": "array", "items": {"type": "string"}},
-    "validity_failures": {"type": "array", "items": {"type": "string"}},
-    "resource_usage": {
-      "type": "object",
+    "failure_signature": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "validity_failures": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "output_hash": {"type": "string", "minLength": 1},
+
+    "model_input_tokens": {"type": "integer", "minimum": 0},
+    "model_output_tokens": {"type": "integer", "minimum": 0},
+    "preprocessing_model_tokens": {"type": "integer", "minimum": 0},
+    "tool_calls": {"type": "integer", "minimum": 0},
+    "retrieval_calls": {"type": "integer", "minimum": 0},
+    "wall_time_ms": {"type": "integer", "minimum": 0},
+
+    "false_transfer": {"type": ["boolean", "null"]},
+    "repeated_failure": {"type": ["boolean", "null"]},
+    "memory_changed_action": {"type": ["boolean", "null"]},
+    "unsupported_scope_escalation": {"type": ["boolean", "null"]},
+    "root_coordinate_surrogate_error": {"type": ["boolean", "null"]},
+    "local_global_gluing_failure": {"type": ["boolean", "null"]},
+
+    "harness_self_test": {
+      "type": ["object", "null"],
+      "description": "Present only when the record was produced by a non-model harness self-test adapter. Any record carrying this object is instrument-validation output and must never be reported as a Paper 5 attribution result.",
       "additionalProperties": false,
-      "required": ["model_input_tokens", "model_output_tokens", "preprocessing_model_tokens", "preprocessing_tool_calls", "external_retrieval_calls", "wall_time_ms"],
+      "required": ["adapter_id", "mode", "grants_scientific_authority"],
       "properties": {
-        "model_input_tokens": {"type": "integer", "minimum": 0},
-        "model_output_tokens": {"type": "integer", "minimum": 0},
-        "preprocessing_model_tokens": {"type": "integer", "minimum": 0},
-        "preprocessing_tool_calls": {"type": "integer", "minimum": 0},
-        "external_retrieval_calls": {"type": "integer", "minimum": 0},
-        "wall_time_ms": {"type": "integer", "minimum": 0}
+        "adapter_id": {"type": "string", "minLength": 1},
+        "mode": {"type": "string", "minLength": 1},
+        "grants_scientific_authority": {"const": false}
       }
-    },
-    "output_hash": {"type": "string", "minLength": 1}
+    }
   }
 }

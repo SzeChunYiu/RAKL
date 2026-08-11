@@ -8,9 +8,10 @@ freeze the environment-specific adapter before outcomes. The adapter interface i
                    --record-output RECORD.json
 
 The adapter must write RAW.json before RECORD.json and RECORD.json must conform
-to ``schemas/paper5-attribution-run-v1.schema.json``. This orchestrator verifies
-frozen hashes, schedule identity, evaluation-state non-mutation, resource
-ceilings and raw-output hash binding before appending the record to JSONL.
+to ``schemas/paper5-attribution-run-v1.schema.json``. This orchestrator enforces
+that schema directly and additionally verifies frozen hashes, schedule identity,
+evaluation-state non-mutation, resource ceilings and raw-output hash binding
+before appending the record to JSONL.
 
 The orchestrator does not know how to call a model and therefore cannot silently
 substitute a provider/model when the frozen adapter is unavailable.
@@ -27,6 +28,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from jsonschema import Draft202012Validator
+
+RECORD_SCHEMA_PATH = (
+    Path(__file__).resolve().parents[2] / "schemas" / "paper5-attribution-run-v1.schema.json"
+)
+
 ARMS = ("MODEL_ONLY", "RAKL_RESET", "RAKL_SHAM_MEMORY", "RAKL_LEARNING")
 RESOURCE_FIELDS = (
     "model_input_tokens",
@@ -40,6 +47,20 @@ RESOURCE_FIELDS = (
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load_record_validator() -> Draft202012Validator:
+    """Load the frozen record schema.
+
+    A missing/unreadable schema is a CANNOT_CHECK condition and must stop the
+    run. Skipping validation silently would let unconformant records enter the
+    evidence JSONL while the docstring still claimed schema conformance.
+    """
+    if not RECORD_SCHEMA_PATH.is_file():
+        raise SystemExit(f"record schema missing, cannot validate: {RECORD_SCHEMA_PATH}")
+    schema = json.loads(RECORD_SCHEMA_PATH.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema)
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -96,7 +117,19 @@ def validate_schedule(tasks: dict[str, Any], schedule: dict[str, Any], contract:
     return by_task
 
 
-def validate_record(record: dict[str, Any], schedule_row: dict[str, Any], contract: dict[str, Any], raw_path: Path) -> None:
+def validate_record(
+    record: dict[str, Any],
+    schedule_row: dict[str, Any],
+    contract: dict[str, Any],
+    raw_path: Path,
+    validator: Draft202012Validator,
+) -> None:
+    errors = sorted(validator.iter_errors(record), key=lambda err: list(err.path))
+    if errors:
+        detail = "; ".join(
+            f"{'/'.join(str(part) for part in err.path) or '<root>'}: {err.message}" for err in errors[:5]
+        )
+        raise SystemExit(f"{schedule_row['run_id']}: record violates paper5-attribution-run-v1: {detail}")
     for field in ("run_id", "task_id", "repetition", "arm"):
         if record.get(field) != schedule_row.get(field):
             raise SystemExit(f"{schedule_row['run_id']}: adapter record changed frozen {field}")
@@ -142,6 +175,7 @@ def main() -> None:
     adapter = Path(contract["adapter_path"]).expanduser().resolve()
     validate_contract(contract, args.tasks, args.schedule, adapter)
     by_task = validate_schedule(tasks, schedule, contract)
+    validator = load_record_validator()
 
     run_rows = sorted(schedule["runs"], key=lambda row: int(row["sequence"]))
     selected = [
@@ -205,7 +239,7 @@ def main() -> None:
         if not record_path.is_file():
             raise SystemExit(f"adapter did not write record: {record_path}")
         record = load(record_path)
-        validate_record(record, row, contract, raw_path)
+        validate_record(record, row, contract, raw_path, validator)
         with args.results_jsonl.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
             handle.flush()
