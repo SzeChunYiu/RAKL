@@ -22,9 +22,9 @@ This matrix separates deployment, internal hardening, measurement instrumentatio
 | Four-arm attribution record schema | enforced | `paper5-attribution-run-v1` schema is satisfiable with orchestrator/analyzer consumers; records are validated on write (#256) |
 | Four-arm attribution executor contract | enforced proposal-only | `paper5-executor-contract-v1` schema + `build_executor_contract.py`; orchestrator accepts built contracts (#263) |
 | Four-arm attribution harness instrument | validated, not a Paper 5 result | null + planted-lift self-test (288 runs) recovers truth both ways; stamped `grants_scientific_authority: false` (#279, receipt at `research/paper5_harness_selftest_v1/`) |
-| Four-arm attribution confirmatory study | preregistered, not executed | real packet/adapter/sham/evaluator freeze and execution remain on #250/#251; learning-semantics gate #238 still open |
-| Live RAKL_math cycle telemetry | rollout in progress | prospective longitudinal curves can be collected; missing fields must be recorded rather than invented |
-| Independent retained-novelty audit | protocol frozen, evidence pending | internal semantic-growth counts remain internally classified until audited |
+| Four-arm attribution confirmatory study | packet freeze stub only; not executed | `research/paper5_confirmatory_packet_v1/PACKET_FREEZE_STUB.json` is `NOT_CONFIRMATORY_PACKET_FROZEN_AND_EXECUTABLE`; real freeze/execution remain on #250/#251 with #238 + LUNARC blockers |
+| Live RAKL_math cycle telemetry | harvester + coverage observation landed; analysis pending | read-only harvest preserves `CANNOT_*` markers and refuses cross-version pooling; missing fields must be recorded rather than invented |
+| Independent retained-novelty audit | protocol + freeze stub; human evidence pending | internal semantic-growth counts remain internally classified until audited; AI roleplay is not independent review |
 | Independent external assurance of v3 hardening | pending | internal conformance/adversarial tests do not equal independent assurance |
 | RAKL 3.1 superiority/incumbency | not established | future Class-B challenger must earn the label under the upgrade protocol |
 
