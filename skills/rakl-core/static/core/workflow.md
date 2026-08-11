@@ -124,13 +124,17 @@ proposed next action
 content hash and timestamp
 ```
 
-For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, and `NEXT_STEP_PROPOSED`.
+For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, and `NEXT_STEP_PROPOSED`.
+
+`EXPERT_CONTEXT_REVIEW` records role-separated same-context passes over domain knowledge, analogy transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. Preserve disagreement and unresolved uncertainty; do not represent these roles as independent peer review.
+
+Trace entries are tamper-evident: except for the first event, `previous_event_hash` must equal the preceding event's `artifact_hash`.
 
 This is a reproducible scientific decision ledger, not a raw private chain-of-thought transcript.
 
 ## I. Pre-candidate gate
 
-Do not invent or propose a candidate while the active context/method-transfer/analogy packet or public trace is missing, incomplete, unfrozen, or chronologically later than the candidate.
+Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
 
 When a runtime gate exists, obey it. For mathematical research, call:
 
