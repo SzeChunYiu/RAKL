@@ -53,3 +53,15 @@ descriptor job with a current zero-label observation. Harvest it only after the
 required chronology observation/cutoff exists. Preserve any model, tokenizer,
 scheduler, chronology or runtime failure as a typed null; do not alter the
 frozen projection or model to obtain a pass.
+
+## Subject-binding freeze window (issue #144)
+
+`HEAD`, `refs/remotes/origin/main`, and `expected_repo_sha` must stay equal for
+the entire stage-submit → stage-harvest interval. Do not `git fetch` mid-window.
+A later-session harvest after mainline advances is the known stranded-asset
+failure mode; use
+`experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh` so harvest
+is mandatory before the window closes. See
+`research/paper3_semantic_descriptor_lunarc/SUBJECT_BINDING_FREEZE_WINDOW_144.md`.
+Canonical A1 evidence is jobs `3476291`/`3476296` (PR #159); do not restage
+unless intentionally rebinding a new subject.
