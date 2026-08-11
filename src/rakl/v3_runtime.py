@@ -26,6 +26,7 @@ from .problem_solving_algebra import ProblemState, ResearchOperator
 from .research_tool_inventory import ResearchToolInventory, add_research_tool
 from .saturation_vector import NoveltyRound, SaturationVectorState, add_novelty_round
 from .strategy_motifs import StrategyMotif
+from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
 
 
 @dataclass(frozen=True)
@@ -183,6 +184,21 @@ def compile_state_fibre(
         expertise_chunks=expertise_chunks,
         candidate_method_families=candidate_method_families,
         top_k_each=top_k_each,
+    )
+
+
+def materialize_state_substrate(
+    state: RAKLV3State,
+    *,
+    legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
+) -> UnifiedSubstrateSnapshot:
+    """Create the common read-only substrate overlay for the current v3 state."""
+
+    return materialize_unified_substrate(
+        experience=state.experience,
+        tools=state.tools,
+        failures=state.failures,
+        legacy_knowledge_fibers=legacy_knowledge_fibers,
     )
 
 
