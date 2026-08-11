@@ -1,0 +1,97 @@
+\subsection{Authority as a partial order rather than a confidence meter}
+
+Scientific authority is represented as a partial order because many improvements are incomparable. A new calibration study can strengthen grounding without changing mechanism evidence. A discriminating intervention can strengthen identification while leaving the raw measurement quality unchanged. A robust decision analysis can increase decision usability without establishing a more detailed mechanism. These are scientifically different movements through state.
+
+Let
+\[
+\alpha(c)=(G,R,M,I,D)
+\]
+denote grounding, representation/relation, mechanism, identification and decision certificates for claim \(c\). The order \(\alpha_1\preceq\alpha_2\) is defined only under compatible claim scope and means that every relevant certificate carried by \(\alpha_1\) is retained or strengthened in \(\alpha_2\). The order need not be total. One claim can have stronger measurement provenance while another has stronger identification evidence. A single scalar would force a tradeoff rate between these coordinates that has no general scientific justification.
+
+This is why the architecture uses blocking conditions. Suppose a model has exceptional predictive performance but relies on temporally leaked features. No amount of predictive score compensates for the causal availability violation if the target is a prospective prediction. Similarly, a large literature count cannot compensate for shared dataset ancestry when independent replication is required. The authority representation is intentionally non-compensatory on such coordinates.
+
+Partial order language also prevents the word ``confidence'' from doing too much work. Statistical confidence, posterior probability, model-selection weight, source quality and epistemic authority are different objects. A 95\% interval is not ``95\% authority,'' and an LLM's verbal confidence is not a measurement certificate. Probabilities may appear inside authority coordinates when their assumptions are valid, but authority itself records the type and scope of what those probabilities license.
+
+The authority firewall is therefore a collection of forbidden coercions. Retrieval rank cannot raise authority. Citation count cannot raise authority. Workspace occupancy cannot raise authority. Model agreement cannot raise mechanism authority without evidence of independence and identification. Human approval cannot by itself transform a missing measurement into a measured value. These restrictions make the framework conservative, but they also make claims auditable: a reviewer can ask which certificate authorized a transition rather than interpreting an opaque aggregate score.
+
+This structure is also compatible with scientific disagreement. Two research groups can possess different authority certificates because they have access to different evidence or accept different explicit assumptions. The atlas can represent both states and the exact assumptions separating them. Resolving the disagreement then becomes an experiment or evidence-acquisition problem rather than a contest between scalar confidences.
+
+\subsection{Decision authority is downstream of scientific authority but not reducible to it}
+
+Scientific research often terminates in a decision rather than a theory. A decision claim has its own prerequisites: action set, loss or utility, target population, time horizon, feasible information, and the scientific uncertainty over outcomes. This is why decision authority is a separate coordinate rather than the top rung of a single truth ladder.
+
+A partially identified mechanism can still support a robust action. If every model in the survivor set recommends the same intervention under the registered loss, the decision can have strong robustness even though mechanism identification remains weak. Conversely, a sharply estimated predictive model can have low decision authority if the action cost is asymmetric, the deployment population differs, or the features needed at decision time are causally unavailable.
+
+The decision certificate therefore records the set of scientific states over which the action was evaluated. If later evidence expands the uncertainty set or changes the target population, the action can be re-evaluated without pretending the earlier decision was irrational. It was conditionally justified under a prior state. This versioned interpretation is especially important in fast-changing domains where policies must be made before all scientific uncertainty is resolved.
+
+Decision authority also prevents a common benchmark mistake. A system that predicts well is not automatically useful for action if the benchmark loss differs from the real decision loss. Accuracy, log loss and calibration can each be relevant while still failing to encode the cost of false positives, intervention harm or abstention. \RAKL{} therefore requires the decision target to be stated before a model-selection score can be interpreted as action value.
+
+When no decision is required, the coordinate can remain absent. The framework does not force every scientific result into optimization. Descriptive knowledge, mechanism understanding, negative results and identification bounds are legitimate endpoints in their own right.
+
+\subsection{Authority is not confidence, probability or calibration}
+
+The authority tuple should not be confused with a probability that a sentence is true. Probabilistic belief and predictive calibration are useful scientific objects, but they answer different questions. A model can assign a well-calibrated probability to an event without identifying the event's mechanism. A source can provide strong mechanistic evidence about a pathway while leaving a downstream forecast poorly calibrated. A decision can be robust across a wide identified set even when no member has high posterior probability. These cases motivate keeping epistemic authority and probabilistic uncertainty as separate coordinates that can constrain one another without being identified.
+
+Suppose a predictive model emits \(P(Y\mid X)\). Calibration evidence can increase confidence that its probability statements have the registered frequency or scoring-rule interpretation on a target population. That evidence belongs primarily to representation/prediction authority and transport. It does not create provenance for an external source, mechanism ancestry or point identification. Conversely, an experimentally supported mechanism can constrain the plausible model family without guaranteeing that a particular finite-sample probabilistic forecast is calibrated. The framework therefore permits both a probability object and an authority certificate to attach to the same claim while recording distinct verification routes.
+
+This separation prevents two common scalarization errors. The first is \emph{confidence laundering}: a fluent model reports high internal confidence, which is then interpreted as scientific support. The second is \emph{evidence laundering}: a claim has impeccable provenance, which is then interpreted as a high probability of truth regardless of study design, selection or context. Provenance answers ``where did this come from?''; calibration answers ``how do these probabilities behave?''; authority answers ``what type of scientific transition has been licensed?'' None subsumes the others.
+
+The distinction also matters for abstention. A fail-closed system should return \CannotCheck{} when the evidence required for a particular authority upgrade is unavailable even if its proposer assigns high probability to the candidate. But it need not abstain from every downstream decision. If a policy is robust across the surviving identified set, decision authority may be strong while mechanism authority remains weak. Separating the axes allows the system to be conservative about explanation without becoming useless for action.
+
+\subsection{Proposal, verification and update}
+The proposal channel
+\begin{equation}G_\theta(K_t,a_t)\rightarrow\mathcal P_t\end{equation}
+may be implemented by an LLM, symbolic program, human or hybrid. Verification is separate:
+\begin{equation}
+\begin{aligned}
+V(p,e,\gamma)\rightarrow\{&\mathrm{SUPPORTED},\mathrm{REFUTED},\mathrm{PARTIALLY\_IDENTIFIED},\\
+&\mathrm{BLOCKED},\CannotCheck\}.
+\end{aligned}
+\end{equation}
+Canonical update is
+\begin{equation}K_{t+1}=\mathcal U(K_t,a_t,e_{t+1},V,\mathcal G_t^K).\end{equation}
+Negative history is monotone,
+\begin{equation}\mathcal H_t^{-}\subseteq\mathcal H_{t+1}^{-},\end{equation}
+meaning later evidence can supersede interpretation or scope but cannot erase the historical null/refutation event.
+
+\subsection{Verification is claim-type specific}
+
+A generic ``critic'' cannot verify every scientific proposal with one rubric. Verification depends on the proposed authority effect. A bibliographic claim can be verified against source metadata. A numerical transformation can be verified by recomputation and unit checks. A statistical claim requires a data and analysis identity. A mechanism claim requires ancestry and identification assumptions. A decision claim requires a loss function, action set, target population and transport scope.
+
+For proposal \(p\), the verifier therefore evaluates a contract
+\[
+V_p=(\tau_p,\gamma_p,E_p,A_p,F_p),
+\]
+where \(\tau_p\) is claim type, \(\gamma_p\) context, \(E_p\) required evidence classes, \(A_p\) assumptions and \(F_p\) falsifiers. The verifier is not necessarily one model or one program. It can be a composition of deterministic checks, statistical analyses, source inspection, domain review and protected evaluators. What matters is that the required evidence cannot be substituted by the proposal generator's self-assessment.
+
+The outcome vocabulary is richer than accept/reject. `SUPPORTED' means the registered evidence licenses the proposed scoped update. `REFUTED' preserves decisive counterevidence. `PARTIALLY\_IDENTIFIED' means evidence narrows the target without selecting a unique point or mechanism. `BLOCKED' means a stated prerequisite has not been met. \CannotCheck{} means the required evidence or verification capability is unavailable. These outcomes have different downstream consequences: a refutation can close or redirect a fiber, a block opens a prerequisite, and partial identification may already be sufficient for a robust decision.
+
+Verification identity is itself versioned. If a software library, rubric, model judge or domain criterion changes, the certificate names the new evaluator. Otherwise a later replay can silently produce a different answer under the same apparent claim. For strong self-evolution claims, protected evaluator state is additionally outside the challenger's write authority. This is the method-level analogue of keeping the measuring instrument separate from the object being optimized.
+
+A verifier can still be wrong. \RAKL{} does not claim infallible certification. The purpose of explicit verification identity is to make such failure localizable and revisable. If a verifier is later found defective, the system can trace which authority upgrades depended on it, invalidate or downgrade those certificates, and preserve the historical event. Without that dependency graph, correction becomes a global narrative rewrite.
+
+\subsection{Mechanism, measurement and uncertainty}
+Mechanistic authority requires an evidence-bearing ancestry such as
+\begin{equation}
+\begin{aligned}
+\text{building blocks}&\to\text{interactions}\to\text{mechanism}\\
+&\to\text{mesoscopic state}\to\text{effective law}\to\text{observation/QoI}.
+\end{aligned}
+\end{equation}
+Missing ancestry leads to partial identification or a mechanism set rather than a forced mechanism label.
+
+Measurement is explicit. We write
+\begin{equation}y=h(O,\eta,\gamma)+\epsilon,\end{equation}
+with $\eta$ representing instrument/calibration state. For affine $Y=AX+b$,
+\begin{equation}\mu_Y=A\mu_X+b,\qquad \Sigma_Y=A\Sigma_XA^\top.\end{equation}
+For differentiable nonlinear $g$, the first-order approximation
+\begin{equation}\Sigma_{g(X)}\approx J_g\Sigma_XJ_g^\top\end{equation}
+is explicitly local and assumption-dependent. Root-sum-square uncertainty is accepted only with an independence or uncorrelatedness witness.
+
+\subsection{Metrology boundary: measured values are not context-free numbers}
+
+The measurement layer is grounded in established metrology rather than invented uncertainty vocabulary. The JCGM Guide to the Expression of Uncertainty in Measurement treats measurement uncertainty as part of the reported result and supplies general rules for evaluating and expressing it \cite{jcgm2008}. \RAKL{} uses this lineage to enforce a simple point: a number without its measurand definition, calibration state, units, transformation history and uncertainty model is not yet a comparable scientific object.
+
+This becomes critical when LLMs normalize literature. Converting units is easy; proving that two quantities are the same measurand is not. One paper may report a direct observable, another a model-derived latent quantity, and a third a proxy calibrated under a different regime. A numeric conversion can be correct while the scientific merge is false. The projection step therefore records the observation operator before normalization decides whether values can be transported.
+
+Uncertainty propagation likewise has scope. The affine covariance law is exact for the stated second-moment transformation. First-order Jacobian propagation is a local approximation whose adequacy depends on nonlinearity and operating region. Independence-based root-sum-square formulas require an independence or uncorrelatedness witness. When these conditions fail, \RAKL{} must either use a more appropriate propagation method, retain a conservative bound, or return \CannotCheck{}. The model cannot fill in a missing covariance by assuming independence because the resulting narrower interval would itself be a scientific claim.

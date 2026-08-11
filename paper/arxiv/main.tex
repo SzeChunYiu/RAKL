@@ -1,0 +1,309 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,tabularx,array}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist{nosep}
+\setlength{\emergencystretch}{2em}
+\captionsetup{font=small,labelfont=bf}
+
+\title{RAKL: An Evidence-Governed Recursive Atlas Method for Scientific Research with Large Language Models}
+\author{Sze Chun Yiu}
+\date{August 2026}
+
+\newcommand{\RAKL}{\textsc{RAKL}}
+\newcommand{\CannotCheck}{\texttt{CANNOT\_CHECK}}
+\newcommand{\CannotCompile}{\texttt{CANNOT\_COMPILE}}
+\newcommand{\SoftwareTests}{598}
+\newcommand{\ImplementationSHA}{\texttt{138d4857cfc34a2f95c7de512567c4a18591f50d}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large language models can search literature, generate hypotheses, execute analyses and draft scientific reports, while recent systems increasingly automate end-to-end research workflows. Fluency and workflow completion, however, do not determine which generated statements deserve scientific authority, whether apparently conflicting studies share a context, whether predictive agreement identifies a mechanism, or whether a self-modifying research agent improved beyond the benchmark it optimized. We introduce \RAKL{} (Recursive Atomic Knowledge Lattices), a candidate evidence-governed methodology for LLM-mediated scientific inquiry. \RAKL{} represents research as controlled updates to an external contextual Knowledge Atlas. Local scientific charts carry evidence, context and multi-axis authority certificates; typed transitions separate representation, prediction, mechanism, identification and decision claims; incompatible local views can remain a plural atlas or identified set rather than being forcibly merged. Residuals open recursive atomic research fibers, negative evidence is immutable history, and stopping depends on semantic novelty and evidence-lineage independence. A bounded context compiler exposes only an epistemically mandatory working set to the LLM, decoupling archive growth from prompt growth. The method is also applied to itself: challenge learning, external-method assimilation and constructive invention may propose changes, but strong self-evolution evidence requires frozen development tests, fresh assurance and a protected evaluator. The current reference profile assigns explicit contracts to 24 high-impact research-method surfaces and includes executable measurement/uncertainty, execution-provenance, context-efficiency and model-criticism support. On the exact implementation candidate \ImplementationSHA{}, the frozen software suite passed \SoftwareTests{} tests. Same-context Self-\RAKL{} has already exposed and repaired several framework defects, which we treat only as first-sign evidence; the stronger self-evolution and scientific-discovery claims remain preregistered. A real quantitative-finance study will use the framework to construct a descriptive and predictive model of 5- and 15-minute cryptocurrency spot movement, with Polymarket strictly downstream of spot-model validation.
+\end{abstract}
+
+\section{Introduction}
+Scientific-agent systems have moved rapidly beyond question answering. Co-Scientist combines generation, reflection, ranking and hypothesis evolution and includes experimental biomedical validation \citep{gottweis2026coscientist}; Robin integrates literature and data-analysis agents across a discovery workflow \citep{ghareeb2026robin}; AI Scientist-v2 automates experiment design, execution, analysis and paper generation using agentic tree search \citep{yamada2025aiscientistv2}; Kosmos uses a structured world model for long-horizon discovery \citep{mitchener2025kosmos}; SciAgents couples multi-agent reasoning with ontological knowledge graphs \citep{ghafarollahi2024sciagents}; and PaperQA2 demonstrates strong agentic literature synthesis \citep{skarlinski2024paperqa2}. These systems make it untenable to position a new method as novel merely because it searches papers, generates hypotheses, uses multiple agents, retains research state or iteratively revises ideas.
+
+The remaining problem is narrower and, we argue, more fundamental: \emph{what is a new observation allowed to change in the scientific state?} Two papers can use the same terminology while describing different populations, scales or measurement operators. Two models can be observationally equivalent yet mechanistically distinct. A model can be decision-useful while its microscopic mechanism remains unidentified. Several papers or agents can appear independent while sharing the same evidence lineage. A null result can disappear after enough iterations. A research loop can stop because a compute budget is exhausted rather than because the search has become semantically flat. A self-modifying agent can overfit the very evaluator used to declare its improvement.
+
+\RAKL{} treats these as failures of \textbf{epistemic state transition}. The language model is a replaceable proposer. Canonical scientific state lives outside the model and changes only through evidence- and governance-bearing transitions. Scientific knowledge is represented as an atlas of contextual local views rather than one accumulating natural-language answer. The same evidence discipline is applied recursively to candidate changes in the research method itself.
+
+The present preprint makes five contributions. First, it specifies a projection-first scientific state in which source claims become context-scoped local charts before they compete. Second, it provides a typed transition and obstruction discipline that separates local compatibility, path coherence, global existence and global identifiability. Third, it represents scientific authority as a multi-axis partial order rather than a scalar confidence. Fourth, it couples recursive fibers, negative history, semantic/evidence-lineage stopping, bounded epistemic context, metacognitive learning and governed method evolution in one control architecture. Fifth, it makes these claims falsifiable through machine-checkable method contracts, hostile known-answer worlds, a frozen self-bootstrap protocol and a preregistered real scientific application.
+
+We do not claim novelty for multi-agent science, knowledge graphs, provenance, sheaf-like local-to-global reasoning, hierarchical memory, prompt compression, active experiment design, causal discovery, skill libraries or program evolution in isolation. The candidate contribution is the integrated evidence-governed transition discipline connecting them.
+
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{\input{../figures/fig1_architecture.tex}}
+\caption{\textbf{RAKL separates proposal generation from scientific authority.} Evidence and tools inform a replaceable proposer, but candidate claims and method changes pass through explicit verification before canonical state can change. Residuals drive new scientific fibers; method residuals can trigger Challenge Learning and Self-RAKL, but fresh assurance is outside the challenger's write authority.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Related work and novelty boundary}
+Self-improving agents and reusable skills are established directions. Darwin G\"odel Machine iteratively modifies agent code and empirically selects descendants \citep{zhang2025dgm}. EvoSkill uses failure analysis, held-out validation and a Pareto skill archive \citep{alzubi2026evoskill}. SkillFoundry builds and evolves scientific skill libraries from heterogeneous resources \citep{shen2026skillfoundry}. EvoAgentBench explicitly evaluates self-evolution through ability transfer \citep{gao2026evoagentbench}. Consequently, \RAKL{} does not claim novelty for recursive modification, failure-driven skill creation or held-out skill transfer.
+
+Prediction and mechanism are also known to diverge. CausaLab evaluates hidden causal recovery separately from task performance, reinforcing that good prediction need not identify the generator. Local-to-global consistency has a long mathematical history; recent sheaf work gives machine-verified conditions under which compatible engineering views glue uniquely \citep{gibson2026sheaves}. Provenance-centered knowledge models similarly preserve attributed local worlds rather than forcing every statement into one global fact set \citep{vitali2026provenance}. \RAKL{} uses these as prior mechanisms and claims only the narrower integration with scoped authority, residual routing and governed state transitions.
+
+Hierarchical memory and context optimization are also prior art. MemGPT frames long-horizon context as a virtual-memory problem \citep{packer2023memgpt}; RAPTOR organizes multi-resolution retrieval hierarchically \citep{sarthi2024raptor}; LLMLingua compresses prompts \citep{jiang2023llmlingua}; and RECOMP selectively compresses retrieved evidence \citep{xu2023recomp}. \RAKL{} therefore does not claim generic compression or hierarchical memory. Its narrower requirement is that a context policy preserve registered mandatory epistemic material or fail closed.
+
+\section{Formal method}
+\subsection{Task, researcher state and epistemic state}
+A scoped inquiry is
+\begin{equation}
+\mathcal P=(O,\mathcal Q,\Gamma_0,\mathcal E_0,\mathcal B,\Lambda),
+\end{equation}
+where $O$ is the target object, $\mathcal Q$ the registered scientific questions or quantities of interest, $\Gamma_0$ the context/observation boundary, $\mathcal E_0$ the evidence available at the declared cutoff, $\mathcal B$ the resource budget, and $\Lambda$ the blocking epistemic invariants.
+
+The functional researcher state is
+\begin{equation}
+\mathfrak R_t=(K_t,\mathcal Z_t,\Omega_t,\Pi_t,\mathcal G_t,\mathcal M_t,\mathcal X_t,\mathcal R_t),
+\end{equation}
+separating canonical scientific state, explanatory/world-model survivors, method skills, executive policy, research agenda, metacognition, experience/transfer history and resources. The epistemic state is
+\begin{equation}
+K_t=(\mathcal A_t,\mathcal T_t,\mathcal V_t,\mathcal E_t,\mathcal U_t,\mathcal O_t,\mathcal F_t,\mathcal H_t^{-},\mathcal S_t,\mathcal G_t^K),
+\end{equation}
+with Knowledge Atlas charts, typed transitions, survivors, evidence/provenance, uncertainty and identified sets, obstructions/residuals, recursive fibers, immutable negative history, saturation state and protected governance identity.
+
+\subsection{Contextual charts, transitions and gluing}
+A local scientific chart is
+\begin{equation}
+C_i=(U_i,\phi_i,\gamma_i,e_i,\alpha_i),
+\end{equation}
+where the context $\gamma_i$ can include population, scale, regime, units, observation model, assumptions, intervention, time/cutoff and QoI. Source observations are therefore treated as contextual projections $y_i=\pi_i(O\mid\gamma_i)$ rather than globally competing whole-object answers.
+
+For overlapping charts,
+\begin{equation}
+T_{ij}^{\tau,\sigma}:\phi_i(U_i\cap U_j)\rightarrow\phi_j(U_i\cap U_j)
+\end{equation}
+is a typed, scoped transition carrying evidence, assumptions and uncertainty semantics. Composition is licensed only when interfaces, relation types, scopes, invariants, lineage and error-composition rules are compatible. Graph connectivity alone does not create endpoint scientific authority.
+
+At comparison layer $\ell$, a contradiction requires overlap, alignment and incompatibility:
+\begin{equation}
+\operatorname{Contradict}_{\ell}(C_i,C_j)=\operatorname{Overlap}(C_i,C_j)\land\operatorname{Align}_{\ell}(C_i,C_j)\land\neg\operatorname{Compatible}_{\ell}(C_i,C_j).
+\end{equation}
+The gluing operator may return a global formalism, a plural atlas, or an obstructed/identified set. Pairwise compatibility is therefore not silently promoted to unique global identification.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.98\textwidth}{!}{\input{../figures/fig2_atlas.tex}}
+\caption{\textbf{Contextual Knowledge Atlas and target-conditioned inquiry.} Papers, datasets and models become local scientific charts. Typed transitions establish which comparisons and derivations are licensed; unresolved incompatibility remains an obstruction. The active research problem is not to maximize the graph, but to find an authority-valid support structure to target $\tau$. A prerequisite intersecting every admissible route is an epistemic cut.}
+\label{fig:atlas}
+\end{figure}
+
+\subsection{Multi-axis scientific authority}
+For claim $c$, \RAKL{} represents scientific authority as
+\begin{equation}
+\alpha(c)=(G_c,R_c,M_c,I_c,D_c),
+\end{equation}
+where the coordinates are scoped certificate sets for grounding/provenance, representation/relation, mechanism ancestry, identification/bounding and decision/QoI usability. Under compatible scope, the induced order is coordinatewise. It is a partial order, not automatically a mathematical lattice: incompatible assumptions, populations or observation operators can obstruct a join.
+
+Cross-axis non-escalation is explicit:
+\begin{equation}
+R\not\Rightarrow M,\qquad D\not\Rightarrow M,\qquad M\not\Rightarrow I.
+\end{equation}
+Thus predictive or observational success does not by itself identify a mechanism; mechanism plausibility does not establish point identification; provenance and citation multiplicity do not create truth or independent evidence.
+
+\subsection{Proposal, verification and update}
+The proposal channel
+\begin{equation}
+G_\theta(K_t,a_t)\rightarrow\mathcal P_t
+\end{equation}
+may be implemented by an LLM, a symbolic program, a human or a hybrid. Verification is separate:
+\begin{equation}
+V(p,e,\gamma)\rightarrow\{\mathrm{SUPPORTED},\mathrm{REFUTED},\mathrm{PARTIALLY\_IDENTIFIED},\mathrm{BLOCKED},\CannotCheck\}.
+\end{equation}
+Canonical update is
+\begin{equation}
+K_{t+1}=\mathcal U(K_t,a_t,e_{t+1},V,\mathcal G_t^K).
+\end{equation}
+Negative history is monotone,
+\begin{equation}
+\mathcal H_t^{-}\subseteq\mathcal H_{t+1}^{-},
+\end{equation}
+meaning later evidence can supersede interpretation or scope but cannot erase the historical null/refutation event.
+
+\subsection{Mechanism, measurement and uncertainty}
+Mechanistic authority requires an evidence-bearing ancestry such as
+\begin{equation}
+\text{building blocks}\to\text{interactions}\to\text{mechanism}\to\text{mesoscopic state}\to\text{effective law}\to\text{observation/QoI}.
+\end{equation}
+Missing ancestry leads to partial identification or a mechanism set rather than a forced mechanism label.
+
+Measurement is explicit. We write
+\begin{equation}
+y=h(O,\eta,\gamma)+\epsilon,
+\end{equation}
+with $\eta$ representing instrument/calibration state. For an affine transform $Y=AX+b$,
+\begin{equation}
+\mu_Y=A\mu_X+b,\qquad \Sigma_Y=A\Sigma_XA^\top,
+\end{equation}
+and no independence assumption is needed when the full covariance matrix is supplied. For differentiable nonlinear $g$, the first-order approximation
+\begin{equation}
+\Sigma_{g(X)}\approx J_g\Sigma_XJ_g^\top
+\end{equation}
+is explicitly labelled local and assumption-dependent. Root-sum-square uncertainty is accepted only with an independence/uncorrelatedness witness.
+
+\subsection{Recursive fibers, target paths and epistemic cuts}
+An unresolved transformation is
+\begin{equation}
+f=(o_f,q_f,\gamma_f,r_f,\operatorname{parent}(f)).
+\end{equation}
+Residual routing opens only dimensions capable of changing the target conclusion. For target $\tau=(q,\alpha^*,\gamma)$, \RAKL{} searches for an authority-valid support subgraph/hypergraph. If no admissible support structure exists, it seeks a low-cost epistemic cut
+\begin{equation}
+B^*_{\tau}=\arg\min_B\operatorname{Cost}(B)
+\end{equation}
+subject to every admissible support route intersecting $B$. A cut may correspond to missing evidence, measurement, context, transition, mechanism, formal lemma or reasoning operator. Gap detection, missing-operator identification and fresh transfer are distinct evidence states.
+
+\subsection{Action selection and model criticism}
+When calibrated probabilities are justified, one action policy is
+\begin{equation}
+u(a\mid K_t)=\frac{\lambda_Q I(Q;Y_a\mid K_t)+\lambda_M\operatorname{Sep}(a,\mathcal V_t)+\lambda_N E[\Delta N_a]}{\operatorname{Cost}(a)}.
+\end{equation}
+When calibrated probabilities are unavailable, \RAKL{} uses set-valued alternatives such as worst-case mechanism separation or identified-set shrinkage rather than inventing priors.
+
+A same-context Self-\RAKL{} audit in Round 42 exposed an under-specified child operation: explicit generative model criticism. The resulting frozen operator compares predeclared scientific discrepancy statistics $s_k=T_k(y)$ against predictive samples $s_k^{(b)}=T_k(y_{\mathrm{pred}}^{(b)})$. A two-sided empirical predictive tail plus a predeclared materiality tolerance can identify a structured residual. Passing all frozen probes establishes adequacy only relative to that probe family, context and resolution; it does not prove truth or mechanism identity. This operation is owned by the existing benchmarking and gap-discovery surfaces, so the high-level inventory remains 24 surfaces.
+
+\section{Bounded scientific cognition}
+Canonical archive size and active prompt size are treated as different resources. For operation
+\begin{equation}
+o=(a,f,q,\gamma,\alpha^*,B),
+\end{equation}
+let $M(o)$ denote the mandatory epistemic set: target/scope, assumptions, falsifiers, relevant negative history, contradiction sides, authority prerequisites, mechanism ancestry and evaluator/benchmark identity. The compiler solves
+\begin{equation}
+C^*(o)=\arg\max_{C\subseteq V(o)}U(C\mid o)
+\end{equation}
+subject to
+\begin{equation}
+M(o)\subseteq C,\qquad \operatorname{Tokens}(C)\le B.
+\end{equation}
+If $\operatorname{Tokens}(M(o))>B$, the correct state is \CannotCompile{}, not silent truncation. Compact views remain reconstructable projections with source pointers and erasure metadata.
+
+A key engineering target for long projects is archive-scale invariance. For an unchanged scientific target,
+\begin{equation}
+\frac{\partial E[\text{active context tokens}]}{\partial N_{\text{irrelevant archive objects}}}\approx0
+\end{equation}
+while mandatory recall remains one. The frozen known-answer benchmark adds 1$\times$, 10$\times$ and 100$\times$ unrelated distractor records and requires identical selected record identities and active token cost. It separately tests same-fiber semantic redundancy, newly required coverage, mandatory negative evidence, lossy-view reconstruction and mandatory-budget overflow.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.94\textwidth}{!}{\input{../figures/fig3_context.tex}}
+\caption{\textbf{Bounded scientific cognition.} The archive and method history can grow while the model sees only a target-specific working set. Some atoms are mandatory because dropping them changes epistemic validity. If they cannot fit, the operation fails closed rather than silently compressing them away.}
+\label{fig:context}
+\end{figure}
+
+\section{Learning and evolving the method}
+\subsection{Challenge Learning}
+Metacognitive diagnosis is separated from learning control. A failure is first attributed to a candidate cause such as missing evidence, implementation defect, stochastic/underpowered result, wrong strategy, ontology/context gap or method-basis gap. The controller can recommend persistence, strategy switching, help seeking, evidence acquisition, implementation repair, a discriminating challenge, or operator invention/assimilation. A simple learning-progress signal is
+\begin{equation}
+LP_t(f)=Q_t(f)-Q_{t-k}(f).
+\end{equation}
+Failure attribution is important: a missing measurement is not automatically a missing reasoning operator.
+
+\subsection{Assimilation and constructive invention}
+An external method is decomposed into an atomic contract
+\begin{equation}
+C_m=(I_m,O_m,\gamma_m,A_m,P_m,F_m,\alpha_m^+,\alpha_m^-,T_m,B_m),
+\end{equation}
+recording inputs, outputs, context, assumptions, preconditions, failures, authority it may and may not create, transitions and benchmark identity. A candidate may be equivalent to an incumbent, a parallel local view, shadow-eligible, blocked or rejected. External reputation is not imported as authority.
+
+Constructive invention is likewise proposal-only. A new formalism must state variables, interactions, observation map, limiting cases, assumptions, predictions and falsifiers before target evidence can support it.
+
+\subsection{Governed Self-RAKL}
+For incumbent method $M_t$ and challenger $M'$, development improvement
+\begin{equation}
+\Delta_D=q_D(M')-q_D(M_t)>0
+\end{equation}
+is local optimization only. Strong scoped evolution evidence additionally requires fresh assurance
+\begin{equation}
+\Delta_A=q_A(M')-q_A(M_t)>0,
+\end{equation}
+with frozen candidate/evaluator chronology, matched resources, preserved negative history and all blocking invariants clean. Repeated exposure to the assurance set consumes its evidential value, a concern closely related to adaptive holdout reuse \citep{dwork2015reusable}. Development improvement with assurance regression is `META\_OVERFIT'.
+
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{\input{../figures/fig4_self_evolution.tex}}
+\caption{\textbf{Governed self-evolution.} A candidate change can be generated endogenously or assimilated from external work, but development gain is insufficient. Strong scoped evolution evidence requires fresh assurance outside the challenger's write authority. Failed, equivalent, blocked and overfit generations remain in the lineage.}
+\label{fig:selfevolution}
+\end{figure}
+
+\section{Reference implementation and scoped formal closure}
+The current reference profile registers exactly 24 high-impact method surfaces: decomposition; routing; search/query generation; source selection/reliability; claim extraction; ontology/terminology normalization; mathematical/context translation; equivalence/similarity; contextual theory gluing; contradiction diagnosis; gap discovery; experiment/query selection; synthesis; memory; review; benchmarking; authority promotion; saturation/stopping; prompting/context policy; capability shaping; software architecture/execution; research portfolio/tree control; objective evolution; and generator transport.
+
+For each surface $m$, a machine-readable software object $C(m)$ contains typed inputs/outputs, context, assumptions, state read/write sets, authority effect, non-escalation rules, failure semantics, invariants, mathematical semantics, implementation/test references and explicit empirical-open coordinates. We define scoped formal closure for reference profile $\mathcal R$ as
+\begin{equation}
+\operatorname{FormalClosed}_{\mathcal R}(M)=\mathbf 1\!\left[\forall m\in\mathcal M,\;\exists!C(m):\operatorname{ContractValid}(C(m))\right].
+\end{equation}
+This is a structural property only. It does not establish empirical superiority, global method completeness or scientific saturation. A real-project residual that exposes a missing necessary surface reopens the affected coordinate.
+
+The implementation also includes content-addressed project storage, bounded task packets, exact execution specifications, append-only hash-chained execution events, immutable terminal receipts, release manifests, token-count certificates, measurement-aware relation checks, historical meta-fiber compilation, method assimilation, constructive invention, challenge learning and the new model-criticism operator. Runtime attestation binds observed executable bytes and privacy-preserving declared-environment fingerprints as reproducibility evidence, not scientific truth.
+
+At the implementation-stage Round-42 candidate \ImplementationSHA{}, the exact GitHub Actions workflow completed with \SoftwareTests{} passing tests. These tests establish software-contract behavior on frozen known-answer and hostile worlds; they are not evidence of real-world scientific superiority.
+
+\section{First-sign Self-RAKL evidence}
+The project has already produced several examples in which applying the method to itself exposed defects in the framework or its engineering. These include discovering that earlier same-context expert roles could not be counted as independent review; separating storage growth from prompt growth; adding explicit metacognitive control after recognizing that diagnosis did not specify how to learn; distinguishing hidden method-basis gaps from missing evidence or implementation defects; detecting historical meta-fiber namespace and ledger inconsistencies; and, in the current round, making generative model criticism explicit after a cross-domain search of automated statistical-model discovery and symbolic equation search.
+
+The canonical Round-41 historical-ledger run is particularly useful as process evidence: its own early implementation encountered malformed/legacy-schema assumptions, preserved those failures, and revised the compiler rather than editing the historical source records to fit the parser. The current Round-42 model-criticism addition was separately frozen before implementation and passes its known-answer worlds within the integrated suite.
+
+We classify these observations as \textbf{first-sign self-correction}, not strong self-evolution. They occur within the same overall orchestration context and therefore lack the protected fresh assurance required by the preregistered bootstrap benchmark. A future coding-agent experiment will compare fixed \RAKL{}, generic reflection, unconstrained self-editing and governed Self-\RAKL{} under matched resources over hidden method defects and fresh assurance tasks.
+
+\section{Preregistered empirical evaluation}
+\subsection{Matched scientific-research workflows}
+The same base LLM will be compared under matched evidence cutoff, tools, hidden outcomes and resource budget across direct strong prompting, retrieval-augmented research, a strong generic agentic workflow, fixed \RAKL{} and self-evolving \RAKL{}. Primary outcomes include hidden scientific-defect precision/recall, unsupported authority upgrades, counterevidence uptake, negative-history recovery, experiment discrimination per cost, final held-out scientific performance, context tokens, tool calls and wall time. The framework loses its empirical case if simpler conditions match its registered scientific-process and final-task outcomes at lower cost without more blocking failures.
+
+\subsection{Fresh-assurance self-evolution}
+Sealed method-defect worlds are reconstructed from real research failures while withholding the defect label. Candidate classes include target leakage, misspecified correspondence nulls, missing replication, multiplicity, estimand mismatch and causal-clock overreach. A strong self-evolution result requires the system to localize a previously unlabelled weakness, freeze a discriminator before repair, construct or assimilate a non-equivalent candidate and show material transfer on fresh assurance. Development-only gains are explicitly insufficient.
+
+\subsection{Real quant-finance study}
+The real application is the existing `polymarket\_crypto' research programme. The scientific order is deliberately spot-first:
+\begin{equation}
+\text{spot evidence}\rightarrow\text{descriptive spot atlas}\rightarrow\text{predictive 5/15-minute spot path}\rightarrow\text{oracle/contract transform}\rightarrow\text{downstream Polymarket}.
+\end{equation}
+Polymarket features are excluded from the primary spot model and cannot repair a failed spot-science result.
+
+The descriptive target covers return/displacement distributions, volatility and volatility-of-volatility, tails/jumps, activity/duration, continuation/reversal/memory, local microstructure/liquidity, global crypto state, cross-asset/venue dependence and observation/clock state. Model criticism will use frozen discrepancy probes so that `fully explain' means no registered scientifically material structured residual remains at the declared scope, not that a stochastic market path is deterministically reproduced.
+
+The predictive object is a future spot-path distribution at 5 and 15 minutes. On identical causal rows, a central bridge estimand is
+\begin{equation}
+\Delta_{\mathrm{joint}}=\min(R_D,R_G)-R_{DG},
+\end{equation}
+where $R_D$, $R_G$ and $R_{DG}$ are strictly proper predictive risks for microstructure-only, global-only and joint states. A positive joint result requires a preregistered material threshold, multiplicity-aware positive lower confidence bound on untouched/forward evidence, calibration and transport checks. A simpler lawful parent winning is a valid scientific result.
+
+Exploration may deliberately fit high-capacity overfit `teacher' models as structure detectors. Teacher fit has proposal authority only. \RAKL{} probes what the teacher exploits, removes leakage/nuisance features, extracts stable interactions, formulates mathematical successors and confirms only frozen descendants on untouched evidence.
+
+\section{Discussion}
+\RAKL{} is intended as a scientific authority and research-control layer around a replaceable LLM, not as a claim that one agent architecture has solved scientific reasoning. The architecture explicitly externalizes what an experienced researcher gradually accumulates: evidence-bearing knowledge, explanatory models, procedural skills, a research agenda, failure history, metacognitive control and resource constraints. Human-inspired terms are operationalized rather than anthropomorphized. Intellectual humility becomes evidence-triggered revision; curiosity becomes information gain or learning-progress-driven exploration; reflection becomes diagnosis plus a costed control action; experience becomes a reusable skill only after transfer.
+
+The self-bootstrap requirement creates a useful but non-circular test. \RAKL{} can be both the instrument and the object of inquiry because proposal and acceptance are separated. Self-application may discover a weakness and propose a repair, but the repair is not authorized by the same proposal process. Strong evidence comes from a frozen harness and fresh tasks outside the challenger's control. This is also why self-authored verification and repeated holdout reuse are treated as risks rather than proof of autonomy.
+
+Formal closure likewise does not mean the method is finished forever. It means the current high-impact method inventory has no known unowned specification surface. The Polymarket/spot project is deliberately the next integration stress test. If that project exposes a high-impact scientific operation absent from the current 24-surface system, the appropriate outcome is to reopen scoped formal closure, register the missing primitive and prospectively test its repair.
+
+\section{Limitations and falsifiers}
+The paper registers direct falsifiers. If direct prompting, RAG or a simpler agent workflow matches \RAKL{} on registered process and final-task outcomes at lower cost without more validity failures, the framework complexity is not justified. If removing a mechanism does not selectively worsen its preregistered failure mode, that mechanism's causal contribution is unsupported. If method changes improve only development tasks, the strong self-evolution claim fails. If a simpler context policy matches mandatory evidence retention and task quality under matched budgets, the complex context compiler has not earned its cost. If the registered quant information set contains no material 5/15-minute predictive information after causal controls, \RAKL{} must report that ceiling or the missing observable rather than continue searching until significance appears. If semantically equivalent prior work is found, the novelty claim narrows regardless of terminology.
+
+\section*{Reproducibility and AI-use statement}
+The repository maintains frozen benchmarks, content-addressed execution receipts, exact-subject CI, negative-history records, release manifests and editable paper/figure sources. The final empirical journal submission will bind code revisions, data/transformation identities, model-run identities, result receipts, figure source data and manuscript artifacts. Language models are research, coding and drafting tools rather than authors; their proposals do not possess canonical scientific authority. Same-context role simulations are not counted as independent peer review.
+
+\appendix
+\section{Proof obligations and structural propositions}
+The full proof sketches and implementation correspondences are maintained in `paper/SUPPLEMENTARY\_METHODS.md'. Core obligations include generation non-authority, mechanism non-upgrade, typed relation non-escalation, non-forced gluing, negative-history monotonicity, conservative evidence-lineage saturation, missing-evidence honesty, residual reopening, meta-evaluator separation, measurement non-escalation, explicit uncertainty assumptions and formal-closure honesty.
+
+\section{Paper and figure release discipline}
+Concept figures are editable vector sources; exact quantitative figures will be generated only from immutable result data/receipts. The release process compiles the LaTeX source, searches logs for overflow/float/undefined-reference errors, renders every page, inspects a contact sheet and then inspects all figure pages at final physical size. The current figure plan and quality contract are maintained in `paper/FIGURE\_PLAN.md' and `paper/FIGURE\_QUALITY\_STANDARD.md'.
+
+\bibliographystyle{plainnat}
+\bibliography{../references}
+\end{document}

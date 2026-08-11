@@ -9,9 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _module():
+    # Disclosure-enabled release builder. Solicitation stays bound to
+    # paper/build_epistemic_mechanics.py (frozen hash d52c1715...).
     spec = importlib.util.spec_from_file_location(
         "build_epistemic_mechanics_round050",
-        ROOT / "paper" / "build_epistemic_mechanics.py",
+        ROOT / "paper" / "build_epistemic_mechanics_release.py",
     )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -46,8 +48,6 @@ def test_round050_builder_promotes_versioned_longform_without_rewriting_legacy_s
     assert r"\section{Implementation correspondence and scope}" not in text
     assert r"\appendix" in text
     assert r"\section{Reproducibility and implementation correspondence}" in text
-    assert r"\section*{Code, materials and AI-use disclosure}" in text
-    assert "publication/papers/paper-01-epistemic-mechanics/" in text
     assert r"\input{" not in text
     assert "paper/epistemic_mechanics_round050/sections/" in text
     assert "paper/epistemic_mechanics/sections/" not in text

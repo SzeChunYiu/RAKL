@@ -1,0 +1,1458 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\newcommand{\RAKL}{RAKL}
+\newcommand{\ImplementationSHA}{\texttt{118b74c17606637a916fc0e1fea8db6508adb847}}
+\newcommand{\SoftwareTests}{840}
+\newcommand{\powerset}{\mathcal P}
+\newcommand{\Bool}{\{0,1\}}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\True}{\operatorname{True}}
+\newcommand{\Compat}{\operatorname{Compat}}
+\newcommand{\Align}{\operatorname{Align}}
+\newcommand{\Overlap}{\operatorname{Overlap}}
+\newcommand{\Contradict}{\operatorname{Contradict}}
+\newcommand{\Owner}{\operatorname{Owner}}
+\newcommand{\Fiber}{\operatorname{Fiber}}
+\newcommand{\Fresh}{\operatorname{Fresh}}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+
+\title{Epistemic Mechanics for Evidence-Governed Scientific Research}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
+
+\begin{document}
+\setlength{\emergencystretch}{3em}
+\allowdisplaybreaks
+\maketitle
+
+\begin{abstract}
+Large-language-model research systems can generate hypotheses, search literature and coordinate analyses, but these capabilities do not specify which generated claims are licensed to change a persistent scientific record. We formalize an ``epistemic mechanics'' in which scientific reasoning is controlled transition over an external typed state. Claims are indexed by context, evidence, uncertainty and provenance; compatibility is mediated by explicit alignments; scientific authority is a partial order over multiple coordinates rather than a scalar score; and proposal-generating models have no direct canonical write authority. We show by a three-context parity construction that pairwise compatibility need not imply higher-order gluing, and that incomparable authority states cannot be faithfully collapsed into one total-order scalar. A capacity-bounded workspace may select computationally useful material without conferring evidential authority. Open-World Mechanism Discovery begins from functional signatures rather than framework terminology and can certify only bounded closure; unrestricted open-world completeness cannot be established from a finite transcript without a complete membership oracle. We define bounded epistemic saturation as a stopping condition relative to an explicit research world and show when declared closure operators yield complete lattices of closed states. A pendulum derivation illustrates the transition discipline from evidence through mathematical representation to scoped claims. The result is a formal framework for evidence-governed scientific state, not a claim of empirical superiority or global scientific completeness.
+\end{abstract}
+
+\section{Introduction}
+
+A research agent can make a claim easy to retrieve, repeat and act on long before the claim deserves scientific trust. The distinction is obvious in ordinary laboratory practice. A conjecture written on a whiteboard is available to the group, but availability does not make it compatible with every measurement, and compatibility does not make it established. A computational research system should preserve the same separation. Yet language-model agents naturally operate through text: hypotheses, plans, summaries, tool calls and conclusions all arrive through a common linguistic interface. Without an external discipline, the fact that a sentence is fluent, salient or repeatedly reused can leak into a surrogate for truth.
+
+This problem becomes sharper as language models are connected to search engines, code execution, laboratory automation and persistent memory. Autonomous chemical systems can plan tool use and execute experiments; chemistry agents can combine language models with expert-designed tools; general-purpose research agents can generate ideas, run code, write manuscripts and even simulate review \cite{boiko2023,bran2024,lu2024}. More recent systems distribute scientific work across multiple agents or long-running research loops \cite{gottweis2025,kosmos2025}. These systems make the control problem more important, not less: a larger action space creates more ways for a provisional statement to become operationally consequential before its evidential status is clear.
+
+\RAKL{} approaches this problem by treating scientific knowledge as an external state with typed transitions. A language model may propose, retrieve, combine or criticize objects, but canonical scientific state changes only through registered operations. The present paper develops the mathematical discipline behind that design and then asks a second question: \emph{when may a recursively expanding research process stop?} That question is central to this project. Knowledge should accumulate while new evidence, mechanisms, contradictions, derivations or relevant prior art continue to appear. A release is justified only after repeated, deliberately heterogeneous attempts to expand the knowledge state cease to produce substantive growth under a fixed measurement basis and a declared freshness horizon.
+
+The resulting notion is not absolute completion. An unrestricted scientific world is not a finite database, and no finite search transcript can show that an unknown relevant paper, mechanism or counterexample does not exist. The defensible target is instead \emph{bounded epistemic saturation}: a fixed-point-like condition relative to declared scope, discovery routes, identity rules, evidence standards and time cutoff. This qualification is not rhetorical. It changes the software contract, the mathematics of the stopping rule and the claims that a paper is permitted to make.
+
+\subsection{Three separations}
+
+The central architecture can be summarized by three inequalities:
+\[
+\boxed{\text{computational access}\neq\text{cross-context coherence}\neq\text{epistemic authority}.}
+\]
+Computational access asks whether an object is active and reusable by downstream computation. Coherence asks whether objects can coexist after their contexts, representations and regimes have been aligned. Authority asks what the registered evidence licenses the system to assert. None of these coordinates is a monotone proxy for the other two.
+
+A second separation distinguishes persistent epistemic state from a transient workspace. Contemporary language-model systems already use retrieval, tools, scratchpads and memory hierarchies to extend what can be brought into a model's immediate context \cite{lewis2020,yao2023,schick2023,packer2023,mialon2023}. Generative agents and reflection-based agents likewise maintain memories or textual feedback that can influence future behavior \cite{park2023,shinn2023}. These mechanisms are useful models of computational access, but they do not define scientific authority. In the architecture developed here, a workspace can change what downstream operators see without acquiring any canonical write permission.
+
+The third separation concerns geometric growth and scientific progress. Adding a node, splitting a category or storing another textual representation can increase the size of a knowledge graph while adding no scientific content. Conversely, a failed experiment, a counterexample or a newly discovered prior-art equivalence may add little geometric volume while substantially narrowing what can responsibly be claimed. For that reason the saturation rule introduced later uses a non-compensatory vector of epistemically meaningful changes rather than a single object count.
+
+\subsection{Contributions and claim boundary}
+
+The paper makes seven contributions.
+
+\begin{enumerate}[leftmargin=*]
+\item It formalizes a typed scientific state in which claims, evidence, context, uncertainty, obstructions, negative history and authority certificates have distinct roles.
+\item It distinguishes pairwise compatibility from higher-order gluing. A three-context parity construction gives an explicit counterexample in which every pair is compatible while the triple has no global section.
+\item It audits the overloaded term ``lattice.'' The current reference object is a typed compatibility complex. We then give sufficient additional structure for a genuine lattice: the fixed points of an extensive, monotone and idempotent closure operator form a complete lattice, with intersection as meet and closure of union as join.
+\item It proves that a multi-coordinate authority order containing incomparable states cannot be faithfully collapsed into a real-valued scalar order without losing incomparability information.
+\item It formulates the transient workspace as a capacity-constrained selection problem, proves optimality of the implemented reservation-first greedy rule under its explicit unit-cost/additive-utility assumptions, and proves that workspace-only transitions do not create authority or compatibility certificates.
+\item It develops Open-World Mechanism Discovery (OWMD), in which unowned functions are inverted into vocabulary-independent signatures and searched through heterogeneous route families. A finite transcript can certify bounded closure but not unrestricted open-world completeness.
+\item It introduces bounded epistemic saturation as the release/stopping criterion for both research and manuscript construction. The criterion requires repeated zero substantive gain under a stable basis, stable route coverage, closed blocking fibers, omission and nearest-work audits, and an explicit freshness horizon. Any new substantive object reopens the state.
+\end{enumerate}
+
+The scope is deliberately narrower than the ambition of autonomous science. We do not claim that these structures make a model conscious, that a finite process can exhaust the scientific literature, or that the current implementation improves real scientific outcomes. The paper provides formal and executable governance mechanics. Empirical superiority requires matched experiments; external credibility requires independent review; and unrestricted completeness is excluded by construction.
+
+\section{Foundations and the gap between them}
+
+Epistemic mechanics sits near several mature fields, but the combination needed for evidence-governed research agents is not supplied by any one of them. This section treats the neighboring literatures as constraints on novelty. Where an older field already owns a function, the contribution here is the integration and the additional boundary, not a renamed invention.
+
+\subsection{Agentic scientific systems: powerful proposal generators}
+
+Tool-augmented language models established that text models can be embedded in loops that retrieve information, invoke programs and act in external environments \cite{lewis2020,yao2023,schick2023,mialon2023}. Scientific systems extend the same pattern to domain tools and experiments. Coscientist connects planning, search, code and cloud-laboratory execution in chemistry \cite{boiko2023}; ChemCrow augments a language model with a suite of chemistry tools \cite{bran2024}. The AI Scientist automates an end-to-end machine-learning research loop including ideation, experimentation and paper writing \cite{lu2024}, while the AI co-scientist distributes hypothesis generation and critique across specialized agents \cite{gottweis2025}. Kosmos uses a structured world model to support long-running cycles of literature search, data analysis and hypothesis generation \cite{kosmos2025}.
+
+These systems demonstrate that proposal generation and tool orchestration can be automated at increasing scale. They do not, by that fact alone, solve the normative question addressed here: which generated objects are permitted to modify a persistent scientific record, under what evidence, and with what consequences for contradiction, uncertainty and later reuse? A system may be highly capable as an actor while remaining under-specified as an epistemic governor. Epistemic mechanics therefore treats the model as one operator in a larger state machine rather than locating scientific authority inside the model's token probabilities.
+
+\subsection{Belief change and truth maintenance: revision without the full evidence geometry}
+
+Truth-maintenance systems established early that intelligent systems need explicit justifications and mechanisms for retracting conclusions when their supports change. Doyle's TMS records dependencies between beliefs and maintains consistency as assumptions are revised \cite{doyle1979}. De Kleer's assumption-based TMS goes further by representing sets of assumptions that support propositions, allowing multiple contexts to coexist and enabling reasoning across alternative environments \cite{dekleer1986}. These ideas are direct ancestors of any architecture that refuses to treat a current text buffer as the whole epistemic state.
+
+Belief revision supplies a complementary normative perspective. The AGM framework characterizes rational revision and contraction of deductively closed belief sets \cite{agm1985}, and G\"ardenfors develops the broader dynamics of changing knowledge states \cite{gardenfors1988}. Abstract argumentation separates attack relations from acceptance semantics and shows how nonmonotonic conclusions can be organized around conflict and defense \cite{dung1995}. Four-valued and paraconsistent traditions show another route: inconsistency need not collapse a reasoning system into triviality \cite{belnap1977}.
+
+The present framework borrows the need for explicit revision, contexts, conflict and justification, but it does not identify scientific state with a deductively closed belief set. Scientific claims may be partially identified, empirically bounded, model-dependent or blocked by missing measurements. A failed claim should remain in negative history because the failure itself can guide later search. Evidence objects also have physical provenance and independence structure that ordinary logical consequence does not represent. The state therefore needs a richer typing discipline than ``believed/not believed'' or even ``in/out/undecided.''
+
+\subsection{Provenance: ancestry is necessary but not authority}
+
+Database provenance and scientific workflow provenance solve another part of the problem. Why- and where-provenance distinguish different questions about the origin of query results \cite{buneman2001}; provenance semirings give an algebraic account of how annotations propagate through relational queries \cite{green2007}. The W3C PROV standard provides interoperable entities, activities and agents for provenance exchange \cite{prov2013}. FAIR principles similarly emphasize that research objects should be findable, accessible, interoperable and reusable \cite{wilkinson2016}.
+
+These are essential capabilities, and RAKL does not claim novelty for provenance graphs. The missing distinction is between \emph{having ancestry} and \emph{having scientific authority}. A claim can have immaculate lineage back to a source that is observationally weak, context-misaligned or itself a hypothesis. Conversely, several independent evidence roots may jointly strengthen a claim even when they share no common textual source. We therefore attach provenance to evidence and transitions while representing authority as a separate coordinate structure. Provenance answers ``where did this object come from?''; authority answers ``what is this object licensed to support here?''
+
+\subsection{Context and local-to-global reasoning}
+
+Scientific contradiction is rarely well-defined without context. McCarthy's work on formalizing context and Giunchiglia's account of contextual reasoning both emphasize that assertions may be valid relative to a local theory or context and require explicit lifting when moved elsewhere \cite{mccarthy1993,giunchiglia1993}. Sheaf theory provides a mathematical language for local data and global consistency. In contextuality theory, compatible local assignments need not extend to a global assignment \cite{abramsky2011}. Applied sheaf work has used the same local-to-global machinery to reason about structured data and sensor consistency \cite{curry2014,robinson2017}.
+
+The analogy is useful but should not be exaggerated. RAKL's present atlas is not a full sheaf implementation. What is retained is the obligation structure: local claims live over declared domains and contexts; overlaps require alignment maps; and pairwise compatibility does not automatically license global gluing. Section~4 makes the obstruction concrete with a finite parity example.
+
+\subsection{Causality, evidence and intervention}
+
+Causal models make a related distinction between observational association and intervention. Structural causal models provide semantics for interventions and counterfactual questions \cite{pearl2009}, while formal accounts of actual causality expose how strongly causal conclusions depend on the declared model and contingency structure \cite{halpern2016}. Epistemic mechanics uses interventions in a narrower engineering sense when testing whether workspace contents are computationally load-bearing. Removing an item from an active workspace and observing a changed proposal can establish dependence of that proposal on the item under the registered computational setup. It does not turn the active item into scientific evidence for the claim it influenced. Cognitive provenance and evidential provenance therefore remain different graph types.
+
+\subsection{The integration gap}
+
+The neighboring fields thus own substantial parts of the problem. Truth-maintenance systems own justification-sensitive revision; AGM owns abstract belief change; argumentation owns attack/acceptance structure; provenance systems own lineage; contextual logics and sheaves own local-to-global obligations; causal models own intervention semantics; agent architectures own tool use, memory and iterative proposal generation. The open problem addressed here is how to compose these functions into a scientific-state machine in which (i) context is first-class, (ii) evidence and authority remain typed, (iii) proposals cannot silently promote themselves, (iv) active computational access is transient, (v) discovery can deliberately escape current vocabulary, and (vi) recursive research has a defensible stopping rule.
+
+That last requirement is especially important. A system that never stops is unusable; a system that stops because it has stopped asking new kinds of questions is unreliable. The saturation construction in Section~8 treats stopping as an epistemic certificate rather than an intuition about having ``read enough.''
+
+\section{Epistemic state and transition mechanics}
+
+We now define the persistent state on which the later compatibility, workspace, discovery and saturation results operate.
+
+\subsection{Local scientific charts}
+
+A local scientific chart is a tuple
+\[
+C_i=(U_i,\phi_i,\gamma_i,e_i,u_i,\alpha_i),
+\]
+where \(U_i\) is a scientific subdomain; \(\phi_i\) is a representation or coordinate system; \(\gamma_i\) records regime, boundary and observation conditions; \(e_i\) is evidence/provenance; \(u_i\) is an uncertainty object; and \(\alpha_i\) is scoped authority. The chart language is deliberately broader than a numerical model. A chart can represent a dataset under calibration assumptions, a symbolic law over a regime, an observational claim, a mechanistic hypothesis or a negative result, provided the type-specific obligations are explicit.
+
+For a claim \(c\), define an authority coordinate
+\[
+\alpha(c)=(G_c,R_c,M_c,I_c,D_c),
+\]
+where \(G_c\) is grounding/provenance support, \(R_c\) is representation/relation support, \(M_c\) is mechanism support, \(I_c\) is identification or bounding support, and \(D_c\) is decision/QoI usability. Each coordinate is a set or structured certificate family, not a real number. Under a common scope, we write
+\[
+\alpha_1\preceq\alpha_2
+\quad\Longleftrightarrow\quad
+\forall q\in\{G,R,M,I,D\},\; \alpha_1^{(q)}\subseteq \alpha_2^{(q)}
+\]
+when certificate inclusion is the relevant local order. More general coordinate-specific entailment relations can replace set inclusion without changing the product-order argument in Section~5.
+
+\subsection{Canonical state}
+
+At time \(t\), canonical state is
+\[
+\begin{aligned}
+K_t=(&\mathcal A_t,\mathcal T_t,\mathcal V_t,\mathcal E_t,\mathcal U_t,\\
+     &\mathcal O_t,\mathcal F_t,\mathcal H_t^{-},\mathcal S_t,\mathcal G_t^K).
+\end{aligned}
+\]
+Here \(\mathcal A_t\) contains local charts or typed atoms; \(\mathcal T_t\) contains typed transitions and alignment maps; \(\mathcal V_t\) contains currently surviving models or validated objects; \(\mathcal E_t\) stores evidence and provenance; \(\mathcal U_t\) uncertainty objects; \(\mathcal O_t\) obstructions and residuals; \(\mathcal F_t\) open research fibers; \(\mathcal H_t^{-}\) immutable negative history; \(\mathcal S_t\) discovery/saturation state; and \(\mathcal G_t^K\) protected governance identities and policies.
+
+A proposal generator is outside the canonical update map:
+\[
+G_\theta(K_t,a_t)\longrightarrow \mathcal P_t,
+\]
+where \(a_t\) is an action or research objective and \(\mathcal P_t\) is a set of proposals. Verification is typed:
+\[
+V(p,e,\gamma)\in
+\left\{
+\begin{array}{lll}
+\mathrm{SUPPORTED}, & \mathrm{REFUTED}, & \mathrm{PARTIALLY\ IDENTIFIED},\\
+\mathrm{BLOCKED}, & \mathrm{CANNOT\ CHECK}
+\end{array}
+\right\}.
+\]
+Only a separately licensed update operator may transform canonical state:
+\[
+K_{t+1}=\mathcal U(K_t,p,e,\gamma,\chi),
+\]
+where \(\chi\) is the authority/governance certificate required for that transition type.
+
+\begin{proposition}[Proposal non-sovereignty]
+If the codomain of every proposal-generating operator excludes canonical state and every canonical update requires a certificate \(\chi\) unavailable to proposal generators, then no finite composition of proposal generators alone can change \(K_t\).
+\end{proposition}
+
+\begin{proof}
+Every proposal generator maps into a proposal space. Composition therefore remains inside proposal-bearing or transient computational state until an operator with codomain in canonical state is invoked. By assumption, every such canonical operator requires \(\chi\), and proposal generators cannot construct a valid \(\chi\). Hence a composition containing no certified update leaves the canonical projection invariant.
+\end{proof}
+
+This is a software-architecture theorem rather than a theorem about model psychology. It says that authority separation can be made a property of types and write permissions instead of an instruction asking a model to be cautious.
+
+\subsection{Evidence roots and negative history}
+
+Evidence support is represented by roots and derivation paths rather than by citation count alone. Two papers that report the same upstream experiment are not automatically independent evidence. A new review article that repeats an old claim adds provenance but may add no new evidence root. Conversely, a failure to reproduce a claim can add a negative-history object and close a previously admissible support path. The state therefore preserves negative evidence:
+\[
+\mathcal H_t^{-}\subseteq \mathcal H_{t+1}^{-}
+\]
+for ordinary monotone archival updates. Correction is represented by superseding metadata or scope, not by deleting the fact that a refutation was observed.
+
+\begin{proposition}[Negative-history monotonicity under append-only archival policy]
+Suppose the only transitions that touch \(\mathcal H^{-}\) are append operations and metadata corrections that preserve object identity. Then \(\mathcal H_t^{-}\subseteq\mathcal H_{t+n}^{-}\) for every \(n\ge 0\).
+\end{proposition}
+
+\begin{proof}
+Each permitted transition is extensive on \(\mathcal H^{-}\). A finite composition of extensive set updates is extensive, so the inclusion is preserved by induction.
+\end{proof}
+
+The importance of this small invariant becomes visible later. Saturation must count negative results and counterexamples as knowledge growth; otherwise a research process could become ``saturated'' precisely by ignoring the observations that narrow its theory space.
+
+\subsection{Uncertainty is not authority}
+
+Uncertainty and authority answer different questions. A posterior distribution, confidence interval or error bar quantifies uncertainty under a statistical/modeling setup; it does not by itself certify provenance, mechanism or cross-context applicability. Conversely, a high-authority calibration fact may have a broad uncertainty interval. Epistemic mechanics therefore stores \(u(c)\) and \(\alpha(c)\) separately. Bayesian or causal calculations may contribute evidence certificates when their assumptions are registered, but the numerical output is not coerced into the authority tuple by default \cite{pearl2009}.
+
+This separation prepares the two main mathematical issues of the next sections. First, compatibility must be checked after context alignment and can fail at higher order even when all pairs look acceptable. Second, a multi-coordinate authority structure generally contains incomparable states, so reducing it to one scalar destroys information that matters for scientific governance.
+
+\subsection{Claim-level provenance and verification systems}
+
+There is also direct prior art for representing and verifying claims at finer granularity than whole documents. Zhang, Ives and Roth formalize provenance graphs for natural-language claims in order to track where a claim came from and how it evolved \cite{zhang2020claim}. In biomedicine, the SEE framework represents scientific claims together with their provenance, argumentative relations, subjects, methods and assumptions in an RDF/OWL evidence model \cite{boelling2014see}. These systems make clear that claim-level provenance and evidence structure are not new functions introduced by RAKL.
+
+Verification systems add another layer. ProVe checks whether knowledge-graph triples are actually supported by the textual sources recorded as their provenance rather than assuming that a documented source entails the graph assertion \cite{amaral2024prove}. Open-domain scientific claim verification further shows that retrieval source and retrieval method materially affect evidence recall and precision when the relevant document is not already supplied to the verifier \cite{vladika2024}. In scholarly LLM interfaces, PaperTrail decomposes generated answers and sources into claim/evidence units to surface unsupported assertions and omissions \cite{martinboyle2026}.
+
+Research-agent trajectories now supply an even closer operational parent. Zhuang et al. treat a completed experimental trajectory as candidate evidence rather than as knowledge, verify consequential artifacts before release, qualify cross-round intervention claims by execution validity and attribution, and retain only bounded Repairs or Guards while withholding unsupported findings \cite{zhuang2026trajectory}. Their industrial study also reports non-monotone adaptation---for 22 of 30 methods the last valid round was worse than an earlier best---and identifies affirmative applicability judgment as a remaining controller bottleneck. This owns substantial territory around verified proposal handoffs, negative-result retention, applicability-bounded experimental records and non-monotone research history. It also provides empirical motivation for preserving validated intermediate states rather than treating the final trajectory endpoint as authoritative.
+
+These works narrow the present contribution in a useful way. Epistemic mechanics does not claim novelty for claim decomposition, provenance graphs, evidence attribution, source retrieval, support/refute classification, bounded artifact verification or applicability-qualified experimental records in isolation. Its additional object is the broader governed scientific-state transition around those operations: what kind of support was observed, under what context and independence assumptions, which scientific authority coordinates it can change, whether higher-order alignment obstructions and conflicting objects remain explicitly represented, and whether later discovery can reopen a state that had previously been judged saturated. Conversely, the present formal paper does not reproduce Zhuang et al.'s industrial intervention results or claim comparable empirical validation.
+
+\subsection{Agent-native publishing and composite epistemic scores}
+
+A recent architectural neighbor is Traxia, which proposes agent-native scientific publishing around verifiable epistemic artefacts carrying claims, reasoning traces, provenance, agent identity, replication records and contradiction handling \cite{dogah2026traxia}. This occupies substantial prior-art territory around machine-readable scientific artefacts, agent attribution, verifiable publishing and persistent contradiction records. Epistemic mechanics therefore does not claim that these functions arise uniquely from RAKL.
+
+The comparison also exposes a substantive design fork. Traxia defines a composite Epistemic Confidence Score by weighting claim confidence, reproducibility and trace completeness. Such a scalar can be useful as a platform ranking policy. The theorem in Section~5 makes a narrower structural point: whenever epistemic states contain incomparable authority coordinates, no real-valued score can preserve the partial order by a biconditional order embedding. RAKL consequently treats any scalar ranking as a declared decision projection, not as the scientific authority state itself. This is not a claim that composite scores are invalid; it is a requirement that their policy semantics remain separate from the multidimensional evidence relation they summarize.
+
+Traxia and RAKL also differ in where they place the release boundary. Traxia focuses on publication infrastructure, identity, review and reputation. Epistemic mechanics focuses on controlled scientific-state transition and on whether continuing discovery still changes the registered claim/evidence/novelty state. The two architectures are therefore adjacent and potentially composable: a bounded-saturated RAKL research state could be packaged into an agent-native publication artefact, while a publication record could provide provenance objects for later RAKL assimilation.
+
+\subsection{Contemporary transactional state and authority boundaries}
+
+The 2026 literature makes the generic ``external state plus guarded write'' idea too crowded to carry a novelty claim by itself. Mullins and Symons give LLM agents an explicit inspectable epistemic state updated by consistency-preserving announcement-like operations \cite{mullins2026}. MemTX treats a memory write as distinct from a committed belief and implements staged validation, provenance-bearing records, commit gating and cascade repair \cite{memtx2026}. PPMF studies provenance laundering under lossy memory consolidation and enforces source-authority non-amplification at later action time \cite{ppmf2026}; TMA-NM goes further by making authority origin-bound and non-malleable under laundering attacks \cite{tmanm2026}. Commit-time authorization independently shows that a witness that was valid earlier in a trajectory need not authorize a later durable effect unless freshness, causal priority, binding and eligibility still hold at commit time \cite{committime2026}. TOKI makes the memory-write contract more explicit still: contradiction resolution is formulated as a bitemporal operator algebra with typed isolation assumptions, provenance-preserving audit rows and soundness obligations for update pipelines \cite{toki2026}. ReSSERAct combines posterior belief with ledgers for uncertainty, temporal validity, replay and control and uses a shielded admissibility gate before action; its formal analysis shows that freshness and contradiction burden are not recoverable from a belief state alone \cite{ozturk2026resseract}. SAVeR independently audits and minimally repairs candidate belief states before commitment under explicit acceptance constraints rather than treating coherent or consensual reasoning as automatically faithful \cite{yuan2026saver}. Arjmandi's ``LLM proposes, Executive disposes'' instrument is closer to the proposal/canonical-state separation used here: a deterministic executive owns committed belief, the LLM files typed proposals, and pre-registered predictions are checked against observations by code; its ablations also illustrate why a mechanism-selective structural result can be meaningful even when end-task efficacy is null \cite{arjmandi2026}.
+
+AuthMem-Bench supplies a controlled empirical test of this lower-level boundary \cite{zhan2026authority}. It holds claim content and the later task fixed while varying source authority, observes authority upgrades in 48 of 49 consolidator--backbone configurations, and finds a mean unauthorized-action rate of 50.3\% when collapsed memories lack authority metadata. In its selected end-to-end pipeline, predicted persistent labels reduce the observed unauthorized-action rate from 16.9\% to 0.0\% without a material decrease in authorized task success, although omission remains recall-limiting. These results make source-governed operational permission a first-class inherited requirement rather than a RAKL novelty claim. They do not establish the different scientific question of whether evidence licenses a representation, mechanism, identification or decision claim.
+
+Structured state itself is likewise established in scientific and long-horizon agent systems. Millison et al. use an explicit state-machine architecture and strongly typed interfaces to constrain an LLM assistant performing physical-science analysis \cite{millison2026}; Chen's State-Aware Runtime separates generation from canonical state, validation, commit, rollback and audit in a long-horizon runtime architecture \cite{chen2026stateaware}. Recent surveys independently organize persistent-agent memory around lifecycle and governance properties rather than retrieval quality alone: Always-On Agents emphasizes authority, scope, mutability, provenance, recoverability and actionability, while the ACL memory survey traces the progression from raw storage to reusable experience and highlights increasing structure in long-term agent memory \cite{ding2026alwayson,luo2026memorysurvey}. These surveys corroborate rather than replace the specific transaction/state mechanisms above, but they make the nearest-work boundary sharper: the scientific contribution cannot be ``we give an LLM a state machine or a persistent memory.''
+
+These systems are parent mechanisms rather than competitors to be routed around. They establish that persistent agent state needs explicit update and authorization boundaries, and their strongest transaction/provenance invariants should be assimilated into any serious implementation of evidence-governed scientific memory. They also narrow the contribution of the present paper. RAKL does not claim to invent staged belief commit, deterministic proposal/commit separation, bitemporal contradiction-update operators, freshness/contradiction ledgers, belief-state self-auditing, provenance preservation, origin-bound or use-specific authority, authority-collapse evaluation, freshness checks at a durable boundary, or structured agent state. The residual question is scientific: how should such commit discipline interact with context-indexed local scientific views, typed representation/mechanism/identification relations, partially ordered multi-axis authority, unresolved contradiction, partial identification, negative scientific history and bounded open-world saturation?
+
+This distinction is testable. A transactional memory system can be perfectly safe about \emph{who may write} while remaining agnostic about whether a predictive certificate can be coerced into a mechanism claim or whether two context-misaligned observations should be called contradictory. Conversely, a scientific relation algebra is incomplete if its canonical updates can be laundered through stale or origin-free memory. The intended RAKL architecture therefore treats transactional commit, typed temporal update algebra, structured runtime state, evidence-state reconciliation and provenance authority as inherited lower-level safeguards and places scientific-state typing above them rather than presenting either layer as a substitute for the other.
+
+\subsection{Contested-knowledge substrates and time-stamped claim logics}
+
+A separate nearest-work family comes from systems that treat contradiction, context and evidence as first-class properties of the knowledge substrate itself. Ramos, Rasga, Sernadas and Vigan\`o's Event-Based Time-Stamped Claim Logic formalizes distributed claims that can change through events, permits contradictory claims from differently trusted sources, and provides a sound, complete and decidable temporal calculus \cite{ramos2021eventclaim}. More recently, the donto systems report describes a bitemporal, paraconsistent, evidence-first quad store in which every claim is contextual, contradictions are preserved, predicate alignments are typed, machine-extracted claims are maturity-bounded and policy-gated ingest plus a Lean overlay constrain later use \cite{donto2026}. Vitali and Pasqual's DEC framework gives provenance-enhanced RDF statements an explicitly epistemic interpretation: attributed statements are grouped into provenance-homogeneous cognitive worlds and controlled permeation rules govern when attributed content reaches a distinguished factual core \cite{vitali2026dec}.
+
+These systems materially narrow the atlas-level novelty boundary. RAKL does not claim to invent contextual claims, contradiction preservation, bitemporal evidence records, typed schema alignment, event histories, provenance-indexed epistemic worlds, or the idea that machine confidence must not stand in for review. Their existence also supplies useful implementation parents for future RAKL storage and query layers. The residual formal object in this paper is the coupling of such contested local views to scientific relation types, multi-axis authority, mechanism/identification distinctions, partial-identification outcomes, proposal-only workspaces, open-world mechanism routing and the bounded-saturation release rule.
+
+The comparison also clarifies why the RAKL authority object is not merely source trust or attributed belief. Time-stamped claim logics may rank or qualify sources, evidence-first stores may attach maturity or policy states, and DEC controls attributed factualization, while RAKL's authority coordinates distinguish what evidence licenses about grounding, representation, mechanism, identification and decision use. A source can be highly trustworthy yet remain unable to identify a microscopic mechanism from an observational design. Conversely, a low-level storage, provenance-world or transaction mechanism can be adopted wholesale without settling those scientific inferences. The layers should therefore compose rather than be renamed as one another.
+
+\section{Compatibility, gluing, and when a lattice exists}
+
+The persistent state becomes scientifically useful only if it can express relations between claims that were produced in different representations or under different regimes. The difficult part is not storing an edge. It is deciding what an edge means and what, if anything, follows from several edges taken together.
+
+\subsection{Typed transition maps and aligned contradiction}
+
+For overlapping charts \(C_i\) and \(C_j\), let
+\[
+T_{ij}^{\tau,\sigma}:\phi_i(U_i\cap U_j)\longrightarrow\phi_j(U_i\cap U_j)
+\]
+be a transition with relation type \(\tau\) and scope \(\sigma\). The transition record contains assumptions, a validity regime, error semantics, evidence and a failure mode. Examples include coordinate conversion, unit conversion, approximation, calibration transfer, model reduction, causal mapping or an explicitly conjectural bridge.
+
+A contradiction predicate should be evaluated only after the relevant overlap and alignment obligations are satisfied. For comparison level \(\ell\), define
+\[
+\Contradict_{\ell}(C_i,C_j)=
+\Overlap(C_i,C_j)\land
+\Align_{\ell}(C_i,C_j)\land
+\neg\Compat_{\ell}(C_i,C_j).
+\]
+If the contexts cannot be aligned, the correct state is not necessarily ``contradiction.'' It may be ``not comparable under the registered map.'' This distinction prevents a common scientific error: treating two statements as rivals when they refer to different observables, scales, interventions or approximation regimes.
+
+The context literature anticipated the need for explicit lifting between local theories \cite{mccarthy1993,giunchiglia1993}. The sheaf-theoretic viewpoint makes the local-to-global obligation especially sharp: local compatibility data can fail to assemble into a global section even when every pairwise overlap looks harmless \cite{abramsky2011,curry2014,robinson2017}. RAKL uses this as a structural warning rather than claiming that its current atlas implements all sheaf axioms.
+
+Causal abstraction networks provide a closer formal parent for heterogeneous scientific perspectives \cite{dacunto2026can}. D'Acunto, Di Lorenzo and Barbarossa represent collections of subjective mixture causal models as a sheaf-theoretic network, define local abstraction maps, and derive consistency and global-section conditions together with a diffusion process that converges to the global-section space under their assumptions. Their work therefore owns the stronger claim that context-dependent causal knowledge can be aligned and globally coordinated with explicit sheaf and categorical structure. The compatibility complex here is broader in claim and evidence type but mathematically weaker: it records witnessed relations and obstructions without implementing their causal-abstraction category, connection-Laplacian criterion or diffusion solver. The residual contribution is the surrounding evidence/authority/negative-history/discovery governance, not local causal gluing itself.
+
+\subsection{The current object: a typed compatibility complex}
+
+The historical implementation name \texttt{TypedKnowledgeLattice} is stronger than the operations it actually provides. The reference object stores typed atoms, pairwise compatibility witnesses and constructive paths. Let its abstract content be
+\[
+\mathfrak C=(A,W,\mathcal P),
+\]
+where \(A\) is a typed set of atoms, \(W\) a partial map assigning a witnessed compatibility status to selected unordered pairs, and \(\mathcal P\) a family of finite constructive paths admitted by the registered witness policy.
+
+This object is useful. It can reject a path containing an explicitly incompatible pair, preserve conditions attached to a conditional witness, and aggregate evidence associated with the participating atoms and relations. But none of those operations defines a partial order, a meet or a join.
+
+\begin{proposition}[Pairwise compatibility does not imply an order-theoretic lattice]
+The data \((A,W,\mathcal P)\) does not, solely by virtue of containing pairwise compatibility witnesses and admissible paths, define an order-theoretic lattice.
+\end{proposition}
+
+\begin{proof}
+A lattice requires a partial order \(\preceq\) such that every relevant pair has a greatest lower bound and a least upper bound. A witnessed compatibility relation is generally symmetric, whereas a nontrivial partial order is antisymmetric. Moreover, the existence of a compatibility witness for \(a\) and \(b\) does not construct an element representing either \(a\wedge b\) or \(a\vee b\), much less prove the universal properties of those elements. Therefore additional structure is required.
+\end{proof}
+
+The software now exposes \texttt{TypedCompatibilityComplex} as the semantically conservative name while retaining the historical class as a compatibility alias. The word ``complex'' is used here in the broad engineering sense of a structured family of atoms, witnesses and finite paths. If one wants a simplicial complex, higher-order admissibility must additionally be downward closed under taking subsets.
+
+\subsection{A three-context parity obstruction}
+
+Pairwise compatibility can fail even more strongly than the preceding proposition suggests. Consider three binary variables \(x,y,z\in\Bool\) and three local contexts:
+\[
+U_{xy}=\{x,y\},\qquad U_{yz}=\{y,z\},\qquad U_{xz}=\{x,z\}.
+\]
+Define the locally allowed assignments by
+\[
+\begin{aligned}
+S_{xy}&=\{(x,y):x\oplus y=0\},\\
+S_{yz}&=\{(y,z):y\oplus z=0\},\\
+S_{xz}&=\{(x,z):x\oplus z=1\},
+\end{aligned}
+\]
+where \(\oplus\) denotes addition modulo two.
+
+Every pair of contexts is compatible on its intersection. For example, both \(S_{xy}\) and \(S_{yz}\) restrict to the full set \(\{0,1\}\) on the shared variable \(y\); the same is true for the other two overlaps. Nevertheless there is no global assignment \((x,y,z)\) satisfying all three constraints.
+
+\begin{proposition}[Three-context parity obstruction]
+The three local charts above are pairwise compatible on every overlap but possess no global section.
+\end{proposition}
+
+\begin{proof}
+The first two parity constraints imply \(x=y\) and \(y=z\), hence \(x=z\). The third constraint requires \(x\ne z\). Thus the conjunction is inconsistent. Pairwise restrictions do not expose the obstruction because each single-variable overlap admits both values.
+\end{proof}
+
+This is the finite pattern that the phrase ``coactivation is not gluing'' will later echo for the workspace. The obstruction is also closely related to the local-to-global failures studied in sheaf-theoretic contextuality \cite{abramsky2011}. The scientific lesson is simple: a graph in which every edge is individually admissible can still contain a higher-order inconsistency. A mature implementation should therefore support certificates attached to larger covers or explicit obstruction objects, not only pairwise edge labels.
+
+\subsection{From compatibility to closure}
+
+There is, however, a principled route to a genuine lattice. Let \(A\) be a universe of typed scientific atoms and let
+\[
+\cl:\powerset(A)\longrightarrow\powerset(A)
+\]
+be a closure operator satisfying, for all \(X,Y\subseteq A\),
+\[
+X\subseteq\cl(X),\qquad
+X\subseteq Y\Rightarrow\cl(X)\subseteq\cl(Y),\qquad
+\cl(\cl(X))=\cl(X).
+\]
+These are extensivity, monotonicity and idempotence. Closure operators are classical objects in lattice theory, formal concept analysis and abstract interpretation \cite{birkhoff1940,ganter1999,cousot1977}. Let
+\[
+\mathcal L_{\cl}=\{X\subseteq A:\cl(X)=X\}
+\]
+be the family of closed scientific states under the declared operator.
+
+\begin{theorem}[Closure-system lattice]
+Ordered by set inclusion, \((\mathcal L_{\cl},\subseteq)\) is a complete lattice. For any family \(\{X_i\}_{i\in I}\subseteq\mathcal L_{\cl}\),
+\[
+\bigwedge_{i\in I}X_i=\bigcap_{i\in I}X_i,
+\qquad
+\bigvee_{i\in I}X_i=\cl\!\left(\bigcup_{i\in I}X_i\right).
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(M=\bigcap_i X_i\). Since \(M\subseteq X_i\), monotonicity gives \(\cl(M)\subseteq\cl(X_i)=X_i\) for every \(i\); hence \(\cl(M)\subseteq M\). Extensivity gives \(M\subseteq\cl(M)\), so \(M\) is closed. It is plainly the greatest closed lower bound.
+
+Let \(J=\cl(\bigcup_i X_i)\). Idempotence makes \(J\) closed, and extensivity gives \(X_i\subseteq J\) for every \(i\). If \(Y\) is any closed upper bound, then \(\bigcup_i X_i\subseteq Y\), so monotonicity yields \(J=\cl(\bigcup_i X_i)\subseteq\cl(Y)=Y\). Thus \(J\) is the least closed upper bound. Arbitrary meets and joins therefore exist.
+\end{proof}
+
+This theorem gives a mathematically honest meaning to a ``knowledge lattice'' provided the closure operator itself is declared and justified. It also clarifies the role of saturation. A saturated state, relative to a fixed closure operator and universe, is a fixed point. Tarski's fixed-point theorem places such constructions in the broader theory of monotone operators on complete lattices \cite{tarski1955}. Section~8 will add the crucial scientific qualification: in open-world research, the effective universe and discovery operator can expand, so a fixed point can only be certified relative to a bounded basis and horizon.
+
+\subsection{Two layers rather than one overloaded object}
+
+The resulting architecture has two mathematical layers. The \emph{compatibility layer} stores typed scientific atoms, witnessed relations, obstructions and admissible paths. It is designed to preserve local detail and to refuse unjustified gluing. The \emph{closure layer}, when supplied with a valid closure operator, organizes closed epistemic states into a genuine lattice. Conflating the two loses useful distinctions: a compatibility edge is not an order relation, while a lattice join is not merely ``put these two claims in the same memory.''
+
+This layered interpretation is also consistent with formal concept analysis, where closure operators generate concept lattices \cite{ganter1999}, and with abstract interpretation, where closure-like operators and Galois connections organize sound abstractions \cite{cousot1977}. RAKL's contribution is not the lattice theorem. The contribution is the discipline of requiring the theorem's hypotheses before using lattice language in a scientific-agent architecture.
+
+\section{Authority, uncertainty, and scalar inadequacy}
+
+A second mathematical hazard arises when a rich epistemic state is compressed to one ``confidence'' or ``quality'' number. Scalar scores are convenient for ranking, but they can silently convert a governance policy into a claim about epistemic structure.
+
+\subsection{Authority as a product order}
+
+For simplicity let each authority coordinate \(Q\in\{G,R,M,I,D\}\) carry a local partial order \(\preceq_Q\). The product order is
+\[
+\alpha\preceq\beta
+\quad\Longleftrightarrow\quad
+\alpha^{(Q)}\preceq_Q\beta^{(Q)}\quad\text{for every }Q.
+\]
+This construction permits incomparable states. One claim may be strongly grounded but mechanistically weak; another may have a persuasive mechanism but poor identification. Neither need dominate the other.
+
+\begin{example}
+Let
+\[
+\alpha=(3,1,0,2,1),\qquad \beta=(2,1,3,1,1)
+\]
+under coordinatewise numerical orders used only for illustration. Then \(\alpha\) is stronger in grounding and identification, while \(\beta\) is stronger in mechanism. Neither \(\alpha\preceq\beta\) nor \(\beta\preceq\alpha\).
+\end{example}
+
+A scalar score \(s(\alpha)\) can still be introduced for a specific decision policy, just as multi-objective optimization can apply a utility function. What it cannot do is faithfully represent the partial order as though the underlying epistemic structure were itself one-dimensional.
+
+\begin{theorem}[No faithful scalarization of incomparability]
+Let \((P,\preceq)\) be a partial order containing distinct incomparable elements \(x\) and \(y\). There is no map \(s:P\to\mathbb R\) such that for all \(a,b\in P\),
+\[
+a\preceq b\quad\Longleftrightarrow\quad s(a)\le s(b).
+\]
+\end{theorem}
+
+\begin{proof}
+Because the usual order on \(\mathbb R\) is total, either \(s(x)\le s(y)\) or \(s(y)\le s(x)\). Under the stated biconditional, the first case implies \(x\preceq y\) and the second implies \(y\preceq x\). Both contradict incomparability.
+\end{proof}
+
+The theorem is intentionally elementary because the design consequence is often obscured by sophisticated scoring machinery. A scalar can be a \emph{policy projection}; it cannot preserve every relation in a genuinely partial epistemic order. If a system needs the distinction between ``more evidence'' and ``more mechanism'' later, collapsing the coordinates early is information loss.
+
+\subsection{Uncertainty and authority occupy different axes}
+
+Probability theory and structural causal modeling supply principled methods for uncertainty and causal questions \cite{pearl2009,halpern2016}. They do not remove the need for provenance or scope. A posterior probability can be sharply concentrated because a likelihood is strong under a misspecified model. A causal effect can be identifiable under assumptions that do not hold in a target population. An observational result can be numerically precise while mechanistically agnostic. For that reason uncertainty objects \(u(c)\) are not embedded into the authority tuple by default.
+
+Conversely, authority need not mean certainty. A well-calibrated measurement with a wide interval may have excellent grounding and representation certificates. The correct system state can therefore be ``high authority, high uncertainty.'' This is another pair that a single confidence score tends to obscure.
+
+\subsection{Contradiction without explosion}
+
+Scientific archives must also tolerate unresolved contradiction. Argumentation frameworks explicitly model attack and defense rather than treating the knowledge base as a single classical theory \cite{dung1995}; four-valued logics provide semantics in which inconsistent information can be represented without trivializing every proposition \cite{belnap1977}. RAKL adopts the engineering lesson: conflicting claims can coexist as typed objects while their contradiction is recorded as an obstruction. The canonical state does not infer arbitrary consequences from the presence of a conflict.
+
+A useful distinction is
+\[
+\text{raw conflict}\;\supseteq\;\text{aligned contradiction}\;\supseteq\;\text{decisive refutation}.
+\]
+Raw conflict may be textual. Aligned contradiction requires compatible scope and representation. Decisive refutation additionally requires evidence of sufficient authority for the target claim and regime. By making these transitions explicit, the archive can preserve the history of a theory without granting all historical statements equal current standing.
+
+\subsection{Authority update and revocation}
+
+Authority is not assumed to be globally monotone. New evidence can invalidate a calibration, expose data leakage or show that a previously claimed regime was too broad. What is append-only is the \emph{history of certificates and challenges}; current valid authority is a view over that history. If \(\mathcal C_t(c)\) is the set of certificates ever attached to claim \(c\), then ordinary archival policy can preserve
+\[
+\mathcal C_t(c)\subseteq \mathcal C_{t+1}(c),
+\]
+while a validity predicate \(\nu_t:\mathcal C_t(c)\to\Bool\) determines which certificates currently contribute to \(\alpha_t(c)\). Revocation therefore changes validity, not the historical fact that a certificate once existed.
+
+This pattern parallels the distinction between provenance and current query semantics in data systems \cite{buneman2001,green2007,prov2013}. It also makes re-analysis possible: if a later policy changes the admissibility of a calibration, the system can recompute the authority view without erasing the record that produced the earlier conclusion.
+
+\subsection{Why the geometry/value distinction matters for saturation}
+
+The scalarization problem reappears in the stopping rule. ``Number of nodes stopped increasing'' is not enough. ``Average confidence stopped increasing'' is worse because it can hide counterexamples and negative results. The saturation vector in Section~8 therefore counts multiple kinds of substantive change separately: new mechanisms, derivations, independent evidence roots, contradictions/counterexamples, negative results, novelty-boundary updates, assumption-scope changes, unresolved-fiber updates and discovery-route changes. Flatness means every coordinate is zero under a stable basis. It is a product condition, not a weighted average.
+
+\section{Transient workspace: access without authority}
+
+Persistent scientific state solves a storage and governance problem, but it does not solve a computational one. A research process with millions of archived objects cannot expose every object to every operator at every step. It needs a bounded active view. The danger is that ``active'' can be confused with ``important,'' then ``important'' with ``credible,'' and finally ``credible'' with ``true.'' The workspace is designed to break that chain.
+
+\subsection{Lineage and novelty boundary}
+
+Shared-workspace mechanisms long predate language-model agents. Blackboard architectures coordinate heterogeneous knowledge sources through a common data structure and control mechanism \cite{hayesroth1985,nii1986}. Global Workspace Theory and Global Neuronal Workspace accounts use competition, limited capacity and broad availability to describe access to information across cognitive processes \cite{baars1988,dehaene2001,mashour2020}. In machine learning, the Consciousness Prior proposed attention to a small subset of variables followed by broad downstream use \cite{bengio2017}; Shared Global Workspace architectures coordinate specialist neural modules through a bandwidth-limited channel \cite{goyal2021}.
+
+RAKL therefore claims no novelty for shared memory, competition, broadcast or limited capacity. Its narrower contribution is an \emph{epistemic boundary}: workspace membership changes computational accessibility while leaving atlas compatibility and authority untouched unless separate certified transitions are executed.
+
+Recent work on language-model representations makes the distinction timely. Gurnee et al. use a Jacobian lens to identify a sparse family of verbalizable representations with properties associated with broad functional access and directed modulation \cite{gurnee2026}. Their framing concerns a functional notion related to access consciousness and does not establish phenomenal consciousness. Their J-space is constructed from sparse non-negative combinations of J-lens directions; for a fixed sparsity level it has a union-of-cones geometry rather than an order-theoretic lattice. The study also leaves open what mechanism causes a representation to enter J-space. These results motivate causal tests of computational access; they do not supply an authority theory for scientific claims.
+
+\subsection{Workspace frame}
+
+Let \(C_t=\{1,\ldots,n\}\) index candidate objects derived from canonical state, current residuals and research goals. Each candidate \(i\) has a partition \(p(i)\), a non-negative computational priority \(u_i\), a stable content reference and a set of typed broadcast targets. The reference partitions are
+\[
+\mathcal P=\{\mathrm{CORE},\mathrm{CHALLENGE},\mathrm{NOVEL},\mathrm{HISTORY}\}.
+\]
+A policy specifies capacity \(\kappa\) and lower reservations \(r_p\) for selected partitions. The selected set is
+\[
+S_t=G_{\kappa,r}(C_t),\qquad |S_t|\le \kappa.
+\]
+The resulting workspace frame is
+\[
+W_t=(S_t,B_t,L_t,X_t,T_t),
+\]
+where \(B_t\) is a typed broadcast map, \(L_t\) a selection ledger, \(X_t\) intervention handles and \(T_t\) lifetime/capacity metadata. A downstream operator receives only the projections addressed to it by \(B_t\) and returns a proposal.
+
+The reservations are epistemically motivated. A pure relevance ranking tends to reinforce the current problem framing. Reserving capacity for challenge, novelty and negative/history material guarantees that the active view cannot be filled entirely by objects that already agree with the dominant hypothesis.
+
+\subsection{Selection as a constrained top-$k$ problem}
+
+Under the current reference assumptions, selection has a simple optimization form. Let \(x_i\in\Bool\) indicate whether candidate \(i\) is selected. For disjoint partitions and unit item costs,
+\[
+\begin{aligned}
+\max_{x\in\Bool^n}\quad &\sum_{i=1}^n u_i x_i\\
+\text{subject to}\quad
+&\sum_i x_i\le\kappa,\\
+&\sum_{i:p(i)=p}x_i\ge r_p,\qquad p\in\mathcal R,
+\end{aligned}
+\]
+where \(\mathcal R\subseteq\mathcal P\) is the set of reserved partitions. Feasibility requires at least \(r_p\) candidates in each reserved partition and \(\sum_p r_p\le\kappa\).
+
+The implementation first takes the \(r_p\) highest-priority candidates inside every reserved partition, then fills the remaining capacity by global priority among all unselected candidates.
+
+\begin{theorem}[Optimality of reservation-first greedy selection]
+Assume (i) every candidate belongs to exactly one partition, (ii) every selected item has unit cost, (iii) utilities \(u_i\ge0\) are additive, (iv) reservations are lower bounds only, and (v) the instance is feasible. Then reservation-first selection followed by global greedy fill maximizes \(\sum_i u_i x_i\) subject to the constraints above.
+\end{theorem}
+
+\begin{proof}
+Consider any optimal feasible set \(S^*\). For a reserved partition \(p\), suppose \(S^*\) contains a reserved-slot candidate \(j\) whose utility is lower than an unselected candidate \(i\) among the top \(r_p\) utilities of that partition. Exchanging \(j\) for \(i\) preserves cardinality and all lower-bound constraints and does not decrease the objective. Repeating this exchange yields an optimal solution containing the top \(r_p\) candidates from every reserved partition.
+
+After these mandatory choices are fixed, no residual partition constraint restricts the remaining slots: all lower bounds are already satisfied, partitions are disjoint, and every item consumes one unit of capacity. The residual optimization is therefore ordinary top-$k$ selection over the remaining candidates. Because utilities are non-negative, filling each available slot with the largest remaining utility is optimal. Combining the two stages gives the stated rule.
+\end{proof}
+
+The assumptions matter. Heterogeneous costs turn the fill stage into a knapsack-like problem; pairwise diversity bonuses make utility non-additive; upper quotas or overlapping group memberships couple the reservations. The theorem therefore certifies the current implementation's narrow policy, not a universal workspace optimizer.
+
+\subsection{Access, coherence and authority}
+
+For an item \(a\), define
+\[
+\begin{aligned}
+A_t(a)&=\text{computational accessibility},\\
+C_t(a)&=\text{atlas coherence},\\
+\alpha_t(a)&=\text{epistemic authority}.
+\end{aligned}
+\]
+Workspace selection can change \(A_t\) by construction. It has no direct operator for changing either of the other two quantities.
+
+\begin{proposition}[Authority-preservation invariant]
+Assume workspace transitions can write only workspace state, cognitive provenance and proposals, while an authority increase requires a canonical verification/promotion transition carrying a valid authority certificate. Then a workspace-only transition cannot increase \(\alpha_t(a)\).
+\end{proposition}
+
+\begin{proof}
+The codomain of a workspace-only transition excludes canonical authority coordinates and the certificate-producing promotion operator. Hence the canonical projection onto authority is invariant. Any later authority change must occur in a separate certified transition.
+\end{proof}
+
+The result is intentionally architectural. A model can still become more convinced by seeing an item; the proposition says that such internal or behavioral change is not automatically written into the scientific record.
+
+\begin{proposition}[Coactivation does not imply compatibility]
+For arbitrary selected items \(a,b\),
+\[
+a,b\in S_t\not\Rightarrow \Compat(a,b),
+\]
+and coactivation does not imply the existence of a gluing witness or lattice join.
+\end{proposition}
+
+\begin{proof}
+The gate is defined by partition reservations and computational priorities, not by a compatibility predicate. A contradictory claim can be deliberately placed in the \(\mathrm{CHALLENGE}\) partition and selected together with the claim it attacks. Therefore coactivation is compatible with explicit epistemic incompatibility.
+\end{proof}
+
+This is not a defect. A critic must be able to see mutually incompatible objects simultaneously in order to compare them. The workspace is a debate surface, not a consistency filter.
+
+\subsection{Broadcast and proposal typing}
+
+Let \(\mathcal O\) be the set of downstream operator types. The broadcast map
+\[
+B_t:S_t\longrightarrow\powerset(\mathcal O)
+\]
+controls which operator receives which selected object. A proposal emitted after broadcast has the form
+\[
+p=(\mathrm{id},\mathrm{source\ items},\mathrm{target\ operator},\mathrm{payload}).
+\]
+The source-item list makes computational ancestry explicit. A proposer can therefore say ``this hypothesis was generated after seeing items \(a,b,c\)'' without claiming that those items constitute evidence for the hypothesis.
+
+Memory-oriented language-model architectures show why the distinction is practical. Retrieval-augmented generation supplies external passages to the model \cite{lewis2020}; MemGPT manages tiers of context and external memory \cite{packer2023}; generative agents retrieve memories to guide future behavior \cite{park2023}. In all such systems, memory access changes computation. Epistemic mechanics adds a rule that is external to those memory mechanisms: access provenance is not evidence provenance.
+
+\subsection{Cognitive provenance and interventions}
+
+A cognitive-provenance edge records
+\[
+a\longrightarrow p
+\]
+when selected item \(a\) contributed to downstream proposal \(p\). To test whether the contribution is load-bearing, one can perform registered interventions on candidate/workspace state:
+\[
+do(a\notin S_t),\qquad do(a\mapsto a'),\qquad do(u_a\mapsto\lambda u_a).
+\]
+The intervention language resembles structural causal reasoning \cite{pearl2009,halpern2016}, but the claim remains local to the computational system. If removing \(a\) changes the proposal while other registered conditions are held fixed, then \(a\) is causally relevant to that proposal under the declared intervention model. It does not follow that \(a\) is scientifically true.
+
+Accordingly, the provenance types are separated:
+\[
+\Pi^{\mathrm{cog}}\neq\Pi^{\mathrm{evid}}.
+\]
+A cognitive edge can support explanations of model behavior, ablations and debugging. An evidential edge supports a scientific claim only through a verification identity. There is no default coercion from one type to the other.
+
+\subsection{Workspace lifetime and eviction}
+
+A workspace is intentionally transient. Let \(\ell_t(a)\in\mathbb N\) be the remaining lifetime of selected item \(a\). Between two computational steps, an item can be retained, displaced by a higher-priority item, evicted when its lifetime expires or removed by intervention. This gives access its own temporal semantics. A claim can have high canonical authority while being absent from the current workspace because it is irrelevant to the immediate target; a low-authority challenge can be highly active because falsifying it is useful.
+
+This observation gives a second proof intuition for scalar inadequacy. If workspace prominence and epistemic authority were one monotone scalar, prioritizing a false claim for adversarial testing would incorrectly increase its epistemic standing. Separating the state spaces avoids the contradiction.
+
+\subsection{What the workspace does not solve}
+
+The workspace does not discover remote concepts by itself. If the candidate generator is trapped inside the current vocabulary, a perfectly diverse gate can only rearrange locally generated objects. That failure occurred in the development history that motivated OWMD. The next section therefore moves one level outward: instead of selecting among known candidates, it asks how the system should search for mechanisms it does not yet know how to name.
+
+\section{Open-World Mechanism Discovery}
+
+A protected canonical state can still be incomplete in a systematic way. The failure is not necessarily shallow search. A recursive process can generate thousands of descendants while remaining inside the vocabulary, citation neighborhood and disciplinary assumptions of its first query. This is \emph{ontology-conditioned closure}: depth increases while the accessible concept space does not.
+
+Information retrieval has long documented the vocabulary problem---different people use different words for the same objects and functions \cite{furnas1987}. Literature-based discovery showed that scientifically useful connections can exist between literatures that do not directly cite one another \cite{swanson1986}. More recent methodology-inspiration retrieval explicitly targets transferable methods rather than ordinary topical similarity \cite{garikaparthi2025}. Search diversification likewise treats breadth across intents or aspects as an objective distinct from relevance alone \cite{carbonell1998}. OWMD turns these observations into a governance requirement for research-agent architecture.
+
+\subsection{Capability ownership before search}
+
+For a subsystem \(M\), let
+\[
+\mathcal F_{\mathrm{req}}(M)=\{f_1,\ldots,f_n\}
+\]
+be the functions that the subsystem must perform. A function is considered \emph{owned} only when there exists a record
+\[
+O_f=(m_f,\sigma_f,\mathrm{pre}_f,\mathrm{post}_f,E_f,T_f,\mathrm{fail}_f),
+\]
+containing a mechanism identity \(m_f\), scope \(\sigma_f\), preconditions, postconditions, evidence, executable tests and failure semantics. A label such as ``memory,'' ``reasoning'' or ``workspace'' is not an owner record. This requirement follows the spirit of explicit contracts in software and formal methods: the question is what the mechanism guarantees under stated conditions, not what it is called.
+
+For every unowned or contested function, construct a functional signature
+\[
+\Sigma(f)=(I,O,C,R,D,X),
+\]
+where \(I\) and \(O\) are characteristic inputs and outputs, \(C\) resource or structural constraints, \(R\) relations among participating objects, \(D\) temporal/control dynamics, and \(X\) failure or intervention signatures. The signature is written so that current framework labels can be masked.
+
+For the bounded-selection/broadcast function, for example, a signature can say: many processes generate candidates; a small active subset is selected competitively; capacity is limited; selected objects become reusable by heterogeneous downstream processes; items can persist, be displaced or be evicted; interventions on active contents can change later computation; and computational prominence does not establish truth. None of those phrases requires the terms ``global workspace,'' ``blackboard'' or ``J-space.''
+
+\subsection{Route ensemble}
+
+OWMD executes a heterogeneous route family \(\mathcal R\). The reference family includes:
+
+\begin{enumerate}[leftmargin=*]
+\item exact terminology;
+\item lexical variants and paraphrases;
+\item a function-only route with current core vocabulary masked;
+\item historical precursors;
+\item mathematical equivalents or neighboring formalisms;
+\item implementation analogues from other technical communities;
+\item methodology-inspiration retrieval;
+\item backward and forward citation-neighborhood expansion;
+\item literature bridges between otherwise separated topics;
+\item adversarial alternatives that solve the function differently;
+\item cross-language expansion when the domain makes it relevant; and
+\item a final freshness scan reaching a declared cutoff.
+\end{enumerate}
+
+Every route retains its query, route kind, completion state, candidate identities, lexical-independence flag, stability status and freshness metadata. At least one completed route must be lexically independent of the current core vocabulary. Lexical independence is tested on the actual query tokens rather than accepted as a declaration.
+
+The goal is not to maximize query count. Routes are designed to fail differently. Exact terminology has high precision after a name is known but cannot recover an unknown name. Function-only search is robust to nomenclature but can be broad. Historical search can find mechanisms whose modern vocabulary changed. Mathematical-equivalence routes can reveal an older formal result hiding behind different application language. Implementation analogues can expose engineering solutions that are absent from the target discipline. Citation expansion exploits local graph structure but risks remaining inside one community. The ensemble therefore treats route diversity as an epistemic defense.
+
+Open-world learning and open-set recognition address a different but related problem: systems must detect and manage classes that were not fully represented at training time \cite{jafarzadeh2021}. OWMD is not a classifier for unknown classes. Its common principle is the refusal to assume that the current ontology exhausts the world.
+
+\subsection{Candidate assimilation and novelty discipline}
+
+A retrieved mechanism \(m\) is not simply appended as a citation. It is assimilated relative to the target function with a status
+\[
+\mathrm{assim}(m,f)\in
+\left\{
+\begin{array}{lll}
+\mathrm{EQUIVALENT}, & \mathrm{SUBSUMED}, & \mathrm{COMPLEMENTARY},\\
+\mathrm{CONFLICTING}, & \mathrm{NOVEL\ RESIDUAL}, & \mathrm{UNRESOLVED}
+\end{array}
+\right\}.
+\]
+The candidate record retains source identifiers, route identifiers, functional and structural fit, evidence quality, novelty threat, transfer cost and contradiction flags.
+
+This step protects the novelty claim. If a historical system already implements the function under materially equivalent assumptions, the correct action is to narrow the RAKL contribution. If the old system solves a strict superset of the function, the new mechanism may be subsumed. If it contributes a complementary property---for example, strong computational access but no evidence governance---the relationship should be stated as a decomposition rather than a priority claim. Unresolved candidates remain explicit research fibers.
+
+\subsection{Discovery workspace}
+
+Retrieval can still be locally myopic if the candidate shortlist is ranked only by current relevance. OWMD therefore has its own bounded Discovery Workspace with partitions
+\[
+\{\mathrm{NEAR},\mathrm{REMOTE},\mathrm{CHALLENGE},\mathrm{HISTORICAL},\mathrm{FRESH}\}.
+\]
+The reference gate reserves slots for remote, challenging, historical and fresh candidates before filling by global priority. A missing reserved partition fails closed. The semantics are analogous to the research workspace of Section~6, but the object being diversified is a mechanism candidate rather than an active scientific claim.
+
+\subsection{Bounded discovery closure}
+
+Let \(Q\) denote the discovery question, \(\mathcal D\) a declared source universe, \(B\) finite route/retrieval budgets and \(t^\star\) a freshness cutoff.
+
+\begin{definition}[Bounded discovery closure]
+A required function \(f\) is \emph{bounded-discovery-closed} relative to \((Q,\mathcal R,\mathcal D,B,t^\star)\) when:
+\begin{enumerate}[leftmargin=*]
+\item it has a complete owner or an explicit unresolved research fiber;
+\item every mandatory route is complete or explicitly inapplicable;
+\item at least one completed route is lexically independent of the current core vocabulary;
+\item citation-neighborhood expansion satisfies its declared stability rule;
+\item the freshness route reaches \(t^\star\);
+\item an omission audit and nearest-work equivalence audit have provenance-bearing records; and
+\item every unresolved retrieved candidate is preserved as an explicit fiber.
+\end{enumerate}
+\end{definition}
+
+The reference implementation goes further than a boolean checklist: omission and nearest-work audits carry identities, reviewer-context provenance and evidence references. This avoids a degenerate closure call in which the same code that wants to stop simply passes \texttt{True} for ``independent review complete.''
+
+\begin{theorem}[Unrestricted open-world completeness is not finitely certifiable]
+Assume the concept/source universe is unrestricted and no complete membership oracle is available. No finite OWMD transcript can certify that no relevant undiscovered mechanism exists outside the retrieved set.
+\end{theorem}
+
+\begin{proof}
+A finite run issues finitely many queries and observes finitely many returned objects. Consider two possible worlds that agree on the complete observed transcript. In the first world, no additional relevant mechanism exists. In the second, add one relevant mechanism that is described only in a vocabulary or source not returned by any executed route. Because the observed transcript is identical in both worlds, no decision function over that transcript can distinguish them. A universal non-existence claim is therefore not identifiable from the finite transcript.
+\end{proof}
+
+This result is the formal reason the software has no \texttt{ABSOLUTELY\_COMPLETE} success state. It can report only \texttt{BOUNDED\_CLOSED} relative to a declared search world.
+
+\subsection{GWT-OMISSION-01}
+
+The development history supplies a regression test. The benchmark withholds the names ``global workspace,'' ``consciousness,'' ``J-space,'' ``blackboard'' and relevant author names. It exposes only the functional signature described above. A successful scored retrieval must recover mechanism families containing blackboard architectures, Global Workspace/Global Neuronal Workspace, the Consciousness Prior, shared neural workspaces and the J-space study through at least one lexically independent route.
+
+The benchmark currently validates the scoring, provenance and name-leakage contract. It does not establish prospective recall on arbitrary future hidden concepts. That stronger statement would require fresh pre-registered concepts whose identities are genuinely unavailable to the search process before execution.
+
+\section{Bounded epistemic saturation}
+
+OWMD says when one required function has been searched broadly enough to receive a bounded closure certificate. The project-level stopping rule is larger. A paper or research program can still grow after its mechanism owners are known: a new derivation may appear, an assumption may need narrowing, a counterexample may invalidate a theorem, or a newly independent experiment may change an evidence coordinate. The system therefore needs a definition of \emph{epistemic saturation} rather than search completion alone.
+
+The term ``saturation'' has several established meanings. In qualitative research it commonly refers to conditions under which further sampling or analysis ceases to add relevant conceptual material, and the literature stresses that saturation must be operationalized relative to the research question and analytic framework \cite{saunders2018}. In automated reasoning and program optimization, saturation procedures repeatedly apply inference or rewrite rules until no new consequences or equivalences are produced; equality saturation uses e-graphs to preserve many equivalent expressions while rewrites accumulate \cite{tate2009,willsey2021}. Database and logic-programming fixed-point semantics likewise compute consequences by iterating monotone operators \cite{vanemden1976}. These traditions motivate the fixed-point language, but none by itself provides the evidence, novelty, freshness and open-world conditions required here.
+
+\subsection{Saturation basis}
+
+A flat growth trace is meaningful only if the measurement semantics stay fixed. Define a saturation basis
+\[
+\mathcal B=(b,\Omega,\iota,\rho,\nu,\epsilon),
+\]
+where \(b\) is a basis identity, \(\Omega\) the research/manuscript scope, \(\iota\) an object-identity policy, \(\rho\) a discovery-route-family version, \(\nu\) a novelty/equivalence policy and \(\epsilon\) an evidence/authority policy. The implementation fingerprints these coordinates content-wise. A change of basis invalidates a longitudinal saturation comparison rather than being counted as new knowledge.
+
+This mirrors the metrology discipline used elsewhere in RAKL. Renaming or splitting a research fiber can change graph geometry without changing scientific content. Saturation therefore counts epistemic events, not raw representation edits.
+
+\subsection{Marginal epistemic growth vector}
+
+For research round \(r\), define
+\[
+\Delta_r=
+(\Delta M,\Delta D,\Delta E,\Delta C,\Delta N,
+\Delta V,\Delta A,\Delta F,\Delta R)_r,
+\]
+with non-negative coordinates:
+\begin{align*}
+\Delta M&=\text{new mechanisms or function owners},\\
+\Delta D&=\text{new derivations or formal consequences},\\
+\Delta E&=\text{new independent evidence roots},\\
+\Delta C&=\text{new contradictions or counterexamples},\\
+\Delta N&=\text{new negative results},\\
+\Delta V&=\text{novelty/prior-art boundary updates},\\
+\Delta A&=\text{assumption or scope updates},\\
+\Delta F&=\text{unresolved-fiber updates},\\
+\Delta R&=\text{discovery-route updates}.
+\end{align*}
+A round is substantively flat when \(\Delta_r=\mathbf 0\). Representation-only changes---sentence polishing, file reorganization, equivalent notation or ontology renaming under the same identity policy---are tracked separately and do not reset epistemic flatness.
+
+The vector is deliberately non-compensatory. Ten new prose paragraphs cannot cancel one new counterexample; a large number of citations that duplicate existing evidence roots cannot compensate for an unresolved mechanism gap. This follows the same rationale as the earlier separation between description length, compression and target-relevant retained function. Minimum-description-length thinking warns against representational bookkeeping as progress \cite{rissanen1978}; the information bottleneck distinguishes compression from retained task-relevant information \cite{tishby2000}. RAKL uses these as analogies rather than claiming to optimize either formal objective.
+
+\subsection{Finite-basis fixed point}
+
+The fixed-point interpretation can be made exact in a bounded world. Let \(U_{\mathcal B}\) be a finite universe of distinguishable epistemic objects under basis \(\mathcal B\), and let
+\[
+F_{\mathcal B}:\powerset(U_{\mathcal B})\to\powerset(U_{\mathcal B})
+\]
+be a monotone, inflationary expansion operator representing all inference, retrieval and assimilation operations admitted by the basis. Starting from \(K_0\subseteq U_{\mathcal B}\), define
+\[
+K_{n+1}=F_{\mathcal B}(K_n).
+\]
+
+\begin{theorem}[Finite-basis saturation]
+If \(U_{\mathcal B}\) is finite and \(F_{\mathcal B}\) is monotone and inflationary, then the iteration reaches a fixed point after at most \(|U_{\mathcal B}|-|K_0|\) strict-growth steps. The stabilized state is the least fixed point of \(F_{\mathcal B}\) containing \(K_0\).
+\end{theorem}
+
+\begin{proof}
+Inflationarity gives \(K_n\subseteq K_{n+1}\). Every strict inclusion adds at least one element of the finite universe, so there can be at most \(|U_{\mathcal B}|-|K_0|\) strict-growth steps. At the first non-strict step, \(K_{n+1}=K_n\), hence \(K_n\) is a fixed point.
+
+Now let \(Y\) be any fixed point with \(K_0\subseteq Y\). If \(K_n\subseteq Y\), monotonicity gives
+\[
+K_{n+1}=F_{\mathcal B}(K_n)\subseteq F_{\mathcal B}(Y)=Y.
+\]
+By induction every iterate is contained in \(Y\), including the stabilized state. Thus the stabilized state is the least fixed point above \(K_0\).
+\end{proof}
+
+This is a standard closure/fixed-point pattern closely related to Tarski's theorem \cite{tarski1955}. Its scientific value lies in exposing the assumptions that fail in an unrestricted open world. The real literature is not a fixed finite \(U_{\mathcal B}\); the source universe changes with time, languages, databases and newly discovered vocabularies. A paper can therefore be a fixed point only relative to its bounded expansion operator.
+
+\subsection{Operational saturation certificate}
+
+The software uses a stricter operational rule than ``one call to \(F\) added nothing.'' A bounded saturation report requires \(m\ge1\) consecutive flat rounds under the same basis fingerprint. For each of those final rounds:
+
+\begin{enumerate}[leftmargin=*]
+\item all required functions are bounded-discovery-closed;
+\item route coverage is stable;
+\item the omission audit passes;
+\item the nearest-work equivalence audit passes;
+\item no blocking research fibers remain; and
+\item the freshness scan reaches the required cutoff.
+\end{enumerate}
+
+The reference default used for manuscript release is multiple consecutive flat rounds rather than a single flat round. This is not a statistical proof of recall. It is an adversarial engineering safeguard: the system must fail to grow after more than one independently designed expansion/review pass.
+
+\begin{proposition}[New substantive knowledge reopens saturation]
+If a bounded-saturated state is followed by a round \(r\) with \(\Delta_r\ne\mathbf0\), then the new state is not saturated under the consecutive-flat-round rule until the required number of subsequent flat rounds has again been observed.
+\end{proposition}
+
+\begin{proof}
+The newest suffix of consecutive flat rounds has length zero when \(\Delta_r\ne\mathbf0\). Therefore it cannot satisfy any positive required flat-round count.
+\end{proof}
+
+This proposition captures the project principle directly: saturation is not a permanent badge. A new theorem, counterexample, primary source, prior-art equivalence or mechanism owner is evidence that the previous state was incomplete relative to what is now known, so the release gate reopens.
+
+\subsection{Freshness expiry}
+
+A saturation certificate also ages. Let \(t^\star\) be the freshness cutoff recorded by the final route scan and suppose a new release policy requires coverage through \(t'>t^\star\).
+
+\begin{proposition}[Freshness-horizon expiry]
+A bounded saturation certificate whose freshness cutoff is \(t^\star\) does not satisfy a release basis requiring cutoff \(t'>t^\star\) until the freshness route is rerun through at least \(t'\).
+\end{proposition}
+
+\begin{proof}
+Freshness coverage through \(t'\) is an explicit predicate of the new basis. The old certificate establishes that predicate only through \(t^\star\), so the new obligation is unproved.
+\end{proof}
+
+This is why a paper can be saturated today and reopened by tomorrow's literature. Recent work on decision-theoretic stopping rules for document screening likewise treats stopping as dependent on the objective and the costs/benefits of further search rather than as an intrinsic property of a ranked list \cite{fletcher2026}. Systematic-review methodology similarly emphasizes explicit search strategies and update procedures rather than intuition about having seen enough papers \cite{macfarlane2022}.
+
+\subsection{The paper as a bounded-saturated epistemic projection}
+
+The long-form manuscript is generated under exactly this rule. Its state includes formal claims, proofs, counterexamples, evidence and literature links. A literature pass that discovers an equivalent mechanism changes \(\Delta V\); a mathematical audit that finds an omitted obstruction changes \(\Delta C\) or \(\Delta A\); an additional derivation changes \(\Delta D\); a new primary source can change \(\Delta E\) or \(\Delta V\). The manuscript must then grow or narrow accordingly.
+
+Only when heterogeneous discovery/review passes become substantively flat under a fixed basis may the paper be described as \emph{bounded-saturated}. In the closure-system interpretation of Section~4, the manuscript describes one closed epistemic state---a fixed point relative to the declared operator---inside a genuine lattice of closed states. That is the precise sense in which the paper can be a description of a saturated epistemic-mechanics lattice. It is not a statement that the unrestricted scientific world has stopped growing.
+
+\subsection{Open-world graph completion and stopping criteria}
+
+A useful neighboring literature comes from knowledge-graph completion. Standard link-prediction benchmarks often treat unobserved triples as negatives even though a real knowledge graph is incomplete. Open-world knowledge-graph work instead permits unseen entities and missing true facts \cite{shi2017}, while later analyses show that common completion metrics can behave misleadingly when unknown triples contain undiscovered positives \cite{yang2022}. Progressive knowledge-graph completion makes verification itself part of the construction loop: candidates are mined, verified and then used to update the graph rather than being treated as ground truth at retrieval time \cite{li2024kg}. These systems solve a different problem from RAKL, but they reinforce two boundaries used here: an absent fact is not automatically false, and graph completion is an ongoing verified process rather than a certificate that the external world has been exhausted.
+
+The provenance literature also reaches further into the fixed-point setting than a simple source graph. Recent semiring work extends provenance analysis to first-order logic with negation and studies how model-checking results depend on both positive and negative atomic information \cite{gradel2024}. This narrows the novelty boundary around the present saturation construction: the contribution is not provenance for logical inference or fixed points in isolation, but the joint certificate tying provenance, open-world route coverage, evidence independence, novelty audits, freshness and repeated marginal flatness to a scientific release decision.
+
+Stopping research introduces a second adjacent distinction. Decision-theoretic screening work models the decision to continue reading as a value-of-information problem rather than assuming that a fixed recall target is always the right objective \cite{fletcher2026}. A complementary 2026 study proposes confidence-based stopping rules that ask whether the screened evidence is already sufficient to preserve the eventual review conclusion, not merely whether a nominal recall threshold has been reached \cite{fletcher2026b}. Epistemic saturation is stricter in another direction: it is not a screening heuristic over one ranked document stream, because derivations, counterexamples, novelty boundaries, mechanism owners and discovery routes can all change the state. The common lesson is nevertheless important: a stopping rule should be tied to the epistemic decision it is meant to support, not to the raw number of documents or graph edges processed.
+
+These adjacent results modify the saturation interpretation in a useful way. Flatness of the paper's knowledge vector is a release condition only after the system has checked that the relevant decision coordinates themselves are stable. If a new source would not change any claim, proof, evidence root, contradiction, novelty boundary, assumption, unresolved fiber or discovery route, then adding it is bibliographic redundancy rather than epistemic growth. If it changes even one of those coordinates, the state is not flat regardless of how high the prior screening recall appeared to be.
+
+\subsection{Nearest work: retrieval-grounded FCA and closure-based knowledge expansion}
+
+A particularly close 2026 result makes the novelty boundary around saturation and closure much sharper. Yang and Lee combine retrieval with Formal Concept Analysis (FCA) to construct a growing formal context in which a small language-model oracle evaluates incidences and proposed implications, returns counterexamples, and makes accepted implications, contradictions and corrections inspectable \cite{yanglee2026fca}. Their loop is explicitly verification-oriented rather than unrestricted text generation. Within its controlled object--attribute world, FCA supplies closure-based implication structure, and the experimental process expands the formal context across repeated rounds.
+
+That work owns several functions that must not be redescribed as RAKL inventions: retrieval-grounded symbolic knowledge expansion, counterexample-driven correction, closure-based implication checking, and inspectable growth of a formal context. It also connects the present paper directly to the established FCA lineage, in which Galois connections and closure operators generate concept lattices \cite{ganter1999}. Earlier lattice-based knowledge-representation work used Birkhoff's representation theorem to implement finite distributive knowledge structures incrementally \cite{oles2000}. Likewise, constraint-processing research has long distinguished local consistency from conditions sufficient for global consistency \cite{dechter1992}. The parity obstruction in Section~4 should therefore be read as an explicit compact countermodel for RAKL's typing discipline, not as the discovery that local consistency can fail to become global consistency.
+
+The difference in scope is structural. Yang and Lee study a bounded FCA formal context with a controlled attribute set and retrieval-grounded oracle. Epistemic mechanics treats the formal context itself as only one possible scientific representation and adds governance dimensions that FCA does not by itself supply: evidence-root independence, multi-coordinate authority, context/alignment transitions, immutable negative history, proposal-only workspace access, open-world route diversification, provenance-bearing omission and nearest-work audits, unresolved research fibers, and freshness-expiring saturation certificates. Conversely, RAKL does not currently implement the complete FCA attribute-exploration machinery or claim that its compatibility complex is a canonical implication basis.
+
+This comparison also prevents a misleading use of the word ``saturated.'' FCA closure can be exact relative to a fixed formal context. The RAKL paper-level certificate is intentionally weaker and broader: it asks whether all registered substantive-growth coordinates have remained flat across heterogeneous expansion attempts under a fixed basis. A new source or mechanism can enlarge the effective research world and revoke that certificate even when the previously constructed FCA closure remains mathematically correct for its original context. Thus the nearest-work relation is complementary rather than competitive: FCA provides a rigorous closure engine inside a bounded representation, while epistemic saturation governs when a broader evidence-bearing research state is stable enough to release.
+
+\subsection{Nearest work: epistemic state graphs and recursive-reasoning termination}
+
+The most direct prior art for coupling an explicit reasoning state to a stopping rule is Guha et al.'s 2026 framework for recursive reasoning systems \cite{guha2026termination}. Their epistemic state graph stores claims, evidential relations, conflicts, partial answers, open questions and confidence weights. They decompose iteration into an external-evidence expansion operator and an internal consolidation operator, then define an \emph{order-gap}: the distance between expand-then-consolidate and consolidate-then-expand. A windowed small order-gap is used as an endogenous stopping signal. The graph-structured paper characterizes when the linearized commutator near a consolidation fixed point is non-degenerate and explicitly warns that its local condition is not by itself a global convergence or truth guarantee. A companion operator-mechanics paper develops the consolidation/expansion formalism more generally and gives convergence, error-bound and finite-stopping results for the order-gap signal under stated contractive/Lipschitz/noise assumptions \cite{guha2026opmech}. The present comparison therefore does not treat order-sensitive stopping as an open function owned only by RAKL.
+
+This lineage owns the general idea that recursive reasoning should expose both state and termination instead of relying on a token budget or iteration count. It also exposes a real weakness in a naive repeated-flatness rule: one observed operator ordering can look stable while a perturbation of the ordering still changes the epistemically meaningful state. The RAKL saturation contract therefore includes an explicit operator-order perturbation audit. It does not reuse the Euclidean order-gap as its certificate. Instead it runs the alternative orderings under the same frozen basis and computes their difference in the non-compensatory epistemic-growth coordinates. Different serialization or graph digests are harmless when the substantive difference vector is zero; any change to mechanisms, derivations, evidence roots, counterexamples, novelty, assumptions, fibers or discovery routes blocks saturation.
+
+The distinction is thus one of release semantics rather than priority over termination mechanics. The Guha line asks when an adaptive or recursive reasoning trajectory has become insensitive enough to consolidation/expansion ordering to justify stopping under its operator assumptions. RAKL asks when a publishable scientific state has stopped changing under heterogeneous evidence, discovery, formal-review and order-perturbation passes while authority, nearest-work, unresolved-fiber and freshness obligations remain closed. Operator-order stability is therefore one necessary coordinate of the RAKL certificate, not a competing invention claim.
+
+A second adjacent 2026 proposal, Epistemic State Replication, separates an immutable evidence log from a stochastic belief lineage when distributed agent replicas need semantic rather than bitwise agreement \cite{heyu2026esr}. This reinforces the present separation between canonical evidential state and model-dependent computational state: semantic agreement between agents is not identical to evidence authority, but a deterministic evidence boundary can anchor divergent internal reasoning. The two systems address different execution problems, yet the shared separation is useful prior art and narrows any claim that evidence/belief decoupling is unique to RAKL.
+
+Finally, a 2026 National Academies-associated framework for research trustworthiness argues for a systems view spanning accountability, evaluability, formulation, evaluation, bias control, error reduction and whether claims are warranted by evidence \cite{nosek2026trust}. This provides an external metascientific reason not to identify scientific trustworthiness with one confidence coordinate. The RAKL authority tuple is not asserted to be a canonical decomposition of trustworthiness; it is an executable local certificate structure whose multidimensional form is consistent with the broader finding that trustworthy science depends on several non-interchangeable properties.
+
+\subsection{Scientific mechanism completion is itself a parent mechanism}
+
+A final function-first search exposes a domain-specific parent that directly overlaps the missing-mechanism motivation. Wu et al. frame scientific simulation failure as an ``Implicit Context'' problem: equations retrieved from literature can carry unstated validity assumptions, and syntactically correct code can therefore be physically wrong when the target boundary conditions differ \cite{wu2026epistemicclosure}. Their neuro-symbolic agent encapsulates literature-derived physical laws as Constitutive Skills with applicability metadata, constructs a causal topology, prunes mechanisms that are redundant in the current regime, and inductively completes a missing dissipation mechanism when dimensionless scaling shows that a literature simplification is invalid. In the reported thermal-pressurization case, the agent uses the Deborah number to reject an undrained assumption and activates Darcy-flow dissipation before running the coupled simulation.
+
+This work materially narrows any claim that RAKL uniquely proposes context-aware scientific mechanism completion. The mechanism is a parent to assimilate: scientific operators should carry applicability domains; boundary/regime checks should occur before execution; and a missing mechanism can be hypothesized when a governing constraint remains unsatisfied. RAKL's residual OWMD claim is narrower and more infrastructural. It concerns how an initially unnamed or remotely named function owner is searched across heterogeneous vocabularies and disciplines, how candidate mechanisms are recorded with provenance and scientific authority rather than accepted from model priors alone, how competing mappings and negative results remain in canonical history, and why only a bounded discovery-closure certificate is permitted.
+
+The comparison also reinforces the distinction between \emph{proposal} and \emph{evidence}. An intrinsically proposed mechanism can be scientifically valuable, but its origin in a model's latent prior does not by itself establish external scientific authority. Under RAKL it enters as a candidate operator/mechanism whose regime checks, limiting cases, derivations, independent evidence and discriminating predictions determine whether authority can increase. Thus autonomous mechanism completion is assimilated as a generation and model-construction capability, while the evidence-governed state transition remains a separate obligation.
+
+\subsection{Transport obstruction and representation extension are also parent mechanisms}
+
+Olivieri and Hern\'andez develop a finite sheaf-theoretic framework for scientific theory-shift candidates in AI agents that is unusually close to the representation-escape intuition used throughout RAKL \cite{olivieri2026theoryshift}. Their transition-card setting explicitly asks whether a source representation can be transported into a new regime or whether the language becomes locally-to-globally obstructed and must be extended. Candidate source, overlap, target and validation charts are fitted and tested for gluing; the obstruction score combines residual fit, overlap incompatibility, constraint violation, limiting-relation failure and representational cost. The reported benchmark distinguishes deformation within a source language from extension of that language.
+
+This work removes any defensible novelty claim that RAKL uniquely connects sheaf-like obstruction to scientific representation change. The mechanism should instead be treated as a parent for a future representation-escape operator: finite transport/gluing diagnostics can nominate when the current representation family is no longer coherent. RAKL's remaining formal contribution is the surrounding scientific-state discipline---the obstruction is attached to evidence and context, the candidate extension cannot mint its own authority, mechanism and identification remain separate axes, failed transports persist as negative history, open-world routes can search for remote function owners, and any saturation certificate reopens when a new representational owner or counterexample is found.
+
+The parent also clarifies a useful division of labor. A finite obstruction diagnostic can answer a bounded question such as ``under these transition cards, which candidate deformation or extension is most coherent?'' It does not certify that the selected representation is scientifically true or that no remote representation remains undiscovered. Those stronger statements remain governed by the normal RAKL verification and bounded-open-world rules. The correct integration is therefore transport obstruction as a candidate-generation/diagnostic operator inside the wider epistemic state machine, not a competing vocabulary for the whole framework.
+
+\section{Worked mechanics trace: the simple pendulum}
+
+Formal state machinery is easiest to evaluate on a case whose physics is already known. The simple pendulum is deliberately unglamorous. Its governing equation, approximation hierarchy and finite-amplitude correction are classical, so the example cannot hide behind scientific novelty. That makes it a useful unit test for context, compatibility, evidence roles, negative history and saturation.
+
+\subsection{Exact mechanical model}
+
+Consider a point mass \(m\) attached to a massless rigid rod of length \(L\) in a uniform gravitational field \(g\), with angular displacement \(\theta\) from the downward vertical. Neglect drag and pivot friction. The Lagrangian is
+\[
+\mathcal L(\theta,\dot\theta)
+=\frac12 mL^2\dot\theta^2-mgL(1-\cos\theta).
+\]
+The Euler--Lagrange equation gives
+\[
+\frac{\mathrm d}{\mathrm dt}\left(mL^2\dot\theta\right)
++mgL\sin\theta=0,
+\]
+so
+\[
+\boxed{\ddot\theta+\frac{g}{L}\sin\theta=0.}
+\]
+The mass cancels exactly under the stated idealization. This is a mechanism-level reason for ideal mass invariance, not merely an empirical pattern. Standard mechanics texts treat the pendulum as a canonical nonlinear oscillator \cite{landau1976,strogatz2015}.
+
+For release from rest at amplitude \(\theta_0\in(0,\pi)\), energy conservation per unit mass gives
+\[
+\frac12L^2\dot\theta^2+gL(1-\cos\theta)
+=gL(1-\cos\theta_0),
+\]
+therefore
+\[
+\dot\theta^2
+=\frac{2g}{L}(\cos\theta-\cos\theta_0)
+=\frac{4g}{L}\left[\sin^2\!\left(\frac{\theta_0}{2}\right)
+-\sin^2\!\left(\frac{\theta}{2}\right)\right].
+\]
+Set
+\[
+k=\sin\left(\frac{\theta_0}{2}\right),
+\qquad
+\sin\left(\frac\theta2\right)=k\sin\varphi.
+\]
+Over one quarter-period, \(\theta\) runs from \(0\) to \(\theta_0\), and the substitution yields
+\[
+\frac{T}{4}
+=\sqrt{\frac{L}{g}}
+\int_0^{\pi/2}
+\frac{\mathrm d\varphi}{\sqrt{1-k^2\sin^2\varphi}}.
+\]
+The integral is Legendre's complete elliptic integral of the first kind \(K(k)\) \cite{dlmf2026}, hence
+\[
+\boxed{T(\theta_0)=4\sqrt{\frac{L}{g}}\,K\!\left(\sin\frac{\theta_0}{2}\right).}
+\]
+This derivation is the exact relationship for libration under the registered ideal model. It also exposes the regime boundary: the familiar harmonic period is not the governing law for arbitrary amplitude.
+
+\subsection{Small-angle chart and finite-amplitude correction}
+
+For \(|\theta|\ll1\),
+\[
+\sin\theta=\theta-\frac{\theta^3}{6}+\frac{\theta^5}{120}-\cdots.
+\]
+Keeping only the linear term gives
+\[
+\ddot\theta+\omega_0^2\theta=0,
+\qquad \omega_0=\sqrt{\frac gL},
+\]
+with period
+\[
+T_0=2\pi\sqrt{\frac Lg}.
+\]
+This is a local chart, not an exact replacement for the nonlinear equation.
+
+The complete elliptic integral has the convergent expansion for \(|k|<1\)
+\[
+K(k)=\frac\pi2
+\left[
+1+\frac14k^2+\frac{9}{64}k^4+\frac{25}{256}k^6
++\frac{1225}{16384}k^8+\cdots
+\right] \cite{dlmf2026}.
+\]
+Substituting \(k=\sin(\theta_0/2)\) and re-expanding in \(\theta_0\) gives
+\[
+\frac{T(\theta_0)}{T_0}
+=1+\frac{\theta_0^2}{16}
++\frac{11\theta_0^4}{3072}
++\frac{173\theta_0^6}{737280}
++O(\theta_0^8).
+\]
+The leading relative correction is therefore
+\[
+\frac{T-T_0}{T_0}\approx\frac{\theta_0^2}{16}.
+\]
+A statement such as ``the pendulum period is independent of amplitude'' is thus not simply true or false. It is a small-angle approximation whose error grows systematically with amplitude. Exact and approximate treatments of the nonlinear pendulum are well established \cite{reinberger2021,graber2018}.
+
+This distinction illustrates why context must be attached to claims. Define
+\[
+C_{\mathrm{exact}}=(\theta_0\in(0,\pi),\text{ideal pendulum},T(\theta_0)),
+\]
+and
+\[
+C_{\mathrm{small}}=(|\theta_0|\ll1,\text{linearized pendulum},T_0).
+\]
+The transition from the exact to the small-angle chart carries an approximation map and an error expansion. The two charts are coherent after that relation is registered. If the small-angle formula is asserted globally with its regime removed, it becomes a different claim and can be refuted by finite-amplitude evidence.
+
+\subsection{Gravity, mass and context alignment}
+
+The exact and approximate periods both scale as \(\sqrt{L/g}\). Changing from Earth to the Moon therefore changes the period through the local gravitational acceleration while preserving the structural form of the ideal model. By contrast, \(m\) cancels from the equation of motion. These facts have different epistemic roles:
+
+\begin{itemize}[leftmargin=*]
+\item ``period changes with \(g\)'' is a parameter-dependence statement;
+\item ``period is independent of \(m\)'' is an ideal-model invariance;
+\item ``period is independent of amplitude'' is only an approximation-level statement;
+\item ``period depends on mass'' is incompatible with the registered ideal model unless some additional mass-dependent mechanism enters the context.
+\end{itemize}
+
+A real experiment can introduce such additional mechanisms. Air drag, bob geometry, string elasticity or pivot friction may correlate with mass. The correct response is not to force the observation into the ideal chart. It is to open or refine a context/mechanism fiber. The ideal invariant remains valid in its scope while the experimental chart records the extra physics.
+
+\subsection{A typed epistemic trace}
+
+Suppose the initial research state contains only the small-angle relation
+\[
+c_1:T\approx2\pi\sqrt{L/g}
+\]
+with a regime certificate \(|\theta_0|\ll1\). A finite-amplitude source or derivation adds
+\[
+c_2:T=4\sqrt{L/g}\,K(\sin(\theta_0/2)).
+\]
+The new object does not refute \(c_1\) because the registered transition identifies \(c_1\) as the leading approximation to \(c_2\). Instead, the atlas gains a representation/relation certificate and a more explicit scope boundary.
+
+Now consider a candidate claim
+\[
+c_3:T\text{ increases with bob mass under the ideal model}.
+\]
+The Lagrangian derivation gives a structural falsifier: mass divides out of the Euler--Lagrange equation. A refuted \(c_3\) enters negative history rather than disappearing. That negative object can later prevent a language model from reintroducing the same unsupported dependency.
+
+A fourth claim
+\[
+c_4:T_{\mathrm{Moon}}=T_{\mathrm{Earth}}
+\]
+looks superficially similar to mass invariance but fails after context alignment because the two charts have different \(g\). The contradiction is therefore not a generic ``same pendulum/different answer'' conflict; it is a parameter-context conflict localized to gravitational acceleration.
+
+The sequence demonstrates why one evidence/support list is insufficient. The exact period derivation, the small-angle approximation, the ideal mass invariance, the Earth/Moon parameter change and a refuted mass-dependence claim occupy different typed roles. A structured answer can cite them separately instead of treating every retrieved source as interchangeable support.
+
+\subsection{Geometric growth versus epistemic gain}
+
+The pendulum also illustrates the metrology distinction used by the saturation rule. Let a registered target ask for a defensible account of period dependence. An initial transition from \(c_1\) to \(c_2\) can both add an atom and close a blocking epistemic cut: the target now has an amplitude-aware support path. Adding a second textual source that merely restates \(c_2\) may increase evidence bindings without adding an independent evidence root. Recording the refutation of \(c_3\) grows negative history without opening a new positive support path. Refining a fiber name changes representation without changing any of those epistemic coordinates.
+
+A single ``knowledge volume'' number would mix these events. The non-compensatory growth vector instead records what changed. This is the same reason reproducibility reforms emphasize transparent evidence and independent checks rather than the mere abundance of published claims \cite{nosek2015,munafo2017}.
+
+\subsection{What saturation would mean in the worked world}
+
+For the pendulum target, a bounded saturation basis might declare: the ideal rigid pendulum plus specified perturbations; a fixed object-identity policy; a route family spanning mechanics texts, historical sources, exact nonlinear analyses, experimental deviations and adversarial alternative mechanisms; an evidence policy distinguishing derivation from experiment; and a freshness cutoff.
+
+A round that discovers the elliptic-integral solution has \(\Delta D>0\). A round that discovers a previously omitted drag mechanism has \(\Delta M>0\) and likely \(\Delta A>0\). A round that finds an older source establishing the same function can have \(\Delta V>0\) because the novelty boundary changes even if no equation changes. A round that only rewrites the explanation more elegantly has zero substantive growth.
+
+Only after the required route family is stable and repeated rounds produce
+\[
+\Delta_r=\mathbf0
+\]
+may the bounded target be called saturated. The certificate remains explicitly relative to the declared world. A new precision experiment or a newly relevant physical regime can reopen the state immediately.
+
+\subsection{Discussion: what epistemic mechanics adds}
+
+The framework should be read as a composition of established ideas with new governance boundaries, not as an attempt to replace the fields reviewed in Section~2. Belief revision already studies rational change \cite{agm1985,gardenfors1988}. Truth-maintenance systems already preserve justifications and alternative assumption environments \cite{doyle1979,dekleer1986}. Provenance systems already track lineage \cite{buneman2001,green2007,prov2013}. Sheaf and contextuality methods already formalize local-to-global obstruction \cite{abramsky2011,curry2014}. Global-workspace and blackboard theories already study bounded shared access \cite{hayesroth1985,nii1986,baars1988,dehaene2001}. Search and literature-discovery work already addresses vocabulary mismatch and remote connections \cite{furnas1987,swanson1986,garikaparthi2025}.
+
+Epistemic mechanics contributes the joints between these components. A proposal is not a canonical update. Provenance is not authority. Coactivation is not compatibility. Pairwise compatibility is not global gluing. A compatibility complex is not automatically a lattice. Computational influence is not evidence. Search depth is not open-world coverage. Graph growth is not scientific progress. A flat graph is not saturation unless the discovery and review basis is stable. These boundaries are individually simple; their value is that they are represented in one executable state discipline rather than left as prose advice to an agent.
+
+\subsection{Limitations and open fibers}
+
+Several important coordinates remain open.
+
+First, the paper is primarily formal and architectural. The software tests establish behavior of the reference mechanisms, not improved scientific discovery in the wild. Matched same-model evaluations are required to estimate whether the governance overhead improves correctness, calibration, novelty detection or research efficiency.
+
+Second, OWMD's hidden-name benchmark is currently a regression contract. Prospective evaluation should freeze unseen mechanism identities before search, include multiple domains and score both recall and false-positive/transfer cost. The absence of such an experiment is why bounded discovery closure is not advertised as a learned universal discovery skill.
+
+Third, the closure-system lattice theorem is conditional on a declared closure operator. The present compatibility code does not yet implement a universal scientific closure operator, and different scientific domains may require different closure semantics. Constructing such operators without smuggling unsupported inference into \(\cl\) is itself a research problem.
+
+Fourth, independence remains a hard empirical and organizational property. Two evidence roots can share hidden upstream data; two internal reviewers can share the same model context; two search routes can call the same underlying index. The framework can require provenance fields and reject obvious aliasing, but genuine independence sometimes requires external experimental or reviewer separation.
+
+Fifth, a fixed freshness cutoff is operational rather than metaphysical. Science continues after publication. Saturation therefore has a built-in expiration mechanism rather than a permanent completeness label.
+
+\subsection{Conclusion}
+
+Scientific research by language-model agents needs a mechanics of permission as much as a mechanics of generation. The framework developed here treats knowledge as typed external state, requires context before contradiction, separates compatibility from gluing, and separates both from authority. A transient workspace can make selected objects computationally global without making them scientifically true. OWMD can force discovery to leave the vocabulary that produced the current ontology without pretending that finite search exhausts the open world.
+
+The long-form construction adds a final principle: research should continue while substantive epistemic growth continues. Under a finite declared expansion operator, this principle is an ordinary fixed-point computation. In open-world science it becomes a bounded certificate requiring stable routes, repeated zero-gain rounds, omission and nearest-work audits, closed blocking fibers and a current freshness horizon. The paper itself is governed by that rule. It is released not because a target page count has been reached, but because additional adversarial knowledge-acquisition passes cease to change the formal, evidential or novelty state under the declared basis.
+
+That is the intended meaning of a saturated epistemic-mechanics lattice: not a claim that all knowledge has been accumulated, but a closed, auditable scientific state whose current derivations, evidence, conflicts, mechanisms and novelty boundaries have stabilized relative to an explicit research world.
+
+\appendix
+
+\section{Notation and transition ledger}
+
+This appendix collects the objects used in the main text so that the formalism can be read without inferring overloaded meanings from prose.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.27\textwidth} >{\raggedright\arraybackslash}p{0.44\textwidth}}
+\toprule
+Symbol & Type & Meaning \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Type & Meaning \\
+\midrule
+\endhead
+\(C_i\) & local scientific chart & Domain, representation, context, evidence, uncertainty and scoped authority. \\
+\(K_t\) & canonical state & Persistent evidence-governed state at research time \(t\). \\
+\(\mathcal P_t\) & proposal set & Candidate claims/actions emitted by generative operators; no canonical write authority. \\
+\(V\) & verifier & Typed map returning supported, refuted, partially identified, blocked or cannot-check outcomes. \\
+\(\alpha(c)\) & authority vector & Grounding, representation, mechanism, identification and decision/QoI certificate coordinates. \\
+\(T_{ij}^{\tau,\sigma}\) & typed transition & Alignment/conversion/approximation relation between local charts, with relation type and scope. \\
+\(\mathfrak C\) & compatibility object & Typed atoms, witnessed pair relations and constructive paths; not automatically an order-theoretic lattice. \\
+\(\cl\) & closure operator & Extensive, monotone and idempotent operator on sets of epistemic atoms. \\
+\(\mathcal L_{\cl}\) & closed-state lattice & Fixed points of \(\cl\), ordered by inclusion. \\
+\(W_t\) & transient workspace & Capacity-bounded active computational state with selection/broadcast/intervention metadata. \\
+\(\Pi^{\mathrm{cog}}\) & cognitive provenance & Influence of active computational objects on proposals. \\
+\(\Pi^{\mathrm{evid}}\) & evidential provenance & Evidence-to-claim lineage through registered verification. \\
+\(\Sigma(f)\) & functional signature & Inputs, outputs, constraints, relations, dynamics and failure/intervention coordinates for an unowned function. \\
+\(\mathcal R\) & discovery route family & Heterogeneous OWMD search routes, including an ontology-independent route. \\
+\(\mathcal B\) & saturation basis & Frozen scope, identity, route, novelty and evidence semantics for a saturation comparison. \\
+\(\Delta_r\) & epistemic growth vector & Marginal substantive knowledge changes observed in research/review round \(r\). \\
+\bottomrule
+\end{longtable}
+
+\subsection{Transition classes}
+
+A complete deployment can refine the transition set, but the formal paper assumes at least the following distinction:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{proposal transitions} create candidate hypotheses, plans, explanations, derivations or search actions;
+\item \textbf{workspace transitions} select, broadcast, evict, substitute or reweight active computational objects;
+\item \textbf{verification transitions} bind proposals to evidence/context and return typed outcomes;
+\item \textbf{alignment transitions} relate representations, regimes or observation coordinates;
+\item \textbf{promotion transitions} modify the current valid canonical view when required certificates are present;
+\item \textbf{archival transitions} append immutable provenance, negative history and supersession records;
+\item \textbf{discovery transitions} create route records, mechanism candidates and owner/fiber updates; and
+\item \textbf{saturation transitions} evaluate marginal knowledge growth and issue or revoke a bounded saturation certificate.
+\end{enumerate}
+
+The separation matters because only a subset of these transitions can change current authority. In particular, workspace and discovery operations may produce proposals about scientific state, but their outputs remain proposals until verification/promotion occurs.
+
+\section{Additional derivations and counterexamples}
+
+\subsection{The parity obstruction as a constraint matrix}
+
+The three parity equations from Section~4 can be written over \(\mathbb F_2\) as
+\[
+\begin{bmatrix}
+1&1&0\\
+0&1&1\\
+1&0&1
+\end{bmatrix}
+\begin{bmatrix}x\\y\\z\end{bmatrix}
+=
+\begin{bmatrix}0\\0\\1\end{bmatrix}.
+\]
+Adding the first two equations yields \(x+z=0\), while the third requires \(x+z=1\). The system therefore has no global solution. Removing any one row leaves a consistent system, which makes the obstruction irreducibly higher-order with respect to the three registered contexts.
+
+This representation also suggests an implementation strategy. Pairwise witnesses can be augmented with a constraint object whose support lists all charts involved. A path is globally admissible only if the union of its active constraints is satisfiable under the registered theory. The current pairwise reference implementation does not yet perform this general constraint solve; the paper therefore records it as a future extension rather than silently attributing higher-order gluing to the existing code.
+
+\subsection{Closure-system join in finite examples}
+
+Let \(A=\{a,b,c\}\) and suppose the closure rules are
+\[
+a,b\in X\Rightarrow c\in\cl(X),
+\qquad c\in X\Rightarrow c\in\cl(X),
+\]
+with all sets otherwise closed under identity. Then \(\{a\}\) and \(\{b\}\) are closed, but their set union \(\{a,b\}\) is not. In the closed-state lattice,
+\[
+\{a\}\vee\{b\}
+=\cl(\{a,b\})
+=\{a,b,c\}.
+\]
+This is why a lattice join should not be implemented as concatenating two state fragments. The closure operator must add whatever consequences are licensed by its own rules, and those rules themselves must be epistemically justified.
+
+\subsection{Product-order incomparability}
+
+For authority coordinates with componentwise set inclusion, take
+\[
+\alpha=(\{g_1,g_2\},\{r_1\},\varnothing,\{i_1\},\varnothing)
+\]
+and
+\[
+\beta=(\{g_1\},\{r_1\},\{m_1,m_2\},\varnothing,\varnothing).
+\]
+The grounding coordinate of \(\alpha\) strictly dominates that of \(\beta\), while the mechanism coordinate of \(\beta\) strictly dominates that of \(\alpha\). Hence the states are incomparable. A weighted sum can order them after weights are chosen, but that order is a decision policy dependent on the weights; it is not the authority partial order itself.
+
+\subsection{Sensitivity of the workspace selection theorem}
+
+The proof in Section~6 relies on unit item cost and additive utility. To see why, suppose two unreserved candidates have utilities \(u_1=6,u_2=5\) but costs \(c_1=3,c_2=1\), and only two units of residual capacity remain. Global priority by \(u\) would attempt to select item 1 even though it is infeasible, while item 2 is feasible. With several heterogeneous costs the residual problem becomes a knapsack instance.
+
+Similarly, let two candidates each have individual utility 5 but a redundancy penalty of 8 when co-selected. Additive greedy selection assigns value 10 to the pair, while the true joint utility is 2. A diversity-aware workspace therefore requires either a different optimization objective or a submodular/structured selection algorithm. The theorem should not be cited outside the assumptions printed in its statement.
+
+\section{Bounded-saturation audit protocol}
+
+The paper-construction loop uses the same semantics as the framework-level saturation object. A review round is not defined by an editing session; it is defined by a frozen expansion question and a ledger of substantive changes.
+
+\subsection{Round procedure}
+
+Each saturation round performs, at minimum:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{formal pass}: search for missing assumptions, invalid implications, stronger counterexamples, alternative definitions and hidden type coercions;
+\item \textbf{prior-art pass}: search exact terminology, functional paraphrases, historical precursors, mathematical equivalents, implementation analogues and citation neighborhoods;
+\item \textbf{evidence pass}: look for independent primary sources that change support, refutation or scope rather than merely increasing citation count;
+\item \textbf{adversarial pass}: actively search for cases that reverse, break or subsume a claimed mechanism;
+\item \textbf{freshness pass}: search literature through the registered cutoff;
+\item \textbf{editorial pass}: apply the Nature-skills writing/polishing logic to argument order, section function, claim support and overstatement; and
+\item \textbf{growth accounting}: record \(\Delta_r\) and reopen every affected manuscript/framework object before judging saturation.
+\end{enumerate}
+
+A round is flat only when the formal, evidential and novelty state is unchanged. Stylistic edits can still occur in a flat round, but they are recorded as representation-only changes and cannot be used to claim additional epistemic progress.
+
+\subsection{Why two or more flat rounds}
+
+One flat pass can be an artifact of a bad query or a reviewer sharing the same blind spot as the previous pass. Requiring a suffix of flat rounds does not solve this problem probabilistically, but it forces the process to survive different perturbations. The intended practice is to vary route families and reviewer lenses while keeping the saturation basis fixed. If the perturbation reveals new substantive knowledge, the flat-round count resets.
+
+The criterion should be strengthened when stakes increase. A public methods release can use same-context internal adversarial passes as an engineering gate if that limitation is disclosed. A claim of independent peer review requires genuinely independent reviewers. A high-stakes empirical conclusion may require external replication or domain-specific evidence standards. The saturation software records the basis; it does not erase these distinctions.
+
+\subsection{Saturation record for a manuscript}
+
+For a manuscript artifact \(P\), one can define a projection
+\[
+\pi_P(K)=
+(\text{claims},\text{proofs},\text{sources},\text{figures},\text{scope boundaries})
+\]
+of the broader canonical research state. A literature discovery may change \(K\) without changing \(P\) if it is genuinely irrelevant to the manuscript question. Conversely, a change in the novelty boundary must change \(P\) even if the equations remain identical. The manuscript is saturated only when all knowledge changes relevant under \(\pi_P\) are flat for the required rounds.
+
+This projection prevents a perverse interpretation of ``accumulate until nothing grows.'' A paper need not contain every object in the project archive. It must contain every object required to make its own claims, derivations, boundaries and nearest-work relationships defensible under the registered scope.
+
+\section{Reproducibility and implementation correspondence}
+
+This appendix carries implementation metadata so the main scientific argument does not contain a numbered chapter devoted to repository bookkeeping.
+
+\subsection{Source layout}
+
+The manuscript is maintained as a modular TeX project:
+
+\begin{itemize}[leftmargin=*]
+\item \path{paper/epistemic_mechanics_round050/main.tex}: document driver, packages, notation and section inputs;
+\item \path{paper/epistemic_mechanics_round050/sections/01_introduction_foundations_state.tex}: introduction, related foundations and canonical-state mechanics;
+\item \path{paper/epistemic_mechanics_round050/sections/02_compatibility_authority.tex}: compatibility, gluing, closure-system lattice and scalar inadequacy;
+\item \path{paper/epistemic_mechanics_round050/sections/03_workspace.tex}: workspace lineage, constrained selection and provenance;
+\item \path{paper/epistemic_mechanics_round050/sections/04_owmd.tex}: OWMD and bounded epistemic saturation;
+\item \path{paper/epistemic_mechanics_round050/sections/05_pendulum_discussion.tex}: worked mechanics derivation, discussion and conclusion;
+\item \path{paper/epistemic_mechanics_round050/sections/06_appendices.tex}: notation, additional derivations, saturation protocol and reproducibility; and
+\item \path{paper/epistemic_mechanics_round050/sections/07_bibliography.tex}: complete manuscript bibliography.
+\end{itemize}
+
+The release builder recursively inlines the local \verb|\input| files and then binds the resulting single TeX artifact to the exact evaluated Git subject and observed software-test count. Thus the repository is convenient to edit by scientific section while the CI artifact is self-contained for archival/submission purposes.
+
+\subsection{Reference implementation}
+
+The principal code correspondences are:
+
+\begin{itemize}[leftmargin=*]
+\item \path{src/rakl/typed_lattice.py} and \path{src/rakl/compatibility_complex.py}: atoms, pairwise compatibility witnesses, constructive paths and the conservative compatibility-complex name;
+\item \path{src/rakl/lattice_metrology.py}: basis-bound geometric metrics and target-conditioned epistemic gain;
+\item \path{src/rakl/workspace.py}: capacity gate, reservation policy, broadcast, interventions and cognitive/evidential provenance types;
+\item \path{src/rakl/open_world_discovery.py}: functional signatures, capability owners, route records, audit provenance, bounded discovery closure, discovery workspace and hidden-name benchmark;
+\item \path{src/rakl/epistemic_saturation.py}: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry; and
+\item the corresponding test modules: executable regression contracts for these invariants.
+\end{itemize}
+
+The exact public build of this manuscript is bound to:
+
+\begin{center}
+\ImplementationSHA
+\end{center}
+
+The same checkout reports \SoftwareTests{} passing software tests. Those tests establish reference-mechanics behavior and release reproducibility. They are not an empirical validation of scientific superiority.
+
+\subsection{Release preflight}
+
+The continuous-integration workflow reconstructs deterministic receipts and publication figures, stages the framework manuscripts and this paper, compiles all PDFs, fails on overfull boxes or unresolved citations/references, renders every PDF page to raster images and uploads the complete publication-review artifact. For this long-form paper the workflow additionally requires at least 20 PDF pages and requires the number of rendered page images to match the PDF page count.
+
+The source-level test also guards substantive depth rather than page count alone. It checks for the main formal results and worked mechanics section, requires a large body-word count, requires at least forty distinct bibliography entries and demands that every bibliography item is actually cited in the expanded manuscript. These guards do not substitute for scientific review, but they prevent accidental regression to the earlier short note.
+
+\section{Claim-to-evidence and claim-to-code map}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.31\textwidth}}
+\toprule
+Paper claim & Formal/evidential support & Executable correspondence \\
+\midrule
+\endfirsthead
+\toprule
+Paper claim & Formal/evidential support & Executable correspondence \\
+\midrule
+\endhead
+Workspace selection changes access, not authority & Proposition in Section 6; type/codomain argument & \path{workspace.py}; workspace tests \\
+Coactivation does not imply compatibility & Explicit contradictory-selection countermodel & \path{coactivation_pairs}; workspace tests \\
+Current atom/witness/path object is not itself a lattice & Lattice-definition audit; absent order/meet/join obligations & \path{compatibility_complex.py}; terminology tests \\
+Closed states of a valid closure operator form a complete lattice & Closure-system theorem in Section 4 & Formal result; universal closure operator not yet implemented \\
+Pairwise compatibility need not glue globally & Three-context parity obstruction & Formal result; higher-order solver remains an open implementation fiber \\
+Authority cannot be faithfully represented by one scalar when incomparability exists & Total-order contradiction theorem in Section 5 & Authority remains coordinate-typed in framework design \\
+OWMD can issue only bounded closure & Finite-transcript non-certifiability theorem & \path{open_world_discovery.py}; closure tests \\
+Hidden-name retrieval must be ontology-independent & GWT-OMISSION-01 definition & hidden-name benchmark tests \\
+Saturation requires repeated zero substantive gain under stable basis & finite-basis fixed-point theorem plus operational certificate & \path{epistemic_saturation.py}; saturation tests \\
+New substantive knowledge reopens saturation & suffix-flatness proposition & saturation regression test \\
+Pendulum amplitude independence is only approximate & exact elliptic-integral derivation and series & deterministic known-answer research trace \\
+Ideal pendulum mass invariance is structural & cancellation of \(m\) in Euler--Lagrange equation & deterministic known-answer research trace \\
+\bottomrule
+\end{longtable}
+
+\section{Executable authority-revocation contract}
+
+The long-form theory distinguishes two objects that are easy to conflate in an implementation: an append-only history of authority certificates and challenges, and the non-monotone view of certificates that are currently valid. The reference branch now includes a small executable contract, \path{src/rakl/authority_ledger.py}, that makes this distinction explicit.
+
+An \texttt{AuthorityProposal} carries a claim, one authority axis, a scope and evidence identities but has no active authority. A verifier outcome may mint a scoped \texttt{AuthorityCertificate} only for \texttt{SUPPORTED} or explicitly partial outcomes. Refuted or uncheckable proposals do not change the active authority view. A later \texttt{revoke} operation removes a certificate from the active set while retaining both the certificate and its issue/revocation events in the historical ledger. \texttt{supersede} similarly deactivates an older certificate and activates a replacement without deleting the old record.
+
+The implementation is intentionally coordinate-local. Issuing a representation certificate does not create a mechanism certificate, and there is no generic cross-axis coercion function. Any future operation that raises a different authority coordinate must therefore be a separately registered inference rule with its own evidence obligations. Tests in \path{tests/test_authority_ledger.py} cover proposal non-sovereignty, axis non-escalation, refutation-driven authority decrease, supersession traceability and fail-closed evidence identity.
+
+This module is a reference conformance object, not a claim that RAKL invented transactional belief commit. Contemporary agent-memory systems already provide substantially richer transaction, provenance and authorization mechanisms \cite{memtx2026,ppmf2026,tmanm2026,committime2026}. Its role in this paper is narrower: it demonstrates that the scientific distinction used by the authority formalism---historical monotonicity without active-authority monotonicity---has an executable state-transition realization.
+
+\begin{thebibliography}{99}
+\small
+\bibitem{boiko2023} D. A. Boiko, R. MacKnight, B. Kline, and G. Gomes. Autonomous chemical research with large language models. \emph{Nature} 624:570--578, 2023. doi:10.1038/s41586-023-06792-0.
+
+\bibitem{bran2024} A. M. Bran, S. Cox, O. Schilter, C. Baldassari, A. D. White, and P. Schwaller. Augmenting large language models with chemistry tools. \emph{Nature Machine Intelligence} 6:525--535, 2024. doi:10.1038/s42256-024-00832-8.
+
+\bibitem{lu2024} C. Lu et al. The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery. arXiv:2408.06292, 2024.
+
+\bibitem{gottweis2025} J. Gottweis et al. Towards an AI co-scientist. arXiv:2502.18864, 2025.
+
+\bibitem{kosmos2025} B. Mitchener et al. Kosmos: An AI Scientist for Autonomous Discovery. arXiv:2511.02824, 2025.
+
+\bibitem{dogah2026traxia} W. Dogah. Traxia: A Framework for Verifiable, Agent-Native Scientific Publishing. arXiv:2606.08256, 2026.
+
+\bibitem{guha2026termination} D. Guha, A. Mukherjee, S. Kukreja, and T. Kumar. State Representation and Termination for Recursive Reasoning Systems. arXiv:2605.06690, 2026.
+
+\bibitem{guha2026opmech} D. Guha. Consolidation-Expansion Operator Mechanics: A Unified Framework for Adaptive Learning. arXiv:2605.09968, 2026.
+
+\bibitem{heyu2026esr} J. He and D. Yu. Replicating Belief, Not Bits: Epistemic State Replication for Agentic Systems. arXiv:2607.09748, 2026.
+
+\bibitem{nosek2026trust} B. A. Nosek, D. B. Allison, K. Hall Jamieson, M. McNutt, A. B. Nielsen, and S. M. Wolf. A framework for assessing the trustworthiness of scientific research findings. \emph{Proceedings of the National Academy of Sciences} 123(6):e2536736123, 2026. doi:10.1073/pnas.2536736123.
+
+\bibitem{mullins2026} J. Mullins and J. Symons. Epistemic state updates in large language model-based agents via public announcement and graded modal logic. \emph{Journal of Logic and Computation} 36(3):exag018, 2026. doi:10.1093/logcom/exag018.
+
+\bibitem{memtx2026} X. Li, Y. Wang, H. Lu, Z. Chen, M. Li, P. Song, and T. Cai. MemTX: Transactional Belief Commit for Stateful Agent Memory. arXiv:2607.23929, 2026.
+
+\bibitem{ppmf2026} J. Xu, Y. Xiao, W. Shao, H. Liu, and X. Li. Memory Provenance Laundering in LLM Agents: A Non-Amplification Firewall for Persistent Memory. arXiv:2607.29167, 2026.
+
+\bibitem{tmanm2026} Y. Louck. Securing LLM-Agent Long-Term Memory Against Poisoning: Non-Malleable, Origin-Bound Authority with Machine-Checked Guarantees. arXiv:2606.24322, 2026.
+
+\bibitem{committime2026} I. Santos-Grueiro. Temporary Authority, Permanent Effects: Commit-Time Authorization for LLM Agents. arXiv:2607.10487, 2026.
+
+\bibitem{toki2026} Z. Wang. TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Persistent Memory. arXiv:2606.06240, 2026.
+
+\bibitem{ozturk2026resseract} M. A. \"Ozt\"urk and H. Artuner. ReSSERAct: Safeguarding LLM Agent Decisions against Stale and Contradictory Evidence via Typed Hybrid State. SSRN working paper, 2026.
+
+\bibitem{yuan2026saver} W. Yuan, C. Lin, J. Chen, J. Xu, X. Wang, and E. C.-H. Ngai. Verify Before You Commit: Towards Faithful Reasoning in LLM Agents via Self-Auditing. In \emph{Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics}, pages 31201--31225, 2026. doi:10.18653/v1/2026.acl-long.1440.
+
+\bibitem{arjmandi2026} M. Arjmandi. The LLM Proposes, the Executive Disposes: A Self-Verifying Agent Instrument that Dissociates Commitment Drift from Binding Drift in Long-Horizon Agents. arXiv:2608.04066, 2026.
+
+\bibitem{millison2026} J. Millison et al. State Machine Structured Agents for Physical Science Reasoning. \emph{Proceedings of the AAAI Symposium Series} 8(1):474--483, 2026. doi:10.1609/aaaiss.v8i1.42579.
+
+\bibitem{chen2026stateaware} X. Chen. State-Aware Runtime for Long-Horizon LLM Agents: A Conceptual Framework and Research Agenda. Cambridge Open Engage working paper, version 2, 2026.
+
+\bibitem{lewis2020} P. Lewis et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In \emph{Advances in Neural Information Processing Systems} 33:9459--9474, 2020.
+
+\bibitem{yao2023} S. Yao et al. ReAct: Synergizing Reasoning and Acting in Language Models. In \emph{International Conference on Learning Representations}, 2023.
+
+\bibitem{schick2023} T. Schick et al. Toolformer: Language Models Can Teach Themselves to Use Tools. In \emph{Advances in Neural Information Processing Systems} 36, 2023.
+
+\bibitem{packer2023} C. Packer et al. MemGPT: Towards LLMs as Operating Systems. arXiv:2310.08560, 2023.
+
+\bibitem{mialon2023} G. Mialon et al. Augmented Language Models: a Survey. arXiv:2302.07842, 2023.
+
+\bibitem{park2023} J. S. Park et al. Generative Agents: Interactive Simulacra of Human Behavior. In \emph{Proceedings of UIST 2023}, 2023. doi:10.1145/3586183.3606763.
+
+\bibitem{shinn2023} N. Shinn et al. Reflexion: Language Agents with Verbal Reinforcement Learning. In \emph{Advances in Neural Information Processing Systems} 36, 2023.
+
+\bibitem{doyle1979} J. Doyle. A truth maintenance system. \emph{Artificial Intelligence} 12(3):231--272, 1979. doi:10.1016/0004-3702(79)90008-0.
+
+\bibitem{dekleer1986} J. de Kleer. An assumption-based TMS. \emph{Artificial Intelligence} 28(2):127--162, 1986. doi:10.1016/0004-3702(86)90080-9.
+
+\bibitem{agm1985} C. E. Alchourr\'on, P. G\"ardenfors, and D. Makinson. On the logic of theory change: Partial meet contraction and revision functions. \emph{Journal of Symbolic Logic} 50(2):510--530, 1985. doi:10.2307/2274239.
+
+\bibitem{gardenfors1988} P. G\"ardenfors. \emph{Knowledge in Flux: Modeling the Dynamics of Epistemic States}. MIT Press, 1988.
+
+\bibitem{dung1995} P. M. Dung. On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. \emph{Artificial Intelligence} 77(2):321--357, 1995. doi:10.1016/0004-3702(94)00041-X.
+
+\bibitem{belnap1977} N. D. Belnap Jr. A Useful Four-Valued Logic. In J. M. Dunn and G. Epstein, editors, \emph{Modern Uses of Multiple-Valued Logic}, pages 5--37. Reidel, 1977.
+
+\bibitem{buneman2001} P. Buneman, S. Khanna, and W.-C. Tan. Why and Where: A Characterization of Data Provenance. In \emph{Database Theory---ICDT 2001}, pages 316--330. Springer, 2001. doi:10.1007/3-540-44503-X\_20.
+
+\bibitem{green2007} T. J. Green, G. Karvounarakis, and V. Tannen. Provenance semirings. In \emph{Proceedings of PODS 2007}, pages 31--40, 2007. doi:10.1145/1265530.1265535.
+
+\bibitem{prov2013} W3C. \emph{PROV-O: The PROV Ontology}. W3C Recommendation, 30 April 2013.
+
+\bibitem{wilkinson2016} M. D. Wilkinson et al. The FAIR Guiding Principles for scientific data management and stewardship. \emph{Scientific Data} 3:160018, 2016. doi:10.1038/sdata.2016.18.
+
+\bibitem{zhang2020claim} Y. Zhang, Z. Ives, and D. Roth. ``Who said it, and Why?'' Provenance for Natural Language Claims. In \emph{Proceedings of ACL 2020}, pages 4416--4426. doi:10.18653/v1/2020.acl-main.406.
+
+\bibitem{boelling2014see} C. B\"olling, M. Weidlich, and H.-G. Holzh\"utter. SEE: structured representation of scientific evidence in the biomedical domain using Semantic Web techniques. \emph{Journal of Biomedical Semantics} 5:S1, 2014. doi:10.1186/2041-1480-5-S1-S1.
+
+\bibitem{amaral2024prove} G. Amaral, O. Rodrigues, and E. Simperl. ProVe: A pipeline for automated provenance verification of knowledge graphs against textual sources. \emph{Semantic Web} 15(6):2159--2192, 2024. doi:10.3233/SW-233467.
+
+\bibitem{vladika2024} J. Vladika and F. Matthes. Comparing Knowledge Sources for Open-Domain Scientific Claim Verification. In \emph{Proceedings of EACL 2024}, pages 2103--2114. doi:10.18653/v1/2024.eacl-long.128.
+
+\bibitem{martinboyle2026} A. Martin-Boyle, C. A. C. Leckey, M. C. Brown, and H. Kaur. PaperTrail: A Claim-Evidence Interface for Grounding Provenance in LLM-based Scholarly Q\&A. arXiv:2602.21045, 2026.
+
+\bibitem{ramos2021eventclaim} J. Ramos, J. Rasga, C. Sernadas, and L. Vigan\`o. Event-Based Time-Stamped Claim Logic. \emph{Journal of Logical and Algebraic Methods in Programming} 121:100684, 2021. doi:10.1016/j.jlamp.2021.100684.
+
+\bibitem{donto2026} T. Davis and A. Davis. donto: An Evidence Operating System for Contested Knowledge. Systems report, 28 May 2026.
+
+\bibitem{vitali2026dec} F. Vitali and V. Pasqual. Provenance-Enhanced Statements in Knowledge Graphs. arXiv:2606.15246, 2026.
+
+\bibitem{mccarthy1993} J. McCarthy. Notes on Formalizing Context. In \emph{Proceedings of the 13th International Joint Conference on Artificial Intelligence}, 1993.
+
+\bibitem{giunchiglia1993} F. Giunchiglia. Contextual reasoning. \emph{Epistemologia}, 1993.
+
+\bibitem{abramsky2011} S. Abramsky and A. Brandenburger. The sheaf-theoretic structure of non-locality and contextuality. \emph{New Journal of Physics} 13:113036, 2011. doi:10.1088/1367-2630/13/11/113036.
+
+\bibitem{curry2014} J. Curry. \emph{Sheaves, Cosheaves and Applications}. PhD thesis, University of Pennsylvania, 2014. arXiv:1303.3255.
+
+\bibitem{robinson2017} M. Robinson. Sheaves are the canonical data structure for sensor integration. \emph{Information Fusion} 36:208--224, 2017. doi:10.1016/j.inffus.2016.12.002.
+
+\bibitem{dechter1992} R. Dechter. From local to global consistency. \emph{Artificial Intelligence} 55(1):87--107, 1992. doi:10.1016/0004-3702(92)90043-W.
+
+\bibitem{pearl2009} J. Pearl. \emph{Causality: Models, Reasoning, and Inference}. 2nd edition, Cambridge University Press, 2009.
+
+\bibitem{halpern2016} J. Y. Halpern. \emph{Actual Causality}. MIT Press, 2016.
+
+\bibitem{birkhoff1940} G. Birkhoff. \emph{Lattice Theory}. American Mathematical Society Colloquium Publications, 1940.
+
+\bibitem{oles2000} F. J. Oles. An application of lattice theory to knowledge representation. \emph{Theoretical Computer Science} 249(1):163--196, 2000. doi:10.1016/S0304-3975(00)00058-X.
+
+\bibitem{ganter1999} B. Ganter and R. Wille. \emph{Formal Concept Analysis: Mathematical Foundations}. Springer, 1999.
+
+\bibitem{yanglee2026fca} Y. Yang and H. Lee. Verifiable Knowledge Expansion through Retrieval-Grounded Formal Concept Analysis. arXiv:2607.01773, 2026.
+
+\bibitem{cousot1977} P. Cousot and R. Cousot. Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints. In \emph{Proceedings of POPL 1977}, pages 238--252, 1977. doi:10.1145/512950.512973.
+
+\bibitem{tarski1955} A. Tarski. A lattice-theoretical fixpoint theorem and its applications. \emph{Pacific Journal of Mathematics} 5(2):285--309, 1955.
+
+\bibitem{hayesroth1985} B. Hayes-Roth. A blackboard architecture for control. \emph{Artificial Intelligence} 26:251--321, 1985. doi:10.1016/0004-3702(85)90063-3.
+
+\bibitem{nii1986} H. P. Nii. The Blackboard Model of Problem Solving and the Evolution of Blackboard Architectures. \emph{AI Magazine} 7(2):38--53, 1986.
+
+\bibitem{baars1988} B. J. Baars. \emph{A Cognitive Theory of Consciousness}. Cambridge University Press, 1988.
+
+\bibitem{dehaene2001} S. Dehaene and L. Naccache. Towards a cognitive neuroscience of consciousness: basic evidence and a workspace framework. \emph{Cognition} 79:1--37, 2001. PMID:11164022.
+
+\bibitem{mashour2020} G. A. Mashour, P. Roelfsema, J.-P. Changeux, and S. Dehaene. Conscious Processing and the Global Neuronal Workspace Hypothesis. \emph{Neuron} 105:776--798, 2020. doi:10.1016/j.neuron.2020.01.026.
+
+\bibitem{bengio2017} Y. Bengio. The Consciousness Prior. arXiv:1709.08568, 2017.
+
+\bibitem{goyal2021} A. Goyal et al. Coordination Among Neural Modules Through a Shared Global Workspace. arXiv:2103.01197, 2021.
+
+\bibitem{gurnee2026} W. Gurnee et al. Verbalizable Representations Form a Global Workspace in Language Models. \emph{Transformer Circuits Thread}, published 6 July 2026; arXiv:2607.15495, posted 16 July 2026.
+
+\bibitem{furnas1987} G. W. Furnas, T. K. Landauer, L. M. Gomez, and S. T. Dumais. The Vocabulary Problem in Human-System Communication. \emph{Communications of the ACM} 30(11):964--971, 1987. doi:10.1145/32206.32212.
+
+\bibitem{swanson1986} D. R. Swanson. Fish oil, Raynaud's syndrome, and undiscovered public knowledge. \emph{Perspectives in Biology and Medicine} 30:7--18, 1986. doi:10.1353/pbm.1986.0087.
+
+\bibitem{garikaparthi2025} A. Garikaparthi, M. Patwardhan, A. S. Kanade, A. Hassan, L. Vig, and A. Cohan. MIR: Methodology Inspiration Retrieval for Scientific Research Problems. In \emph{Proceedings of ACL 2025}, pages 28614--28659. doi:10.18653/v1/2025.acl-long.1390.
+
+\bibitem{carbonell1998} J. Carbonell and J. Goldstein. The Use of MMR, Diversity-Based Reranking for Reordering Documents and Producing Summaries. In \emph{Proceedings of SIGIR 1998}, pages 335--336, 1998. doi:10.1145/290941.291025.
+
+\bibitem{jafarzadeh2021} M. Jafarzadeh et al. A Review of Open World Learning and Steps Toward Open World Learning Without Labels. arXiv:2011.12906, 2021.
+
+\bibitem{saunders2018} B. Saunders et al. Saturation in qualitative research: exploring its conceptualization and operationalization. \emph{Quality \& Quantity} 52:1893--1907, 2018. doi:10.1007/s11135-017-0574-8.
+
+\bibitem{tate2009} R. Tate, M. Stepp, Z. Tatlock, and S. Lerner. Equality Saturation: A New Approach to Optimization. In \emph{Proceedings of POPL 2009}, pages 264--276, 2009. doi:10.1145/1480881.1480915.
+
+\bibitem{willsey2021} M. Willsey et al. egg: Fast and Extensible Equality Saturation. \emph{Proceedings of the ACM on Programming Languages} 5(POPL), 2021. doi:10.1145/3434304.
+
+\bibitem{vanemden1976} M. H. van Emden and R. A. Kowalski. The Semantics of Predicate Logic as a Programming Language. \emph{Journal of the ACM} 23(4):733--742, 1976. doi:10.1145/321978.321991.
+
+\bibitem{rissanen1978} J. Rissanen. Modeling by shortest data description. \emph{Automatica} 14(5):465--471, 1978. doi:10.1016/0005-1098(78)90005-5.
+
+\bibitem{tishby2000} N. Tishby, F. C. Pereira, and W. Bialek. The information bottleneck method. arXiv:physics/0004057, 2000.
+
+\bibitem{fletcher2026} A. H. A. Fletcher and M. Stevenson. Decision-Theoretic Stopping Rules for Document Screening. arXiv:2606.07071, 2026.
+
+\bibitem{fletcher2026b} A. H. A. Fletcher and M. Stevenson. Confidence-Based Stopping Methods for Systematic Reviews. arXiv:2606.15380, 2026.
+
+\bibitem{macfarlane2022} A. MacFarlane, T. Russell-Rose, and F. Shokraneh. Search strategy formulation for systematic reviews: Issues, challenges and opportunities. \emph{Intelligent Systems with Applications}, 2022. doi:10.1016/j.iswa.2022.200091.
+
+\bibitem{shi2017} B. Shi and T. Weninger. Open-World Knowledge Graph Completion. arXiv:1711.03438, 2017.
+
+\bibitem{yang2022} H. Yang, Z. Lin, and M. Zhang. Rethinking Knowledge Graph Evaluation Under the Open-World Assumption. arXiv:2209.08858, 2022.
+
+\bibitem{li2024kg} J. Li, R. Luo, J. Sun, J. Xiao, and Y. Yang. Progressive Knowledge Graph Completion. arXiv:2404.09897, 2024.
+
+\bibitem{gradel2024} E. Gr\"adel and V. Tannen. Provenance Analysis and Semiring Semantics for First-Order Logic. arXiv:2412.07986, 2024.
+
+\bibitem{landau1976} L. D. Landau and E. M. Lifshitz. \emph{Mechanics}. 3rd edition, Pergamon Press, 1976.
+
+\bibitem{strogatz2015} S. H. Strogatz. \emph{Nonlinear Dynamics and Chaos}. 2nd edition, Westview Press, 2015.
+
+\bibitem{dlmf2026} NIST Digital Library of Mathematical Functions. Chapter 19: Elliptic Integrals. National Institute of Standards and Technology, accessed 2026.
+
+\bibitem{reinberger2021} P. Reinberger et al. On the trajectory of the nonlinear pendulum: Exact analytic solutions via power series. arXiv:2108.09395, 2021.
+
+\bibitem{graber2018} J. Graber-Mitchell. Finding the period of a simple pendulum. arXiv:1805.00002, 2018.
+
+\bibitem{nosek2015} Open Science Collaboration. Estimating the reproducibility of psychological science. \emph{Science} 349(6251):aac4716, 2015. doi:10.1126/science.aac4716.
+
+\bibitem{munafo2017} M. R. Munaf\`o et al. A manifesto for reproducible science. \emph{Nature Human Behaviour} 1:0021, 2017. doi:10.1038/s41562-016-0021.
+
+\bibitem{wu2026epistemicclosure} Y. Wu, T. Su, R. Hu, M. Zhao, S. Hu, D. Pan, and J. Huang. Epistemic Closure: Autonomous Mechanism Completion for Physically Consistent Simulation. arXiv:2603.09756, 2026.
+
+\bibitem{olivieri2026theoryshift} D. N. Olivieri and R. J. Hern\'andez. Sheaf-Theoretic Transport and Obstruction for Detecting Scientific Theory Shift in AI Agents. arXiv:2605.14033, 2026.
+
+\bibitem{ding2026alwayson} T. Ding, A. Nannapaneni, B. Liu, and L. Zhang. Always-On Agents: A Survey of Persistent Memory, State, and Governance in LLM Agents. arXiv:2606.30306, 2026.
+
+\bibitem{luo2026memorysurvey} J. Luo, Y. Tian, C. Cao, Z. Luo, H. Lin, K. Li, C. Kong, R. Yang, and J. Ma. From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms. In \emph{Findings of the Association for Computational Linguistics: ACL 2026}, pages 41622--41652, 2026. doi:10.18653/v1/2026.findings-acl.2069.
+
+\bibitem{zhuang2026trajectory} Z. Zhuang, C. Lao, P. Xu, H. Xu, R. Yang, Y. He, P. Zhang, J. Cao, Y. Huang, G. Mu, J. Liang, R. Tang, S. Yang, Z. Liu, W. Ou, and K. Gai. From Trajectories to Evidence: Auditable Experimental Records for Industrial Research Agents. arXiv:2608.05235v1, 2026.
+
+\bibitem{zhan2026authority} Q. Zhan, R. Zhang, S. Guo, L. Zhao, and Z. Liu. When Memory Becomes Authority: Benchmarking Authority Collapse at the Memory Consolidation Boundary. arXiv:2608.01679v2, 2026.
+
+\bibitem{dacunto2026can} G. D'Acunto, P. Di Lorenzo, and S. Barbarossa. Networks of Causal Abstractions: A Sheaf-Theoretic Framework. arXiv:2509.25236v3, 2026.
+
+\end{thebibliography}
+
+\end{document}
