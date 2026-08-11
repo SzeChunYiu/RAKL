@@ -52,50 +52,33 @@ jobs:
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
 
-      - name: Stage four exact-source manuscripts
+      - name: Stage four release manuscripts
         shell: bash
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
           rm -rf build/publication
-          mkdir -p build/publication
+          mkdir -p \
+            build/publication/paper-01 \
+            build/publication/paper-04
 
-          # Paper I: stage the canonical modular publication source and bind
-          # only the release identity macros.
-          cp -a publication/papers/paper-01-epistemic-mechanics build/publication/paper-01
-          python - <<'PY'
-          import os
-          from pathlib import Path
-          path = Path('build/publication/paper-01/main.tex')
-          text = path.read_text(encoding='utf-8')
-          sha = os.environ['GITHUB_SHA']
-          # Pull-request checkout is explicitly bound below using git, so use
-          # the actual checked-out subject rather than the workflow merge SHA.
-          import subprocess
-          sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          tests = os.environ['RAKL_SOFTWARE_TESTS']
-          old_sha = r'\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}'
-          old_tests = r'\newcommand{\SoftwareTests}{UNBOUND}'
-          if text.count(old_sha) != 1 or text.count(old_tests) != 1:
-              raise SystemExit('Paper I release identity anchors changed')
-          text = text.replace(old_sha, rf'\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}', 1)
-          text = text.replace(old_tests, rf'\newcommand{{\SoftwareTests}}{{{tests}}}', 1)
-          path.write_text(text, encoding='utf-8')
-          PY
+          python paper/build_epistemic_mechanics.py \
+            --output build/publication/paper-01/main.tex \
+            --subject-sha "$HEAD_SHA" \
+            --software-tests "$RAKL_SOFTWARE_TESTS"
 
           python paper/build_saturated_epistemic_mechanics.py \
             --stage build/publication/paper-02 \
-            --subject-sha "$HEAD_SHA" --software-tests "$RAKL_SOFTWARE_TESTS"
+            --subject-sha "$HEAD_SHA" \
+            --software-tests "$RAKL_SOFTWARE_TESTS"
 
-          cp -a publication/papers/paper-03-directional-structural-witnesses build/publication/paper-03
+          cp -a publication/papers/paper-03-directional-structural-witnesses \
+            build/publication/paper-03
 
-          mkdir -p build/publication/paper-04
-          python paper/build_math_research_assurance.py \
-            --output build/publication/paper-04/main.tex \
-            --subject-sha "$HEAD_SHA" --software-tests "$RAKL_SOFTWARE_TESTS"
-          cp publication/papers/paper-04-verified-discovery/main.tex build/publication/paper-04/canonical-main.tex
+          cp publication/papers/paper-04-verified-discovery/main.tex \
+            build/publication/paper-04/main.tex
 
-      - name: Bind author metadata to staged release sources
+      - name: Bind author metadata to generated release sources
         shell: bash
         run: |
           set -euo pipefail
@@ -106,23 +89,28 @@ jobs:
           author_new = r"\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}"
           date_old = r"\date{10 August 2026}"
           date_new = r"\date{11 August 2026}"
-          paths = [
-              Path("build/publication/paper-02/main.tex"),
-              Path("build/publication/paper-04/main.tex"),
-              Path("build/publication/paper-04/canonical-main.tex"),
-          ]
-          for path in paths:
+
+          for paper in ("paper-01", "paper-02"):
+              path = Path(f"build/publication/{paper}/main.tex")
               text = path.read_text(encoding="utf-8")
               if author_old not in text:
                   raise SystemExit(f"author anchor missing: {path}")
               text = text.replace(author_old, author_new, 1)
               if date_old in text:
                   text = text.replace(date_old, date_new, 1)
+              text = text.replace(
+                  "Personal author metadata, funding and competing-interest declarations are supplied separately at submission and are not inferred by the build system.",
+                  "Author identity, affiliation and corresponding email are given on the title page. Funding, competing-interest, acknowledgement and licensing declarations remain author-supplied submission metadata and are not inferred by the build system.",
+              )
               path.write_text(text, encoding="utf-8")
 
-          for paper in ("paper-01", "paper-03"):
+          for paper in ("paper-01", "paper-02", "paper-03", "paper-04"):
               text = Path(f"build/publication/{paper}/main.tex").read_text(encoding="utf-8")
-              for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
+              for required in (
+                  "Sze Chun Yiu",
+                  "Stockholm University",
+                  "sze-chun.yiu@fysik.su.se",
+              ):
                   if required not in text:
                       raise SystemExit(f"{paper} author metadata missing: {required}")
           PY
@@ -184,7 +172,6 @@ jobs:
             build/publication/paper-03/main.txt
             build/publication/paper-03/renders/*.png
             build/publication/paper-04/main.tex
-            build/publication/paper-04/canonical-main.tex
             build/publication/paper-04/main.pdf
             build/publication/paper-04/main.log
             build/publication/paper-04/pdfinfo.txt
