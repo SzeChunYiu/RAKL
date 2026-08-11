@@ -45,6 +45,7 @@ CLAIM_BOUNDARY = (
     "framework-process observation only; reproducible decision records, no "
     "private reasoning transcript, no theorem/tool/gluing/review authority"
 )
+assert "\n" not in CLAIM_BOUNDARY
 
 
 def _episode(**overrides: Any) -> EpisodeBinding:
@@ -361,6 +362,36 @@ def test_unattributed_failure_is_recorded_but_does_not_support_attribution() -> 
     assert report.verdict is MethodTelemetryVerdict.RECORDED_PROPOSAL_ONLY
     assert "failure_observed_but_not_attributed" in report.reasons
     assert report.permits_failure_attribution_study is False
+
+
+def test_unattributed_failure_on_a_successful_episode_also_blocks_attribution() -> None:
+    """Being unattributed is a property of the failure class, not the outcome.
+
+    A successful episode may attribute a recovered sub-step failure, so an
+    *unclassified* sub-step failure is equally reachable there.  Gating this note
+    on the episode outcome let such a record license attribution study.
+    """
+
+    report = audit_method_telemetry(
+        _telemetry(
+            failure_class=MethodFailureClass.UNCLASSIFIED_FAILURE,
+            failure_evidence_pointers=(),
+        ),
+        episode=_episode(outcome_is_failure=False),
+    )
+    assert report.verdict is MethodTelemetryVerdict.RECORDED_PROPOSAL_ONLY
+    assert "failure_observed_but_not_attributed" in report.reasons
+    assert report.permits_failure_attribution_study is False
+
+
+def test_a_claim_boundary_cannot_hold_a_narrative_either() -> None:
+    """The no-transcript property must cover every free-text field, not most."""
+
+    report = audit_method_telemetry(
+        _telemetry(claim_boundary=_TRANSCRIPT), episode=_episode()
+    )
+    assert report.verdict is MethodTelemetryVerdict.CANNOT_CHECK
+    assert any("claim_boundary" in reason for reason in report.reasons)
 
 
 def test_unassessed_gluing_is_recorded_as_such() -> None:

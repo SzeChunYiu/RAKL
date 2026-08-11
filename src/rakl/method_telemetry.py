@@ -439,6 +439,12 @@ def _rationale_reasons(telemetry: MethodTelemetry) -> Tuple[str, ...]:
                 alternative.not_selected_because,
             )
         )
+    # claim_boundary is prose the author writes, so it is guarded too: it is the
+    # only other free-text field, and leaving it unbounded would make the
+    # object's no-transcript property false.
+    reasons.extend(
+        bounded_rationale_reasons("claim_boundary", telemetry.claim_boundary)
+    )
     decision = telemetry.search_policy_decision
     if decision is not None:
         reasons.extend(
@@ -569,10 +575,11 @@ def audit_method_telemetry(
         )
 
     notes: list[str] = []
-    if (
-        episode.outcome_is_failure
-        and telemetry.failure_class is MethodFailureClass.UNCLASSIFIED_FAILURE
-    ):
+    # Not gated on the episode outcome.  Because a successful episode may
+    # legitimately attribute a recovered sub-step failure, an *unclassified*
+    # sub-step failure is equally reachable there.  Being unattributed is a
+    # property of the failure class alone.
+    if telemetry.failure_class is MethodFailureClass.UNCLASSIFIED_FAILURE:
         notes.append("failure_observed_but_not_attributed")
     if telemetry.gluing_status is GluingStatus.GLUING_NOT_ASSESSED:
         notes.append("gluing_status_not_assessed")
