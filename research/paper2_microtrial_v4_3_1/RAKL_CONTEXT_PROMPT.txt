@@ -1,0 +1,51 @@
+Answer the registered scientific questions using only the supplied evidence. Return exactly one JSON object matching the registered output schema, with no markdown fence or surrounding prose. Do not use unstated facts, tools, retrieval, repository contents, or hidden context.
+
+FIELD POLARITY (schema meaning only; decide true/false from the supplied evidence only; do not invent facts):
+- small_angle_is_asymptotic: true iff the usual small-angle period law is an approximation/asymptotic relation rather than exact for arbitrary amplitude; false iff it is exact for arbitrary amplitude.
+- finite_amplitude_increases_period: true iff the first finite-amplitude correction increases the period; false iff it decreases the period.
+- context_distinct_claims_not_direct_contradictions: true iff S4 and/or S5 must not be treated as direct contradictions of the 1 m, 20-degree Earth finite-amplitude conclusion; false iff they may be treated as such direct contradictions.
+- ideal_period_is_mass_invariant: true iff, at fixed length/gravity in the ideal/simple-pendulum regime, period does not depend on bob mass; false iff it does depend on bob mass.
+- context_alignment_required_before_contradiction: true iff context/regime alignment is required before declaring contradiction; false iff such alignment is not required.
+- supporting_source_ids: ids that support one or more registered conclusions in this mini-world.
+- rejected_as_misaligned_source_ids: ids that are informative but context-misaligned for a direct contradiction of the Earth/moderate-amplitude target.
+- refuted_source_ids: ids whose scientific claim is refuted by the frozen evidence.
+
+OUTPUT DISCIPLINE: Return exactly one flat JSON object matching OUTPUT OBJECT SHAPE (no fields/id envelope). Prefer a bare JSON object. If you use a fence, use exactly one lowercase json fence and stop immediately after the closing fence. Do not write Explanation, Q1/Q2 commentary, markdown headings, or any prose before or after the JSON.
+
+TOOLS: disabled
+RETRIEVAL: disabled
+REPOSITORY ACCESS: not exposed to the model
+
+FROZEN RAW EVIDENCE CORPUS
+[S1] For a simple pendulum at small angle on Earth, T = 2*pi*sqrt(L/g).
+[S2] At small amplitude, a 100 cm pendulum follows T = 2*pi*sqrt(1 m/g); the ideal period does not depend on bob mass.
+[S3] For moderate amplitude, the first finite-amplitude correction is T approximately T0*(1 + theta0^2/16).
+[S4] Within the small-angle approximation, pendulum period is approximately independent of amplitude.
+[S5] On the Moon the same length pendulum uses lunar gravitational acceleration rather than Earth gravity.
+[S6] Claim: increasing the bob mass increases the ideal simple-pendulum period at fixed length and gravity.
+[S7] Controlled ideal-pendulum check: changing bob mass at fixed length, gravity and small amplitude does not materially change the period.
+[S8] Independent derivation reproduces the same first finite-amplitude correction T/T0 approximately 1 + theta0^2/16.
+
+RAKL CONTEXT MAP
+{"context": ["Earth", "small_angle", "ideal"], "projection": "small-angle period representation", "source_id": "S1"}
+{"context": ["Earth", "small_angle", "ideal", "L=1m"], "projection": "normalized small-angle law and mass invariance", "source_id": "S2"}
+{"context": ["moderate_amplitude", "first_order"], "projection": "positive first finite-amplitude correction", "source_id": "S3"}
+{"context": ["small_angle", "approximation"], "projection": "amplitude independence restricted to small-angle regime", "source_id": "S4"}
+{"context": ["Moon", "small_angle"], "projection": "gravity-context change", "source_id": "S5"}
+{"context": ["ideal", "fixed_length", "fixed_gravity"], "projection": "mass-dependence claim retained as negative history", "source_id": "S6"}
+{"context": ["ideal", "fixed_length", "fixed_gravity", "small_angle"], "projection": "controlled support for mass invariance", "source_id": "S7"}
+{"context": ["moderate_amplitude", "first_order", "independent_derivation"], "projection": "independent support for positive finite-amplitude correction", "source_id": "S8"}
+{"left": "S1", "reason": "finite-amplitude representation reduces to the small-angle law as amplitude approaches zero", "relation": "CONDITIONAL", "right": "S3"}
+{"left": "S4", "reason": "S4 is scoped to the small-angle approximation", "relation": "CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION", "right": "Earth_20_degree_target"}
+{"left": "S5", "reason": "Moon and Earth gravity contexts differ", "relation": "CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION", "right": "Earth_20_degree_target"}
+{"left": "S6", "reason": "at fixed ideal context the controlled evidence and law support mass invariance", "relation": "ALIGNED_REFUTATION", "right": "S2+S7"}
+{"left": "S3", "reason": "both give the same positive first correction with distinct registered lineage", "relation": "INDEPENDENT_CORROBORATION", "right": "S8"}
+
+REGISTERED QUESTIONS
+Q1: For the supplied simple-pendulum evidence, state whether the usual small-angle period law is exact for arbitrary amplitude or is an approximation/asymptotic relation, and state whether the first finite-amplitude correction increases or decreases the period.
+Q2: Can S4, which states amplitude independence inside the small-angle approximation, or S5, which concerns Moon gravity, be treated as direct contradictions of the 1 m, 20-degree Earth finite-amplitude conclusion? State the context/regime alignment requirement before declaring contradiction.
+Q3: At fixed length, gravity and ideal/simple-pendulum regime, state whether period depends on bob mass. Identify the source id containing the mass-dependence claim that should remain refuted and identify evidence supporting the mass-invariance conclusion.
+Q4: Return source ids that support one or more registered conclusions in this mini-world, source ids that are informative but context-misaligned for a direct contradiction of the Earth/moderate-amplitude target, and source ids whose scientific claim is refuted by the frozen evidence.
+OUTPUT OBJECT SHAPE (flat top-level keys only; registered answer type id is PENDULUM_STRUCTURED_ANSWER_V2 but must NOT appear as an output wrapper):
+{"small_angle_is_asymptotic": <boolean>, "finite_amplitude_increases_period": <boolean>, "context_distinct_claims_not_direct_contradictions": <boolean>, "ideal_period_is_mass_invariant": <boolean>, "context_alignment_required_before_contradiction": <boolean>, "supporting_source_ids": [<string>, ...], "rejected_as_misaligned_source_ids": [<string>, ...], "refuted_source_ids": [<string>, ...]}
+Do not emit {"fields": {...}, "id": "..."}. Emit exactly one flat JSON object with those eight top-level keys.

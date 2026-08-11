@@ -145,18 +145,25 @@ Instruct model is out of scope for the V4.2 packet, which binds only the staged
 0.5B snapshot; softening exact conceptual pass is forbidden.
 
 A later adaptive V4.3 staging successor runs the same sealed exact gate on
-Qwen2.5-1.5B-Instruct.  As of native job 3476566
-(\texttt{HARVEST\_V4\_3\_TASK\_SEED\_PASS\_NONCONFIRMATORY}; ingest
-\texttt{NATIVE\_EXECUTION\_CHAIN\_PASS\_\_ONE\_ARM\_SCORABLE\_NO\_EXACT\_PASS\_\_1\_5B\_NO\_EXACT\_PASS}),
-DIRECT\_CORPUS remains parse-valid false (answer-schema field mismatch;
-sibling may still repair and resubmit), while RAKL\_CONTEXT is one-arm
-scorable at 2/5 conceptual fields with exact conceptual pass false.  Thus
-exact conceptual pass arm count is zero, matching V4.2 job 3476540; this is
-not a 1.5B improvement claim under the unchanged gate.  Prior V4.3 job
-3476564 is preserved only as \texttt{HARVEST\_V4\_3\_CANNOT\_CHECK} (stale
-batch parent) and is not an admitted ingest pass.  Promotional /
-paired-effect metrics remain blocked.  The exact admitted lineage is
+Qwen2.5-1.5B-Instruct.  Native job 3476566 harvests as
+\texttt{HARVEST\_V4\_3\_TASK\_SEED\_PASS\_NONCONFIRMATORY} and ingests as
+\texttt{NATIVE\_EXECUTION\_CHAIN\_PASS\_\_ONE\_ARM\_SCORABLE\_NO\_EXACT\_PASS\_\_1\_5B\_NO\_EXACT\_PASS}.
+\texttt{DIRECT\_CORPUS} is \texttt{parse\_valid=false} because the model emitted a
+registered-schema envelope
+\texttt{\{"fields":\{\ldots\},"id":"PENDULUM\_STRUCTURED\_ANSWER\_V2"\}}
+instead of the flat answer object (literalization of the meta
+\texttt{OUTPUT SCHEMA} descriptor under the frozen V4.1 normalizer).
+\texttt{RAKL\_CONTEXT} is one-arm scorable at 2/5 conceptual fields with
+\texttt{exact\_conceptual\_pass=false}.  Thus
+\texttt{exact\_conceptual\_pass\_arm\_count=0}; arm comparison is not estimable;
+this is not a 1.5B improvement or promotional claim under the unchanged gate.
+Prior V4.3 job 3476564 is superseded as a stale batch-parent execution and is
+not an admitted scientific unit.  The exact admitted lineage is
 \path{research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_RECEIPT_20260811.json}
 (status note
-\path{research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_STATUS_20260811.md}).
+\path{research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_STATUS_20260811.md};
+root-cause note
+\path{research/paper2_microtrial_v4_3/PAPER2_V4_3_JOB_3476566_DIRECT_PARSE_ROOT_CAUSE_20260811.md}).
+A V4.3.1 flat \texttt{OUTPUT OBJECT SHAPE} repair (optional registered-envelope
+unwrap; exact conceptual gate unchanged) is the next serialization discriminator.
 The full matched empirical claim remains open.

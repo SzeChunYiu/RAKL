@@ -1,0 +1,36 @@
+{
+  "accepted_serializations": [
+    "bare JSON object after removal of leading/trailing whitespace",
+    "exactly one lowercase ```json fence with newline-delimited JSON-object body and whitespace only outside the fence",
+    "after the above, optionally once unwrap {\"fields\": <object>, \"id\": \"PENDULUM_STRUCTURED_ANSWER_V2\"} when fields contains exactly the registered answer keys"
+  ],
+  "chronology_class": "ADAPTIVE_FLAT_SCHEMA_SHAPE_REPLAY_FRESH_ONLY_TO_V4_3_1_OUTPUTS",
+  "claim_boundary": "Serialization repair only; does not alter answer values or exact conceptual gate.",
+  "contract_id": "PENDULUM_EXACT_JSON_OR_FENCE_PLUS_REGISTERED_ENVELOPE_UNWRAP_V4_3_1",
+  "created_at_utc": "2026-08-11T20:10:00Z",
+  "frozen_branches": {
+    "all_other_nonexact_serialization": "PARSE_INVALID",
+    "bare_json_object": "PARSE_BODY",
+    "fence_plus_trailing_prose": "PARSE_INVALID",
+    "registered_fields_id_envelope": "UNWRAP_FIELDS_ONCE_THEN_PARSE_BODY",
+    "single_exact_lowercase_json_fence": "REMOVE_FENCE_ONCE_THEN_PARSE_BODY"
+  },
+  "parent_negative_evidence": {
+    "ingest_receipt_path": "research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_RECEIPT_20260811.json",
+    "signature": "DIRECT schema-envelope parse-null under V4.1 exact normalizer"
+  },
+  "rejected_serializations": [
+    "any prose before or after a fence",
+    "uppercase or missing fence language",
+    "multiple fences",
+    "JSON substring extraction from prose",
+    "non-object JSON",
+    "invalid JSON",
+    "any envelope other than the exact registered id/fields pair"
+  ],
+  "schema_version": "paper2-output-normalization-contract-v4.3.1",
+  "status": "FROZEN_AFTER_V4_3_RESULT_BEFORE_V4_3_1_OUTPUT_ACCESS",
+  "threshold_or_score_change_permitted": false,
+  "transformation": "Apply V4.1 fence removal; then at most once unwrap the exact registered fields/id envelope without altering field values.",
+  "v4_3_reinterpretation_permitted": false
+}
