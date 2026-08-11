@@ -1,0 +1,90 @@
+{
+  "schema_version": "claim-evidence-adversarial-audit-v1",
+  "receipt_id": "claim-evidence-adversarial-audit-20260811",
+  "created_at_utc": "2026-08-11T21:10:00Z",
+  "object": "Papers I–V publication TeX and research receipts vs frozen LUNARC/FS9 job evidence",
+  "qoi": "Do key numerical/verdict claims MATCH frozen job evidence without overclaim?",
+  "authority_boundary": "Same-session adversarial audit. Not independent peer review. Does not invent positive empirical results. Type B leak finding inherits issue #283 probe authority only for fail-closed demotion of contaminated field comparisons.",
+  "evidence_cutoff": {
+    "repo_sha_at_audit_branch_base": "a23cf23",
+    "fs9_checked": true,
+    "fs9_path_prefix": "/projects/hep/fs9/users/scyiu/RAKL-paper2"
+  },
+  "scoreboard": [
+    {
+      "claim_id": "P2-V4.1-TIP-3476520-21-24",
+      "claim": "Jobs 3476520/21/24: HARVEST_V4_1_TASK_SEED_PASS_NONCONFIRMATORY; one scorable arm; exact_conceptual_pass_arm_count=0",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P2-V4.2-3476540",
+      "claim": "Job 3476540 both arms parse_valid/scorable; exact_conceptual_pass_arm_count=0; both conceptual_correct=3/5",
+      "status": "MATCH",
+      "fail_closed_note": "Field fractions receipt-bound only; #283 Type B leak demotes arm-comparative use."
+    },
+    {
+      "claim_id": "P2-V4.3-3476566",
+      "claim": "Job 3476566 DIRECT parse_valid=false; RAKL_CONTEXT conceptual_correct=2/5; exact_conceptual_pass_arm_count=0",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P2-V4.3.1-3476576",
+      "claim": "Job 3476576 both arms parse_valid; DIRECT=1/5; RAKL=3/5; exact_conceptual_pass_arm_count=0",
+      "status": "MATCH",
+      "prior_overclaim": "TeX presented DIRECT 1/5 vs RAKL 3/5 without Type B disclosure",
+      "fix": "Fail-closed demotion of field fractions as non-comparative"
+    },
+    {
+      "claim_id": "P2-EXP-3476548",
+      "claim": "12/12 schema-valid; success_rate=0 both arms; NEGATIVE_NO_TRANSFER_SUCCESS_LIFT_UNDER_0_5B",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P3-DESCRIPTOR-3476527-29",
+      "claim": "HARVEST_DESCRIPTOR_READY; training_authorized=false; 16 records",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P3-CHEAP-GATE",
+      "claim": "n=44; ROC-AUC gain≈0.086; AP gain≈0.097; overall_cheap_gate_passed=false; expensive_training_authorized=false",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P5-PRECURSOR-3476548",
+      "claim": "Scoped negative precursor; no four-arm substitution",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "P1-P4-NATIVE-JOB-NUMBERS",
+      "claim": "No conflicting flagged-job scoreboard numbers",
+      "status": "MATCH"
+    },
+    {
+      "claim_id": "MIRROR-PAPER-PAPERS-P2-V4.3.1",
+      "claim": "Legacy paper/papers Paper II lagged on 3476576",
+      "status": "MISMATCH_FIXED"
+    }
+  ],
+  "numerical_mismatches_against_frozen_jobs": [],
+  "mismatches_found": [
+    {
+      "id": "COMPARATIVE_FIELD_FRACTIONS_WITHOUT_TYPE_B_DISCLOSURE",
+      "severity": "OVERCLAIM_RISK",
+      "action": "Demote field fractions; disclose #283; keep exact_conceptual_pass_arm_count=0"
+    },
+    {
+      "id": "LEGACY_PAPER_PAPERS_MISSING_V4_3_1",
+      "severity": "STALE_MIRROR",
+      "action": "Sync paper/papers and saturated mirrors to publication fail-closed text"
+    }
+  ],
+  "what_must_not_be_promoted": [
+    "Arm win/loss or paired effect from V4.x pendulum microtrials",
+    "Field-level RAKL vs DIRECT conceptual_correct deltas on V4.2/V4.3.1 under Type B leak",
+    "Paper III confirmatory / training_authorized=true",
+    "Cheap-gate constructed diagnostic as natural-domain or encoder superiority",
+    "ExperienceBenchmark 3476548 as transfer-success lift or Paper V four-arm substitute",
+    "Invented exact_conceptual_pass or positive continual-learning lift"
+  ],
+  "verdict": "NUMBERS_MATCH_FROZEN_JOBS__FAIL_CLOSED_OVERCLAIM_DEMOTE_APPLIED"
+}
