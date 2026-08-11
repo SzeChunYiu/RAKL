@@ -29,8 +29,8 @@ cd "$REPO"
   --sacct "$SACCT_PATH" \
   --packet research/paper2_microtrial_v4_2/EXECUTION_PACKET_V4_2_20260811.json \
   --result-schema schemas/paper2-pendulum-microtrial-result.schema.json \
-  --task-seed-schema schemas/paper2-pendulum-task-seed-receipt-v4-1.schema.json \
+  --task-seed-schema schemas/paper2-pendulum-task-seed-receipt-v4-2.schema.json \
   --attestation-schema schemas/paper2-model-snapshot-attestation-v4.schema.json \
-  --submission-schema schemas/paper2-pendulum-submission-receipt-v4-1.schema.json \
-  --harvest-schema schemas/paper2-pendulum-native-harvest-receipt-v4-1.schema.json \
+  --submission-schema schemas/paper2-pendulum-submission-receipt-v4-2.schema.json \
+  --harvest-schema schemas/paper2-pendulum-native-harvest-receipt-v4-2.schema.json \
   --output "$HARVEST_PATH"
