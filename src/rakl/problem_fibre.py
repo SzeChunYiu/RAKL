@@ -141,6 +141,8 @@ def knowledge_items_from_legacy_fiber(fiber: KnowledgeFiber) -> Tuple[FibreKnowl
     This adapter lets v3 consume the current epistemic framework directly.  It
     copies no authority: each item merely exposes the original Projection's
     registered authority and a deterministic content hash for fibre snapshots.
+    The legacy fiber id namespaces projection identity because old projection ids
+    are only enforced within their owning fiber.
     """
 
     dimension_tags = tuple(
@@ -180,7 +182,7 @@ def knowledge_items_from_legacy_fiber(fiber: KnowledgeFiber) -> Tuple[FibreKnowl
         effects = tuple(dict.fromkeys(projection.tags))
         items.append(
             FibreKnowledgeItem(
-                item_id=projection.projection_id,
+                item_id=f"{fiber.fiber_id}:{projection.projection_id}",
                 kind="legacy_knowledge_projection",
                 structural_signature=structural,
                 effects=effects,
