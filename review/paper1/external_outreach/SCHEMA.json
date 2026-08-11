@@ -1,0 +1,474 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.example/schemas/paper1-external-review-request.schema.json",
+  "title": "Paper 1 external-review solicitation request receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_status",
+    "request_id",
+    "review_round",
+    "packet_id",
+    "packet_manifest_sha256",
+    "public_solicitation_context",
+    "requested_track",
+    "reviewer_candidate",
+    "coordinator",
+    "artifact_binding",
+    "return_contract",
+    "delivery",
+    "chronology",
+    "attestations",
+    "declaration"
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "const": "paper1-external-review-request-v1"
+    },
+    "request_status": {
+      "enum": [
+        "template-example-not-sent",
+        "frozen-outbound-solicitation-receipt"
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^P1-EXT-REQ-[A-Z0-9]{4}-R[0-9]{2}$"
+    },
+    "review_round": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "packet_id": {
+      "const": "paper1-external-review-solicitation-20260810-v1"
+    },
+    "packet_manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "public_solicitation_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_number",
+        "issue_url",
+        "observation_receipt_path",
+        "observation_receipt_sha256",
+        "public_issue_is_private_delivery_receipt",
+        "public_comment_is_qualified_review"
+      ],
+      "properties": {
+        "issue_number": {
+          "const": 41
+        },
+        "issue_url": {
+          "const": "https://github.com/SzeChunYiu/RAKL/issues/41"
+        },
+        "observation_receipt_path": {
+          "const": "review/paper1/external_outreach/PUBLIC_SOLICITATION_OBSERVATION.json"
+        },
+        "observation_receipt_sha256": {
+          "const": "e3c9eb579112d8e54c3706d71b1168a62f8ab92d9c86ab8d55dd1073b0622642"
+        },
+        "public_issue_is_private_delivery_receipt": {
+          "const": false
+        },
+        "public_comment_is_qualified_review": {
+          "const": false
+        }
+      }
+    },
+    "requested_track": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lens",
+        "reviewer_role",
+        "form_path",
+        "concern_namespace",
+        "external_gate"
+      ],
+      "properties": {
+        "lens": {
+          "enum": [
+            "formal_methods",
+            "novelty_prior_art",
+            "editorial_significance"
+          ]
+        },
+        "reviewer_role": {
+          "enum": [
+            "formal_methods_reviewer",
+            "novelty_prior_art_reviewer",
+            "editorial_significance_reviewer"
+          ]
+        },
+        "form_path": {
+          "type": "string",
+          "pattern": "^review/paper1/external_solicitation/[A-Z_]+\\.md$"
+        },
+        "concern_namespace": {
+          "type": "string",
+          "pattern": "^P1-EXT-(FORMAL|NOVELTY|EDITORIAL)-$"
+        },
+        "external_gate": {
+          "enum": [
+            "independent_formal_review",
+            "independent_nearest_work_novelty_review",
+            "external_editorial_or_peer_review"
+          ]
+        }
+      }
+    },
+    "reviewer_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pseudonymous_id",
+        "concern_code",
+        "role",
+        "expertise_requested",
+        "human_expert_expected",
+        "external_to_authoring_context_expected",
+        "identity_and_coi_qualification_status"
+      ],
+      "properties": {
+        "pseudonymous_id": {
+          "type": "string",
+          "pattern": "^P1-REVIEWER-[A-Z0-9]{4}$"
+        },
+        "concern_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{4}$"
+        },
+        "role": {
+          "enum": [
+            "formal_methods_reviewer",
+            "novelty_prior_art_reviewer",
+            "editorial_significance_reviewer"
+          ]
+        },
+        "expertise_requested": {
+          "type": "string",
+          "minLength": 20
+        },
+        "human_expert_expected": {
+          "const": true
+        },
+        "external_to_authoring_context_expected": {
+          "const": true
+        },
+        "identity_and_coi_qualification_status": {
+          "const": "pending-private-coordinator-audit"
+        }
+      }
+    },
+    "coordinator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pseudonymous_id",
+        "private_identity_record_retained",
+        "qualification_receipt_required_after_response"
+      ],
+      "properties": {
+        "pseudonymous_id": {
+          "type": "string",
+          "pattern": "^P1-COORDINATOR-[A-Z0-9-]{4,40}$"
+        },
+        "private_identity_record_retained": {
+          "type": "boolean"
+        },
+        "qualification_receipt_required_after_response": {
+          "const": true
+        }
+      }
+    },
+    "artifact_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manuscript_subject_sha",
+        "modular_source_sha256",
+        "builder_sha256",
+        "staged_source_sha256",
+        "pdf_sha256",
+        "pdf_pages"
+      ],
+      "properties": {
+        "manuscript_subject_sha": {
+          "const": "118b74c17606637a916fc0e1fea8db6508adb847"
+        },
+        "modular_source_sha256": {
+          "const": "76c20f20e642939c10d6582a1a87233f172cbf7ee6a45f2dbdcdc4db35bee871"
+        },
+        "builder_sha256": {
+          "const": "d52c1715b4e1519443a7cef6e26ff2d03f5a8e000bc6a2ae2db0f03ed13b981b"
+        },
+        "staged_source_sha256": {
+          "const": "aa00a64d801ac802d310c818fe7699454db1346ccb2adf5e4d7de28019c20eb1"
+        },
+        "pdf_sha256": {
+          "const": "b6a07517699a52151260c6c321f239af61b1e07089c079a1eac9f7c0ac1352af"
+        },
+        "pdf_pages": {
+          "const": 44
+        }
+      }
+    },
+    "return_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "response_template_path",
+        "response_schema_path",
+        "response_schema_sha256",
+        "response_validator_path",
+        "secure_return_channel_supplied_privately"
+      ],
+      "properties": {
+        "response_template_path": {
+          "const": "review/paper1/external_solicitation/RESPONSE_TEMPLATE.json"
+        },
+        "response_schema_path": {
+          "const": "schemas/paper1-external-review-response.schema.json"
+        },
+        "response_schema_sha256": {
+          "const": "3d8c7d4c37ceb88dd71e665877511612aad2c479ad78bd1f74bc798ea3f48a2a"
+        },
+        "response_validator_path": {
+          "const": "review/paper1/external_solicitation/validate_response.py"
+        },
+        "secure_return_channel_supplied_privately": {
+          "const": true
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel_class",
+        "private_contact_details_in_repository",
+        "private_request_payload_sha256",
+        "private_delivery_receipt_sha256"
+      ],
+      "properties": {
+        "channel_class": {
+          "enum": [
+            "private_email",
+            "private_direct_message",
+            "review_platform",
+            "journal_submission_system",
+            "other_private_channel"
+          ]
+        },
+        "private_contact_details_in_repository": {
+          "const": false
+        },
+        "private_request_payload_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "private_delivery_receipt_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "chronology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "concern_code_assigned_at_utc",
+        "request_payload_frozen_at_utc",
+        "request_sent_at_utc",
+        "private_delivery_receipt_recorded_at_utc",
+        "response_due_at_utc"
+      ],
+      "properties": {
+        "concern_code_assigned_at_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "request_payload_frozen_at_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "request_sent_at_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "private_delivery_receipt_recorded_at_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "response_due_at_utc": {
+          "$ref": "#/$defs/utc"
+        }
+      }
+    },
+    "attestations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packet_manifest_hash_verified_before_send",
+        "artifact_hashes_verified_before_send",
+        "lens_role_and_form_matched",
+        "request_contains_no_private_contact_details",
+        "same_context_internal_review_not_labeled_external",
+        "request_does_not_confer_independence",
+        "request_does_not_confer_peer_review"
+      ],
+      "properties": {
+        "packet_manifest_hash_verified_before_send": {
+          "type": "boolean"
+        },
+        "artifact_hashes_verified_before_send": {
+          "type": "boolean"
+        },
+        "lens_role_and_form_matched": {
+          "type": "boolean"
+        },
+        "request_contains_no_private_contact_details": {
+          "type": "boolean"
+        },
+        "same_context_internal_review_not_labeled_external": {
+          "type": "boolean"
+        },
+        "request_does_not_confer_independence": {
+          "type": "boolean"
+        },
+        "request_does_not_confer_peer_review": {
+          "type": "boolean"
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "solicitation_sent",
+        "response_received",
+        "independent_review_completed",
+        "peer_review_completed",
+        "accepted_or_published"
+      ],
+      "properties": {
+        "solicitation_sent": {
+          "type": "boolean"
+        },
+        "response_received": {
+          "const": false
+        },
+        "independent_review_completed": {
+          "const": false
+        },
+        "peer_review_completed": {
+          "const": false
+        },
+        "accepted_or_published": {
+          "const": false
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "request_status": {
+            "const": "template-example-not-sent"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "packet_manifest_sha256": {
+            "const": "0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          "declaration": {
+            "properties": {
+              "solicitation_sent": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "request_status": {
+            "const": "frozen-outbound-solicitation-receipt"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "packet_manifest_sha256": {
+            "type": "string",
+            "pattern": "^(?!0{64}$)[0-9a-f]{64}$"
+          },
+          "delivery": {
+            "properties": {
+              "private_request_payload_sha256": {
+                "type": "string",
+                "pattern": "^(?!0{64}$)[0-9a-f]{64}$"
+              },
+              "private_delivery_receipt_sha256": {
+                "type": "string",
+                "pattern": "^(?!0{64}$)[0-9a-f]{64}$"
+              }
+            }
+          },
+          "coordinator": {
+            "properties": {
+              "private_identity_record_retained": {
+                "const": true
+              }
+            }
+          },
+          "attestations": {
+            "properties": {
+              "packet_manifest_hash_verified_before_send": {
+                "const": true
+              },
+              "artifact_hashes_verified_before_send": {
+                "const": true
+              },
+              "lens_role_and_form_matched": {
+                "const": true
+              },
+              "request_contains_no_private_contact_details": {
+                "const": true
+              },
+              "same_context_internal_review_not_labeled_external": {
+                "const": true
+              },
+              "request_does_not_confer_independence": {
+                "const": true
+              },
+              "request_does_not_confer_peer_review": {
+                "const": true
+              }
+            }
+          },
+          "declaration": {
+            "properties": {
+              "solicitation_sent": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
