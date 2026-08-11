@@ -1,0 +1,14 @@
+{
+  "schema_version": "paper2-arm-comparison-status-v1",
+  "verdict": "NOT_INFORMATIVE",
+  "reason": "Type B answer-key leak in RAKL_CONTEXT_PROMPT treatment arms: graded misaligned_source_ids and required_refuted_source_ids are recoverable from treatment-only markers/edges.",
+  "affected_generations": [
+    "paper2_microtrial_v1",
+    "paper2_microtrial_v4_2",
+    "paper2_microtrial_v4_3_1"
+  ],
+  "issue": 283,
+  "probe": "rakl.degeneracy_probe.probe_arm_answer_leak",
+  "preservation_rule": "Do not mutate historical prompt bytes; supersede with a leak-free packet after positive-control sensitivity is demonstrated.",
+  "claim_boundary": "No RAKL-vs-DIRECT superiority, null, or capability claim may be reported from the affected generations on the leaked fields."
+}

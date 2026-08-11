@@ -68,8 +68,14 @@ def _scan_for_gold(candidates: list[Path]) -> dict[str, frozenset[str]]:
         def walk(node: object) -> None:
             if isinstance(node, dict):
                 for key, value in node.items():
-                    if key in GOLD_FIELDS and isinstance(value, list):
-                        found.setdefault(key, frozenset(str(v) for v in value))
+                    # ROUND044 names the misalignment gold differently from the
+                    # v1 evaluator; alias so v4.* arm pairs are assessed rather
+                    # than left UNASSESSED (issue #283).
+                    canonical = {
+                        "misaligned_for_direct_target_contradiction_source_ids": "misaligned_source_ids",
+                    }.get(key, key)
+                    if canonical in GOLD_FIELDS and isinstance(value, list):
+                        found.setdefault(canonical, frozenset(str(v) for v in value))
                     walk(value)
             elif isinstance(node, list):
                 for item in node:
