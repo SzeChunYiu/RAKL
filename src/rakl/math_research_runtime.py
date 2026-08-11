@@ -51,6 +51,7 @@ from .root_coordinate_preservation import (
 )
 from .semantic_shortcut import (
     REQUIRED_SHORTCUT_ACTIONS,
+    ObstructionTransformationMemory,
     ObstructionTransformationReview,
     ShortcutMode,
     ShortcutReviewReport,
@@ -78,6 +79,7 @@ def _facts_from_record(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
     shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> frozenset[str]:
@@ -99,6 +101,7 @@ def _facts_from_record(
                 atom_id=context_fiber.atom_id,
                 context_hash=context_fiber.packet_hash,
                 research_memory_review_hash=memory_review.artifact_hash,
+                transformation_memory=transformation_memory,
             )
             if (
                 shortcut_report.verdict is ShortcutReviewVerdict.PASS
@@ -165,6 +168,7 @@ def derive_planning_state(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
     shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> ProblemState:
@@ -175,6 +179,7 @@ def derive_planning_state(
             record,
             context_fiber,
             memory_review,
+            transformation_memory,
             shortcut_review,
             research_trace,
         ),
@@ -188,6 +193,7 @@ def plan_math_research(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
     shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
     preservation_receipt: RootCoordinatePreservationReceipt | None = None,
@@ -207,11 +213,12 @@ def plan_math_research(
     2. **Experience-memory gate** — query both the scoped success-derived tool
        inventory and global failure-experience lattice, recording applicable tools,
        prior failure warnings, reuse scope/difference witnesses, and empty searches.
-    3. **Semantic-shortcut gate** — fingerprint the relational obstruction and
-       select an invention-last SEARCH/JUMP/GLUE/LIFT route. JUMP needs an explicit
-       structural mapping witness, GLUE needs a composition witness, and LIFT needs
-       bounded exhaustion plus repeated residual structure and emits only a missing-
-       transformation specification.
+    3. **Semantic-shortcut gate** — bind an actual content-addressed
+       obstruction-transformation memory, fingerprint the relational obstruction,
+       and select an invention-last SEARCH/JUMP/GLUE/LIFT route. SEARCH and JUMP
+       need explicit source-to-target applicability mappings, GLUE additionally
+       needs an interface witness, and LIFT requires bounded cross-problem
+       coverage plus repeated residual structure.
     4. **Trace gate** — preserve the chronological public decision ledger including
        atomization, context, analogy, expert review, experience-memory review,
        obstruction-transformation review and the proposed next step before any
@@ -252,6 +259,7 @@ def plan_math_research(
             atom_id=context_fiber.atom_id,
             context_hash=context_fiber.packet_hash,
             research_memory_review_hash=memory_review.artifact_hash,
+            transformation_memory=transformation_memory,
         )
     else:
         shortcut_gate = ShortcutReviewReport(
@@ -293,6 +301,7 @@ def plan_math_research(
         record=record,
         context_fiber=context_fiber,
         memory_review=memory_review,
+        transformation_memory=transformation_memory,
         shortcut_review=shortcut_review,
         research_trace=research_trace,
     )
