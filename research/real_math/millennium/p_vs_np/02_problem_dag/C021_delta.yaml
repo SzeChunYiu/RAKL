@@ -1,0 +1,48 @@
+candidate_id: C021
+claim: "For every odd prime p, QR_p has rho(QR_p,G_pp) <= D_intersection(QR_p|G_pp) = O(log p * (log log p)^3)."
+status: PROOF_DRAFT_NEARLINEAR_LOG_COVER_UPPER_BOUND
+route: R004
+root_impact: NONE
+novelty_claim: false
+
+proof_dependencies:
+  - id: SRC-CO2025-FUSION
+    claim: "rho(A,B) <= D_intersection(A|B) and graph generators are row/column stars"
+  - id: SRC-BZ2010-JACOBI
+    claim: "Jacobi symbol on n-bit integers is computable in O(M(n) log n) time"
+  - id: SRC-HV2021-MULT
+    claim: "n-bit integer multiplication has multitape-TM time O(n log n)"
+  - id: SRC-PF1979-SIM
+    claim: "T machine steps on one-dimensional tapes admit combinational-network cost O(T log T)"
+  - id: C020-L1-L2
+    claim: "row/column bit polarities are free unions of stars and dual-rail De Morgan circuits compile to O(gate_count) intersections"
+  - id: C021-L1
+    claim: "For prime p, QR adjacency of d=y-x mod p is exactly the predicate Jacobi(d,p)=+1, with d=0 rejected"
+
+counterexample_first:
+  executable: "05_falsification/jacobi_cover_spec.py"
+  tests: "tests/test_real_math_jacobi_cover_spec.py"
+  authority: "finite specification/calibration only; no asymptotic proof authority"
+
+residuals:
+  - id: O9d12a1
+    target: "determine whether the extra (log log p)^3 factor can be removed to obtain an O(log p) full-cover construction"
+    status: ACTIVE
+  - id: O9d12a2
+    target: "if O(log p) cannot be obtained, seek a lower-bound invariant distinguishing omega(log p) from the new near-linear-log ceiling"
+    status: OPEN
+  - id: O9d12c_revised
+    target: "screen candidate families by explicit adjacency-circuit cost; strongly explicit O(log N)-circuit families are automatically disqualified as super-log cover targets"
+    status: OPEN
+
+promotion_blockers:
+  - machine_model_alignment_not_formalized
+  - network_basis_translation_not_formalized
+  - theorem_prover_formalization_missing
+  - formalization_witness_missing
+  - proof_receipt_missing
+  - isolated_recheck_missing
+  - bounded_novelty_certificate_missing
+  - independent_reviews_missing
+
+terminal_effect: "None. R0 remains open."
