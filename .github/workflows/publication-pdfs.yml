@@ -87,10 +87,12 @@ jobs:
             fi
           done
 
-          python - <<PY
+          export HEAD_SHA
+          python - <<'PY'
           from pathlib import Path
-          sha = "$HEAD_SHA"
-          tests = int("$RAKL_SOFTWARE_TESTS")
+          import os
+          sha = os.environ["HEAD_SHA"]
+          tests = int(os.environ["RAKL_SOFTWARE_TESTS"])
           p1 = Path("build/publication/paper-01/main.tex")
           text = p1.read_text(encoding="utf-8")
           if r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}" not in text:
@@ -111,9 +113,10 @@ jobs:
               raise SystemExit("paper-01 missing AI-use disclosure")
           p1.write_text(text, encoding="utf-8")
           Path("build/publication/paper-02/build_identity.tex").write_text(
-              "\\newcommand{\\SoftwareTests}{%d}\n"
-              "\\newcommand{\\ImplementationSHA}{\\texttt{%s}}\n"
-              % (tests, sha),
+              (
+                  rf"\newcommand{{\SoftwareTests}}{{{tests}}}" + "\n"
+                  + rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}" + "\n"
+              ),
               encoding="utf-8",
           )
           PY
