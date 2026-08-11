@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import replace
 
 import pytest
@@ -16,330 +14,395 @@ from rakl.semantic_shortcut import (
     StructuralMappingWitness,
     TransformationCompositionWitness,
     TransformationEpisodeAuthority,
+    add_transformation_episode,
     audit_obstruction_transformation_review,
-    rank_obstruction_transformations,
+    build_transformation_memory,
+    discover_shortcut_candidates,
     repeated_residual_features,
     synthesize_missing_transformation_specification,
+    validate_transformation_memory,
 )
 
 
 def _target() -> ObstructionFingerprint:
     return ObstructionFingerprint(
-        obstruction_id="obs-target",
+        obstruction_id="O-target",
         domain="mathematics",
-        roles=("many local states", "global proof obligation"),
-        relations=("local dependencies feed global obstruction", "finite state revisitation"),
-        constraints=("must preserve theorem statement", "finite state space"),
-        failure_mechanisms=("local expansion causes search branching",),
-        invariants_to_preserve=("logical equivalence",),
-        desired_transition=("compress local family into tractable global object",),
-        forbidden_losses=("do not weaken theorem statement",),
+        roles=("state", "resource"),
+        relations=("depends_on", "aggregates"),
+        constraints=("finite", "typed"),
+        failure_mechanisms=("local_reasoning_expands",),
+        invariants_to_preserve=("conservation",),
+        desired_transition=("global_object_exposed", "search_reduced"),
+        forbidden_losses=("conservation",),
+    )
+
+
+def _source(domain: str, *, oid: str) -> ObstructionFingerprint:
+    return ObstructionFingerprint(
+        obstruction_id=oid,
+        domain=domain,
+        roles=("state", "resource"),
+        relations=("depends_on", "aggregates"),
+        constraints=("finite", "typed"),
+        failure_mechanisms=("local_reasoning_expands",),
+        invariants_to_preserve=("conservation",),
+        desired_transition=("global_object_exposed", "search_reduced"),
     )
 
 
 def _episode(
-    episode_id: str = "episode-shipping",
+    episode_id: str,
+    domain: str,
     *,
-    source_domain: str = "logistics",
-    relation: str = "finite state revisitation",
+    effects=("global_object_exposed", "search_reduced"),
+    authority=TransformationEpisodeAuthority.SOURCE_EVENT_VERIFIED,
+    breaks=(),
 ) -> ObstructionTransformationEpisode:
     return ObstructionTransformationEpisode(
         episode_id=episode_id,
-        source_domain=source_domain,
-        source_context="packages circulate among a finite set of depots",
-        source_obstruction=ObstructionFingerprint(
-            obstruction_id=f"source-{episode_id}",
-            domain=source_domain,
-            roles=("moving item", "finite locations"),
-            relations=(relation,),
-            constraints=("finite state space",),
-            failure_mechanisms=("local expansion causes search branching",),
-            invariants_to_preserve=("logical equivalence",),
-            desired_transition=("compress local family into tractable global object",),
-            forbidden_losses=("do not lose state identity",),
-        ),
-        transformation_name="aggregate-and-follow-state",
-        operation="replace repeated local inspection with a global finite-state trajectory",
-        preconditions=("finite state space",),
-        resulting_relations=("global trajectory exposes repetition",),
-        preserved_invariants=("logical equivalence",),
-        relaxed_or_broken_constraints=("individual-step representation is no longer mandatory",),
-        known_breakpoints=("fails when the state space is not finite",),
-        evidence_pointers=("source:verified-episode",),
-        authority=TransformationEpisodeAuthority.SOURCE_EVENT_VERIFIED,
+        source_domain=domain,
+        source_context=f"{domain} source case",
+        source_obstruction=_source(domain, oid=f"O-{episode_id}"),
+        transformation_name=f"transform-{episode_id}",
+        operation="replace local expansion with an aggregate representation",
+        preconditions=("finite", "typed"),
+        resulting_relations=tuple(effects),
+        preserved_invariants=("conservation",),
+        relaxed_or_broken_constraints=tuple(breaks),
+        known_breakpoints=("infinite untyped state",),
+        evidence_pointers=(f"source:{episode_id}",),
+        authority=authority,
         artifact_hash=f"sha256:{episode_id}",
     )
 
 
-def _mapping(episode_id: str = "episode-shipping") -> StructuralMappingWitness:
+def _memory(*episodes: ObstructionTransformationEpisode):
+    return build_transformation_memory(
+        memory_id="OTM-1",
+        source_universe=("mathematics", "logistics", "biology", "engineering"),
+        episodes=tuple(episodes),
+        evidence_pointers=("index:OTM-1",),
+    )
+
+
+def _mapping(episode_id: str) -> StructuralMappingWitness:
     return StructuralMappingWitness(
-        witness_id=f"map-{episode_id}",
+        witness_id=f"W-{episode_id}",
         episode_id=episode_id,
-        target_obstruction_id="obs-target",
-        role_mapping=(("moving item", "proof state"), ("finite locations", "finite states")),
-        shared_relations=("finite state revisitation",),
-        shared_constraints=("finite state space",),
-        disanalogies=("shipping transitions are physical while proof transitions are formal",),
-        target_validation_obligations=("prove the transported transition preserves the theorem obligation",),
-        evidence_pointers=("mapping:structural-witness",),
+        target_obstruction_id="O-target",
+        role_mapping=(("state", "state"), ("resource", "resource")),
+        shared_relations=("depends_on", "aggregates"),
+        shared_constraints=("finite", "typed"),
+        precondition_mapping=(("finite", "finite"), ("typed", "typed")),
+        unmatched_source_preconditions=(),
+        disanalogies=("domain vocabulary and ontology differ",),
+        target_validation_obligations=("prove transported operation preserves target invariants",),
+        evidence_pointers=(f"mapping:{episode_id}",),
         artifact_hash=f"sha256:map-{episode_id}",
     )
 
 
-def _search_review() -> ObstructionTransformationReview:
-    return ObstructionTransformationReview(
-        review_id="shortcut-review-C",
+def _base_review(memory, mode: ShortcutMode, **changes) -> ObstructionTransformationReview:
+    values = dict(
+        review_id="R-1",
         target_atom_id="atom-C",
         target_context_hash="sha256:context",
-        research_memory_review_hash="sha256:memory",
-        episode_memory_snapshot_hash="sha256:episode-memory",
-        obstruction=_target(),
-        direct_search_status=RouteSearchStatus.MATCHES_FOUND,
-        jump_search_status=RouteSearchStatus.NOT_RUN,
-        glue_search_status=RouteSearchStatus.NOT_RUN,
-        selected_mode=ShortcutMode.SEARCH,
-        direct_candidate_episode_ids=("episode-direct",),
-        selected_episode_ids=("episode-direct",),
-        unresolved_warnings=("source success still requires target validation",),
-        evidence_pointers=("episode-memory:snapshot",),
-        artifact_hash="sha256:shortcut-review",
-    )
-
-
-def _audit(review: ObstructionTransformationReview):
-    return audit_obstruction_transformation_review(
-        review,
-        atom_id="atom-C",
-        context_hash="sha256:context",
-        research_memory_review_hash="sha256:memory",
-    )
-
-
-def test_structural_ranking_uses_relational_coordinates_not_domain_name() -> None:
-    cross_domain = _episode("cross-domain", source_domain="newspaper-logistics")
-    lexical_decoy = _episode(
-        "math-words-only",
-        source_domain="mathematics",
-        relation="unrelated relation",
-    )
-    lexical_decoy = replace(
-        lexical_decoy,
-        source_obstruction=replace(
-            lexical_decoy.source_obstruction,
-            constraints=("unrelated constraint",),
-            failure_mechanisms=("unrelated failure",),
-            invariants_to_preserve=("unrelated invariant",),
-            desired_transition=("unrelated transition",),
-        ),
-    )
-
-    matches = rank_obstruction_transformations(_target(), (lexical_decoy, cross_domain))
-    assert matches
-    assert matches[0].episode_id == "cross-domain"
-    assert all(match.episode_id != "math-words-only" for match in matches)
-
-
-def test_valid_direct_search_route_passes_without_forcing_invention() -> None:
-    report = _audit(_search_review())
-    assert report.verdict is ShortcutReviewVerdict.PASS
-    assert report.selected_mode is ShortcutMode.SEARCH
-    assert report.candidate_route_ready
-
-
-def test_jump_requires_direct_search_exhaustion_and_structural_witness() -> None:
-    review = replace(
-        _search_review(),
-        direct_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
-        jump_search_status=RouteSearchStatus.MATCHES_FOUND,
-        selected_mode=ShortcutMode.JUMP,
-        direct_candidate_episode_ids=(),
-        selected_episode_ids=("episode-shipping",),
-        jump_mapping_witnesses=(),
-    )
-    missing = _audit(review)
-    assert missing.verdict is ShortcutReviewVerdict.FAIL
-    assert "jump_mapping_witness_missing" in missing.reasons
-
-    passed = _audit(replace(review, jump_mapping_witnesses=(_mapping(),)))
-    assert passed.verdict is ShortcutReviewVerdict.PASS
-
-
-def test_surface_analogy_without_disanalogy_or_validation_fails_closed() -> None:
-    weak_mapping = replace(
-        _mapping(),
-        disanalogies=(),
-        target_validation_obligations=(),
-    )
-    review = replace(
-        _search_review(),
-        direct_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
-        jump_search_status=RouteSearchStatus.MATCHES_FOUND,
-        selected_mode=ShortcutMode.JUMP,
-        direct_candidate_episode_ids=(),
-        selected_episode_ids=("episode-shipping",),
-        jump_mapping_witnesses=(weak_mapping,),
-    )
-    report = _audit(review)
-    assert report.verdict is ShortcutReviewVerdict.FAIL
-    assert "jump_disanalogies_missing" in report.reasons
-    assert "jump_target_validation_obligations_missing" in report.reasons
-
-
-def test_glue_requires_explicit_order_and_interface_obligations() -> None:
-    glue = TransformationCompositionWitness(
-        composition_id="glue-1",
-        target_obstruction_id="obs-target",
-        episode_ids=("episode-A", "episode-B"),
-        operation_order=("episode-A", "episode-B"),
-        interface_obligations=("output of A satisfies preconditions of B",),
-        incompatibilities_checked=("A does not destroy the invariant required by B",),
-        target_validation_obligations=("verify composed transformation in target domain",),
-        evidence_pointers=("composition:witness",),
-        artifact_hash="sha256:glue-1",
-    )
-    review = replace(
-        _search_review(),
-        direct_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
-        jump_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
-        glue_search_status=RouteSearchStatus.MATCHES_FOUND,
-        selected_mode=ShortcutMode.GLUE,
-        direct_candidate_episode_ids=(),
-        selected_episode_ids=("episode-A", "episode-B"),
-        glue_witness=glue,
-    )
-    assert _audit(review).verdict is ShortcutReviewVerdict.PASS
-
-    bad = replace(review, glue_witness=replace(glue, interface_obligations=()))
-    report = _audit(bad)
-    assert report.verdict is ShortcutReviewVerdict.FAIL
-    assert "glue_interface_obligations_missing" in report.reasons
-
-
-def test_repeated_residual_features_require_cross_attempt_support() -> None:
-    repeated = repeated_residual_features(
-        {
-            "failure-1": ("branching", "parity mismatch"),
-            "failure-2": ("branching", "boundary loss"),
-            "failure-3": ("branching", "parity mismatch"),
-        }
-    )
-    assert repeated == ("branching", "parity mismatch")
-
-
-def test_lift_specification_is_synthesized_from_repeated_failure_not_one_failure() -> None:
-    with pytest.raises(ValueError, match="at least two failed attempts"):
-        synthesize_missing_transformation_specification(
-            _target(),
-            spec_id="lift-1",
-            residual_signatures={"failure-1": ("branching",)},
-            must_reduce=("proof search branching factor",),
-            allowed_representation_changes=("introduce auxiliary aggregate object",),
-            validation_obligations=("show target equivalence",),
-            falsifiers=("find a case where aggregate loses a required distinction",),
-            evidence_pointers=("failure:1",),
-            artifact_hash="sha256:lift-1",
-        )
-
-    spec = synthesize_missing_transformation_specification(
-        _target(),
-        spec_id="lift-2",
-        residual_signatures={
-            "failure-1": ("branching", "local-only view"),
-            "failure-2": ("branching", "local-only view"),
-        },
-        must_reduce=("proof search branching factor",),
-        allowed_representation_changes=("introduce auxiliary aggregate object",),
-        validation_obligations=("show target equivalence",),
-        falsifiers=("find a case where aggregate loses a required distinction",),
-        evidence_pointers=("failure:1", "failure:2"),
-        artifact_hash="sha256:lift-2",
-    )
-    assert set(spec.must_break) == {"branching", "local-only view"}
-    assert spec.must_preserve == _target().invariants_to_preserve
-
-
-def _lift_review() -> ObstructionTransformationReview:
-    exhaustion = ExhaustionWitness(
-        target_obstruction_id="obs-target",
-        search_boundary="registered math + science + engineering + everyday knowledge snapshot",
-        searched_domains=("mathematics", "science", "engineering", "ordinary situations"),
-        searched_method_families=("direct reuse", "structural jump", "composition"),
-        rejected_direct_episode_ids=("direct-1",),
-        rejected_jump_episode_ids=("jump-1",),
-        rejected_glue_composition_ids=("glue-0",),
-        rejection_reasons=("all retained routes violate a load-bearing target constraint",),
-        residual_failure_ids=("failure-1", "failure-2"),
-        repeated_residual_features=("branching",),
-        evidence_pointers=("search:coverage", "failure:1", "failure:2"),
-        artifact_hash="sha256:exhaustion",
-    )
-    spec = MissingTransformationSpecification(
-        spec_id="missing-transform-1",
-        target_obstruction_id="obs-target",
-        residual_failure_ids=("failure-1", "failure-2"),
-        must_preserve=("logical equivalence",),
-        must_break=("branching",),
-        must_expose=("compress local family into tractable global object",),
-        must_reduce=("proof search branching factor",),
-        allowed_representation_changes=("introduce auxiliary global object",),
-        forbidden_shortcuts=("do not weaken theorem statement",),
-        validation_obligations=("prove representation equivalence",),
-        falsifiers=("counterexample showing lost target distinction",),
-        evidence_pointers=("failure:1", "failure:2"),
-        artifact_hash="sha256:missing-transform-1",
-    )
-    return ObstructionTransformationReview(
-        review_id="shortcut-review-lift",
-        target_atom_id="atom-C",
-        target_context_hash="sha256:context",
-        research_memory_review_hash="sha256:memory",
-        episode_memory_snapshot_hash="sha256:episode-memory",
+        research_memory_review_hash="sha256:memory-review",
+        episode_memory_snapshot_hash=memory.snapshot_hash,
         obstruction=_target(),
         direct_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
         jump_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
         glue_search_status=RouteSearchStatus.NO_VIABLE_MATCH,
-        selected_mode=ShortcutMode.LIFT,
+        selected_mode=mode,
+        evidence_pointers=("review:evidence",),
+        artifact_hash="sha256:review",
+    )
+    values.update(changes)
+    return ObstructionTransformationReview(**values)
+
+
+def _audit(review, memory):
+    return audit_obstruction_transformation_review(
+        review,
+        atom_id="atom-C",
+        context_hash="sha256:context",
+        research_memory_review_hash="sha256:memory-review",
+        transformation_memory=memory,
+    )
+
+
+def test_memory_is_content_bound_and_append_rehashes() -> None:
+    memory = _memory(_episode("E1", "mathematics"))
+    assert validate_transformation_memory(memory) == ()
+    tampered = replace(memory, episodes=memory.episodes + (_episode("E2", "biology"),))
+    assert "transformation_memory_snapshot_hash_mismatch" in validate_transformation_memory(
+        tampered
+    )
+
+    expanded = add_transformation_episode(memory, _episode("E2", "biology"))
+    assert expanded.snapshot_hash != memory.snapshot_hash
+    assert validate_transformation_memory(expanded) == ()
+
+
+def test_query_separates_direct_jump_and_rejects_forbidden_loss() -> None:
+    memory = _memory(
+        _episode("D", "mathematics"),
+        _episode("J", "biology"),
+        _episode("BAD", "engineering", breaks=("conservation",)),
+    )
+    candidates = discover_shortcut_candidates(_target(), memory)
+    assert [item.episode_id for item in candidates.direct_matches] == ["D"]
+    assert [item.episode_id for item in candidates.jump_matches] == ["J"]
+
+
+def test_proposal_only_episode_is_not_a_viable_shortcut() -> None:
+    memory = _memory(
+        _episode(
+            "P",
+            "biology",
+            authority=TransformationEpisodeAuthority.PROPOSAL_ONLY,
+        )
+    )
+    candidates = discover_shortcut_candidates(_target(), memory)
+    assert candidates.direct_matches == ()
+    assert candidates.jump_matches == ()
+
+
+def test_search_requires_bound_episode_and_applicability_mapping() -> None:
+    memory = _memory(_episode("D", "mathematics"))
+    review = _base_review(
+        memory,
+        ShortcutMode.SEARCH,
+        direct_search_status=RouteSearchStatus.MATCHES_FOUND,
+        direct_candidate_episode_ids=("D",),
+        direct_mapping_witnesses=(_mapping("D"),),
+        selected_episode_ids=("D",),
+    )
+    report = _audit(review, memory)
+    assert report.verdict is ShortcutReviewVerdict.PASS
+    assert report.selected_mode is ShortcutMode.SEARCH
+
+
+def test_search_rejects_unaccounted_source_precondition() -> None:
+    memory = _memory(_episode("D", "mathematics"))
+    broken_mapping = replace(
+        _mapping("D"),
+        precondition_mapping=(("finite", "finite"),),
+        unmatched_source_preconditions=("typed",),
+    )
+    review = _base_review(
+        memory,
+        ShortcutMode.SEARCH,
+        direct_search_status=RouteSearchStatus.MATCHES_FOUND,
+        direct_candidate_episode_ids=("D",),
+        direct_mapping_witnesses=(broken_mapping,),
+        selected_episode_ids=("D",),
+    )
+    report = _audit(review, memory)
+    assert report.verdict is ShortcutReviewVerdict.FAIL
+    assert "mapping_has_unrepaired_source_preconditions" in report.reasons
+
+
+def test_jump_passes_only_after_direct_route_is_absent() -> None:
+    memory = _memory(_episode("J", "biology"))
+    review = _base_review(
+        memory,
+        ShortcutMode.JUMP,
+        jump_search_status=RouteSearchStatus.MATCHES_FOUND,
+        jump_mapping_witnesses=(_mapping("J"),),
+        selected_episode_ids=("J",),
+    )
+    report = _audit(review, memory)
+    assert report.verdict is ShortcutReviewVerdict.PASS
+    assert report.selected_mode is ShortcutMode.JUMP
+
+
+def test_jump_cannot_bypass_existing_direct_route() -> None:
+    memory = _memory(_episode("D", "mathematics"), _episode("J", "biology"))
+    review = _base_review(
+        memory,
+        ShortcutMode.JUMP,
+        jump_search_status=RouteSearchStatus.MATCHES_FOUND,
+        jump_mapping_witnesses=(_mapping("J"),),
+        selected_episode_ids=("J",),
+    )
+    report = _audit(review, memory)
+    assert report.verdict is ShortcutReviewVerdict.FAIL
+    assert "direct_search_status_disagrees_with_bound_memory_query" in report.reasons
+
+
+def test_glue_requires_effect_coverage_mapping_and_interface_witness() -> None:
+    left = _episode("A", "biology", effects=("global_object_exposed",))
+    right = _episode("B", "engineering", effects=("search_reduced",))
+    memory = _memory(left, right)
+    candidates = discover_shortcut_candidates(_target(), memory)
+    assert ("A", "B") in candidates.glue_episode_sets
+
+    glue = TransformationCompositionWitness(
+        composition_id="G-A-B",
+        target_obstruction_id="O-target",
+        episode_ids=("A", "B"),
+        operation_order=("A", "B"),
+        interface_obligations=("prove output of A is admissible input to B",),
+        incompatibilities_checked=("no invariant conflict across interface",),
+        target_validation_obligations=("verify composed target effect",),
+        evidence_pointers=("glue:evidence",),
+        artifact_hash="sha256:glue",
+    )
+    review = _base_review(
+        memory,
+        ShortcutMode.GLUE,
+        glue_search_status=RouteSearchStatus.MATCHES_FOUND,
+        jump_mapping_witnesses=(_mapping("A"), _mapping("B")),
+        glue_witness=glue,
+        selected_episode_ids=("A", "B"),
+    )
+    report = _audit(review, memory)
+    assert report.verdict is ShortcutReviewVerdict.PASS
+
+
+def test_repeated_residuals_drive_inverse_lift_specification() -> None:
+    residuals = {
+        "F1": ("local_expansion", "hidden_global_state"),
+        "F2": ("local_expansion", "wrong_coordinate"),
+        "F3": ("local_expansion",),
+    }
+    assert repeated_residual_features(residuals) == ("local_expansion",)
+    spec = synthesize_missing_transformation_specification(
+        _target(),
+        spec_id="SPEC-1",
+        residual_signatures=residuals,
+        must_reduce=("proof search branching",),
+        allowed_representation_changes=("auxiliary object", "coordinate change"),
+        validation_obligations=("show target equivalence",),
+        falsifiers=("candidate loses conservation",),
+        evidence_pointers=("failures:F1-F3",),
+        artifact_hash="sha256:spec",
+    )
+    assert spec.must_break == ("local_expansion",)
+    assert spec.must_preserve == ("conservation",)
+
+
+def test_lift_requires_cross_problem_coverage_and_multiple_failures() -> None:
+    memory = _memory()
+    spec = MissingTransformationSpecification(
+        spec_id="SPEC",
+        target_obstruction_id="O-target",
+        residual_failure_ids=("F1", "F2"),
+        must_preserve=("conservation",),
+        must_break=("local_expansion",),
+        must_expose=("global_object_exposed",),
+        must_reduce=("search_reduced",),
+        allowed_representation_changes=("auxiliary object",),
+        forbidden_shortcuts=("conservation",),
+        validation_obligations=("prove equivalence",),
+        falsifiers=("conservation lost",),
+        evidence_pointers=("failures:F1-F2",),
+        artifact_hash="sha256:spec",
+    )
+    exhaustion = ExhaustionWitness(
+        target_obstruction_id="O-target",
+        search_boundary="registered transformation memory plus cross-domain coverage receipt",
+        searched_domains=("mathematics", "biology"),
+        searched_method_families=("representation", "invariant"),
+        rejected_direct_episode_ids=(),
+        rejected_jump_episode_ids=(),
+        rejected_glue_composition_ids=(),
+        rejection_reasons=("no viable transformation survived",),
+        residual_failure_ids=("F1", "F2"),
+        repeated_residual_features=("local_expansion",),
+        evidence_pointers=("coverage:receipt",),
+        artifact_hash="sha256:exhaustion",
+        coverage_receipt_hash="sha256:coverage",
+    )
+    review = _base_review(
+        memory,
+        ShortcutMode.LIFT,
         exhaustion_witness=exhaustion,
         missing_transformation_specification=spec,
-        unresolved_warnings=("LIFT is a proposal specification, not a proof",),
-        evidence_pointers=("shortcut:search-ladder",),
-        artifact_hash="sha256:shortcut-lift",
     )
+    assert _audit(review, memory).verdict is ShortcutReviewVerdict.PASS
+
+    no_coverage = replace(exhaustion, coverage_receipt_hash="")
+    failed = _audit(replace(review, exhaustion_witness=no_coverage), memory)
+    assert failed.verdict is ShortcutReviewVerdict.FAIL
+    assert "exhaustion_cross_problem_coverage_receipt_hash_missing" in failed.reasons
 
 
-def test_lift_requires_search_jump_and_glue_exhaustion_plus_repeated_residual() -> None:
-    assert _audit(_lift_review()).verdict is ShortcutReviewVerdict.PASS
-
-    premature = replace(
-        _lift_review(), direct_search_status=RouteSearchStatus.MATCHES_FOUND
+def test_lift_must_account_for_every_memory_candidate_it_rejects() -> None:
+    memory = _memory(_episode("J", "biology"))
+    spec = MissingTransformationSpecification(
+        spec_id="SPEC",
+        target_obstruction_id="O-target",
+        residual_failure_ids=("F1", "F2"),
+        must_preserve=("conservation",),
+        must_break=("local_expansion",),
+        must_expose=("global_object_exposed",),
+        must_reduce=("search_reduced",),
+        allowed_representation_changes=("auxiliary object",),
+        forbidden_shortcuts=("conservation",),
+        validation_obligations=("prove equivalence",),
+        falsifiers=("conservation lost",),
+        evidence_pointers=("failures:F1-F2",),
+        artifact_hash="sha256:spec",
     )
-    report = _audit(premature)
+    exhaustion = ExhaustionWitness(
+        target_obstruction_id="O-target",
+        search_boundary="bounded",
+        searched_domains=("mathematics", "biology"),
+        searched_method_families=("representation", "invariant"),
+        rejected_direct_episode_ids=(),
+        rejected_jump_episode_ids=(),
+        rejected_glue_composition_ids=(),
+        rejection_reasons=("candidate J had an unresolved target disanalogy",),
+        residual_failure_ids=("F1", "F2"),
+        repeated_residual_features=("local_expansion",),
+        evidence_pointers=("coverage:receipt",),
+        artifact_hash="sha256:exhaustion",
+        coverage_receipt_hash="sha256:coverage",
+    )
+    review = _base_review(
+        memory,
+        ShortcutMode.LIFT,
+        exhaustion_witness=exhaustion,
+        missing_transformation_specification=spec,
+    )
+    report = _audit(review, memory)
     assert report.verdict is ShortcutReviewVerdict.FAIL
-    assert "lift_requires_direct_route_exhausted" in report.reasons
+    assert "exhaustion_did_not_account_for_all_jump_candidates" in report.reasons
+
+    accounted = replace(exhaustion, rejected_jump_episode_ids=("J",))
+    assert (
+        _audit(replace(review, exhaustion_witness=accounted), memory).verdict
+        is ShortcutReviewVerdict.PASS
+    )
 
 
-def test_lift_break_target_must_be_supported_by_repeated_residuals() -> None:
-    review = _lift_review()
-    assert review.missing_transformation_specification is not None
-    unsupported = replace(
-        review.missing_transformation_specification,
-        must_break=("imagined feature absent from failures",),
+def test_memory_snapshot_mismatch_blocks_review() -> None:
+    memory = _memory(_episode("J", "biology"))
+    review = _base_review(
+        memory,
+        ShortcutMode.JUMP,
+        jump_search_status=RouteSearchStatus.MATCHES_FOUND,
+        jump_mapping_witnesses=(_mapping("J"),),
+        selected_episode_ids=("J",),
     )
-    report = _audit(
-        replace(review, missing_transformation_specification=unsupported)
-    )
+    report = _audit(replace(review, episode_memory_snapshot_hash="stale"), memory)
     assert report.verdict is ShortcutReviewVerdict.FAIL
-    assert "lift_spec_break_target_not_supported_by_repeated_residuals" in report.reasons
+    assert "shortcut_episode_memory_snapshot_hash_mismatch" in report.reasons
 
 
-def test_shortcut_review_cannot_mint_candidate_route_when_unresolved() -> None:
-    review = replace(
-        _search_review(),
-        selected_mode=ShortcutMode.CANNOT_CHECK,
-        direct_search_status=RouteSearchStatus.NOT_RUN,
-        direct_candidate_episode_ids=(),
-        selected_episode_ids=(),
-    )
-    report = _audit(review)
-    assert report.verdict is ShortcutReviewVerdict.CANNOT_CHECK
-    assert not report.candidate_route_ready
+def test_lift_spec_requires_repeated_residual_structure() -> None:
+    with pytest.raises(ValueError):
+        synthesize_missing_transformation_specification(
+            _target(),
+            spec_id="SPEC",
+            residual_signatures={"F1": ("a",), "F2": ("b",)},
+            must_reduce=("search",),
+            allowed_representation_changes=("auxiliary object",),
+            validation_obligations=("prove equivalence",),
+            falsifiers=("fails target",),
+            evidence_pointers=("evidence",),
+            artifact_hash="sha256:spec",
+        )
