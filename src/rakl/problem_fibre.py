@@ -5,6 +5,7 @@ from hashlib import sha256
 from typing import Iterable, Tuple
 
 from .breakthrough_learning import ExpertiseChunk
+from .core import KnowledgeFiber
 from .experience_substrate import ExperienceLedger, TaskEpisode
 from .failure_lattice import FailureExperience, FailureExperienceLattice, query_related_failures
 from .problem_solving_algebra import ProblemState, ResearchOperator
@@ -134,6 +135,63 @@ class GluingReport:
         return self.compatible and self.all_sections_verified and self.complete_coverage
 
 
+def knowledge_items_from_legacy_fiber(fiber: KnowledgeFiber) -> Tuple[FibreKnowledgeItem, ...]:
+    """Project the existing mutable `KnowledgeFiber` into immutable v3 retrieval items.
+
+    This adapter lets v3 consume the current epistemic framework directly.  It
+    copies no authority: each item merely exposes the original Projection's
+    registered authority and a deterministic content hash for fibre snapshots.
+    """
+
+    dimension_tags = tuple(
+        f"dimension:{name}:{value}"
+        for name, values in sorted(fiber.dimensions.items())
+        for value in sorted(values)
+    )
+    items: list[FibreKnowledgeItem] = []
+    for projection_id in sorted(fiber.projections):
+        projection = fiber.projections[projection_id]
+        context_tags: list[str] = []
+        for field_name in (
+            "population",
+            "scale",
+            "horizon",
+            "observation_model",
+            "units",
+            "intervention",
+            "method",
+        ):
+            value = getattr(projection.context, field_name)
+            if value is not None:
+                context_tags.append(f"{field_name}:{value}")
+        context_tags.extend(f"assumption:{item}" for item in projection.context.assumptions)
+        structural = tuple(
+            dict.fromkeys(
+                projection.facets
+                + projection.tags
+                + (
+                    f"object:{projection.object_id}",
+                    f"atomic_step:{fiber.atomic_step}",
+                    f"legacy_fiber:{fiber.fiber_id}",
+                )
+                + dimension_tags
+            )
+        )
+        effects = tuple(dict.fromkeys(projection.tags))
+        items.append(
+            FibreKnowledgeItem(
+                item_id=projection.projection_id,
+                kind="legacy_knowledge_projection",
+                structural_signature=structural,
+                effects=effects,
+                context_tags=tuple(context_tags),
+                authority=projection.authority.value,
+                payload_hash=sha256(repr(projection).encode("utf-8")).hexdigest(),
+            )
+        )
+    return tuple(items)
+
+
 def _score_knowledge(item: FibreKnowledgeItem, atom: ProblemAtom) -> int:
     score = 2 * len(set(item.structural_signature) & set(atom.structural_coordinates))
     score += 2 * len(set(item.effects) & set(atom.desired_effects))
@@ -166,6 +224,7 @@ def compile_problem_fibre(
     atom: ProblemAtom,
     *,
     knowledge_items: Iterable[FibreKnowledgeItem] = (),
+    legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
     tool_inventory: ResearchToolInventory | None = None,
     failure_lattice: FailureExperienceLattice | None = None,
     experience_ledger: ExperienceLedger | None = None,
@@ -180,13 +239,21 @@ def compile_problem_fibre(
 
     The fibre is a derived working view.  It cannot promote evidence, lessons, or
     tools and it does not imply that co-retrieved items are mutually compatible.
+    Existing `KnowledgeFiber` objects are adapted read-only into the same retrieval
+    pool, so v3 extends rather than forks the current epistemic framework.
     """
 
     if top_k_each < 1:
         raise ValueError("top_k_each must be positive")
 
+    knowledge_pool = list(knowledge_items)
+    for legacy_fiber in legacy_knowledge_fibers:
+        knowledge_pool.extend(knowledge_items_from_legacy_fiber(legacy_fiber))
+    if len({item.item_id for item in knowledge_pool}) != len(knowledge_pool):
+        raise ValueError("problem fibre knowledge item identities must be unique after legacy adaptation")
+
     scored_knowledge = sorted(
-        ((-_score_knowledge(item, atom), item.item_id, item) for item in knowledge_items if _score_knowledge(item, atom) > 0),
+        ((-_score_knowledge(item, atom), item.item_id, item) for item in knowledge_pool if _score_knowledge(item, atom) > 0),
         key=lambda row: (row[0], row[1]),
     )
     selected_knowledge = tuple(item for _, _, item in scored_knowledge[:top_k_each])
