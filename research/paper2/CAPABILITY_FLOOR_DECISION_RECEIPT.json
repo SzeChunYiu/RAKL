@@ -1,0 +1,84 @@
+{
+  "adjacent_microtrial_capability_evidence": {
+    "microtrial_v4_2": {
+      "evaluated_task_seed_unit_count": 1,
+      "exact_conceptual_pass_arm_count": 0,
+      "job_id": "3476540",
+      "model_id": null,
+      "parse_valid_arm_count": 2,
+      "scorable_arm_count": 2,
+      "score_comparison_permitted": false,
+      "verdict": "NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__CAPABILITY_LIMIT"
+    },
+    "microtrial_v4_3": {
+      "evaluated_task_seed_unit_count": 1,
+      "exact_conceptual_pass_arm_count": 0,
+      "job_id": "3476566",
+      "model_id": null,
+      "parse_valid_arm_count": 1,
+      "scorable_arm_count": 1,
+      "score_comparison_permitted": false,
+      "verdict": "NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__1_5B_NO_EXACT_PASS"
+    },
+    "microtrial_v4_3_1": {
+      "evaluated_task_seed_unit_count": 1,
+      "exact_conceptual_pass_arm_count": 0,
+      "job_id": "3476576",
+      "model_id": null,
+      "parse_valid_arm_count": 2,
+      "scorable_arm_count": 2,
+      "score_comparison_permitted": false,
+      "verdict": "NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__SERIALIZATION_REPAIR_STILL_ZERO_EXACT"
+    }
+  },
+  "artifact_sha256": "3d0e637a321315dc3cbca78d528bcaf0666e341b80e09f985e77101e1880bee0",
+  "claim_boundary": "Receipt from existing sealed jobs only. No invented ORACLE scores, no promotional capability claim, and no BENCHMARK_CANNOT_DISCRIMINATE kill without ORACLE.",
+  "classification_rules": {
+    "INSTRUMENT_DEFECT": "ORACLE parse-invalid outputs \u2014 repair harness, do not escalate model.",
+    "MODEL_CAPABILITY_FLOOR": "Requires ORACLE_PROCEDURE_UPPER_BOUND at 0.5B with parse-valid outputs and success_rate < 0.6666666666666666 on fresh-transfer tasks.",
+    "cannot_close_from_microtrial_alone": "Adjacent pendulum microtrial receipts measure a different task/gate and do not substitute for ExperienceBenchmark ORACLE on the frozen transfer panel."
+  },
+  "created_at_utc": "2026-08-11T21:20:31Z",
+  "decision": {
+    "blocks_confirmatory_without_oracle": true,
+    "capability_staircase_after_oracle": [
+      "Qwen/Qwen2.5-0.5B-Instruct (ORACLE gate)",
+      "Qwen/Qwen2.5-1.5B-Instruct (adjacent microtrial: exact_conceptual_pass_arm_count=0)"
+    ],
+    "kill_narrowing_available": false,
+    "kill_narrowing_reason": "ORACLE arm not executed; microtrial-only evidence is adjacent and task-mismatched. Honest close requires ORACLE on the ExperienceBenchmark transfer panel or explicit INSTRUMENT_DEFECT repair path.",
+    "primary_model_for_oracle_gate": "Qwen/Qwen2.5-0.5B-Instruct"
+  },
+  "experience_benchmark_v1_2": {
+    "available": true,
+    "harvest_validation_verdict": "VALID_CHRONOLOGY_SCHEMA_VALID_PARTIAL_SCORES_NO_SUCCESS",
+    "job_id": 3476548,
+    "learning_success_rate": 0.0,
+    "protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
+    "reset_success_rate": 0.0,
+    "total_retrieval_calls": 0.0,
+    "transfer_success_delta": 0.0
+  },
+  "git_subject_sha256": "fd188f9664da0a1dcba633c30c17ce511f598d51",
+  "issue_number": 247,
+  "observed_facts": {
+    "microtrial_zero_exact_pass_generations": [
+      "microtrial_v4_2",
+      "microtrial_v4_3",
+      "microtrial_v4_3_1"
+    ],
+    "v1_2_both_arms_zero_successes": true,
+    "v1_2_whole_state_dump_not_selective_rakl": true
+  },
+  "oracle_blocked_reason": "No local Qwen2.5-0.5B/1.5B model assets in repository; LUNARC snapshot paths are attested in frozen packets but not runnable in this environment.",
+  "oracle_blocked_status": "CANNOT_EXECUTE_ORACLE_WITHOUT_COMPUTE",
+  "oracle_execution_status": "NOT_EXECUTED",
+  "oracle_pass_criterion_frozen": {
+    "min_success_rate": 0.6666666666666666,
+    "phase": "FRESH_TRANSFER",
+    "source": "research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md"
+  },
+  "provisional_classification": "SUSPECTED_CAPABILITY_FLOOR_PENDING_ORACLE",
+  "receipt_id": "paper2-capability-floor-decision-20260811",
+  "schema_version": "paper2-capability-floor-decision-receipt-v1"
+}

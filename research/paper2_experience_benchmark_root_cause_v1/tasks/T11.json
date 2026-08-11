@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T11",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "title": "Materials testing context transfer",
+  "prompt": "Adjudicate: 'Lab X refutes Lab Y on alloy yield strength.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Lab X: 6061-T6 yield 275 MPa at room temperature."
+    },
+    {
+      "id": "E2",
+      "text": "Lab Y: 6061-T6 yield 240 MPa at 200 C."
+    },
+    {
+      "id": "E3",
+      "text": "Temperature regime differs; both measurements can be valid."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "regime_mismatch",
+      "not_direct_refutation"
+    ]
+  }
+}

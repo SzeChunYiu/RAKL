@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T7",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "REPEATED_FAMILY",
+  "title": "Fresh flow-meter calibration claim",
+  "prompt": "Adjudicate: 'Coolant flow is 120 L/min.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Flow meter F-A reads 120 L/min after gravimetric calibration this morning."
+    },
+    {
+      "id": "E2",
+      "text": "Flow meter F-B reads 145 L/min but was last calibrated 14 months ago."
+    },
+    {
+      "id": "E3",
+      "text": "Pump nameplate says 'high flow'; no numeric measurement."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "SUPPORT",
+    "selected_evidence_ids": [
+      "E1"
+    ],
+    "rejected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "rationale_tags": [
+      "calibration_valid",
+      "wrong_instrument_rejected"
+    ]
+  }
+}

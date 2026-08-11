@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T9",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "HOSTILE_NEAR_MISS",
+  "title": "Hostile near-miss: exact unit transform, wrong instrument",
+  "prompt": "Adjudicate: 'Coolant temperature is 358.15 K.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Uncalibrated sensor TC-B reads 91 C (~364.15 K)."
+    },
+    {
+      "id": "E2",
+      "text": "Calibrated TC-A reads 85.0 C; 85 C = 358.15 K under ITS-90 offset."
+    },
+    {
+      "id": "E3",
+      "text": "Marketing slide says 'running hot' without a numeric value."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "SUPPORT",
+    "selected_evidence_ids": [
+      "E2"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E3"
+    ],
+    "rationale_tags": [
+      "unit_conversion_ok",
+      "uncalibrated_rejected"
+    ]
+  }
+}

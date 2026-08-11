@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T12",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "HOSTILE_NEAR_MISS",
+  "title": "Hostile near-miss: alignment trap",
+  "prompt": "Adjudicate: 'Source A directly contradicts Source B on traffic volume.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Source A: weekday peak on Bridge North is 12_000 vehicles/hour."
+    },
+    {
+      "id": "E2",
+      "text": "Source B: weekend average on Bridge South is 4_000 vehicles/hour."
+    },
+    {
+      "id": "E3",
+      "text": "Different bridge spans and aggregation windows."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "different_object",
+      "different_aggregation"
+    ]
+  }
+}

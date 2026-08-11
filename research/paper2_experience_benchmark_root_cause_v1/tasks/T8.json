@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T8",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "title": "Epidemiology context alignment",
+  "prompt": "Adjudicate: 'Study A contradicts Study B on infection rate.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Study A: peak ICU incidence during winter wave is 18%."
+    },
+    {
+      "id": "E2",
+      "text": "Study B: community seroprevalence in summer is 42%."
+    },
+    {
+      "id": "E3",
+      "text": "Population, season, and metric differ; not a direct contradiction."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "different_population",
+      "different_metric"
+    ]
+  }
+}

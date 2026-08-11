@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T6",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "HOSTILE_NEAR_MISS",
+  "title": "Hostile near-miss: calibrated sensor, wrong QoI",
+  "prompt": "Adjudicate: 'The calibrated pressure gauge supports the claim that purity failed specification.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Gauge G-A reads 2.00 bar after today's dead-weight calibration."
+    },
+    {
+      "id": "E2",
+      "text": "Purity specification is assay >= 99.0% HPLC; pressure is not the purity QoI."
+    },
+    {
+      "id": "E3",
+      "text": "HPLC assay reads 99.4%, above specification."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "REFUTE",
+    "selected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1"
+    ],
+    "rationale_tags": [
+      "qoi_mismatch",
+      "tempting_calibration_transfer_invalid"
+    ]
+  }
+}

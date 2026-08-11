@@ -1,0 +1,37 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T17",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "MISSING_EVIDENCE",
+  "title": "Incomplete contradiction record",
+  "prompt": "Adjudicate: 'Sensor A contradicts Sensor B on tank level.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Sensor A last logged 72% four hours ago; no current timestamp."
+    },
+    {
+      "id": "E2",
+      "text": "Sensor B failed mid-shift; last valid reading unavailable."
+    },
+    {
+      "id": "E3",
+      "text": "Maintenance ticket mentions drift but no paired contemporaneous readings."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CANNOT_CHECK",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "missing_contemporaneous_readings"
+    ]
+  }
+}

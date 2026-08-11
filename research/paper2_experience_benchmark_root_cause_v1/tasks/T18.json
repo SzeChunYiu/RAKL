@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T18",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "MISSING_EVIDENCE",
+  "title": "Expired calibration only",
+  "prompt": "Adjudicate: 'Tank pressure is 2.00 bar absolute.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Gauge G-OLD reads 2.00 bar; calibration expired 20 months ago."
+    },
+    {
+      "id": "E2",
+      "text": "No alternate calibrated gauge reading is available for this timestamp."
+    },
+    {
+      "id": "E3",
+      "text": "Ambient pressure nearby is ~1.01 bar; not vessel pressure."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CANNOT_CHECK",
+    "selected_evidence_ids": [
+      "E2"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E3"
+    ],
+    "rationale_tags": [
+      "no_valid_calibrated_reading",
+      "insufficient_evidence"
+    ]
+  }
+}

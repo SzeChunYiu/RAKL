@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Sensor TC-A reads 85.0 after today's calibration against ice-point and steam-point standards."
+    },
+    {
+      "id": "E2",
+      "text": "Sensor TC-B reads 91.0 but its calibration certificate expired 18 months ago."
+    },
+    {
+      "id": "E3",
+      "text": "A nearby room thermometer reads 22 C; it is not a coolant sensor."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "phase": "DEVELOPMENT_SEQUENCE",
+  "prompt": "Given sealed evidence, adjudicate the claim: 'The reactor coolant temperature is 85 C.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "calibration_valid",
+      "wrong_instrument_rejected"
+    ],
+    "rejected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "selected_evidence_ids": [
+      "E1"
+    ],
+    "verdict": "SUPPORT"
+  },
+  "stratum": "REPEATED_FAMILY",
+  "task_id": "D1",
+  "title": "Calibration-bound temperature claim"
+}

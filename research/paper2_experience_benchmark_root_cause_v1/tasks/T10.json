@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T10",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "REPEATED_FAMILY",
+  "title": "Fresh mass-balance calibration claim",
+  "prompt": "Adjudicate: 'Feed mass flow is 50.0 kg/min.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Coriolis meter M-A reads 50.0 kg/min after zero and span check today."
+    },
+    {
+      "id": "E2",
+      "text": "Orifice plate meter M-B reads 58 kg/min; calibration overdue."
+    },
+    {
+      "id": "E3",
+      "text": "Operator log says 'steady feed' without numbers."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "SUPPORT",
+    "selected_evidence_ids": [
+      "E1"
+    ],
+    "rejected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "rationale_tags": [
+      "calibration_valid",
+      "qualitative_rejected"
+    ]
+  }
+}

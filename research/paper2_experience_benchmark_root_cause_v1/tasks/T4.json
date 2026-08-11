@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T4",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "REPEATED_FAMILY",
+  "title": "Fresh pH calibration-bound claim",
+  "prompt": "Adjudicate: 'Batch acidity is pH 7.00.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Bench pH probe P-A reads 7.00 after two-point calibration today against pH 4.00 and 7.00 buffers."
+    },
+    {
+      "id": "E2",
+      "text": "Probe P-B reads 6.2 but its calibration certificate expired six months ago."
+    },
+    {
+      "id": "E3",
+      "text": "Operator notes the room smells acidic; no numeric reading."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "SUPPORT",
+    "selected_evidence_ids": [
+      "E1"
+    ],
+    "rejected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "rationale_tags": [
+      "calibration_valid",
+      "qualitative_rejected"
+    ]
+  }
+}
