@@ -106,6 +106,21 @@ For every unresolved atomic step record alternatives across the standard RAKL di
 
 Build terminology/ontology mappings and representation-equivalence relationships.
 
+Before a strict mathematical candidate, also perform the obstruction–transformation semantic-shortcut review after the dual experience-memory review. Ask:
+
+> **Has this relational obstruction — and a transformation that breaks it — occurred anywhere in recorded knowledge?**
+
+Fingerprint roles, relations, constraints, failure mechanisms, invariants to preserve, desired transition and forbidden losses. Then route in invention-last order:
+
+```text
+SEARCH direct reusable transformation
+-> JUMP through an explicitly witnessed structural mapping
+-> GLUE compatible partial transformations with interface obligations
+-> LIFT only after bounded SEARCH/JUMP/GLUE exhaustion plus repeated residual structure
+```
+
+`LIFT` produces a `MissingTransformationSpecification` describing what a downstream invented representation/operator must preserve, break, expose, reduce and validate. One failed candidate, an unbounded retrieval miss, or lexical similarity alone cannot justify LIFT.
+
 ## H. Record the public decision trace
 
 Every material research transition must leave an auditable record containing:
@@ -124,11 +139,13 @@ proposed next action
 content hash and timestamp
 ```
 
-For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, `EXPERIENCE_MEMORY_REVIEW`, and `NEXT_STEP_PROPOSED`.
+For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, `EXPERIENCE_MEMORY_REVIEW`, `OBSTRUCTION_TRANSFORMATION_REVIEW`, and `NEXT_STEP_PROPOSED`.
 
 `EXPERT_CONTEXT_REVIEW` records role-separated same-context passes over domain knowledge, analogy transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. Preserve disagreement and unresolved uncertainty; do not represent these roles as independent peer review.
 
 `EXPERIENCE_MEMORY_REVIEW` records the dual experience-memory query over the scoped success-derived tool inventory and the global failure-experience lattice: method families searched, relevant tool/failure ids or explicit `NO_RELEVANT_MATCH`, applicability and reuse-scope warnings, and the memory-review artifact hash. Accumulated experience guides search; it never mints theorem truth.
+
+`OBSTRUCTION_TRANSFORMATION_REVIEW` records the active relational obstruction fingerprint, the exact obstruction–transformation episode-memory snapshot, SEARCH/JUMP/GLUE/LIFT statuses, structural mapping/composition/exhaustion witnesses, selected route, validation obligations and review artifact hash. It can license candidate routing only; it cannot mint theorem, novelty or method authority.
 
 Trace entries are tamper-evident: except for the first event, `previous_event_hash` must equal the preceding event's `artifact_hash`.
 
@@ -136,17 +153,17 @@ This is a reproducible scientific decision ledger, not a raw private chain-of-th
 
 ## I. Pre-candidate gate
 
-Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, dual experience-memory review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
+Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, dual experience-memory review, obstruction–transformation shortcut review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
 
 When a runtime gate exists, obey it. For mathematical research, call:
 
 ```text
-plan_math_research(..., context_fiber=..., memory_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)
+plan_math_research(..., context_fiber=..., memory_review=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)
 ```
 
 If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.
 
-Backfilling context or trace after candidate generation does not repair discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
+Backfilling context, memory, shortcut review or trace after candidate generation does not repair discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
 
 ## J. Build constrained global paths
 
@@ -162,9 +179,11 @@ For a certifying mechanism lane, materialize the candidate as a typed formalism 
 
 Only after the pre-candidate gate passes, if existing representations do not close the registered residual, invoke the mechanism-invention workflow rather than expanding a fixed model menu blindly.
 
+If the semantic-shortcut route is `LIFT`, treat its frozen `MissingTransformationSpecification` as the inverse-invention target. Generate candidates that satisfy its `must_preserve`, `must_break`, `must_expose`, `must_reduce`, allowed-representation-change and falsifier obligations rather than inventing arbitrary new machinery.
+
 Use residual-guided operators such as composition/recombination, latent-state addition, regime splitting, clock changes, coarse/fine graining, stochasticization, feedback/coupling changes, nonlinearization, symmetry/invariant operations, observation-map changes and witnessed analogical transfer.
 
-Every invention must be an explicit typed delta with parent lineage, targeted residual ids and a pointer to the method-transfer row, witnessed analogy or residual that motivated it.
+Every invention must be an explicit typed delta with parent lineage, targeted residual ids and a pointer to the method-transfer row, witnessed analogy, obstruction–transformation review or residual that motivated it.
 
 ## M. Identify
 
@@ -200,7 +219,7 @@ Use the same registered population, filtration, target, units, and split across 
 
 Do not immediately fit another arbitrary model. Classify the residual and reopen only plausible generating fibers.
 
-A failed candidate emits a residual signature that becomes direct input to the constructive invention algebra. If repeated candidates fail for the same structural reason, reopen the context fiber, method-transfer matrix and analogy scan before generating another candidate.
+A failed candidate emits a residual signature that becomes direct input to the constructive invention algebra. If repeated candidates fail for the same structural reason, reopen the context fiber, method-transfer matrix, analogy scan and obstruction–transformation review before generating another candidate. Repeated residual features may constrain a later LIFT specification, but they do not themselves establish a method-basis gap.
 
 ## R. Tournament and synthesize
 
@@ -230,7 +249,7 @@ candidate rejected
 -> retain negative receipt
 -> residual diagnosis
 -> reopen context/fibers
--> update analogue/method-transfer/analogy matrix when needed
+-> update analogue/method-transfer/analogy/obstruction-transform matrices when needed
 -> record next-step decision
 -> generate/mutate/recombine
 -> freeze candidate
@@ -250,4 +269,4 @@ Promote only claims/method steps supported by their evidence scope.
 
 ## V. Recurse
 
-Any new contradiction, failure, missing facet, unexplained residual, or method weakness becomes a new RAKL child problem. If the incumbent invention-operator basis cannot cross an identified epistemic cut, open a method-basis gap and evolve RAKL itself.
+Any new contradiction, failure, missing facet, unexplained residual, or method weakness becomes a new RAKL child problem. If the bounded SEARCH/JUMP/GLUE routes are exhausted, repeated residual structure yields a missing-transformation specification, and the incumbent invention-operator basis still cannot cross the identified epistemic cut, open a method-basis gap and evolve RAKL itself.
