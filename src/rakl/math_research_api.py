@@ -4,8 +4,9 @@ The modules behind this facade deliberately separate planning from authority. Pa
 search and strategy motifs generate candidate research routes; theorem, novelty and
 publication stages are still controlled by explicit assurance receipts. Strict RAKL
 mathematical discovery additionally requires a frozen context/analogue-transfer
-packet, a review of accumulated success/failure experience, and an auditable public
-research trace before candidate generation.
+packet, a review of accumulated success/failure experience, an obstruction-
+transformation semantic-shortcut review, and an auditable public research trace
+before candidate generation.
 """
 
 from .failure_lattice import (
@@ -117,6 +118,28 @@ from .research_trace import (
     audit_pre_candidate_trace,
     audit_research_trace,
 )
+from .semantic_shortcut import (
+    REQUIRED_SHORTCUT_ACTIONS,
+    ExhaustionWitness,
+    MissingTransformationSpecification,
+    ObstructionFingerprint,
+    ObstructionTransformationEpisode,
+    ObstructionTransformationReview,
+    RouteSearchStatus,
+    ShortcutMode,
+    ShortcutReviewReport,
+    ShortcutReviewVerdict,
+    StructuralMappingWitness,
+    StructuralMatch,
+    TransformationCompositionWitness,
+    TransformationEpisodeAuthority,
+    audit_obstruction_transformation_review,
+    rank_obstruction_transformations,
+    repeated_residual_features,
+    synthesize_missing_transformation_specification,
+    validate_obstruction_fingerprint,
+    validate_transformation_episode,
+)
 from .strategy_motifs import (
     DEFAULT_STRATEGY_MOTIFS,
     MotifInstantiation,
@@ -136,6 +159,7 @@ __all__ = [
     "DEFAULT_OPERATOR_ATLAS",
     "DEFAULT_STRATEGY_MOTIFS",
     "DifferenceWitness",
+    "ExhaustionWitness",
     "FailureDiagnosisStatus",
     "FailureExperience",
     "FailureExperienceLattice",
@@ -150,9 +174,13 @@ __all__ = [
     "MathResearchTrace",
     "MemoryQueryStatus",
     "MethodTransfer",
+    "MissingTransformationSpecification",
     "MotifInstantiation",
     "NoveltyCertificate",
+    "ObstructionFingerprint",
     "ObstructionKind",
+    "ObstructionTransformationEpisode",
+    "ObstructionTransformationReview",
     "OperatorFamily",
     "PathCandidate",
     "ProblemSignature",
@@ -168,6 +196,7 @@ __all__ = [
     "REQUIRED_MEMORY_ACTIONS",
     "REQUIRED_PRE_CANDIDATE_ACTIONS",
     "REQUIRED_PRE_CANDIDATE_EVENTS",
+    "REQUIRED_SHORTCUT_ACTIONS",
     "REQUIRED_TRACE_ACTIONS",
     "ResearchMemoryReport",
     "ResearchMemoryReview",
@@ -180,13 +209,21 @@ __all__ = [
     "ResearchTraceEventType",
     "ResearchTraceReport",
     "ReuseVerdict",
+    "RouteSearchStatus",
+    "ShortcutMode",
+    "ShortcutReviewReport",
+    "ShortcutReviewVerdict",
     "StrategyMotif",
+    "StructuralMappingWitness",
+    "StructuralMatch",
     "TerminalCertificate",
     "TerminalKind",
     "ToolApplicabilityAssessment",
     "ToolApplicabilityVerdict",
     "ToolApplicabilityWitness",
     "TraceGateVerdict",
+    "TransformationCompositionWitness",
+    "TransformationEpisodeAuthority",
     "add_edge",
     "add_failure_experience",
     "add_failure_link",
@@ -199,6 +236,7 @@ __all__ = [
     "audit_formalization",
     "audit_math_context_fiber",
     "audit_novelty",
+    "audit_obstruction_transformation_review",
     "audit_pre_candidate_trace",
     "audit_proof_receipt",
     "audit_research_memory_review",
@@ -214,14 +252,19 @@ __all__ = [
     "publication_ready",
     "query_related_failures",
     "query_research_tools",
+    "rank_obstruction_transformations",
     "rank_strategy_motifs",
     "refute_node",
+    "repeated_residual_features",
     "search_operator_paths",
+    "synthesize_missing_transformation_specification",
     "tool_inventory_portrait",
     "update_novelty_certificate",
     "validate_failure_experience",
+    "validate_obstruction_fingerprint",
     "validate_proof_dag",
     "validate_research_tool",
     "validate_strategy_motif",
+    "validate_transformation_episode",
     "verify_checkpoint",
 ]
