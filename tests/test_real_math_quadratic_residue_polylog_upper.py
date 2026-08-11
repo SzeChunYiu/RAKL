@@ -1,5 +1,6 @@
 from pathlib import Path
 import importlib.util
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +16,7 @@ MODULE_PATH = (
 SPEC = importlib.util.spec_from_file_location("quadratic_residue_polylog_upper", MODULE_PATH)
 assert SPEC and SPEC.loader
 mod = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = mod
 SPEC.loader.exec_module(mod)
 
 
