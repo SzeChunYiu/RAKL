@@ -1,0 +1,76 @@
+{
+  "authority_boundary": "internal_framework_assurance_not_independent_peer_review",
+  "claims_not_granted": [
+    "independent_peer_review",
+    "universal_security",
+    "mathematical_truth",
+    "empirical_RAKL_superiority",
+    "automatic_framework_promotion"
+  ],
+  "context": "post-PR118 corrective authority hardening",
+  "controls": {
+    "authority_source": "HMAC-authenticated protected signer under externally supplied trust policy",
+    "chronology": "timezone-aware artifact freeze and attestation issue ordering",
+    "content_binding": "SHA-256 over exact canonical subject plus resolved evidence/evaluator bytes",
+    "legacy_behavior": "accepted only where it cannot mint authority; authority-sensitive paths fail closed"
+  },
+  "created_at": "2026-08-11T12:20:00+02:00",
+  "frozen_hostile_worlds": [
+    "episode_content_changed_under_same_digest",
+    "bare_lesson_authority_enum",
+    "caller_verification_and_proof_ids",
+    "caller_independence_booleans",
+    "forged_protected_attestation_signature",
+    "local_section_verified_boolean_with_empty_evidence",
+    "Self-RAKL_assurance_booleans_without_attestation",
+    "governance_approved_boolean_without_attestation",
+    "benchmark_frozen_boolean_without_receipts",
+    "benchmark_output_bytes_hash_mismatch",
+    "posthoc_benchmark_freeze"
+  ],
+  "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
+  "paper_files_touched": [],
+  "payload_sha256": "a6530ae74c9eabb046cb2bd874aba914a223dbbc9f34fdaed247923881cce436",
+  "pre_existing_failures": [],
+  "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
+  "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
+  "repository": {
+    "base_commit": "a151d5612709ea0f95c3ea232630f246f722739a",
+    "implementation_commit": "35da974c57dece0c451cbb88cd7712478e211c95",
+    "implementation_tree": "824846a02bbb30ab099d81c4ea551d3d4050eff8",
+    "origin": "https://github.com/SzeChunYiu/RAKL.git",
+    "red_test_commit": "265768926178a8f762aa4ef3bb77fa9737a2e0d2"
+  },
+  "schema_version": "rakl-v3-authority-hardening-receipt-v1",
+  "source_sha256": {
+    "src/rakl/driver_learning.py": "08fea1cda7a6775a22de896c5da57ffe3ebc75bff1b7bfe1c3b546bfbd9f8eb5",
+    "src/rakl/evolution_archive.py": "da568e4a6863437fd86ac1f22a344473e002971e5b49ac527fcb19d9259d296e",
+    "src/rakl/experience_benchmark.py": "3f45f6ed1e16434c40852593b097490a5faa98b2cc20e1d70d8a1b8c4cea86eb",
+    "src/rakl/experience_learning.py": "650dd848e0ab58033e4e7ed0d1399592536cfbc82e2db6200e3d2e46a754d8bd",
+    "src/rakl/experience_substrate.py": "6e62fd5f37e7ab45ca9df43024b5196cb534fd6c98100af96700d0d8a9967ba3",
+    "src/rakl/method_specs.py": "8e83965c0b1e3ea97163b9f8c9119c69533cc3428b9ebd118f221fb95bd0c1f8",
+    "src/rakl/problem_fibre.py": "86818021bd6debed7e9aad68e9931038fdd7e14ad14a7439a2bffc53c9823c2f",
+    "src/rakl/v3.py": "5596fc47bcc12621f6ff32f56ea815724895e5941ec1171225653f8869997645",
+    "src/rakl/v3_authority.py": "c565b7a60dca58868e2cc33d93f8c4223bac689892f12a6c175d633f8972f8f0",
+    "src/rakl/v3_runtime.py": "61ff29440a4beb32e8906c3fffd23ee62b7b3562cd19211abd6a8bbe31524dd0",
+    "tests/test_rakl_v3_authority_hardening.py": "4cbc845c26df6a15ceff70b1deb2abe52d238c501a1e7b7c1791df2c3a187ca8",
+    "tests/test_rakl_v3_experience_benchmark.py": "6e54a1aad3f1738f661d5e7819739f52a2891832ae177d6ec1ae8569afa84a81"
+  },
+  "verdict": "INTERNAL_ASSURANCE_PASS_PENDING_INDEPENDENT_REVIEW",
+  "verification": [
+    {
+      "command": "pytest -q tests/test_rakl_v3*.py",
+      "result": "PASS",
+      "tests_collected": 39
+    },
+    {
+      "command": "pytest -q",
+      "result": "PASS",
+      "tests_collected": 1312
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ]
+}
