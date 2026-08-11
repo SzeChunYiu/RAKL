@@ -44,13 +44,14 @@ eight-file Qwen2.5-0.5B-Instruct snapshot.  The chronology-corrected harvest
 authority is staging pass with zero model executions and zero evaluated result
 records.  Staging success is therefore not reported as model performance.
 
-The next frozen discriminator is deliberately narrower than the confirmatory
-factorial.  One sealed known-answer pendulum task at seed 17 will compare two
+The executed bridge is deliberately narrower than the confirmatory factorial.
+One sealed known-answer pendulum task at seed 17 compared two
 prompt materializations, \texttt{DIRECT\_CORPUS} and
 \texttt{RAKL\_CONTEXT}, using identical complete-sealed evidence, model,
-questions, evaluator, no-tool policy and resource ceiling.  A successful native
-job must emit two arm records plus one task--seed index binding the raw output,
-resource receipt and deterministic score for both arms.  All eight staged
+questions, evaluator, no-tool policy and resource ceiling.  Native job 3475193
+completed in 64 seconds with scheduler return code zero and emitted two arm
+records plus one task--seed index binding the raw output,
+resource receipt and deterministic score record for both arms.  All eight staged
 model/tokenizer files are byte- and hash-attested immediately before and after
 inference; the post-inference attestation also binds the result receipt.  The
 packet parent identity and executed clean checkout SHA/tree remain separate
@@ -59,12 +60,64 @@ are schema validated, while the harvest parser follows the native nested
 \texttt{sacct --json} representation.  Scheduler or receipt ambiguity remains
 \CannotCheck{}.
 
+The receipt chain and eight-file pre/post snapshot identity passed, but both
+frozen evaluator parses failed and both scores are null.  The
+\texttt{RAKL\_CONTEXT} arm emitted exactly one lowercase JSON fence; the
+\texttt{DIRECT\_CORPUS} arm emitted fenced JSON followed by prose.  Their
+recorded input/output token counts are respectively 1,140/108 and 638/320, but
+with zero scorable arms these are execution coordinates rather than an
+efficiency comparison.  No arm win/loss, effect estimate, cost-per-success or
+quantitative figure is reported.
+
 This bridge cannot estimate the registered architecture--evidence-access
 interaction.  It omits the strong RAG, generic-agent and hypothesis--evidence
 parents; exposes only complete-sealed evidence; and contains one task, one small
-model and one deterministic seed.  Its only purpose is to test the real inference
-and receipt chain before expanding the task panel.  At the present source cutoff
-the V4 packet is frozen but not merged into the governed LUNARC checkout, no V4
-job has been submitted and no result or quantitative figure exists.  Exact status
-and fail-closed counts are recorded in
-\path{research/paper2_microtrial_v4/PAPER2_V4_FROZEN_BATCH_READINESS_RECEIPT_20260811.json}.
+model and one deterministic seed.  Its only purpose was to test the real
+inference and receipt chain before expanding the task panel.  The exact negative
+outcome is preserved in
+\path{research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json}.
+An adaptive V4.1 parser-engineering replay, frozen after V4 result inspection
+but before any V4.1 output, fixes a non-heuristic serialization rule:
+bare JSON or exactly one lowercase \texttt{json} fence is admissible, while
+trailing prose, multiple/nonexact fences and substring extraction remain invalid.
+It is fresh only to V4.1 outputs, is not an untouched discriminator, does not
+reinterpret V4, and cannot convert the V4 nulls into scores.
+
+The V4.1 batch is explicitly an adaptive non-confirmatory replay fresh only to
+V4.1 outputs: V4 outputs were already known.  Its separately versioned LUNARC
+packet requires an exact clean merged checkout, allocated-node revalidation of
+the normalization and negative-history bindings, semantic preflight before
+inference, separate \texttt{v4\_1} run/receipt/log roots and exact model-snapshot
+attestations before and after execution.  Native job 3475212 satisfied this
+receipt chain at merged checkout
+\texttt{4a8d5ff19e3e6b26b95cb7408bbf55475208989c}: it completed in 54
+scheduler seconds with return code zero, and the eight-file snapshot identity
+was unchanged across inference.  The governed harvest admits one task--seed
+unit with two arm records and no receipt failure.
+
+This is a partial parser-engineering result, not comparative evidence.
+\texttt{RAKL\_CONTEXT} is the sole parse-valid/scorable arm; it answers 3 of 5
+conceptual fields correctly but fails the exact conceptual gate.
+\texttt{DIRECT\_CORPUS} again appends prose after a JSON fence, so its score
+remains null under the frozen exact normalizer.  Consequently V4.1 has one
+scorable arm and zero exact conceptual passes.  A paired effect, arm win/loss
+and uncertainty interval are not estimable.  Under the frozen zero-success
+convention, each arm's observed token count per valid scientific success is
+infinite because each used positive tokens and neither produced a valid
+scientific success.  The recorded
+1,140/108 versus 638/320 input/output-token counts and 15,789 versus 32,447 ms
+arm wall times are retained only as execution coordinates.  Both local provider
+API charges are zero, but electricity, hardware, download and labour coordinates
+are unpriced; zero API charge is not a full cost estimate or a fully costed
+cost-per-success comparison.
+
+No quantitative figure is produced from a single scorable arm.  The exact
+admitted bytes and scheduler/checkout/snapshot/task--seed/result lineage are
+bound by
+\path{research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3475212_INGEST_RECEIPT_20260811.json}.
+No successor candidate is proposed in this result-ingest iteration.  The V4
+and V4.1 negatives are instead retained as typed, linked experiences in the
+global failure lattice.  Before any future Paper-2 candidate, a frozen dual
+memory review must query both this failure history and the success-derived tool
+inventory under the then-current object/context; only a later gated iteration
+may select a discriminator.  The full matched empirical claim remains open.
