@@ -4,10 +4,12 @@ import hashlib
 import json
 from pathlib import Path
 
-import jsonschema
+import pytest
 
 from rakl.paper2_pendulum_microtrial import MicrotrialPreflightVerdict, audit_execution_packet
 from rakl.paper2_pendulum_microtrial_v4_1 import normalize_pendulum_output_v4_1
+
+jsonschema = pytest.importorskip("jsonschema")
 
 
 ROOT = Path(__file__).resolve().parents[1]
