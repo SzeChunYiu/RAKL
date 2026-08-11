@@ -1,0 +1,61 @@
+{
+  "annotation_burden_model": {
+    "adjudicator": 1,
+    "annotators": 2,
+    "feasible_person_hours_ceiling": 24,
+    "minutes_per_item_adjudication": 6,
+    "minutes_per_item_per_annotator": 12
+  },
+  "class_balances": [
+    0.4,
+    0.5,
+    0.6
+  ],
+  "config_sha256": "af917959b6bf739f9d7957d0e57f91a922f96fb46a1b8d15d6e9c80bb5e5fbd7",
+  "control_structural_correlations": [
+    0.2,
+    0.5,
+    0.8
+  ],
+  "grants_scientific_authority": false,
+  "inference": {
+    "alpha": 0.05,
+    "n_boot": 600,
+    "n_perm": 600,
+    "seed": 24801
+  },
+  "issue": 248,
+  "items_per_family_current": 4,
+  "material_effect_targets": {
+    "primary_mde_brier_reduction": 0.05,
+    "q2_floor_improvement": 0.15,
+    "q3_ceiling_reduction": 0.15,
+    "rationale": "0.05 mean paired Brier reduction is the smallest effect that would justify Paper III's additional structural-witness layer as more than noise under the registered paired bootstrap/sign-flip gate (alpha=0.05). Smaller effects remain scientifically interesting but are treated as exploratory under a power-limited packet.",
+    "secondary_mde_brier_reduction_grid": [
+      0.03,
+      0.05,
+      0.08,
+      0.1
+    ]
+  },
+  "monte_carlo_trials": 120,
+  "n_families_current": 4,
+  "n_grid": [
+    16,
+    24,
+    32,
+    48,
+    64
+  ],
+  "primary_definition": "For each item i, brier_control_i - brier_structural_i with brier=(p-label)^2. Positive means structural witness reduces Brier relative to the strongest admissible non-structural control.",
+  "primary_quantity": "paired_item_brier_reduction",
+  "schema_version": "paper3-power-simulation-config-v1",
+  "score_noise_sd": 0.18,
+  "secondary_quantities": [
+    "roc_auc_gain",
+    "average_precision_gain",
+    "q2_true_accept_rate",
+    "q3_false_accept_rate"
+  ],
+  "target_power": 0.8
+}
