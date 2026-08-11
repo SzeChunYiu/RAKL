@@ -122,9 +122,10 @@ jobs:
               raise SystemExit("paper-01 missing AI-use disclosure")
           p1.write_text(text, encoding="utf-8")
           Path("build/publication/paper-02/build_identity.tex").write_text(
-              "\\newcommand{\\SoftwareTests}{%d}\n"
-              "\\newcommand{\\ImplementationSHA}{\\texttt{%s}}\n"
-              % (tests, sha),
+              (
+                  rf"\newcommand{{\SoftwareTests}}{{{tests}}}" "\n"
+                  rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}" "\n"
+              ),
               encoding="utf-8",
           )
           PY
@@ -174,7 +175,7 @@ jobs:
             echo "=== $paper ==="
             (
               cd "$dir"
-              latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
+              latexmk -gg -pdf -interaction=nonstopmode -halt-on-error -file-line-error -jobname=main main.tex | tee latexmk.stdout.log
               test -s main.pdf
               pdfinfo main.pdf | tee pdfinfo.txt
               pdffonts main.pdf | tee pdffonts.txt
