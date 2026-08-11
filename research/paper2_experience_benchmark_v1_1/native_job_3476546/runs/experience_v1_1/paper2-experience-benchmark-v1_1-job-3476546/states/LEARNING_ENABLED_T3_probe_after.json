@@ -1,0 +1,167 @@
+{
+  "episodes": [
+    {
+      "failure_signature": [
+        "unparseable_model_output",
+        "schema_violation"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [],
+      "model_verdict": null,
+      "output_hash": "c0188ccd7b30fdad468b51dcde48545084441aba1038c1483b152d9a8e34d928",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.0,
+      "sealed_answer_included": false,
+      "stratum": "REPEATED_FAMILY",
+      "success": false,
+      "task_id": "D1",
+      "title": "Calibration-bound temperature claim"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "952958df9babbbf5e6cfdbb437244c6b4feeb3612aae3670ec9120d9c989a384",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.25,
+      "sealed_answer_included": false,
+      "stratum": "REPEATED_FAMILY",
+      "success": false,
+      "task_id": "D2",
+      "title": "Same family, unit-surface change"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [
+        "Context_Misaligned"
+      ],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "model_verdict": "REFUTE",
+      "output_hash": "b4078f861653879eaf12ed75ce19b8b1e7d5c90e8ee29769750d54847637661e",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.0,
+      "sealed_answer_included": false,
+      "stratum": "CROSS_DOMAIN_TRANSFER",
+      "success": false,
+      "task_id": "D3",
+      "title": "Context mismatch before contradiction"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [
+        "Context_Misaligned"
+      ],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "89efa2972c3ad1c10a2c8f42b471819da6323872cc250f9df251c4beda4bcfbf",
+      "phase": "FRESH_TRANSFER",
+      "score": 0.125,
+      "sealed_answer_included": false,
+      "stratum": "HOSTILE_NEAR_MISS",
+      "success": false,
+      "task_id": "T3",
+      "title": "Hostile near-miss: same labels, changed QoI"
+    }
+  ],
+  "failure_lattice_entries": [
+    {
+      "failure_signature": [
+        "unparseable_model_output",
+        "schema_violation"
+      ],
+      "task_id": "D1"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D2"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D3"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "T3"
+    }
+  ],
+  "lessons": [
+    {
+      "failure_signature": [
+        "unparseable_model_output",
+        "schema_violation"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D1",
+      "stratum": "REPEATED_FAMILY"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D2",
+      "stratum": "REPEATED_FAMILY"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D3",
+      "stratum": "CROSS_DOMAIN_TRANSFER"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "T3",
+      "stratum": "HOSTILE_NEAR_MISS"
+    }
+  ],
+  "notes": "S0 is the registered reset baseline. LEARNING_ENABLED may accumulate after development; RESET_BASELINE must remain S0 after every task.",
+  "schema_version": "rakl-experience-benchmark-initial-state-v1",
+  "state_kind": "LEARNING_EXTERNAL_RAKL_STATE",
+  "tools": []
+}

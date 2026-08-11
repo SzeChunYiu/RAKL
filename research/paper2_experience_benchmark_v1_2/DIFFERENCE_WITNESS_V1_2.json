@@ -1,0 +1,26 @@
+{
+  "schema_version": "paper2-experience-benchmark-difference-witness-v1",
+  "issue": 138,
+  "parent_packet": "paper2-experience-benchmark-v1_1",
+  "parent_protocol_subject_hash": "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb",
+  "parent_job_id": "3476546",
+  "challenger_packet": "paper2-experience-benchmark-v1_2",
+  "challenger_protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
+  "what_changed": [
+    "SYSTEM_PROMPT requires first/last braces and forbids CSV/YAML/prose",
+    "Explicit JSON skeleton example with CANNOT_CHECK empty arrays (not task gold)",
+    "Runner require_json_skeleton_prompt fail-closed gate"
+  ],
+  "what_did_not_change": [
+    "OUTPUT_SCHEMA enum",
+    "EVALUATOR_PROTOCOL scoring",
+    "task sealed answers",
+    "model identity",
+    "resource ceiling",
+    "RESET/LEARNING chronology"
+  ],
+  "why_old_falsifier_may_no_longer_apply": "v1.1 residual was serialization format (CSV-like) after verdict vocabulary was fixed; skeleton makes JSON shape explicit.",
+  "cheapest_test_that_difference_is_illusory": "If v1.2 still majority-unparseable on RESET despite skeleton, residual is 0.5B JSON capability under this ceiling.",
+  "v4_1_score_reuse_allowed": false,
+  "paper3_issue_217_path": false
+}

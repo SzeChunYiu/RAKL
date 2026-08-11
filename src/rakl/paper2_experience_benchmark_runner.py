@@ -1,7 +1,7 @@
 """Execute Paper-II ExperienceBenchmark RESET vs LEARNING under a frozen protocol.
 
 Issue #138 §B2 runner. Bound to ``protocol_subject_hash`` from
-``research/paper2_experience_benchmark_v1_1/`` (v1 preserved as negative history). Does **not** reuse V4.1/V4.2
+``research/paper2_experience_benchmark_v1_2/`` (v1/v1.1 preserved as negative/interface history). Does **not** reuse V4.1/V4.2
 pendulum scores or Paper-III (#217) paths.
 """
 
@@ -30,15 +30,19 @@ from .v3_authority import canonical_json_bytes
 PACKET_REL_V1 = Path("research/paper2_experience_benchmark_v1")
 PROTOCOL_SUBJECT_HASH_V1 = "1248dd101ff2cda94f2dfd91f990350dc46a59d169b4db36f2e64a596bf30b56"
 PACKET_REL_V1_1 = Path("research/paper2_experience_benchmark_v1_1")
+PACKET_REL_V1_2 = Path("research/paper2_experience_benchmark_v1_2")
+PROTOCOL_SUBJECT_HASH_V1_2 = "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352"
 # Bound after v1.1 protocol freeze; submit scripts require exact match.
 PROTOCOL_SUBJECT_HASH_V1_1 = "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb"
-# Default execution subject is the repaired verdict-enum packet (v1.1).
-PACKET_REL = PACKET_REL_V1_1
-PROTOCOL_SUBJECT_HASH = PROTOCOL_SUBJECT_HASH_V1_1
+# Default execution subject is the JSON-skeleton repair packet (v1.2).
+PACKET_REL = PACKET_REL_V1_2
+PROTOCOL_SUBJECT_HASH = PROTOCOL_SUBJECT_HASH_V1_2
 FORBIDDEN_JOBS = frozenset({3476520, 3476521, 3476524})
 ALLOWED_VERDICTS = ("SUPPORT", "REFUTE", "CONTEXT_MISALIGNED", "CANNOT_CHECK")
 VERDICT_ENUM_MARKER = "SUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK"
 FORBIDDEN_VERDICT_SYNONYM_MARKER = "Do not emit REJECT, FAIL"
+JSON_SKELETON_MARKER = '{"verdict":"CANNOT_CHECK","selected_evidence_ids":[],"rejected_evidence_ids":[],"rationale_tags":[]}'
+JSON_OBJECT_ONLY_MARKER = 'The first non-whitespace character MUST be "{"'
 JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -47,6 +51,13 @@ def require_verdict_enum_prompt(text: str, *, label: str) -> None:
     for marker in (VERDICT_ENUM_MARKER, FORBIDDEN_VERDICT_SYNONYM_MARKER, "selected_evidence_ids"):
         if marker not in text:
             raise RuntimeError(f"experience prompt missing verdict-enum marker:{label}:{marker}")
+
+
+def require_json_skeleton_prompt(text: str, *, label: str) -> None:
+    """Fail closed if the prompt omits the JSON-only skeleton contract."""
+    for marker in (JSON_SKELETON_MARKER, JSON_OBJECT_ONLY_MARKER, VERDICT_ENUM_MARKER):
+        if marker not in text:
+            raise RuntimeError(f"experience prompt missing json-skeleton marker:{label}:{marker}")
 
 
 def _utc_now() -> str:
@@ -184,6 +195,9 @@ def build_user_prompt(
         "verdict, selected_evidence_ids, rejected_evidence_ids, rationale_tags.",
         f"verdict MUST be exactly one of: {VERDICT_ENUM_MARKER}",
         f"{FORBIDDEN_VERDICT_SYNONYM_MARKER}, ACCEPT, TRUE, FALSE, or any other verdict synonym.",
+        'The first non-whitespace character MUST be "{" and the last MUST be "}".',
+        "Do not emit CSV/YAML/prose. Use this exact skeleton shape:",
+        JSON_SKELETON_MARKER,
         "Then stop. Do not wrap the JSON in markdown fences.",
     ]
     if arm is ExperienceBenchmarkArm.LEARNING_ENABLED:
@@ -201,6 +215,7 @@ def build_user_prompt(
         ]
     prompt = "\n".join(parts)
     require_verdict_enum_prompt(prompt, label=f"user:{task['task_id']}")
+    require_json_skeleton_prompt(prompt, label=f"user:{task['task_id']}")
     return prompt
 
 
@@ -399,10 +414,9 @@ def execute_experience_benchmark(
     bound_hash = protocol_subject_hash or PROTOCOL_SUBJECT_HASH
     if bound_hash.startswith("PENDING_"):
         raise RuntimeError("protocol_subject_hash is not frozen yet")
-    require_verdict_enum_prompt(
-        (repo / bound_packet_rel / "protocol" / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8"),
-        label="system_prompt",
-    )
+    system_prompt_text = (repo / bound_packet_rel / "protocol" / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8")
+    require_verdict_enum_prompt(system_prompt_text, label="system_prompt")
+    require_json_skeleton_prompt(system_prompt_text, label="system_prompt")
     bundle = load_frozen_protocol(repo, packet_rel=bound_packet_rel, protocol_subject_hash=bound_hash)
     freeze = bundle["freeze"]
     model_cfg = bundle["model"]
