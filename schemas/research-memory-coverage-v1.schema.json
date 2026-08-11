@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/research-memory-coverage-v1.schema.json",
+  "title": "RAKL cross-problem research memory coverage receipt v1",
+  "description": "Proposal-only, framework-process evidence binding the problem/lane universe a cross-problem synthesis actually searched, before it makes any completeness or counting claim. Promotes no application evidence and no mathematical authority. Full artifact enumeration is deliberately not required: a hashed index/manifest plus targeted retrieval is sufficient when coverage_semantics states so explicitly.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "registry_repository",
+    "registry_revision",
+    "synthesis_id",
+    "public_trace_event_id",
+    "bound_lane_universe",
+    "lane_records",
+    "query_status",
+    "claim_boundary",
+    "query_terms",
+    "structural_coordinates",
+    "desired_effects",
+    "result_ids",
+    "evidence_pointers",
+    "receipt_canonical_sha256",
+    "grants_application_evidence_authority",
+    "grants_mathematical_authority",
+    "requires_full_artifact_enumeration"
+  ],
+  "properties": {
+    "schema_version": {"const": "research-memory-coverage-v1"},
+    "registry_repository": {"type": "string", "minLength": 1, "maxLength": 512},
+    "registry_revision": {
+      "description": "Exact repository commit or registry revision the universe was read at.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[0-9A-Za-z._:+/-]+$"
+    },
+    "synthesis_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "public_trace_event_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "bound_lane_universe": {
+      "description": "The registered problem/lane universe this receipt binds. A completeness claim is only ever evaluated inside this set; an empty universe is an unbounded narrative claim and is rejected.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/laneId"}
+    },
+    "lane_records": {
+      "description": "One record per bound lane. A lane with no record is uninspected, never assumed covered.",
+      "type": "array",
+      "maxItems": 10000,
+      "items": {"$ref": "#/$defs/laneCoverageRecord"}
+    },
+    "query_status": {
+      "description": "NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE is the only representable no-match outcome; an unbounded narrative no-match has no encoding here.",
+      "enum": ["MATCHES_FOUND", "NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE"]
+    },
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "query_terms": {"$ref": "#/$defs/stringArray"},
+    "structural_coordinates": {"$ref": "#/$defs/stringArray"},
+    "desired_effects": {"$ref": "#/$defs/stringArray"},
+    "result_ids": {
+      "type": "array",
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "receipt_canonical_sha256": {
+      "description": "Canonical SHA-256 over this document with this field removed.",
+      "oneOf": [{"const": ""}, {"$ref": "#/$defs/sha256"}]
+    },
+    "grants_application_evidence_authority": {"const": false},
+    "grants_mathematical_authority": {"const": false},
+    "requires_full_artifact_enumeration": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "laneId": {"type": "string", "minLength": 1, "maxLength": 256},
+    "stringArray": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "laneCoverageRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lane_id",
+        "lane_head_revision",
+        "index_manifest_hash",
+        "inspection_status",
+        "coverage_semantics",
+        "deferral_reason",
+        "result_ids",
+        "evidence_pointers"
+      ],
+      "properties": {
+        "lane_id": {"$ref": "#/$defs/laneId"},
+        "lane_head_revision": {"type": "string", "maxLength": 256},
+        "index_manifest_hash": {"type": "string", "maxLength": 256},
+        "inspection_status": {"enum": ["INSPECTED", "DEFERRED_DECLARED"]},
+        "coverage_semantics": {
+          "description": "FULL_ARTIFACT_ENUMERATION and HASHED_INDEX_TARGETED_RETRIEVAL can back a completeness claim; SAMPLED_SUBSET is a legitimate search that cannot; UNSPECIFIED fails closed.",
+          "enum": [
+            "FULL_ARTIFACT_ENUMERATION",
+            "HASHED_INDEX_TARGETED_RETRIEVAL",
+            "SAMPLED_SUBSET",
+            "UNSPECIFIED"
+          ]
+        },
+        "deferral_reason": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1, "maxLength": 1024}
+          ]
+        },
+        "result_ids": {
+          "type": "array",
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        },
+        "evidence_pointers": {
+          "type": "array",
+          "maxItems": 10000,
+          "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+        }
+      }
+    }
+  }
+}
