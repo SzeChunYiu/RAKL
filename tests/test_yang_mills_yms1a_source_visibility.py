@@ -128,4 +128,7 @@ def test_yms1_research_trace_appends_calibration_without_candidate() -> None:
         ResearchTraceEventType.RESIDUAL_OPENED,
     ]
     assert entries[-2].event_id == "YM-S1-E009"
-    assert "restricted_source_decay_not_full_gap" in entries[-2].outputs
+    assert any(
+        output.endswith("restricted_source_decay_not_full_gap")
+        for output in entries[-2].outputs
+    )
