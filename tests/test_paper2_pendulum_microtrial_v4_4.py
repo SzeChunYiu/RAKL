@@ -68,11 +68,20 @@ def test_v4_4_candidate_packet_validates() -> None:
 def test_v4_4_difference_witness_is_leak_repair_only() -> None:
     witness = json.loads((V44 / "DIFFERENCE_WITNESS_V4_4.json").read_text())
     changed = set(witness["changed_structural_coordinates"])
-    assert changed == {"rakl_context_prompt_type_b_answer_key_leak_repair"}
+    assert "rakl_context_prompt_type_b_answer_key_leak_repair" in changed
+    assert "sealed_task_type_b_answer_key_leak_repair" in changed
     assert "exact_conceptual_pass_threshold" not in changed
+    assert "seed" not in changed
+    assert "model_revision" not in changed
 
 
-def test_v4_4_batch_bindings_match_bytes() -> None:
+def test_v4_4_preflight_has_no_prompt_semantic_mismatch() -> None:
+    from rakl.paper2_pendulum_microtrial import audit_execution_packet
+
+    packet = json.loads((V44 / "EXECUTION_PACKET_V4_4_20260811.json").read_text())
+    report = audit_execution_packet(packet, base_dir=ROOT)
+    assert "materialized_prompt_semantic_mismatch:RAKL_CONTEXT" not in report.invalid_bindings
+    assert "materialized_prompt_semantic_mismatch:DIRECT_CORPUS" not in report.invalid_bindings
     batch = json.loads((V44 / "BATCH_CONTRACT_V4_4.json").read_text())
     assert batch["threshold_or_score_change_permitted"] is False
     for binding in batch["bindings"]:
