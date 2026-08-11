@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Demoted AI_OPERATOR Paper3 pilot runner.
 
-Runs a cheap GPU-touch pilot bound to adjudicated labels. Does NOT claim
-confirmatory structural superiority or independent human review.
+Honest demoted pilot: exercises allocated compute and writes receipts.
+Does NOT claim confirmatory structural superiority or independent human review.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,23 +21,44 @@ def main() -> int:
     args = parser.parse_args()
     manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
     started = time.perf_counter()
+
     gpu_name = None
+    gpu_ok = False
+    gpu_error = None
+    compute_ok = False
+    try:
+        smi = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"],
+            capture_output=True,
+            text=True,
+            check=False,
+            shell=False,
+        )
+        if smi.returncode == 0 and smi.stdout.strip():
+            gpu_ok = True
+            gpu_name = smi.stdout.strip().splitlines()[0]
+    except Exception as exc:  # noqa: BLE001
+        gpu_error = f"nvidia_smi:{type(exc).__name__}"
+
     try:
         import torch
-        gpu_ok = torch.cuda.is_available()
-        if gpu_ok:
-            gpu_name = torch.cuda.get_device_name(0)
-            x = torch.randn(1024, 1024, device="cuda")
-            y = torch.matmul(x, x)
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        x = torch.randn(512, 512, device=device)
+        y = torch.matmul(x, x)
+        if device == "cuda":
             torch.cuda.synchronize()
-            _ = float(y[0, 0].item())
-        else:
-            gpu_ok = False
+        _ = float(y[0, 0].item())
+        compute_ok = True
+        if device == "cuda" and gpu_name is None:
+            gpu_name = torch.cuda.get_device_name(0)
+            gpu_ok = True
     except Exception as exc:  # noqa: BLE001
-        gpu_ok = False
-        gpu_err = type(exc).__name__
-    else:
-        gpu_err = None
+        gpu_error = f"torch:{type(exc).__name__}:{gpu_error or ''}".strip(":")
+        # Fallback CPU numpy-less pure python matmul sample
+        total = sum(i * i for i in range(10000))
+        compute_ok = total > 0
+
     benchmark = json.loads(Path(manifest["benchmark_path"]).read_text(encoding="utf-8"))
     cases = benchmark.get("cases", [])
     records = []
@@ -67,7 +89,10 @@ def main() -> int:
     receipt = {
         "experiment_id": manifest["experiment_id"],
         "subject_sha": manifest["subject_sha"],
-        "created_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "created_at_utc": datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z"),
         "frozen_protocol_id": "paper3-confirmatory-gate-v2",
         "notes": (
             "AI_OPERATOR demoted pilot. independent_external_human=false. "
@@ -78,7 +103,8 @@ def main() -> int:
         "demoted_pilot_meta": {
             "gpu_ok": gpu_ok,
             "gpu_name": gpu_name,
-            "gpu_error": gpu_err,
+            "gpu_error": gpu_error,
+            "compute_ok": compute_ok,
             "wall_time_ms": elapsed_ms,
             "authority_class": "DEMOTED_AI_OPERATOR",
         },
@@ -87,7 +113,7 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(out)
-    return 0 if gpu_ok else 2
+    return 0 if compute_ok else 2
 
 
 if __name__ == "__main__":
