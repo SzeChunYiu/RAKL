@@ -187,10 +187,15 @@ Three things follow, and they constrain how any later comparison may be reported
    v4-2 -> v4-3 schema change) and should be diagnosed as a defect rather than absorbed as a property
    of the baseline.
 
+The table covers every generation that has produced results. `research/paper2_microtrial_v4_3_1/`
+exists on main but is **staged only** - contracts and prompts, no ingest receipt - so V4.3.1 has no
+outcome to report yet and the table must not be read as excluding it.
+
 The prompts are not rigged. `research/paper2_microtrial_v4_2/RAKL_CONTEXT_PROMPT.txt` with its
 `RAKL CONTEXT MAP` section removed is **byte-identical** to `DIRECT_CORPUS_PROMPT.txt` (1912-byte
-insertion; the `OUTPUT SCHEMA` block and everything after it hash the same). The asymmetry is real, not
-an artefact of differing output instructions.
+insertion; the `OUTPUT SCHEMA` block and everything after it hash the same). The same holds for the
+staged V4.3.1 pair, with an identical 1912-byte insertion. The asymmetry is real, not an artefact of
+differing output instructions.
 
 ### Required reporting: two quantities per arm, never blended
 
