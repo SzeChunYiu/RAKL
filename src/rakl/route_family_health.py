@@ -638,6 +638,9 @@ class RouteWindowObservation:
         return self.actions_blocked_externally / self.actions_attempted
 
 
+REPORT_SCHEMA_VERSION = "route-family-health-report-v1"
+
+
 @dataclass(frozen=True)
 class RouteFamilyHealthReport:
     state: RouteHealthState
@@ -665,6 +668,49 @@ class RouteFamilyHealthReport:
     @property
     def is_truth_verdict(self) -> bool:
         return False
+
+    def to_dict(self) -> dict[str, object]:
+        """Serialize the authority-boundary report for schema validation.
+
+        Chronology tallies stay out of this export: they are diagnostic inputs,
+        not part of the machine-readable authority-boundary contract frozen by
+        ``route-family-health-report-v1``.
+        """
+
+        vector_payload: Optional[dict[str, object]]
+        if self.vector is None:
+            vector_payload = None
+        else:
+            vector_payload = {
+                "coordinates": [list(pair) for pair in self.vector.coordinates],
+                "non_compensatory_coordinates": list(
+                    self.vector.non_compensatory_coordinates
+                ),
+                "window_episode_ids": list(self.vector.window_episode_ids),
+            }
+        return {
+            "schema_version": REPORT_SCHEMA_VERSION,
+            "state": self.state.value,
+            "lineage_id": self.lineage_id,
+            "stalled_non_compensatory_coordinates": list(
+                self.stalled_non_compensatory_coordinates
+            ),
+            "vector": vector_payload,
+            "progress_classifications": [
+                {
+                    "improvement_id": item.improvement_id,
+                    "kind": item.kind.value,
+                    "preservation_status": item.preservation_status.value,
+                    "reasons": list(item.reasons),
+                }
+                for item in self.progress_classifications
+            ],
+            "reasons": list(self.reasons),
+            "grants_scientific_authority": False,
+            "grants_abandonment_authority": False,
+            "recommends_abandonment": False,
+            "is_truth_verdict": False,
+        }
 
 
 def assess_route_family_health(

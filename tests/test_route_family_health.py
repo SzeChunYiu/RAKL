@@ -600,3 +600,33 @@ def test_an_observation_bound_to_another_lineage_cannot_check() -> None:
         _fixture_lineage(), _fixture_observation(lineage_id="OTHER_LINEAGE")
     )
     assert report.state is RouteHealthState.CANNOT_CHECK
+
+
+def test_health_report_to_dict_validates_against_v1_schema() -> None:
+    """Authority-boundary export must match the frozen JSON schema (#135)."""
+
+    import json
+    from pathlib import Path
+
+    from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
+
+    report = assess_route_family_health(
+        _fixture_lineage(),
+        _fixture_observation(
+            verified_local_results=4,
+            residual_contraction=0.2,
+            discriminating_falsifiers_yielded=1,
+        ),
+    )
+    payload = report.to_dict()
+    schema_path = (
+        Path(__file__).resolve().parents[1]
+        / "schemas"
+        / "route-family-health-report-v1.schema.json"
+    )
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(payload)
+    assert payload["grants_scientific_authority"] is False
+    assert payload["recommends_abandonment"] is False
+    assert payload["is_truth_verdict"] is False
+    assert "score" not in payload

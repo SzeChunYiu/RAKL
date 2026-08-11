@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/route-family-health-report-v1.schema.json",
+  "title": "RAKL route-family health report v1",
+  "description": "Proposal-only longitudinal route-family health diagnostic (issue #135). Search-control telemetry only: never a truth/rationality verdict, never an abandonment authority, never a scientific-authority grant. Coordinates are non-compensatory by construction; there is no score field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "state",
+    "lineage_id",
+    "stalled_non_compensatory_coordinates",
+    "progress_classifications",
+    "reasons",
+    "grants_scientific_authority",
+    "grants_abandonment_authority",
+    "recommends_abandonment",
+    "is_truth_verdict"
+  ],
+  "properties": {
+    "schema_version": {"const": "route-family-health-report-v1"},
+    "state": {
+      "description": "Cautious search-control labels only. FALSE_PROGRAMME / DEGENERATING / PSEUDOSCIENCE are deliberately absent.",
+      "enum": [
+        "PROGRESSIVE_SIGNAL",
+        "LOCALLY_PROGRESSIVE_ROOT_STALLED",
+        "STAGNANT_SIGNAL",
+        "PATCH_ACCUMULATION_SIGNAL",
+        "RESTRUCTURING_SIGNAL",
+        "EXTERNALLY_BLOCKED",
+        "INSUFFICIENT_HISTORY",
+        "CANNOT_CHECK"
+      ]
+    },
+    "lineage_id": {"type": "string", "minLength": 1},
+    "stalled_non_compensatory_coordinates": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "vector": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "coordinates",
+        "non_compensatory_coordinates",
+        "window_episode_ids"
+      ],
+      "properties": {
+        "coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"type": "string", "minLength": 1},
+              {"type": "number"}
+            ]
+          }
+        },
+        "non_compensatory_coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "window_episode_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "progress_classifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "improvement_id",
+          "kind",
+          "preservation_status",
+          "reasons"
+        ],
+        "properties": {
+          "improvement_id": {"type": "string", "minLength": 1},
+          "kind": {
+            "enum": ["ROOT_PROGRESS", "LOCAL_PROGRESS", "CANNOT_CHECK"]
+          },
+          "preservation_status": {
+            "enum": [
+              "PRESERVATION_INTERFACE_ESTABLISHED",
+              "PRESERVATION_INTERFACE_ABSENT",
+              "PRESERVATION_INTERFACE_REFUTED",
+              "CANNOT_CHECK"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "grants_scientific_authority": {"const": false},
+    "grants_abandonment_authority": {"const": false},
+    "recommends_abandonment": {"const": false},
+    "is_truth_verdict": {"const": false}
+  }
+}
