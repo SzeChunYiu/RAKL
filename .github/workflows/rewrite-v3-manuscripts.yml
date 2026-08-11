@@ -1,0 +1,72 @@
+name: rewrite-v3-manuscripts
+
+on:
+  push:
+    branches:
+      - publication/v3-manuscripts-20260811
+    paths:
+      - scripts/rewrite_v3_manuscripts.py
+      - scripts/audit_publication_citations.py
+      - .github/workflows/rewrite-v3-manuscripts.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: publication/v3-manuscripts-20260811
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Rewrite four canonical manuscripts for RAKL v3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import runpy
+
+          # The helper was authored before its replacement string contained TeX;
+          # make the abstract replacement literal before executing it.
+          path = Path('scripts/rewrite_v3_manuscripts.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'return pattern.sub("\\\\begin{abstract}\\n" + new_body.strip() + "\\n\\\\end{abstract}", text, count=1)'
+          new = 'return pattern.sub(lambda _m: "\\\\begin{abstract}\\n" + new_body.strip() + "\\n\\\\end{abstract}", text, count=1)'
+          if old in text:
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          runpy.run_path(str(path), run_name='__main__')
+          PY
+      - name: Validate v3 manuscript invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'RAKL v3' publication/papers/paper-01-epistemic-mechanics/main.tex
+          grep -F 'RAKL v3' publication/papers/paper-02-rakl-evidence-governed-research/source/main.tex
+          grep -F 'RAKL v3' publication/papers/paper-03-directional-structural-witnesses/main.tex
+          grep -F 'RAKL v3' publication/papers/paper-04-verified-discovery/main.tex
+          grep -F 'Experience-routing non-escalation' publication/papers/paper-01-epistemic-mechanics/sections/02b_v3_epistemic_projection.tex
+          grep -F 'RESET\_BASELINE' publication/papers/paper-02-rakl-evidence-governed-research/source/sections/13_preregistered_evaluation.tex
+          grep -F 'TRANSFER\_NOVEL' publication/papers/paper-03-directional-structural-witnesses/sections/02c_v3_experience_transfer.tex
+          grep -F 'Experience cannot promote theorem truth' publication/papers/paper-04-verified-discovery/main.tex
+          ! grep -R -n -E 'we establish (empirical|universal).*superiority|global novelty is established|universal continual-learning gain' publication/papers
+      - name: Audit all citation keys
+        run: python scripts/audit_publication_citations.py
+      - name: Commit rewritten manuscripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No manuscript changes to commit.'
+            exit 0
+          fi
+          git config user.name 'RAKL publication bot'
+          git config user.email '52784502+SzeChunYiu@users.noreply.github.com'
+          git add publication/README.md publication/papers paper/papers
+          git commit -m 'docs(publication): rewrite four papers for RAKL v3'
+          git push origin HEAD:publication/v3-manuscripts-20260811

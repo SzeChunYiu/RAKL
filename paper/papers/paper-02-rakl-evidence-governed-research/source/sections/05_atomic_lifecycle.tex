@@ -1,6 +1,12 @@
 \section{Atomic LLM research lifecycle}
 The current reference implementation makes 17 stages explicit. This is important for both scientific reasoning and coding-agent use: a user can tell which steps are model-proposed, which are deterministic state operations, and where verification must occur. Table~\ref{tab:lifecycle} summarizes the public contract; typed inputs/outputs, state read/write sets, failure states and code owners are machine-readable in the implementation.
 
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+In v3 these 17 stages are best understood as the authority-critical \emph{information-to-knowledge sub-lifecycle} inside a larger recursive task loop. The outer driver registers and atomizes a problem, compiles a target-conditioned fibre, ranks admissible operator paths using symbolic and experiential priors, executes a candidate action, verifies the result, freezes a \texttt{TaskEpisode}, records any residual, glues verified local sections, and only then consolidates reusable lessons or updates the saturation vector. Method invention is reached only after an explicit basis-gap gate, and a repeated meta-residual may open a protected Self-RAKL challenger branch.
+
+This outer loop introduces no new authority shortcut. The fibre is a working view; co-retrieval does not establish compatibility. A successful local section does not establish a global solution until declared interfaces, dependencies, complete atom coverage and verification agree. An observed failure does not establish a causal obstruction. A learned routing prior changes search order only. Thus the 17-stage table remains the audit contract for scientific-state transitions while v3 supplies the persistent experience and problem-solving dynamics around it.
+
 \begin{table}[H]
 \centering
 \scriptsize
