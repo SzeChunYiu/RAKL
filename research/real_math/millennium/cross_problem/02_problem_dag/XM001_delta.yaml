@@ -1,0 +1,112 @@
+atom_id: XM-ROOT-BRIDGE-001
+candidate_id: XM001
+status: VERIFIED_ABSTRACT_INFERENCE_FALSIFIER
+root_impact: NONE
+novelty_claim: false
+
+selected_failure_family:
+  id: SURROGATE_ROOT_BRIDGE_LOSS
+  authority: SUPPORTED_TAXONOMY
+  definition: >-
+    A route proves a valid property on a surrogate/local/finite/relaxed object,
+    but the exact map needed to reach the root statement lacks a proved
+    preservation, uniformity, compactness, integrality, realization, or scaling
+    condition. This is a research-process category, not one common theorem.
+
+failure_coordinates:
+  - integrality_or_correlation_loss
+  - cutoff_or_continuum_scaling_loss
+  - compactness_or_profile_coverage_loss
+  - spectral_to_arithmetic_realization_gap
+  - cohomological_to_algebraic_realization_gap
+  - local_or_p_primary_to_global_complex_gap
+  - hidden_dependency_on_unproved_bridge
+  - representation_mismatch
+  - verification_and_novelty_debt
+
+problem_portrait:
+  p_vs_np:
+    source: C024
+    coordinates: [integrality_or_correlation_loss]
+    evidence: research/real_math/millennium/p_vs_np/07_memory/C024_FAILURE_EXPERIENCE_DELTA_20260811.json
+    authority: VERIFIED_LOCAL_FAILURE_WITH_SUPPORTED_DIAGNOSIS
+  riemann_hypothesis:
+    source: issue_84_RH_SPEC_001
+    coordinates: [spectral_to_arithmetic_realization_gap, hidden_dependency_on_unproved_bridge]
+    evidence: issue:84
+    authority: PRE_CANDIDATE_WARNING_ONLY
+  navier_stokes:
+    source: issues_83_88
+    coordinates: [compactness_or_profile_coverage_loss, representation_mismatch]
+    evidence: [issue:83, issue:88]
+    authority: PRE_CANDIDATE_WARNING_ONLY
+  yang_mills:
+    source: issue_85_YM_S1
+    coordinates: [cutoff_or_continuum_scaling_loss]
+    evidence:
+      - issue:85
+      - research/real_math/millennium/cross_problem/04_candidates/XM001_root_bridge_stability_audit.md
+    authority: ABSTRACT_INFERENCE_FALSIFIER_EXECUTED
+  hodge:
+    source: issue_86_H1_H5
+    coordinates: [cohomological_to_algebraic_realization_gap, hidden_dependency_on_unproved_bridge]
+    evidence: issue:86
+    authority: PRE_CANDIDATE_WARNING_ONLY
+  birch_swinnerton_dyer:
+    source: issues_90_91
+    coordinates: [local_or_p_primary_to_global_complex_gap]
+    evidence: [issue:90, issue:91]
+    authority: POST_FREEZE_OBSERVATION_ONLY
+    chronology_note: >-
+      BSD issues appeared after the XM001 pre-candidate context was frozen and
+      are not retroactively inserted into that context. A fresh successor atom
+      must construct its own DifferenceWitness before reuse.
+
+exact_result:
+  target: YM-S1
+  surrogate_ratio: r(a,L)=exp(-a^2)
+  dimensionless_gap: delta(a,L)=a^2>0
+  physical_gap: Delta_phys(a,L)=delta/a=a
+  limit: Delta_phys->0 as a->0
+  consequence: >-
+    Pointwise finite-cutoff positivity, even uniform in volume at each fixed a,
+    does not imply a positive physical continuum gap without a quantitative
+    lattice-spacing bridge.
+
+retained_tool:
+  id: T-XM-ROOT-BRIDGE-STABILITY-AUDIT
+  authority: VERIFIED_LOCAL
+  use: >-
+    Freeze the surrogate/root bridge and attempt the cheapest exact counterexample
+    before strengthening the surrogate certificate.
+
+new_failure:
+  id: F-XM001-POINTWISE-GAP-COLLAPSE
+  status: SUPPORTED
+  scope: abstract weak YM-S1 inference only; not actual Yang-Mills dynamics
+
+active_residuals:
+  - id: YM-S1-SCALED-UNIFORM-BRIDGE
+    target: >-
+      State and prove/source the correct a-scaled and volume/limit-uniform bridge
+      for the actual Yang-Mills transfer/correlation object, with physical units,
+      state sector, boundary conditions, RG trajectory and order of limits bound.
+    status: ACTIVE
+  - id: XM002-FRESH-DIFFERENCE-WITNESS
+    target: >-
+      Reuse the audit on a structurally different Millennium lane only after a
+      fresh context and DifferenceWitness; BSD is now eligible because issues
+      #90/#91 exist, but no retroactive XM001 inference is allowed.
+    status: OPEN
+
+meta_learning:
+  selected_mode: CONTRASTIVE_DISCRIMINATION_PLUS_EFFECTUAL_PROBE
+  observed_gain: >-
+    The one-line scaled-gap sequence separates finite-cutoff positivity from the
+    root-normalized continuum claim and prevents low-value optimization of a
+    surrogate whose preservation modulus is unspecified.
+  non_guarantee: >-
+    One successful calibration does not establish universal usefulness; promotion
+    beyond VERIFIED_LOCAL requires a second structurally shifted reuse benchmark.
+
+root_status: ALL_MILLENNIUM_ROOTS_OPEN_NO_SOLUTION_CERTIFICATE
