@@ -249,4 +249,17 @@ def validate_v3_method_ownership() -> tuple[str, ...]:
         )
         if owner not in canonical
     ]
+    from . import v3 as v3_facade
+
+    for public_name in v3_facade.__all__:
+        value = getattr(v3_facade, public_name)
+        module = getattr(value, "__module__", "")
+        implementation_path = f"src/{module.replace('.', '/')}.py" if module.startswith("rakl.") else ""
+        owner = V3_PUBLIC_AUTHORITY_SURFACE_OWNERS.get(public_name)
+        if owner is None and implementation_path:
+            owner = V3_IMPLEMENTATION_OWNER_MAP.get(implementation_path)
+        if owner is None and public_name == "LESSON_ERASURE_TAGS":
+            owner = "memory"
+        if owner is None:
+            problems.append(f"v3_public_surface_owner_missing:{public_name}:{module}")
     return tuple(problems)

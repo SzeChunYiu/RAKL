@@ -50,7 +50,7 @@ At implementation commit `35da974c57dece0c451cbb88cd7712478e211c95`:
 
 ## Residual trust boundary
 
-The reference implementation uses HMAC-SHA256 with key material supplied by the protected evaluator environment. Candidate code must not possess that key. A production deployment still needs external key custody, runner isolation, rotation, audit logging, and independent review of the exact PR head.
+The corrected reference implementation accepts authority only for exact attestation payload digests pinned by a governed framework-release manifest. Runtime caller keys and policies are proposal inputs and cannot extend that manifest. A production deployment still needs external evaluator isolation, governed manifest updates, audit logging, and independent review of the exact PR head.
 
 ## Latest-main integration
 
@@ -59,3 +59,7 @@ The branch was merged with then-current `origin/main` `decd1a4eae2b10cfdbb98e76b
 ## Recursive same-context review repair
 
 A same-context review (not independent review) found that the first benchmark chronology implementation compared timestamp strings and did not fully bind protocol/output freeze order. The successor parses timezone-aware instants and requires: protocol artifacts frozen no later than the packet, freeze-attestation subject time equal to packet freeze time, runs after the freeze attestation, output artifact freeze time equal to the registered run time, and matched-result subject/issuance after all runs.
+
+## Blocking-review repair round
+
+A blocking review reproduced seven authority/replay defects. The receipt verdict was narrowed to `INTERNAL_CONFORMANCE_PASS_BLOCK_MERGE_PENDING_FRESH_REVIEW`. The successor removes runtime caller policy keys from the authority decision by requiring exact release-manifest membership; binds local certificates to the exact section, atom, and decomposition; rejects lesson-report replay across candidate content; binds governance to the complete archive/variant/edge state; uses timezone-aware benchmark chronology; requires exact development benchmark, assurance benchmark, candidate method, and result receipt artifacts for Self-RAKL assurance; and introspects every exported v3 facade symbol for a canonical method owner. These are same-context corrective claims pending fresh exact-head re-review.

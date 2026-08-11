@@ -273,6 +273,8 @@ def promoted_lesson_version(
         raise ValueError("promoted lesson version requires new id")
     if report.verdict is ConsolidationVerdict.CANNOT_CHECK:
         raise ValueError("cannot promote lesson from CANNOT_CHECK evidence")
+    if report.authority_subject_hash != candidate.artifact_hash:
+        raise ValueError("consolidation report subject does not match exact candidate content")
     if report.target_authority is not LessonAuthority.CANDIDATE and not report.authority_attestation_id:
         raise ValueError("promoted lesson requires resolved protected authority attestation")
     draft = replace(

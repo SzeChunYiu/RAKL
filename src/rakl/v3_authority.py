@@ -102,7 +102,7 @@ class ProtectedAttestation:
         if _parse_time(self.subject_frozen_at) is None or _parse_time(self.issued_at) is None:
             raise ValueError("protected attestation chronology must be timezone-aware")
         if not _is_sha256(self.signature):
-            raise ValueError("protected attestation signature must be a SHA-256 HMAC")
+            raise ValueError("protected attestation digest must be a SHA-256 value")
 
 
 def _unsigned_attestation_payload(attestation: ProtectedAttestation) -> dict[str, object]:
@@ -122,17 +122,19 @@ def _unsigned_attestation_payload(attestation: ProtectedAttestation) -> dict[str
 
 
 def issue_protected_attestation(*, signing_key: bytes, **values: object) -> ProtectedAttestation:
-    """Reference issuer for an evaluator-side trust boundary.
+    """Construct an attestation proposal for release-manifest review.
 
-    Production signing keys must remain outside candidate write authority.  The
-    helper exists so protected runners and hostile tests can create deterministic
-    receipts; verification never trusts the caller's booleans.
+    ``signing_key`` is a deprecated compatibility input and creates no authority.
+    Resolution requires the exact unsigned digest to be present in the governed
+    release manifest; a caller-created key or policy cannot add that entry.
     """
 
-    if not isinstance(signing_key, bytes) or len(signing_key) < 32:
-        raise ValueError("protected signing key must contain at least 32 bytes")
+    if not isinstance(signing_key, bytes):
+        raise TypeError("signing_key compatibility input must be bytes")
     unsigned = ProtectedAttestation(signature="0" * 64, **values)  # type: ignore[arg-type]
-    signature = hmac.new(signing_key, canonical_json_bytes(_unsigned_attestation_payload(unsigned)), sha256).hexdigest()
+    # Issuance only constructs a proposal. Resolution additionally requires the
+    # exact unsigned digest to be present in the release-governed manifest below.
+    signature = sha256(canonical_json_bytes(_unsigned_attestation_payload(unsigned))).hexdigest()
     return ProtectedAttestation(signature=signature, **values)  # type: ignore[arg-type]
 
 
@@ -161,6 +163,22 @@ class AttestationResolution:
     valid: bool
     reasons: Tuple[str, ...]
     attestation_id: str | None = None
+
+
+# Exact attestation payloads approved by this framework release. Adding an entry
+# is a governed source change and therefore cannot be done by the runtime caller
+# that supplies artifacts/attestations. These initial entries are internal
+# assurance fixtures only; deployment roots require a separately reviewed
+# manifest update and external evaluator custody.
+PROTECTED_ATTESTATION_MANIFEST: dict[str, str] = {
+    "verify": "a4982487ea09675c1a092e74f3b4bb88f2355a4e3629b30f20702b0ad8dc8d74",
+    "transfer": "d651f8d539c1d89004bf3db4228cda8a2c8e0a52da295aa2a0cea314c1c1888e",
+    "section-check": "0a5f192c219636ec22e0dfa362c9a4d30d2c9ba412bcc51970d7966a5d6c6d43",
+    "assurance": "3cd740c0ff99026b0a0c4d78e79b0ada6e096e6fc39bfea69fae546c0431df30",
+    "governance": "0ecfa661bf7702920fcf977ff741e4f4b9263a284a989dc619ac9311be9cf161",
+    "freeze": "c81a942cebfbaeb37f3e8aaa5f86ff83fbe4cb42f6a55241b1526fb4fde22994",
+    "match": "b28ec3d25ab5751950d8660cd967e044c5bffe3a1fa28f8a9fad49909d852c89",
+}
 
 
 def resolve_protected_attestation(
@@ -195,14 +213,14 @@ def resolve_protected_attestation(
     if attestation.signer_id == attestation.proposer_id:
         reasons.append("protected_evaluator_not_separate_from_proposer")
 
-    keys = dict(context.policy.signer_keys)
-    key = keys.get(attestation.signer_id)
-    if key is None:
-        reasons.append("protected_attestation_signer_untrusted")
-    else:
-        expected = hmac.new(key, canonical_json_bytes(_unsigned_attestation_payload(attestation)), sha256).hexdigest()
-        if not hmac.compare_digest(expected, attestation.signature):
-            reasons.append("protected_attestation_signature_invalid")
+    unsigned_digest = sha256(canonical_json_bytes(_unsigned_attestation_payload(attestation))).hexdigest()
+    manifest_digest = PROTECTED_ATTESTATION_MANIFEST.get(attestation.attestation_id)
+    if manifest_digest is None:
+        reasons.append("protected_attestation_not_in_release_manifest")
+    elif not hmac.compare_digest(manifest_digest, unsigned_digest):
+        reasons.append("protected_attestation_release_manifest_mismatch")
+    if not hmac.compare_digest(unsigned_digest, attestation.signature):
+        reasons.append("protected_attestation_signature_invalid")
 
     bound = dict(attestation.evidence_bindings)
     evaluator = artifacts.get(attestation.evaluator_artifact_id)

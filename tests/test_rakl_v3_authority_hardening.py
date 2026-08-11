@@ -8,14 +8,18 @@ import pytest
 from rakl.evolution import EvolutionTrial, EvolutionVerdict
 from rakl.evolution_archive import (
     RAKLVariant,
+    EvolutionTrialAuthorityBindings,
     VariantStatus,
     initialize_evolution_archive,
     promote_incumbent,
     record_evolution_trial,
     register_challenger,
     evolution_trial_subject_hash,
+    evolution_assurance_subject_hash,
+    variant_promotion_subject_hash,
 )
 from rakl.experience_learning import ConsolidationVerdict, LessonConsolidationEvidence, assess_lesson_consolidation
+from rakl.experience_learning import promoted_lesson_version
 from rakl.experience_substrate import (
     EpisodeOutcome,
     ExperienceLedger,
@@ -38,6 +42,7 @@ from rakl.v3_authority import (
     ProtectedAttestation,
     ProtectedAuthorityContext,
     issue_protected_attestation,
+    resolve_protected_attestation,
 )
 
 
@@ -145,6 +150,40 @@ def test_episode_and_lesson_hashes_bind_exact_content_and_bare_authority_fails_c
         add_lesson(ledger, forged)
 
 
+def test_caller_generated_policy_key_and_attestation_cannot_enter_release_manifest() -> None:
+    evidence = _artifact("attacker-evidence", b"attacker bytes", at="2026-08-11T08:00:00+00:00", producer="attacker")
+    evaluator = _artifact("attacker-evaluator", b"attacker evaluator", at="2026-08-11T08:00:00+00:00", producer="attacker")
+    attacker_key = b"attacker-controlled-key-material-over-32-bytes"
+    forged = issue_protected_attestation(
+        attestation_id="attacker-minted",
+        purpose=AttestationPurpose.LOCAL_SECTION_VERIFICATION,
+        subject_hash=sha256(b"forged-subject").hexdigest(),
+        subject_frozen_at="2026-08-11T08:00:00+00:00",
+        evaluator_artifact_id=evaluator.artifact_id,
+        evaluator_artifact_sha256=evaluator.payload_sha256,
+        evidence_bindings=((evidence.artifact_id, evidence.payload_sha256),),
+        proposer_id="candidate",
+        signer_id="attacker",
+        issued_at="2026-08-11T08:10:00+00:00",
+        verdict="PASS",
+        signing_key=attacker_key,
+    )
+    attacker_context = ProtectedAuthorityContext(
+        (evaluator, evidence),
+        (forged,),
+        AuthorityTrustPolicy((("attacker", attacker_key),)),
+    )
+    resolution = resolve_protected_attestation(
+        attacker_context,
+        forged.attestation_id,
+        purpose=forged.purpose,
+        subject_hash=forged.subject_hash,
+        required_artifact_ids=(evidence.artifact_id,),
+    )
+    assert not resolution.valid
+    assert "protected_attestation_not_in_release_manifest" in resolution.reasons
+
+
 def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bools() -> None:
     source = _episode("E1")
     transfer = _episode("E2", at="2026-08-11T08:11:00+00:00")
@@ -201,6 +240,16 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         ),
     )
     assert resolved.verdict is ConsolidationVerdict.CONDITIONALLY_REUSABLE
+    malicious_draft = replace(candidate, action="malicious different action", artifact_hash="")
+    malicious = replace(malicious_draft, artifact_hash=sha256(lesson_content_bytes(malicious_draft)).hexdigest())
+    with pytest.raises(ValueError, match="subject does not match exact candidate"):
+        promoted_lesson_version(
+            malicious,
+            new_lesson_id="L-malicious",
+            artifact_hash="ignored",
+            report=resolved,
+            evidence=LessonConsolidationEvidence(supporting_episode_ids=("E1",)),
+        )
     state = record_task_episode(record_task_episode(RAKLV3State(), source), transfer)
     consolidated = consolidate_lesson(
         state,
@@ -249,15 +298,18 @@ def test_local_section_boolean_and_empty_evidence_never_grant_solution_authority
         evidence_ids=("section-evidence",),
         verification_attestation_id="section-check",
     )
-    section = replace(section_draft, subject_hash=local_section_subject_hash(section_draft))
+    section = replace(section_draft, subject_hash=local_section_subject_hash(section_draft, decomposition, atom))
     attestation = _attestation(
         AttestationPurpose.LOCAL_SECTION_VERIFICATION,
-        local_section_subject_hash(section),
+        local_section_subject_hash(section, decomposition, atom),
         (evidence,),
         attestation_id="section-check",
     )
     report = glue_local_sections(decomposition, (section,), authority_context=_context((evidence,), (attestation,)))
     assert report.grants_solution_authority
+    pnp_atom = ProblemAtom("A1", "prove P=NP", "pnp", ("complexity",), ("proof",))
+    pnp = ProblemDecomposition("P-vs-NP", (pnp_atom,))
+    assert not glue_local_sections(pnp, (section,), authority_context=_context((evidence,), (attestation,))).grants_solution_authority
 
 
 def test_self_rakl_assurance_and_promotion_require_protected_attestations() -> None:
@@ -284,20 +336,23 @@ def test_self_rakl_assurance_and_promotion_require_protected_attestations() -> N
     with pytest.raises(ValueError, match="protected governance attestation"):
         promote_incumbent(replace(archive2, variants=tuple(replace(v, status=VariantStatus.ASSURED) if v.variant_id == "v2" else v for v in archive2.variants)), "v2", governance_approved=True)
 
+    dev = _artifact("development-benchmark", b"frozen development benchmark", at="2026-08-11T08:01:00+00:00")
+    assurance_artifact = _artifact("assurance-benchmark", b"fresh assurance benchmark", at="2026-08-11T08:01:00+00:00")
+    method = _artifact("candidate-method", b"v2", at="2026-08-11T08:02:00+00:00")
     receipt = _artifact("assurance-receipt", b"fresh matched assurance bytes", at="2026-08-11T08:10:00+00:00")
+    bindings = EvolutionTrialAuthorityBindings(
+        (dev.artifact_id, dev.payload_sha256),
+        (assurance_artifact.artifact_id, assurance_artifact.payload_sha256),
+        (method.artifact_id, method.payload_sha256),
+        (receipt.artifact_id, receipt.payload_sha256),
+    )
     assured = _attestation(
         AttestationPurpose.EVOLUTION_ASSURANCE,
-        evolution_trial_subject_hash(trial),
-        (receipt,),
+        evolution_assurance_subject_hash(trial, bindings),
+        (dev, assurance_artifact, method, receipt),
         attestation_id="assurance",
     )
-    governance = _attestation(
-        AttestationPurpose.GOVERNANCE_PROMOTION,
-        child.method_hash,
-        (receipt,),
-        attestation_id="governance",
-    )
-    context = _context((receipt,), (assured, governance))
+    context = _context((dev, assurance_artifact, method, receipt), (assured,))
     archive3, assessment3 = record_evolution_trial(
         archive,
         trial_id="T-protected",
@@ -305,16 +360,33 @@ def test_self_rakl_assurance_and_promotion_require_protected_attestations() -> N
         trial=trial,
         authority_context=context,
         assurance_attestation_id="assurance",
+        authority_bindings=bindings,
     )
     assert assessment3.supports_scoped_evolution
     assert next(v for v in archive3.variants if v.variant_id == "v2").status is VariantStatus.ASSURED
+    governance = _attestation(
+        AttestationPurpose.GOVERNANCE_PROMOTION,
+        variant_promotion_subject_hash(archive3, "v2"),
+        (receipt,),
+        attestation_id="governance",
+    )
+    governance_context = _context((receipt,), (governance,))
     promoted = promote_incumbent(
         archive3,
         "v2",
-        authority_context=context,
+        authority_context=governance_context,
         governance_attestation_id="governance",
     )
     assert promoted.incumbent_id == "v2"
+    replay_variant = replace(next(v for v in archive3.variants if v.variant_id == "v2"), capability_tags=("different",))
+    replay_archive = replace(archive3, variants=tuple(replay_variant if v.variant_id == "v2" else v for v in archive3.variants))
+    with pytest.raises(ValueError, match="subject_mismatch"):
+        promote_incumbent(
+            replay_archive,
+            "v2",
+            authority_context=governance_context,
+            governance_attestation_id="governance",
+        )
 
 
 def test_every_v3_module_and_authority_surface_has_a_canonical_method_owner() -> None:

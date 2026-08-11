@@ -145,7 +145,11 @@ class GluingReport:
         return self.compatible and self.all_sections_verified and self.complete_coverage
 
 
-def local_section_subject_hash(section: LocalSection) -> str:
+def local_section_subject_hash(
+    section: LocalSection,
+    decomposition: ProblemDecomposition | None = None,
+    atom: ProblemAtom | None = None,
+) -> str:
     """Bind a local mathematical section to its exact substantive content."""
 
     return canonical_sha256(
@@ -156,6 +160,8 @@ def local_section_subject_hash(section: LocalSection) -> str:
             "assumptions": list(section.assumptions),
             "operator_ids": list(section.operator_ids),
             "evidence_ids": list(section.evidence_ids),
+            "decomposition": repr(decomposition) if decomposition is not None else None,
+            "atom": repr(atom) if atom is not None else None,
         }
     )
 
@@ -447,7 +453,8 @@ def glue_local_sections(
     assignments = tuple(sorted((key, value) for key, (_, value) in global_values.items()))
     verified_sections: list[bool] = []
     for section in section_tuple:
-        exact_subject = local_section_subject_hash(section)
+        atom = next(item for item in decomposition.atoms if item.atom_id == section.atom_id)
+        exact_subject = local_section_subject_hash(section, decomposition, atom)
         if section.subject_hash != exact_subject or not section.evidence_ids:
             verified_sections.append(False)
             continue

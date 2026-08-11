@@ -8,6 +8,7 @@ from .driver_learning import DriverRequest, DriverResult, DriverTask, LearningTu
 from .evolution_archive import (
     EvolutionArchive,
     EvolutionEdge,
+    EvolutionTrialAuthorityBindings,
     RAKLVariant,
     VariantSelection,
     VariantStatus,
@@ -18,6 +19,8 @@ from .evolution_archive import (
     record_evolution_trial,
     register_challenger,
     evolution_trial_subject_hash,
+    evolution_assurance_subject_hash,
+    variant_promotion_subject_hash,
 )
 from .experience_benchmark import (
     ArmPhaseMetrics,
@@ -156,6 +159,7 @@ __all__ = [
     "EpisodeOutcome",
     "EvolutionArchive",
     "EvolutionEdge",
+    "EvolutionTrialAuthorityBindings",
     "ExperienceBenchmarkArm",
     "ExperienceBenchmarkPacket",
     "ExperienceBenchmarkPhase",
@@ -231,6 +235,7 @@ __all__ = [
     "episode_to_failure_experience",
     "evolution_portrait",
     "evolution_trial_subject_hash",
+    "evolution_assurance_subject_hash",
     "experience_memory_views",
     "glue_local_sections",
     "gluing_episode_outcome",
@@ -262,4 +267,5 @@ __all__ = [
     "validate_episode",
     "validate_experience_benchmark",
     "validate_lesson",
+    "variant_promotion_subject_hash",
 ]

@@ -1,5 +1,28 @@
 {
   "authority_boundary": "internal_framework_assurance_not_independent_peer_review",
+  "blocking_review_round": {
+    "findings": [
+      "caller_constructed_policy_and_key_could_self-mint",
+      "local_section_subject_omitted_atom_and_decomposition",
+      "lesson_report_replay_across_candidate_content",
+      "governance_bound_method_hash_only",
+      "benchmark_offset_chronology",
+      "evolution_nonempty_evidence_not_exact_assurance",
+      "method_owner_mapping_not_completeness_checked"
+    ],
+    "independent_review": false,
+    "merge_allowed": false,
+    "repairs": [
+      "release-governed exact attestation manifest ignores caller policy keys",
+      "local subject binds section plus exact atom/decomposition",
+      "promotion requires report subject equals exact candidate",
+      "governance binds full archive/variant/edge state",
+      "timezone-aware benchmark ordering",
+      "evolution binds exact development/assurance/method/result bytes",
+      "owner validator introspects every v3 facade export"
+    ],
+    "status": "REPAIRED_PENDING_FRESH_EXACT_HEAD_REVIEW"
+  },
   "claims_not_granted": [
     "independent_peer_review",
     "universal_security",
@@ -9,7 +32,7 @@
   ],
   "context": "post-PR118 corrective authority hardening",
   "controls": {
-    "authority_source": "HMAC-authenticated protected signer under externally supplied trust policy",
+    "authority_source": "exact attestation payload digest pinned in governed framework-release manifest; runtime policy/key cannot extend it",
     "chronology": "timezone-aware artifact freeze and attestation issue ordering",
     "content_binding": "SHA-256 over exact canonical subject plus resolved evidence/evaluator bytes",
     "legacy_behavior": "accepted only where it cannot mint authority; authority-sensitive paths fail closed"
@@ -31,10 +54,10 @@
   "latest_main_integration": {
     "focused_command": "pytest -q tests/test_rakl_v3*.py",
     "focused_result": "PASS",
-    "focused_tests_collected": 40,
+    "focused_tests_collected": 41,
     "full_command": "pytest -q",
     "full_result": "PASS",
-    "full_tests_collected": 1314,
+    "full_tests_collected": 1315,
     "git_diff_check": "PASS",
     "main_commit": "decd1a4eae2b10cfdbb98e76b5023e2a756fa7a8",
     "merge_commit": "c1a2a98183feb9da1731f70fd4979078ac176e5a",
@@ -42,7 +65,7 @@
   },
   "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
   "paper_files_touched": [],
-  "payload_sha256": "56413905f12063d57605532e5cf1969a5e402e8f8cf56e1d72d674be05dbb4ca",
+  "payload_sha256": "fd8308fa0fe837d0a80de9bdcb7ead6b8b80c26ccc18546447ed06e1adddf96e",
   "pre_existing_failures": [],
   "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
   "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
@@ -62,19 +85,19 @@
   "schema_version": "rakl-v3-authority-hardening-receipt-v1",
   "source_sha256": {
     "src/rakl/driver_learning.py": "08fea1cda7a6775a22de896c5da57ffe3ebc75bff1b7bfe1c3b546bfbd9f8eb5",
-    "src/rakl/evolution_archive.py": "da568e4a6863437fd86ac1f22a344473e002971e5b49ac527fcb19d9259d296e",
+    "src/rakl/evolution_archive.py": "8e034cc43671490cb286112f2d0eea5ca5df0896ee3b27dbed6d59815440702a",
     "src/rakl/experience_benchmark.py": "85f14051d4ffa6f7177e969dd81cc97c8002f2f90a54a871305224da01f26af5",
-    "src/rakl/experience_learning.py": "650dd848e0ab58033e4e7ed0d1399592536cfbc82e2db6200e3d2e46a754d8bd",
+    "src/rakl/experience_learning.py": "3185cd99d633edf40f2daed1e40d462a9ab06ebcd18176ca2dd824ece937523f",
     "src/rakl/experience_substrate.py": "6e62fd5f37e7ab45ca9df43024b5196cb534fd6c98100af96700d0d8a9967ba3",
-    "src/rakl/method_specs.py": "8e83965c0b1e3ea97163b9f8c9119c69533cc3428b9ebd118f221fb95bd0c1f8",
-    "src/rakl/problem_fibre.py": "86818021bd6debed7e9aad68e9931038fdd7e14ad14a7439a2bffc53c9823c2f",
-    "src/rakl/v3.py": "5596fc47bcc12621f6ff32f56ea815724895e5941ec1171225653f8869997645",
-    "src/rakl/v3_authority.py": "c565b7a60dca58868e2cc33d93f8c4223bac689892f12a6c175d633f8972f8f0",
+    "src/rakl/method_specs.py": "0e1a352c5ad197c54c2a438441179bf5a5963f72778bc7e6aa077df2208a97ee",
+    "src/rakl/problem_fibre.py": "9b02ab47a70f05a1b5880b81acdf451027021c68ba171bf6a7ef4c09eef9505b",
+    "src/rakl/v3.py": "8625e460d74a478c60f1a82a061f0747997b73d6b28fc0c5098186e8ab144658",
+    "src/rakl/v3_authority.py": "e17d0a577345f75d26fbcb611fbe93cd6956cce374b80a564988b8748ab0bd39",
     "src/rakl/v3_runtime.py": "61ff29440a4beb32e8906c3fffd23ee62b7b3562cd19211abd6a8bbe31524dd0",
-    "tests/test_rakl_v3_authority_hardening.py": "4cbc845c26df6a15ceff70b1deb2abe52d238c501a1e7b7c1791df2c3a187ca8",
+    "tests/test_rakl_v3_authority_hardening.py": "016c10e231fa641c5aeb78969b0f079ea3c984c8f11ba7d3f20271e302278cf2",
     "tests/test_rakl_v3_experience_benchmark.py": "6e54a1aad3f1738f661d5e7819739f52a2891832ae177d6ec1ae8569afa84a81"
   },
-  "verdict": "INTERNAL_ASSURANCE_PASS_PENDING_INDEPENDENT_REVIEW",
+  "verdict": "INTERNAL_CONFORMANCE_PASS_BLOCK_MERGE_PENDING_FRESH_REVIEW",
   "verification": [
     {
       "command": "pytest -q tests/test_rakl_v3*.py",
