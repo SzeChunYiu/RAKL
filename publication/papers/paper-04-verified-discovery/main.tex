@@ -16,16 +16,18 @@
 \newcommand{\PASS}{\texttt{PASS}}
 \newcommand{\FAIL}{\texttt{FAIL}}
 \newcommand{\CC}{\texttt{CANNOT\_CHECK}}
+\newcommand{\ImplementationSHA}{\texttt{0000000000000000000000000000000000000000}}
+\newcommand{\SoftwareTests}{1}
 
 \title{Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research}
-\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}
-\date{11 August 2026}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Large language models can solve difficult mathematical exercises and increasingly operate inside formal proof systems, yet exercise solving is not the same task as mathematical research. Research requires not only a plausible continuation but a correct theorem, a faithful formalization of the intended claim, evidence that the result is not a rediscovery, and a reason the result is worth attention. We introduce a mathematical-research assurance layer for \RAKL{}, an evidence-governed framework for LLM-mediated inquiry. The central design separates five authority coordinates: specification alignment, theorem truth, novelty, research value, and verifier trust. LLMs remain proposal generators; computational testing can refute or prioritize but never promote a conjecture to a theorem; formal proofs are bound to exact statement hashes and audited for axioms and verifier identity; novelty is represented by a bounded, cutoff-scoped and defeasible certificate rather than a claim of global completeness. We prove three architectural results. First, under a sound proof checker and a fail-closed update rule, generator hallucinations cannot by themselves promote a false theorem. Second, verified lemma checkpointing changes long-horizon model error from hidden logical debt into rejected branches and search cost, subject to the remaining specification and verifier trust assumptions. Third, theorem truth and novelty have different order-theoretic behaviour: truth of a fixed proved statement can remain stable while novelty is non-monotone as the literature world expands. We implement these distinctions as a typed state machine and preregister an evaluation suite spanning false conjectures, autoformalization traps, long proof DAGs, rediscovery detection, novelty screening and proof-assistant trust attacks. The result is not an autonomous-mathematician claim; it is an architecture intended to make machine-assisted mathematical discovery auditable enough that creative search can scale without silently scaling mathematical authority.
+Large language models can solve difficult mathematical exercises and increasingly operate inside formal proof systems, yet exercise solving is not the same task as mathematical research. RAKL v3 adds persistent external task experience, versioned procedural lessons and experience-conditioned routing, creating a new assurance question: how can a system learn which mathematical moves to try without allowing past success, repeated failure or model confidence to become mathematical authority? We present a mathematical-research assurance layer that separates five coordinates: specification alignment, theorem truth, novelty, research value and verifier trust. Proof attempts are preserved as immutable task episodes; failed search remains distinct from impossibility; reusable proof lessons and strategy motifs are proposal-side abstractions; and experience may reprioritize proof routes but cannot promote theorem truth. Formal proofs remain bound to exact statement hashes and audited for axioms and verifier identity, while novelty remains a bounded, cutoff-scoped and defeasible certificate. Under a sound checker and fail-closed update rule, generator hallucinations or experience-derived routing cannot by themselves promote a false theorem. Verified lemma checkpointing converts many local generator errors into rejected branches and search cost, subject to specification and verifier-trust assumptions. The result is a v3 specialization for auditable mathematical discovery, not an autonomous-mathematician claim, a proof that repeated search failure implies impossibility, or evidence of universal discovery superiority.
 \end{abstract}
 
 \section{The gap between solving and research}
@@ -79,6 +81,41 @@ with frozen informal targets $I_t$, formal statements and alignment witnesses $F
 
 The dependency object $D_t$ replaces the monolithic research transcript. Nodes can be definitions, conjectures, lemmas, representations, counterexamples, proof obligations, imported theorems or computational experiments. Edges record typed relations such as \emph{implies}, \emph{reduces to}, \emph{refutes}, \emph{specializes}, \emph{generalizes} and \emph{requires}. A verified lemma becomes a persistent checkpoint. A failed branch remains addressable negative history rather than being overwritten by the next fluent derivation.
 
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+\section{Experience-governed mathematical search in RAKL v3}
+
+The v3 substrate distinguishes the mathematical research state from the system's accumulated task experience. A consequential conjecture test, representation change, tactic sequence, proof attempt or counterexample search can be frozen as a task episode containing the problem signature, relevant fibre snapshot, operators, action trace, observations, verification events, outcome, residual, provenance and cost. The episode records what happened; it does not certify why it happened.
+
+A reusable mathematical lesson is a separate versioned object. It may encode a trigger such as a proof-state pattern, a scoped action such as changing representation or attempting a lemma family, expected effects, boundaries, supporting and contradicting episodes, a falsifier and validation obligations. Reflection can propose such a lesson, but proof-backed or fresh-transfer evidence is required before it is treated as reusable method state. The source episodes remain immutable even when a later lesson supersedes an earlier abstraction.
+
+Experience may also alter the order in which admissible proof operators or paths are attempted. Let $\rho_t$ be a routing policy derived from previous episodes. Then the proposal process may be written schematically as
+\[
+a_t\sim G_\theta(\mathfrak M_t,E_t,\rho_t),
+\]
+where $E_t$ is the episode ledger. This changes search, not truth authority.
+
+\begin{proposition}[Experience cannot promote theorem truth]
+Assume theorem promotion requires an accepted proof artifact for the exact registered formal statement under an admitted verifier-trust profile. Then no update consisting only of task-episode storage, lesson consolidation or experience-conditioned routing can promote an unproved theorem.
+\end{proposition}
+
+\begin{proof}
+Episode, lesson and routing updates have codomain in experience or search-policy state. By assumption, theorem promotion has an additional necessary premise: an accepted proof artifact bound to the registered statement and trust profile. Therefore experience can change which proof attempts are generated or prioritized but cannot satisfy the missing theorem-promotion premise by itself.
+\end{proof}
+
+\subsection{Failed search is not impossibility}
+A failed proof attempt creates negative search history. It does not establish that the theorem is false, that no proof exists in the registered logic, or that a required operator is missing. A counterexample may refute a universal statement; a machine-checked impossibility theorem may establish a scoped negative result; ordinary search failure establishes neither. V3 therefore retains the ladder
+\[
+\text{failed episode}
+\to\text{candidate diagnosis}
+\to\text{discriminating evidence}
+\to\text{verified boundary lesson},
+\]
+with no shortcut from repeated frustration to mathematical authority.
+
+\subsection{Proof strategy motifs remain lossy abstractions}
+Repeated successful operator sequences may nominate reusable strategy motifs. Such motifs can be valuable for retrieval and planning, especially in long proof DAGs with recurring bottlenecks, but they remain summaries of trajectories. A proof-backed lesson can be reliable as a method while still erasing local branch structure from the underlying episodes. The original trajectories and verification receipts therefore remain addressable whenever a later audit needs to reconstruct what was actually checked.
+
 \section{Counterexample-first search}
 
 Before expensive proof search, the system attempts cheap falsification: exact finite enumeration where available, randomized or property-based testing, boundary cases, computer algebra, SAT/SMT/model finding, adversarial parameter search and retrieval of stronger known parent results. These tools are especially useful because a single counterexample can close a large proof branch.
@@ -123,6 +160,45 @@ An invalid proposal that fails checking is not added to the trusted dependency D
 
 This proposition does not make research easy. It changes the failure geometry. Long-horizon model error remains costly, and the hard unsolved problems become search, formalization, representation, novelty and trust rather than hidden survival of one invalid implication.
 
+% Paper IV addendum: long-horizon assurance decomposition.
+% Intended for insertion after the verified-checkpointing proposition.
+
+\subsection{A long-horizon assurance decomposition}
+
+The difference between an unchecked derivation and a verifier-gated research process can be stated as a simple event bound. Let $F$ be the event that a promoted result is false \emph{as the intended mathematical claim}. Let $E_{\mathrm{spec}}$ denote failure of the informal--formal specification alignment gate, and let $E_{\mathrm{trust}}$ denote failure of the proof-checking trust chain, including unsound checker behaviour, unregistered axioms, incorrect dependency identity or artifact substitution. Assume canonical promotion is fail-closed: a result is promoted only when the alignment witness and the exact proof receipt pass their respective gates.
+
+\begin{proposition}[Assurance decomposition for a verifier-gated proof DAG]
+Under the fail-closed promotion rule above,
+\[
+F\subseteq E_{\mathrm{spec}}\cup E_{\mathrm{trust}}.
+\]
+Consequently, for any probability measure describing the deployment environment,
+\[
+\Pr(F)\leq
+\Pr(E_{\mathrm{spec}})+\Pr(E_{\mathrm{trust}}).
+\]
+In particular, local proposal errors made by the LLM do not appear as an additional additive term merely because the research horizon contains many generated steps, provided rejected proposals never enter the trusted proof DAG.
+\end{proposition}
+
+\begin{proof}
+Consider a promoted result outside $E_{\mathrm{spec}}\cup E_{\mathrm{trust}}$. Since $E_{\mathrm{spec}}$ does not occur, the checked formal statement faithfully represents the intended claim under the declared alignment criterion. Since $E_{\mathrm{trust}}$ does not occur, the exact admitted proof artifact is valid under the registered assumptions and verifier semantics. Therefore the intended claim is not false, so $F$ cannot occur. This proves the set inclusion. The probability inequality follows from the union bound. \qed
+\end{proof}
+
+\begin{remark}
+This is an assurance decomposition, not a calibrated numerical guarantee. Estimating either term is a separate empirical problem. The important structural point is that, once every accepted dependency is verifier-gated, a thousand hallucinated candidate moves need not create a thousand hidden logical liabilities. They can create substantial search cost, and they can indirectly increase pressure on formalization or infrastructure, but they acquire truth authority only by passing the explicit gates.
+\end{remark}
+
+For novelty, a distinct error event $E_{\mathrm{novel}}$ must be tracked. A result promoted to the strongest new-mathematics candidate stage therefore has a broader research-level risk decomposition,
+\[
+\begin{aligned}
+\Pr(F_{\mathrm{research}})\leq{}&\Pr(E_{\mathrm{spec}})
++\Pr(E_{\mathrm{trust}})\\
+&+\Pr(E_{\mathrm{novel}})
++\Pr(E_{\mathrm{value}}),
+\end{aligned}
+\]
+where $E_{\mathrm{value}}$ denotes failure of the declared research-value review criterion. This second expression is likewise a union-bound decomposition, not an assumption that the events are independent.
+
 \section{Novelty is bounded and defeasible}
 
 A verified theorem is not automatically new. Newness requires a literature world, an equivalence notion and a cutoff. Define a bounded novelty certificate
@@ -160,6 +236,10 @@ This architecture aligns with recent successful discovery systems. FunSearch cou
 
 \section{RAKL integration}
 
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+The v3 framework makes this specialization explicit. The mathematical state $\mathfrak M_t$ is one authority-owning view inside a broader persistent RAKL state whose episode ledger, lessons, tools, failure view and method variants can influence retrieval and planning without inheriting theorem authority. Mathematical proof receipts remain owned by the assurance layer; a unified substrate edge can show that a lesson was derived from a proof episode or that a tool succeeded on a task, but that lineage edge does not replace the proof artifact.
+
 The mathematical assurance layer is a specialization of existing \RAKL{} principles rather than a competing architecture. The proposal/authority firewall becomes the theorem-promotion gate. Epistemic cut sets become unresolved proof or novelty blockers. Constructive invention proposes conjectures, lemmas, definitions and representations. Structural witnesses support notation-independent analogy and prior-art search. Negative history stores refuted conjectures and failed proof attempts. The authority poset is extended by specification, truth, novelty, value and trust coordinates.
 
 The current reference implementation introduces:
@@ -180,6 +260,63 @@ The promotion sequence is intentionally conservative:
 \end{aligned}
 \]
 No step is automatic.
+
+\section{Typed discovery search and reference implementation}
+
+The assurance layer controls promotion, but a research system also needs a disciplined way to choose what to try next. We therefore couple theorem assurance to a typed problem-solving transition system. A problem state is represented as
+\[
+S=(\sigma,F,O,R,B,H,\tau),
+\]
+where $\sigma$ is a problem signature, $F$ the current planning facts, $O$ open obligations, $R$ registered representations, $B$ explicit obstructions, $H$ operator history and $\tau$ terminal status. A reusable research operator carries typed preconditions, state effects, targeted blockers, cost, verification debt, boundary risk and failure modes.
+
+The operational structure is deliberately not claimed to be one global lattice. Method composition is partial and generally non-commutative. For example, formal proof search may require a formal-statement fact produced by a prior formalization operator, so the reverse ordering is not licensed. Local lattices or partial orders are used only for relations whose meet/join or comparison obligations are separately established.
+
+The reference planner performs bounded best-first search over candidate operator paths. For a path $\pi$, the current transparent planning score is
+\[
+\begin{aligned}
+J(\pi)={}&C(\pi)+2D(\pi)+2R(\pi)\\
+&+|B_{\mathrm{remain}}|-3|B_{\mathrm{relieved}}|,
+\end{aligned}
+\]
+where $C$ is modeled cost, $D$ verification debt and $R$ boundary risk. This score is not a probability of correctness. It only prioritizes candidate research actions according to explicit blockers and costs.
+
+Reusable strategy motifs sit one level above primitive operators. A motif is an explicitly typed operator sequence. One motif changes representation, introduces an auxiliary object and then searches for an invariant. Another attempts cheap counterexample search before proof search and exact verification. Motifs are instantiated only as far as their operator preconditions remain satisfied. They are reusable search priors, not proof authority.
+
+Crucially, planning transitions have no terminal write authority. A symbolic operator may propose a representation, lemma, auxiliary object or proof artifact, but only a separately verified terminal certificate may close a problem as a proof, counterexample, relative-independence result, reformulation or partial result. The planner therefore cannot turn path completion into theorem truth by construction.
+
+Long-horizon reasoning is externalized into a persistent typed proof DAG. Nodes can represent conjectures, lemmas, theorems, definitions, computations, representations, imported results and counterexamples. Dependency cycles in proof-bearing relations are rejected. A lemma becomes a persistent verified checkpoint only when an exact statement-bound proof receipt passes the strict trust audit; refuted conjectures remain explicit nodes rather than being deleted. This is the executable mechanism behind the claim that rejected local generations become search cost and negative history instead of hidden logical debt.
+
+The implementation surfaces are:
+\begin{itemize}[leftmargin=*]
+\item \texttt{src/rakl/problem\_solving\_algebra.py}: typed problem signatures, obstructions, partial operators, bounded path search and certificate-gated terminal closure;
+\item \texttt{src/rakl/strategy\_motifs.py}: reusable typed operator sequences with partial instantiation;
+\item \texttt{src/rakl/proof\_dag.py}: persistent proof-state DAG, dependency-cycle checks, exact verified checkpoints and preserved refutations;
+\item \texttt{src/rakl/math\_research\_runtime.py}: compilation of theorem-assurance state into blockers and candidate paths;
+\item \texttt{src/rakl/math\_research\_assurance.py}: specification, proof, trust, novelty and value promotion gates;
+\item \texttt{src/rakl/math\_research\_api.py}: stable public facade for the reference profile;
+\item \texttt{benchmarks/math\_research\_assurance/tasks\_v0.json}: hostile conformance worlds;
+\item \texttt{docs/MATH\_RESEARCH\_QUICKSTART.md}: executable usage path.
+\end{itemize}
+
+\paragraph{Exact release identity.}
+The staged release source and machine receipt record the exact 40-character Git subject identifier used for evaluation; the manuscript also records \SoftwareTests{} passing repository tests before PDF construction. The hostile packet checks, among other cases, that finite computation is not promoted to proof, a proof of a neighbouring formal statement is rejected, \texttt{sorryAx} and unregistered custom axioms are blocked, missing isolated rechecking is detected, proof does not mint novelty, rediscovery is not called new mathematics, and research value cannot compensate for missing assurance coordinates. Additional unit tests bind proof source/checker identities, reject malformed prior-art receipts, reject proof-dependency cycles, exercise partial/non-commutative operator composition and require exact receipts before a proof-DAG checkpoint can become verified. These are implementation-conformance results, not evidence of autonomous-discovery superiority.
+
+\paragraph{Usability boundary.}
+The reference runtime is ready to be used as an auditable planning and promotion layer: users can construct a problem signature and claim record, inspect explicit blockers, obtain candidate operator paths or reusable motifs, maintain verified lemma checkpoints, attach formalization/proof/novelty receipts and query the resulting authority stage. It does not include a universal theorem prover, a complete mathematical literature index or a guarantee that its current operator basis is discovery-optimal. External LLMs, CAS/SAT/SMT tools, proof assistants and literature systems remain replaceable proposal/evaluation backends behind the typed contracts.
+
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+\section{Vector saturation and invention boundaries for mathematical research}
+
+RAKL v3 separates several reasons a mathematical search may appear exhausted. Literature/knowledge routes, proof operators, recurring experience patterns, known obstructions, structural relations, successful composition paths and meta-methods can become locally flat at different times. Let
+\[
+\mathbf s^{\mathrm{math}}_t=(s_K,s_O,s_E,s_B,s_R,s_P,s_M)
+\]
+be the corresponding scoped saturation vector for a registered mathematical project. Flatness of $s_P$ says that declared proof-path route families added no retained path novelty in the active window; it does not prove the theorem unprovable. Flatness of $s_K$ says the registered novelty/literature routes were locally flat; it does not prove global novelty. Flatness of all declared coordinates remains bounded by their route families, cutoffs and resource envelope.
+
+This distinction also gates invention. Being stuck does not establish a missing proof operator or representation. Escalation to representation/operator invention requires repeated stable residuals, exclusion of ordinary failures, bounded-flat relevant knowledge/operator/path routes, exhausted registered transfer routes and explicit evidence of a basis gap. Candidate invention then remains proposal-side until independent proof or protected assurance shows that the new operation closes the registered gap without violating theorem or verifier-trust invariants.
+
+The architecture therefore permits aggressive creative search while making a negative claim difficult to mint. ``No proof found'', ``no known method retrieved'', ``representation gap suspected'' and ``impossibility proved'' are four different states with different evidence obligations.
 
 \section{Preregistered evaluation}
 
@@ -204,6 +341,11 @@ Primary metrics are false theorem promotion, formalization mismatch, counterexam
 The framework cannot prove that a finite novelty search is globally complete. It cannot remove the need for mathematical judgement about interestingness. It cannot guarantee that formalization faithfully captures intention without some semantic review. It inherits trust from the proof assistant, imported libraries and checker deployment. Search may remain computationally prohibitive on genuinely hard open problems. Finally, a system can be perfectly reliable at rejecting bad claims while discovering nothing useful; reliability and creative productivity must therefore be evaluated separately.
 
 \section{Conclusion}
+
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+\paragraph{V3 interpretation.}
+The framework can now accumulate and reuse mathematical task experience while keeping the proof/novelty/value authority coordinates separate. This strengthens the practical search architecture but not the theorem claim: future success may improve because the system remembers better routes, and future failure may become less repetitive because it remembers better boundaries, yet every promoted theorem still depends on the registered proof and verifier-trust chain. The scientific question left open is whether this experience substrate improves fresh mathematical-research outcomes under matched resources without increasing specification, novelty or trust failures.
 
 The practical target for AI mathematics should not be an unconstrained model that writes longer proofs. It should be a system in which creative generation can be extremely aggressive because authority is extremely conservative. Formal verification changes the long-horizon error problem by turning many hallucinated steps into failed search rather than accepted mathematics. But proof correctness solves only one axis. Research-grade mathematical discovery also requires statement alignment, novelty evidence, research-value judgement and a hardened verifier trust chain. The design principle is therefore
 \[

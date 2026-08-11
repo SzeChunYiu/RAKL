@@ -1,0 +1,120 @@
+name: publication-v3-build
+
+on:
+  push:
+    branches:
+      - publication/v3-manuscripts-20260811
+    paths:
+      - publication/**
+      - paper/generate_demo_figures.py
+      - research/MINI_RESEARCH_DEMO_043_RECEIPT.json
+      - research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json
+      - research/MINI_ARCHIVE_STORAGE_044_RECEIPT.json
+      - scripts/audit_publication_citations.py
+      - .github/workflows/publication-v3-build.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-four-papers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: publication/v3-manuscripts-20260811
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Audit citation keys before TeX
+        run: python scripts/audit_publication_citations.py
+      - name: Install figure, LaTeX and PDF tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install matplotlib
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
+            lmodern poppler-utils
+      - name: Regenerate receipt-bound Paper II figures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/generate_demo_figures.py
+          for name in fig5_demo_growth fig6_demo_context; do
+            src="paper/figures/generated/${name}.pdf"
+            dst="publication/papers/paper-02-rakl-evidence-governed-research/source/${name}.pdf"
+            test -s "$src"
+            pdfinfo "$src" >/dev/null
+            cp "$src" "$dst"
+          done
+      - name: Compile Paper I
+        working-directory: publication/papers/paper-01-epistemic-mechanics
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Compile Paper II
+        working-directory: publication/papers/paper-02-rakl-evidence-governed-research/source
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Compile Paper III
+        working-directory: publication/papers/paper-03-directional-structural-witnesses
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Compile Paper IV
+        working-directory: publication/papers/paper-04-verified-discovery
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Check converged logs and rendered text
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_one() {
+            local dir="$1"
+            local label="$2"
+            echo "=== $label ==="
+            test -s "$dir/main.pdf"
+            test -s "$dir/main.log"
+            if grep -E 'LaTeX Warning: Citation .* undefined|LaTeX Warning: Reference .* undefined|There were undefined references|There were undefined citations|Undefined control sequence|Emergency stop|Fatal error' "$dir/main.log"; then
+              echo "Blocking converged LaTeX warning in $label" >&2
+              exit 1
+            fi
+            pdfinfo "$dir/main.pdf" | tee "$dir/pdfinfo.txt"
+            pdftotext "$dir/main.pdf" "$dir/main.txt"
+            grep -F 'Sze Chun Yiu' "$dir/main.txt"
+            grep -F 'Stockholm University' "$dir/main.txt"
+            grep -F 'sze-chun.yiu@fysik.su.se' "$dir/main.txt"
+            mkdir -p "$dir/renders"
+            pdftoppm -png -r 140 "$dir/main.pdf" "$dir/renders/page" >/dev/null
+            pages="$(pdfinfo "$dir/main.pdf" | awk '/^Pages:/ {print $2}')"
+            rendered="$(find "$dir/renders" -maxdepth 1 -name 'page-*.png' | wc -l)"
+            test "$rendered" -eq "$pages"
+          }
+          check_one publication/papers/paper-01-epistemic-mechanics 'Paper I'
+          check_one publication/papers/paper-02-rakl-evidence-governed-research/source 'Paper II'
+          check_one publication/papers/paper-03-directional-structural-witnesses 'Paper III'
+          check_one publication/papers/paper-04-verified-discovery 'Paper IV'
+      - name: Upload compiled v3 papers
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rakl-v3-four-papers-${{ github.sha }}
+          path: |
+            publication/papers/paper-01-epistemic-mechanics/main.pdf
+            publication/papers/paper-01-epistemic-mechanics/main.log
+            publication/papers/paper-01-epistemic-mechanics/main.txt
+            publication/papers/paper-01-epistemic-mechanics/pdfinfo.txt
+            publication/papers/paper-01-epistemic-mechanics/renders/*.png
+            publication/papers/paper-02-rakl-evidence-governed-research/source/fig5_demo_growth.pdf
+            publication/papers/paper-02-rakl-evidence-governed-research/source/fig6_demo_context.pdf
+            publication/papers/paper-02-rakl-evidence-governed-research/source/main.pdf
+            publication/papers/paper-02-rakl-evidence-governed-research/source/main.log
+            publication/papers/paper-02-rakl-evidence-governed-research/source/main.txt
+            publication/papers/paper-02-rakl-evidence-governed-research/source/pdfinfo.txt
+            publication/papers/paper-02-rakl-evidence-governed-research/source/renders/*.png
+            publication/papers/paper-03-directional-structural-witnesses/main.pdf
+            publication/papers/paper-03-directional-structural-witnesses/main.log
+            publication/papers/paper-03-directional-structural-witnesses/main.txt
+            publication/papers/paper-03-directional-structural-witnesses/pdfinfo.txt
+            publication/papers/paper-03-directional-structural-witnesses/renders/*.png
+            publication/papers/paper-04-verified-discovery/main.pdf
+            publication/papers/paper-04-verified-discovery/main.log
+            publication/papers/paper-04-verified-discovery/main.txt
+            publication/papers/paper-04-verified-discovery/pdfinfo.txt
+            publication/papers/paper-04-verified-discovery/renders/*.png
+          if-no-files-found: error

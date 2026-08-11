@@ -1,4 +1,24 @@
 \section{Preregistered empirical evaluation}
+
+% RAKL_V3_MANUSCRIPT_UPDATE_20260811
+
+\subsection{Immediate v3 gate: matched continual-experience transfer}
+The first empirical question introduced specifically by v3 is narrower than general research-agent superiority: does persistent external experience improve the same underlying model on fresh tasks when resources and task exposure are matched? The executable benchmark therefore compares two arms,
+\[
+\texttt{RESET\_BASELINE}
+\qquad\text{and}\qquad
+\texttt{LEARNING\_ENABLED},
+\]
+across a sequential development phase followed by fresh transfer. Every baseline task starts from the same initial state and may not mutate it. The learning arm forms one continuous state-hash chain through the development sequence. After development, the learned state is frozen, and every transfer task starts independently from that same frozen state; transfer task $T_1$ cannot teach $T_2$.
+
+The packet freezes model identity, prompts, resource ceiling, tools, evaluator protocol, initial state, task order and transfer set before execution. It fails closed on state-chain breaks, baseline mutation, transfer contamination, resource-ceiling violations or task/arm mismatch. Reported outcomes include success, registered score, repeated-failure rate, model and preprocessing tokens, tool/retrieval calls and wall time. A positive transfer delta is an observed benchmark result only; the report is structurally incapable of granting a global capability claim.
+
+The hostile near-miss stratum is essential. A learning architecture that always reuses prior lessons can improve repeated-task scores while becoming less safe out of scope. V3 therefore makes invalid transfer and false-lesson reuse direct falsifiers alongside positive transfer and reduced repeated failure.
+
+\subsection{RAKL-triviality as structural novelty metrology}
+Verified solutions are also classified by the strongest genuinely new problem-solving structure they required: \texttt{STORED}, \texttt{RAKL\_TRIVIAL}, \texttt{TRANSFER\_NOVEL}, \texttt{REPRESENTATION\_NOVEL}, \texttt{OPERATOR\_NOVEL}, \texttt{ONTOLOGY\_NOVEL} or \texttt{UNRESOLVED}. This does not rank intelligence. It asks whether a solution was retrieved, composed from existing resources, transferred by a witnessed mapping, or required a new representation, operator or ontology.
+
+The resulting zero-invention and strict RAKL-trivial rates make a previously qualitative hypothesis measurable: as the substrate grows, does the rate of genuinely new problem-solving primitives decline on a declared task distribution? The implementation supplies the metrology, not the answer. A high RAKL-triviality claim requires empirical benchmark data and remains open in this paper.
 \subsection{Matched scientific-research workflows}
 The same base LLM will be compared under matched evidence cutoff, tools, hidden outcomes and a common preregistered resource ceiling across direct strong prompting, retrieval-augmented research, a strong generic agentic workflow, fixed \RAKL{} and self-evolving \RAKL{}. The ceiling constrains model input/output tokens, preprocessing model tokens, preprocessing tool calls, external retrieval and wall time; actual resource use may differ because preprocessing is part of the intervention, but every arm must report its usage and remain within the same envelope. Primary outcomes include hidden scientific-defect precision/recall, unsupported authority upgrades, counterevidence uptake, negative-history recovery, experiment discrimination per cost, final held-out scientific performance, context tokens, preprocessing cost, tool calls and wall time. The framework loses its empirical case if simpler conditions match its registered scientific-process and final-task outcomes at lower cost without more blocking failures. The pendulum same-model microtrial is only a diagnostic bridge to this broader programme and cannot establish general superiority.
 
