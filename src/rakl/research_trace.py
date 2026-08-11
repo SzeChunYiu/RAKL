@@ -19,6 +19,7 @@ class ResearchTraceEventType(str, Enum):
     ANALOGY_SCAN = "ANALOGY_SCAN"
     METHOD_TRANSFER_REVIEW = "METHOD_TRANSFER_REVIEW"
     EXPERT_CONTEXT_REVIEW = "EXPERT_CONTEXT_REVIEW"
+    EXPERIENCE_MEMORY_REVIEW = "EXPERIENCE_MEMORY_REVIEW"
     NEXT_STEP_PROPOSED = "NEXT_STEP_PROPOSED"
     CANDIDATE_PROPOSED = "CANDIDATE_PROPOSED"
     FALSIFIER_RUN = "FALSIFIER_RUN"
@@ -76,6 +77,7 @@ REQUIRED_PRE_CANDIDATE_EVENTS: Tuple[ResearchTraceEventType, ...] = (
     ResearchTraceEventType.ANALOGY_SCAN,
     ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
     ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
+    ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW,
     ResearchTraceEventType.NEXT_STEP_PROPOSED,
 )
 
@@ -85,6 +87,7 @@ REQUIRED_TRACE_ACTIONS: Tuple[str, ...] = (
     "record_cross_domain_analogy_scan_result",
     "record_method_transfer_matrix_and_disanalogies",
     "record_role_separated_expert_context_review",
+    "record_success_tool_and_failure_lattice_memory_review",
     "record_proposed_next_step_with_alternatives_and_decision_rationale",
 )
 
@@ -162,6 +165,7 @@ def audit_research_trace(trace: MathResearchTrace | None) -> ResearchTraceReport
 
         if entry.event_type in {
             ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
+            ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW,
             ResearchTraceEventType.NEXT_STEP_PROPOSED,
             ResearchTraceEventType.CANDIDATE_PROPOSED,
         }:
@@ -173,6 +177,12 @@ def audit_research_trace(trace: MathResearchTrace | None) -> ResearchTraceReport
         if entry.event_type is ResearchTraceEventType.EXPERT_CONTEXT_REVIEW:
             if not entry.uncertainties:
                 reasons.append(f"{prefix}:expert_review_uncertainties_missing")
+
+        if entry.event_type is ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW:
+            if not entry.outputs:
+                reasons.append(f"{prefix}:memory_review_outputs_missing")
+            if not entry.uncertainties:
+                reasons.append(f"{prefix}:memory_review_warnings_or_uncertainties_missing")
 
         if entry.event_type is ResearchTraceEventType.NEXT_STEP_PROPOSED:
             if not entry.next_steps:
