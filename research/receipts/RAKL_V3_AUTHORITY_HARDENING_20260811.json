@@ -32,7 +32,7 @@
   ],
   "context": "post-PR118 corrective authority hardening",
   "controls": {
-    "authority_source": "exact attestation payload digest pinned in governed framework-release manifest; runtime policy/key cannot extend it",
+    "authority_source": "exact attestation payload digest plus release-governed signer-key fingerprint; runtime policy supplies verification material but cannot authorize a new payload or key",
     "chronology": "timezone-aware artifact freeze and attestation issue ordering",
     "content_binding": "SHA-256 over exact canonical subject plus resolved evidence/evaluator bytes",
     "legacy_behavior": "accepted only where it cannot mint authority; authority-sensitive paths fail closed"
@@ -49,7 +49,9 @@
     "governance_approved_boolean_without_attestation",
     "benchmark_frozen_boolean_without_receipts",
     "benchmark_output_bytes_hash_mismatch",
-    "posthoc_benchmark_freeze"
+    "posthoc_benchmark_freeze",
+    "known_manifest_id_and_payload_reissued_with_caller_key",
+    "promoted_lesson_contradiction_pointer_or_packet_mutation"
   ],
   "latest_main_integration": {
     "focused_command": "pytest -q tests/test_rakl_v3*.py",
@@ -65,7 +67,7 @@
   },
   "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
   "paper_files_touched": [],
-  "payload_sha256": "fe39ab2b742c625ce839e914a3ecd23dd964f4d7568784720f76cd46efb8c6ef",
+  "payload_sha256": "cd6ea0800dcf859faf681c3370b60d386bfb6dabe398ac7369529053dbeea006",
   "pre_existing_failures": [],
   "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
   "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
@@ -103,15 +105,27 @@
     "src/rakl/driver_learning.py": "08fea1cda7a6775a22de896c5da57ffe3ebc75bff1b7bfe1c3b546bfbd9f8eb5",
     "src/rakl/evolution_archive.py": "8e034cc43671490cb286112f2d0eea5ca5df0896ee3b27dbed6d59815440702a",
     "src/rakl/experience_benchmark.py": "85f14051d4ffa6f7177e969dd81cc97c8002f2f90a54a871305224da01f26af5",
-    "src/rakl/experience_learning.py": "099c9ea4a7e72887f4e051dca918cbae9d1de5565aad8a010d1f7e5dfb6e7654",
-    "src/rakl/experience_substrate.py": "a5814b7220d11698545fc663d23cc6bf97922a4383586ee97fc1fc11b67b87fb",
+    "src/rakl/experience_learning.py": "dae8546b3254f8b4636bd919e8660633330f730f2bd52667041834a5894b2b31",
+    "src/rakl/experience_substrate.py": "7bb8011a948ea5c4c38e683a3bef4ff390a03ed07e057bf57966036ea29956ae",
     "src/rakl/method_specs.py": "0e1a352c5ad197c54c2a438441179bf5a5963f72778bc7e6aa077df2208a97ee",
     "src/rakl/problem_fibre.py": "9b02ab47a70f05a1b5880b81acdf451027021c68ba171bf6a7ef4c09eef9505b",
     "src/rakl/v3.py": "8625e460d74a478c60f1a82a061f0747997b73d6b28fc0c5098186e8ab144658",
-    "src/rakl/v3_authority.py": "c882116971df1936ac5a1e5a5e2f44de430d71debb3621e143c521c139f0fad2",
+    "src/rakl/v3_authority.py": "d9248d33383d0d00fa1da20d48d9a30fad24793302ed5a1115966ed69ea09657",
     "src/rakl/v3_runtime.py": "272395c121fe28bbbbce44571c36d20d767bf70af1ad3f288994e0276ba2341a",
-    "tests/test_rakl_v3_authority_hardening.py": "b184d83f21fe92314bef29446ef7dc8c39c99d0a0a3645c85716aac5ae1c5baa",
+    "tests/test_rakl_v3_authority_hardening.py": "590bf61ff2d675dcf884c0af05795209366fa0aef4483f1497e0eb25a13e1b70",
     "tests/test_rakl_v3_experience_benchmark.py": "6e54a1aad3f1738f661d5e7819739f52a2891832ae177d6ec1ae8569afa84a81"
+  },
+  "third_blocking_review_round": {
+    "findings": [
+      "known release-manifest id and unsigned payload could be reissued with caller-controlled key because signatures were unkeyed and runtime policy keys were not authenticated",
+      "promoted contradiction lineage evidence pointers and packet hash could be mutated with a recomputed self-hash"
+    ],
+    "merge_allowed": false,
+    "repairs": [
+      "HMAC-SHA-256 verification requires both exact release-manifest payload membership and a release-governed signer-key fingerprint; known-id caller-key replay fails closed",
+      "a canonical consolidation-packet artifact and separate LESSON_PROMOTION attestation bind the exact final promoted-lesson content hash parent packet and complete episode lineage"
+    ],
+    "status": "REPAIRED_PENDING_FRESH_EXACT_HEAD_REVIEW"
   },
   "verdict": "INTERNAL_CONFORMANCE_PASS_BLOCK_MERGE_PENDING_FRESH_REVIEW",
   "verification": [

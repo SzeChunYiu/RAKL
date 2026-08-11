@@ -22,6 +22,7 @@ class AttestationPurpose(str, Enum):
     LESSON_VERIFICATION = "LESSON_VERIFICATION"
     LESSON_TRANSFER = "LESSON_TRANSFER"
     LESSON_PROOF = "LESSON_PROOF"
+    LESSON_PROMOTION = "LESSON_PROMOTION"
     TOOL_PROJECTION = "TOOL_PROJECTION"
     LOCAL_SECTION_VERIFICATION = "LOCAL_SECTION_VERIFICATION"
     EVOLUTION_ASSURANCE = "EVOLUTION_ASSURANCE"
@@ -125,17 +126,22 @@ def _unsigned_attestation_payload(attestation: ProtectedAttestation) -> dict[str
 def issue_protected_attestation(*, signing_key: bytes, **values: object) -> ProtectedAttestation:
     """Construct an attestation proposal for release-manifest review.
 
-    ``signing_key`` is a deprecated compatibility input and creates no authority.
-    Resolution requires the exact unsigned digest to be present in the governed
-    release manifest; a caller-created key or policy cannot add that entry.
+    Resolution requires both the exact unsigned digest in the governed release
+    manifest and an HMAC made with release-authorized signer key material.  A
+    caller-created key or runtime policy cannot add either trust root.
     """
 
     if not isinstance(signing_key, bytes):
         raise TypeError("signing_key compatibility input must be bytes")
     unsigned = ProtectedAttestation(signature="0" * 64, **values)  # type: ignore[arg-type]
     # Issuance only constructs a proposal. Resolution additionally requires the
-    # exact unsigned digest to be present in the release-governed manifest below.
-    signature = sha256(canonical_json_bytes(_unsigned_attestation_payload(unsigned))).hexdigest()
+    # exact unsigned digest and signer-key fingerprint to be present in the
+    # release-governed manifests below.
+    signature = hmac.new(
+        signing_key,
+        canonical_json_bytes(_unsigned_attestation_payload(unsigned)),
+        sha256,
+    ).hexdigest()
     return ProtectedAttestation(signature=signature, **values)  # type: ignore[arg-type]
 
 
@@ -174,12 +180,24 @@ class AttestationResolution:
 PROTECTED_ATTESTATION_MANIFEST: dict[str, str] = {
     "verify": "e0642f3afbc68a579aa643c33a7116eba274acc257e5ea3943b8d6887010c6c7",
     "transfer": "b1c18bc4964d761c8c915368ca70e7b32875dc022d6806c1dbfea5f308dd0c3b",
-    "tool-projection": "57faa504b675341e2dc5b3b2061a2b38c2fcab820021492c0bf2dcc582db1c9c",
+    "lesson-promotion": "8ef2274b7f4cb9aa42e927190116cc61a61b6d3d71602929073a8cead7bb73b5",
+    "tool-projection": "9e732fbd98809241f00695c0662f41959fdbfe2bd86468c89ed881ada68a2d83",
     "section-check": "0a5f192c219636ec22e0dfa362c9a4d30d2c9ba412bcc51970d7966a5d6c6d43",
     "assurance": "3cd740c0ff99026b0a0c4d78e79b0ada6e096e6fc39bfea69fae546c0431df30",
     "governance": "0ecfa661bf7702920fcf977ff741e4f4b9263a284a989dc619ac9311be9cf161",
     "freeze": "c81a942cebfbaeb37f3e8aaa5f86ff83fbe4cb42f6a55241b1526fb4fde22994",
     "match": "b28ec3d25ab5751950d8660cd967e044c5bffe3a1fa28f8a9fad49909d852c89",
+}
+
+
+# Fingerprints of signer keys authorized for the internal assurance fixtures in
+# this framework release. Runtime ``AuthorityTrustPolicy`` values provide key
+# material for verification but cannot authorize a different key by themselves.
+# Production deployments should replace this internal HMAC fixture with an
+# externally governed public-key verifier and protected private-key custody.
+PROTECTED_SIGNER_KEY_SHA256: dict[str, str] = {
+    "protected-evaluator": "4a07f27fead8f41f1a0da5aa9bbcf9aa529af39d3dc0581cced0842644467a1f",
+    "benchmark-evaluator": "4c255078ac100113bb6f7aaf4734028ec9458c9f03a7e0ea0b9f59b20aef7a9b",
 }
 
 
@@ -221,8 +239,23 @@ def resolve_protected_attestation(
         reasons.append("protected_attestation_not_in_release_manifest")
     elif not hmac.compare_digest(manifest_digest, unsigned_digest):
         reasons.append("protected_attestation_release_manifest_mismatch")
-    if not hmac.compare_digest(unsigned_digest, attestation.signature):
-        reasons.append("protected_attestation_signature_invalid")
+    signer_keys = dict(context.policy.signer_keys)
+    signer_key = signer_keys.get(attestation.signer_id)
+    governed_key_digest = PROTECTED_SIGNER_KEY_SHA256.get(attestation.signer_id)
+    if signer_key is None:
+        reasons.append("protected_signer_key_unresolved")
+    elif governed_key_digest is None:
+        reasons.append("protected_signer_not_release_authorized")
+    elif not hmac.compare_digest(sha256(signer_key).hexdigest(), governed_key_digest):
+        reasons.append("protected_signer_key_material_mismatch")
+    else:
+        expected_signature = hmac.new(
+            signer_key,
+            canonical_json_bytes(_unsigned_attestation_payload(attestation)),
+            sha256,
+        ).hexdigest()
+        if not hmac.compare_digest(expected_signature, attestation.signature):
+            reasons.append("protected_attestation_signature_invalid")
 
     bound = dict(attestation.evidence_bindings)
     evaluator = artifacts.get(attestation.evaluator_artifact_id)

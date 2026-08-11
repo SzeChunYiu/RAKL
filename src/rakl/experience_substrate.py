@@ -150,6 +150,8 @@ class Lesson:
     authority_attestation_id: str | None = None
     authority_subject_hash: str | None = None
     authority_evidence_packet_hash: str | None = None
+    promotion_attestation_id: str | None = None
+    authority_evidence_packet_artifact_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -200,8 +202,7 @@ def episode_content_bytes(episode: TaskEpisode) -> bytes:
 def lesson_content_bytes(lesson: Lesson) -> bytes:
     """Canonical exact bytes whose digest is the lesson-version identity."""
 
-    return canonical_json_bytes(
-        {
+    payload: dict[str, object] = {
             "lesson_id": lesson.lesson_id,
             "kind": lesson.kind.value,
             "trigger_signature": list(lesson.trigger_signature),
@@ -220,7 +221,12 @@ def lesson_content_bytes(lesson: Lesson) -> bytes:
             "authority_subject_hash": lesson.authority_subject_hash,
             "authority_evidence_packet_hash": lesson.authority_evidence_packet_hash,
         }
-    )
+    # Preserve candidate hashes from the pre-promotion substrate while binding
+    # the exact final promotion receipt into every promoted lesson version.
+    if lesson.promotion_attestation_id is not None or lesson.authority_evidence_packet_artifact_id is not None:
+        payload["promotion_attestation_id"] = lesson.promotion_attestation_id
+        payload["authority_evidence_packet_artifact_id"] = lesson.authority_evidence_packet_artifact_id
+    return canonical_json_bytes(payload)
 
 
 def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
@@ -363,6 +369,8 @@ def add_lesson(
             raise ValueError("promoted lesson authority subject is not its exact parent")
         if not lesson.authority_evidence_packet_hash:
             raise ValueError("promoted lesson exact evidence packet binding is missing")
+        if not lesson.promotion_attestation_id or not lesson.authority_evidence_packet_artifact_id:
+            raise ValueError("promoted lesson exact-final-content attestation is missing")
         attestation = next(
             item for item in authority_context.attestations
             if item.attestation_id == lesson.authority_attestation_id
@@ -375,6 +383,36 @@ def add_lesson(
         }
         if attested_episode_ids != set(lesson.supporting_episode_ids):
             raise ValueError("promoted lesson support does not equal attested episode lineage")
+        packet_artifact = next(
+            (
+                item
+                for item in authority_context.artifacts
+                if item.artifact_id == lesson.authority_evidence_packet_artifact_id
+            ),
+            None,
+        )
+        if (
+            packet_artifact is None
+            or not packet_artifact.content_valid
+            or packet_artifact.payload_sha256 != lesson.authority_evidence_packet_hash
+        ):
+            raise ValueError("promoted lesson exact evidence packet artifact is unresolved")
+        promotion = resolve_protected_attestation(
+            authority_context,
+            lesson.promotion_attestation_id,
+            purpose=AttestationPurpose.LESSON_PROMOTION,
+            subject_hash=lesson.artifact_hash,
+            required_artifact_ids=(lesson.authority_evidence_packet_artifact_id,),
+            required_artifact_hashes=(
+                parent.artifact_hash,
+                lesson.authority_evidence_packet_hash,
+            ) + required_hashes,
+        )
+        if not promotion.valid:
+            raise ValueError(
+                "promoted lesson requires exact-final-content promotion attestation: "
+                + ", ".join(promotion.reasons)
+            )
 
     node = SubstrateNode(
         node_id=lesson.lesson_id,

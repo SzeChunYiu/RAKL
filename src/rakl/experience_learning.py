@@ -49,6 +49,8 @@ class LessonConsolidationEvidence:
     verification_attestation_id: str | None = None
     transfer_attestation_id: str | None = None
     proof_attestation_id: str | None = None
+    promotion_attestation_id: str | None = None
+    promotion_artifact_id: str | None = None
     authority_context: ProtectedAuthorityContext | None = None
 
 
@@ -90,14 +92,42 @@ def consolidation_evidence_packet_hash(
     candidate: Lesson,
     evidence: LessonConsolidationEvidence,
 ) -> str:
+    return sha256(consolidation_evidence_packet_bytes(candidate, evidence)).hexdigest()
+
+
+def consolidation_evidence_packet_bytes(
+    candidate: Lesson,
+    evidence: LessonConsolidationEvidence,
+) -> bytes:
     context = evidence.authority_context
+    selected_attestation_ids = {
+        item
+        for item in (
+            evidence.verification_attestation_id,
+            evidence.transfer_attestation_id,
+            evidence.proof_attestation_id,
+        )
+        if item
+    }
+    selected_attestations = () if context is None else tuple(
+        item for item in context.attestations if item.attestation_id in selected_attestation_ids
+    )
+    selected_artifact_ids = {
+        artifact_id
+        for attestation in selected_attestations
+        for artifact_id, _ in attestation.evidence_bindings
+    } | {attestation.evaluator_artifact_id for attestation in selected_attestations}
     artifact_bindings = () if context is None else tuple(
-        sorted((item.artifact_id, item.payload_sha256, item.frozen_at, item.producer_id) for item in context.artifacts)
+        sorted(
+            (item.artifact_id, item.payload_sha256, item.frozen_at, item.producer_id)
+            for item in context.artifacts
+            if item.artifact_id in selected_artifact_ids
+        )
     )
-    attestation_bindings = () if context is None else tuple(
-        sorted((item.attestation_id, item.signature, item.subject_hash, item.issued_at) for item in context.attestations)
+    attestation_bindings = tuple(
+        sorted((item.attestation_id, item.signature, item.subject_hash, item.issued_at) for item in selected_attestations)
     )
-    return sha256(canonical_json_bytes({
+    return canonical_json_bytes({
         "candidate_hash": candidate.artifact_hash,
         "supporting_episode_ids": list(evidence.supporting_episode_ids),
         "contradicting_episode_ids": list(evidence.contradicting_episode_ids),
@@ -107,9 +137,11 @@ def consolidation_evidence_packet_hash(
         "verification_attestation_id": evidence.verification_attestation_id,
         "transfer_attestation_id": evidence.transfer_attestation_id,
         "proof_attestation_id": evidence.proof_attestation_id,
+        "promotion_attestation_id": evidence.promotion_attestation_id,
+        "promotion_artifact_id": evidence.promotion_artifact_id,
         "artifact_bindings": artifact_bindings,
         "attestation_bindings": attestation_bindings,
-    })).hexdigest()
+    })
 
 
 def assess_lesson_consolidation(
@@ -322,7 +354,17 @@ def promoted_lesson_version(
         evidence_pointers=tuple(
             dict.fromkeys(
                 candidate.evidence_pointers
-                + tuple(item for item in (evidence.verification_attestation_id, evidence.transfer_attestation_id, evidence.proof_attestation_id) if item)
+                + tuple(
+                    item
+                    for item in (
+                        evidence.verification_attestation_id,
+                        evidence.transfer_attestation_id,
+                        evidence.proof_attestation_id,
+                        evidence.promotion_attestation_id,
+                        evidence.promotion_artifact_id,
+                    )
+                    if item
+                )
             )
         ),
         artifact_hash="",
@@ -330,6 +372,8 @@ def promoted_lesson_version(
         authority_attestation_id=report.authority_attestation_id,
         authority_subject_hash=report.authority_subject_hash,
         authority_evidence_packet_hash=report.evidence_packet_hash,
+        promotion_attestation_id=evidence.promotion_attestation_id,
+        authority_evidence_packet_artifact_id=evidence.promotion_artifact_id,
     )
     # The caller-provided artifact_hash is retained only as a backwards API
     # parameter; authority identity is always recomputed from exact content.

@@ -20,6 +20,7 @@ from rakl.evolution_archive import (
 )
 from rakl.experience_learning import ConsolidationVerdict, LessonConsolidationEvidence, assess_lesson_consolidation
 from rakl.experience_learning import (
+    consolidation_evidence_packet_bytes,
     lesson_to_research_tool,
     promoted_lesson_version,
     research_tool_content_bytes,
@@ -238,6 +239,8 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         fresh_transfer_episode_ids=("E2",),
         verification_attestation_id="verify",
         transfer_attestation_id="transfer",
+        promotion_attestation_id="lesson-promotion",
+        promotion_artifact_id="lesson-packet:L2",
         authority_context=context,
     )
     resolved = assess_lesson_consolidation(
@@ -275,6 +278,22 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         preview, ledger, tool_id="T1", name="protected tool", kind="operator"
     )
     candidate_artifact = _artifact("lesson:L1", lesson_content_bytes(candidate), at="2026-08-11T08:10:00+00:00")
+    packet_artifact = _artifact(
+        "lesson-packet:L2",
+        consolidation_evidence_packet_bytes(candidate, evidence_packet),
+        at="2026-08-11T08:13:00+00:00",
+    )
+    promotion_attestation = _attestation(
+        AttestationPurpose.LESSON_PROMOTION,
+        preview.artifact_hash,
+        (packet_artifact, candidate_artifact, source_artifact, transfer_artifact),
+        attestation_id="lesson-promotion",
+    )
+    promotion_context = _context(
+        (packet_artifact, candidate_artifact, source_artifact, transfer_artifact),
+        (verification, transfer_attestation, promotion_attestation),
+    )
+    final_evidence_packet = replace(evidence_packet, authority_context=promotion_context)
     promoted_artifact = _artifact("lesson:L2", lesson_content_bytes(preview), at="2026-08-11T08:14:00+00:00")
     tool_artifact = _artifact("tool:T1", research_tool_content_bytes(tool_preview), at="2026-08-11T08:15:00+00:00")
     tool_attestation = _attestation(
@@ -284,14 +303,21 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         attestation_id="tool-projection",
     )
     tool_context = _context(
-        (tool_artifact, promoted_artifact, candidate_artifact, source_artifact, transfer_artifact),
-        (verification, transfer_attestation, tool_attestation),
+        (
+            tool_artifact,
+            promoted_artifact,
+            packet_artifact,
+            candidate_artifact,
+            source_artifact,
+            transfer_artifact,
+        ),
+        (verification, transfer_attestation, promotion_attestation, tool_attestation),
     )
     state = record_task_episode(record_task_episode(RAKLV3State(), source), transfer)
     consolidated = consolidate_lesson(
         state,
         candidate,
-        evidence_packet,
+        final_evidence_packet,
         promoted_lesson_id="L2",
         promoted_artifact_hash="caller-string-is-not-authority",
         tool_spec=ToolProjectionSpec(
@@ -307,7 +333,7 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         consolidate_lesson(
             state,
             candidate,
-            evidence_packet,
+            final_evidence_packet,
             promoted_lesson_id="L2",
             promoted_artifact_hash="ignored",
             tool_spec=ToolProjectionSpec(
@@ -338,7 +364,25 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
     forged_final_draft = replace(preview, action="unreviewed operation", artifact_hash="")
     forged_final = replace(forged_final_draft, artifact_hash=sha256(lesson_content_bytes(forged_final_draft)).hexdigest())
     with pytest.raises(ValueError, match="changes unreviewed parent content"):
-        add_lesson(add_lesson(ledger, candidate), forged_final, authority_context=context)
+        add_lesson(add_lesson(ledger, candidate), forged_final, authority_context=promotion_context)
+
+    recorded_candidate_ledger = add_lesson(ledger, candidate)
+    hostile_mutations = (
+        replace(preview, contradicting_episode_ids=("E2",), artifact_hash=""),
+        replace(preview, evidence_pointers=preview.evidence_pointers + ("forged:pointer",), artifact_hash=""),
+        replace(preview, authority_evidence_packet_hash="0" * 64, artifact_hash=""),
+    )
+    for hostile_draft in hostile_mutations:
+        hostile = replace(
+            hostile_draft,
+            artifact_hash=sha256(lesson_content_bytes(hostile_draft)).hexdigest(),
+        )
+        with pytest.raises(ValueError, match="promoted lesson"):
+            add_lesson(
+                recorded_candidate_ledger,
+                hostile,
+                authority_context=promotion_context,
+            )
 
     forged_attestation = replace(transfer_attestation, signature="0" * 64)
     forged_context = _context((source_artifact, transfer_artifact), (verification, forged_attestation))
@@ -378,6 +422,52 @@ def test_local_section_boolean_and_empty_evidence_never_grant_solution_authority
     )
     report = glue_local_sections(decomposition, (section,), authority_context=_context((evidence,), (attestation,)))
     assert report.grants_solution_authority
+
+    # Reconstruct the exact release-manifest fixture id and unsigned payload,
+    # but sign it with caller-controlled key material and advertise that same
+    # key through the runtime policy.  Manifest membership authenticates
+    # content chronology, not the signer, so this must still fail closed.
+    attacker_key = b"caller-controlled-key-material-over-32-bytes"
+    forged_known_id = issue_protected_attestation(
+        attestation_id="section-check",
+        purpose=AttestationPurpose.LOCAL_SECTION_VERIFICATION,
+        subject_hash=local_section_subject_hash(section, decomposition, atom),
+        subject_frozen_at="2026-08-11T08:10:00+00:00",
+        evaluator_artifact_id="evaluator",
+        evaluator_artifact_sha256=sha256(b"protected evaluator v1").hexdigest(),
+        evidence_bindings=((evidence.artifact_id, evidence.payload_sha256),),
+        proposer_id=PROPOSER,
+        signer_id=SIGNER,
+        issued_at="2026-08-11T08:20:00+00:00",
+        verdict="PASS",
+        signing_key=attacker_key,
+    )
+    evaluator = _artifact(
+        "evaluator",
+        b"protected evaluator v1",
+        at="2026-08-11T08:00:00+00:00",
+        producer=SIGNER,
+    )
+    attacker_context = ProtectedAuthorityContext(
+        artifacts=(evaluator, evidence),
+        attestations=(forged_known_id,),
+        policy=AuthorityTrustPolicy(((SIGNER, attacker_key),)),
+    )
+    forged_resolution = resolve_protected_attestation(
+        attacker_context,
+        "section-check",
+        purpose=AttestationPurpose.LOCAL_SECTION_VERIFICATION,
+        subject_hash=local_section_subject_hash(section, decomposition, atom),
+        required_artifact_ids=(evidence.artifact_id,),
+    )
+    assert not forged_resolution.valid
+    assert "protected_signer_key_material_mismatch" in forged_resolution.reasons
+    assert not glue_local_sections(
+        decomposition,
+        (section,),
+        authority_context=attacker_context,
+    ).grants_solution_authority
+
     pnp_atom = ProblemAtom("A1", "prove P=NP", "pnp", ("complexity",), ("proof",))
     pnp = ProblemDecomposition("P-vs-NP", (pnp_atom,))
     assert not glue_local_sections(pnp, (section,), authority_context=_context((evidence,), (attestation,))).grants_solution_authority
