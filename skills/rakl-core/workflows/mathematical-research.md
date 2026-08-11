@@ -4,21 +4,22 @@ Use when the target includes a conjecture, theorem, proof, formalization, or a c
 
 ## Core separation
 
-Keep seven questions independent:
+Keep eight questions independent:
 
 1. **Discovery context** — was the active atom understood across equivalent formulations, solved/near-solved analogues and witnessed method-transfer assumptions before candidate generation?
-2. **Research trace** — is there an auditable chronological record of atomization, context, analogy scan, method choice, expert objections, next action, falsification, residuals and later promotion events?
-3. **Specification** — does the formal statement mean what the researcher intended?
-4. **Truth** — is that exact formal statement proved from the registered assumptions?
-5. **Verifier trust** — what checker, axioms, dependencies and artifact identities does the truth claim rely on?
-6. **Novelty** — is an equivalent or stronger prior result already known in the registered literature world?
-7. **Research value** — is the result interesting, general, explanatory, or useful enough to pursue or publish?
+2. **Accumulated experience** — were relevant success-derived tools and prior failure experiences queried, scoped and incorporated before choosing the next move?
+3. **Research trace** — is there an auditable chronological record of atomization, context, analogy scan, experience review, method choice, expert objections, next action, falsification, residuals and later promotion events?
+4. **Specification** — does the formal statement mean what the researcher intended?
+5. **Truth** — is that exact formal statement proved from the registered assumptions?
+6. **Verifier trust** — what checker, axioms, dependencies and artifact identities does the truth claim rely on?
+7. **Novelty** — is an equivalent or stronger prior result already known in the registered literature world?
+8. **Research value** — is the result interesting, general, explanatory, or useful enough to pursue or publish?
 
 No score may average these gates together. Discovery-process compliance does not make a theorem true; theorem truth does not retroactively establish that strict RAKL discovery procedure was followed.
 
 ## Hard pre-candidate gates
 
-After atomization and **before** the LLM may propose a proof idea, lemma, invariant, auxiliary construction or other mathematical candidate, two process gates must pass.
+After atomization and **before** the LLM may propose a proof idea, lemma, invariant, auxiliary construction or other mathematical candidate, three process gates must pass.
 
 ### Gate A — mathematical context fiber
 
@@ -41,7 +42,20 @@ The cross-domain scan may inspect other mathematics, physics, engineering, algor
 
 A bibliography, paper list, generic survey or sentence such as "this resembles X" does not pass this gate.
 
-### Gate B — public research trace
+### Gate B — dual research experience memory
+
+Before selecting a candidate method, query both:
+
+- the **scoped success-derived research tool inventory** (`src/rakl/research_tool_inventory.py`);
+- the **global failure experience lattice** (`src/rakl/failure_lattice.py`).
+
+Freeze a `ResearchMemoryReview` bound to the current atom/context and exact memory snapshot hashes. Record the candidate method families searched, relevant tool ids, relevant failure ids, tool applicability assessment, failure reuse/scope assessment, unresolved warnings and evidence pointers. Explicit `NO_RELEVANT_MATCH` is allowed; silently skipping the query is not.
+
+Successful steps are promoted to reusable tools only when preconditions, structural signature, guaranteed effects, non-guarantees, validation obligations, provenance and known failure history are explicit. `worked_once` never means `universally_valid`.
+
+Failures are reusable experience, not blacklists. Reusing a method with relevant prior failure history requires a scope/difference witness and targeted repeat-failure test. Only a verified impossibility result may globally block reuse, and only inside its registered scope.
+
+### Gate C — public research trace
 
 Freeze and append an auditable trace conforming to `schemas/math-research-trace.schema.json`. Before candidate generation, the active atom must have these chronological events:
 
@@ -50,7 +64,8 @@ Freeze and append an auditable trace conforming to `schemas/math-research-trace.
 3. `ANALOGY_SCAN` — retained/refuted analogies or explicit no-safe-bridge result;
 4. `METHOD_TRANSFER_REVIEW` — source methods, enabling assumptions, shared structure and disanalogies;
 5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, unresolved uncertainty and recommendation;
-6. `NEXT_STEP_PROPOSED` — proposed action, alternatives considered, concise evidence-grounded selection rationale, uncertainty and expected discriminator.
+6. `EXPERIENCE_MEMORY_REVIEW` — relevant success tools, failure experiences, applicability/reuse warnings and exact memory-review artifact;
+7. `NEXT_STEP_PROPOSED` — proposed action, alternatives considered, concise evidence-grounded selection rationale, uncertainty and expected discriminator.
 
 The pre-candidate expert cell must cover at least: domain/theory, analogy/method transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. These are same-context role-separated passes and must never be labelled independent peer review.
 
@@ -58,7 +73,7 @@ Trace entries are hash-chained. Except for the first event, `previous_event_hash
 
 This is an inspectable scientific decision record, not a raw private chain-of-thought transcript. Record only reproducible state, bounded rationale, evidence, outputs, uncertainties, residuals and next actions.
 
-Call `plan_math_research(..., context_fiber=..., research_trace=...)`. If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`. Do not directly call lower-level candidate operators to bypass either gate. Do not write a candidate and backfill context or trace afterward.
+Call `plan_math_research(..., context_fiber=..., memory_review=..., research_trace=...)`. If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`. Do not directly call lower-level candidate operators to bypass any gate. Do not write a candidate and backfill context, memory review or trace afterward.
 
 ## Procedure
 
@@ -70,123 +85,103 @@ Call `plan_math_research(..., context_fiber=..., research_trace=...)`. If `candi
 6. Run a cross-domain analogy scan. Abstract away domain nouns and compare roles, constraints, resources, transformations, bottlenecks, information flow, reuse, symmetry, conservation and failure modes. Retain an analogy only when its mapping and disanalogies are explicit.
 7. Build the method-transfer matrix. For each analogue, record shared structure, broken assumptions/disanalogies and the minimum repair question needed for transfer.
 8. Freeze/hash the context packet and record `CONTEXT_FROZEN`, `ANALOGY_SCAN` and `METHOD_TRANSFER_REVIEW` before candidate generation.
-9. Convene the same-context expert cell. The domain/theory lead checks exact model scope and barriers; the analogy lead attacks transfer assumptions; the adversarial lead designs cheap falsifiers and detects obstruction renaming; the formal-methods lead checks statement/proof obligations and verifier boundaries; the novelty/value lead searches for likely parent results and assesses information gain. Preserve disagreement and record `EXPERT_CONTEXT_REVIEW`.
-10. Propose the next action and alternatives. Record `NEXT_STEP_PROPOSED` with a concise evidence-grounded rationale and expected discriminator.
-11. Pass `audit_math_context_fiber`, `audit_pre_candidate_trace` and `plan_math_research`.
-12. Only after both gates pass, use LLMs as proposal generators for conjectures, proof ideas, lemmas, representations, auxiliary objects and search actions. Each candidate must point to the context-transfer row, witnessed analogy or residual that motivated it. Record `CANDIDATE_PROPOSED`.
-13. Compile the assurance state into explicit obstructions with `plan_math_research`; use obstruction-guided operator paths as candidate research routes, not truth authority.
-14. Run a **counterexample-first pass** before expensive proof search: exact finite enumeration where possible, randomized/property testing, CAS/SMT/SAT/model finding, boundary and degenerate cases. Record `FALSIFIER_RUN` and `RESULT_RECORDED`.
-15. If a candidate fails, preserve the failure, record `RESIDUAL_OPENED`, and classify the residual. Update the context fiber when the failure reveals a new structural coordinate, disanalogy, method limitation or equivalent formulation. Do not blindly generate another proof from the same unchanged context packet.
-16. Formalize the candidate statement. Bind the informal claim and formal statement with hashes and an explicit `FormalizationWitness`. Record `FORMALIZED`.
-17. Check the formalization by round-trip paraphrase, positive/negative examples, boundary cases, assumptions, quantifier order, domains, and at least one independent review for a new-mathematics claim.
-18. Search for a proof in a theorem prover or other proof-producing system. Treat every failed proof attempt as negative history rather than deleting it.
-19. For any accepted theorem, record a `ProofReceipt` bound to the exact formal statement and source hash. Record `PROOF_CHECKED` only at the actual authority achieved.
-20. Audit all transitive proof dependencies. Finished strict-profile results must not depend on `sorryAx`; unregistered custom axioms are rejected, and compiler/native trust is rejected when independent kernel-level assurance is required.
-21. Recheck generated proof artifacts in an isolated independent checker where the proof ecosystem supports it. Pin checker versions and dependency identities.
-22. Only after truth assurance, open the novelty fiber. Build a notation-normalized and structure-aware theorem fingerprint; search multiple literature corpora, terminology variants, citation neighborhoods, translations, structural equivalents and known stronger parent theorems. Record `NOVELTY_CHECKED`.
-23. Record novelty only as a **bounded, cutoff-scoped certificate**. A later prior-art hit may demote novelty without demoting proof validity.
-24. Evaluate research value separately: generality, compression, explanatory power, connection to open problems, nontriviality, downstream consequences, new representation/invariant/technique and expert interest.
-25. Run same-context consistency review, then genuinely isolated reviewers where independence is required. Record `REVIEWED` with the exact review authority.
-26. Promote to `NEW_MATHEMATICS_CANDIDATE` only when specification alignment, proof assurance, verifier-trust audit, bounded novelty, and research-value review all pass. If claiming strict RAKL-mediated discovery, context chronology and research trace must also pass. Record `PROMOTED` only after those gates.
-27. Release the context fiber, research trace, theorem statement, proof artifact, dependency/axiom audit, checker identities, corpus cutoff, novelty search routes, structural fingerprint/equivalence policy and negative-history summary.
+9. Convene the same-context expert cell. Preserve disagreement and record `EXPERT_CONTEXT_REVIEW`.
+10. Query the success-derived tool inventory for structurally applicable methods and review each tool's preconditions, guarantees, non-guarantees, validation obligations and known failures.
+11. Query the failure lattice for relevant method families, broken assumptions and residual signatures. If reusing a warned method, record a `DifferenceWitness` and cheapest repeat-failure test. If repeated residuals remain unclassified, route them to metacognition rather than guessing again.
+12. Freeze the `ResearchMemoryReview` and record `EXPERIENCE_MEMORY_REVIEW`.
+13. Propose the next action and alternatives. Record `NEXT_STEP_PROPOSED` with a concise evidence-grounded rationale and expected discriminator, including how accumulated experience affected the choice.
+14. Pass `audit_math_context_fiber`, `audit_research_memory_review`, `audit_pre_candidate_trace` and `plan_math_research`.
+15. Only after all three gates pass, use LLMs as proposal generators for conjectures, proof ideas, lemmas, representations, auxiliary objects and search actions. Each candidate must point to the context-transfer row, witnessed analogy, reusable tool, failure repair/difference witness or residual that motivated it. Record `CANDIDATE_PROPOSED`.
+16. Run a **counterexample-first pass** before expensive proof search. Record `FALSIFIER_RUN` and `RESULT_RECORDED`.
+17. If a candidate fails, preserve the exact failure and record `RESIDUAL_OPENED`. Generate competing diagnoses, test them where possible, create/update a `FailureExperience`, link it into the global failure lattice, and update the global failure portrait. Reopen context if the failure reveals a new structural coordinate or transfer mismatch.
+18. If a candidate succeeds, update the knowledge/proof DAG at the exact authority achieved. If a method step is genuinely reusable, distill a scoped `ResearchTool`; do not automatically universalize the success.
+19. Formalize the candidate statement. Bind the informal claim and formal statement with hashes and an explicit `FormalizationWitness`. Record `FORMALIZED`.
+20. Check the formalization by round-trip paraphrase, positive/negative examples, boundary cases, assumptions, quantifier order, domains, and at least one independent review for a new-mathematics claim.
+21. Search for a proof in a theorem prover or other proof-producing system. Treat every failed proof attempt as negative history and failure experience when material.
+22. For any accepted theorem, record a `ProofReceipt` bound to the exact formal statement and source hash. Record `PROOF_CHECKED` only at the actual authority achieved.
+23. Audit all transitive proof dependencies and recheck generated proof artifacts in an isolated independent checker where supported.
+24. Only after truth assurance, open the novelty fiber. Build a notation-normalized and structure-aware theorem fingerprint; search multiple literature corpora and structural equivalents. Record `NOVELTY_CHECKED`.
+25. Record novelty only as a bounded, cutoff-scoped certificate.
+26. Evaluate research value separately.
+27. Run same-context consistency review, then genuinely isolated reviewers where independence is required. Record `REVIEWED` with exact review authority.
+28. Promote to `NEW_MATHEMATICS_CANDIDATE` only when specification alignment, proof assurance, verifier-trust audit, bounded novelty, and research-value review all pass. If claiming strict RAKL-mediated discovery, context, dual-memory and trace chronology must also pass. Record `PROMOTED` only after those gates.
+29. Release the context fiber, memory review, research trace, relevant tool/failure records, theorem statement, proof artifact, dependency/axiom audit, checker identities, novelty search world and negative-history summary.
 
-The executable reference surfaces are:
+## Long-horizon memory rule
+
+Do not store research as one long transcript or a folder of disconnected attempts. Maintain four complementary planes:
 
 ```text
-src/rakl/math_context.py
-src/rakl/research_trace.py
-src/rakl/problem_solving_algebra.py
-src/rakl/math_research_runtime.py
-src/rakl/math_research_assurance.py
-schemas/math-context-fiber.schema.json
-schemas/math-research-trace.schema.json
-benchmarks/math_research_assurance/tasks_v0.json
-docs/MATH_RESEARCH_QUICKSTART.md
+knowledge/proof DAG       -> what is known / open
+scoped tool inventory     -> what has worked, under what conditions
+failure experience lattice-> what has failed, why/scope/repairs
+public research trace     -> how the state changed over time
 ```
 
-## Long-horizon rule
+`src/rakl/metacognition.py` sits above these planes. Repeated unclassified failures may expose an ontology or method-basis gap and become a new RAKL child problem.
 
-Do not store mathematical research as one long natural-language transcript. Every verified lemma is a persistent checkpoint in the proof DAG. Every active atom has a versioned context fiber and an append-only hash-chained public research trace. Generator mistakes should increase search cost or create rejected branches; they must not accumulate as hidden logical debt inside an accepted theorem.
-
-When several candidates fail for the same structural reason, do not ask for another unconstrained proof. Promote that repeated residual into a new context atom and search solved sibling contexts and cross-domain analogues for methods that specifically handle the missing structure.
+When several candidates fail for the same structural reason, do not ask for another unconstrained proof. Promote that repeated residual into a new context/meta atom and search for methods that specifically handle the missing structure.
 
 ## Analogy discipline
 
 An everyday or cross-domain analogy is useful only as a **proposal compressor**. Convert both source and target into an abstract relational description first. Examples of transferable structure include shared-resource reuse, queueing, caching, bottlenecks, conservation, matching, routing, error correction, adversarial games, local-to-global assembly, redundancy and compression.
 
-For every retained analogy ask:
-
-> What are the objects/roles on each side?
->
-> What relation or constraint is truly shared?
->
-> What transformation in the source corresponds to a legal transformation in the target?
->
-> Which source assumptions have no target analogue?
->
-> What candidate principle does the analogy suggest?
->
-> What exact mathematical test would refute the transfer?
-
-If the last two questions cannot be answered, discard the analogy.
+If an analogy cannot produce an explicit target-domain candidate principle and falsifiable test, discard it.
 
 ## Required questions before every candidate
 
-> What exact atomic obstruction is active?
+> What exact atomic obstruction is active, and what did atomization produce?
 >
-> What did atomization produce?
+> What is the current context snapshot and structural coordinates?
 >
-> What is the current context snapshot?
+> Which solved/near-solved contexts and cross-domain analogies share the structure?
 >
-> What structural coordinates make this atom difficult?
+> Why do their methods work, and which assumptions break here?
 >
-> What equivalent formulations expose different available methods?
+> What successful RAKL tools are relevant, and do their preconditions actually match?
 >
-> Which solved or near-solved contexts share those coordinates?
+> What prior failures are structurally relevant, and what did we learn from them?
 >
-> Why does each candidate method work in the source context?
+> If we reuse a previously failed method, what changed and what is the cheapest old-failure regression test?
 >
-> Which assumption fails in the target context?
+> What did each expert lens object to?
 >
-> Did any cross-domain/everyday situation share the same abstract structure, and if so what is the witnessed mapping and disanalogy?
+> What alternatives were considered and why is this the next action?
 >
-> What did each expert lens object to, and which disagreement remains unresolved?
+> What result would discriminate or falsify it?
 >
-> What alternatives were considered for the next step and why was this action selected?
->
-> What result would discriminate or falsify this next step?
->
-> Were the context packet and hash-chained trace frozen before the candidate was generated?
+> Were context, memory review and hash-chained trace frozen before candidate generation?
 
-If these questions are not answered in frozen artifacts, candidate generation is blocked.
-
-## Required questions at every proof edge
-
-> What exact proposition is being claimed here?
->
-> What premises and axioms does it depend on?
->
-> Can this edge be refuted cheaply before we spend proof-search budget?
->
-> If the formal checker accepts it, have we also checked that the formal statement matches the intended mathematics?
->
-> Which checker/trust boundary would have to fail for this accepted edge to be false?
+If these are not answered in frozen artifacts, candidate generation is blocked.
 
 ## Failure rules
 
-- `context_missing` or `context_incomplete` blocks candidate generation in strict RAKL mathematical discovery.
-- `research_trace_missing` or `research_trace_incomplete` blocks candidate generation.
-- `expert_context_review_missing` blocks candidate generation.
-- `trace_hash_chain_broken` blocks strict discovery chronology.
-- `candidate_generated_before_context_freeze` or before required trace events is a chronology failure. The candidate may be evaluated for truth, but it is not a strict context-first RAKL discovery artifact.
-- `literature_list_present` is not equivalent to `method_transfer_mapped`.
-- `analogy_found` is not equivalent to `analogy_transfer_valid`; abstract mapping, disanalogies and falsifier must be explicit.
-- `everyday_story_sounds_similar` has no authority and is discarded unless it survives the witnessed analogy gate.
-- repeated failure under an unchanged context packet triggers context reopening rather than unlimited same-basis candidate generation.
-- `tested_many_cases` is never promoted to `proved`.
-- `candidate_path_completed` is never promoted to `problem_closed` without a verified terminal certificate.
-- `machine_proven` is never promoted to `novel` without a novelty certificate.
-- `no_prior_art_found` is never represented as globally complete novelty.
-- `interesting` cannot compensate for an unproved theorem.
-- `proof_found` cannot compensate for a specification mismatch or failed verifier-trust audit.
-- resource exhaustion is a nonterminal block, not evidence that a conjecture is false.
+- missing/incomplete context, memory review or research trace blocks candidate generation;
+- a literature list is not a method-transfer matrix;
+- an analogy is not a transfer without structural mapping, disanalogy and falsifier;
+- a successful local step does not become a universal tool without scope/applicability evidence;
+- a failed local step does not become a universal blacklist;
+- repeated same-context retry without new derivation/evidence or a difference witness is rejected as search drift;
+- repeated unclassified failures trigger metacognitive gap analysis;
+- finite tests are never promoted to proof;
+- planning completion is never promoted to problem closure;
+- machine proof never implies novelty;
+- resource exhaustion is nonterminal.
+
+The executable reference surfaces are:
+
+```text
+src/rakl/math_context.py
+src/rakl/research_tool_inventory.py
+src/rakl/failure_lattice.py
+src/rakl/research_memory.py
+src/rakl/research_trace.py
+src/rakl/metacognition.py
+src/rakl/math_research_runtime.py
+src/rakl/math_research_assurance.py
+schemas/math-context-fiber.schema.json
+schemas/research-tool-inventory.schema.json
+schemas/failure-experience-lattice.schema.json
+schemas/research-memory-review.schema.json
+schemas/math-research-trace.schema.json
+docs/RESEARCH_MEMORY_ARCHITECTURE.md
