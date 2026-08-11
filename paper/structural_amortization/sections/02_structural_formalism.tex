@@ -1,0 +1,37 @@
+\section{A scoped structural transfer object}
+
+A reusable structure should not be a bag of similar words. Let a structural object be
+\[
+S=(V,E,\chi,\gamma,q,\varepsilon),
+\]
+where $V$ is a set of typed roles, $E$ a set of typed directed or undirected relations, $\chi$ a set of invariants or constraints, $\gamma$ a boundary/context record, $q$ the quantity of interest, and $\varepsilon$ the evidence identities supporting the extraction. Domain-facing entities are retained in provenance, but the transfer layer reasons over roles and relations.
+
+The object is intentionally scoped. A hospital and a packet network need not be globally ``the same.'' They may instantiate the same queue-stability substructure for a backlog or delay QoI while differing radically in ethics, priority policies, intervention constraints and entity semantics. The formalism therefore uses a directional mapping witness rather than a global equivalence relation.
+
+\begin{definition}[Directional structural witness]
+For source $S_A$ and target $S_B$, a witness is
+\[
+w_{A\to B}=(\mu_V,I^+,I^-,B,E_w,U_w),
+\]
+where $\mu_V$ maps source roles to target roles, $I^+$ records preserved invariants, $I^-$ records explicitly non-preserved properties, $B$ contains required target boundary conditions, $E_w$ is evidence for the mapping and $U_w$ records uncertainty. The witness is licensed only for the registered QoI.
+\end{definition}
+
+The relation is directional because a transformation useful in $A$ may require information or interventions unavailable in $B$. It is context-specific because a mapping that is valid in one regime can fail after a boundary change. It need not be transitive: $A\to B$ and $B\to C$ do not automatically license $A\to C$ unless the composed invariant and boundary obligations are separately satisfied.
+
+\subsection{Transfer gate}
+
+The reference transfer-gate module checks four non-compensatory conditions. First, the source and target endpoints must match the witnessed objects. Second, every required source relation must survive under the role mapping in the target. Third, the source invariants required for the intended operation must be declared and present in the target. Fourth, every required target boundary must match. QoI mismatch is itself a rejection. Domain labels and semantic similarity are not positive license conditions.
+
+This gate is conservative by design. It can return \texttt{CANNOT\_CHECK} for an invalid witness identity and \texttt{REJECTED} for an examined but failed mapping. A low semantic similarity is not a reason to reject when the relations and boundaries are witnessed; a high semantic similarity is not a reason to accept when the load-bearing invariant fails.
+
+\subsection{Why explicit non-preservation matters}
+
+Analogies are dangerous when the reusable part and the non-reusable part are stored in one undifferentiated similarity score. The witness therefore records $I^-$. In the queue example, ``arrival competes with service and excess load grows backlog'' may transfer while domain-specific priority policy and entity semantics do not. This is more than documentation: a later operator can declare which preserved invariants it depends on, and an intervention touching a non-preserved property can fail closed.
+
+\subsection{Operators as executable compressed knowledge}
+
+A later RAKL layer can associate structural classes with operators
+\[
+T=(\mathrm{Pre},\mathrm{Transform},\mathrm{Post},B,C,F,E_T,A_T),
+\]
+for preconditions, executable transformation, postconditions, boundaries, cost, failure modes, evidence and allowed authority effects. Paper 3 does not yet claim useful autonomous operator invention. The present objective is more basic: determine whether the structural object can safely retrieve or adapt an already validated operator across surface-disjoint domains. Operator induction becomes a later extension only after this transfer mechanism survives the benchmark.

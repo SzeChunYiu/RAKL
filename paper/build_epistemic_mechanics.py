@@ -44,7 +44,7 @@ def _apply_release_layout_repairs(text: str) -> str:
     """Break three long formal displays without changing their mathematical content.
 
     The modular source stays readable, while the exact release builder guarantees that
-    formally important tuples/enumerations fit the publication width. Every rewrite is
+    formally important tuples/enumerations fit the publication width.  Every rewrite is
     exact-anchor guarded so a future semantic edit reopens the build contract instead of
     silently receiving a stale formatting patch.
     """
@@ -122,32 +122,12 @@ def build_epistemic_mechanics_source(*, subject_sha: str, software_tests: int) -
         rf"\newcommand{{\SoftwareTests}}{{{software_tests}}}",
         1,
     )
-
-    bibliography_anchor = r"\begin{thebibliography}"
-    if text.count(bibliography_anchor) != 1:
-        raise RuntimeError("epistemic-mechanics bibliography anchor changed")
-    release_disclosure = r"""
-\section*{Code, materials and AI-use disclosure}
-The public research artifact is maintained at \url{https://github.com/SzeChunYiu/RAKL}. The canonical modular publication source is under \path{publication/papers/paper-01-epistemic-mechanics/}; the release builder expands the local section files into a self-contained TeX artifact and binds it to the exact evaluated Git subject and passing-test count. The repository also preserves the hash-bound external-review solicitation packet separately from the manuscript. Language models were used as research, coding and drafting tools; they are not authors and their proposals receive no canonical scientific authority without the verification and promotion rules described in the paper. Same-context internal review is not represented as independent peer review. Personal author metadata, funding and competing-interest declarations are supplied separately at submission and are not inferred by the build system.
-""".strip()
-    text = text.replace(
-        bibliography_anchor,
-        release_disclosure + "\n\n" + bibliography_anchor,
-        1,
-    )
-
-    forbidden = (
-        "[[RESULT:",
-        "independent peer review completed",
-        "phenomenal consciousness established",
-    )
+    forbidden = ("[[RESULT:", "independent peer review completed", "phenomenal consciousness established")
     for phrase in forbidden:
         if phrase in text:
             raise RuntimeError(f"forbidden release phrase present: {phrase}")
     if r"\input{" in text:
         raise RuntimeError("staged epistemic-mechanics source still contains unresolved input")
-    if r"\section*{Code, materials and AI-use disclosure}" not in text:
-        raise RuntimeError("Paper I release disclosure missing")
     return text
 
 

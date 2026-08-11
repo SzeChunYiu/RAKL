@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 
 import pytest
@@ -136,9 +137,9 @@ def test_v4_1_native_component_receipts_validate_under_frozen_schemas() -> None:
 
 def test_v4_1_native_builder_reproduces_the_exact_ingest(tmp_path: Path) -> None:
     output = tmp_path / "ingest.json"
-    subprocess.run(
+    completed = subprocess.run(
         [
-            "python",
+            sys.executable,
             str(BUILDER),
             "--job-id",
             "3475212",
@@ -150,10 +151,16 @@ def test_v4_1_native_builder_reproduces_the_exact_ingest(tmp_path: Path) -> None
             str(output),
         ],
         cwd=ROOT,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
     )
+    if completed.returncode != 0:
+        raise AssertionError(
+            "native ingest builder failed\n"
+            f"stdout:\n{completed.stdout}\n"
+            f"stderr:\n{completed.stderr}"
+        )
     assert output.read_bytes() == INGEST.read_bytes()
 
 

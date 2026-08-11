@@ -1,0 +1,60 @@
+\section{Introduction}
+Scientific-agent systems have moved rapidly beyond question answering. Co-Scientist combines generation, reflection, ranking and hypothesis evolution and includes experimental biomedical validation \cite{gottweis2026}; Robin integrates literature and data-analysis agents across a discovery workflow \cite{ghareeb2026}; AI Scientist-v2 automates experiment design, execution, analysis and paper generation using agentic tree search \cite{yamada2025}; Kosmos uses a structured world model for long-horizon discovery \cite{mitchener2025}; SciAgents couples multi-agent reasoning with ontological knowledge graphs \cite{ghafarollahi2024}; and PaperQA2 demonstrates strong agentic literature synthesis \cite{skarlinski2024}. These systems make it untenable to position a new method as novel merely because it searches papers, generates hypotheses, uses multiple agents, retains research state or iteratively revises ideas.
+
+A recent evaluation spanning more than 25,000 scientific-agent runs reported frequent evidence neglect and relatively infrequent refutation-driven revision, illustrating that workflow success and epistemically self-correcting reasoning are different targets \cite{riosgarcia2026}. The remaining problem is therefore narrower: \emph{what is a new observation allowed to change in the scientific state?} Two papers can use the same terminology while describing different populations, scales or measurement operators. Two models can be observationally equivalent yet mechanistically distinct. A model can be decision-useful while its microscopic mechanism remains unidentified. Several papers or agents can appear independent while sharing evidence lineage. A null result can disappear after enough iterations. A loop can stop because its resource budget is exhausted rather than because the scientific search has become semantically flat. A self-modifying agent can overfit the very evaluator used to declare its improvement.
+
+\RAKL{} treats these as failures of \textbf{epistemic state transition}. The language model is a replaceable proposer. Canonical scientific state lives outside the model and changes only through evidence- and governance-bearing transitions. Scientific knowledge is represented as an atlas of contextual local views rather than one accumulating natural-language answer. The same evidence discipline is applied recursively to candidate changes in the research method itself.
+
+This preprint makes five candidate contributions. First, it specifies a projection-first scientific state in which source claims become context-scoped local charts before they compete. Second, it provides a typed transition and obstruction discipline that separates local compatibility, path coherence, global existence and global identifiability. Third, it represents scientific authority as a multi-axis partial order rather than a scalar confidence. Fourth, it couples recursive fibers, negative history, semantic/evidence-lineage stopping, bounded epistemic context, metacognitive learning and governed method evolution in one control architecture. Fifth, it makes these claims falsifiable through machine-checkable method contracts, hostile known-answer worlds, a frozen self-bootstrap protocol and a preregistered real scientific application.
+
+We do not claim novelty for multi-agent science, knowledge graphs, provenance, sheaf-like local-to-global reasoning, hierarchical memory, prompt compression, active experiment design, causal discovery, skill libraries or program evolution in isolation. The candidate contribution is the integrated evidence-governed transition discipline connecting them.
+
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=8mm and 10mm, >=Latex,
+  every node/.style={font=\sffamily\footnotesize,align=center},
+  box/.style={draw,rounded corners=1.5pt,minimum height=8mm,inner sep=4pt,fill=black!3},
+  strong/.style={draw,rounded corners=1.5pt,minimum height=9mm,inner sep=5pt,line width=0.8pt,fill=black!8},
+  gate/.style={draw,diamond,aspect=2.2,inner sep=2pt,fill=black!5},
+  arrow/.style={->,line width=0.6pt}, dashedarrow/.style={->,dashed,line width=0.55pt}]
+\node[box,text width=24mm] (evidence) {Evidence, tools,\\measurements};
+\node[strong,text width=29mm,right=of evidence] (proposer) {Replaceable LLM /\\proposal process $G_\theta$};
+\node[box,text width=24mm,right=of proposer] (proposal) {Candidate claim,\\experiment, map,\\or method change};
+\node[gate,right=10mm of proposal] (verify) {Verify $V$};
+\node[strong,text width=30mm,right=10mm of verify] (state) {Canonical epistemic state\\$K_t$ / Knowledge Atlas};
+\draw[arrow] (evidence) -- (proposer); \draw[arrow] (proposer) -- (proposal); \draw[arrow] (proposal) -- (verify);
+\draw[arrow] (evidence.south east) to[bend right=18] node[below,sloped]{external evidence} (verify.south west);
+\draw[arrow] (verify) -- node[above]{licensed update $\mathcal U$} (state);
+\node[box,text width=26mm,below=11mm of state] (residual) {Residual / obstruction /\\epistemic cut};
+\node[box,text width=25mm,left=12mm of residual] (action) {Next atomic fiber\\or discriminator};
+\draw[arrow] (state) -- (residual); \draw[arrow] (residual) -- (action);
+\draw[dashedarrow] (action.west) to[bend left=18] node[below,sloped]{new operation} (proposer.south);
+\node[strong,text width=31mm,below=22mm of proposal] (meta) {Challenge Learning /\\Self-RAKL};
+\node[box,text width=29mm,left=of meta] (methodres) {Method residual\\$e^{\mathrm{method}}$};
+\node[box,text width=29mm,right=of meta] (candidate) {Candidate operator /\\method $M'$};
+\node[gate,right=10mm of candidate] (assure) {Fresh assurance};
+\draw[arrow] (residual.west) to[bend right=16] (methodres.east); \draw[arrow] (methodres) -- (meta); \draw[arrow] (meta) -- (candidate); \draw[arrow] (candidate) -- (assure);
+\draw[dashedarrow] (assure.north) to[bend right=18] node[right]{only after protected gates} (state.south);
+\node[font=\sffamily\scriptsize,anchor=north west,text width=66mm] at ([yshift=-7mm]methodres.south west) {\textbf{Authority firewall.} Proposal fluency, support-module success, or self-reflection cannot directly mint scientific authority. Nulls, refutations, failed mappings, and failed method generations remain addressable negative history.};
+\end{tikzpicture}}
+\caption{\textbf{RAKL separates proposal generation from scientific authority.} Evidence and tools inform a replaceable proposer, but candidate claims and method changes pass through explicit verification before canonical state can change. Residuals drive scientific fibers; method residuals can trigger Challenge Learning and Self-RAKL, but fresh assurance is outside the challenger's write authority.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{The control problem behind scientific agency}
+
+The central engineering problem is not whether a language model can emit a plausible next step. It is whether a research system can maintain a distinction between \emph{proposal dynamics} and \emph{scientific state dynamics}. A proposal can be useful before it is true, a contradiction can be informative before either side is rejected, and a model can be decision-useful while remaining mechanistically unidentified. These cases require state types that do not collapse into one scalar score. Recent benchmark evidence strengthens this motivation. Science Edge Evaluation (SEE) reports that even strong multimodal models remain far from reliable evidence-bounded inference on expert-curated laboratory questions, and that giving a visual agent tools improves access to information without making the scientific reasoning problem disappear \cite{han2026see}. SCHEMA similarly reports a gap between terminal answer accuracy and the integrity of intermediate scientific trajectories: a correct-looking endpoint can be reached through structurally defective reasoning \cite{feng2026schema}. These findings do not prove that \RAKL{} solves the problem. They make the target failure mode concrete.
+
+We distinguish three coupled state machines. The first is the \emph{generative machine}, which proposes claims, experiments, mappings, code, models and method changes. The second is the \emph{epistemic machine}, which records what is supported, refuted, partially identified, blocked or currently uncheckable under a declared context and evidence boundary. The third is the \emph{publication machine}, which projects a bounded subset of the epistemic machine into a human-readable paper. Conflating the three creates recurrent failure modes. If generative fluency writes directly to epistemic state, unsupported authority appears. If publication convenience writes back to epistemic state, omitted negative results or compressed caveats can become invisible. If the canonical archive is treated as the prompt itself, context growth eventually turns memory completeness into computational overload.
+
+This paper therefore uses ``epistemic mechanics'' in a deliberately operational sense. A scientific state transition is licensed only when it carries the prerequisites appropriate to the claim type. The resulting discipline is analogous to a type system for scientific updates: a representation witness cannot be implicitly coerced into a mechanism witness, an observational association cannot be silently cast as an intervention result, and a convenient summary cannot be promoted into its own evidence root. The analogy has limits. Scientific claims are not ordinary program values, evidence is fallible, and contexts can remain incompletely specified. The practical value of the type-system analogy is fail-closed behavior: when a required coercion cannot be justified, the transition remains blocked rather than being supplied by model confidence.
+
+\subsection{What the paper is, and what it is not}
+
+A paper is not the Knowledge Atlas. It is a \emph{publication projection} of that atlas for a declared audience, claim boundary and evidence cutoff. This distinction matters for the present manuscript because a framework paper can become misleading in two opposite ways. It can be too compressed, leaving equations and named components without enough intellectual lineage to tell the reader why they are necessary. Or it can become encyclopedic, accumulating related work without increasing the reader's ability to distinguish the framework's objects, obligations and falsifiers. We therefore apply the same semantic-saturation principle to the manuscript that the method applies to literature search. Additional text is retained only when it contributes a new claim distinction, citation lineage, proof obligation, explanatory bridge, falsifier, implementation correspondence or reviewer-relevant boundary.
+
+The resulting saturation claim is intentionally local. It is indexed by the source universe and freshness cutoff, the registered review lenses, the required route families, the current implementation subject, and the unresolved empirical coordinates. A later paper, method or counterexample that changes a novelty boundary or exposes a missing operator reopens the manuscript. ``Locally saturated'' therefore never means ``all relevant knowledge in the open world has been found.'' It means that under the registered search and review protocol, another pass produces no material semantic gain while all remaining open coordinates are explicit.
+
+This framing also explains why the paper remains a methods and preregistration manuscript. Software contracts and deterministic known-answer worlds establish whether the reference mechanics behave as specified. They do not establish that the full architecture improves real scientific discovery. The latter requires matched same-model evaluation, fresh assurance for method changes, and domain evidence. Keeping these evidence classes separate is not rhetorical modesty; it is part of the method being claimed.

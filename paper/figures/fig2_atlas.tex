@@ -1,0 +1,36 @@
+\begin{tikzpicture}[
+  >=Latex,
+  every node/.style={font=\sffamily\footnotesize,align=center},
+  chart/.style={draw,rounded corners=1.5pt,minimum width=29mm,minimum height=17mm,fill=black!3},
+  target/.style={draw,double,rounded corners=1.5pt,minimum width=28mm,minimum height=14mm,fill=black!7},
+  cut/.style={draw,dashed,rounded corners=1.5pt,minimum width=30mm,minimum height=13mm},
+  trans/.style={->,line width=0.6pt},
+  strongpath/.style={->,line width=0.95pt},
+  weak/.style={->,dashed,line width=0.55pt}
+]
+
+\node[chart] (c1) at (0,1.55) {$C_1$\\population A\\representation $\phi_1$};
+\node[chart] (c2) at (4.05,1.55) {$C_2$\\population A\\representation $\phi_2$};
+\node[chart] (c3) at (0,-1.45) {$C_3$\\population B\\measurement $h_3$};
+\node[chart] (c4) at (4.05,-1.45) {$C_4$\\population A\\mechanistic view};
+\node[target] (tau) at (8.45,0.9) {target $\tau$\\$(q,\alpha^*,\gamma)$};
+\node[cut] (cut) at (8.45,-1.65) {missing prerequisite\\epistemic cut $B^*_{\tau}$};
+
+\draw[trans] (c1) -- (c2);
+\draw[weak] (c1) -- (c3);
+\draw[trans] (c2) -- (c4);
+
+% An unlicensed local relation is represented as an obstruction, not a forced edge.
+\draw[dashed,line width=0.55pt] (c3.east) -- (c4.west);
+\node[fill=white,inner sep=2pt,font=\sffamily\scriptsize] at (2.03,-1.45) {obstruction};
+
+\draw[strongpath] (c2.east) to[bend left=7] (tau.north west);
+\draw[strongpath] (c4.east) to[bend right=9] (tau.south west);
+\draw[weak] (cut.north) -- (tau.south);
+
+\node[font=\sffamily\scriptsize,text width=44mm,anchor=north west] at (-1.35,-2.95) {
+\textbf{Relation key.} Solid thin paths are registered typed/scoped transitions; dashed paths require context or remain conditional. The central dashed segment is unresolved and therefore retained as an obstruction.};
+\node[font=\sffamily\scriptsize,text width=49mm,anchor=north west] at (4.55,-2.95) {
+\textbf{Target view.} Thick paths mark the current authority-valid support corridor. If every admissible route crosses an unresolved prerequisite, that prerequisite becomes an epistemic cut and opens a new research fiber.};
+
+\end{tikzpicture}

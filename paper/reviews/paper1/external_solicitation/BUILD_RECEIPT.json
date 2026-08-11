@@ -1,0 +1,46 @@
+{
+  "schema_version": "paper1-solicitation-build-receipt-v1",
+  "built_at_utc": "2026-08-10T21:48:38Z",
+  "subject_sha": "118b74c17606637a916fc0e1fea8db6508adb847",
+  "source": {
+    "path": "paper/epistemic_mechanics_round050/main.tex",
+    "sha256": "76c20f20e642939c10d6582a1a87233f172cbf7ee6a45f2dbdcdc4db35bee871"
+  },
+  "builder": {
+    "path": "paper/build_epistemic_mechanics.py",
+    "sha256": "d52c1715b4e1519443a7cef6e26ff2d03f5a8e000bc6a2ae2db0f03ed13b981b",
+    "command": "python paper/build_epistemic_mechanics.py --output review/paper1/external_solicitation/artifacts/main.tex --subject-sha 118b74c17606637a916fc0e1fea8db6508adb847 --software-tests 840"
+  },
+  "software_test_evidence": {
+    "passed": 840,
+    "skipped": 4,
+    "source": "GitHub main exact-push test workflow after merged PR 37",
+    "run_id": 31435415429,
+    "job_url": "https://github.com/SzeChunYiu/RAKL/actions/runs/31435415429/job/93608338647"
+  },
+  "staged_source": {
+    "path": "review/paper1/external_solicitation/artifacts/main.tex",
+    "sha256": "aa00a64d801ac802d310c818fe7699454db1346ccb2adf5e4d7de28019c20eb1",
+    "inputs_fully_inlined": true
+  },
+  "render": {
+    "engine": "tectonic 0.15.0",
+    "command": "tectonic --outdir review/paper1/external_solicitation/artifacts review/paper1/external_solicitation/artifacts/main.tex",
+    "pdf_path": "review/paper1/external_solicitation/artifacts/main.pdf",
+    "pdf_sha256": "b6a07517699a52151260c6c321f239af61b1e07089c079a1eac9f7c0ac1352af",
+    "pages": 44,
+    "page_size": "A4",
+    "overfull_boxes": 0,
+    "undefined_references_or_citations": 0,
+    "underfull_unique_source_locations": 13,
+    "underfull_boxes_are_nonblocking": true,
+    "all_pages_rendered": true
+  },
+  "reproducibility_boundary": {
+    "distributed_pdf_is_immutable_content_addressed_artifact": true,
+    "byte_identical_pdf_rebuild_promised": false,
+    "reason": "PDF creation metadata can change across otherwise equivalent Tectonic renders",
+    "staged_source_rebuild_is_byte_identical": true,
+    "github_latexmk_compile_required_on_exact_pr_head": true
+  }
+}

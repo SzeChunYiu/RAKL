@@ -17,9 +17,9 @@ Each paper directory contains a `PUBLICATION_STATUS.md` that separates what can 
 - `shared/` — current cross-paper editorial standards, figure guidance, references and terminology material.
 - `archive/` — superseded manuscript drafts, old arXiv/release packages, legacy sources and historical editorial/audit material. Archive contents remain immutable historical evidence; they are not canonical submission sources.
 
-## Compatibility
+## Path policy
 
-Historical repository paths are retained as lightweight aliases where current CI, builders or frozen receipts still depend on them. New work must use the canonical `publication/papers/...`, `publication/reviews/...`, `publication/shared/...` and `publication/archive/...` paths.
+Do not introduce symlinks under `paper/` or `publishing/`. Reader-facing canonical sources live under `publication/`. Historical CI/receipt paths under `paper/` are real files (not link farms); new work should prefer `publication/papers/...`, `publication/reviews/...`, `publication/shared/...` and `publication/archive/...`.
 
 ## Publication policy
 
