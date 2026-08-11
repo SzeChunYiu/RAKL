@@ -1,0 +1,130 @@
+{
+  "atom_id": "HM1",
+  "object_context": "For smooth projective complex X, p>=0, and alpha in H^{2p}(X,Q) of type (p,p), find a nonconjectural source-object/correspondence criterion forcing alpha into im(cl_Q:CH^p(X)_Q->H^{2p}(X,Q)); do not assume Hodge, standard, Tate, period, or equivalent algebraicity conjectures.",
+  "structural_coordinates": [
+    "root coefficients are rational; integral strengthening is not admissible",
+    "algebraic cycles are source witnesses; Hodge/absolute/motivated/categorical labels are target-side realization structure",
+    "the unresolved direction is image/lifting through a realization map",
+    "motivated correspondences enlarge Chow correspondences by formally allowed Lefschetz inverses",
+    "categorical routes require an actual object/kernel, not only a class in a realization lattice",
+    "arithmetic reduction needs both special-fiber algebraicity and a lift back to characteristic zero"
+  ],
+  "equivalent_formulations": [
+    "surjectivity CH^p(X)_Q -> Hdg^p(X)",
+    "surjectivity, up to motive conventions, of algebraic-cycle/Tate-motive Hom under Betti-Hodge realization onto Q(0)->H^{2p}(X,Q)(p)",
+    "construct Z in CH^p(X)_Q with cl(Z)=alpha"
+  ],
+  "solved_analogues": [
+    "Lefschetz (1,1): codimension-one rational Hodge classes are divisor classes"
+  ],
+  "near_solved_analogues": [
+    "Deligne: Hodge cycles on abelian varieties are absolute Hodge, but this does not generally supply algebraic representatives",
+    "André: motivated motives/deformation have strong unconditional formal properties in an enlarged correspondence category",
+    "Arapura: actual algebraic correspondences can transfer Hodge/standard-conjecture results in motivated examples",
+    "Perry: object/moduli methods prove a categorical integral Hodge result for special 2-Calabi-Yau categories"
+  ],
+  "method_transfers": [
+    {
+      "source_context": "Lefschetz (1,1)",
+      "method": "produce an actual geometric object whose characteristic/cycle class equals the Hodge class",
+      "shared_structure": [
+        "both are preimage problems for a geometric realization map"
+      ],
+      "required_assumptions": [
+        "codimension one in the source theorem"
+      ],
+      "disanalogies": [
+        "no general higher-codimension Picard-style surjectivity theorem is known"
+      ],
+      "repair_question": "What higher-codimension source object/correspondence can be proved to realize arbitrary alpha?",
+      "source_anchors": [
+        "Deligne, The Hodge conjecture, Clay 2006"
+      ]
+    },
+    {
+      "source_context": "André motivated motives",
+      "method": "organize classes using motivated correspondences and formally adjoined Lefschetz inverses",
+      "shared_structure": [
+        "correspondence categories map to Hodge realizations"
+      ],
+      "required_assumptions": [
+        "motivated status is kept distinct from Chow algebraicity"
+      ],
+      "disanalogies": [
+        "motivated correspondences need not be known algebraic; André's algebraic deformation bridge is tied to standard conjectures"
+      ],
+      "repair_question": "Can every motivated operation used for alpha be algebraized without a standard-conjecture input?",
+      "source_anchors": [
+        "André, Publ. Math. IHES 83 (1996)",
+        "André, JIMJ 5 (2006), DOI 10.1017/S1474748005000265"
+      ]
+    },
+    {
+      "source_context": "Algebraic correspondences / categorical objects",
+      "method": "use an actual algebraic correspondence, Fourier-Mukai kernel, or moduli object to transfer/realize a source class",
+      "shared_structure": [
+        "object-level witnesses can map to target cohomology classes"
+      ],
+      "required_assumptions": [
+        "an actual algebraic kernel/object exists",
+        "the relevant source Hodge classes are already algebraic"
+      ],
+      "disanalogies": [
+        "arbitrary X,alpha need not lie in the image of any known source correspondence or object-realization map"
+      ],
+      "repair_question": "Which verifiable representability/span condition forces alpha into an explicit algebraic-correspondence image?",
+      "source_anchors": [
+        "Arapura, Adv. Math. 207 (2006), arXiv:math/0501348",
+        "Perry, arXiv:2004.03163"
+      ]
+    }
+  ],
+  "explicit_disanalogies": [
+    "Atiyah-Hirzebruch integral counterexamples forbid replacing the rational root by integral Hodge",
+    "Cattani-Deligne-Kaplan algebraicity of a Hodge locus is parameter-space algebraicity, not a cycle on each fiber",
+    "absolute Hodge and motivated are not synonyms for algebraic",
+    "Tate/period constraints do not give a characteristic-zero Chow witness without separate bridges"
+  ],
+  "source_anchors": [
+    "Clay Mathematics Institute Hodge Conjecture official page, checked 2026-08-11",
+    "Deligne, The Hodge conjecture, Clay 2006",
+    "Deligne et al., Hodge Cycles, Motives, and Shimura Varieties, LNM 900 (1982)",
+    "Cattani-Deligne-Kaplan, JAMS 8 (1995), arXiv:alg-geom/9402009",
+    "André, Publ. Math. IHES 83 (1996)",
+    "André, JIMJ 5 (2006)",
+    "Arapura, Adv. Math. 207 (2006), arXiv:math/0501348",
+    "Perry, arXiv:2004.03163",
+    "Atiyah-Hirzebruch, Topology 1 (1962)"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "software/verified-compilation",
+      "source_situation": "A target semantic property can hold without any known source program that compiles to it; source reconstruction requires a lifting/fullness theorem.",
+      "common_abstraction": [
+        "source objects map to a coarser target representation",
+        "target admissibility need not characterize the image"
+      ],
+      "source_to_target_mapping": [
+        "source program -> algebraic cycle/correspondence",
+        "compiler -> Betti/Hodge realization",
+        "admissible output -> rational Hodge class",
+        "source reconstruction -> Chow-cycle lift"
+      ],
+      "shared_constraints": [
+        "a valid lift must re-realize to the target",
+        "realization may forget source structure"
+      ],
+      "disanalogies": [
+        "Hodge realization has tensor/algebraic structure absent from ordinary compilers"
+      ],
+      "proposed_principle": "Treat every motive/categorical route as a named realization image/lifting problem; reject target-label-only progress.",
+      "validation_obligation": "Specify source category, target category, exact realization map, source witness, and theorem-backed proof that its image equals alpha without hidden conjectures.",
+      "provenance_note": "Proposal-organizing analogy only; no mathematical authority."
+    }
+  ],
+  "analogy_scan_notes": "Scanned motives, absolute Hodge, Hodge loci, algebraic correspondences, categorical objects, arithmetic reduction, periods, and source-to-semantics lifting. Retained only the lifting/fullness analogy.",
+  "frozen_at": "2026-08-11T06:05:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:cb61d65124f55f69e6f011b26d648e5b78178467ca6c0357bf4e9dd2cc799743"
+}
