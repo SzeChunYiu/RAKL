@@ -64,10 +64,13 @@ def _trace() -> MathResearchTrace:
         ResearchTraceEventType.CONTEXT_FROZEN,
         ResearchTraceEventType.ANALOGY_SCAN,
         ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
+        ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
         ResearchTraceEventType.NEXT_STEP_PROPOSED,
     )
     entries = []
+    previous_hash = ""
     for i, event_type in enumerate(types, start=1):
+        artifact_hash = f"sha256:event-{i}"
         entries.append(
             ResearchTraceEntry(
                 event_id=f"e{i}",
@@ -76,12 +79,19 @@ def _trace() -> MathResearchTrace:
                 timestamp=f"2026-08-11T04:0{i}:00+00:00",
                 state_summary=f"state {i}",
                 action_summary=f"action {i}",
-                evidence_pointers=("sha256:context",) if event_type is ResearchTraceEventType.CONTEXT_FROZEN else (f"artifact:{i}",),
+                evidence_pointers=("sha256:context",)
+                if event_type is ResearchTraceEventType.CONTEXT_FROZEN
+                else (f"artifact:{i}",),
                 alternatives_considered=("A", "B"),
                 decision_rationale="bounded public rationale",
-                artifact_hash=f"sha256:event-{i}",
+                outputs=(f"output:{i}",),
+                uncertainties=("one unresolved issue",),
+                next_steps=("next atomic action",),
+                artifact_hash=artifact_hash,
+                previous_event_hash=previous_hash,
             )
         )
+        previous_hash = artifact_hash
     return MathResearchTrace(trace_id="trace-C", entries=tuple(entries))
 
 
