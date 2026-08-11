@@ -509,3 +509,27 @@ def test_current_framework_revision_has_no_integration_surface() -> None:
 def test_report_never_grants_authority() -> None:
     report = check_epistemic_noninterference(_state(ledger=_seed_ledger()), ())
     assert report.grants_authority is False
+
+
+def test_noninterference_report_to_dict_validates_against_v1_schema() -> None:
+    """Authority-boundary export must match the frozen JSON schema (#152)."""
+
+    import json
+    from pathlib import Path
+
+    from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
+
+    report = check_epistemic_noninterference(
+        _state(),
+        (Transition("t1", TransitionKind.RECORD_EPISODE, _state(episodes=("ep-1",))),),
+    )
+    payload = report.to_dict()
+    schema_path = (
+        Path(__file__).resolve().parents[1]
+        / "schemas"
+        / "epistemic-noninterference-report-v1.schema.json"
+    )
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(payload)
+    assert payload["grants_authority"] is False
+    assert payload["status"] == "NO_INTEGRATION_SURFACE"
