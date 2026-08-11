@@ -37,12 +37,32 @@ After freezing the exact active atomic obstruction, first create and freeze a ma
 - explicit disanalogies or broken assumptions;
 - the smallest repair/transfer question exposed by each mismatch;
 - primary/authoritative source anchors;
+- a mandatory cross-domain analogy scan, including mathematics, science, engineering, games and ordinary human situations when structurally relevant;
+- for every retained analogy, the common abstraction, explicit source-to-target mapping, shared constraints, disanalogies, proposed transferable principle and a falsifiable validation obligation;
 - a content hash and chronology proving the context packet was frozen before the first candidate.
+
+An analogy may generate a proposal but never supplies theorem authority. Surface resemblance is insufficient. If no cross-domain or everyday analogy survives the mapping/disanalogy gate, record `NO_SAFE_BRIDGE_FOUND` with the search boundary rather than inventing one.
 
 Do not treat a list of papers or a literature summary as a context fiber. The required object is a **method-transfer matrix** explaining why a method works elsewhere and exactly what blocks its transfer here.
 
-Call `plan_math_research(..., context_fiber=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context later.
+## Public research trace
 
-A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate chronology gate passed.
+Every material mathematical-research step must also be appended to a machine-readable trace conforming to `schemas/math-research-trace.schema.json` and `src/rakl/research_trace.py`.
+
+Before the first candidate for an atom, the trace must contain, in chronological order:
+
+1. `ATOMIZED` — exact atomization result and parent/root relation;
+2. `CONTEXT_FROZEN` — current context snapshot and context-packet hash;
+3. `ANALOGY_SCAN` — retained/refuted cross-domain analogies or explicit no-safe-bridge result;
+4. `METHOD_TRANSFER_REVIEW` — solved/near-solved contexts, transferable methods, enabling assumptions and disanalogies;
+5. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator.
+
+After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash.
+
+This trace is an **auditable scientific decision record**, not a raw private chain-of-thought transcript. Record reproducible state, alternatives, concise decision rationale, evidence, outputs, uncertainties, residuals and next actions. Do not claim that hidden model reasoning has been exposed.
+
+Call `plan_math_research(..., context_fiber=..., research_trace=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/trace later.
+
+A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate chronology and trace gates passed.
 
 Use `python -m rakl` for project state, bounded task packets, exact receipts and reproducible execution where applicable.
