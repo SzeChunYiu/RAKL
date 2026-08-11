@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-internal-review.schema.json",
+  "title": "Paper 3 same-context internal hostile review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "review_id", "created_at_utc", "review_class", "claim_boundary", "findings", "blocking_code_findings_remaining", "external_blockers_remaining", "verification", "internal_verdict", "training_inference_authorized", "next_discriminator"],
+  "properties": {
+    "schema_version": {"const": "paper3-internal-review-v1"},
+    "review_id": {"type": "string", "minLength": 1},
+    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "review_class": {"const": "same_context_internal_hostile_review_not_independent_peer_review"},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "findings": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["finding_id", "severity", "finding", "disposition"],
+        "properties": {
+          "finding_id": {"type": "string", "minLength": 1},
+          "severity": {"enum": ["BLOCKING", "MAJOR", "MINOR"]},
+          "finding": {"type": "string", "minLength": 1},
+          "disposition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "blocking_code_findings_remaining": {"type": "array", "items": {"type": "string"}},
+    "external_blockers_remaining": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["focused_tests", "full_tests", "manuscript_build"],
+      "properties": {
+        "focused_tests": {"$ref": "#/$defs/check"},
+        "full_tests": {"$ref": "#/$defs/check"},
+        "manuscript_build": {"$ref": "#/$defs/check"}
+      }
+    },
+    "internal_verdict": {"const": "READY_FOR_PR_CI_WITH_DESCRIPTOR_AND_EMPIRICAL_GATES_CLOSED"},
+    "training_inference_authorized": {"const": false},
+    "next_discriminator": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["command", "status", "detail"],
+      "properties": {
+        "command": {"type": "string", "minLength": 1},
+        "status": {"enum": ["PASS", "CANNOT_CHECK"]},
+        "detail": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

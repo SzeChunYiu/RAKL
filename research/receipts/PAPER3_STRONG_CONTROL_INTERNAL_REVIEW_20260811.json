@@ -1,0 +1,91 @@
+{
+  "blocking_code_findings_remaining": [],
+  "claim_boundary": "Same-context internal hostile review of protocol, code, provenance, chronology, parent scope and manuscript only. This is not independent review or peer review and creates no semantic, structural-signal, training, inference or break-even result.",
+  "created_at_utc": "2026-08-11T04:05:38Z",
+  "external_blockers_remaining": [
+    "exact_full_model_assets_not_staged_or_locally_hash_verified",
+    "content_bound_semantic_descriptor_not_generated",
+    "genuinely_external_annotations_not_received",
+    "distinct_adjudication_not_received",
+    "external_provenance_audit_not_received"
+  ],
+  "findings": [
+    {
+      "disposition": "Resolved by narrowing the historical result to lexical/tag controls and freezing a BGE cross-encoder successor control.",
+      "finding": "The v2 evaluator's Jaccard features are transparent conformance controls, not a strongest-feasible modern semantic control.",
+      "finding_id": "P3SC-01-WEAK-V2-SEMANTIC-CONTROL",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Resolved: exact repository revision, six file sizes/hashes, implementation hash, content projection and per-pair hash contract are frozen.",
+      "finding": "A model name or unbound score vector would permit asset substitution and content drift.",
+      "finding_id": "P3SC-02-UNBOUND-DESCRIPTOR",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Resolved: candidate invariant/boundary proposals, annotations, quadrants and outcomes are excluded; all 16 actual v2.1 items render successfully in tests.",
+      "finding": "Feeding curator structural proposals to the semantic control would leak the challenger representation into the baseline.",
+      "finding_id": "P3SC-03-STRUCTURAL-PROPOSAL-LEAKAGE",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Resolved by a machine-readable applicability freeze: Skill-It/MASS are training-selection parents; SWIFT is an inference workflow parent only with an executable operator interface.",
+      "finding": "Calling static dependency overlap Skill-It/MASS or graph similarity SWIFT would unfairly weaken the parents.",
+      "finding_id": "P3SC-04-PARENT-FIDELITY",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Preserved as an external execution blocker. The descriptor attempt returns CANNOT_CHECK with zero scores and authorization false.",
+      "finding": "The exact 2.27-GB model file and accompanying assets are not staged in the bounded environment.",
+      "finding_id": "P3SC-05-MODEL-ASSET-MISSING",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Resolved in the authority language: the reranker is a non-structural content relevance control, not a semantic-equivalence or mechanistic oracle.",
+      "finding": "A relevance-trained cross-encoder score must not be promoted to structural or theorem authority.",
+      "finding_id": "P3SC-06-RERANKER-AUTHORITY-BOUNDARY",
+      "severity": "MAJOR"
+    },
+    {
+      "disposition": "Preserved explicitly. The provenance receipt distinguishes locally hashed small files from LFS registry metadata and requires local re-verification after staging.",
+      "finding": "Registry LFS hashes are authoritative metadata but have not yet been checked against locally staged full assets.",
+      "finding_id": "P3SC-07-LFS-LOCAL-VERIFICATION",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Resolved: ready descriptors are rejected unless their timestamp strictly predates the first external label completion and all label-access attestations are false.",
+      "finding": "Computing or selecting the semantic descriptor after labels are visible would break candidate/evaluator chronology.",
+      "finding_id": "P3SC-08-POST-LABEL-CONTROL",
+      "severity": "BLOCKING"
+    },
+    {
+      "disposition": "Preserved: this report self-identifies as same-context internal review and grants no independent-review authority.",
+      "finding": "A same-session hostile pass is useful but cannot count as independent scientific review.",
+      "finding_id": "P3SC-09-REVIEW-INDEPENDENCE",
+      "severity": "MAJOR"
+    }
+  ],
+  "internal_verdict": "READY_FOR_PR_CI_WITH_DESCRIPTOR_AND_EMPIRICAL_GATES_CLOSED",
+  "next_discriminator": "Stage and locally hash-verify the exact model assets, generate the content-bound descriptor before any external annotation completion, then obtain genuinely external annotation/adjudication/provenance evidence before running the successor signal gate.",
+  "review_class": "same_context_internal_hostile_review_not_independent_peer_review",
+  "review_id": "paper3-strong-control-internal-review-20260811",
+  "schema_version": "paper3-internal-review-v1",
+  "training_inference_authorized": false,
+  "verification": {
+    "focused_tests": {
+      "command": "python -m pytest -q tests/test_paper3_confirmatory_gate_v2.py tests/test_paper3_external_annotation.py tests/test_paper3_v2_publication.py tests/test_paper3_v2_1_annotation_packet.py tests/test_paper3_v2_source_set.py tests/test_paper3_v2_source_set_repair.py tests/test_paper3_strong_controls.py",
+      "detail": "77 Paper-3 control, annotation, publication and freeze tests passed on the rebased branch.",
+      "status": "PASS"
+    },
+    "full_tests": {
+      "command": "python -m pytest -q",
+      "detail": "1,225 repository tests passed on the rebased branch.",
+      "status": "PASS"
+    },
+    "manuscript_build": {
+      "command": "latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main_v6.tex",
+      "detail": "CANNOT_CHECK locally because latexmk and pdflatex are not installed; exact PR CI must build main_v6.tex.",
+      "status": "CANNOT_CHECK"
+    }
+  }
+}

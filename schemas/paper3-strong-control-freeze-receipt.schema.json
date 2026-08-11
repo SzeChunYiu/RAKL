@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-strong-control-freeze-receipt.schema.json",
+  "title": "Paper 3 strong-control freeze receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "receipt_id", "created_at_utc", "frozen_parent_subject_sha", "status", "object", "qoi", "claim_boundary", "current_v2_audit", "artifact_sha256", "semantic_descriptor_generated", "external_annotations_accessed", "evaluated_results_accessed", "training_or_inference_authorized", "blocking_failures", "next_discriminator"],
+  "properties": {
+    "schema_version": {"const": "paper3-strong-control-freeze-receipt-v1"},
+    "receipt_id": {"const": "paper3-strong-control-freeze-20260811"},
+    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "frozen_parent_subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "status": {"const": "FROZEN_PROTOCOL_MODEL_ASSET_UNAVAILABLE"},
+    "object": {"type": "string", "minLength": 1},
+    "qoi": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "current_v2_audit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["audited_evaluator_path", "audited_evaluator_sha256", "finding", "authority_effect"],
+      "properties": {
+        "audited_evaluator_path": {"type": "string", "minLength": 1},
+        "audited_evaluator_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "finding": {"type": "string", "minLength": 1},
+        "authority_effect": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifact_sha256": {
+      "type": "object", "minProperties": 1,
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "semantic_descriptor_generated": {"const": false},
+    "external_annotations_accessed": {"const": false},
+    "evaluated_results_accessed": {"const": false},
+    "training_or_inference_authorized": {"const": false},
+    "blocking_failures": {"const": ["model_asset_unavailable"]},
+    "next_discriminator": {"type": "string", "minLength": 1}
+  }
+}
