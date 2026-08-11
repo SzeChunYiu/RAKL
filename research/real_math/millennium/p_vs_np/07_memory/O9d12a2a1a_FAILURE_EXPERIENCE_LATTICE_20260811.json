@@ -1,0 +1,111 @@
+{
+  "experiences": [
+    {
+      "failure_id": "F-C010-MULTIPLEXING",
+      "atom_id": "R004/O9d1",
+      "candidate_id": "C010",
+      "context_packet_hash": "legacy:no-strict-context:C010",
+      "research_trace_event_id": "legacy:issue24:C010",
+      "method_family": "block-repetition amplification",
+      "failure_mode": "global pair multiplexing compresses repeated fixed gadgets",
+      "residual_signature": ["repetition does not amplify cover complexity linearly", "global disjoint generator separation costs only logarithmic overhead"],
+      "broken_assumptions": ["independent repeated gadgets would require independent cover resources"],
+      "scope_conditions": ["fixed-gadget block-diagonal complement repetition", "unrestricted full-cover model with global pair reuse"],
+      "competing_diagnoses": ["candidate family too decomposable", "cover model permits cross-copy multiplexing", "upper-bound parameter sigma captures repeated gadget structure"],
+      "selected_diagnosis": "global pair multiplexing defeats naive direct-sum amplification",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": ["issue24:C010", "research/real_math/millennium/p_vs_np/02_problem_dag/open_obligations.yaml"],
+      "falsifier_or_attempt": "construct a global disjoint generator-separating cover across t repeated blocks",
+      "observed_result": "rho is bounded by sigma(base)+ceil(log2 t), so fixed-gadget repetition cannot yield the required super-log amplification",
+      "local_repair_attempts": ["move from disjoint repetition to coupled product/tensor families"],
+      "timestamp": "2026-08-11T00:10:00+00:00",
+      "artifact_hash": "sha256:0b8676ae467d0a00ee5d307a9457bf632c17e9b43547645ec6516242b9fc6f61"
+    },
+    {
+      "failure_id": "F-C021-CHEAP-ADJACENCY",
+      "atom_id": "R004/O9d12a",
+      "candidate_id": "C021",
+      "context_packet_hash": "legacy:no-strict-context:C021",
+      "research_trace_event_id": "legacy:issue24:C021",
+      "method_family": "strongly-explicit algebraic target",
+      "failure_mode": "cheap adjacency predicate compiles into a cheap unrestricted intersection construction",
+      "residual_signature": ["explicitness imposes an upper ceiling", "QR cover window is nearly logarithmic"],
+      "broken_assumptions": ["pseudorandom or spectral hardness of an explicit graph is enough to make unrestricted cover hard"],
+      "scope_conditions": ["bipartite target has adjacency circuit of size s(log N)", "C020 dual-rail compiler applies in the unrestricted intersection model"],
+      "competing_diagnoses": ["target family is algorithmically too explicit", "compiler is too permissive for lower-bound target", "algebraic pseudorandomness does not block constructive cover"],
+      "selected_diagnosis": "adjacency computation itself yields an explicit cover/intersection upper construction",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/03_routes/R004_C021_ROUTE_DELTA_20260811.md"],
+      "falsifier_or_attempt": "compile the best source-bound Jacobi-symbol algorithm through machine-to-circuit simulation and the dual-rail set compiler",
+      "observed_result": "rho(QR_p)=O(log p*(log log p)^3), leaving only a narrow super-log window",
+      "local_repair_attempts": ["search for a reuse-stable invariant before target evaluation", "parallel attempt to sharpen QR upper bound toward O(log p)"],
+      "timestamp": "2026-08-11T03:30:00+00:00",
+      "artifact_hash": "sha256:4f2747198fe835117d9bc38fe48320e0837fd3143b19255f64c2d3797e7ce3ec"
+    },
+    {
+      "failure_id": "F-C023-SCALAR-COLLAPSE",
+      "atom_id": "R004/O9d12a2a",
+      "candidate_id": "C023",
+      "context_packet_hash": "legacy:no-strict-context:C023",
+      "research_trace_event_id": "legacy:issue24:C023",
+      "method_family": "scalar spectral lower-bound invariant",
+      "failure_mode": "extremal scalar hardness coexists with logarithmic unrestricted cover complexity",
+      "residual_signature": ["N/operator-norm ratio is globally capped by sqrt(N)", "inner-product graph attains the cap but has logarithmic cover", "universal monotone scalar certificate is therefore logarithmically capped"],
+      "broken_assumptions": ["larger operator-norm hardness ratio monotonically tracks unrestricted cover hardness"],
+      "scope_conditions": ["universal lower bound depends only on r(G)=N/||A_G||", "dependence on r is nondecreasing"],
+      "competing_diagnoses": ["scalar statistic discards fusion-relevant structure", "inner-product graph is a special exception", "spectral family needs conditioning on reuse structure"],
+      "selected_diagnosis": "the scalar statistic is structure-blind with respect to cyclic fusion/reuse and cannot universally certify super-log cover complexity",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/04_candidates/negative_history/C023_spectral_ratio_unrestricted_cover_no_go.md", "research/real_math/millennium/p_vs_np/03_routes/R004_C023_ROUTE_DELTA_20260811.md"],
+      "falsifier_or_attempt": "calibrate the global scalar maximum on the mod-2 inner-product graph and compare with the C012 logarithmic cover",
+      "observed_result": "all universal nondecreasing functions of the scalar ratio are capped by the inner-product family's O(log N) cover value",
+      "local_repair_attempts": ["open O9d12a2a1 for non-scalar fusion-stable potentials", "allow structural conditioning only with a separately justified fusion-compatible property"],
+      "timestamp": "2026-08-11T04:10:00+00:00",
+      "artifact_hash": "sha256:b395e309098917ce33b8d63f447f3b9364ec83f15e1a2454f5ad192df4c775f0"
+    },
+    {
+      "failure_id": "F-C024-FRACTIONAL-INTEGRALITY-GAP",
+      "atom_id": "O9d12a2a1",
+      "candidate_id": "C024",
+      "context_packet_hash": "sha256:33d5edc3f2ff8b93a9fb165e44bba144d411152db9e716ea5a67c7770cfc01e0",
+      "research_trace_event_id": "O9d12a2a1-E10",
+      "method_family": "plain fractional set-cover / semi-filter packing relaxation",
+      "failure_mode": "independent fractional pair weights erase cross-fusion integrality/correlation",
+      "residual_signature": ["fractional cover of G_NEQ is at most 2", "integral cover complexity of G_NEQ is log2 N", "integrality gap grows at least log2(N)/2"],
+      "broken_assumptions": ["a one-pair LP budget would preserve enough accumulation to serve as the primary non-scalar route invariant"],
+      "scope_conditions": ["plain LP relaxation of the full Cavalar-Oliveira cover graph", "independent fractional weights on pair vertices without lifted correlation constraints"],
+      "competing_diagnoses": ["the G_NEQ calibration is exceptional but fractional packing may still be useful elsewhere", "the relaxation loses simultaneous integral choice correlations", "semi-filter weights need a lifted or entropy-style joint constraint"],
+      "selected_diagnosis": "the plain LP local law is sound, but fractionalization loses the correlation/integrality responsible for logarithmic accumulation across multiple fusions",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md", "Cavalar-Oliveira 2025 Proposition 40"],
+      "falsifier_or_attempt": "apply the symmetric fractional mixture of all cuts of the diagonal universe for G_NEQ, assigning weight 2/2^N to each cut pair",
+      "observed_result": "every semi-filter above (u,v) is covered by exactly half the cuts, giving feasible total fractional weight 2 while rho(G_NEQ)=log2 N",
+      "local_repair_attempts": ["retain C024 only as a scoped cheap certificate tool", "open a correlation-sensitive lifted-packing child atom rather than target-first evaluation"],
+      "timestamp": "2026-08-11T05:50:00+00:00",
+      "artifact_hash": "sha256:07dcbbc8245073495fe4ba928c2bfd8ecdcac6b8bb8f8f324d050628a74357f6"
+    }
+  ],
+  "links": [
+    {
+      "source_id": "F-C024-FRACTIONAL-INTEGRALITY-GAP",
+      "target_id": "F-C010-MULTIPLEXING",
+      "relation": "SHARES_RESIDUAL_WITH",
+      "rationale": "Both expose that locally valid resources can be shared across many obligations; C024 is the convex/LP version in which fractional choices share responsibility across semi-filters.",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md", "issue24:C010"]
+    },
+    {
+      "source_id": "F-C024-FRACTIONAL-INTEGRALITY-GAP",
+      "target_id": "F-C023-SCALAR-COLLAPSE",
+      "relation": "MOTIVATES_META_ATOM",
+      "rationale": "C023 removed structure-blind scalar summaries; C024 shows that even a fusion-aligned one-step LP can discard multi-fusion correlation. The next method basis must retain relational/correlation structure across pair choices.",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md", "research/real_math/millennium/p_vs_np/03_routes/R004_C023_ROUTE_DELTA_20260811.md"]
+    },
+    {
+      "source_id": "F-C021-CHEAP-ADJACENCY",
+      "target_id": "F-C024-FRACTIONAL-INTEGRALITY-GAP",
+      "relation": "TRANSFER_WARNING_FOR",
+      "rationale": "Even after correlation is restored, an eventual explicit target can remain too easy if its adjacency relation compiles into a cheap unrestricted intersection construction.",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/03_routes/R004_C021_ROUTE_DELTA_20260811.md", "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md"]
+    }
+  ]
+}
