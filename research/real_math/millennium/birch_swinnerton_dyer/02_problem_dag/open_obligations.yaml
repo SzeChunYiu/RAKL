@@ -1,0 +1,24 @@
+root: BSD
+authority: OPEN_NO_SOLUTION_CERTIFICATE
+control_issue: 90
+active_atom: BSD-S001
+nodes:
+  - id: BSD-RANK
+    statement: "ord_{s=1} L(E,s) = rank E(Q) for every elliptic curve E/Q"
+    state: OPEN
+  - id: BSD-LEADING
+    statement: "refined complex BSD leading-term identity with regulator, period, local factors, torsion and Sha"
+    state: OPEN
+  - id: BSD-S001
+    parent: [BSD-RANK, BSD-LEADING]
+    statement: "identify the minimal comparison object/identity connecting arbitrary-rank p-primary Selmer/Iwasawa structure to complex analytic rank and the global leading term"
+    state: PRE_CANDIDATE_CONTEXT_FROZEN
+    children:
+      - BSD-S001a
+      - BSD-S001b
+  - id: BSD-S001a
+    statement: "audit projection sufficiency: what global coordinates are lost by a fixed-p Selmer/Iwasawa output?"
+    state: NEXT
+  - id: BSD-S001b
+    statement: "search determinant/higher-rank explicit reciprocity identities that restore the missing complex/global coordinates"
+    state: QUEUED
