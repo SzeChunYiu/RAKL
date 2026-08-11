@@ -89,21 +89,31 @@ Accumulated experience guides search; it never mints theorem truth.
 
 ## Obstruction-transformation semantic shortcut review
 
-After the dual experience-memory review and before selecting the next mathematical action, freeze an `ObstructionTransformationReview` from `src/rakl/semantic_shortcut.py`, conforming to `schemas/obstruction-transformation-review.schema.json`.
+After the dual experience-memory review and before selecting the next mathematical action, compile or load a content-bound `ObstructionTransformationMemory` from `src/rakl/semantic_shortcut.py`, conforming to `schemas/obstruction-transformation-memory.schema.json`. Each episode records a scoped source event of the form:
+
+```text
+relational obstruction O
+-> transformation T with explicit preconditions
+-> changed relation/state O'
+```
+
+Episodes may originate in mathematics, science, engineering, algorithms, organizations, games, journalism or ordinary situations. The source event's authority is recorded separately from target applicability. Proposal-only source episodes may guide search but cannot become a strict viable route.
+
+Then freeze an `ObstructionTransformationReview` conforming to `schemas/obstruction-transformation-review.schema.json`, bound to the exact transformation-memory snapshot.
 
 Ask explicitly:
 
 > **Has this relational obstruction — and a transformation that breaks it — occurred anywhere in recorded knowledge?**
 
-Fingerprint the active obstruction using domain-light structural coordinates: roles, relations, constraints, failure mechanisms, invariants that must survive, desired transition, and forbidden losses. Then use the invention-last route order:
+Fingerprint the active obstruction using domain-light structural coordinates: roles, relations, constraints, failure mechanisms, invariants that must survive, desired transition, and forbidden losses. Search transformations by obstruction morphology and actual source effects, not by topic vocabulary. Then use the invention-last route order:
 
-1. `SEARCH` — directly reuse an applicable recorded obstruction→transformation episode;
-2. `JUMP` — transport a structurally analogous episode only with explicit source→target role mapping, shared relations/constraints, material disanalogies, and target validation obligations;
-3. `GLUE` — compose compatible partial transformations only with explicit operation order and interface/incompatibility obligations;
-4. `LIFT` — only after SEARCH, JUMP, and GLUE are each explicitly exhausted/blocked in a recorded search boundary and at least two distinct failed attempts share a residual feature;
+1. `SEARCH` — reuse an applicable same-domain recorded episode only when every enabling source precondition is mapped or explicitly repaired and target validation obligations are frozen;
+2. `JUMP` — transport a cross-domain episode only with explicit source→target role mapping, shared relations/constraints, complete source-precondition accounting, material disanalogies, and target validation obligations;
+3. `GLUE` — compose compatible partial transformations only when their combined effects cover the required transition and an explicit operation-order/interface/incompatibility witness exists;
+4. `LIFT` — only after SEARCH, JUMP, and GLUE are each explicitly exhausted/blocked, every retrieved candidate is accounted for, the no-match claim is bound to a cross-problem coverage receipt, and at least two distinct failed attempts share a residual feature;
 5. `CANNOT_CHECK` — when the structural/search/exhaustion evidence is insufficient.
 
-A `LIFT` emits a `MissingTransformationSpecification` describing what a new representation/operator must preserve, break, expose, reduce, and validate. It is **not** itself a new tool, proof, theorem, or method-promotion certificate. One failed attempt never justifies LIFT. Retrieval failure without a bounded exhaustion witness is not evidence that human knowledge lacks a relevant transformation.
+A `LIFT` emits a `MissingTransformationSpecification` describing what a new representation/operator must preserve, break, expose, reduce, and validate. It is **not** itself a new tool, proof, theorem, or method-promotion certificate. One failed attempt never justifies LIFT. Retrieval failure without a bounded coverage witness is not evidence that recorded knowledge lacks a relevant transformation.
 
 ## Role-separated pre-candidate review
 
@@ -129,7 +139,7 @@ Before the first candidate for an atom, the trace must contain, in chronological
 4. `METHOD_TRANSFER_REVIEW` — solved/near-solved contexts, transferable methods, enabling assumptions and disanalogies;
 5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties and recommendation;
 6. `EXPERIENCE_MEMORY_REVIEW` — exact success-tool/failure-lattice queries, applicability/reuse warnings, selected reusable tools if any, and memory-review artifact;
-7. `OBSTRUCTION_TRANSFORMATION_REVIEW` — relational obstruction fingerprint, recorded episode-memory snapshot, SEARCH/JUMP/GLUE/LIFT statuses, mapping/composition/exhaustion witnesses, selected route, and exact shortcut-review artifact;
+7. `OBSTRUCTION_TRANSFORMATION_REVIEW` — relational obstruction fingerprint, content-bound episode-memory snapshot, SEARCH/JUMP/GLUE/LIFT statuses, mapping/composition/exhaustion witnesses, selected route, and exact shortcut-review artifact;
 8. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator, including how relevant prior success/failure experience and the semantic-shortcut review affected the choice.
 
 After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash. Every material failed result must also emit/update a failure-experience record; every genuinely reusable successful step may emit a scoped research-tool candidate.
@@ -138,7 +148,7 @@ Trace entries are hash-chained: except for the first event, `previous_event_hash
 
 This trace is an **auditable scientific decision record**, not a raw private chain-of-thought transcript. Record reproducible state, alternatives, concise decision rationale, evidence, outputs, uncertainties, residuals and next actions. Do not claim that hidden model reasoning has been exposed.
 
-Call `plan_math_research(..., context_fiber=..., memory_review=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/memory/shortcut/trace later.
+Call `plan_math_research(..., context_fiber=..., memory_review=..., transformation_memory=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/memory/shortcut/trace later.
 
 A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate context, experience-memory, obstruction-transformation, and trace gates passed.
 
