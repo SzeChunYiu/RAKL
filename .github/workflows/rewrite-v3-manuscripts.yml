@@ -24,7 +24,21 @@ jobs:
         with:
           python-version: "3.11"
       - name: Rewrite four canonical manuscripts for RAKL v3
-        run: python scripts/rewrite_v3_manuscripts.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import runpy
+
+          path = Path('scripts/rewrite_v3_manuscripts.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'return pattern.sub("\\\\begin{abstract}\\n" + new_body.strip() + "\\n\\\\end{abstract}", text, count=1)'
+          new = 'return pattern.sub(lambda _m: "\\\\begin{abstract}\\n" + new_body.strip() + "\\n\\\\end{abstract}", text, count=1)'
+          if old in text:
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          runpy.run_path(str(path), run_name='__main__')
+          PY
       - name: Validate v3 manuscript invariants
         shell: bash
         run: |
