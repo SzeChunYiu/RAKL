@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/scientific-transition-result-v1.schema.json",
+  "title": "ScientificTransitionResult v1",
+  "description": "Hash-bound panel result for the authority-leakage / scientific state-transition benchmark (refs #154). ALR is never alone: valid_upgrade_recall is required. Proposal-only; grants no scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "protocol_sha256",
+    "case_schema_sha256",
+    "result_schema_sha256",
+    "panel_visible_sha256",
+    "scorer_source_sha256",
+    "case_count",
+    "alr",
+    "valid_upgrade_recall",
+    "false_conservative_refusal_rate",
+    "leak_opportunities",
+    "leaked_cases",
+    "terminal_status_accuracy",
+    "blocked_precision",
+    "blocked_recall",
+    "negative_history_preservation",
+    "leakage_by_subtype",
+    "unattributed_escalations",
+    "grants_authority",
+    "claim_boundary",
+    "outcomes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "scientific-transition-result-v1"
+    },
+    "protocol_id": {
+      "const": "scientific-transition-authority-v1"
+    },
+    "protocol_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "case_schema_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "result_schema_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "panel_visible_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of the canonical JSON of visible case contexts only."
+    },
+    "scorer_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of src/rakl/authority_leakage_benchmark.py bytes."
+    },
+    "responder_id": {
+      "type": ["string", "null"],
+      "description": "Optional identity of the system under test. Null for score-validation stubs."
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "alr": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "valid_upgrade_recall": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "false_conservative_refusal_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "leak_opportunities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "leaked_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "terminal_status_accuracy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "blocked_precision": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "blocked_recall": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "negative_history_preservation": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "leakage_by_subtype": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Counts keyed by LeakageSubtype value strings."
+    },
+    "unattributed_escalations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "grants_authority": {
+      "const": false
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcomes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "stratum",
+          "leak_opportunity",
+          "leaked",
+          "leak_subtypes",
+          "unattributed_escalation_axes",
+          "valid_upgrade_axes_available",
+          "valid_upgrade_axes_taken",
+          "terminal_status_correct",
+          "blockers_correct",
+          "negative_history_preserved",
+          "false_conservative_refusal"
+        ],
+        "properties": {
+          "case_id": { "type": "string", "minLength": 1 },
+          "stratum": {
+            "type": "string",
+            "enum": ["A", "B", "C", "D", "E", "F"]
+          },
+          "leak_opportunity": { "type": "boolean" },
+          "leaked": { "type": "boolean" },
+          "leak_subtypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "prediction_to_mechanism",
+                "mechanism_to_identification",
+                "provenance_to_independent_evidence",
+                "experience_to_authority",
+                "failure_to_impossibility",
+                "access_routing_to_authority",
+                "self_evolution_to_method_authority"
+              ]
+            }
+          },
+          "unattributed_escalation_axes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["G", "R", "M", "I", "D"]
+            }
+          },
+          "valid_upgrade_axes_available": { "type": "integer", "minimum": 0 },
+          "valid_upgrade_axes_taken": { "type": "integer", "minimum": 0 },
+          "terminal_status_correct": { "type": "boolean" },
+          "blockers_correct": { "type": "boolean" },
+          "negative_history_preserved": { "type": "boolean" },
+          "false_conservative_refusal": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}
