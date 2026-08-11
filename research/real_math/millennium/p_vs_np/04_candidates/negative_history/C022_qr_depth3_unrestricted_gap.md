@@ -39,7 +39,7 @@ Therefore:
 
 - if `p == 3 mod 4`, then `chi(-1)=-1` and
   `A_p A_p^T = (p+1)I-J`, so `||A_p|| = sqrt(p+1)`;
-- if `p == 1 mod 4`, then `chi(-1)=+1`, `C_p` is symmetric, is zero on the all-ones vector, and has eigenvalues `+sqrt(p)` or `-sqrt(p)` on its orthogonal complement. Hence `A_p=C_p-I` has operator norm `sqrt(p)+1`.
+- if `p == 1 mod 4`, then `chi(-1)=+1`, so `C_p` is real symmetric, is zero on the all-ones vector, and satisfies `C_p^2=pI-J`. Hence its eigenvalues on the orthogonal complement of the all-ones vector lie in `{+sqrt(p),-sqrt(p)}`. Because `trace(C_p)=0` and that orthogonal complement is nonzero, both signs occur. Thus `A_p=C_p-I` has eigenvalues `-1`, `sqrt(p)-1`, and `-sqrt(p)-1`, and therefore `||A_p||=sqrt(p)+1`.
 
 Thus in every case
 
