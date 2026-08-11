@@ -1,0 +1,177 @@
+{
+  "atom_id": "NS-B1a",
+  "object_context": "Child atom of NS-B1 for the unforced whole-space 3D incompressible Navier–Stokes Clay (A) route. Assume v is a mild bounded ancient Navier–Stokes solution on R^3 x (-infinity,0) with the Albritton–Barker Type-I quantity I(v,q)<infinity. Identify an equation-specific inherited trace/tail property strong enough either to yield times t_k->-infinity with uniformly bounded global L3 norm, activating Albritton–Barker Theorem 1.2, or to activate another source-valid Liouville theorem. Purely functional implications from A+C+D+E alone are excluded by the NS-B1 sparse-tail calibration; the Navier–Stokes dynamics, pressure relation, local energy inequality, mild representation, or another proved dynamical structure must do the work.",
+  "structural_coordinates": [
+    "mild bounded ancient 3D incompressible Navier–Stokes solution on R^3 x (-infinity,0)",
+    "finite Albritton–Barker scale-invariant parabolic quantity I=sup_Q(A+C+D+E)",
+    "local parabolic cylinder control versus global spatial tail tightness are distinct coordinates",
+    "target trace condition is existence of t_k->-infinity with sup_k ||v(t_k)||_L3(R3)<infinity",
+    "Navier–Stokes mild/Duhamel representation couples diffusion and the divergence of v tensor v across space",
+    "pressure is nonlocal and determined modulo time-dependent constants by the velocity through the Navier–Stokes equation",
+    "translation and dilation noncompactness allow energy/critical mass to escape spatially under weak or local convergence",
+    "boundedness of local scale-invariant quantities does not imply global integrability by functional analysis alone",
+    "singularity-persistence logic requires a nontrivial ancient object, while a Liouville trigger must eliminate precisely that class",
+    "renormalized orbit may be fixed, periodic/DSS, or genuinely nonperiodic; the trace bridge must not assume orbit type",
+    "Type-II blow-up remains outside the child atom even if the trace/tail bridge succeeds"
+  ],
+  "equivalent_formulations": [
+    "Bridge form: every mild bounded ancient Navier–Stokes solution with finite I possesses a backward sequence uniformly bounded in global L3.",
+    "Tail-tightness form: derive a dynamics-specific uniform control preventing infinitely replicated critical mass from escaping to spatial infinity strongly enough to produce an L3-bounded backward slice.",
+    "Alternative-Liouville form: instead of global L3, prove an inherited property P from finite I and the equation such that a source-valid Liouville theorem applies to the full ancient trajectory class.",
+    "Contrapositive research form: if a nontrivial mild bounded ancient solution with finite I exists, then every attempted global trace/tail functional compatible with a chosen Liouville theorem must fail; identify the exact failure mechanism."
+  ],
+  "solved_analogues": [
+    "Albritton–Barker Theorem 1.2: a mild ancient solution with uniformly bounded global L3 norm along a sequence t_k->-infinity is identically zero.",
+    "Koch–Nadirashvili–Seregin–Šverák: bounded ancient solutions are rigid in two dimensions and in selected axisymmetric settings, where additional structural controls are available."
+  ],
+  "near_solved_analogues": [
+    "Escauriaza–Seregin–Šverák critical L-infinity_t L3_x regularity/backward-uniqueness route supplies a rigidity trigger once the global critical norm is available.",
+    "Albritton–Barker Lemma 2.5 gives one-way implications from several weak Serrin/critical hypotheses to finite I, but the reverse direction needed here is not supplied.",
+    "The NS-B1 sparse-tail calibration shows local scale-invariant functionals can stay bounded while global L3 diverges on every slice when the Navier–Stokes equation is removed."
+  ],
+  "method_transfers": [
+    {
+      "source_context": "Albritton–Barker ancient L3-sequence Liouville theorem",
+      "method": "Produce a backward sequence with uniform global L3 control, then invoke the source theorem to force the mild ancient solution to vanish.",
+      "shared_structure": [
+        "same mild ancient whole-space Navier–Stokes target class",
+        "same backward-time direction",
+        "triviality contradicts the nontrivial ancient witness required by a Type-I singularity"
+      ],
+      "required_assumptions": [
+        "global L3 norm is finite and uniformly bounded along a sequence t_k->-infinity",
+        "mild ancient Navier–Stokes solution hypotheses of the theorem"
+      ],
+      "disanalogies": [
+        "finite I controls local parabolic cylinders rather than global spatial tails",
+        "the source theorem assumes the trace condition; it does not derive it from Type-I bounds"
+      ],
+      "repair_question": "Which equation-specific estimate converts finite I plus ancient mild dynamics into global L3 tightness along at least one backward sequence?",
+      "source_anchors": [
+        "Albritton–Barker, arXiv:1811.00502, Theorem 1.2"
+      ]
+    },
+    {
+      "source_context": "Heat-semigroup / mild Navier–Stokes representation",
+      "method": "Use diffusion and the Duhamel representation to propagate or create spatial tail decay/tightness from controlled nonlinear forcing.",
+      "shared_structure": [
+        "parabolic diffusion acts over length scale sqrt(time separation)",
+        "mild ancient solutions satisfy an integral representation rather than only distributional local bounds",
+        "tail information can in principle be transported across time"
+      ],
+      "required_assumptions": [
+        "a valid ancient mild representation on the required time intervals",
+        "integrability or cancellation of the nonlinear term sufficient to estimate global tails",
+        "pressure/Helmholtz projection handled in the correct global function space"
+      ],
+      "disanalogies": [
+        "finite I supplies no a priori global Lp norm for the nonlinear term",
+        "infinitely distributed spatial mass may evade estimates based only on local cylinders",
+        "ancient time extends without a preferred finite initial slice carrying global decay"
+      ],
+      "repair_question": "Can the Duhamel/heat-kernel structure plus finite I forbid the sparse-tail replication allowed by arbitrary divergence-free fields?",
+      "source_anchors": [
+        "research/real_math/millennium/navier_stokes/01_frontier/NS-B1_TYPE_I_IMPLICATION_MATRIX_20260811.md",
+        "Albritton–Barker, arXiv:1811.00502"
+      ]
+    },
+    {
+      "source_context": "Concentration-compactness / profile decomposition",
+      "method": "Separate compact core, translated/dilated profiles, and remainder; prove that a minimal nontrivial ancient witness cannot split or leak critical mass to infinity.",
+      "shared_structure": [
+        "translation/dilation are the primary noncompact symmetries",
+        "local convergence can lose globally distributed mass",
+        "a rigidity argument becomes easier if one obtains almost-periodicity/modulo-symmetry"
+      ],
+      "required_assumptions": [
+        "a critical function space admitting a profile or compactness theory",
+        "decoupling/stability strong enough for Navier–Stokes evolution",
+        "a minimality quantity that is actually controlled by finite I"
+      ],
+      "disanalogies": [
+        "finite I is a local parabolic Morrey-type control, not immediately a global critical norm with known profile decomposition",
+        "no minimal blow-up threshold tied to I has been frozen",
+        "pressure and nonlinear interactions may obstruct clean profile decoupling"
+      ],
+      "repair_question": "Is there a source-valid minimality or almost-periodicity principle for finite-I ancient solutions that upgrades local compactness to global tail tightness?",
+      "source_anchors": [
+        "Koch–Nadirashvili–Seregin–Šverák, arXiv:0709.3599",
+        "Albritton–Barker, arXiv:1802.03164"
+      ]
+    },
+    {
+      "source_context": "Local energy inequality plus pressure decomposition",
+      "method": "Use localized energy flux and harmonic/nonlocal pressure control to bound outward/inward transport across expanding spatial shells.",
+      "shared_structure": [
+        "same suitable/mild Navier–Stokes dynamics",
+        "local energy balance sees flux through cutoffs",
+        "pressure is a load-bearing nonlocal term in any tail estimate"
+      ],
+      "required_assumptions": [
+        "quantitative cutoff estimates uniform over expanding radii",
+        "pressure decomposition with far-field terms controlled without assuming global L3",
+        "integrated flux estimate strong enough to yield a global trace consequence"
+      ],
+      "disanalogies": [
+        "standard local energy control is compatible with mass relocating between distant regions",
+        "finite I bounds critical local quantities but does not make the flux small",
+        "a shell-by-shell estimate can accumulate over infinitely many shells"
+      ],
+      "repair_question": "Can a pressure-aware flux inequality sum over expanding shells without logarithmic or infinite accumulation, and if not, what exact obstruction appears?",
+      "source_anchors": [
+        "Caffarelli–Kohn–Nirenberg, Comm. Pure Appl. Math. 35 (1982)",
+        "Albritton–Barker, arXiv:1811.00502"
+      ]
+    }
+  ],
+  "explicit_disanalogies": [
+    "The sparse-tail functional calibration is not a Navier–Stokes solution and cannot refute an equation-specific bridge.",
+    "Local parabolic Type-I control and global spatial L3 integrability live on different locality scales; no implication may be inserted without a theorem.",
+    "A fixed or periodic renormalized orbit assumption is stronger than finite I and cannot be smuggled into the trace/tail bridge.",
+    "Pressure is nonlocal, so a velocity-only local tail argument may miss long-range coupling.",
+    "An almost-periodic/minimal-element mechanism from another critical PDE cannot be transferred without a Navier–Stokes stability/minimality theorem.",
+    "Even a complete NS-B1a theorem would eliminate only the registered Type-I branch, not Type-II or the Clay root by itself."
+  ],
+  "source_anchors": [
+    "Albritton–Barker, arXiv:1811.00502, Theorems 1.1 and 1.2 and Lemma 2.5",
+    "Escauriaza–Seregin–Šverák, Russian Math. Surveys 58 (2003), DOI:10.1070/RM2003v058n02ABEH000609",
+    "Koch–Nadirashvili–Seregin–Šverák, arXiv:0709.3599",
+    "Albritton–Barker, arXiv:1802.03164",
+    "research/real_math/millennium/navier_stokes/01_frontier/NS-B1_TYPE_I_IMPLICATION_MATRIX_20260811.md"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "distributed systems / resource accounting",
+      "source_situation": "A system may obey a strict per-shard or per-window resource bound while total replicated state is unbounded across infinitely many shards; a global eviction, synchronization, or conservation mechanism is required to convert local budgets into a global inventory bound.",
+      "common_abstraction": [
+        "uniform local budget does not imply finite global inventory",
+        "replication/escape across many locations is the missing coordinate",
+        "a dynamics-specific coupling can rule out otherwise legal independent local configurations"
+      ],
+      "source_to_target_mapping": [
+        "local shard/window budget -> A,C,D,E bound on a parabolic cylinder",
+        "replicated state across shards -> spatially separated critical-mass packets",
+        "total inventory -> global L3 norm of a time slice",
+        "eviction/synchronization rule -> Navier–Stokes diffusion, nonlinear transport, pressure coupling, and ancient mild dynamics"
+      ],
+      "shared_constraints": [
+        "local constraints are individually valid but do not sum automatically",
+        "the global conclusion requires control of interactions or accumulation across locations",
+        "a counterexample can be made by sparse replication when the coupling law is removed"
+      ],
+      "disanalogies": [
+        "Navier–Stokes is a nonlinear PDE with continuous space-time and nonlocal pressure, not a discrete storage system",
+        "there is no literal eviction protocol or conserved global inventory corresponding to L3",
+        "the analogy does not prove any tail estimate"
+      ],
+      "proposed_principle": "Search for an equation-specific anti-replication/tail-coupling mechanism rather than another local critical scalar bound.",
+      "validation_obligation": "Prove on mild bounded ancient Navier–Stokes solutions that the proposed dynamical mechanism quantitatively rules out the sparse-tail functional calibration or otherwise yields a source-valid Liouville trigger; failure on a PDE-consistent adversarial class refutes the transfer.",
+      "provenance_note": "Proposal-only structural analogy used to identify the missing local-to-global coordinate; no mathematical authority is imported."
+    }
+  ],
+  "analogy_scan_notes": "The retained analogy is intentionally about local-versus-global accounting, not fluid intuition. It survives the mapping/disanalogy gate because the NS-B1 sparse-tail calibration explicitly realizes the uncoupled local-budget/global-inventory mismatch. Surface analogies to turbulence cascades were not retained without a quantified target mapping.",
+  "frozen_at": "2026-08-11T07:20:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:d0acf9ae066132883a893e669c09f5969f5e40281c558913b61c8ac0fcc2902d"
+}
