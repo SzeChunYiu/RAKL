@@ -15,6 +15,8 @@ The current manuscript supports a reproducible directional-witness formalism and
 - deterministic conformance cases are present;
 - the 44-item internal diagnostic is explicitly labelled constructed and same-session;
 - the fresh 16-item natural-domain packet is frozen;
+- FS9 descriptor harvests 3476527--3476529 are READY with `training_authorized=false`;
+- GitHub issue #43 remains open with zero public responses (no labels/adjudication);
 - a strong content-semantic comparator protocol and parent-applicability contract are frozen before labels;
 - expensive training/inference correctly fails closed while prerequisite gates remain open;
 - superseded manuscript and section versions are archived inside this paper directory; `main.tex` is now the canonical current manuscript.

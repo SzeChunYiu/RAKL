@@ -9,7 +9,7 @@
 
 ## Claim boundary
 
-The current manuscript supports reference-engineering behavior, formal control structure, deterministic known-answer traces, and a preregistered empirical programme. It does **not** support a claim that RAKL outperforms strong RAG or scientific-agent baselines.
+The current manuscript supports reference-engineering behavior, formal control structure, deterministic known-answer traces, a preregistered empirical programme, and honest non-confirmatory native microtrial harvests (V4/V4.1; zero exact conceptual passes; tip jobs 3476520/1/4 are receipt-chain only). It does **not** support a claim that RAKL outperforms strong RAG or scientific-agent baselines, and it must not report promotional arm win/loss numbers from those harvests.
 
 ## Closed coordinates
 

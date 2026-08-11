@@ -58,64 +58,98 @@ jobs:
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
 
-      - name: Stage five release manuscripts
+      - name: Stage five release manuscripts from canonical publication/
         shell: bash
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
           rm -rf build/publication
-          mkdir -p build/publication/paper-01 build/publication/paper-04
+          mkdir -p build/publication
 
-          python paper/build_epistemic_mechanics.py \
-            --output build/publication/paper-01/main.tex \
-            --subject-sha "$HEAD_SHA" \
-            --software-tests "$RAKL_SOFTWARE_TESTS"
-
-          python paper/build_saturated_epistemic_mechanics.py \
-            --stage build/publication/paper-02 \
-            --subject-sha "$HEAD_SHA" \
-            --software-tests "$RAKL_SOFTWARE_TESTS"
-
+          # Stage reader-facing packages (not stale paper/ archives).
+          cp -a publication/papers/paper-01-epistemic-mechanics build/publication/paper-01
+          cp -a publication/papers/paper-02-rakl-evidence-governed-research/source \
+            build/publication/paper-02
           cp -a publication/papers/paper-03-directional-structural-witnesses \
             build/publication/paper-03
-
+          mkdir -p build/publication/paper-04
           cp publication/papers/paper-04-verified-discovery/main.tex \
             build/publication/paper-04/main.tex
-
           cp -a publication/papers/paper-05-experience-governed-evolution \
             build/publication/paper-05
-          rm -f build/publication/paper-05/main.pdf
 
-      - name: Bind author metadata to generated release sources
+          rm -f build/publication/paper-0*/main.pdf
+
+          for fig in fig5_demo_growth.pdf fig6_demo_context.pdf; do
+            if [[ -f "paper/figures/generated/$fig" ]]; then
+              cp -f "paper/figures/generated/$fig" "build/publication/paper-02/$fig"
+            fi
+          done
+
+          python - <<PY
+          from pathlib import Path
+          sha = "$HEAD_SHA"
+          tests = int("$RAKL_SOFTWARE_TESTS")
+          p1 = Path("build/publication/paper-01/main.tex")
+          text = p1.read_text(encoding="utf-8")
+          if r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}" not in text:
+              raise SystemExit("paper-01 missing UNBOUND ImplementationSHA anchor")
+          if r"\newcommand{\SoftwareTests}{UNBOUND}" not in text:
+              raise SystemExit("paper-01 missing UNBOUND SoftwareTests anchor")
+          text = text.replace(
+              r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}",
+              rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}",
+              1,
+          )
+          text = text.replace(
+              r"\newcommand{\SoftwareTests}{UNBOUND}",
+              rf"\newcommand{{\SoftwareTests}}{{{tests}}}",
+              1,
+          )
+          if r"\section*{Code, materials and AI-use disclosure}" not in text:
+              raise SystemExit("paper-01 missing AI-use disclosure")
+          p1.write_text(text, encoding="utf-8")
+          Path("build/publication/paper-02/build_identity.tex").write_text(
+              "\\newcommand{\\SoftwareTests}{%d}\n"
+              "\\newcommand{\\ImplementationSHA}{\\texttt{%s}}\n"
+              % (tests, sha),
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Require author metadata and AI-use disclosures
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
 
-          author_old = r"\author{Sze Chun Yiu}"
-          author_new = r"\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}"
-          date_old = r"\date{10 August 2026}"
-          date_new = r"\date{11 August 2026}"
-
-          for paper in ("paper-01", "paper-02"):
+          required_meta = ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se")
+          disclosure_files = {
+              "paper-01": None,
+              "paper-02": "sections/16_reproducibility_ai_use.tex",
+              "paper-03": None,
+              "paper-04": None,
+              "paper-05": None,
+          }
+          disclosure_needles = {
+              "paper-01": r"\section*{Code, materials and AI-use disclosure}",
+              "paper-02": r"\section*{Reproducibility and AI-use statement}",
+              "paper-03": r"\section*{Code, materials and AI-use disclosure}",
+              "paper-04": r"\section*{Code, materials and AI-use disclosure}",
+              "paper-05": r"\section*{Code, data, materials and AI-use disclosure}",
+          }
+          for paper, needle in disclosure_needles.items():
               path = Path(f"build/publication/{paper}/main.tex")
-              text = path.read_text(encoding="utf-8")
-              if author_old not in text:
-                  raise SystemExit(f"author anchor missing: {path}")
-              text = text.replace(author_old, author_new, 1)
-              if date_old in text:
-                  text = text.replace(date_old, date_new, 1)
-              text = text.replace(
-                  "Personal author metadata, funding and competing-interest declarations are supplied separately at submission and are not inferred by the build system.",
-                  "Author identity, affiliation and corresponding email are given on the title page. Funding, competing-interest, acknowledgement and licensing declarations remain author-supplied submission metadata and are not inferred by the build system.",
-              )
-              path.write_text(text, encoding="utf-8")
-
-          for paper in ("paper-01", "paper-02", "paper-03", "paper-04", "paper-05"):
-              text = Path(f"build/publication/{paper}/main.tex").read_text(encoding="utf-8")
-              for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
-                  if required not in text:
+              raw = path.read_text(encoding="utf-8")
+              blob = raw
+              extra = disclosure_files[paper]
+              if extra is not None:
+                  blob += "\n" + (path.parent / extra).read_text(encoding="utf-8")
+              if needle not in blob:
+                  raise SystemExit(f"{paper} missing AI-use disclosure")
+              for required in required_meta:
+                  if required not in raw:
                       raise SystemExit(f"{paper} author metadata missing: {required}")
           PY
 

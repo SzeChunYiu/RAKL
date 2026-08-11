@@ -15,6 +15,7 @@ The current manuscript supports reference-engineering behavior, formal control s
 
 - deterministic reference trace and bounded-context engineering evidence are explicitly scoped;
 - the manuscript already states that matched empirical comparisons are preregistered rather than completed;
+- V4 and tip-rebound V4.1 microtrials are recorded as non-confirmatory negatives (receipt-chain only; not experience-§B authority);
 - reproducibility and AI-use disclosure is present;
 - failure-closed infrastructure for native matched evaluation is preserved;
 - the publication folder exposes a consistent root `main.tex` entry point while retaining the chaptered source tree.
