@@ -1,0 +1,183 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-native-v3-2-1-harvest-pass-chronology-corrected-internal-review.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blocking_concerns": {
+      "const": []
+    },
+    "checks": {
+      "const": {
+        "corrected_synthesis_created_after_discrepancy": true,
+        "corrected_synthesis_created_after_v1_git_freeze": true,
+        "corrected_synthesis_schema_valid": true,
+        "evaluated_result_record_count": 0,
+        "invalid_v1_internal_review_preserved": true,
+        "invalid_v1_synthesis_preserved": true,
+        "jobs_submitted_by_correction": 0,
+        "model_execution_performed": false,
+        "native_harvest_bytes_unchanged": true,
+        "pre_review_chronology_tests": {
+          "failed": 0,
+          "passed": 3
+        },
+        "quantitative_figure_generated": false
+      }
+    },
+    "claim_boundary": {
+      "const": "Same-context internal re-review of an additive metadata correction only. This is not independent review, peer review, model execution, empirical performance evidence, acceptance or publication."
+    },
+    "concern_ledger": {
+      "const": [
+        {
+          "concern_id": "P2-V321-NH-B08",
+          "finding": "The V1 post-harvest synthesis records a creation time earlier than an exact dependency it binds, and the V1 internal review omitted this blocker.",
+          "resolution": "Preserve both V1 artifacts as negative history; bind an additive discrepancy receipt; create a distinct synthesis after every dependency and the V1 Git freeze; test parsed timestamp ordering and unchanged native scope.",
+          "severity": "blocking",
+          "state": "closed"
+        }
+      ]
+    },
+    "created_at_utc": {
+      "const": "2026-08-11T03:01:11.078548Z"
+    },
+    "nonblocking_concerns": {
+      "const": []
+    },
+    "object": {
+      "const": "Paper 2 V3.2.1 post-harvest synthesis chronology-corrected successor"
+    },
+    "passes": {
+      "const": [
+        {
+          "concerns": [
+            "P2-V321-NH-B08"
+          ],
+          "pass_id": "isolated_postmerge_chronology_audit",
+          "verdict": "BLOCKED"
+        },
+        {
+          "concerns": [],
+          "pass_id": "post_correction_recursive_internal_review",
+          "verdict": "PASS"
+        }
+      ]
+    },
+    "review_class": {
+      "const": "same_context_internal_recursive_hostile_review_not_independent_not_peer_review"
+    },
+    "review_id": {
+      "const": "paper2-native-v3-2-1-harvest-pass-chronology-corrected-internal-review-20260811"
+    },
+    "reviewed_artifacts": {
+      "const": [
+        {
+          "path": "research/paper2_microtrial_v3/native_receipts/HARVEST_PASS_NATIVE_V3_2_1_JOBS_3475123_3475124.json",
+          "role": "native_harvest",
+          "sha256": "8dc6207f771943cc4597ba2504e11e886e55af9ae1901b131100f6baf439824a"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_1_HARVEST_PASS_RECEIPT_20260811.json",
+          "role": "invalid_v1_synthesis_preserved",
+          "sha256": "969f7dc5109d66e77b0649c89d749adf16e62cc14d4d7d9816bb3369481c81ab"
+        },
+        {
+          "path": "schemas/paper2-native-v3-2-1-harvest-pass-receipt.schema.json",
+          "role": "invalid_v1_schema_preserved",
+          "sha256": "8711029c079fe86159ed01d4d6b6c3e750afeebfb2da2be386c283ce30abecb8"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_1_HARVEST_PASS_INTERNAL_REVIEW_20260811.json",
+          "role": "incomplete_v1_internal_review_preserved",
+          "sha256": "64c2b79428e19bccaaa341624a0d63466abad6ecffbf52aed859fa28f441da24"
+        },
+        {
+          "path": "schemas/paper2-native-v3-2-1-harvest-pass-internal-review.schema.json",
+          "role": "incomplete_v1_review_schema_preserved",
+          "sha256": "e8347345bf984c75307da7469e38fb1cc8e4aa72b764b78d3775618a2413aee9"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_V3_2_1_POST_HARVEST_SYNTHESIS_CHRONOLOGY_DISCREPANCY_20260811.json",
+          "role": "post_harvest_chronology_discrepancy",
+          "sha256": "32e8f2c64dbc5109feb5582d6fd317003344413459b337643c9f1a2c70e15edf"
+        },
+        {
+          "path": "schemas/paper2-v3-2-1-post-harvest-synthesis-chronology-discrepancy.schema.json",
+          "role": "post_harvest_chronology_discrepancy_schema",
+          "sha256": "be74dc92066cfd0a99e1cb788fae3d9aa3ecd6db3bffc841bd3e43452aaf0bd2"
+        },
+        {
+          "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_1_HARVEST_PASS_CHRONOLOGY_CORRECTED_RECEIPT_20260811.json",
+          "role": "current_chronology_corrected_synthesis",
+          "sha256": "3299a064a6793fb67a0c519fc2e9ff2fc729812ed56b98ac82e13b4b36314ae2"
+        },
+        {
+          "path": "schemas/paper2-native-v3-2-1-harvest-pass-chronology-corrected-receipt.schema.json",
+          "role": "current_synthesis_schema",
+          "sha256": "f8e8869164a132956ae3d42e47a8c969ca9edec98244ae6bcc47b68b3c464cd2"
+        },
+        {
+          "path": "tests/test_paper2_cpu_staging_v3_2_1_chronology_successor.py",
+          "role": "chronology_successor_tests",
+          "sha256": "8ca4c6dc8b4558a6de17bcfba4d5c07020707c969fd5b940e0c85a207fd0fdc8"
+        },
+        {
+          "path": "research/PAPER2_CPU_STAGING_V3_2_1_NATIVE_HARVEST_CHRONOLOGY_REVIEW_20260811.md",
+          "role": "same_context_hostile_review",
+          "sha256": "e54be91b070442ee395e91dbcf88309ce98bd0b0094e19fe1f8d1a68325bf595"
+        },
+        {
+          "path": "research/PAPER2_CPU_STAGING_V3_2_1_NATIVE_HARVEST_CHRONOLOGY_CORRECTED_STATUS_20260811.md",
+          "role": "chronology_corrected_status",
+          "sha256": "ef3b41a78c245acef351272cde5940c19ba75372450e0f507dece882c2e48f4e"
+        },
+        {
+          "path": "research/PAPER2_MICROTRIAL_MANUSCRIPT_STATUS_V3_2_1_CHRONOLOGY_CORRECTED_20260811.md",
+          "role": "chronology_corrected_manuscript_status",
+          "sha256": "23d279ecec3722fb587cc8d668f1a4119620d14937f1a063a5b353433a84d4de"
+        }
+      ]
+    },
+    "schema_binding": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-native-v3-2-1-harvest-pass-chronology-corrected-internal-review.schema.json"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "paper2-native-v3-2-1-harvest-pass-chronology-corrected-internal-review-v1"
+    },
+    "verdict": {
+      "const": "PASS__NATIVE_HARVEST_STAGING_PASS__CHRONOLOGY_CORRECTED__EXECUTION_PACKET_NOT_YET_FROZEN"
+    }
+  },
+  "required": [
+    "blocking_concerns",
+    "checks",
+    "claim_boundary",
+    "concern_ledger",
+    "created_at_utc",
+    "nonblocking_concerns",
+    "object",
+    "passes",
+    "review_class",
+    "review_id",
+    "reviewed_artifacts",
+    "schema_binding",
+    "schema_version",
+    "verdict"
+  ],
+  "title": "Paper 2 native V3.2.1 chronology-corrected internal review",
+  "type": "object"
+}

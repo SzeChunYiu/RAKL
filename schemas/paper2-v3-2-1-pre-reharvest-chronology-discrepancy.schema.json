@@ -1,0 +1,89 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-v3-2-1-pre-reharvest-chronology-discrepancy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "affected_artifacts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "recorded_created_at_utc": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "recorded_created_at_utc"
+        ],
+        "type": "object"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "authority_rule": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "chronology_result": {
+      "const": "EXACT_ARTIFACT_BYTES_FROZEN_BEFORE_NATIVE_RESULT__CREATED_AT_FIELDS_INVALID"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "finding": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "git_freeze": {
+      "const": {
+        "candidate_commit": "98228ceb42be3aa7e86a3b9ed5ff24cf4fd30406",
+        "candidate_committed_at_utc": "2026-08-11T02:25:24Z",
+        "candidate_tree": "80e961f4db739914b773c999034ae3ea1d7f6733",
+        "merge_commit": "3db76e37c6e8a72fad32a38bc28aef2f093a5152",
+        "merged_at_utc": "2026-08-11T02:30:54Z"
+      }
+    },
+    "native_harvest_created_at_utc": {
+      "const": "2026-08-11T02:31:55Z"
+    },
+    "negative_history_preserved": {
+      "const": true
+    },
+    "object": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-v3-2-1-pre-reharvest-chronology-discrepancy-v1"
+    },
+    "verdict": {
+      "const": "METADATA_ERROR_PRESERVED__FREEZE_CHRONOLOGY_VERIFIED_BY_GIT_OBJECTS"
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "object",
+    "affected_artifacts",
+    "git_freeze",
+    "native_harvest_created_at_utc",
+    "finding",
+    "authority_rule",
+    "chronology_result",
+    "negative_history_preserved",
+    "verdict"
+  ],
+  "title": "Paper 2 V3.2.1 pre-reharvest chronology metadata discrepancy",
+  "type": "object"
+}
