@@ -132,7 +132,7 @@ with parse-valid output, no further 0.5B arm is run and the remaining rows are n
 | Observation | Root-cause classification | Action |
 |---|---|---|
 | ORACLE fails (`success_rate < 2/3`), outputs parse-invalid | `INSTRUMENT_DEFECT` | repair harness; re-run at same model size; do **not** escalate the model |
-| ORACLE fails (`success_rate < 2/3`), outputs parse-valid | `MODEL_CAPABILITY_FLOOR` | **stop spending 0.5B runs**; halt arms 2-5 at this size; escalate to the frozen 1.5B/3B packet |
+| ORACLE fails (`success_rate < 2/3`), outputs parse-valid | `MODEL_CAPABILITY_FLOOR` | **stop spending 0.5B runs**; halt arms 2-5 at this size. **0.5B->1.5B has already been run (job 3476566) and produced zero exact conceptual passes**, so this branch is *not* "use a bigger model". Remaining moves are 3B+, or revisiting the task/gate itself. |
 | ORACLE succeeds, VERIFIED fails | `VERIFIED_LESSON_INDUCTION_OR_MATERIALIZATION_FAILURE` | repair lesson extraction/admission/selection in RAKL |
 | VERIFIED succeeds, FAILURE_MEMORY_ONLY fails | `VERIFIED_EXPERIENCE_ADDS_VALUE` | verified experience-to-method conversion is what matters; proceed to selective/full RAKL test |
 | FAILURE_MEMORY_ONLY and VERIFIED both succeed | `SIMPLER_MEMORY_MAY_SUFFICE` | narrow architecture claim; test cost |
@@ -158,6 +158,68 @@ Recorded so these rows are not mistakenly treated as already satisfied:
 - `transfer_success_delta = 0.0`, and both development deltas are `0.0`. The only moved quantities are
   the partial score above and `transfer_repeat_failure_delta = -0.3333`.
 
+
+## Microtrial evidence: parse rate is not reasoning
+
+Verified from the V4 microtrial ingest receipts in `research/paper2_microtrial_v4*/`. Every cell below
+is read from a committed receipt; `n_seed` is `evaluated_task_seed_unit_count`.
+
+| Generation | Job | Model | DIRECT_CORPUS | RAKL_CONTEXT | n_seed |
+|---|---|---|---|---|---|
+| V4 | 3475193 | 0.5B | parse-invalid | parse-invalid | 1 |
+| V4.1 | 3475212, 3476520, 3476521, 3476524 | 0.5B | parse-invalid | 3/5 | 1 |
+| V4.2 | 3476540 | 0.5B | **3/5** | **3/5** | 1 |
+| V4.3 | 3476566 | **1.5B** | parse-invalid | **2/5** | 1 |
+
+Three things follow, and they constrain how any later comparison may be reported:
+
+1. **The baseline arm has been scored.** V4.2 job 3476540 reports `parse_valid_arm_count = 2` and
+   `scorable_arm_count = 2`, verdict `NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__CAPABILITY_LIMIT`.
+   Any statement that DIRECT_CORPUS has never produced a scorable output in any generation is false and
+   must not be repeated.
+2. **In the one generation where both arms parsed, they scored the same: 3/5 vs 3/5.** The apparent
+   RAKL advantage in V4.1 and V4.3 is a *parse-rate* difference, not a demonstrated reasoning
+   difference. This is measured, not hypothesised.
+3. **V4.3 is a regression, not a continuation.** V4.2 repaired the V4.1 serialization residual and got
+   both arms scorable; V4.3 lost DIRECT_CORPUS again with a different error (`model output fields do
+   not match the registered answer schema`) and simultaneously dropped RAKL_CONTEXT from 3/5 to 2/5
+   while *tripling* model size. The V4.3 parse failure has a findable cause (the 1.5B swap, or a
+   v4-2 -> v4-3 schema change) and should be diagnosed as a defect rather than absorbed as a property
+   of the baseline.
+
+The prompts are not rigged. `research/paper2_microtrial_v4_2/RAKL_CONTEXT_PROMPT.txt` with its
+`RAKL CONTEXT MAP` section removed is **byte-identical** to `DIRECT_CORPUS_PROMPT.txt` (1912-byte
+insertion; the `OUTPUT SCHEMA` block and everything after it hash the same). The asymmetry is real, not
+an artefact of differing output instructions.
+
+### Required reporting: two quantities per arm, never blended
+
+Any comparison of arms must report both, separately:
+
+- **(a) format-compliance / parse rate** — fraction of runs whose output satisfies the registered
+  answer schema;
+- **(b) reasoning score conditional on parse** — the conceptual score computed only over parse-valid
+  runs.
+
+Rules:
+
+- A single blended number is prohibited. It lets format compliance masquerade as reasoning, which the
+  table above shows is the live failure mode, not a hypothetical one.
+- If RAKL's only measurable benefit is that the model emits parseable JSON, that is a **formatting
+  effect** and must be reported as such. It is not a research-capability claim and grants no
+  scientific authority.
+- Do **not** resolve the censoring by silently scoring a parse failure as 0. That converts an
+  instrument defect into a reasoning result. Report the parse failure as a parse failure in (a) and
+  exclude the run from (b).
+- Parse failure is `null`/unscorable in (b), which censors an arm out of the comparison. Report the
+  censoring explicitly rather than letting a missing cell read as an absent effect.
+
+### Power is the first-order blocker
+
+Every generation above has `evaluated_task_seed_unit_count = 1`. V4.2 had two scorable arms and *still*
+recorded `arm_comparison_estimable = False` and `score_comparison_permitted = False`. The reason no A/B
+result exists is therefore **power (n=1)**, with parse censoring as a real but second-order defect.
+Sizing that comparison is owned by #247; this protocol only fixes how it must be reported.
 
 ## Chronology invariants
 
