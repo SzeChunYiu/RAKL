@@ -84,3 +84,41 @@ def test_score_refuses_incomplete_responses() -> None:
 
 def test_packet_file_present() -> None:
     assert PACKET_PATH.is_file()
+
+
+def test_empirics_authorize_and_plan_ready() -> None:
+    from rakl.ablation_a3_a4_matched_empirical import (
+        plan_matched_empirics_submission,
+        validate_empirics_authorize,
+    )
+
+    auth = validate_empirics_authorize()
+    assert auth["authorize_matched_a3_a4_model_empirics"] is True
+    assert auth["grants_scientific_authority"] is False
+    assert auth["autosci_cannot_check_disposition"] == "UNADJUDICATED_EXPLICIT"
+    plan = plan_matched_empirics_submission()
+    assert plan["status"] == "READY_TO_SUBMIT"
+    assert plan["grants_scientific_authority"] is False
+
+
+def test_governance_prompts_differ_and_bind_visible_case() -> None:
+    from rakl.ablation_a3_a4_matched_empirical import (
+        build_a3_governance_prompt,
+        build_a4_governance_prompt,
+    )
+
+    panel = frozen_case_panel_v2()
+    a3 = build_a3_governance_prompt(panel[0].visible)
+    a4 = build_a4_governance_prompt(panel[0].visible)
+    assert "transactional governance" in a3
+    assert "scientific authority typing" in a4
+    assert a3 != a4
+    assert panel[0].visible.case_id in a3
+    assert panel[0].visible.case_id in a4
+
+
+def test_matched_model_arms_refuse_without_authorize() -> None:
+    from rakl.ablation_a3_a4_matched_empirical import run_matched_model_arms
+
+    with pytest.raises(PermissionError):
+        run_matched_model_arms(Path("/tmp/no-model"), authorize=False)

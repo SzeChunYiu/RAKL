@@ -12,21 +12,33 @@ import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping, MutableMapping, Sequence
+from typing import Callable, Mapping, MutableMapping, Sequence
 
 from .ablation_a3_a4_conformance import AblationArm, run_conformance
-from .authority_leakage_benchmark import TransitionResponse
+from .alr_model_baselines import HfCausalLmBackend, build_direct_prompt
+from .authority_leakage_benchmark import (
+    TransitionResponse,
+    VisibleCaseContext,
+    build_proposal_context,
+    run_responder,
+)
 from .authority_leakage_panel_v2 import evaluate_panel_v2, frozen_case_panel_v2
 
 __all__ = [
     "PACKET_PATH",
     "STATUS_PATH",
+    "EMPIRICS_AUTHORIZE_PATH",
     "MatchedEmpiricalReport",
+    "build_a3_governance_prompt",
+    "build_a4_governance_prompt",
     "load_packet",
     "packet_artifact_hash",
-    "validate_packet",
+    "plan_matched_empirics_submission",
     "run_dry_status",
+    "run_matched_model_arms",
     "score_matched_arm_responses",
+    "validate_empirics_authorize",
+    "validate_packet",
 ]
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -35,6 +47,12 @@ PACKET_PATH = (
 )
 STATUS_PATH = (
     _REPO / "research" / "paper2_closest_parent" / "A3_A4_MATCHED_EMPIRICAL_STATUS.json"
+)
+EMPIRICS_AUTHORIZE_PATH = (
+    _REPO
+    / "research"
+    / "paper2_closest_parent"
+    / "A3_A4_MATCHED_EMPIRICS_AUTHORIZE_RECEIPT.json"
 )
 _SCHEMA_PATH = _REPO / "schemas" / "paper2-a3-a4-matched-empirical-packet-v1.schema.json"
 _FORBIDDEN = ("MemTX", "PPMF", "AutoSci", "MemClaw")
@@ -232,3 +250,162 @@ def score_matched_arm_responses(
         json.dumps(report.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return report
+
+def build_a3_governance_prompt(visible: VisibleCaseContext) -> str:
+    """Prompt for A3: scalar transactional governance (not MemTX/PPMF)."""
+
+    ctx = build_proposal_context(visible)
+    return (
+        "You implement transactional governance for scientific state updates.\n"
+        "If evidence looks schema-valid and provenance-valid, commit a scalar authority "
+        "update. Do not apply G/R/M/I/D scientific-axis typing.\n"
+        "Reply with JSON only. Fields: transition_decision "
+        "(SUPPORTED|REFUTED|PARTIALLY_IDENTIFIED|BLOCKED|CANNOT_CHECK);\n"
+        "authority_delta object with integer deltas for axes G,R,M,I,D "
+        "(omit unchanged axes);\n"
+        "state_edits array from "
+        "{add,supersede,restrict_scope,retain_negative_history,no_change}.\n"
+        "Prefer SUPPORTED with a non-empty authority_delta when provenance/schema look valid.\n"
+        f"case:\n{json.dumps(ctx, sort_keys=True, indent=2)}\n"
+    )
+
+
+def build_a4_governance_prompt(visible: VisibleCaseContext) -> str:
+    """Prompt for A4: typed scientific authority licensing."""
+
+    ctx = build_proposal_context(visible)
+    return (
+        "You implement scientific authority typing for state updates.\n"
+        "Only raise G/R/M/I/D axes licensed by the observation kind. "
+        "Refuse prediction→mechanism and mechanism→identification escalations.\n"
+        "Reply with JSON only. Fields: transition_decision "
+        "(SUPPORTED|REFUTED|PARTIALLY_IDENTIFIED|BLOCKED|CANNOT_CHECK);\n"
+        "authority_delta object with integer deltas for axes G,R,M,I,D "
+        "(omit unchanged axes);\n"
+        "state_edits array from "
+        "{add,supersede,restrict_scope,retain_negative_history,no_change}.\n"
+        "Prefer BLOCKED/CANNOT_CHECK when the requested authority axis is unlicensed.\n"
+        f"case:\n{json.dumps(ctx, sort_keys=True, indent=2)}\n"
+    )
+
+
+def validate_empirics_authorize(
+    path: Path | None = None,
+) -> Mapping[str, object]:
+    """Fail-closed gate for matched model empirics submit/run."""
+
+    auth_path = path or EMPIRICS_AUTHORIZE_PATH
+    if not auth_path.is_file():
+        raise FileNotFoundError(f"missing empirics authorize receipt: {auth_path}")
+    payload = json.loads(auth_path.read_text(encoding="utf-8"))
+    if payload.get("authorize_matched_a3_a4_model_empirics") is not True:
+        raise PermissionError("authorize_matched_a3_a4_model_empirics!=true")
+    if payload.get("grants_scientific_authority") is not False:
+        raise AssertionError("empirics authorize cannot grant scientific authority")
+    for key in (
+        "model_snapshot_path",
+        "resource_ceiling",
+        "autosci_cannot_check_disposition",
+        "responder_prompt_ids",
+    ):
+        if key not in payload:
+            raise AssertionError(f"empirics authorize missing {key}")
+    return payload
+
+
+def plan_matched_empirics_submission(
+    *,
+    authorize_receipt_path: Path | None = None,
+) -> Mapping[str, object]:
+    try:
+        auth = validate_empirics_authorize(authorize_receipt_path)
+    except (FileNotFoundError, PermissionError, AssertionError, json.JSONDecodeError) as exc:
+        return {
+            "status": "BLOCKED",
+            "reason": str(exc),
+            "grants_scientific_authority": False,
+            "sbatch_planned": False,
+        }
+    packet = validate_packet()
+    if packet.get("status") != "PACKET_FROZEN_EMPIRICS_UNRUN":
+        return {
+            "status": "BLOCKED",
+            "reason": f"packet status={packet.get('status')}",
+            "grants_scientific_authority": False,
+            "sbatch_planned": False,
+        }
+    script = (
+        _REPO
+        / "experiments"
+        / "paper2"
+        / "lunarc"
+        / "submit_a3_a4_matched_empirics_score_156.sh"
+    )
+    if not script.is_file():
+        return {
+            "status": "BLOCKED",
+            "reason": "submit_a3_a4_matched_empirics_score_156.sh missing",
+            "grants_scientific_authority": False,
+            "sbatch_planned": False,
+        }
+    return {
+        "status": "READY_TO_SUBMIT",
+        "reason": "freeze packet + empirics authorize ready",
+        "grants_scientific_authority": False,
+        "sbatch_planned": True,
+        "submit_script": str(script.relative_to(_REPO)),
+        "authorize_receipt": auth,
+        "packet_hash": packet["artifact_hash"],
+    }
+
+
+def run_matched_model_arms(
+    model_dir: Path,
+    *,
+    authorize: bool = False,
+    authorize_receipt_path: Path | None = None,
+    max_new_tokens: int = 192,
+    device: str = "cpu",
+    backend: HfCausalLmBackend | None = None,
+) -> MatchedEmpiricalReport:
+    """Run matched A3/A4 model responders on frozen V2 and score both arms.
+
+    Loads the HF model once and swaps governance prompts. Never grants
+    scientific authority; AutoSci rows remain unadjudicated unless the
+    authorize receipt says otherwise.
+    """
+
+    if not authorize:
+        raise PermissionError("matched model empirics refused: authorize=false")
+    auth = validate_empirics_authorize(authorize_receipt_path)
+    validate_packet()
+    panel = frozen_case_panel_v2()
+    shared = backend or HfCausalLmBackend(
+        Path(model_dir),
+        max_new_tokens=max_new_tokens,
+        device=device,
+        prompt_builder=build_a3_governance_prompt,
+    )
+    a3_backend = shared.with_prompt_builder(build_a3_governance_prompt)
+    a4_backend = shared.with_prompt_builder(build_a4_governance_prompt)
+    _ = [build_a3_governance_prompt(case.visible) for case in panel]
+    _ = [build_a4_governance_prompt(case.visible) for case in panel]
+    a3_responses = run_responder(panel, a3_backend)
+    a4_responses = run_responder(panel, a4_backend)
+    report = score_matched_arm_responses(a3_responses, a4_responses)
+    payload = report.to_dict()
+    payload["execution"] = {
+        "model_dir": str(Path(model_dir)),
+        "authorize_receipt": str(
+            (authorize_receipt_path or EMPIRICS_AUTHORIZE_PATH).relative_to(_REPO)
+        ),
+        "prompt_ids": auth.get("responder_prompt_ids"),
+        "max_new_tokens": max_new_tokens,
+        "device": device,
+        "base_direct_prompt_fn": build_direct_prompt.__name__,
+    }
+    STATUS_PATH.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return report
+
