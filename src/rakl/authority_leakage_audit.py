@@ -60,6 +60,8 @@ __all__ = [
     "last_candidate_responder",
     "keyword_refusal_responder",
     "case_id_exploit_responder",
+    "twin_polarity_responder",
+    "check_role_order_shortcut",
 ]
 
 
@@ -101,6 +103,16 @@ SHORTCUT_CHANCE_ALPHA = 0.05
 
 #: No fixed candidate position may be correct more often than this.
 MAX_POSITIONAL_SHORTCUT = 0.75
+
+#: No fixed *relative* ordering of candidate roles may recur more often than
+#: this. Absolute position and relative order are different regularities: a
+#: rotation scheme spreads the correct answer evenly across positions while
+#: leaving cyclic order invariant, so "find the dismissive reading and take the
+#: next one" solves the panel while the positional check reports CLEAN. With
+#: three candidates the floor is 0.5 — any ordered role pair is cyclically
+#: adjacent in half of the six permutations — so this cannot be driven to zero,
+#: only to chance.
+MAX_ROLE_ADJACENCY = 0.75
 
 #: A label-blind responder may not beat the trivial constant baseline by more
 #: than this on terminal status. Absolute accuracy is not gated: with five
@@ -600,6 +612,66 @@ def check_positional_shortcut(cases: Sequence[ScientificTransitionCase]) -> Chec
     )
 
 
+def check_role_order_shortcut(cases: Sequence[ScientificTransitionCase]) -> CheckResult:
+    """No fixed relative ordering of candidate roles may recur.
+
+    Complements :func:`check_positional_shortcut`, which sees only absolute
+    index. A panel can spread the correct answer evenly across positions and
+    still place it immediately after the same distractor every time.
+
+    Requires ``candidate_roles``; reports CANNOT_CHECK when absent.
+    """
+
+    roled = [getattr(case.labels, "candidate_roles", ()) for case in cases]
+    missing = [case.case_id for case, r in zip(cases, roled) if not r]
+    if missing:
+        return CheckResult(
+            check_id="role_order_shortcut",
+            status=AuditStatus.CANNOT_CHECK,
+            message=(
+                f"{len(missing)}/{len(cases)} cases do not label candidate roles; "
+                "relative-order regularity is unmeasurable"
+            ),
+            detail={"cases_missing_candidate_roles": missing},
+        )
+
+    counts: dict[str, int] = {}
+    for roles in roled:
+        n = len(roles)
+        for index, role in enumerate(roles):
+            counts[f"{role}->{roles[(index + 1) % n]}"] = (
+                counts.get(f"{role}->{roles[(index + 1) % n]}", 0) + 1
+            )
+
+    fractions = {pair: count / len(cases) for pair, count in counts.items()}
+    worst = max(fractions, key=lambda k: fractions[k])
+    detail = {
+        "cyclic_adjacency_fraction": fractions,
+        "worst_pair": worst,
+        "chance_floor": 0.5,
+    }
+    if fractions[worst] > MAX_ROLE_ADJACENCY:
+        return CheckResult(
+            check_id="role_order_shortcut",
+            status=AuditStatus.DEGENERATE,
+            message=(
+                f"role order '{worst}' recurs in {fractions[worst]:.0%} of cases "
+                f"(max {MAX_ROLE_ADJACENCY:.0%}); a responder can locate the correct "
+                "reading from its neighbour without reading the observation"
+            ),
+            detail=detail,
+        )
+    return CheckResult(
+        check_id="role_order_shortcut",
+        status=AuditStatus.CLEAN,
+        message=(
+            f"no role ordering exceeds {MAX_ROLE_ADJACENCY:.0%} "
+            f"(worst: {worst} at {fractions[worst]:.0%}, chance floor 50%)"
+        ),
+        detail=detail,
+    )
+
+
 # --------------------------------------------------------------------------
 # check 5: label balance and pattern diversity
 # --------------------------------------------------------------------------
@@ -823,6 +895,26 @@ def case_id_exploit_responder(visible: VisibleCaseContext) -> TransitionResponse
     )
 
 
+def twin_polarity_responder(visible: VisibleCaseContext) -> TransitionResponse:
+    """Guess twin polarity from the identifier and grant everything to one side.
+
+    Twin-pair panels invite an identifier that reveals pair membership and which
+    member licenses the upgrade. This responder assumes a trailing ``B`` marks
+    the licensing twin. It exists so that channel is measured on every panel
+    rather than assumed shut.
+    """
+
+    licensing = visible.case_id.strip().upper().endswith("B")
+    return TransitionResponse(
+        case_id=visible.case_id,
+        transition_decision=(
+            TransitionDecision.SUPPORTED if licensing else TransitionDecision.CANNOT_CHECK
+        ),
+        authority_delta={axis: 1 for axis in AuthorityAxis} if licensing else {},
+        state_edits=frozenset({StateEdit.ADD} if licensing else {StateEdit.NO_CHANGE}),
+    )
+
+
 def label_blind_responders(
     cases: Sequence[ScientificTransitionCase],
 ) -> Mapping[str, Responder]:
@@ -837,6 +929,7 @@ def label_blind_responders(
         "last_candidate": last_candidate_responder,
         "keyword_refusal": keyword_refusal_responder,
         "case_id_exploit": case_id_exploit_responder,
+        "twin_polarity": twin_polarity_responder,
     }
 
 
@@ -917,6 +1010,7 @@ CHECKS: Tuple[Callable[[Sequence[ScientificTransitionCase]], CheckResult], ...] 
     check_visible_disposition_leak,
     check_single_feature_separation,
     check_positional_shortcut,
+    check_role_order_shortcut,
     check_label_pattern_diversity,
     check_label_blind_ceiling,
 )

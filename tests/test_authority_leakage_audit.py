@@ -23,8 +23,10 @@ from rakl.authority_leakage_audit import (
     check_label_blind_ceiling,
     check_label_pattern_diversity,
     check_positional_shortcut,
+    check_role_order_shortcut,
     check_single_feature_separation,
     check_visible_disposition_leak,
+    twin_polarity_responder,
 )
 from rakl.authority_leakage_benchmark import (
     CaseStratum,
@@ -55,9 +57,15 @@ def _case(
     disallowed: dict[AuthorityAxis, LeakageSubtype] | None = None,
     status: TransitionDecision = TransitionDecision.SUPPORTED,
     correct_index: int | None = None,
+    roles: tuple[str, ...] = (),
 ) -> ScientificTransitionCase:
-    label_cls = HiddenCaseLabels if correct_index is None else HiddenCaseLabelsV2
-    extra = {} if correct_index is None else {"correct_interpretation_index": correct_index}
+    labelled = correct_index is not None or bool(roles)
+    label_cls = HiddenCaseLabelsV2 if labelled else HiddenCaseLabels
+    extra: dict[str, object] = {}
+    if correct_index is not None:
+        extra["correct_interpretation_index"] = correct_index
+    if roles:
+        extra["candidate_roles"] = roles
     return ScientificTransitionCase(
         VisibleCaseContext(
             case_id=case_id,
@@ -190,6 +198,46 @@ def test_positional_shortcut_trips_when_one_position_always_correct() -> None:
 def test_positional_shortcut_clean_when_rotated() -> None:
     cases = [_case(f"OPAQUE-{i:03d}", correct_index=i % 3) for i in range(9)]
     assert check_positional_shortcut(cases).status is AuditStatus.CLEAN
+
+
+# --------------------------------------------------------------------------
+# check 4b: relative role order
+# --------------------------------------------------------------------------
+
+
+def test_role_order_cannot_check_without_roles() -> None:
+    result = check_role_order_shortcut([_case(correct_index=0)])
+    assert result.status is AuditStatus.CANNOT_CHECK
+
+
+def test_role_order_trips_on_rotation_only_placement() -> None:
+    """The defect a rotation scheme cannot avoid.
+
+    Rotating ``(escalating, conservative, correct)`` spreads the correct answer
+    evenly across absolute positions — ``check_positional_shortcut`` reports
+    CLEAN — while leaving cyclic order invariant, so the correct reading always
+    follows the conservative distractor.
+    """
+
+    canonical = ("escalating", "conservative", "correct")
+    cases = [
+        _case(f"OPAQUE-{i:03d}", correct_index=(2 - i % 3) % 3, roles=canonical[i % 3:] + canonical[: i % 3])
+        for i in range(9)
+    ]
+    assert check_positional_shortcut(cases).status is AuditStatus.CLEAN
+    result = check_role_order_shortcut(cases)
+    assert result.status is AuditStatus.DEGENERATE
+    assert result.detail["cyclic_adjacency_fraction"]["conservative->correct"] == 1.0
+
+
+def test_role_order_clean_on_v2() -> None:
+    assert check_role_order_shortcut(frozen_case_panel_v2()).status is AuditStatus.CLEAN
+
+
+def test_twin_polarity_responder_does_not_clear_the_ceiling_on_v2() -> None:
+    panel = frozen_case_panel_v2()
+    score = score_panel(panel, tuple(twin_polarity_responder(c.visible) for c in panel))
+    assert not (score.alr <= 0.25 and score.valid_upgrade_recall >= 0.50)
 
 
 # --------------------------------------------------------------------------

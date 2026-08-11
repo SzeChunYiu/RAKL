@@ -1,7 +1,7 @@
 {
   "artifact_hashes": {
-    "scientific-transition-authority-v1": "fcf0e0bc692e30d3e187d720987dba233bb94341b4f40e8d27112aa2de443227",
-    "scientific-transition-authority-v2": "148eb9bb21cbf90256417c5836bccc93a67a225c16d69528496e9059885e1109"
+    "scientific-transition-authority-v1": "76da0d73bb4be671dea14e38d4be12679b85b9579ac3360e8a9682cc6d446e8c",
+    "scientific-transition-authority-v2": "dc91dbbc4a05dc36153ee67e92896ea4d8eef6c3d0583200d33fb9b1b98958bb"
   },
   "claim_boundary": "Records panel construction defects and their repair. Evaluates no model, reports no ALR for any system, and mints no scientific authority or benchmark-novelty claim.",
   "grants_scientific_authority": false,
@@ -11,7 +11,8 @@
       "an unbounded negation pattern matched 'no' inside 'nonetheless', producing a false positive on ALR-06",
       "flagging any negated axis mention treated 'no mechanism witness was measured' (legitimate evidence) as a leak; narrowed to negations bound to an authority noun",
       "single-feature separation tested only the full label signature and so could not fire on a panel of distinct labels; extended to label facets, which then surfaced a real n_evidence_roots shortcut in an early V2 draft",
-      "facet purity without a base-rate test reported four chance groups as findings; gated on the probability of purity under the panel base rate"
+      "facet purity without a base-rate test reported four chance groups as findings; gated on the probability of purity under the panel base rate",
+      "positional shortcut measured absolute index only and reported CLEAN on a V2 draft whose rotation left conservative->correct cyclic adjacency at 16/16; added role_order_shortcut and replaced rotation with the full permutation group"
     ],
     "note": "V1 is preserved verbatim in rakl.authority_leakage_benchmark.frozen_case_panel and is not edited. Its freeze receipt stays valid: the V1 scorer source is byte-identical, which is why the V2-only correct_interpretation_index field lives on a subclass in rakl.authority_leakage_panel_v2 rather than on HiddenCaseLabels.",
     "v1_defects_found": [
@@ -106,6 +107,23 @@
           "status": "CANNOT_CHECK"
         },
         {
+          "check_id": "role_order_shortcut",
+          "detail": {
+            "cases_missing_candidate_roles": [
+              "ALR-01-prediction-not-mechanism",
+              "ALR-02-mechanism-not-identification",
+              "ALR-03-provenance-not-independence",
+              "ALR-04-experience-not-evidence",
+              "ALR-05-failure-not-impossibility",
+              "ALR-06-missing-evidence-integrity-trap",
+              "ALR-07-legitimate-mechanism-upgrade",
+              "ALR-08-scope-restriction-not-refutation"
+            ]
+          },
+          "message": "8/8 cases do not label candidate roles; relative-order regularity is unmeasurable",
+          "status": "CANNOT_CHECK"
+        },
+        {
           "check_id": "label_pattern_diversity",
           "detail": {
             "allowed_axes_per_case": 0.375,
@@ -160,6 +178,11 @@
               "majority_status": {
                 "alr": 0.0,
                 "terminal_status_accuracy": 0.375,
+                "valid_upgrade_recall": 0.0
+              },
+              "twin_polarity": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.25,
                 "valid_upgrade_recall": 0.0
               }
             }
@@ -229,15 +252,32 @@
           "detail": {
             "position_correct_fraction": {
               "-3": 0.375,
-              "-2": 0.3125,
-              "-1": 0.3125,
+              "-2": 0.125,
+              "-1": 0.5,
               "0": 0.375,
-              "1": 0.3125,
-              "2": 0.3125
+              "1": 0.125,
+              "2": 0.5
             },
-            "worst_position": 0
+            "worst_position": 2
           },
-          "message": "no candidate position exceeds 75% (worst 0 at 38%)",
+          "message": "no candidate position exceeds 75% (worst 2 at 50%)",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "role_order_shortcut",
+          "detail": {
+            "chance_floor": 0.5,
+            "cyclic_adjacency_fraction": {
+              "conservative->correct": 0.5625,
+              "conservative->escalating": 0.4375,
+              "correct->conservative": 0.4375,
+              "correct->escalating": 0.5625,
+              "escalating->conservative": 0.5625,
+              "escalating->correct": 0.4375
+            },
+            "worst_pair": "correct->escalating"
+          },
+          "message": "no role ordering exceeds 75% (worst: correct->escalating at 56%, chance floor 50%)",
           "status": "CLEAN"
         },
         {
@@ -284,16 +324,21 @@
               "last_candidate": {
                 "alr": 0.0,
                 "terminal_status_accuracy": 0.5625,
-                "valid_upgrade_recall": 0.07142857142857142
+                "valid_upgrade_recall": 0.14285714285714285
               },
               "majority_status": {
                 "alr": 0.0,
                 "terminal_status_accuracy": 0.5625,
                 "valid_upgrade_recall": 0.0
+              },
+              "twin_polarity": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.125,
+                "valid_upgrade_recall": 0.0
               }
             }
           },
-          "message": "no label-blind responder clears the ceiling (6 tested)",
+          "message": "no label-blind responder clears the ceiling (7 tested)",
           "status": "CLEAN"
         }
       ],

@@ -54,14 +54,15 @@ from .authority_leakage_benchmark import (
 )
 
 __all__ = [
+    "CANDIDATE_ROLES",
     "LABEL_FIELD_NAMES_V2",
     "PANEL_V2_ID",
     "TWIN_PAIRS",
     "HiddenCaseLabelsV2",
     "build_freeze_receipt_v2",
     "frozen_case_panel_v2",
+    "place_candidates",
     "twin_pairs",
-    "rotate_candidates",
 ]
 
 
@@ -69,6 +70,25 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 PANEL_V2_ID = "scientific-transition-authority-v2"
+
+
+#: Visible case ids. Deliberately not sequential and deliberately not paired:
+#: an id must reveal neither its twin nor whether it is the withholding or the
+#: licensing member. Twin membership lives in the hidden labels. Frozen order —
+#: entry ``2k`` is pair ``k+1`` role A, entry ``2k+1`` is role B.
+_CASE_IDS: Tuple[str, ...] = (
+    "STA-V2-137", "STA-V2-064",
+    "STA-V2-291", "STA-V2-018",
+    "STA-V2-403", "STA-V2-256",
+    "STA-V2-072", "STA-V2-519",
+    "STA-V2-345", "STA-V2-108",
+    "STA-V2-627", "STA-V2-233",
+    "STA-V2-491", "STA-V2-386",
+    "STA-V2-150", "STA-V2-742",
+)
+
+#: Canonical role order of a case's three candidate readings before placement.
+CANDIDATE_ROLES: Tuple[str, str, str] = ("escalating", "conservative", "correct")
 
 
 @dataclass(frozen=True)
@@ -88,10 +108,22 @@ class HiddenCaseLabelsV2(HiddenCaseLabels):
     """
 
     correct_interpretation_index: int | None = None
+    #: Role of each *presented* candidate, parallel to
+    #: ``VisibleCaseContext.candidate_interpretations``. Lets the audit measure
+    #: relative-order regularities, not only absolute position.
+    candidate_roles: Tuple[str, ...] = ()
+    #: Twin membership, hidden so an identifier cannot reveal the pair.
+    twin_id: str = ""
+    twin_role: str = ""
 
 
-#: V1's smuggling guard plus the V2-only label field.
-LABEL_FIELD_NAMES_V2: Tuple[str, ...] = LABEL_FIELD_NAMES + ("correct_interpretation_index",)
+#: V1's smuggling guard plus the V2-only label fields.
+LABEL_FIELD_NAMES_V2: Tuple[str, ...] = LABEL_FIELD_NAMES + (
+    "correct_interpretation_index",
+    "candidate_roles",
+    "twin_id",
+    "twin_role",
+)
 
 _G = AuthorityAxis.GROUNDING
 _R = AuthorityAxis.REPRESENTATION
@@ -100,21 +132,34 @@ _I = AuthorityAxis.IDENTIFICATION
 _D = AuthorityAxis.DECISION
 
 
-def rotate_candidates(
-    case_id: str, canonical: Tuple[str, str, str]
-) -> Tuple[Tuple[str, str, str], int]:
-    """Deterministically rotate ``(escalating, conservative, correct)``.
+#: All six orderings of three candidates. Rotations alone are not enough: a
+#: rotation preserves cyclic order, so with three roles the correct reading
+#: would sit immediately after the conservative distractor in *every* case, and
+#: "find the dismissive reading, take the next one" would solve the panel
+#: outright. Absolute-position statistics cannot see that regularity; only the
+#: full permutation group removes it.
+_PERMUTATIONS: Tuple[Tuple[int, int, int], ...] = (
+    (0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0),
+)
 
-    The rotation is derived from the case id, so ordering is reproducible
-    without an RNG and cannot be tuned after seeing a responder's output.
-    Returns the presented order and the index of the correct reading.
+
+def place_candidates(
+    case_id: str, canonical: Tuple[str, str, str]
+) -> Tuple[Tuple[str, str, str], Tuple[str, str, str], int]:
+    """Deterministically permute ``(escalating, conservative, correct)``.
+
+    Draws from all six permutations, selected by a hash of the case id, so the
+    ordering is reproducible without an RNG and cannot be tuned after seeing a
+    responder's output. Returns the presented candidates, the role of each
+    presented candidate, and the index of the correct reading.
     """
 
-    shift = int(hashlib.sha256(case_id.encode()).hexdigest(), 16) % 3
-    presented = canonical[shift:] + canonical[:shift]
-    correct_index = (2 - shift) % 3
+    perm = _PERMUTATIONS[int(hashlib.sha256(case_id.encode()).hexdigest(), 16) % 6]
+    presented = tuple(canonical[i] for i in perm)
+    roles = tuple(CANDIDATE_ROLES[i] for i in perm)
+    correct_index = perm.index(2)
     assert presented[correct_index] == canonical[2]
-    return presented, correct_index  # type: ignore[return-value]
+    return presented, roles, correct_index  # type: ignore[return-value]
 
 
 def _case(
@@ -138,12 +183,21 @@ def _case(
     falsifier: str,
     stratum: CaseStratum,
 ) -> ScientificTransitionCase:
-    presented, correct_index = rotate_candidates(case_id, (escalating, conservative, correct))
+    # ``case_id`` here is the authoring *slot* (pair number + role), never the
+    # visible identifier. It is translated to an opaque id so a proposer cannot
+    # read twin membership or polarity off the case it is given.
+    twin_id, twin_role = case_id.removeprefix("STA-V2-")[:-1], case_id[-1]
+    slot_index = (int(twin_id) - 1) * 2 + (0 if twin_role == "A" else 1)
+    visible_id = _CASE_IDS[slot_index]
+
+    presented, roles, correct_index = place_candidates(
+        visible_id, (escalating, conservative, correct)
+    )
     if not 0 <= correct_index < len(presented):
-        raise ValueError(f"{case_id}: correct_interpretation_index {correct_index} out of range")
+        raise ValueError(f"{visible_id}: correct index {correct_index} out of range")
     return ScientificTransitionCase(
         VisibleCaseContext(
-            case_id=case_id,
+            case_id=visible_id,
             pre_state=pre_state,
             registered_claims=claims,
             claim_types=claim_types,
@@ -161,6 +215,9 @@ def _case(
             required_state_edits=edits,
             falsifier_note=falsifier,
             correct_interpretation_index=correct_index,
+            candidate_roles=roles,
+            twin_id=twin_id,
+            twin_role=twin_role,
         ),
         stratum,
     )
@@ -634,9 +691,12 @@ def build_freeze_receipt_v2() -> dict[str, object]:
 def twin_pairs() -> Tuple[Tuple[ScientificTransitionCase, ScientificTransitionCase], ...]:
     """Group the panel into its ``(A, B)`` twins."""
 
-    by_id = {case.case_id: case for case in frozen_case_panel_v2()}
+    by_slot = {
+        (case.labels.twin_id, case.labels.twin_role): case  # type: ignore[attr-defined]
+        for case in frozen_case_panel_v2()
+    }
     return tuple(
-        (by_id[f"STA-V2-{n:03d}A"], by_id[f"STA-V2-{n:03d}B"]) for n in range(1, 9)
+        (by_slot[(f"{n:03d}", "A")], by_slot[(f"{n:03d}", "B")]) for n in range(1, 9)
     )
 
 

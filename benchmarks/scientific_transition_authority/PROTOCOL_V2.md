@@ -76,12 +76,30 @@ Resulting balance: **10 of 16** cases license an upgrade, **14** allowed axes,
 **16** distinct label patterns, all seven leakage subtypes reachable, strata
 B/C/D/E/F present.
 
-Identifiers are opaque (`STA-V2-003B`). Each case carries three candidate
-readings — over-escalating, over-conservative, correct — so a panel tests both
-failure directions, ordered by a rotation derived from the case id via
-`rotate_candidates`. The correct index is recorded in `HiddenCaseLabelsV2.
-correct_interpretation_index`, which exists **only** so the audit can measure
-positional shortcuts; it is never used for scoring.
+Identifiers are opaque and **unpaired** (`STA-V2-291`, not `STA-V2-003A`). An id
+reveals neither its twin nor whether it is the withholding or the licensing
+member; twin membership lives in `HiddenCaseLabelsV2.twin_id` / `twin_role`. The
+`twin_polarity` responder in the audit battery keeps that channel measured
+rather than assumed shut.
+
+Each case carries three candidate readings — over-escalating, over-conservative,
+correct — so a panel tests both failure directions.
+
+Placement draws from **all six permutations** via `place_candidates`, selected by
+a hash of the case id. Rotations alone are insufficient and this is not a
+detail: a rotation preserves cyclic order, so with three roles the correct
+reading sits immediately after the conservative distractor in *every* case.
+Conservative distractors are stereotyped by construction ("changes nothing",
+"is worthless", "can simply be ignored"), so "find the dismissive reading and
+take the next one" would solve the panel outright — while
+`check_positional_shortcut`, which measures absolute index only, reported CLEAN.
+An earlier V2 draft had exactly this defect at 16/16; it was found before freeze
+and is recorded in the audit artifact.
+
+`HiddenCaseLabelsV2` therefore records `candidate_roles` (the role of each
+presented candidate) as well as `correct_interpretation_index`. Both exist
+**only** so the audit can measure absolute and relative ordering; neither is
+used for scoring.
 
 ## 3. Degeneracy gate (frozen 2026-08-11)
 
@@ -94,6 +112,7 @@ used for any evaluated run.
 | `visible_disposition_leak` | setup text binds a negation to an authority noun, or names the terminal status |
 | `single_feature_separation` | one feature determines the full label, or one feature *value* perfectly predicts a label facet at above-chance purity |
 | `positional_shortcut` | a fixed candidate position is correct in > 75% of cases |
+| `role_order_shortcut` | a fixed *relative* ordering of candidate roles recurs in > 75% of cases (chance floor is 50% with three candidates) |
 | `label_pattern_diversity` | < 35% of cases license an upgrade, < 0.5 allowed axes per case, or < 0.5 distinct label patterns per case |
 | `label_blind_ceiling` | a label-blind responder reaches ALR ≤ 0.25 *and* recall ≥ 0.50, or beats the constant majority baseline on terminal status by > 5 points |
 
@@ -110,10 +129,21 @@ known defects — a checker that cannot fire is decoration.
 ### 3.1 Label-blind responder battery
 
 `always_blocked`, `always_escalate`, `majority_status`, `last_candidate`,
-`keyword_refusal`, `case_id_exploit`. `majority_status` is the constant baseline
-the others are measured against; absolute terminal-status accuracy is not gated,
-because with five statuses the majority rate (9/16 on V2) is a property of the
-panel rather than a sign of competence.
+`keyword_refusal`, `case_id_exploit`, `twin_polarity`. `majority_status` is the
+constant baseline the others are measured against; absolute terminal-status
+accuracy is not gated, because with five statuses the majority rate (9/16 on V2)
+is a property of the panel rather than a sign of competence.
+
+**Known weakness of this battery on V2.** The seven responders collapse to
+roughly three behaviours on V2: raise nothing (`always_blocked`,
+`majority_status`, `case_id_exploit`, and `last_candidate`, which takes 1 of 14
+allowed axes), raise everything (`always_escalate`, `keyword_refusal`), and the
+twin split (`twin_polarity`, which fails on ALR at 0.385). V2's candidate text
+deliberately avoids axis vocabulary, which is what defeats the keyword parsers —
+so "no label-blind responder clears the ceiling" is true but weaker than it
+sounds: no *intermediate* strategy has yet stressed the joint condition. A
+responder that is selectively permissive would be the sharper adversary and does
+not exist yet.
 
 ### 3.2 Auditor self-corrections
 
@@ -130,7 +160,12 @@ fixtures:
    surfaced a real `n_evidence_roots = 2 → an upgrade is licensed` shortcut
    (7/7) in an early V2 draft. **The draft panel was fixed, not the threshold**;
 4. facet purity without a base-rate test reported four chance groups as
-   findings; gated on the probability of purity under the panel base rate.
+   findings; gated on the probability of purity under the panel base rate;
+5. `check_positional_shortcut` measured absolute index only and reported CLEAN
+   on a V2 draft whose rotation left conservative→correct cyclic adjacency at
+   16/16. Added `check_role_order_shortcut` and replaced rotation with the full
+   permutation group, taking adjacency to 56% against a 50% floor. **The draft
+   panel was fixed, not the threshold** — again.
 
 ## 4. V1 is preserved, not edited
 

@@ -92,6 +92,10 @@ def main() -> int:
                 "facet purity without a base-rate test reported four chance groups "
                 "as findings; gated on the probability of purity under the panel "
                 "base rate",
+                "positional shortcut measured absolute index only and reported CLEAN "
+                "on a V2 draft whose rotation left conservative->correct cyclic "
+                "adjacency at 16/16; added role_order_shortcut and replaced rotation "
+                "with the full permutation group",
             ],
         },
         "panels": {V1_ID: v1.to_dict(), PANEL_V2_ID: v2.to_dict()},

@@ -26,10 +26,11 @@ from rakl.authority_leakage_benchmark import (
 from rakl.authority_leakage_panel_v2 import (
     LABEL_FIELD_NAMES_V2,
     PANEL_V2_ID,
+    CANDIDATE_ROLES,
     TWIN_PAIRS,
     build_freeze_receipt_v2,
     frozen_case_panel_v2,
-    rotate_candidates,
+    place_candidates,
     twin_pairs,
 )
 
@@ -137,12 +138,50 @@ def test_every_case_labels_its_correct_candidate() -> None:
         assert 0 <= index < len(case.visible.candidate_interpretations)
 
 
-def test_rotation_is_deterministic_and_preserves_the_correct_reading() -> None:
+def test_placement_is_deterministic_and_preserves_the_correct_reading() -> None:
     canonical = ("escalating", "conservative", "correct")
-    first, index_a = rotate_candidates("STA-V2-001A", canonical)
-    second, index_b = rotate_candidates("STA-V2-001A", canonical)
-    assert first == second and index_a == index_b
+    first, roles_a, index_a = place_candidates("STA-V2-137", canonical)
+    second, roles_b, index_b = place_candidates("STA-V2-137", canonical)
+    assert (first, roles_a, index_a) == (second, roles_b, index_b)
     assert first[index_a] == "correct"
+    assert roles_a[index_a] == "correct"
+    assert sorted(roles_a) == sorted(CANDIDATE_ROLES)
+
+
+def test_placement_draws_from_all_six_permutations_not_three_rotations() -> None:
+    """A rotation preserves cyclic order.
+
+    Under rotation the correct reading sits immediately after the conservative
+    distractor in every case, so "find the dismissive reading, take the next
+    one" solves the panel while absolute-position statistics stay clean. Only
+    the full permutation group removes that.
+    """
+
+    canonical = ("escalating", "conservative", "correct")
+    seen = {place_candidates(case.case_id, canonical)[1] for case in PANEL}
+    assert len(seen) > 3, f"only {len(seen)} distinct orderings; rotations alone give 3"
+
+
+def test_no_fixed_relative_role_ordering_dominates() -> None:
+    counts: dict[str, int] = {}
+    for case in PANEL:
+        roles = case.labels.candidate_roles  # type: ignore[attr-defined]
+        for i, role in enumerate(roles):
+            key = f"{role}->{roles[(i + 1) % len(roles)]}"
+            counts[key] = counts.get(key, 0) + 1
+    for key, count in counts.items():
+        assert count / len(PANEL) <= 0.75, f"{key} recurs in {count}/{len(PANEL)} cases"
+
+
+def test_identifiers_reveal_neither_twin_membership_nor_polarity() -> None:
+    """A twin-pair panel invites an id that gives the pair away."""
+
+    for a, b in PAIRS:
+        assert a.case_id[:-1] != b.case_id[:-1], (a.case_id, b.case_id)
+    for case in PANEL:
+        assert not case.case_id.upper().endswith(("A", "B"))
+        assert case.labels.twin_id  # type: ignore[attr-defined]
+        assert case.labels.twin_role in {"A", "B"}  # type: ignore[attr-defined]
 
 
 def test_no_single_candidate_position_dominates() -> None:
