@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/artifact-contract-coverage-v1.schema.json",
+  "title": "RAKL artifact contract coverage receipt v1",
+  "description": "Proposal-only inventory of the artifacts a change introduced or modified, for resolution against the canonical contract that owns each artifact type. Preservation is checked by lifecycle: immutable evidence must stay byte-identical, an append-only ledger must keep its historical prefix, and intentionally evolving state may change provided its historical Git blob is preserved. Grants no strict-process credit and no framework authority, and is not independent review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "subject_repository",
+    "subject_sha",
+    "merge_base_sha",
+    "changed_artifacts",
+    "declared_non_artifacts",
+    "claim_boundary",
+    "evidence_pointers",
+    "receipt_canonical_sha256",
+    "grants_strict_process_credit",
+    "grants_framework_authority",
+    "is_independent_review"
+  ],
+  "properties": {
+    "schema_version": {"const": "artifact-contract-coverage-v1"},
+    "subject_repository": {"type": "string", "minLength": 1, "maxLength": 512},
+    "subject_sha": {"$ref": "#/$defs/gitOid"},
+    "merge_base_sha": {"$ref": "#/$defs/gitOid"},
+    "changed_artifacts": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {"$ref": "#/$defs/changedArtifact"}
+    },
+    "declared_non_artifacts": {
+      "description": "Changed paths the author declares carry no contract-bearing artifact. The declaration is not self-certifying: a path inside a contract's owned glob is reported as misdeclared rather than exempted.",
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "reason"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 512}
+        }
+      }
+    },
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "evidence_pointers": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "receipt_canonical_sha256": {
+      "oneOf": [{"const": ""}, {"$ref": "#/$defs/sha256"}]
+    },
+    "grants_strict_process_credit": {"const": false},
+    "grants_framework_authority": {"const": false},
+    "is_independent_review": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitOid": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "lifecycle": {
+      "description": "IMMUTABLE_EVIDENCE must stay byte-identical. APPEND_ONLY_LEDGER may grow but must retain its historical prefix. EVOLVING_STATE may change; its historical blob must remain preserved. DERIVED_VIEW may change and must declare its source.",
+      "enum": [
+        "IMMUTABLE_EVIDENCE",
+        "APPEND_ONLY_LEDGER",
+        "EVOLVING_STATE",
+        "DERIVED_VIEW"
+      ]
+    },
+    "changedArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "artifact_type",
+        "declared_lifecycle",
+        "historical_blob_sha",
+        "historical_content_sha256",
+        "historical_blob_preserved",
+        "current_content_sha256",
+        "current_content_extends_historical",
+        "declared_internal_hash",
+        "computed_internal_hash",
+        "schema_valid",
+        "runtime_valid",
+        "artifact_event_at_utc",
+        "introducing_commit_at_utc",
+        "derived_from",
+        "evidence_rewrite_authorization_id"
+      ],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "artifact_type": {"type": "string", "minLength": 1, "maxLength": 256},
+        "declared_lifecycle": {"$ref": "#/$defs/lifecycle"},
+        "historical_blob_sha": {"$ref": "#/$defs/gitOid"},
+        "historical_content_sha256": {"$ref": "#/$defs/sha256"},
+        "historical_blob_preserved": {"type": ["boolean", "null"]},
+        "current_content_sha256": {
+          "description": "null means not observed, which yields OBSERVATION_MISSING and never a pass.",
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "current_content_extends_historical": {"type": ["boolean", "null"]},
+        "declared_internal_hash": {
+          "oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 256}]
+        },
+        "computed_internal_hash": {
+          "oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 256}]
+        },
+        "schema_valid": {"type": ["boolean", "null"]},
+        "runtime_valid": {"type": ["boolean", "null"]},
+        "artifact_event_at_utc": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1, "maxLength": 64, "format": "date-time"}
+          ]
+        },
+        "introducing_commit_at_utc": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1, "maxLength": 64, "format": "date-time"}
+          ]
+        },
+        "derived_from": {
+          "oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 1024}]
+        },
+        "evidence_rewrite_authorization_id": {
+          "oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 512}]
+        }
+      }
+    }
+  }
+}
