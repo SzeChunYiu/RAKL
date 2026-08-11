@@ -17,6 +17,7 @@ TERMINAL_RECEIPTS = (
     ROOT / "research/paper2_novelty_campaign/ISSUE_158_TERMINAL_RECEIPT.json",
     ROOT / "research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json",
     ROOT / "research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json",
+    ROOT / "research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json",
 )
 
 
@@ -63,3 +64,11 @@ def test_324_326_wave_residuals_refuse_authority() -> None:
     assert r326["issue"] == 326
     assert r326["terminal_status"] == "POWER_LIMITED_RETAIN_V2_1"
     assert r326["grants_scientific_authority"] is False
+
+
+def test_332_absent_independent_human_residual() -> None:
+    receipt = _load(ROOT / "research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json")
+    assert receipt["issue"] == 332
+    assert receipt["terminal_status"] == "CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS"
+    assert receipt["grants_scientific_authority"] is False
+    assert receipt["acceptance_assessment"]["constitution_grade_independent_review_claimed"] is False

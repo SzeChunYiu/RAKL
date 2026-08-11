@@ -17,9 +17,10 @@ Upstream ORACLE evidence (jobs **3476730** primary / **3476731** race duplicate)
 | #258 | `CAMPAIGN_TERMINAL_WITH_HONEST_NEGATIVES` | `research/ISSUE_258_TERMINAL_RECEIPT.json` |
 | #324 | `CANNOT_EXECUTE_CONFIRMATORY_MODEL_COMPARISON` | `research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json` |
 | #326 | `POWER_LIMITED_RETAIN_V2_1` | `research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json` |
+| #332 | `CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS` | `research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json` |
 
-**Stay open (independent human residual only):** #332 (independent external human review still absent after AI_OPERATOR #217 override). Issues #216/#217/#249/#255 closed under demoted AI_OPERATOR / NON_INDEPENDENT authority only.
+**Independent human residual:** #332 closed under demoted-authority floor only (`ABSENT` independent external humans). Same pattern as #216/#217/#249/#255 — demoted AI_OPERATOR / NON_INDEPENDENT artifacts do **not** mint Constitution-grade independent review.
 
-#324 freezes confirmatory ALR protocol/co-primary metrics but remains blocked by the #247 capability floor and unexecuted typed-authority arm. #326 reaffirms the independent zero-label window (demoted AI_OPERATOR ≠ independent human label) and retains v2.1 as power-limited.
+#324 freezes confirmatory ALR protocol/co-primary metrics but remains blocked by the #247 capability floor and non-confirmatory harvests **3476748**/**3476749**. #326 reaffirms power-limited v2.1 retention. #332 documents `ABSENT` independent humans under operator policy (no external humans).
 
 Publication ingest: `research/PAPERS_II_III_V_STRONGEST_VERSION_STATUS.json` · scoreboard: `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260811.md`
