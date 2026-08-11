@@ -2,6 +2,19 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/failure-experience-lattice.schema.json",
   "title": "RAKL Failure Experience Lattice",
+  "$comment": "Link endpoints must reference failure ids declared in this artifact's own 'experiences' collection, matching src/rakl/failure_lattice.py add_failure_link ('failure links require existing source and target experiences'). JSON Schema 2020-12 cannot express cross-instance reference integrity: '$ref' composes schemas, not instance data, and there is no foreign-key/key/keyref keyword. This schema alone therefore does NOT close that gap. The constraint is declared below as machine-readable data under 'x-rakl-reference-constraints' and is enforced by the companion validator rakl.schema_reference_constraints.check_reference_constraints, which callers must run alongside JSON-schema validation. See issue #133 and tests/test_failure_lattice_endpoint_contract.py.",
+  "x-rakl-reference-constraints": [
+    {
+      "from": "links[*].source_id",
+      "to": "experiences[*].failure_id",
+      "reason": "a link source must be a failure experience registered in this artifact"
+    },
+    {
+      "from": "links[*].target_id",
+      "to": "experiences[*].failure_id",
+      "reason": "a link target must be a failure experience registered in this artifact; candidate/tool/proof ids are not currently valid endpoints"
+    }
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": ["experiences", "links"],
