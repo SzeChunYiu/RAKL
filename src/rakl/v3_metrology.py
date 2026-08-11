@@ -3,10 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from statistics import mean
-from typing import Iterable, Mapping, Tuple
+from typing import Iterable, Tuple
 
-from .experience_substrate import EpisodeOutcome, SubstrateKind, SubstrateRelation
-from .failure_lattice import FailureDiagnosisStatus
+from .experience_substrate import SubstrateKind, SubstrateRelation
 from .matched_microtrial import (
     MatchedModelConfig,
     TrialResourceCeiling,
@@ -14,7 +13,6 @@ from .matched_microtrial import (
     validate_resource_usage,
 )
 from .method_specs import METHOD_CONTRACTS
-from .research_tool_inventory import ResearchToolAuthority
 from .saturation_vector import SaturationAxis
 from .v3_runtime import RAKLV3State, materialize_state_substrate, state_fingerprint
 
@@ -23,7 +21,7 @@ from .v3_runtime import RAKLV3State, materialize_state_substrate, state_fingerpr
 class StateMetricSnapshot:
     """Read-only quantitative portrait of one frozen RAKL v3 state.
 
-    Counts are descriptive.  They do not imply that larger state is better.
+    Counts are descriptive. They do not imply that larger state is better.
     Retained novelty is reported separately from raw object growth.
     """
 
@@ -163,6 +161,7 @@ class ProcessTelemetry:
     output_hash: str
     outcome: ProcessOutcome
     cost: float
+    cost_policy_id: str
     residual_before: Tuple[str, ...]
     residual_after: Tuple[str, ...]
     retained_novelty: Tuple[Tuple[SaturationAxis, int], ...]
@@ -176,6 +175,8 @@ class ProcessTelemetry:
     def __post_init__(self) -> None:
         if not self.invocation_id or not self.process_surface or not self.task_id:
             raise ValueError("process telemetry requires invocation, process surface, and task id")
+        if not self.cost_policy_id:
+            raise ValueError("process telemetry requires a cost_policy_id")
         known_surfaces = {contract.surface for contract in METHOD_CONTRACTS}
         if self.process_surface not in known_surfaces:
             raise ValueError(f"unknown RAKL method surface: {self.process_surface}")
@@ -202,6 +203,7 @@ class ProcessAggregate:
     blocked_count: int
     cannot_check_count: int
     mean_cost: float
+    cost_policy_ids: Tuple[str, ...]
     mean_raw_residual_contraction: float
     retained_novelty_totals: Tuple[Tuple[str, int], ...]
     retrieved_object_count: int
@@ -213,6 +215,10 @@ class ProcessAggregate:
         if not self.invocation_count:
             return 0.0
         return (self.success_count + self.partial_success_count) / self.invocation_count
+
+    @property
+    def costs_comparable(self) -> bool:
+        return len(self.cost_policy_ids) <= 1
 
 
 def aggregate_process_telemetry(records: Iterable[ProcessTelemetry]) -> Tuple[ProcessAggregate, ...]:
@@ -237,6 +243,7 @@ def aggregate_process_telemetry(records: Iterable[ProcessTelemetry]) -> Tuple[Pr
                 blocked_count=sum(item.outcome is ProcessOutcome.BLOCKED for item in items),
                 cannot_check_count=sum(item.outcome is ProcessOutcome.CANNOT_CHECK for item in items),
                 mean_cost=mean(item.cost for item in items),
+                cost_policy_ids=tuple(sorted({item.cost_policy_id for item in items})),
                 mean_raw_residual_contraction=mean(item.raw_residual_contraction for item in items),
                 retained_novelty_totals=tuple(sorted(novelty.items())),
                 retrieved_object_count=sum(len(item.retrieved_ids) for item in items),
@@ -259,6 +266,8 @@ class AttributionRun:
     run_id: str
     task_id: str
     arm: AttributionArm
+    state_before_hash: str
+    state_after_hash: str
     success: bool
     score: float
     failure_signature: Tuple[str, ...]
@@ -269,6 +278,8 @@ class AttributionRun:
     def __post_init__(self) -> None:
         if not self.run_id or not self.task_id or not self.output_hash:
             raise ValueError("attribution run identifiers and output hash are required")
+        if not self.state_before_hash or not self.state_after_hash:
+            raise ValueError("attribution run requires before/after state identity")
         if not 0.0 <= self.score <= 1.0:
             raise ValueError("attribution score must be within [0, 1]")
         if not self.success and not self.failure_signature:
@@ -283,8 +294,10 @@ class AttributionPacket:
     task_ids: Tuple[str, ...]
     model_only_protocol_hash: str
     rakl_protocol_hash: str
+    model_only_state_hash: str
     reset_state_hash: str
     sham_state_hash: str
+    sham_policy_hash: str
     learned_state_hash: str
     evaluator_protocol_hash: str
     runs: Tuple[AttributionRun, ...]
@@ -298,13 +311,17 @@ class AttributionPacket:
         required = (
             self.model_only_protocol_hash,
             self.rakl_protocol_hash,
+            self.model_only_state_hash,
             self.reset_state_hash,
             self.sham_state_hash,
+            self.sham_policy_hash,
             self.learned_state_hash,
             self.evaluator_protocol_hash,
         )
         if any(not value for value in required):
             raise ValueError("attribution protocol/state hashes cannot be empty")
+        if self.sham_state_hash == self.learned_state_hash:
+            raise ValueError("sham and learned state identities must differ")
 
 
 @dataclass(frozen=True)
@@ -357,7 +374,19 @@ class AttributionReport:
         return self.validation.matched
 
 
+def _expected_state_hash(packet: AttributionPacket, arm: AttributionArm) -> str:
+    if arm is AttributionArm.MODEL_ONLY:
+        return packet.model_only_state_hash
+    if arm is AttributionArm.RAKL_RESET:
+        return packet.reset_state_hash
+    if arm is AttributionArm.RAKL_SHAM_MEMORY:
+        return packet.sham_state_hash
+    return packet.learned_state_hash
+
+
 def validate_attribution_packet(packet: AttributionPacket) -> AttributionValidation:
+    """Fail closed on arm mismatch, state leakage, task mismatch, or resources."""
+
     problems: list[str] = []
     if not packet.frozen_before_runs:
         problems.append("attribution_packet_not_frozen_before_runs")
@@ -369,6 +398,12 @@ def validate_attribution_packet(packet: AttributionPacket) -> AttributionValidat
         by_task.setdefault(run.task_id, []).append(run)
         resource_report = validate_resource_usage(run.resource_usage, packet.resource_ceiling)
         problems.extend(f"{run.run_id}:{problem}" for problem in resource_report.problems)
+
+        expected_state = _expected_state_hash(packet, run.arm)
+        if run.state_before_hash != expected_state:
+            problems.append(f"{run.run_id}:unexpected_state_before:{run.arm.value}")
+        if run.state_after_hash != expected_state:
+            problems.append(f"{run.run_id}:state_mutated_or_leaked:{run.arm.value}")
 
     expected = set(packet.task_ids)
     problems.extend(f"unexpected_task:{task}" for task in sorted(set(by_task) - expected))
