@@ -45,6 +45,23 @@ An analogy may generate a proposal but never supplies theorem authority. Surface
 
 Do not treat a list of papers or a literature summary as a context fiber. The required object is a **method-transfer matrix** explaining why a method works elsewhere and exactly what blocks its transfer here.
 
+## Scoped success-derived research tool inventory
+
+Successful research steps may become reusable tools, but promotion is not automatic. Use `src/rakl/research_tool_inventory.py` / `schemas/research-tool-inventory.schema.json`.
+
+A reusable `ResearchTool` must record:
+
+- exact source atom/candidate/result/context;
+- abstraction and operation;
+- preconditions and structural signature;
+- guaranteed effects and explicit non-guarantees;
+- target-specific validation obligations;
+- evidence/proof backing;
+- known failure ids and successful reuse ids;
+- authority level and artifact hash.
+
+`worked_once` is not `universally_valid`. Before reusing a tool, create a `ToolApplicabilityWitness` checking target preconditions/structure and all known failure warnings. Changed structural coordinates normally require target-specific validation.
+
 ## Global failure experience lattice
 
 A failed candidate is both local negative history and a reusable global experience record. After every material failure/refutation, update `src/rakl/failure_lattice.py` / `schemas/failure-experience-lattice.schema.json` with:
@@ -58,11 +75,17 @@ A failed candidate is both local negative history and a reusable global experien
 
 Then connect the failure to structurally related prior failures using typed relations. Do not equate correlation with cause. Maintain the global portrait of recurring failure modes, broken assumptions, unresolved diagnoses and verified impossibilities.
 
-Before proposing the next candidate, query the global failure lattice for the method family, structural coordinates, assumptions and residuals relevant to the active atom. Record the relevant failure ids and reuse assessment in the public trace/next-step packet.
-
 A prior failure is a warning, **not a blacklist**. Reusing the same method is allowed when the new context differs materially or new evidence/derivation exists. For a close prior failure, supply a `DifferenceWitness` stating what changed, which failed assumption is restored/replaced, why the old falsifier may no longer apply, and the cheapest test that could show the claimed difference is illusory. Only a verified impossibility result may block reuse, and only inside its registered scope.
 
 Repeated unclassified failures are not an invitation to keep guessing. Route them to the existing metacognitive auditor as an ontology/method-basis gap candidate and reopen perspective/context search.
+
+## Dual experience memory review
+
+Before proposing the next candidate, query **both** the success-derived tool inventory and the global failure lattice. Freeze a `ResearchMemoryReview` from `src/rakl/research_memory.py`, bound to the current atom/context and exact memory snapshot hashes.
+
+The review must record candidate method families searched, relevant tool ids or explicit `NO_RELEVANT_MATCH`, relevant failure ids or explicit `NO_RELEVANT_MATCH`, tool applicability notes, failure reuse/scope notes, unresolved warnings, evidence pointers and artifact hash.
+
+Accumulated experience guides search; it never mints theorem truth.
 
 ## Role-separated pre-candidate review
 
@@ -86,17 +109,18 @@ Before the first candidate for an atom, the trace must contain, in chronological
 2. `CONTEXT_FROZEN` — current context snapshot and context-packet hash;
 3. `ANALOGY_SCAN` — retained/refuted cross-domain analogies or explicit no-safe-bridge result;
 4. `METHOD_TRANSFER_REVIEW` — solved/near-solved contexts, transferable methods, enabling assumptions and disanalogies;
-5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties, recommendation, and the global failure-memory review/reuse warnings relevant to the proposed action;
-6. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator, including how relevant prior failures were avoided, repaired, deliberately retried or found inapplicable.
+5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties and recommendation;
+6. `EXPERIENCE_MEMORY_REVIEW` — exact success-tool/failure-lattice queries, applicability/reuse warnings, selected reusable tools if any, and memory-review artifact;
+7. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator, including how relevant prior success/failure experience affected the choice.
 
-After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash. Every material failed result must also emit/update a failure-experience record.
+After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash. Every material failed result must also emit/update a failure-experience record; every genuinely reusable successful step may emit a scoped research-tool candidate.
 
 Trace entries are hash-chained: except for the first event, `previous_event_hash` must equal the prior event's `artifact_hash`. This makes chronology tamper-evident and prevents silent insertion or rewriting from looking like an original discovery path.
 
 This trace is an **auditable scientific decision record**, not a raw private chain-of-thought transcript. Record reproducible state, alternatives, concise decision rationale, evidence, outputs, uncertainties, residuals and next actions. Do not claim that hidden model reasoning has been exposed.
 
-Call `plan_math_research(..., context_fiber=..., research_trace=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/trace later.
+Call `plan_math_research(..., context_fiber=..., memory_review=..., research_trace=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/memory/trace later.
 
-A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate chronology and trace gates passed.
+A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate context, experience-memory and trace gates passed.
 
 Use `python -m rakl` for project state, bounded task packets, exact receipts and reproducible execution where applicable.
