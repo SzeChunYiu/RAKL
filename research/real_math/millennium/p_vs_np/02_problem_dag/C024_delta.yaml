@@ -1,0 +1,60 @@
+candidate_id: C024
+claim: "The LP dual of the Cavalar-Oliveira cover graph gives a valid fusion-aligned lower-bound certificate, but the plain fractional relaxation has an unbounded logarithmic integrality gap on G_NEQ: rho_frac<=2 while rho=log_2 N."
+status: VERIFIED_LOCAL_RELAXATION_WITH_CALIBRATION_FAILURE
+route: R004
+root_impact: NONE
+novelty_claim: false
+
+proof_dependencies:
+  - id: C024-L1
+    claim: "rho_frac(A,B) <= rho(A,B) because integral covers are feasible fractional covers."
+    basis: "standard set-cover LP relaxation"
+  - id: C024-L2
+    claim: "Every dual-feasible semi-filter weighting y with pair-neighbourhood mass at most 1 satisfies sum_F y_F <= rho(A,B)=D_cyclic_intersection(A|B)."
+    basis: "LP duality plus Cavalar-Oliveira Theorem 30"
+  - id: C024-L3
+    claim: "For G_NEQ, assigning weight 2/2^N to every cut pair of the diagonal complement gives a feasible fractional cover of total weight 2."
+    basis: "every semi-filter above (u,v) contains the two diagonal singleton generator traces; exactly half of cuts separate u and v"
+  - id: C024-SOURCE
+    claim: "rho(G_NEQ,G_NN)=log_2 N."
+    status: "Cavalar-Oliveira 2025 Proposition 40"
+
+counterexample_first:
+  executable: "tests/test_pnp_c024_fractional_semifilter.py"
+  authority: "exact combinatorial cut-count check plus source-bound Proposition 40 comparison"
+
+route_consequence:
+  parent_obligation: O9d12a2a1
+  retained_tool:
+    id: T-PNP-FRACTIONAL-SEMIFILTER-PACKING
+    authority: VERIFIED_LOCAL
+    use: "cheap valid lower-bound certificates from explicit dual-feasible semi-filter weightings"
+  new_failure:
+    id: F-C024-FRACTIONAL-INTEGRALITY-GAP
+    diagnosis: "plain independent fractional pair weights erase cross-fusion correlation/integrality"
+    status: SUPPORTED
+  active_residuals:
+    - id: O9d12a2a1a
+      target: "construct a correlation-sensitive lift of semi-filter packing that keeps a bounded per-fusion budget but does not collapse from log N to O(1) on G_NEQ"
+      status: ACTIVE
+    - id: O9d12a2a2
+      target: "if spectral information is retained, require a separately proved fusion-relevant structural condition"
+      status: OPEN
+    - id: O9d12a1
+      target: "sharpen the QR upper bound toward O(log p)"
+      status: ACTIVE_PARALLEL
+
+promotion_blockers:
+  - no_explicit_superlog_target_value
+  - correlation_sensitive_successor_not_frozen
+  - bounded_novelty_certificate_missing
+  - independent_reviews_missing
+
+meta_learning:
+  representation: "cover graph / set-cover dual rather than target graph statistic"
+  retrieval: "fractional-cover method found through communication-complexity brokerage after exact set-cover representation was frozen"
+  selected_mode: "REFLECTIVE_RESTRUCTURE + CONTRASTIVE_DISCRIMINATION"
+  falsifier_value: "G_NEQ calibration split local-law success from route-level weakness before QR evaluation"
+  lesson: "a correct local budget is insufficient if the relaxation permits incompatible fractional choices to share responsibility; the next layer must model joint correlation across fusions"
+
+root_status: OPEN_NO_SOLUTION_CERTIFICATE
