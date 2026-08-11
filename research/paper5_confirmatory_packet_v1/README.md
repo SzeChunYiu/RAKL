@@ -10,8 +10,11 @@
 | #254 | residual of executor track | blockers 1–3 closed via #256/#263/#279; real run still open |
 | #255 | `research/paper5_novelty_audit_v1/` (`AUDIT_UNIVERSE_MANIFEST.json`, `ZERO_EXTERNAL_NOVELTY_LABELS.json`, blinded candidate frame) | Phase 0 universe frozen from #253; `AWAITING_HUMAN_ANNOTATORS` |
 
+Related (not confirmatory packet binding): active sham algorithm identity is frozen at `research/paper5_sham_policy_v1/` for Wave-1 Lane E. That freeze supplies a `sham_policy_hash` candidate only; it does **not** authorize four-arm execution.
+
 Validate:
 
 ```bash
 python experiments/paper5/validate_freeze_stubs.py
+python experiments/paper5/active_sham.py validate-policy
 ```
