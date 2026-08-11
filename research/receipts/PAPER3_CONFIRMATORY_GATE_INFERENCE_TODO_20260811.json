@@ -1,0 +1,46 @@
+{
+  "claim_boundary": "Evaluation-design follow-up list only. No label, annotation, adjudication, evaluated result, training authorization or Paper-III confirmation is claimed.",
+  "closed_by_this_tranche": [
+    "Wire stdlib paired bootstrap + sign-flip into the Paper III confirmatory diagnostic gate (interval must exclude zero; Refs #181/#172 helper).",
+    "Freeze statistical_inference block into the v2 protocol before any label arrives.",
+    "Rebind protocol/source-set/packet/preparation/review hashes so CI remains chronologically consistent."
+  ],
+  "created_at_utc": "2026-08-11T18:05:00Z",
+  "issue_refs": [
+    "https://github.com/SzeChunYiu/RAKL/issues/161",
+    "https://github.com/SzeChunYiu/RAKL/issues/166",
+    "https://github.com/SzeChunYiu/RAKL/issues/43"
+  ],
+  "receipt_id": "paper3-confirmatory-gate-inference-todo-20260811",
+  "schema_version": "paper3-confirmatory-gate-inference-todo-v1",
+  "status": "FIX_WINDOW_OPEN_ONLY_UNTIL_FIRST_LABEL",
+  "todos_annotation_blocked": [
+    {
+      "id": "P3-161-TODO-ENLARGE-N-OR-REGISTER-UNDERPOWERED",
+      "blocked_on": "owner decision before annotator A first submission (#43)",
+      "note": "n=16 remains noise-dominated for AUC/AP point thresholds and for Q2/Q3 proportions (~8 items). Interval-excludes-null on paired Brier lift suppresses false PASS/FAIL for that contrast, but does not enlarge power for AUC/AP/Q2/Q3. Either enlarge the frozen item set before labels exist, or pre-register that a null at n=16 is UNDERPOWERED/CANNOT_CHECK rather than a structural refutation."
+    },
+    {
+      "id": "P3-161-TODO-NO-POST-LABEL-EVALUATOR-MUTATION",
+      "blocked_on": "first external annotation arriving on #43",
+      "note": "After the first label exists, revising item count, diagnostic thresholds, or the statistical_inference decision rule is post-hoc evaluator modification (AGENTS.md rule 9 / #138). Settle enlarge-n vs underpowered reporting before staffing completes."
+    },
+    {
+      "id": "P3-161-TODO-EXECUTE-GATE-ONLY-AFTER-ANNOTATION",
+      "blocked_on": "two independent annotations + adjudication + provenance audit",
+      "note": "No confirmatory result, figure, or expensive_training_authorized claim until the annotation gate passes. Synthetic worlds in tests are not Paper-III evidence."
+    }
+  ],
+  "todos_not_this_pr": [
+    {
+      "id": "P3-166-TODO-LUNARC-FS9-INFERENCE-VALIDATION",
+      "blocked_on": "cluster GPU/CPU validation job receipts (see #166 LUNARC comment)",
+      "note": "Issue #166 code path landed via #172/#181. Remaining #166 work is FS9-bound runtime validation, not further gate source edits."
+    },
+    {
+      "id": "P3-161-TODO-CHEAP-GATE-HISTORICAL",
+      "blocked_on": "none for confirmatory path; cheap gate is frozen negative history",
+      "note": "paper3_cheap_gate.py remains a v1 constructed diagnostic with confirmatory_use_permitted=false. Do not silently retrofit inference there as if it authorized confirmatory claims."
+    }
+  ]
+}
