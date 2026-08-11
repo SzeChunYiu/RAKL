@@ -18,10 +18,10 @@ For a root solution, the exact informal problem, formal statement, proof artifac
 | Problem | Role | State |
 |---|---|---|
 | P versus NP | primary flagship | ACTIVE_RESEARCH |
-| Riemann hypothesis | secondary frontier lane | NOT_STARTED |
+| Riemann hypothesis | secondary frontier lane | ACTIVE_RESEARCH |
 | Navier–Stokes existence and smoothness | analytic stress-test lane | NOT_STARTED |
 
-The current compute and research budget is concentrated on P versus NP. Other lanes are placeholders until the primary workflow has accumulated verified checkpoints or a typed obstruction that justifies diversification.
+The programme may run multiple independently governed Millennium-problem lanes in parallel to accumulate verified, scope-bound success and failure experience. Cross-problem reuse requires explicit applicability or difference witnesses; no result, failure, or heuristic transfers theorem authority merely because the problems share vocabulary or a broad structural motif.
 
 ## Shared protocol
 

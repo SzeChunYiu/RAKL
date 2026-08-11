@@ -1,0 +1,43 @@
+{
+  "target_atom_id": "RH-SPEC-001",
+  "target_context_hash": "sha256:17c59f74753a80372364337ec655f3fd49ff30133905bd8b956d029d5485b153",
+  "tool_inventory_snapshot_hash": "sha256:b536b2e586cc6fcb11f54453e8324ffc09873bf2a269d5c1b23e4a77651f053d",
+  "failure_lattice_snapshot_hash": "sha256:5de800278bb35c9cd1562a29dba1b8ee8cd07bee11fa762e6a16db6f28c4a487",
+  "tool_query_status": "MATCHES_FOUND",
+  "failure_query_status": "MATCHES_FOUND",
+  "candidate_method_families": [
+    "exact arithmetic spectral trace realization",
+    "Weil quadratic-form Hilbert-space factorization",
+    "canonical self-adjoint operator with exact xi spectral determinant or complete zero correspondence",
+    "adelic/noncommutative absorption or trace realization",
+    "de Bruijn-Newman deformation as a contrastive boundary probe rather than a spectral proof"
+  ],
+  "relevant_tool_ids": [
+    "T-PNP-EXTREMAL-CALIBRATION"
+  ],
+  "relevant_failure_ids": [
+    "F-C023-SCALAR-COLLAPSE"
+  ],
+  "selected_tool_ids": [],
+  "tool_applicability_notes": [
+    "T-PNP-EXTREMAL-CALIBRATION has only cross-domain planning applicability: before trusting a low-dimensional spectral signature, calibrate whether the same signature occurs in objects that do not satisfy the target conclusion. Its P-vs-NP guarantee and proof scope do not transfer to RH, so it is not selected as a reusable theorem tool."
+  ],
+  "failure_reuse_notes": [
+    "F-C023-SCALAR-COLLAPSE is imported only as a structural warning that a coarse scalar spectral proxy can discard operation-specific structure. DifferenceWitness: the shared coordinate is proxy compression; the RH target instead requires exact Weil arithmetic weights, operator domain, and complete zero correspondence, none of which existed in the P-vs-NP setting.",
+    "Cheapest old-failure regression: reject any RH route whose evidence is only a scalar or statistical spectral match such as N(T), GUE spacing, pair correlation, or finitely many computed zeros and which lacks an exact arithmetic trace/sign bridge."
+  ],
+  "unresolved_warnings": [
+    "an operator domain or boundary condition can encode the zeta zeros and make spectral matching circular",
+    "a regularized or distributional trace can hide correction terms or convergence assumptions that are exactly the load-bearing theorem step",
+    "resonance or absorption language is not automatically a self-adjoint point-spectrum realization",
+    "a proposed Hilbert-norm factorization of the Weil functional may merely restate the RH-equivalent sign condition unless the transform and positivity are independently derived",
+    "there is no mature RH-specific success/failure memory yet, so cross-problem experience must remain advisory"
+  ],
+  "evidence_pointers": [
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_RESEARCH_TOOL_INVENTORY_20260811.json",
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_FAILURE_EXPERIENCE_LATTICE_20260811.json",
+    "research/real_math/millennium/riemann_hypothesis/01_frontier/RH_SPEC_001_CONTEXT_FIBER_20260811.json",
+    "GitHub issue #84"
+  ],
+  "artifact_hash": "sha256:9f5d9281323b66b709516fbe044a093b0a79dbee006dc6aecefd4c2efb123ec5"
+}
