@@ -12,6 +12,7 @@ jsonschema = pytest.importorskip("jsonschema")
 Draft202012Validator = jsonschema.Draft202012Validator
 FormatChecker = jsonschema.FormatChecker
 
+from frozen_source_snapshots import execution_time_base_dir, resolve_frozen_binding
 from rakl.paper2_pendulum_microtrial import (
     _encode_prompt_for_generation,
     BackendGeneration,
@@ -709,7 +710,7 @@ def test_repository_packet_binds_every_mandatory_microtrial_identity() -> None:
         "result_schema",
     }
     for binding in packet["bindings"].values():
-        path = ROOT / binding["path"]
+        path = resolve_frozen_binding(ROOT, binding["path"], binding.get("sha256", ""))
         assert path.is_file()
         assert _sha256(path) == binding["sha256"]
 
@@ -732,10 +733,14 @@ def test_repository_packet_and_preflight_chronology_is_ordered_and_not_future_da
     ).hexdigest()
 
 
-def test_repository_packet_has_no_semantic_placeholder_or_missing_evidence() -> None:
+def test_repository_packet_has_no_semantic_placeholder_or_missing_evidence(tmp_path) -> None:
     packet = json.loads(FROZEN_PACKET.read_text(encoding="utf-8"))
 
-    report = audit_execution_packet(packet, base_dir=ROOT, runtime_versions={})
+    report = audit_execution_packet(
+        packet,
+        base_dir=execution_time_base_dir(ROOT, packet, tmp_path),
+        runtime_versions={},
+    )
 
     assert report.invalid_bindings == ()
     assert report.verdict is MicrotrialPreflightVerdict.CANNOT_CHECK

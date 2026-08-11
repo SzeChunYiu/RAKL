@@ -9,6 +9,8 @@ import tarfile
 import pytest
 
 from rakl.paper2_pendulum_microtrial import MicrotrialPreflightVerdict
+
+from frozen_source_snapshots import execution_time_base_dir
 from rakl.paper2_pendulum_microtrial_v4_1 import (
     audit_execution_packet_v4_1,
     normalize_pendulum_output_v4_1,
@@ -127,7 +129,7 @@ def test_v4_1_candidate_does_not_rescue_v4_and_rejects_trailing_prose() -> None:
     assert _load(V41 / "OUTPUT_NORMALIZATION_CONTRACT_V4_1.json")["v4_reinterpretation_permitted"] is False
 
 
-def test_v4_1_packet_is_adaptive_hash_bound_and_not_executed() -> None:
+def test_v4_1_packet_is_adaptive_hash_bound_and_not_executed(tmp_path: Path) -> None:
     packet_path = V41 / "EXECUTION_PACKET_V4_1_20260811.json"
     packet = _load(packet_path)
     assert packet["freeze_created_at_utc"] > "2026-08-11T04:03:09Z"
@@ -154,7 +156,7 @@ def test_v4_1_packet_is_adaptive_hash_bound_and_not_executed() -> None:
         assert _sha(ROOT / binding["path"]) == binding["sha256"]
     report = audit_execution_packet_v4_1(
         packet,
-        base_dir=ROOT,
+        base_dir=execution_time_base_dir(ROOT, packet, tmp_path),
         runtime_versions={
             "python": "3.11.13",
             "torch": "2.8.0+cpu",

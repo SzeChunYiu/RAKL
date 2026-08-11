@@ -10,6 +10,7 @@ import pytest
 import rakl.paper2_pendulum_microtrial_v4_1 as runner
 from rakl.paper2_pendulum_microtrial import BackendGeneration, ExecutionCheckoutState
 
+from frozen_source_snapshots import execution_time_base_dir
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -61,13 +62,14 @@ def test_v4_1_scoring_normalizes_only_under_explicit_policy() -> None:
     assert [row["parse_valid"] for row in repaired] == [True, False]
 
 
-def test_v4_1_candidate_validation_rejects_any_unbound_successor_artifact() -> None:
+def test_v4_1_candidate_validation_rejects_any_unbound_successor_artifact(tmp_path) -> None:
     packet = json.loads(
         (ROOT / "research/paper2_microtrial_v4_1/EXECUTION_PACKET_V4_1_20260811.json").read_text()
     )
+    base_dir = execution_time_base_dir(ROOT, packet, tmp_path)
     packet["bindings"]["output_normalization_contract"]["sha256"] = "0" * 64
     with pytest.raises(RuntimeError, match="V4.1 binding mismatch:output_normalization_contract"):
-        runner.validate_v4_1_candidate_packet(packet, base_dir=ROOT)
+        runner.validate_v4_1_candidate_packet(packet, base_dir=base_dir)
 
 
 def test_v4_1_exact_head_must_match_batch_binding_and_merged_origin_main() -> None:
@@ -140,6 +142,10 @@ def test_v4_1_synthetic_execution_uses_scoped_freeze_and_exact_head(tmp_path, mo
         if not Path(binding["path"]).is_absolute() and not (tmp_path / binding["path"]).exists():
             source = ROOT / binding["path"]
             binding["path"] = str(source)
+            # The synthetic execution loads and runs the LIVE runner module, so
+            # its packet must bind the live bytes; the frozen artifact on disk
+            # keeps the execution-time sha (see tests/frozen_source_snapshots.py).
+            binding["sha256"] = sha(source)
     evaluator = json.loads(Path(packet["bindings"]["evaluator"]["path"]).read_text())
     evaluator_impl = tmp_path / evaluator["implementation_source_path"]
     evaluator_impl.parent.mkdir(parents=True)
