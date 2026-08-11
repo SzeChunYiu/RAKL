@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/framework-freshness-receipt-v1.schema.json",
+  "title": "RAKL framework freshness receipt v1",
+  "description": "Proposal-only, framework-process telemetry binding an application repository's framework pin against observed current framework main. Mints no method authority, performs no submodule update, and never converts a direct-current-main read into a tested dependency synchronization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "application_repository",
+    "application_subject_sha",
+    "framework_repository",
+    "framework_pin_sha",
+    "task_episode_id",
+    "public_trace_event_id",
+    "declared_pin_relation",
+    "declared_execution_status",
+    "claim_boundary",
+    "observed_current_main_sha",
+    "current_main_observed_at_utc",
+    "pin_is_ancestor_of_current_main",
+    "current_main_is_ancestor_of_pin",
+    "commits_behind_current_main",
+    "commits_ahead_of_current_main",
+    "inspected_surfaces",
+    "v3_feature_set_claimed_operational",
+    "application_pin_updated_in_episode",
+    "application_test_binding",
+    "evidence_pointers",
+    "receipt_canonical_sha256",
+    "performs_submodule_update",
+    "grants_method_authority",
+    "grants_application_mathematical_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "framework-freshness-receipt-v1"},
+    "application_repository": {"type": "string", "minLength": 1, "maxLength": 512},
+    "application_subject_sha": {"$ref": "#/$defs/gitOid"},
+    "framework_repository": {"type": "string", "minLength": 1, "maxLength": 512},
+    "framework_pin_sha": {"$ref": "#/$defs/gitOid"},
+    "task_episode_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "public_trace_event_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "declared_pin_relation": {
+      "enum": [
+        "EQUAL",
+        "PIN_BEHIND_CURRENT_MAIN",
+        "PIN_AHEAD_OF_CURRENT_MAIN",
+        "DIVERGED",
+        "UNOBSERVED"
+      ]
+    },
+    "declared_execution_status": {
+      "description": "Three adoption statuses plus five explicitly distinct fail-closed outcomes. STALE_PIN_TREATED_AS_AUTHORITATIVE and PIN_SYNCHRONIZED_WITHOUT_APPLICATION_TESTS are checked-and-defective; APPLICATION_TEST_BINDING_MISSING, CURRENT_MAIN_UNOBSERVED and RECEIPT_UNVERIFIABLE are could-not-check.",
+      "enum": [
+        "PIN_CURRENT",
+        "CURRENT_MAIN_READ_DIRECTLY_SHADOW",
+        "PIN_SYNCHRONIZED_AND_TESTED",
+        "STALE_PIN_TREATED_AS_AUTHORITATIVE",
+        "PIN_SYNCHRONIZED_WITHOUT_APPLICATION_TESTS",
+        "APPLICATION_TEST_BINDING_MISSING",
+        "CURRENT_MAIN_UNOBSERVED",
+        "RECEIPT_UNVERIFIABLE"
+      ]
+    },
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "observed_current_main_sha": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/gitOid"}]
+    },
+    "current_main_observed_at_utc": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "minLength": 1, "maxLength": 64, "format": "date-time"}
+      ]
+    },
+    "pin_is_ancestor_of_current_main": {"type": ["boolean", "null"]},
+    "current_main_is_ancestor_of_pin": {"type": ["boolean", "null"]},
+    "commits_behind_current_main": {
+      "oneOf": [{"type": "null"}, {"type": "integer", "minimum": 0}]
+    },
+    "commits_ahead_of_current_main": {
+      "oneOf": [{"type": "null"}, {"type": "integer", "minimum": 0}]
+    },
+    "inspected_surfaces": {
+      "description": "Exact framework contracts/surfaces read during the episode. subject_sha binds each read to the framework subject it was read at; a surface read at the stale pin cannot support a current-main adoption claim.",
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "subject_sha", "blob_sha"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+          "subject_sha": {"$ref": "#/$defs/gitOid"},
+          "blob_sha": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/gitOid"}]}
+        }
+      }
+    },
+    "v3_feature_set_claimed_operational": {
+      "type": "array",
+      "maxItems": 200,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 256}
+    },
+    "application_pin_updated_in_episode": {"type": "boolean"},
+    "application_test_binding": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/applicationTestBinding"}]
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "receipt_canonical_sha256": {
+      "description": "Canonical SHA-256 over this document with this field removed. Recomputing it against observed application head, pin and framework main is the revalidation trigger.",
+      "oneOf": [{"const": ""}, {"$ref": "#/$defs/sha256"}]
+    },
+    "performs_submodule_update": {"const": false},
+    "grants_method_authority": {"const": false},
+    "grants_application_mathematical_authority": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitOid": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "applicationTestBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "framework_subject_sha",
+        "application_subject_sha",
+        "command",
+        "run_reference",
+        "complete_suite",
+        "passed"
+      ],
+      "properties": {
+        "framework_subject_sha": {"$ref": "#/$defs/gitOid"},
+        "application_subject_sha": {"$ref": "#/$defs/gitOid"},
+        "command": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "run_reference": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "complete_suite": {"type": "boolean"},
+        "passed": {"type": "boolean"}
+      }
+    }
+  }
+}
