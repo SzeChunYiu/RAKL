@@ -1,0 +1,173 @@
+\section{From raw experience to bounded research method}
+
+The purpose of the v3 experience substrate is not to maximize how much past text can be recalled. It is to preserve an auditable relation between what happened, what the system later believes it learned, and what that belief is allowed to change.
+
+\subsection{Fast recording and slow consolidation}
+
+Every consequential attempt enters the fast loop first:
+\[
+\text{action}\rightarrow\text{observation}\rightarrow\TaskEpisode{}.
+\]
+The episode is frozen before root-cause interpretation. This ordering prevents a later explanation from rewriting the evidence it is supposed to explain.
+
+The slow loop operates on already-recorded episodes:
+\[
+\text{episodes}
+\rightarrow\text{contrastive analysis}
+\rightarrow\text{lesson proposal}
+\rightarrow\text{replay/transfer validation}
+\rightarrow\text{scoped method update}.
+\]
+A failed fresh transfer bounds or contradicts a lesson rather than being averaged away. Promotion creates a new lesson version; it does not mutate the source episodes or silently replace the old lesson.
+
+This architecture responds to a known failure mode of agentic memory. Continually rewriting consolidated memory can degrade performance even when the underlying experiences were useful, while retaining raw episodes can remain competitive \cite{zhang2026faultymemory}. RAKL therefore treats consolidation as a defeasible derived view rather than the canonical memory root.
+
+\subsection{Authority of a lesson}
+
+A lesson can occupy a bounded authority ladder such as
+\[
+\texttt{CANDIDATE}
+<\texttt{VERIFIED\_LOCAL}
+<\texttt{CONDITIONALLY\_REUSABLE}
+<\texttt{PROOF\_BACKED},
+\]
+with \texttt{SUPERSEDED} representing historical lineage rather than a higher state. The order is not automatic. A candidate reflection cannot become reusable because the same LLM says it sounds general. A reusable lesson requires independently registered verification and a fresh successful transfer under the relevant implementation contract, or a separately valid proof-backed route.
+
+The current v3 implementation still contains authority-bearing surfaces whose caller-supplied identifiers and flags require stronger content-bound resolution before promotion-grade use. Paper 5 therefore treats new v3 experience in the live mathematical programme as proposal/shadow evidence until these paths are hardened.
+
+\subsection{Failure learning is an evidence ladder}
+
+Failure learning uses a deliberately slower promotion chain:
+\[
+\TaskEpisode{}(\text{non-success})
+\rightarrow
+\text{observed failure}
+\rightarrow
+\text{competing diagnoses}
+\rightarrow
+\text{discriminating test}
+\rightarrow
+\text{supported diagnosis}
+\rightarrow
+\text{boundary lesson candidate}
+\rightarrow
+\text{cross-context validation}.
+\]
+The reason is causal. A failed proof attempt may have failed because the theorem is false, because a representation was weak, because the source was incomplete, because a tool was unavailable, because the context packet was wrong, or because CI failed. Treating the first plausible narrative as the causal obstruction would poison future routing.
+
+Diagnosis revisions are append-only versions. A later diagnosis can supersede an earlier one without erasing the original observation. A raw failure cannot directly mint a globally blocking impossibility; only an independently verified impossibility can block reuse, and only inside its registered scope.
+
+\subsection{Experience affects routing, not theorem truth}
+
+For operator $o$ in target context $c$, an experience statistic can summarize matched episodes, successes, partial successes, failures and costs. One illustrative routing score is
+\[
+\operatorname{score}(o\mid c)=
+C(o)+D_V(o)+R_B(o)
+-\lambda_s\widehat p_s(o\mid c)
++\lambda_f\widehat p_f(o\mid c)
+-\lambda_e U_o,
+\]
+where $C$ is execution cost, $D_V$ verification debt, $R_B$ boundary risk, $\widehat p_s$ and $\widehat p_f$ smoothed success and failure/block rates, and $U_o$ a small exploration bonus for undersampled operators. The exact coefficients are a policy choice to be evaluated, not epistemic constants.
+
+The hard rule is structural:
+\[
+\boxed{\text{experience-conditioned priority} \neq \text{epistemic authority}}.
+\]
+A high empirical success rate cannot weaken a proof obligation. A historically poor operator may still be used if the current DifferenceWitness restores a previously broken assumption. This avoids turning experience into a self-reinforcing blacklist.
+
+\subsection{Strategy motifs and expertise}
+
+Repeated successful contiguous operator sequences can be proposed as strategy motifs. For example, a cross-domain motif may take the form
+\[
+\text{freeze root coordinate}
+\rightarrow
+\text{identify surrogate}
+\rightarrow
+\text{construct hostile zero-root control}
+\rightarrow
+\text{audit preservation map}
+\rightarrow
+\text{rotate representation if the map fails}.
+\]
+The motif is not accepted because it occurred frequently. Contradictory episodes containing the same sequence remain attached to the motif, and applicability is context-indexed.
+
+This separates two kinds of reusable knowledge that recent systems often combine under ``skills.'' Agent Workflow Memory learns reusable routines \cite{wang2024awm}; AutoSkills constructs multi-level skill hierarchies \cite{wang2026autoskills}; and XSkill separates action-level experience from task-level skills \cite{jiang2026xskill}. RAKL uses a similar intuition but adds evidence lineage, falsifiers, authority boundaries and cross-context contradiction as first-class fields because the target application is open-ended research rather than only task completion.
+
+\subsection{Problem fibres as retrieval state}
+
+The problem fibre couples the experience loop to the active research state. For each atom it co-retrieves relevant knowledge, tools, failures, episodes, motifs and expertise. This makes later method analysis possible at a finer level than ``memory on/off.'' A researcher can ask:
+
+\begin{itemize}[leftmargin=*]
+\item Was a relevant prior failure present in the bound universe?
+\item Was it retrieved?
+\item Was it rejected, and on what structural DifferenceWitness?
+\item Did the chosen operator already have a failure boundary in the target context?
+\item Did the fibre omit a whole problem lane because the coverage index was stale?
+\item Did the compiled context exceed the budget and drop a mandatory atom?
+\end{itemize}
+
+These questions convert memory performance into inspectable process variables rather than one opaque retrieval score.
+
+\subsection{Learning from gluing failure}
+
+Suppose a problem is decomposed into atoms $A_1,\ldots,A_n$ and local candidate sections $s_i$ are verified. A global solution requires more than
+\[
+\forall i\;\operatorname{Verified}(s_i).
+\]
+The sections must cover all required atoms and agree on shared interfaces. Let $I_{ij}$ denote the set of declared shared interface coordinates between $A_i$ and $A_j$. Then a simplified compatibility condition is
+\[
+\forall x\in I_{ij},\qquad s_i(x)=s_j(x),
+\]
+plus dependency and authority conditions.
+
+In research, the interface may be a uniform constant, a limit theorem, a category-preserving realization map, a source-density result, or a statement that a local invariant actually controls the root quantity. A gluing obstruction therefore has a typed residual signature rather than being summarized as ``proof incomplete.''
+
+The pilot cases suggest that gluing failures may be unusually common in hard open problems. Yang--Mills exhibits fixed-cutoff versus continuum and source-to-spectrum interfaces; BSD exhibits discrete/p-adic versus complex analytic coordinates; Hodge exhibits cohomological detection versus algebraic realization; Navier--Stokes exhibits compactness/limit-class versus rigidity hypotheses. Paper 5 preregisters gluing-failure detection as a process QoI because earlier recognition may save large amounts of unproductive local theorem search.
+
+\subsection{Saturation and the invention gate}
+
+The system should not infer ``missing operator'' merely because repeated attempts fail. Invention is proposed only after a bounded saturation audit supports all of the following:
+
+\begin{enumerate}[leftmargin=*]
+\item relevant knowledge/operator/path axes are flat under the registered search window;
+\item the residual is stable across repeated independent routes;
+\item ordinary causes such as missing source detail, wrong context, unavailable tool, implementation failure or verification debt have been excluded;
+\item cross-domain transfer routes have been searched or bounded;
+\item explicit evidence supports a representation or method-basis gap.
+\end{enumerate}
+
+The resulting report permits escalation to an invention process. It does not prove that invention is necessary. This fail-closed distinction is important for studying ``scientific creativity.'' A system that invents new formal objects whenever it is confused may look creative while simply failing to retrieve or compose what already exists.
+
+\subsection{RAKL-triviality as an empirical hypothesis}
+
+Let $N_R(P)$ denote the minimum genuinely novel problem-solving structure required for a verified solution of problem $P$ relative to RAKL state $R$. If existing resources, operators and motifs suffice through composition or transfer, then $N_R(P)=0$. For a solved distribution $D$ we can define
+\[
+\rho_R(D)=\frac{|\{P\in D:N_R(P)=0\}|}{|D|}.
+\]
+This is not assumed to be high. It is a measurable hypothesis about the relationship between the growth of reusable method space and the growth of problem space.
+
+The longitudinal observatory extends the question from terminal solutions to research progress. A problem may remain unsolved while a useful subproblem is classified as transfer-novel or representation-novel. Over many episodes, the distribution of novelty classes can reveal whether the system's bottleneck is missing knowledge, missing representations, missing operators or merely poor routing among already-known components.
+
+\subsection{Unified substrate and Self-RAKL}
+
+The v3 unified substrate materializes a read-only typed overlay over specialized stores. Epistemic items, operators, episodes, failures, strategy motifs and architecture variants can be related without transferring semantic authority to the overlay itself. This lets Self-RAKL represent its own variants as meta-method objects while preserving the original stores that own proof, failure or promotion semantics.
+
+The intended recursion is therefore not
+\[
+\text{LLM rewrites itself and declares success}.
+\]
+It is
+\[
+\text{observed research}
+\rightarrow
+\text{bounded method hypothesis}
+\rightarrow
+\text{challenger variant}
+\rightarrow
+\text{matched evaluation}
+\rightarrow
+\text{fresh assurance}
+\rightarrow
+\text{governed promotion or rejection}.
+\]
+The next sections make this engineering loop explicit.
