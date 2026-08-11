@@ -1,4 +1,4 @@
-version: 0.6.0
+version: 0.6.1
 
 always_load:
   - static/core/principles.md
@@ -59,6 +59,11 @@ workflow_composition:
       - mathematical-research
       - mechanism-invention
   mathematical-research:
+    required_pre_candidate_steps:
+      - freeze-atomic-context-fiber
+      - map-solved-and-near-solved-analogues
+      - build-method-transfer-matrix
+      - freeze-context-chronology
     recommended_pre_steps:
       - perspective-discovery
       - literature-absorption
@@ -91,6 +96,7 @@ invention_resources:
   problem_solving_algebra: src/rakl/problem_solving_algebra.py
   strategy_motifs: src/rakl/strategy_motifs.py
   proof_dag: src/rakl/proof_dag.py
+  mathematical_context_gate: src/rakl/math_context.py
   mathematical_research_runtime: src/rakl/math_research_runtime.py
   mathematical_research_api: src/rakl/math_research_api.py
   dimensional_oracle: src/rakl/math_oracles.py
@@ -103,6 +109,11 @@ invariants:
   - evidence_before_narrative
   - apple_projection_before_theory_competition
   - context_before_contradiction
+  - atomic_context_fiber_before_candidate_generation
+  - analogue_method_transfer_before_invention
+  - context_packet_chronology_precedes_candidate
+  - literature_list_is_not_method_transfer_matrix
+  - repeated_same_basis_failure_reopens_context
   - normalize_before_multiplying
   - representation_is_not_mechanism
   - llm_is_proposer_not_authority
@@ -144,3 +155,4 @@ schemas:
   knowledge_fiber: ../../schemas/knowledge-fiber.schema.json
   typed_lattice: ../../schemas/typed-lattice.schema.json
   formalism: ../../schemas/formalism.schema.json
+  mathematical_context_fiber: ../../schemas/math-context-fiber.schema.json
