@@ -165,6 +165,17 @@ Summaries, lessons, expertise chunks, operator statistics, motifs, and routing p
 
 Machine-readable contract: `schemas/task-episode.schema.json`.
 
+### Proposal/shadow storage vs canonical inventory admission
+
+A content-valid `TaskEpisode` may be retained for search and failure learning
+without satisfying canonical episode-inventory discovery, promotion,
+lesson/tool, proof or root gates. That separation is proposal-only telemetry in
+`rakl.episode_inventory_admission` / `schemas/episode-inventory-admission-receipt-v1.schema.json`
+(Refs #182). Path, file extension and omitted `episode_id` are not authority
+mechanisms; only a verified `CANONICAL_INVENTORY_ADMITTED` receipt may admit an
+episode into protected inventory counts. The object is not wired into runtime
+gates yet.
+
 ## 5. Lessons are versioned, scoped abstractions
 
 A `Lesson` contains:
