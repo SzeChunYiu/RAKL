@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from statistics import mean
 from typing import Iterable, Tuple
@@ -33,6 +34,17 @@ class ExperienceBenchmarkPhase(str, Enum):
 class ExperienceBenchmarkVerdict(str, Enum):
     VALID_MEASUREMENT = "VALID_MEASUREMENT"
     INVALID = "INVALID"
+
+
+def _timestamp(value: str) -> datetime | None:
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 @dataclass(frozen=True)
@@ -259,6 +271,19 @@ def validate_experience_benchmark(
     freeze_attestation = None
     if authority_context is not None:
         freeze_attestation = next((item for item in authority_context.attestations if item.attestation_id == packet.freeze_attestation_id), None)
+    packet_frozen = _timestamp(packet.packet_frozen_at)
+    if packet_frozen is None:
+        problems.append("benchmark_packet_frozen_at_invalid")
+    if freeze_attestation is not None:
+        freeze_subject_time = _timestamp(freeze_attestation.subject_frozen_at)
+        if freeze_subject_time != packet_frozen:
+            problems.append("freeze_attestation_subject_time_mismatch")
+        for artifact_id in protocol_artifact_ids:
+            artifact = artifacts.get(artifact_id)
+            if artifact is not None and packet_frozen is not None:
+                artifact_frozen = _timestamp(artifact.frozen_at)
+                if artifact_frozen is None or artifact_frozen > packet_frozen:
+                    problems.append(f"protocol_artifact_not_frozen_before_packet:{artifact_id}")
 
     for task_id in expected_tasks:
         task_runs = grouped.get(task_id, [])
@@ -283,12 +308,14 @@ def validate_experience_benchmark(
                 problems.append(f"run_output_artifact_unresolved:{run.run_id}")
             elif not output.content_valid or output.payload_sha256 != run.output_hash:
                 problems.append(f"run_output_bytes_hash_mismatch:{run.run_id}")
-            if not run.executed_at:
+            executed = _timestamp(run.executed_at)
+            freeze_issued = _timestamp(freeze_attestation.issued_at) if freeze_attestation is not None else None
+            if executed is None:
                 problems.append(f"run_execution_chronology_missing:{run.run_id}")
-            elif freeze_attestation is not None and run.executed_at <= freeze_attestation.issued_at:
-                # ISO-8601 UTC timestamps are canonical in the protected packet;
-                # lexical order matches chronological order for the required form.
+            elif freeze_issued is not None and executed <= freeze_issued:
                 problems.append(f"run_not_after_frozen_packet:{run.run_id}")
+            if output is not None and executed is not None and _timestamp(output.frozen_at) != executed:
+                problems.append(f"run_output_chronology_mismatch:{run.run_id}")
 
     baseline_runs = {
         run.task_id: run
@@ -337,8 +364,14 @@ def validate_experience_benchmark(
     problems.extend(f"match:{reason}" for reason in matched.reasons)
     if authority_context is not None and packet.match_attestation_id:
         match_attestation = next((item for item in authority_context.attestations if item.attestation_id == packet.match_attestation_id), None)
-        if match_attestation is not None and any(run.executed_at and match_attestation.issued_at <= run.executed_at for run in packet.runs):
-            problems.append("match_attestation_not_after_all_runs")
+        if match_attestation is not None:
+            match_issued = _timestamp(match_attestation.issued_at)
+            match_subject_frozen = _timestamp(match_attestation.subject_frozen_at)
+            run_times = tuple(_timestamp(run.executed_at) for run in packet.runs)
+            if match_issued is None or any(item is None or match_issued <= item for item in run_times):
+                problems.append("match_attestation_not_after_all_runs")
+            if match_subject_frozen is None or any(item is None or match_subject_frozen < item for item in run_times):
+                problems.append("match_subject_not_frozen_after_all_runs")
 
     return ExperienceBenchmarkValidation(not problems, tuple(problems))
 

@@ -55,3 +55,7 @@ The reference implementation uses HMAC-SHA256 with key material supplied by the 
 ## Latest-main integration
 
 The branch was merged with then-current `origin/main` `decd1a4eae2b10cfdbb98e76b5023e2a756fa7a8` at merge commit `c1a2a98183feb9da1731f70fd4979078ac176e5a`. The only overlapping edit was the independently introduced robust float assertion in the v3 benchmark test; the merged file retains `pytest.approx` without duplication. Post-integration verification is 40 focused v3 tests passed, 1314 full tests passed, and `git diff --check` passed.
+
+## Recursive same-context review repair
+
+A same-context review (not independent review) found that the first benchmark chronology implementation compared timestamp strings and did not fully bind protocol/output freeze order. The successor parses timezone-aware instants and requires: protocol artifacts frozen no later than the packet, freeze-attestation subject time equal to packet freeze time, runs after the freeze attestation, output artifact freeze time equal to the registered run time, and matched-result subject/issuance after all runs.

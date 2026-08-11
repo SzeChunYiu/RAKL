@@ -42,7 +42,7 @@
   },
   "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
   "paper_files_touched": [],
-  "payload_sha256": "3da0d40ea28835004990f4e6ecc1310fa195497d5d1fd71307ce48440a750b53",
+  "payload_sha256": "56413905f12063d57605532e5cf1969a5e402e8f8cf56e1d72d674be05dbb4ca",
   "pre_existing_failures": [],
   "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
   "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
@@ -53,11 +53,17 @@
     "origin": "https://github.com/SzeChunYiu/RAKL.git",
     "red_test_commit": "265768926178a8f762aa4ef3bb77fa9737a2e0d2"
   },
+  "same_context_recursive_review": {
+    "finding": "lexical timestamp comparison and incomplete packet/output freeze ordering were insufficient",
+    "independent_review": false,
+    "repair": "timezone-aware comparisons; protocol artifacts before packet; runs after freeze attestation; output freeze equals run time; result subject and issue after runs",
+    "status": "PASS_WITH_CHRONOLOGY_REPAIR"
+  },
   "schema_version": "rakl-v3-authority-hardening-receipt-v1",
   "source_sha256": {
     "src/rakl/driver_learning.py": "08fea1cda7a6775a22de896c5da57ffe3ebc75bff1b7bfe1c3b546bfbd9f8eb5",
     "src/rakl/evolution_archive.py": "da568e4a6863437fd86ac1f22a344473e002971e5b49ac527fcb19d9259d296e",
-    "src/rakl/experience_benchmark.py": "3f45f6ed1e16434c40852593b097490a5faa98b2cc20e1d70d8a1b8c4cea86eb",
+    "src/rakl/experience_benchmark.py": "85f14051d4ffa6f7177e969dd81cc97c8002f2f90a54a871305224da01f26af5",
     "src/rakl/experience_learning.py": "650dd848e0ab58033e4e7ed0d1399592536cfbc82e2db6200e3d2e46a754d8bd",
     "src/rakl/experience_substrate.py": "6e62fd5f37e7ab45ca9df43024b5196cb534fd6c98100af96700d0d8a9967ba3",
     "src/rakl/method_specs.py": "8e83965c0b1e3ea97163b9f8c9119c69533cc3428b9ebd118f221fb95bd0c1f8",
