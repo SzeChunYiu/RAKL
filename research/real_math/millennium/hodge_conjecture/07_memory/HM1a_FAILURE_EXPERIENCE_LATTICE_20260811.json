@@ -1,0 +1,47 @@
+{
+  "experiences": [
+    {
+      "failure_id": "F-XM001-POINTWISE-GAP-COLLAPSE",
+      "atom_id": "XM-ROOT-BRIDGE-001",
+      "candidate_id": "XM001",
+      "context_packet_hash": "sha256:bc11ed85c3987cd24998512641afbf0e8317d09aabf665f06852ef2a8c02f120",
+      "research_trace_event_id": "XM001-E10",
+      "method_family": "finite-scale positive surrogate gap -> positive root-normalized continuum gap inference",
+      "failure_mode": "pointwise positivity of the dimensionless finite-scale gap, even uniform in volume at each fixed lattice spacing, can vanish after the required inverse-spacing physical normalization",
+      "residual_signature": [
+        "r(a,L)=exp(-a^2) lies strictly between 0 and 1 for every a>0 and every L",
+        "dimensionless log-gap delta(a,L)=-log r(a,L)=a^2 is positive for every a and uniform in L",
+        "physical normalization delta(a,L)/a=a tends to 0 as a tends to 0",
+        "therefore fixed-a positivity alone does not imply a positive continuum physical liminf"
+      ],
+      "broken_assumptions": [
+        "positivity of a surrogate dimensionless gap at every cutoff is sufficient without a quantitative cutoff-scaled lower bound"
+      ],
+      "scope_conditions": [
+        "logical inference from pointwise positive finite-scale transfer-eigenvalue ratio gap to a positive inverse-spacing-normalized continuum gap",
+        "abstract positive sequences only; this record does not assert that the adversarial sequence is realized by Yang-Mills transfer matrices"
+      ],
+      "competing_diagnoses": [
+        "actual Yang-Mills dynamics may impose extra RG/positivity/locality structure excluding the adversarial sequence",
+        "uniformity in volume may be insufficient but a quantitative lower bound proportional to lattice spacing may repair the inference",
+        "the physically correct normalization or order of limits may differ for a concrete transfer-matrix setup and must be frozen target-specifically"
+      ],
+      "selected_diagnosis": "the weak bridge omits the quantitative lattice-spacing scaling needed to keep a finite positive physical gap through the continuum limit; the abstract inference is invalid, while the actual Yang-Mills bridge remains open",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": [
+        "research/real_math/millennium/cross_problem/04_candidates/XM001_root_bridge_stability_audit.md",
+        "issue:85:YM-S1",
+        "tests/test_cross_millennium_xm001_result.py"
+      ],
+      "falsifier_or_attempt": "set r(a,L)=exp(-a^2), independently of L, and compare the positive finite-a dimensionless gap -log r=a^2 with the physical normalization -a^{-1}log r=a",
+      "observed_result": "the surrogate gap is positive for every cutoff and uniform in L, while the physical normalized gap tends to zero; hence pointwise finite-scale positivity cannot supply the YM-S1 continuum conclusion without a stronger scaled bridge",
+      "local_repair_attempts": [
+        "replace pointwise positivity by an explicit target-specific condition such as liminf_{a->0} inf_L [-log r(a,L)]/a > 0 along the admissible scaling trajectory, with the correct order of limits",
+        "audit whether any cited lattice/RG theorem actually supplies the required uniform scaled bound rather than only fixed-cutoff positivity or correlation decay"
+      ],
+      "timestamp": "2026-08-11T06:19:00+00:00",
+      "artifact_hash": "sha256:38a237263df62ed4cb6f197076f0eb1674d1aadd602793190df8e6658ff2c4ad"
+    }
+  ],
+  "links": []
+}
