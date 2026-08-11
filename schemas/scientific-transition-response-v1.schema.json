@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/scientific-transition-response-v1.schema.json",
+  "title": "ScientificTransitionResponse v1",
+  "description": "Normalized system response for one scientific-transition case (refs #154). Shape-only; contains no ground-truth labels. Used by the leakage-check stub before offline scoring.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "transition_decision",
+    "authority_delta",
+    "state_edits",
+    "rationale_receipts"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transition_decision": {
+      "type": "string",
+      "enum": [
+        "SUPPORTED",
+        "REFUTED",
+        "PARTIALLY_IDENTIFIED",
+        "BLOCKED",
+        "CANNOT_CHECK"
+      ]
+    },
+    "authority_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "G": { "type": "integer" },
+        "R": { "type": "integer" },
+        "M": { "type": "integer" },
+        "I": { "type": "integer" },
+        "D": { "type": "integer" }
+      },
+      "description": "Positive values are authority increases. Absent axes are unchanged."
+    },
+    "state_edits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "add",
+          "supersede",
+          "restrict_scope",
+          "retain_negative_history",
+          "no_change"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "rationale_receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_ids", "alignment_ids", "dependency_ids"],
+      "properties": {
+        "evidence_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "alignment_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "dependency_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["labels"] },
+      { "required": ["allowed_authority_effects"] },
+      { "required": ["disallowed_authority_effects"] },
+      { "required": ["required_terminal_status"] },
+      { "required": ["required_blockers"] },
+      { "required": ["required_state_edits"] },
+      { "required": ["falsifier_note"] },
+      { "required": ["alr"] },
+      { "required": ["leaked"] }
+    ]
+  }
+}

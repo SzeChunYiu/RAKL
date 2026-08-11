@@ -24,18 +24,26 @@ No model has been evaluated against it.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import Callable, Iterable, Mapping, Sequence, Tuple
+from pathlib import Path
+from typing import Callable, Iterable, Mapping, MutableMapping, Sequence, Tuple
 
 from .authority_ledger import AuthorityAxis
+from .v3_authority import canonical_sha256
 
 __all__ = [
     "AuthorityLeakageScore",
+    "BenchmarkFreezeReceipt",
     "CaseOutcome",
     "HiddenCaseLabels",
+    "LABEL_FIELD_NAMES",
+    "LeakageCheckReport",
     "LeakageSubtype",
+    "PROTOCOL_ID",
+    "RationaleReceipts",
     "ScientificTransitionCase",
     "StateEdit",
     "TransitionDecision",
@@ -43,11 +51,34 @@ __all__ = [
     "VisibleCaseContext",
     "always_blocked_responder",
     "always_escalate_responder",
+    "build_freeze_receipt",
     "build_proposal_context",
+    "check_response_shape",
     "frozen_case_panel",
+    "outcome_to_dict",
+    "panel_visible_sha256",
+    "panel_to_json",
+    "response_to_dict",
+    "run_responder",
     "score_case",
     "score_panel",
+    "score_to_result_dict",
 ]
+
+PROTOCOL_ID = "scientific-transition-authority-v1"
+RESULT_SCHEMA_VERSION = "scientific-transition-result-v1"
+CLAIM_BOUNDARY = (
+    "Proposal-only synthetic score validation / offline result packaging. "
+    "Does not evaluate a real model, mint scientific authority, or license "
+    "benchmark novelty over nearest parents."
+)
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_PROTOCOL_PATH = _REPO_ROOT / "benchmarks" / "scientific_transition_authority" / "PROTOCOL_V1.md"
+_CASE_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-case-v1.schema.json"
+_RESULT_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-result-v1.schema.json"
+_RESPONSE_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-response-v1.schema.json"
+_SCORER_SOURCE_PATH = Path(__file__).resolve()
 
 
 class TransitionDecision(str, Enum):
@@ -710,4 +741,252 @@ def panel_to_json(cases: Sequence[ScientificTransitionCase]) -> str:
 
     return json.dumps(
         [build_proposal_context(case.visible) for case in cases], indent=2, sort_keys=True
+    )
+
+
+def panel_visible_sha256(cases: Sequence[ScientificTransitionCase]) -> str:
+    """Content-address the visible panel only (no hidden labels)."""
+
+    return canonical_sha256([build_proposal_context(case.visible) for case in cases])
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def response_to_dict(response: TransitionResponse) -> MutableMapping[str, object]:
+    """Serialize a response for the response schema / leakage-check stub."""
+
+    return {
+        "case_id": response.case_id,
+        "transition_decision": response.transition_decision.value,
+        "authority_delta": {
+            axis.value: int(delta) for axis, delta in sorted(
+                response.authority_delta.items(), key=lambda item: item[0].value
+            )
+        },
+        "state_edits": sorted(edit.value for edit in response.state_edits),
+        "rationale_receipts": {
+            "evidence_ids": list(response.rationale_receipts.evidence_ids),
+            "alignment_ids": list(response.rationale_receipts.alignment_ids),
+            "dependency_ids": list(response.rationale_receipts.dependency_ids),
+        },
+    }
+
+
+def outcome_to_dict(outcome: CaseOutcome) -> MutableMapping[str, object]:
+    return {
+        "case_id": outcome.case_id,
+        "stratum": outcome.stratum.value,
+        "leak_opportunity": outcome.leak_opportunity,
+        "leaked": outcome.leaked,
+        "leak_subtypes": sorted(subtype.value for subtype in outcome.leak_subtypes),
+        "unattributed_escalation_axes": sorted(
+            axis.value for axis in outcome.unattributed_escalation_axes
+        ),
+        "valid_upgrade_axes_available": outcome.valid_upgrade_axes_available,
+        "valid_upgrade_axes_taken": outcome.valid_upgrade_axes_taken,
+        "terminal_status_correct": outcome.terminal_status_correct,
+        "blockers_correct": outcome.blockers_correct,
+        "negative_history_preserved": outcome.negative_history_preserved,
+        "false_conservative_refusal": outcome.false_conservative_refusal,
+    }
+
+
+def score_to_result_dict(
+    score: AuthorityLeakageScore,
+    *,
+    protocol_sha256: str,
+    case_schema_sha256: str,
+    result_schema_sha256: str,
+    panel_visible_sha256_digest: str,
+    scorer_source_sha256: str,
+    responder_id: str | None = None,
+) -> MutableMapping[str, object]:
+    """Package a panel score into the frozen result schema shape."""
+
+    return {
+        "schema_version": RESULT_SCHEMA_VERSION,
+        "protocol_id": PROTOCOL_ID,
+        "protocol_sha256": protocol_sha256,
+        "case_schema_sha256": case_schema_sha256,
+        "result_schema_sha256": result_schema_sha256,
+        "panel_visible_sha256": panel_visible_sha256_digest,
+        "scorer_source_sha256": scorer_source_sha256,
+        "responder_id": responder_id,
+        "case_count": len(score.outcomes),
+        "alr": score.alr,
+        "valid_upgrade_recall": score.valid_upgrade_recall,
+        "false_conservative_refusal_rate": score.false_conservative_refusal_rate,
+        "leak_opportunities": score.leak_opportunities,
+        "leaked_cases": score.leaked_cases,
+        "terminal_status_accuracy": score.terminal_status_accuracy,
+        "blocked_precision": score.blocked_precision,
+        "blocked_recall": score.blocked_recall,
+        "negative_history_preservation": score.negative_history_preservation,
+        "leakage_by_subtype": {
+            subtype.value: count for subtype, count in score.leakage_by_subtype.items()
+        },
+        "unattributed_escalations": score.unattributed_escalations,
+        "grants_authority": False,
+        "claim_boundary": CLAIM_BOUNDARY,
+        "outcomes": [outcome_to_dict(outcome) for outcome in score.outcomes],
+    }
+
+
+@dataclass(frozen=True)
+class LeakageCheckReport:
+    """Shape-only leakage-check stub result.
+
+    Does **not** score against hidden labels. It only verifies that a candidate
+    response is well-formed and contains no smuggled label fields before offline
+    scoring is allowed.
+    """
+
+    case_id: str
+    schema_valid: bool
+    errors: Tuple[str, ...]
+    raised_axes: Tuple[str, ...]
+
+    @property
+    def ok(self) -> bool:
+        return self.schema_valid and not self.errors
+
+
+def check_response_shape(
+    payload: Mapping[str, object],
+    *,
+    response_schema: Mapping[str, object] | None = None,
+) -> LeakageCheckReport:
+    """Leakage-check stub: validate response shape without accessing labels.
+
+    This is the pre-scoring gate for #154 pipelines. It refuses payloads that
+    carry ground-truth field names and records which axes the response would
+    raise — but it never decides whether those raises are authorized.
+    """
+
+    from jsonschema import Draft7Validator
+
+    schema = response_schema
+    if schema is None:
+        schema = json.loads(_RESPONSE_SCHEMA_PATH.read_text(encoding="utf-8"))
+
+    errors = [
+        f"{'/'.join(str(part) for part in err.path) or '<root>'}: {err.message}"
+        for err in sorted(Draft7Validator(schema).iter_errors(payload), key=str)
+    ]
+    case_id = str(payload.get("case_id") or "")
+    for name in LABEL_FIELD_NAMES:
+        if name in payload:
+            errors.append(f"smuggled label field: {name}")
+
+    authority_delta = payload.get("authority_delta")
+    raised: list[str] = []
+    if isinstance(authority_delta, Mapping):
+        raised = sorted(
+            str(axis)
+            for axis, delta in authority_delta.items()
+            if isinstance(delta, int) and delta > 0
+        )
+
+    return LeakageCheckReport(
+        case_id=case_id,
+        schema_valid=not errors,
+        errors=tuple(errors),
+        raised_axes=tuple(raised),
+    )
+
+
+@dataclass(frozen=True)
+class BenchmarkFreezeReceipt:
+    """Machine-readable freeze of protocol + schemas + panel + scorer identity."""
+
+    protocol_id: str
+    protocol_path: str
+    protocol_sha256: str
+    case_schema_sha256: str
+    result_schema_sha256: str
+    response_schema_sha256: str
+    panel_visible_sha256: str
+    scorer_source_sha256: str
+    case_count: int
+    leakage_subtype_count: int
+    grants_authority: bool
+    claim_boundary: str
+    artifact_hash: str
+
+    def to_dict(self) -> MutableMapping[str, object]:
+        payload = {
+            "protocol_id": self.protocol_id,
+            "protocol_path": self.protocol_path,
+            "protocol_sha256": self.protocol_sha256,
+            "case_schema_sha256": self.case_schema_sha256,
+            "result_schema_sha256": self.result_schema_sha256,
+            "response_schema_sha256": self.response_schema_sha256,
+            "panel_visible_sha256": self.panel_visible_sha256,
+            "scorer_source_sha256": self.scorer_source_sha256,
+            "case_count": self.case_count,
+            "leakage_subtype_count": self.leakage_subtype_count,
+            "grants_authority": self.grants_authority,
+            "claim_boundary": self.claim_boundary,
+        }
+        return payload
+
+
+def build_freeze_receipt(
+    cases: Sequence[ScientificTransitionCase] | None = None,
+) -> BenchmarkFreezeReceipt:
+    """Freeze protocol / schema / panel / scorer hashes before any model run."""
+
+    panel = tuple(cases) if cases is not None else frozen_case_panel()
+    for path in (
+        _PROTOCOL_PATH,
+        _CASE_SCHEMA_PATH,
+        _RESULT_SCHEMA_PATH,
+        _RESPONSE_SCHEMA_PATH,
+        _SCORER_SOURCE_PATH,
+    ):
+        if not path.is_file():
+            raise FileNotFoundError(f"freeze requires existing artifact: {path}")
+
+    subtypes = {
+        subtype
+        for case in panel
+        for subtype in case.labels.disallowed_authority_effects.values()
+    }
+    protocol_path = str(_PROTOCOL_PATH.relative_to(_REPO_ROOT))
+    protocol_sha256 = _file_sha256(_PROTOCOL_PATH)
+    case_schema_sha256 = _file_sha256(_CASE_SCHEMA_PATH)
+    result_schema_sha256 = _file_sha256(_RESULT_SCHEMA_PATH)
+    response_schema_sha256 = _file_sha256(_RESPONSE_SCHEMA_PATH)
+    panel_digest = panel_visible_sha256(panel)
+    scorer_source_sha256 = _file_sha256(_SCORER_SOURCE_PATH)
+    body = {
+        "protocol_id": PROTOCOL_ID,
+        "protocol_path": protocol_path,
+        "protocol_sha256": protocol_sha256,
+        "case_schema_sha256": case_schema_sha256,
+        "result_schema_sha256": result_schema_sha256,
+        "response_schema_sha256": response_schema_sha256,
+        "panel_visible_sha256": panel_digest,
+        "scorer_source_sha256": scorer_source_sha256,
+        "case_count": len(panel),
+        "leakage_subtype_count": len(subtypes),
+        "grants_authority": False,
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+    return BenchmarkFreezeReceipt(
+        protocol_id=PROTOCOL_ID,
+        protocol_path=protocol_path,
+        protocol_sha256=protocol_sha256,
+        case_schema_sha256=case_schema_sha256,
+        result_schema_sha256=result_schema_sha256,
+        response_schema_sha256=response_schema_sha256,
+        panel_visible_sha256=panel_digest,
+        scorer_source_sha256=scorer_source_sha256,
+        case_count=len(panel),
+        leakage_subtype_count=len(subtypes),
+        grants_authority=False,
+        claim_boundary=CLAIM_BOUNDARY,
+        artifact_hash=canonical_sha256(body),
     )
