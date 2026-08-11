@@ -1,4 +1,4 @@
-version: 0.6.1
+version: 0.6.2
 
 always_load:
   - static/core/principles.md
@@ -62,8 +62,10 @@ workflow_composition:
     required_pre_candidate_steps:
       - freeze-atomic-context-fiber
       - map-solved-and-near-solved-analogues
+      - run-cross-domain-and-everyday-analogy-scan
       - build-method-transfer-matrix
-      - freeze-context-chronology
+      - record-auditable-pre-candidate-trace
+      - freeze-context-and-trace-chronology
     recommended_pre_steps:
       - perspective-discovery
       - literature-absorption
@@ -97,6 +99,7 @@ invention_resources:
   strategy_motifs: src/rakl/strategy_motifs.py
   proof_dag: src/rakl/proof_dag.py
   mathematical_context_gate: src/rakl/math_context.py
+  mathematical_research_trace: src/rakl/research_trace.py
   mathematical_research_runtime: src/rakl/math_research_runtime.py
   mathematical_research_api: src/rakl/math_research_api.py
   dimensional_oracle: src/rakl/math_oracles.py
@@ -111,7 +114,12 @@ invariants:
   - context_before_contradiction
   - atomic_context_fiber_before_candidate_generation
   - analogue_method_transfer_before_invention
+  - cross_domain_analogy_requires_structural_witness
+  - everyday_analogy_is_proposal_only
   - context_packet_chronology_precedes_candidate
+  - auditable_research_trace_precedes_candidate
+  - every_material_step_records_state_evidence_residual_and_next_action
+  - research_trace_is_decision_record_not_private_chain_of_thought
   - literature_list_is_not_method_transfer_matrix
   - repeated_same_basis_failure_reopens_context
   - normalize_before_multiplying
@@ -156,3 +164,4 @@ schemas:
   typed_lattice: ../../schemas/typed-lattice.schema.json
   formalism: ../../schemas/formalism.schema.json
   mathematical_context_fiber: ../../schemas/math-context-fiber.schema.json
+  mathematical_research_trace: ../../schemas/math-research-trace.schema.json
