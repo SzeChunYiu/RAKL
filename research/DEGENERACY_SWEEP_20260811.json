@@ -1,0 +1,142 @@
+{
+  "worst_status": "DEGENERATE",
+  "counts": {
+    "CLEAN": 0,
+    "SUSPECT": 0,
+    "DEGENERATE": 3,
+    "CANNOT_CHECK": 4
+  },
+  "reports": [
+    {
+      "surface": "paper2_microtrial_v1 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "DEGENERATE",
+      "exit_code": 1,
+      "records_probed": 8,
+      "findings": [
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v1 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "2 marker(s) unique to the treatment arm ('CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION', 'Earth_20_degree_target') occur on 2 line(s) that mention exactly ['S4', 'S5'], the gold value of graded field 'misaligned_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"left\": \"S4\", \"reason\": \"S4 is scoped to the small-angle approximation\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}",
+            "{\"left\": \"S5\", \"reason\": \"Moon and Earth gravity contexts differ\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}"
+          ]
+        },
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v1 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "3 marker(s) unique to the treatment arm ('history', 'negative', 'retained') occur on 1 line(s) that mention exactly ['S6'], the gold value of graded field 'required_refuted_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"context\": [\"ideal\", \"fixed_length\", \"fixed_gravity\"], \"projection\": \"mass-dependence claim retained as negative history\", \"source_id\": \"S6\"}"
+          ]
+        }
+      ],
+      "reasons": [
+        "37 tokens are unique to the treatment arm; they resolve to 2 distinct leak site(s)",
+        "gold provenance: paper2_microtrial_v1 (local)",
+        "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): none"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_2 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "DEGENERATE",
+      "exit_code": 1,
+      "records_probed": 8,
+      "findings": [
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v4_2 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "3 marker(s) unique to the treatment arm ('history', 'negative', 'retained') occur on 1 line(s) that mention exactly ['S6'], the gold value of graded field 'required_refuted_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"context\": [\"ideal\", \"fixed_length\", \"fixed_gravity\"], \"projection\": \"mass-dependence claim retained as negative history\", \"source_id\": \"S6\"}"
+          ]
+        }
+      ],
+      "reasons": [
+        "37 tokens are unique to the treatment arm; they resolve to 1 distinct leak site(s)",
+        "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
+        "graded fields CHECKED: required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): misaligned_source_ids"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_3_1 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "DEGENERATE",
+      "exit_code": 1,
+      "records_probed": 8,
+      "findings": [
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v4_3_1 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "3 marker(s) unique to the treatment arm ('history', 'negative', 'retained') occur on 1 line(s) that mention exactly ['S6'], the gold value of graded field 'required_refuted_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"context\": [\"ideal\", \"fixed_length\", \"fixed_gravity\"], \"projection\": \"mass-dependence claim retained as negative history\", \"source_id\": \"S6\"}"
+          ]
+        }
+      ],
+      "reasons": [
+        "37 tokens are unique to the treatment arm; they resolve to 1 distinct leak site(s)",
+        "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
+        "graded fields CHECKED: required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): misaligned_source_ids"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v3 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CANNOT_CHECK",
+      "exit_code": 3,
+      "records_probed": 0,
+      "findings": [],
+      "reasons": [
+        "arm prompt pair not present in this directory"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CANNOT_CHECK",
+      "exit_code": 3,
+      "records_probed": 0,
+      "findings": [],
+      "reasons": [
+        "arm prompt pair not present in this directory"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_1 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CANNOT_CHECK",
+      "exit_code": 3,
+      "records_probed": 0,
+      "findings": [],
+      "reasons": [
+        "arm prompt pair not present in this directory"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_3 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CANNOT_CHECK",
+      "exit_code": 3,
+      "records_probed": 0,
+      "findings": [],
+      "reasons": [
+        "arm prompt pair not present in this directory"
+      ]
+    }
+  ]
+}
