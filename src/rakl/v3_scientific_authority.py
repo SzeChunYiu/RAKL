@@ -41,7 +41,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import Iterable, Mapping, Tuple
+from typing import TYPE_CHECKING, Iterable, Mapping, Tuple
+
+if TYPE_CHECKING:  # pragma: no cover - import cycle broken at runtime only
+    # ``v3_runtime`` imports this module at runtime, so the state type can only
+    # be named for type checkers. These functions are re-exported through
+    # ``rakl.v3``, so consumers get real types rather than ``object``.
+    from .v3_runtime import RAKLV3State
 
 from .authority_ledger import (
     AuthorityAxis,
@@ -409,7 +415,7 @@ class ScientificTransitionOutcome:
     is inert, not partially applied.
     """
 
-    state: "object"
+    state: "RAKLV3State"
     committed: bool
     reasons: Tuple[str, ...] = ()
     certificate_id: str | None = None
@@ -435,7 +441,7 @@ def _resolve_or_refuse(
 
 
 def promote_scientific_authority(
-    state: "object",
+    state: "RAKLV3State",
     proposal: AuthorityProposal,
     *,
     certificate_id: str,
@@ -451,7 +457,7 @@ def promote_scientific_authority(
     declaration-bound surface this function exists to close.
     """
 
-    projection: ScientificAuthorityProjection = state.scientific_authority  # type: ignore[attr-defined]
+    projection = state.scientific_authority
     registered = projection.evidence_by_id()
     claim = projection.claim_by_id().get(proposal.claim_id)
 
@@ -495,7 +501,7 @@ def promote_scientific_authority(
         return ScientificTransitionOutcome(state, False, ("verification_outcome_cannot_mint",))
     return ScientificTransitionOutcome(
         replace(
-            state,  # type: ignore[type-var]
+            state,
             scientific_authority=projection_from_ledger(
                 ledger, claims=projection.claims, evidence=projection.evidence
             ),
@@ -507,7 +513,7 @@ def promote_scientific_authority(
 
 
 def revoke_scientific_authority(
-    state: "object",
+    state: "RAKLV3State",
     certificate_id: str,
     *,
     reason: str,
@@ -521,7 +527,7 @@ def revoke_scientific_authority(
     binding obligation. A bare ``reason`` string is a declaration, not evidence.
     """
 
-    projection: ScientificAuthorityProjection = state.scientific_authority  # type: ignore[attr-defined]
+    projection = state.scientific_authority
     registered = projection.evidence_by_id()
     by_id = {item.certificate_id: item for item in projection.certificates}
     certificate = by_id.get(certificate_id)
@@ -569,7 +575,7 @@ def revoke_scientific_authority(
     ledger.revoke(certificate_id, reason=reason)
     return ScientificTransitionOutcome(
         replace(
-            state,  # type: ignore[type-var]
+            state,
             scientific_authority=projection_from_ledger(
                 ledger, claims=projection.claims, evidence=projection.evidence
             ),
@@ -581,7 +587,7 @@ def revoke_scientific_authority(
 
 
 def supersede_scientific_authority(
-    state: "object",
+    state: "RAKLV3State",
     old_certificate_id: str,
     new_proposal: AuthorityProposal,
     *,
@@ -598,7 +604,7 @@ def supersede_scientific_authority(
     non-monotone behaviour the invariant is stated over.
     """
 
-    projection: ScientificAuthorityProjection = state.scientific_authority  # type: ignore[attr-defined]
+    projection = state.scientific_authority
     registered = projection.evidence_by_id()
     by_id = {item.certificate_id: item for item in projection.certificates}
     old_certificate = by_id.get(old_certificate_id)
@@ -652,7 +658,7 @@ def supersede_scientific_authority(
     ledger.supersede(old_certificate_id, replacement, reason=reason)
     return ScientificTransitionOutcome(
         replace(
-            state,  # type: ignore[type-var]
+            state,
             scientific_authority=projection_from_ledger(
                 ledger, claims=projection.claims, evidence=projection.evidence
             ),
@@ -668,18 +674,18 @@ def supersede_scientific_authority(
 # --------------------------------------------------------------------------
 
 
-def register_scientific_claim(state: "object", claim: ClaimAtom) -> "object":
+def register_scientific_claim(state: "RAKLV3State", claim: ClaimAtom) -> "RAKLV3State":
     """Add a canonical claim. Never moves ``pi_auth``."""
 
     if not claim.claim_id.strip() or not claim.text.strip() or not claim.scope.strip():
         raise ValueError("claim atom requires id, text and scope")
-    projection: ScientificAuthorityProjection = state.scientific_authority  # type: ignore[attr-defined]
+    projection = state.scientific_authority
     existing = projection.claim_by_id().get(claim.claim_id)
     if existing is not None:
         if existing != claim:
             raise ValueError("claim identity already registered with different content")
         return state
-    return replace(  # type: ignore[type-var]
+    return replace(
         state,
         scientific_authority=replace(
             projection,
@@ -689,17 +695,17 @@ def register_scientific_claim(state: "object", claim: ClaimAtom) -> "object":
 
 
 def register_scientific_evidence(
-    state: "object", binding: ScientificEvidenceBinding
-) -> "object":
+    state: "RAKLV3State", binding: ScientificEvidenceBinding
+) -> "RAKLV3State":
     """Add a content-bound evidence root. Never moves ``pi_auth``."""
 
-    projection: ScientificAuthorityProjection = state.scientific_authority  # type: ignore[attr-defined]
+    projection = state.scientific_authority
     existing = projection.evidence_by_id().get(binding.evidence_id)
     if existing is not None:
         if existing != binding:
             raise ValueError("evidence identity already registered with different content")
         return state
-    return replace(  # type: ignore[type-var]
+    return replace(
         state,
         scientific_authority=replace(
             projection,
