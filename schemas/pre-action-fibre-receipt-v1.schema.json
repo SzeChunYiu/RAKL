@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/pre-action-fibre-receipt-v1.schema.json",
+  "title": "RAKL pre-action fibre receipt v1",
+  "description": "Proposal-only, content-bound record of a research action selection frozen before the action executes. It binds the exact problem fibre snapshot, the retrievals selected and relevant-but-rejected with their authority, the chosen operator, and the predeclared discriminator with its allowed outcome branches. It does not claim the fibre search universe was complete, does not establish wall-clock priority, and mints no proof, lesson, tool, gluing, theorem, review-independence or framework authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "framework_repository",
+    "framework_commit",
+    "application_repository",
+    "application_revision",
+    "task_id",
+    "atom_id",
+    "context_hash",
+    "fibre_snapshot_hash",
+    "operator_id",
+    "predeclared_discriminator",
+    "allowed_outcome_branches",
+    "timestamp",
+    "sequence_index",
+    "public_trace_event_id",
+    "declared_consequence",
+    "retrieval_bindings",
+    "authority_bearing_retrieval_ids",
+    "coverage_receipt_id",
+    "evidence_pointers",
+    "receipt_canonical_sha256",
+    "claims_fibre_search_universe_complete",
+    "establishes_wall_clock_priority",
+    "grants_proof_authority",
+    "grants_lesson_authority",
+    "grants_tool_authority",
+    "grants_gluing_authority",
+    "grants_theorem_authority",
+    "grants_review_independence",
+    "grants_framework_authority"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pre-action-fibre-receipt-v1"
+    },
+    "framework_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "framework_commit": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "application_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "application_revision": {
+      "description": "Exact application commit or tree identity. Not constrained to a git OID so that a tree hash or content-addressed revision may be bound.",
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "atom_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fibre_snapshot_hash": {
+      "description": "Exact ProblemFibre.snapshot_hash the action was selected against.",
+      "type": "string",
+      "minLength": 1
+    },
+    "operator_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predeclared_discriminator": {
+      "description": "The falsifier or discriminator declared before the action ran.",
+      "type": "string",
+      "minLength": 1
+    },
+    "allowed_outcome_branches": {
+      "description": "Every outcome the agent was prepared to accept before seeing the result. An observed branch outside this list is a discriminator substitution, not a surprise.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "timestamp": {
+      "description": "UTC ISO-8601 selection time. Internal ordering only; see establishes_wall_clock_priority.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "sequence_index": {
+      "description": "The agent's declared position in its own action sequence, bound into the content hash so a later reordering of receipts is detectable. Ordering against an episode is done on timestamp; TaskEpisode carries no sequence number.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "public_trace_event_id": {
+      "description": "Anchor in the append-only public research trace. Tamper-evidence derives from this anchor, not from the timestamp string.",
+      "type": "string",
+      "minLength": 1
+    },
+    "declared_consequence": {
+      "description": "The agent's own classification. It is a claim under test, not a fact; UNCLASSIFIED fails closed to CONSEQUENTIAL.",
+      "enum": [
+        "CONSEQUENTIAL",
+        "NON_CONSEQUENTIAL_DECLARED",
+        "UNCLASSIFIED"
+      ]
+    },
+    "retrieval_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "retrieval_id",
+          "disposition",
+          "authority",
+          "rejection_reason",
+          "evidence_pointer"
+        ],
+        "properties": {
+          "retrieval_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "SELECTED",
+              "RELEVANT_BUT_REJECTED"
+            ]
+          },
+          "authority": {
+            "enum": [
+              "CANONICAL",
+              "PENDING",
+              "NONCANONICAL",
+              "UNVERIFIED"
+            ]
+          },
+          "rejection_reason": {
+            "description": "Mandatory for a rejected retrieval, null for a selected one. An unexplained rejection is indistinguishable from an omission.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence_pointer": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "RELEVANT_BUT_REJECTED"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "rejection_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "SELECTED"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "rejection_reason": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "authority_bearing_retrieval_ids": {
+      "description": "Subset of selected retrievals the agent claims supplies authority. Every member must be SELECTED and CANONICAL.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "coverage_receipt_id": {
+      "description": "Optional pointer to a separate retrieval-universe coverage receipt. Its absence is reported, never silently treated as coverage.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "receipt_canonical_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "claims_fibre_search_universe_complete": {
+      "description": "Permanently false. Retrieval-universe coverage is a separate object.",
+      "const": false
+    },
+    "establishes_wall_clock_priority": {
+      "description": "Permanently false. The timestamp is a string the agent writes; ordering here is internal consistency only.",
+      "const": false
+    },
+    "grants_proof_authority": {
+      "const": false
+    },
+    "grants_lesson_authority": {
+      "const": false
+    },
+    "grants_tool_authority": {
+      "const": false
+    },
+    "grants_gluing_authority": {
+      "const": false
+    },
+    "grants_theorem_authority": {
+      "const": false
+    },
+    "grants_review_independence": {
+      "const": false
+    },
+    "grants_framework_authority": {
+      "const": false
+    }
+  }
+}
