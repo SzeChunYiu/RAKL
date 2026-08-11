@@ -1,6 +1,6 @@
 # Paper II — ExperienceBenchmark v1.3 (root_cause_v1 / #247)
 
-Status: `PROTOCOL_FROZEN_AWAITING_ORACLE_0_5B` / no empirical result yet
+Status: `MODEL_CAPABILITY_FLOOR_0_5B` (jobs 3476730 primary / 3476731 race-duplicate; parse-valid; success_rate 0/3)
 
 ## Why v1.3 exists
 
@@ -27,3 +27,9 @@ v1.3 is the #247 successor after #238 / PR #299 (`learning_loop_mode=root_cause_
 - ExperienceBenchmark@1.5B before ORACLE 0.5B gate
 - reopen #138 / reinterpret 3476548 as lift
 - V4.1/V4.2 pendulum score reuse; Paper3/#217 path
+
+## Phase-1 ORACLE result
+
+- Decision: see `ORACLE_DECISION_RECEIPT_V1_3.json`
+- Native landings: `native_job_3476730/`, `native_job_3476731/` (duplicate preserved)
+- Staircase/1.5B: **not** authorized from this gate
