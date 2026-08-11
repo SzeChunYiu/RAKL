@@ -189,7 +189,7 @@
           "const": true
         },
         "head_sha": {
-          "const": "4a8d5ff19e3e6b26b95cb7408bbf55475208989c"
+          "$ref": "#/$defs/headSha"
         },
         "repo_path": {
           "minLength": 1,
@@ -199,7 +199,7 @@
           "const": true
         },
         "tree_sha": {
-          "const": "1ba49edbf23d46fcc8105f96d0dc45c286c3a9c5"
+          "$ref": "#/$defs/headSha"
         }
       },
       "required": [
@@ -227,7 +227,7 @@
           "type": "integer"
         },
         "path": {
-          "pattern": "^research/paper2_microtrial_v4_1/native_job_3475212/(?:logs|receipts|runs)/.+$",
+          "pattern": "^research/paper2_microtrial_v4_1/native_job_[0-9]+/(?:logs|receipts|runs)/.+$",
           "type": "string"
         },
         "role": {
@@ -348,7 +348,8 @@
           ]
         },
         "slurm_job_id": {
-          "const": "3475212"
+          "pattern": "^[0-9]+$",
+          "type": "string"
         },
         "snapshot_canonical_sha256": {
           "$ref": "#/$defs/sha256"
@@ -405,7 +406,8 @@
       "const": false
     },
     "receipt_id": {
-      "const": "PAPER2_V4_1_NATIVE_JOB_3475212_INGEST_RECEIPT_20260811"
+      "pattern": "^PAPER2_V4_1_NATIVE_JOB_[0-9]+_INGEST_RECEIPT_[0-9]{8}$",
+      "type": "string"
     },
     "schema_version": {
       "const": "paper2-v4-1-native-ingest-receipt-v1"
@@ -418,7 +420,8 @@
           "type": "integer"
         },
         "path": {
-          "const": "research/paper2_microtrial_v4_1/native_bundles/PAPER2_V4_1_NATIVE_JOB_3475212.tar.gz"
+          "pattern": "^research/paper2_microtrial_v4_1/native_bundles/PAPER2_V4_1_NATIVE_JOB_[0-9]+\\.tar\\.gz$",
+          "type": "string"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"

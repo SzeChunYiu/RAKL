@@ -247,6 +247,7 @@ def test_standalone_semantic_verifier_rejects_planted_byte_changes(
             run=run,
             result=_load(run / "result_receipt.json"),
             task_seed=_load(run / "task_seed_receipt.json"),
+            job_id="3475212",
         )
 
 

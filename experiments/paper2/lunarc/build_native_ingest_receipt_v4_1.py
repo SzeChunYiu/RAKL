@@ -79,7 +79,12 @@ def _utc_timestamp(value: object, *, field: str) -> datetime:
 
 
 def _verify_standalone_evidence(
-    *, native: Path, run: Path, result: dict[str, Any], task_seed: dict[str, Any]
+    *,
+    native: Path,
+    run: Path,
+    result: dict[str, Any],
+    task_seed: dict[str, Any],
+    job_id: str,
 ) -> None:
     result_records = {record["blind_id"]: record for record in result["records"]}
     task_records = {record["blind_id"]: record for record in task_seed["records"]}
@@ -114,13 +119,13 @@ def _verify_standalone_evidence(
         "['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` "
         "for more details.\n"
     )
-    stderr = (native / "logs/v4_1/p2-pend-v4-1-3475212.err").read_text(
+    stderr = (native / f"logs/v4_1/p2-pend-v4-1-{job_id}.err").read_text(
         encoding="utf-8"
     )
     _require(stderr == warning * 2, "stderr warning bytes differ from admitted native log")
 
     stdout_lines = (
-        native / "logs/v4_1/p2-pend-v4-1-3475212.out"
+        native / f"logs/v4_1/p2-pend-v4-1-{job_id}.out"
     ).read_text(encoding="utf-8").splitlines()
     _require(len(stdout_lines) == 7, "stdout receipt-line count mismatch")
     _require(json.loads(stdout_lines[0]) == {"verdict": "PASS", "blockers": []}, "stdout preflight verdict mismatch")
@@ -197,8 +202,9 @@ def verify_ingest_receipt(receipt: dict[str, Any], *, root: Path = ROOT) -> None
     _require(schema_path.is_file(), "ingest schema path missing")
     _require(_sha(schema_path) == schema["sha256"], "ingest schema self-hash mismatch")
 
+    job_id = str(receipt["native_execution"]["slurm_job_id"])
     copied: dict[str, tuple[int, str]] = {}
-    prefix = "research/paper2_microtrial_v4_1/native_job_3475212/"
+    prefix = f"research/paper2_microtrial_v4_1/native_job_{job_id}/"
     by_role: dict[str, list[Path]] = {}
     for item in receipt["source_files"]:
         path = root / item["path"]
@@ -257,10 +263,14 @@ def verify_ingest_receipt(receipt: dict[str, Any], *, root: Path = ROOT) -> None
         "verified task/seed post-snapshot link mismatch",
     )
     run = run_manifest_path.parent
-    native_root = root / "research/paper2_microtrial_v4_1/native_job_3475212"
+    native_root = root / f"research/paper2_microtrial_v4_1/native_job_{job_id}"
     _require(run.is_relative_to(native_root), "receipted run path escapes native root")
     _verify_standalone_evidence(
-        native=native_root, run=run, result=result, task_seed=task_seed
+        native=native_root,
+        run=run,
+        result=result,
+        task_seed=task_seed,
+        job_id=job_id,
     )
     _require(
         receipt["task_seed_outcome"] == _summarize_task_seed(task_seed),
@@ -448,7 +458,7 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
     _require(rakl["parse_valid"] is True and isinstance(rakl["score"]["score"], dict), "RAKL_CONTEXT must be the sole scorable arm")
     _require(rakl["score"]["score"]["exact_conceptual_pass"] is False, "unexpected exact conceptual pass")
     _verify_standalone_evidence(
-        native=native, run=run, result=result, task_seed=task_seed
+        native=native, run=run, result=result, task_seed=task_seed, job_id=job_id
     )
 
     v4_ingest = V4 / "PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json"
