@@ -1,0 +1,52 @@
+% Publication schematics. Editable vector source; no empirical quantities encoded.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw,rounded corners,align=center,text width=2.45cm,minimum height=0.95cm,inner sep=4pt},
+  gate/.style={draw,diamond,aspect=2.0,align=center,inner sep=2pt},
+  arr/.style={-{Latex[length=2.2mm]},thick},
+  note/.style={font=\footnotesize,align=center}
+]
+\node[box] (source) {source record\\evidence + provenance};
+\node[box,right=7mm of source] (claim) {normalized claim\\context + uncertainty};
+\node[box,right=7mm of claim] (align) {alignment /\\compatibility witness};
+\node[gate,below=10mm of claim] (gate) {promotion\\gate};
+\node[box,left=8mm of gate] (proposal) {model proposal\\no write authority};
+\node[box,right=8mm of gate] (state) {canonical\\authority state};
+\node[box,right=7mm of state] (history) {revision / revocation\\append-only history};
+\draw[arr] (source) -- (claim);
+\draw[arr] (claim) -- (align);
+\draw[arr] (claim) -- (gate);
+\draw[arr] (align) |- (gate);
+\draw[arr] (proposal) -- (gate);
+\draw[arr] (gate) -- (state);
+\draw[arr] (state) -- (history);
+\node[note,below=2mm of proposal] {generation proposes; verification governs};
+\end{tikzpicture}
+\caption{\textbf{Epistemic lifecycle.} Proposal generation is structurally separated from canonical write authority. Promotion requires claim normalization, context/alignment obligations and evidence/provenance; later revision changes the active view without erasing the historical certificate trail.}
+\label{fig:p1-lifecycle}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  fiber/.style={draw,rounded corners,align=center,text width=3.0cm,minimum height=1.05cm,inner sep=4pt},
+  witness/.style={draw,align=center,text width=2.8cm,minimum height=1.05cm,inner sep=4pt},
+  arr/.style={-{Latex[length=2.2mm]},thick},
+  both/.style={{Latex[length=2.2mm]}-{Latex[length=2.2mm]},thick},
+  note/.style={draw,dashed,rounded corners,align=center,text width=5.0cm,inner sep=4pt,font=\footnotesize}
+]
+\node[fiber] (left) {local closure fiber\\$K_{\gamma,q}$};
+\node[witness,right=8mm of left] (w) {directional mapping witness\\preserved / not preserved / conditions};
+\node[fiber,right=8mm of w] (right) {local closure fiber\\$K_{\gamma',q'}$};
+\draw[both] (left) -- (w);
+\draw[both] (w) -- (right);
+\node[note,below=9mm of w] (obs) {pairwise compatibility does not imply global gluing; higher-order obstruction remains explicit};
+\draw[arr,dashed] (w) -- (obs);
+\node[note,below=7mm of obs,text width=8.1cm] (auth) {authority is a scoped product partial order: grounding, representation, mechanism, identification and decision coordinates may be incomparable and are not replaced by one confidence scalar};
+\end{tikzpicture}
+\caption{\textbf{Local closure atlas and authority geometry.} Lattice language is licensed only inside scopes with a justified closure operator; cross-scope transfer requires an explicit witness, and compatibility can terminate in an obstruction rather than a forced join.}
+\label{fig:p1-atlas}
+\end{figure}

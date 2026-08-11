@@ -1,0 +1,53 @@
+% Formal assurance schematics; editable vector source; no empirical quantities.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+ font=\small,
+ coord/.style={draw,rounded corners,align=center,text width=2.25cm,minimum height=0.9cm,inner sep=4pt},
+ note/.style={draw,dashed,rounded corners,align=center,text width=10.4cm,inner sep=5pt,font=\footnotesize}
+]
+\node[coord] (spec) {$A_{\rm spec}$\\specification};
+\node[coord,right=5mm of spec] (truth) {$A_{\rm truth}$\\proof truth};
+\node[coord,right=5mm of truth] (novel) {$A_{\rm novel}$\\bounded novelty};
+\node[coord,below=7mm of truth] (value) {$A_{\rm value}$\\research value};
+\node[coord,right=5mm of value] (trust) {$A_{\rm trust}$\\verifier trust};
+\node[note,below=8mm of value] {Non-compensatory product authority: proof $\not\Rightarrow$ novelty; novelty $\not\Rightarrow$ truth; value $\not\Rightarrow$ truth; verifier trust cannot repair a specification mismatch.};
+\end{tikzpicture}
+\caption{\textbf{Five mathematical authority coordinates.} A result may be strong on one axis and weak or unresolved on another. Publication and promotion rules preserve the product structure instead of trading a missing obligation against a scalar confidence score.}
+\label{fig:p4-authority}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+ font=\small,
+ box/.style={draw,rounded corners,align=center,text width=3.8cm,minimum height=0.75cm,inner sep=4pt},
+ gate/.style={draw,diamond,aspect=2.25,align=center,text width=3.4cm,inner sep=2pt},
+ rejectbox/.style={draw,rounded corners,align=center,text width=3.0cm,minimum height=0.8cm,inner sep=4pt},
+ arr/.style={-{Latex[length=2.2mm]},thick},
+ reject/.style={-{Latex[length=2.2mm]},thick,dashed}
+]
+\node[box] (prop) {LLM proposals};
+\node[box,below=4mm of prop] (falsify) {counterexample / model search};
+\node[box,below=4mm of falsify] (formal) {formalization witness};
+\node[box,below=4mm of formal] (dag) {candidate proof DAG};
+\node[gate,below=7mm of dag] (verify) {exact statement +\\axiom / checker audit};
+\node[box,below=7mm of verify] (truth) {machine-verified truth state};
+\node[box,below=4mm of truth] (novel) {bounded novelty search};
+\node[box,below=4mm of novel] (value) {research-value review};
+\node[box,below=4mm of value] (candidate) {new-mathematics candidate};
+\node[rejectbox,right=13mm of verify] (rejected) {rejected branch / counterexample / search cost};
+\draw[arr] (prop)--(falsify);
+\draw[arr] (falsify)--(formal);
+\draw[arr] (formal)--(dag);
+\draw[arr] (dag)--(verify);
+\draw[arr] (verify)--(truth);
+\draw[arr] (truth)--(novel);
+\draw[arr] (novel)--(value);
+\draw[arr] (value)--(candidate);
+\draw[reject] (verify.east)--(rejected.west);
+\draw[reject] (falsify.east)-|(rejected.north);
+\end{tikzpicture}
+\caption{\textbf{Verifier-gated discovery pipeline.} Creative generation can branch aggressively because rejected proposals never enter the trusted proof DAG. The logical guarantee remains conditional on specification alignment and the verifier trust chain, while novelty and research value are separate downstream gates.}
+\label{fig:p4-firewall}
+\end{figure}

@@ -1,0 +1,51 @@
+\section{Structural amortization as a cost-to-capability hypothesis}
+
+Reuse is not free. Let $C_I$ be the one-time cost of inducing, validating and storing a reusable structure. Let $c_B$ be the baseline per-task cost of solving without reuse and $c_R$ the per-task cost of retrieving, adapting and verifying the reusable structure. Then
+\[
+C_B(n)=n c_B,
+\qquad
+C_R(n)=C_I+n c_R.
+\]
+When $c_R<c_B$, reuse becomes strictly cheaper once
+\[
+n>\frac{C_I}{c_B-c_R}.
+\]
+The executable reference in \path{src/rakl/amortization.py} reports this break-even count and returns no finite break-even when the reuse path is not cheaper per task. This elementary accounting is important because prior workflow-compilation work can reduce runtime calls without establishing net efficiency when offline compilation cost is omitted \cite{elyadouni2026tracecompiler}.
+
+The empirical paper uses a fuller vector
+\[
+C_{\mathrm{total}}=
+C_{\mathrm{induction}}+
+C_{\mathrm{training}}+
+C_{\mathrm{retrieval}}+
+C_{\mathrm{adapt/reason}}+
+C_{\mathrm{tools}}+
+C_{\mathrm{verification}}.
+\]
+No coordinate is silently set to zero. A cost-to-capability point is admissible only if it reaches the frozen capability target without crossing the registered validity-failure ceiling.
+
+\begin{hypothesis}[Structural transfer]
+At matched semantic similarity, a witnessed structural score provides material incremental prediction of held-out transfer success.
+\end{hypothesis}
+
+\begin{hypothesis}[Semantic-decoy rejection]
+A witness-aware transfer gate has a lower invalid-transfer rate than semantic retrieval or analogy-only baselines on Q3 cases with high semantic and low structural similarity.
+\end{hypothesis}
+
+\begin{hypothesis}[Training efficiency]
+At a frozen structural-OOD capability target, structural curation reaches the target with fewer training tokens or examples than strong semantic/diversity and skill-graph parents in regimes containing cross-domain structural redundancy.
+\end{hypothesis}
+
+\begin{hypothesis}[Inference efficiency]
+For a frozen base model and target capability, reuse of validated structural objects/operators reduces test-time reasoning/search cost relative to semantic memory, analogy prompting and strong skill/workflow-prior parents after all retrieval, adaptation and verification costs are included.
+\end{hypothesis}
+
+\begin{hypothesis}[Redundancy mechanism]
+Under a controlled data generator, the advantage of structural reuse increases with structural redundancy after surface-semantic diversity is held approximately fixed.
+\end{hypothesis}
+
+\begin{hypothesis}[Shared substrate]
+A structure identifier induced or registered during training/data curation can be reused at inference without changing to an unrelated task-specific representation. The strongest paper claim requires this shared object; two independent tricks would support two narrower results rather than one unification.
+\end{hypothesis}
+
+Each hypothesis has a direct falsifier. Flat structural coefficients, high Q3 transfer, no break-even cost, a strong MASS/Skill-It/SWIFT-like parent matching RAKL, or incompatible training/inference representations all narrow the paper.
