@@ -164,3 +164,37 @@ blocked on successful native staging and harvest receipts.
 
 This update and its hostile review are internal same-context work, not
 independent review or peer review.
+
+## Native V3 staging failure and V3.1 repair
+
+The subsequently authorized staging-only pass at exact subject
+`1a9d3079571e1f1278e32061665be885845bd5cf` submitted two jobs and no model
+run. Job `3475080` completed its bounded network probe with 38/38 HTTP-200 HEAD
+observations. Job `3475081` then failed during GET-based staging with HTTP 403;
+the failed candidate was preserved and the final asset path was not created.
+Both chronological harvest receipts retain the negative scheduler result.
+
+Read-only localization found the exact Python archive and first 24 wheels
+through Tokenizers present and hash-matching. The first missing manifest entry
+was `torch==2.8.0+cpu`. That ordering is a bounded inference about the likely
+active request because the V3 failure receipt did not record artifact identity;
+it is not direct proof. The repair therefore does not alter V3 in place. A new
+V3.1 runtime applies the probe's bound User-Agent to GET and makes future 403
+receipts artifact- and status-specific while preserving the V3 candidate and
+contract unchanged.
+
+The first recursive internal review of V3.1 found that a negative harvest could
+be labelled preserved despite absent scheduler rows or contradictory candidate
+observations. The successor now fails closed unless both submitted root rows,
+exact job-id lineage and path-presence facts match. Planted missing and
+contradictory worlds return `HARVEST_CANNOT_CHECK`; the original V3 native
+receipts are not reinterpreted by this software correction.
+
+V3.1 is locally `REPAIR_READY_NOT_SUBMITTED`; no retry has been submitted and
+no native V3.1 success exists. Exact counts for the material native tranche are
+two staging-only jobs, zero model executions and zero evaluated result records.
+Consequently the manuscript still has no microtrial outcome, no performance or
+efficiency estimate, and no quantitative result figure. A chronology-fresh
+execution packet remains blocked on successful native V3.1 staging and harvest.
+This update and its recursive hostile review are internal same-context work,
+not independent review or peer review.

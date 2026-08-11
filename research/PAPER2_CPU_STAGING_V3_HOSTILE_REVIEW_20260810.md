@@ -255,14 +255,76 @@ result records remain zero.
 harvest and the V3 execution packet remain blocked and cannot be inferred from a
 dry-run.
 
+### P2-V3-H16 — HEAD success did not imply GET success
+
+**Finding.** Exact subject `1a9d3079571e1f1278e32061665be885845bd5cf`
+submitted the authorized two-phase staging lane. Probe job `3475080` completed
+with 38/38 HTTP-200 HEAD observations, while dependent staging job `3475081`
+failed with HTTP 403 before promotion. The candidate was preserved and the final
+path remained absent. Both chronological harvest receipts record the same
+negative scheduler state. This falsifies any inference from probe pass to
+staging success.
+
+**Diagnosis.** The V3 probe bound a User-Agent but its GET call used a bare URL.
+Read-only manifest-order inspection found the first 25 objects present and
+identity-matching, followed by missing Torch at index 25. Because the failure
+receipt omitted the active artifact, Torch is the strongest deterministic
+candidate, not directly proven as the failing request.
+
+**Resolution.** Preserve V3 and its failed candidate. Create a V3.1 successor
+whose GET and HEAD use the same bound User-Agent and whose failure receipt names
+the exact artifact id, URL and HTTP status. Synthetic hostile tests plant a 403
+and verify the receipt boundary.
+
+**State:** native V3 failure resolved only as a local versioned repair;
+`REPAIR_READY_NOT_SUBMITTED`. Native V3.1 behavior remains `CANNOT_CHECK` until
+a later authorized exact-subject submission and harvest.
+
+### P2-V3-H17 — an in-place repair would rewrite a protected evaluated subject
+
+**Finding.** The V3 contract byte-binds `src/rakl/paper2_cpu_staging.py` and its
+protected parent evaluator. Updating that file or regenerating V3 around new
+bytes would obscure which runtime generated jobs `3475080` and `3475081` and
+invalidate the trusted-parent readiness invariant.
+
+**Resolution.** The correction is versioned as V3.1 with a new runtime, new
+contract and new operator scripts using distinct candidate/final/failure/receipt
+paths. The V3 runtime and contract remain byte-identical to their evaluated
+parent. The synthesis receipt binds V3 negative evidence and V3.1 repair bytes
+without claiming a retry occurred.
+
+**State:** resolved in local construction and protected-parent tests; native
+V3.1 staging remains unexecuted.
+
+### P2-V3-H18 — a negative harvest could pass without scheduler or preservation evidence
+
+**Finding.** The first V3.1 draft allowed its negative branch to remove a
+missing-scheduler-row failure and accepted a typed stage failure without exact
+stage-job identity or observed candidate preservation. A planted world with no
+scheduler rows, wrong job id and `candidate_preserved=false` therefore returned
+`HARVEST_STAGING_NEGATIVE_PRESERVED`. This violated missing-evidence-fails-closed.
+
+**Resolution.** V3.1 now requires exactly one root scheduler row for each of the
+two distinct submitted job ids, exact probe/stage receipt job-id lineage, a
+terminal negative stage row, and path-presence observations consistent with the
+failure receipt. `STAGING_FAILED_PRESERVED` requires the exact job candidate to
+exist, `candidate_preserved=true`, `final_exists=false`, and no final root.
+Refusals require explicit candidate/final observations. Missing, duplicate,
+mismatched or contradictory evidence returns `HARVEST_CANNOT_CHECK` and
+`negative_history_preserved=false`.
+
+**State:** resolved in the versioned runtime with planted hostile tests for
+missing/duplicate rows, missing/wrong job ids, missing/unpreserved candidate and
+both final-path contradictions. This is local software evidence only.
+
 ## Verdict
 
-`NATIVE_PREFLIGHT_READY_NOT_SUBMITTED__PRIOR_FALSIFIER_PRESERVED`
+`NATIVE_V3_STAGING_FAILURE_PRESERVED__V3_1_REPAIR_READY_NOT_SUBMITTED`
 
 This recursive hostile review is internal same-context work, not independent
-review or peer review. The exact bootstrap and dry-run close the checkout-mutation
-preflight residual only. They do not establish asset staging, model execution,
-evaluated empirical evidence, performance or submission readiness. A separately
-reviewed and merged iteration is required before any staging-only submission,
-and successful staging plus harvest receipts are required before a V3 execution
-packet can be frozen.
+review or peer review. It preserves an actual negative staging result and a
+locally validated successor; it does not establish V3.1 staging success, model
+execution, evaluated empirical evidence, performance or manuscript submission
+readiness. Exact counts are two staging-only jobs, zero model executions and
+zero evaluated result records. A later authorized native V3.1 discriminator is
+required before an execution packet can be frozen.

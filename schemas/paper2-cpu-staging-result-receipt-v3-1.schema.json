@@ -1,0 +1,179 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-result-receipt-v3-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_FAILED_PRESERVED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "candidate_preserved": {
+            "const": true
+          },
+          "error_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "failures": {
+            "minItems": 1,
+            "type": "array"
+          },
+          "final_exists": {
+            "const": false
+          }
+        },
+        "required": [
+          "failures",
+          "error_type",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_REFUSED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "candidate_preserved": {
+            "type": "boolean"
+          },
+          "failures": {
+            "minItems": 1,
+            "type": "array"
+          },
+          "final_exists": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "failures",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_FAILED_PRESERVATION_UNVERIFIED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "candidate_preserved": {
+            "type": "boolean"
+          },
+          "error_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "failures": {
+            "minItems": 1,
+            "type": "array"
+          },
+          "final_exists": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "failures",
+          "error_type",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "contract_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_result_record_count": {
+      "const": 0
+    },
+    "expected_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "failed_artifact_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "failed_artifact_url": {
+      "format": "uri",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "http_status": {
+      "maximum": 599,
+      "minimum": 100,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-result-receipt-v3.1"
+    },
+    "verdict": {
+      "enum": [
+        "STAGING_REFUSED",
+        "STAGING_FAILED_PRESERVED",
+        "STAGING_PASS_ATOMICALLY_PROMOTED",
+        "STAGING_FAILED_PRESERVATION_UNVERIFIED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "contract_canonical_sha256",
+    "expected_repo_sha",
+    "model_execution_performed",
+    "evaluated_result_record_count",
+    "verdict"
+  ],
+  "title": "Paper 2 CPU staging V3.1 result receipt",
+  "type": "object"
+}
