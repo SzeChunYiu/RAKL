@@ -1,0 +1,48 @@
+{
+  "schema_version": "paper2-v4-4-job-failure-disposition-v1",
+  "created_at_utc": "2026-08-11T21:35:55Z",
+  "experiment_id": "PAPER2_PENDULUM_SEALED_KNOWN_ANSWER_V4_4",
+  "verdict": "NOT_HARVESTABLE_NEGATIVE_HISTORY",
+  "jobs": [
+    {
+      "slurm_job_id": "3476740",
+      "state": "FAILED",
+      "failure_class": "allocated_preflight_semantic_mismatch",
+      "detail": "materialized_prompt_semantic_mismatch:RAKL_CONTEXT; packet still bound leaky SEALED_TASK v1. Repaired by #314; do not reinterpret.",
+      "harvest_permitted": false,
+      "v4_2_v4_3_1_field_reclaim_permitted": false
+    },
+    {
+      "slurm_job_id": "3476741",
+      "state": "FAILED",
+      "failure_class": "task_seed_receipt_schema_const_mismatch",
+      "detail": "build_task_seed_receipt_v4_4.py emitted receipt_type=nonconfirmatory_v4_4_task_seed_execution_index but schemas/paper2-pendulum-task-seed-receipt-v4-4.schema.json still const-locked nonconfirmatory_v4_3_1_task_seed_execution_index (copy-paste). Preflight PASS; inference completed; sacct FAILED so harvest/ingest blocked (requires COMPLETED). Preserve run artifacts as process evidence only; do not promote scores.",
+      "preflight_verdict": "PASS",
+      "observed_non_authoritative_scores_if_any": {
+        "note": "Present under runs/v4_4/...-3476741 but not harvestable; exact gate unchanged.",
+        "DIRECT_CORPUS": {
+          "parse_valid": true,
+          "exact_conceptual_pass": false,
+          "conceptual_correct": 1,
+          "conceptual_total": 5
+        },
+        "RAKL_CONTEXT": {
+          "parse_valid": true,
+          "exact_conceptual_pass": false,
+          "conceptual_correct": 2,
+          "conceptual_total": 5
+        },
+        "exact_conceptual_pass_arm_count": 0
+      },
+      "harvest_permitted": false,
+      "v4_2_v4_3_1_field_reclaim_permitted": false
+    }
+  ],
+  "claim_boundary": "Negative/process history only. No promotional claim. No reclaim of sealed leaked v4_2/v4_3_1 fields. Fresh COMPLETED job required after schema const fix.",
+  "refs": [
+    "#283",
+    "#247",
+    "#310",
+    "#314"
+  ]
+}
