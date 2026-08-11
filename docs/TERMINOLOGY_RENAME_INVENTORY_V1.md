@@ -7,6 +7,9 @@ dependency inventory, separate mathematically incorrect terminology from histori
 terminology, freeze naming criteria, and generate candidate names. It deliberately stops
 before step 5 (adversarial selection) and before any prose migration.
 
+Reader-facing lattice ↔ typed-relational glossary (still no rename decision):
+[`docs/TERMINOLOGY_GLOSSARY.md`](TERMINOLOGY_GLOSSARY.md).
+
 **Nothing here selects a name, authorizes a rename, or changes any authority.**
 
 Measurements are reproducible:
@@ -193,8 +196,9 @@ choice made against unmeasured cost.
    rename reasoning may now treat schema `$id` as one uniform GitHub-bound base.
 2. Decide how to record, not erase, the singular/plural expansion split (§3).
 3. Complete the Class-3 inventory across `RAKL_math`, external URLs and citation strings.
-4. Only then run step 5 (adversarial review of candidates against §7) and step 10 (publish a
-   migration/glossary table) before touching reader-facing prose broadly.
+4. Glossary table for lattice vs typed-relational terms: see
+   [`docs/TERMINOLOGY_GLOSSARY.md`](TERMINOLOGY_GLOSSARY.md). Adversarial rename selection
+   (issue step 5) and any Class-1 prose sweep remain deferred governance actions.
 5. Never rewrite immutable historical artifacts to match new terminology; the 120 archive
    occurrences of `lattice` correctly describe their frozen versions.
 
