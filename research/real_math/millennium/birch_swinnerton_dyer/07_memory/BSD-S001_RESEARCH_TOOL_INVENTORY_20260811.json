@@ -1,0 +1,51 @@
+{
+  "tools": [
+    {
+      "tool_id": "T-PNP-EXTREMAL-CALIBRATION",
+      "name": "Extremal-statistic cheap-object calibration",
+      "kind": "invariant_falsification",
+      "abstraction": "Before trusting a scalar or low-dimensional hardness statistic, find an explicit object that extremizes the statistic while admitting a cheap exact construction in the target model.",
+      "source_atom_id": "R004/O9d12a2a",
+      "source_candidate_id": "C023",
+      "source_result_ids": [
+        "C023"
+      ],
+      "source_context_hash": "legacy:pre-strict-context:R004-C023",
+      "authority": "VERIFIED_LOCAL",
+      "preconditions": [
+        "a proposed invariant depends monotonically on a registered scalar or low-dimensional statistic",
+        "an explicit calibration family with analyzable statistic and target complexity is available"
+      ],
+      "structural_signature": [
+        "candidate hardness statistic",
+        "extremal explicit family",
+        "cheap target-model construction",
+        "monotone lower-bound template"
+      ],
+      "operation": "compare the global maximum or near-maximum of the proposed statistic against an explicit family with a proved small target complexity; cap or refute universal monotone templates before target search",
+      "guaranteed_effects": [
+        "within the calibrated statistic/template scope, rules out universal monotone certificates stronger than the cheap extremal family's target value"
+      ],
+      "non_guarantees": [
+        "does not rule out non-monotone dependence",
+        "does not rule out higher-dimensional or structure-conditioned invariants",
+        "does not prove the calibration family is universally extremal without a separate proof"
+      ],
+      "validation_obligations": [
+        "prove the statistic extremal bound",
+        "prove the calibration family attains the relevant bound or range",
+        "bind the cheap target-complexity construction to the same model"
+      ],
+      "evidence_pointers": [
+        "research/real_math/millennium/p_vs_np/04_candidates/negative_history/C023_spectral_ratio_unrestricted_cover_no_go.md",
+        "research/real_math/millennium/p_vs_np/03_routes/R004_C023_ROUTE_DELTA_20260811.md"
+      ],
+      "known_failure_ids": [
+        "F-C023-SCALAR-COLLAPSE"
+      ],
+      "successful_reuse_ids": [],
+      "proof_backing": [],
+      "artifact_hash": "sha256:fd6f9e9ca2ca7f3d4942bcf415ffba398d51bdfff899badcd42ad16caa6b46ca"
+    }
+  ]
+}
