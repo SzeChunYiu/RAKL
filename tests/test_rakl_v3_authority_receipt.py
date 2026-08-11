@@ -3,6 +3,7 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,5 +32,11 @@ def test_v3_authority_hardening_receipt_reconstructs_exact_payload_and_sources()
         "conflicts": [],
         "paper_files_resolved_or_edited_by_this_round": [],
     }
+    historical_commit = payload["final_exact_head_review"]["reviewed_head_commit"]
     for path, expected in payload["source_sha256"].items():
-        assert sha256((ROOT / path).read_bytes()).hexdigest() == expected
+        historical = subprocess.run(
+            ["git", "-C", str(ROOT), "show", f"{historical_commit}:{path}"],
+            check=True,
+            capture_output=True,
+        ).stdout
+        assert sha256(historical).hexdigest() == expected

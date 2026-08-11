@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from hashlib import sha256
 
 import pytest
 
@@ -11,13 +12,15 @@ from rakl.experience_substrate import (
     LessonAuthority,
     LessonKind,
     TaskEpisode,
+    episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.saturation_vector import NoveltyRound, SaturationAxis, assess_saturation_vector
 from rakl.v3_runtime import RAKLV3State, consolidate_lesson, record_task_episode
 
 
 def _episode() -> TaskEpisode:
-    return TaskEpisode(
+    draft = TaskEpisode(
         episode_id="E1",
         task_id="task",
         atom_id="A1",
@@ -31,13 +34,14 @@ def _episode() -> TaskEpisode:
         outcome=EpisodeOutcome.SUCCESS,
         residual_signature=(),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:E1",
+        artifact_hash="",
         timestamp="2026-08-11T08:55:00+00:00",
     )
+    return replace(draft, artifact_hash=sha256(episode_content_bytes(draft)).hexdigest())
 
 
 def _lesson() -> Lesson:
-    return Lesson(
+    draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("structure",),
@@ -51,8 +55,9 @@ def _lesson() -> Lesson:
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("verify",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
     )
+    return replace(draft, artifact_hash=sha256(lesson_content_bytes(draft)).hexdigest())
 
 
 def test_recent_retained_novelty_prevents_axis_flatness() -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from hashlib import sha256
 
 from rakl.evolution_archive import (
     RAKLVariant,
@@ -8,7 +9,7 @@ from rakl.evolution_archive import (
     initialize_evolution_archive,
     register_challenger,
 )
-from rakl.experience_substrate import EpisodeOutcome, TaskEpisode
+from rakl.experience_substrate import EpisodeOutcome, TaskEpisode, episode_content_bytes
 from rakl.v3_runtime import RAKLV3State, materialize_state_substrate, record_task_episode, state_fingerprint
 from rakl.experience_substrate import SubstrateKind, SubstrateRelation
 
@@ -55,7 +56,7 @@ def test_state_fingerprint_is_stable_for_equal_values_and_changes_with_learning(
     initial = RAKLV3State()
     assert state_fingerprint(initial) == state_fingerprint(replace(initial))
 
-    episode = TaskEpisode(
+    episode_draft = TaskEpisode(
         episode_id="E1",
         task_id="task",
         atom_id="A1",
@@ -69,8 +70,12 @@ def test_state_fingerprint_is_stable_for_equal_values_and_changes_with_learning(
         outcome=EpisodeOutcome.SUCCESS,
         residual_signature=(),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:E1",
+        artifact_hash="",
         timestamp="2026-08-11T09:15:00+00:00",
+    )
+    episode = replace(
+        episode_draft,
+        artifact_hash=sha256(episode_content_bytes(episode_draft)).hexdigest(),
     )
     learned = record_task_episode(initial, episode)
     assert state_fingerprint(learned) != state_fingerprint(initial)

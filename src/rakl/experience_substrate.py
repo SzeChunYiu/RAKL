@@ -175,6 +175,10 @@ def _parse_time(value: str) -> datetime | None:
     return parsed
 
 
+def _is_sha256_hexdigest(value: str) -> bool:
+    return len(value) == 64 and all(character in "0123456789abcdef" for character in value)
+
+
 def episode_content_bytes(episode: TaskEpisode) -> bytes:
     """Canonical exact bytes whose digest is the episode identity."""
 
@@ -251,7 +255,9 @@ def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
         reasons.append("episode:evidence_pointers_missing")
     if episode.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS, EpisodeOutcome.BLOCKED} and not episode.residual_signature:
         reasons.append("episode:residual_signature_required_for_non_success")
-    if len(episode.artifact_hash) == 64 and sha256(episode_content_bytes(episode)).hexdigest() != episode.artifact_hash:
+    if episode.artifact_hash and not _is_sha256_hexdigest(episode.artifact_hash):
+        reasons.append("episode:artifact_hash_invalid")
+    elif episode.artifact_hash and sha256(episode_content_bytes(episode)).hexdigest() != episode.artifact_hash:
         reasons.append("episode:artifact_hash_mismatch")
     return tuple(reasons)
 
@@ -275,7 +281,9 @@ def validate_lesson(lesson: Lesson) -> Tuple[str, ...]:
         reasons.append("lesson:validation_obligations_missing")
     if not lesson.evidence_pointers:
         reasons.append("lesson:evidence_pointers_missing")
-    if len(lesson.artifact_hash) == 64 and sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash:
+    if lesson.artifact_hash and not _is_sha256_hexdigest(lesson.artifact_hash):
+        reasons.append("lesson:artifact_hash_invalid")
+    elif lesson.artifact_hash and sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash:
         reasons.append("lesson:artifact_hash_mismatch")
     return tuple(reasons)
 

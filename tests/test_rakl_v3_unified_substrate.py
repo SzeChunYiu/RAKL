@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
+from hashlib import sha256
+
 from rakl.core import Authority, KnowledgeFiber, Projection
 from rakl.experience_substrate import (
     EpisodeOutcome,
@@ -12,6 +15,8 @@ from rakl.experience_substrate import (
     TaskEpisode,
     add_episode,
     add_lesson,
+    episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.failure_lattice import (
     FailureDiagnosisStatus,
@@ -29,7 +34,7 @@ from rakl.unified_substrate import materialize_unified_substrate
 
 
 def test_unified_substrate_links_episode_failure_lesson_tool_and_knowledge() -> None:
-    episode = TaskEpisode(
+    episode_draft = TaskEpisode(
         episode_id="E1",
         task_id="task",
         atom_id="A1",
@@ -43,11 +48,15 @@ def test_unified_substrate_links_episode_failure_lesson_tool_and_knowledge() -> 
         outcome=EpisodeOutcome.PARTIAL_SUCCESS,
         residual_signature=("boundary",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:E1",
+        artifact_hash="",
         timestamp="2026-08-11T09:05:00+00:00",
     )
+    episode = replace(
+        episode_draft,
+        artifact_hash=sha256(episode_content_bytes(episode_draft)).hexdigest(),
+    )
     experience = add_episode(ExperienceLedger(), episode)
-    lesson = Lesson(
+    lesson_draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("graph",),
@@ -61,7 +70,11 @@ def test_unified_substrate_links_episode_failure_lesson_tool_and_knowledge() -> 
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate boundary",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
+    )
+    lesson = replace(
+        lesson_draft,
+        artifact_hash=sha256(lesson_content_bytes(lesson_draft)).hexdigest(),
     )
     experience = add_lesson(experience, lesson)
 

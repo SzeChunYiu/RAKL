@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
+from hashlib import sha256
+
 from rakl.core import Authority, KnowledgeFiber, Projection
 from rakl.experience_memory import experience_memory_views
 from rakl.experience_substrate import (
@@ -11,6 +14,8 @@ from rakl.experience_substrate import (
     TaskEpisode,
     add_episode,
     add_lesson,
+    episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.multires_memory import MemoryViewKind, MemoryViewVerdict, validate_memory_view
 from rakl.problem_fibre import ProblemAtom, compile_problem_fibre
@@ -23,7 +28,7 @@ from rakl.problem_novelty import (
 
 
 def _episode() -> TaskEpisode:
-    return TaskEpisode(
+    draft = TaskEpisode(
         episode_id="E1",
         task_id="task",
         atom_id="A1",
@@ -37,9 +42,10 @@ def _episode() -> TaskEpisode:
         outcome=EpisodeOutcome.SUCCESS,
         residual_signature=(),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:E1",
+        artifact_hash="",
         timestamp="2026-08-11T09:00:00+00:00",
     )
+    return replace(draft, artifact_hash=sha256(episode_content_bytes(draft)).hexdigest())
 
 
 def _legacy(fiber_id: str, object_id: str, projection_id: str = "P1") -> KnowledgeFiber:
@@ -89,7 +95,7 @@ def test_legacy_projection_ids_are_namespaced_by_owning_fibre() -> None:
 
 def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
     ledger = add_episode(ExperienceLedger(), _episode())
-    lesson = Lesson(
+    lesson_draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("graph",),
@@ -103,7 +109,11 @@ def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate target",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
+    )
+    lesson = replace(
+        lesson_draft,
+        artifact_hash=sha256(lesson_content_bytes(lesson_draft)).hexdigest(),
     )
     ledger = add_lesson(ledger, lesson)
     views = experience_memory_views(ledger)
