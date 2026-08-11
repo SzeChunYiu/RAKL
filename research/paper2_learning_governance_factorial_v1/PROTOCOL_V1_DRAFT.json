@@ -1,0 +1,191 @@
+{
+  "schema_version": "paper2-learning-governance-factorial-protocol-v2",
+  "status": "DRAFT",
+  "issue": 155,
+  "grants_scientific_authority": false,
+  "supersedes": [
+    "schemas/learning-governance-factorial-protocol-v1.schema.json"
+  ],
+  "notes": "Design freeze for the 2x2 continual-learning x authority-governance factorial. Status is DRAFT, not PROTOCOL_FROZEN: the design decisions below are settled, but the execution coordinates carry PENDING_FREEZE sentinels because the real hashes do not exist yet and inventing them would fabricate a freeze that never happened. Promotion to PROTOCOL_FROZEN requires every PENDING_FREEZE sentinel to be replaced by a real identity and requires upstream blockers #238 and #242 to be stabilized first.",
+
+  "frozen_coordinates": {
+    "model_id": "PENDING_FREEZE_MODEL_ID",
+    "model_revision": "PENDING_FREEZE_MODEL_REVISION",
+    "sampling_parameters_hash": "PENDING_FREEZE_SAMPLING_PARAMETERS",
+    "system_prompt_family_hash": "PENDING_FREEZE_SYSTEM_PROMPT_FAMILY",
+    "evidence_manifest_hash": "PENDING_FREEZE_EVIDENCE_MANIFEST",
+    "resource_ceiling": {
+      "model_input_tokens": 8192,
+      "model_output_tokens": 2048,
+      "preprocessing_model_tokens": 4096,
+      "tool_calls": 16,
+      "retrieval_calls": 8,
+      "wall_time_ms": 600000
+    },
+    "tool_policy_id": "PENDING_FREEZE_TOOL_POLICY",
+    "development_sequence_hash": "PENDING_FREEZE_DEVELOPMENT_SEQUENCE",
+    "transfer_task_set_hash": "PENDING_FREEZE_TRANSFER_TASK_SET",
+    "evaluator_protocol_hash": "PENDING_FREEZE_EVALUATOR_PROTOCOL",
+    "initial_state_hash": "PENDING_FREEZE_S0",
+    "randomization_seed": 20260811
+  },
+
+  "cells": {
+    "U-R": {
+      "experience": "RESET",
+      "authority_policy": "UNGATED_MATCHED_PERMISSIVE",
+      "state_rule": "every development or transfer task starts at exactly S0; the registered state remains S0 afterwards",
+      "post_development_state_hash": null,
+      "verified_corrective_object_count": null
+    },
+    "U-L": {
+      "experience": "LEARNING",
+      "authority_policy": "UNGATED_MATCHED_PERMISSIVE",
+      "state_rule": "U-S0 -> U-S1 -> ... -> U-Sn over the shared development order; every transfer task starts independently from the frozen U-Sn",
+      "post_development_state_hash": null,
+      "verified_corrective_object_count": null
+    },
+    "G-R": {
+      "experience": "RESET",
+      "authority_policy": "RAKL_TYPED_AUTHORITY_GATES",
+      "state_rule": "every development or transfer task starts at exactly S0; the registered state remains S0 afterwards",
+      "post_development_state_hash": null,
+      "verified_corrective_object_count": null
+    },
+    "G-L": {
+      "experience": "LEARNING",
+      "authority_policy": "RAKL_TYPED_AUTHORITY_GATES",
+      "state_rule": "G-S0 -> G-S1 -> ... -> G-Sn over the same development order; every transfer task starts independently from the frozen G-Sn. U-Sn and G-Sn need not be byte-identical; the divergence is the intervention and is recorded",
+      "post_development_state_hash": null,
+      "verified_corrective_object_count": null
+    }
+  },
+
+  "permissive_control": {
+    "removed_authority_checks": [
+      "PENDING_FREEZE: enumerate each removed RAKL typed authority check by identity before execution; a bare 'governance disabled' entry is not admissible"
+    ],
+    "matched_coordinates": [
+      "base model, revision and sampling parameters",
+      "system prompt family",
+      "evidence and context presented to the proposer",
+      "memory object count, token budget and retrieval-call allowance",
+      "tool policy and resource ceiling",
+      "output schema",
+      "development task sequence and order"
+    ],
+    "provenance_storage_retained": true,
+    "information_availability_unchanged": true,
+    "hostile_control": {
+      "fixture_id": "PENDING_FREEZE_HOSTILE_FIXTURE_154",
+      "expected_ungated": "ACCEPT",
+      "expected_gated": "REJECT"
+    },
+    "legal_control": {
+      "fixture_id": "PENDING_FREEZE_LEGAL_FIXTURE_154",
+      "expected_ungated": "ACCEPT",
+      "expected_gated": "ACCEPT"
+    }
+  },
+
+  "admissibility_gates": {
+    "G1_verified_corrective_knowledge": {
+      "rule": "each frozen post-development state must contain at least one verified corrective object derived from an observed correct resolution or an evidence-bearing correction; job 3476548 had development success_rate 0.0 on both arms and minted only a generic pseudo-lesson, so its learning state held nothing correct to transfer",
+      "min_verified_objects_per_learning_cell": 1,
+      "pseudo_lessons_count_toward_gate": false,
+      "on_failure": "CANNOT_IDENTIFY"
+    },
+    "G2_selective_retrieval_ran": {
+      "rule": "for any arm specified to retrieve, retrieval_calls > 0 is blocking at task level; job 3476548 recorded total_retrieval_calls 0.0 on all four arm/phase rows while the learning arm used 4376 input tokens against the reset arm's 1502, the signature of whole-state prompt stuffing rather than retrieval",
+      "min_retrieval_calls_per_task": 1,
+      "whole_state_injection_is_failure": true,
+      "retrieval_budget_matched_in_control": true,
+      "on_failure": "EXCLUDE_TASK_AND_REPORT_COUNT"
+    },
+    "G3_state_chronology_intact": {
+      "rule": "no cross-task state leakage; every transfer task starts from the same frozen state hash for its cell; T1 must never teach T2",
+      "on_failure": "BLOCK_PACKET"
+    },
+    "G4_resource_ceiling_respected": {
+      "rule": "one ceiling shared by all four cells; actual usage reported per cell, never only the ceiling",
+      "on_failure": "BLOCK_RUN"
+    },
+    "G5_no_post_outcome_evaluator_mutation": {
+      "rule": "evaluator, parser and threshold identities are fixed before outcome access; mutation after outcomes forfeits confirmatory status",
+      "on_failure": "FORFEIT_CONFIRMATORY_STATUS"
+    }
+  },
+
+  "task_strata": {
+    "REPEATED_FAMILY": {
+      "purpose": "same deep task family under materially changed surface form",
+      "disjoint_from_development": true,
+      "task_count": null
+    },
+    "CROSS_DOMAIN_TRANSFER": {
+      "purpose": "prior experience is useful only if scope and structure genuinely match",
+      "disjoint_from_development": true,
+      "task_count": null
+    },
+    "HOSTILE_NEAR_MISS": {
+      "purpose": "prior experience is tempting but invalid under a changed boundary, QoI or context; measures over-transfer",
+      "disjoint_from_development": true,
+      "task_count": null
+    },
+    "AUTHORITY_TRANSITION": {
+      "purpose": "cases from #154 where the correct scientific-state update is known; measures transition validity",
+      "disjoint_from_development": true,
+      "task_count": null
+    }
+  },
+
+  "outcome_axes": {
+    "capability": [
+      "fresh-transfer success",
+      "registered score",
+      "repeat-failure rate",
+      "model and preprocessing tokens",
+      "tool and retrieval calls",
+      "wall time"
+    ],
+    "authority": [
+      "authority-leakage rate (ALR, #154)",
+      "unsupported scope escalation rate",
+      "invalid transition acceptance on HOSTILE_NEAR_MISS",
+      "legitimate-update rejection rate (over-restriction)",
+      "epistemic noninterference violations (#152)"
+    ],
+    "combined_into_single_scalar": false
+  },
+
+  "estimands": {
+    "E_ungated": "U-L minus U-R: experience effect when scientific-authority governance is absent",
+    "E_gated": "G-L minus G-R: experience effect under RAKL governance",
+    "G_reset": "G-R minus U-R: governance effect without cumulative experience",
+    "G_learning": "G-L minus U-L: governance effect on experience-amplified overreach",
+    "interaction": "(G-L minus G-R) minus (U-L minus U-R)",
+    "reported_per_axis": true
+  },
+
+  "analysis": {
+    "inferential_unit": "task",
+    "repeated_generations_are_independent": false,
+    "multiplicity_control": "Holm family-wise error control over the frozen confirmatory family unless a stricter hierarchical gate is frozen before execution",
+    "alpha": 0.05,
+    "stratum_results_are_secondary": true
+  },
+
+  "admissible_outcomes": [
+    "experience provides no gain",
+    "gates provide no leakage benefit",
+    "gates suppress legitimate updates too aggressively",
+    "ungated learning is already safe",
+    "the interaction is null",
+    "RAKL costs too much for the observed benefit",
+    "one or more cells report CANNOT_IDENTIFY under the admissibility gates"
+  ],
+
+  "upstream_blockers": [238, 242],
+
+  "protocol_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

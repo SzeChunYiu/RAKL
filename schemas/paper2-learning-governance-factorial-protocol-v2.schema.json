@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-learning-governance-factorial-protocol-v2.schema.json",
+  "title": "RAKL learning x governance 2x2 factorial protocol v2",
+  "description": "Machine-checkable protocol freeze for the Paper II continual-learning x authority-governance factorial (issue #155). Supersedes learning-governance-factorial-protocol-v1, which carried six fields and could not express a 2x2. This document is a design freeze and contains no evaluated model outcomes; it grants no scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "issue",
+    "grants_scientific_authority",
+    "supersedes",
+    "frozen_coordinates",
+    "cells",
+    "permissive_control",
+    "admissibility_gates",
+    "task_strata",
+    "outcome_axes",
+    "estimands",
+    "analysis",
+    "admissible_outcomes",
+    "protocol_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper2-learning-governance-factorial-protocol-v2"},
+    "status": {
+      "description": "PROTOCOL_FROZEN permits execution. CANNOT_IDENTIFY is a first-class terminal state for a factorial whose ungated control cannot be made fair without changing another causal coordinate.",
+      "enum": ["DRAFT", "PROTOCOL_FROZEN", "EXECUTED", "INSUFFICIENT_EVIDENCE", "CANNOT_IDENTIFY", "CANNOT_CHECK"]
+    },
+    "issue": {"type": "integer", "minimum": 1},
+    "grants_scientific_authority": {"const": false},
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+
+    "frozen_coordinates": {
+      "type": "object",
+      "description": "Everything held identical across all four cells. Bound before any evaluated output is opened.",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "model_revision",
+        "sampling_parameters_hash",
+        "system_prompt_family_hash",
+        "evidence_manifest_hash",
+        "resource_ceiling",
+        "tool_policy_id",
+        "development_sequence_hash",
+        "transfer_task_set_hash",
+        "evaluator_protocol_hash",
+        "initial_state_hash",
+        "randomization_seed"
+      ],
+      "properties": {
+        "model_id": {"type": "string", "minLength": 1},
+        "model_revision": {"type": "string", "minLength": 1},
+        "sampling_parameters_hash": {"type": "string", "minLength": 1},
+        "system_prompt_family_hash": {"type": "string", "minLength": 1},
+        "evidence_manifest_hash": {"type": "string", "minLength": 1},
+        "resource_ceiling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model_input_tokens",
+            "model_output_tokens",
+            "preprocessing_model_tokens",
+            "tool_calls",
+            "retrieval_calls",
+            "wall_time_ms"
+          ],
+          "properties": {
+            "model_input_tokens": {"type": "integer", "minimum": 0},
+            "model_output_tokens": {"type": "integer", "minimum": 0},
+            "preprocessing_model_tokens": {"type": "integer", "minimum": 0},
+            "tool_calls": {"type": "integer", "minimum": 0},
+            "retrieval_calls": {"type": "integer", "minimum": 1},
+            "wall_time_ms": {"type": "integer", "minimum": 0}
+          }
+        },
+        "tool_policy_id": {"type": "string", "minLength": 1},
+        "development_sequence_hash": {"type": "string", "minLength": 1},
+        "transfer_task_set_hash": {"type": "string", "minLength": 1},
+        "evaluator_protocol_hash": {"type": "string", "minLength": 1},
+        "initial_state_hash": {"type": "string", "minLength": 1},
+        "randomization_seed": {"type": "integer"}
+      }
+    },
+
+    "cells": {
+      "type": "object",
+      "description": "Exactly the four factorial cells. U-L and G-L carry a frozen post-development state; U-R and G-R reset to initial_state_hash.",
+      "additionalProperties": false,
+      "required": ["U-R", "U-L", "G-R", "G-L"],
+      "properties": {
+        "U-R": {"$ref": "#/$defs/cell"},
+        "U-L": {"$ref": "#/$defs/cell"},
+        "G-R": {"$ref": "#/$defs/cell"},
+        "G-L": {"$ref": "#/$defs/cell"}
+      }
+    },
+
+    "permissive_control": {
+      "type": "object",
+      "description": "Anti-strawman specification of the ungated arm. It must alter authority permission only, never information availability.",
+      "additionalProperties": false,
+      "required": [
+        "removed_authority_checks",
+        "matched_coordinates",
+        "provenance_storage_retained",
+        "information_availability_unchanged",
+        "hostile_control",
+        "legal_control"
+      ],
+      "properties": {
+        "removed_authority_checks": {
+          "type": "array",
+          "description": "Each removed RAKL authority check, enumerated by identity. 'governance disabled' is not an acceptable entry; the list must name what was removed.",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "matched_coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "provenance_storage_retained": {"const": true},
+        "information_availability_unchanged": {"const": true},
+        "hostile_control": {"$ref": "#/$defs/control_fixture"},
+        "legal_control": {"$ref": "#/$defs/control_fixture"}
+      }
+    },
+
+    "admissibility_gates": {
+      "type": "object",
+      "description": "Evaluated before outcomes are opened. Non-compensatory: a capability gain cannot offset a failed gate.",
+      "additionalProperties": false,
+      "required": [
+        "G1_verified_corrective_knowledge",
+        "G2_selective_retrieval_ran",
+        "G3_state_chronology_intact",
+        "G4_resource_ceiling_respected",
+        "G5_no_post_outcome_evaluator_mutation"
+      ],
+      "properties": {
+        "G1_verified_corrective_knowledge": {
+          "type": "object",
+          "description": "Fixes the v1.2 defect where all development tasks failed and failure minted only a generic pseudo-lesson, leaving nothing correct to transfer. A learning cell with zero qualifying objects reports CANNOT_IDENTIFY, not 'no effect'.",
+          "additionalProperties": false,
+          "required": ["rule", "min_verified_objects_per_learning_cell", "pseudo_lessons_count_toward_gate", "on_failure"],
+          "properties": {
+            "rule": {"type": "string", "minLength": 1},
+            "min_verified_objects_per_learning_cell": {"type": "integer", "minimum": 1},
+            "pseudo_lessons_count_toward_gate": {"const": false},
+            "on_failure": {"const": "CANNOT_IDENTIFY"}
+          }
+        },
+        "G2_selective_retrieval_ran": {
+          "type": "object",
+          "description": "Fixes the v1.2 defect where total_retrieval_calls was 0.0 on every arm/phase row and the learning arm dumped whole state into the prompt instead of retrieving.",
+          "additionalProperties": false,
+          "required": ["rule", "min_retrieval_calls_per_task", "whole_state_injection_is_failure", "retrieval_budget_matched_in_control", "on_failure"],
+          "properties": {
+            "rule": {"type": "string", "minLength": 1},
+            "min_retrieval_calls_per_task": {"type": "integer", "minimum": 1},
+            "whole_state_injection_is_failure": {"const": true},
+            "retrieval_budget_matched_in_control": {"const": true},
+            "on_failure": {"const": "EXCLUDE_TASK_AND_REPORT_COUNT"}
+          }
+        },
+        "G3_state_chronology_intact": {"$ref": "#/$defs/simple_gate"},
+        "G4_resource_ceiling_respected": {"$ref": "#/$defs/simple_gate"},
+        "G5_no_post_outcome_evaluator_mutation": {"$ref": "#/$defs/simple_gate"}
+      }
+    },
+
+    "task_strata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["REPEATED_FAMILY", "CROSS_DOMAIN_TRANSFER", "HOSTILE_NEAR_MISS", "AUTHORITY_TRANSITION"],
+      "properties": {
+        "REPEATED_FAMILY": {"$ref": "#/$defs/stratum"},
+        "CROSS_DOMAIN_TRANSFER": {"$ref": "#/$defs/stratum"},
+        "HOSTILE_NEAR_MISS": {"$ref": "#/$defs/stratum"},
+        "AUTHORITY_TRANSITION": {"$ref": "#/$defs/stratum"}
+      }
+    },
+
+    "outcome_axes": {
+      "type": "object",
+      "description": "Capability and authority are reported separately. Collapsing them into one scalar would hide a method that improves success while worsening leakage.",
+      "additionalProperties": false,
+      "required": ["capability", "authority", "combined_into_single_scalar"],
+      "properties": {
+        "capability": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "authority": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "combined_into_single_scalar": {"const": false}
+      }
+    },
+
+    "estimands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["E_ungated", "E_gated", "G_reset", "G_learning", "interaction", "reported_per_axis"],
+      "properties": {
+        "E_ungated": {"type": "string", "minLength": 1},
+        "E_gated": {"type": "string", "minLength": 1},
+        "G_reset": {"type": "string", "minLength": 1},
+        "G_learning": {"type": "string", "minLength": 1},
+        "interaction": {"type": "string", "minLength": 1},
+        "reported_per_axis": {"const": true}
+      }
+    },
+
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inferential_unit", "repeated_generations_are_independent", "multiplicity_control", "alpha", "stratum_results_are_secondary"],
+      "properties": {
+        "inferential_unit": {"const": "task"},
+        "repeated_generations_are_independent": {"const": false},
+        "multiplicity_control": {"type": "string", "minLength": 1},
+        "alpha": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "stratum_results_are_secondary": {"const": true}
+      }
+    },
+
+    "admissible_outcomes": {
+      "type": "array",
+      "description": "Must include the null and harmful outcomes so the design cannot be read as capable of only one answer.",
+      "minItems": 6,
+      "items": {"type": "string", "minLength": 1}
+    },
+
+    "upstream_blockers": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 1}
+    },
+
+    "protocol_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "notes": {"type": ["string", "null"]}
+  },
+
+  "$defs": {
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["experience", "authority_policy", "state_rule"],
+      "properties": {
+        "experience": {"enum": ["RESET", "LEARNING"]},
+        "authority_policy": {"enum": ["UNGATED_MATCHED_PERMISSIVE", "RAKL_TYPED_AUTHORITY_GATES"]},
+        "state_rule": {"type": "string", "minLength": 1},
+        "post_development_state_hash": {
+          "type": ["string", "null"],
+          "description": "Required for LEARNING cells once development has run. U-Sn and G-Sn need not be byte-identical; the divergence is the intervention and must be recorded."
+        },
+        "verified_corrective_object_count": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "control_fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_id", "expected_ungated", "expected_gated"],
+      "properties": {
+        "fixture_id": {"type": "string", "minLength": 1},
+        "expected_ungated": {"enum": ["ACCEPT", "REJECT"]},
+        "expected_gated": {"enum": ["ACCEPT", "REJECT"]}
+      }
+    },
+    "simple_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "on_failure"],
+      "properties": {
+        "rule": {"type": "string", "minLength": 1},
+        "on_failure": {"type": "string", "minLength": 1}
+      }
+    },
+    "stratum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose", "disjoint_from_development"],
+      "properties": {
+        "purpose": {"type": "string", "minLength": 1},
+        "disjoint_from_development": {"const": true},
+        "task_count": {"type": ["integer", "null"], "minimum": 1}
+      }
+    }
+  }
+}
