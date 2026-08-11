@@ -14,12 +14,13 @@ nothing an agent asserts after the fact can promote a retrospective episode.
 
 Scope, stated as narrowly as the artifact supports:
 
-* **Pre-execution gate, opt-in call sites.**
+* **Pre-execution gate, wired into the consequential learning turn.**
   :func:`gate_consequential_operator_execution` / :func:`require_consequential_operator_receipt`
-  refuse execution when fibre, operator, or falsifier are unbound. Callers of
-  consequential operators must invoke the gate; ``record_task_episode`` and
-  symbolic planning transitions remain unchanged so cheap planning is not
-  ceremonially taxed.
+  refuse execution when fibre, operator, or falsifier are unbound.
+  :func:`rakl.driver_learning.run_learning_turn` invokes the gate before the
+  driver when a receipt is supplied or required, and always derives chronology
+  status afterward. ``record_task_episode`` and symbolic planning transitions
+  remain ungated so cheap planning is not ceremonially taxed.
 * **No completeness claim.** A verified binding says what was selected and
   rejected, never that the fibre search universe was complete. Retrieval-universe
   coverage is a different object, tracked by RAKL issue #119. (Unrelated to

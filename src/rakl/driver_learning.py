@@ -7,6 +7,13 @@ from typing import Callable, Iterable, Protocol, Tuple
 from .breakthrough_learning import ExpertiseChunk
 from .core import KnowledgeFiber
 from .experience_substrate import EpisodeOutcome, TaskEpisode, episode_content_bytes
+from .pre_action_receipt import (
+    OperatorExecutionGateReport,
+    PreActionBindingReport,
+    PreActionFibreReceipt,
+    audit_pre_action_binding,
+    gate_consequential_operator_execution,
+)
 from .problem_fibre import FibreKnowledgeItem, ProblemAtom, ProblemFibre
 from .problem_solving_algebra import ProblemState, ResearchOperator
 from .strategy_motifs import StrategyMotif
@@ -64,6 +71,30 @@ class LearningTurnReport:
     fibre: ProblemFibre
     episode: TaskEpisode
     driver_result: DriverResult
+    chronology_binding: PreActionBindingReport
+    execution_gate: OperatorExecutionGateReport | None = None
+
+
+def _resolve_intended_operator_id(
+    receipt: PreActionFibreReceipt | None,
+    intended_operator_id: str | None,
+) -> str:
+    if intended_operator_id is not None and intended_operator_id.strip():
+        return intended_operator_id
+    if receipt is not None and len(receipt.operator_ids) == 1:
+        return receipt.operator_ids[0]
+    return ""
+
+
+def _resolve_intended_falsifier(
+    receipt: PreActionFibreReceipt | None,
+    intended_falsifier: str | None,
+) -> str:
+    if intended_falsifier is not None and intended_falsifier.strip():
+        return intended_falsifier
+    if receipt is not None:
+        return receipt.predeclared_discriminator
+    return ""
 
 
 def run_learning_turn(
@@ -81,6 +112,10 @@ def run_learning_turn(
     candidate_method_families: Tuple[str, ...] = (),
     failure_spec_factory: Callable[[DriverResult], FailureProjectionSpec | None] | None = None,
     top_k_each: int = 12,
+    pre_action_receipt: PreActionFibreReceipt | None = None,
+    require_pre_action_receipt: bool = False,
+    intended_operator_id: str | None = None,
+    intended_falsifier: str | None = None,
 ) -> LearningTurnReport:
     """Execute one LLM/agent turn against RAKL and persist its experience.
 
@@ -88,6 +123,21 @@ def run_learning_turn(
     frozen into a TaskEpisode before any consolidation.  Optional failure
     projection occurs only after the observed result exists.  Existing RAKL
     `KnowledgeFiber` objects can be supplied directly and are adapted read-only.
+
+    Pre-action fibre / consequential-operator gate (issue #123)
+    ----------------------------------------------------------
+    ``compile_state_fibre`` → action execution → ``record_task_episode`` is the
+    consequential learning path named by the issue. When
+    ``require_pre_action_receipt`` is set, or a ``pre_action_receipt`` is
+    supplied, the fail-closed pre-execution gate runs *before* the driver is
+    invoked. Cheap/proposal turns that neither require nor supply a receipt
+    leave the gate inactive (same shape as the #124 preservation gate).
+
+    Chronology status is always derived after the episode is frozen via
+    :func:`audit_pre_action_binding`. A missing receipt yields
+    ``RETROSPECTIVE_ONLY`` automatically; prospective credit is never declared.
+    ``record_task_episode`` itself stays ungated so symbolic/cheap recording is
+    not ceremonially taxed.
     """
 
     if not episode_id:
@@ -104,7 +154,38 @@ def run_learning_turn(
         candidate_method_families=candidate_method_families,
         top_k_each=top_k_each,
     )
+
+    execution_gate: OperatorExecutionGateReport | None = None
+    gate_active = require_pre_action_receipt or pre_action_receipt is not None
+    if gate_active:
+        resolved_operator = _resolve_intended_operator_id(pre_action_receipt, intended_operator_id)
+        resolved_falsifier = _resolve_intended_falsifier(pre_action_receipt, intended_falsifier)
+        execution_gate = gate_consequential_operator_execution(
+            pre_action_receipt,
+            intended_operator_id=resolved_operator,
+            intended_fibre_snapshot_hash=fibre.snapshot_hash,
+            intended_falsifier=resolved_falsifier,
+            intended_atom_id=task.atom.atom_id,
+            intended_context_hash=task.atom.context_hash,
+            intended_task_id=task.task_id,
+        )
+        if not execution_gate.may_execute:
+            joined = (
+                ",".join(execution_gate.reasons)
+                if execution_gate.reasons
+                else execution_gate.verdict.value
+            )
+            raise ValueError(
+                "consequential learning turn blocked by pre-action fibre receipt gate "
+                f"({execution_gate.verdict.value}): {joined}"
+            )
+
     result = driver(DriverRequest(task=task, fibre=fibre))
+    evidence_pointers = result.evidence_pointers
+    if pre_action_receipt is not None:
+        pointer = pre_action_receipt.episode_pointer
+        if pointer not in evidence_pointers:
+            evidence_pointers = evidence_pointers + (pointer,)
     episode_draft = TaskEpisode(
         episode_id=episode_id,
         task_id=task.task_id,
@@ -118,7 +199,7 @@ def run_learning_turn(
         verification_ids=result.verification_ids,
         outcome=result.outcome,
         residual_signature=result.residual_signature,
-        evidence_pointers=result.evidence_pointers,
+        evidence_pointers=evidence_pointers,
         artifact_hash="",
         timestamp=task.timestamp,
         cost=result.cost,
@@ -133,4 +214,12 @@ def run_learning_turn(
     if failure_spec is not None and result.outcome is EpisodeOutcome.SUCCESS:
         raise ValueError("failure_spec_factory returned a failure projection for a successful result")
     next_state = record_task_episode(state, episode, failure_spec=failure_spec)
-    return LearningTurnReport(next_state, fibre, episode, result)
+    chronology_binding = audit_pre_action_binding(pre_action_receipt, episode)
+    return LearningTurnReport(
+        next_state,
+        fibre,
+        episode,
+        result,
+        chronology_binding=chronology_binding,
+        execution_gate=execution_gate,
+    )
