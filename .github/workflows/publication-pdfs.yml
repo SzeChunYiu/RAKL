@@ -8,11 +8,11 @@ on:
 
 
 concurrency:
-  # PRs still cancel superseded runs for the same PR number.
-  # workflow_dispatch uses run_id so tip-main harvests are not cancelled by
-  # concurrent same-ref dispatches during busy merge windows.
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: true
+  # PRs: supersede older runs for the same PR.
+  # workflow_dispatch: never cancel — tip-main harvests were being mass-cancelled
+  # even with per-run_id groups during busy merge windows.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || format('dispatch-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
