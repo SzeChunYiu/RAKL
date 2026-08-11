@@ -127,7 +127,7 @@ active_obligations:
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, maximum-degree/matching ceilings, forest/arboricity ceilings, finite-state aggregation, population-count/symmetry compression, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
+    discriminator: "attempt pair multiplexing, generator separation, quotient/twin or arbitrary-pullback compression, GF(2)-adjacency-rank screening, maximum-degree/matching ceilings, forest/arboricity ceilings, finite-state aggregation, population-count/symmetry compression, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
   - id: O9d4
     target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
     route: R004-full-cover
@@ -173,15 +173,22 @@ active_obligations:
   - id: O9d10
     target: "construct or refute non-symmetric growing-width globally coupled graph families that preserve coordinate identity and survive quotient, degree, arboricity, finite-state, population-count, linear, product, and cyclic upper-bound adversaries"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C018
     depends_on: [O9d9]
-    residual: C017-R1
-    discriminator: "prefer nonlinear code/constraint or algebraic relations with growing trellis width; before lower-bound search measure quotient size, degree, arboricity, state/trellis width, population-statistic compressibility, local symbol cost, exact tiny full-cover complexity, D_intersection/cyclic constructions, low-dimensional codes, and pair multiplexing"
+    artifacts: [C018, gf2_rank_pullback_ceiling]
+    result: "every nonzero graph with GF(2) adjacency rank r satisfies rho <= 3r-2 by arbitrary pullback monotonicity to the r-bit inner-product graph; all O(log N)-rank and pure bilinear families are therefore dead as super-log targets"
+  - id: O9d11
+    target: "construct or refute explicit high-GF(2)-rank, non-symmetric, globally coupled graph families that survive all current full-cover upper-bound adversaries"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d10]
+    residual: C018-R1
+    discriminator: "require a proved GF(2) adjacency-rank lower bound omega(log N) before cover search; then test arbitrary pullback/quotient compression, degree, arboricity, finite-state, population-count, low-dimensional feature maps, products, pair reuse, and source-level intersection/cyclic constructions"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d10]
+    depends_on: [O9d11]
 
 negative_checkpoints:
   - id: C002
@@ -210,6 +217,8 @@ negative_checkpoints:
     result: "fixed finite-state aggregation over fixed-cost local pair symbols gives rho <= t(C_h+|Q||Sigma|)=O(log N); Hamming-distance mod 3 has arboricity Omega(N) yet rho <= 8 log2 N"
   - id: C017
     result: "every XOR-symmetric graph G_t(x,y)=S_t(x XOR y), for arbitrary symmetric S_t, has rho <= 80t=O(log N) by explicit complement-carrying population count and weight decoding; growing Hamming moduli do not escape"
+  - id: C018
+    result: "every nonzero square graph with GF(2) adjacency rank r has rho <= 3r-2 because its adjacency relation is an arbitrary vertex-map pullback of the r-bit inner-product graph; hence O(log N)-rank and all pure bilinear families are logarithmically bounded"
 
 finite_checkpoints:
   - id: C008
