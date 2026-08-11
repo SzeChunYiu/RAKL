@@ -13,9 +13,11 @@ This paper supports a formal and executable scientific-state transition architec
 ## Closed coordinates
 
 - long-form source exists and is internally scoped to formal/method claims;
+- AI-use disclosure is present in the canonical `publication/papers/` manuscript;
 - exact-source publication preflight and CI were green on the previous closeout subject;
 - release claims explicitly separate software/artifact conformance from scientific superiority;
-- an external-review solicitation packet exists and is hash-bound.
+- an external-review solicitation packet exists and is hash-bound;
+- GitHub issue #41 remains open with zero public responses (no independent-review claim).
 
 ## Open coordinates before strongest journal submission
 

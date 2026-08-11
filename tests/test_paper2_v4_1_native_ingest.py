@@ -553,6 +553,13 @@ def test_manuscript_and_status_preserve_the_nonconfirmatory_null_boundary() -> N
         assert "No quantitative figure" in text
     assert "full matched empirical claim remains open" in manuscript
     assert "V4 job `3475193` remains two parse-invalid nulls" in status
+    for job_id in ("3476520", "3476521", "3476524"):
+        assert job_id in manuscript
+    assert "HARVEST_V4_1_TASK_SEED_PASS_NONCONFIRMATORY" in manuscript.replace(
+        "\\_", "_"
+    )
+    assert "promotional metrics" in manuscript
+    assert "arm win/loss evidence" in manuscript
 
 
 def test_recursive_internal_review_binds_subjects_and_closes_only_internal_blockers() -> None:

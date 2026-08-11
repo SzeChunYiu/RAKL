@@ -8,7 +8,7 @@
 
 ## Claim boundary
 
-The current manuscript supports a reproducible directional-witness formalism and internal constructed diagnostics. It does **not** support natural-domain generalization, superiority over a modern semantic encoder, training-efficiency gains, or a shared learning–reasoning substrate.
+The current manuscript supports a reproducible directional-witness formalism and internal constructed diagnostics. FS9 descriptor harvests may be `HARVEST_DESCRIPTOR_READY` with `training_authorized=false`; that is not confirmatory annotation, training authorization, or a transfer win. It does **not** support natural-domain generalization, superiority over a modern semantic encoder, training-efficiency gains, or a shared learning–reasoning substrate.
 
 ## Closed coordinates
 
