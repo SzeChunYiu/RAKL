@@ -1,0 +1,41 @@
+{
+  "adequate_power_threshold": 0.8,
+  "alpha": 0.05,
+  "decision_sigma_set": [0.08, 0.1, 0.12],
+  "expansion_feasibility": {
+    "annotation_burden_ceiling_coordinate_units": 864,
+    "expansion_packet_frozen_in_repo": false,
+    "max_confirmatory_items_without_new_freeze": 16,
+    "minimum_n_for_primary_mde_note": "Simulation registers n=48 for all decision sigmas; autopilot does not mint a label-blind expansion packet in this window.",
+    "note": "Path B requires a frozen label-blind expansion packet in-repo. Without it, an underpowered v2.1 retain is scoped as power-limited (Path C) rather than post-label retuning."
+  },
+  "monte_carlo_tolerance": 0.1,
+  "monte_carlo_validation": {
+    "cells": [
+      {"mde_brier_reduction": 0.05, "n": 16, "sigma": 0.08},
+      {"mde_brier_reduction": 0.05, "n": 16, "sigma": 0.1},
+      {"mde_brier_reduction": 0.05, "n": 16, "sigma": 0.12},
+      {"mde_brier_reduction": 0.05, "n": 32, "sigma": 0.1},
+      {"mde_brier_reduction": 0.05, "n": 48, "sigma": 0.1}
+    ],
+    "n_boot": 2000,
+    "n_perm": 2000,
+    "n_sim": 500
+  },
+  "n_grid": [16, 24, 32, 48, 64],
+  "paired_brier_diff_sigma_grid": [0.08, 0.1, 0.12, 0.15],
+  "primary_endpoint": {
+    "description": "Mean paired per-item Brier reduction (witnessed_structure minus strongest_semantic_control) on adjudicated transfer validity.",
+    "quantity": "paired_brier_reduction"
+  },
+  "primary_mde_brier_reduction_grid": [0.03, 0.05, 0.08],
+  "registered_material_effects": {
+    "average_precision_gain_mde": 0.05,
+    "primary_paired_brier_reduction_mde": 0.05,
+    "q2_true_accept_floor_improvement_mde": 0.15,
+    "q3_false_accept_ceiling_reduction_mde": 0.15,
+    "roc_auc_gain_mde": 0.05
+  },
+  "schema_version": "paper3-power-simulation-config-v1",
+  "seed": 24820260811
+}

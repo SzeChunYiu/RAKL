@@ -1,0 +1,66 @@
+{
+  "annotation_packet_for_issue_217": {
+    "blocked_until_power_decision_resolved": false,
+    "instruction_readme": "research/paper3/annotation/README_V2_1.md",
+    "item_count": 16,
+    "packet_version": "paper3-natural-transfer-external-annotation-v2-1-20260810",
+    "supersedes_issue_43_reference": true
+  },
+  "claim_boundary": "Pre-label power-design decision only. No external annotation, gate pass, training authorization, or confirmatory result is claimed.",
+  "confirmatory_item_count": 16,
+  "confirmatory_packet_version": "v2.1",
+  "created_at_utc": "2026-08-11T20:58:05Z",
+  "decision": "CONFIRMATORY_PACKET_POWER_LIMITED",
+  "decision_path": "C",
+  "frozen_artifacts": {
+    "config_sha256": "407c7d1d39f195fbd0bccc99ef62ccfb3995d99044b4cae2bcefbe44a164f1d9",
+    "packet_canonical_sha256": "b5212517a0bb9cbe308727d7972ded38ce68bf7f52448aeb82f6512e584336eb",
+    "packet_path": "research/paper3/annotation/EXTERNAL_ANNOTATION_PACKET_V2_1_20260810.json",
+    "results_sha256": "c09882a446704b8c26446e051ca7d0766198aeb4a94d61662785ac382913c36a",
+    "source_set_canonical_sha256": "ba4cdb4acbc695599f6ce5c9148e8e68d6fcf5cb9f6f5b06b8f2f6dd3511b556",
+    "source_set_path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json",
+    "source_set_sha256": "e865a1767ddedeac86da84fcae9bdd6c11659706edf3e76a00653761e6c5da68",
+    "zero_labels_receipt_sha256": "18a81d902bd0e20e02b25a0fddbb972960ea2b9740ae9008d8c0827f0b57f16c"
+  },
+  "git_subject_sha256": "bb30835f41dd5e02a427c3e53be6914732d66fd2",
+  "issue_number": 248,
+  "material_effects": {
+    "average_precision_gain_mde": 0.05,
+    "primary_paired_brier_reduction_mde": 0.05,
+    "q2_true_accept_floor_improvement_mde": 0.15,
+    "q3_false_accept_ceiling_reduction_mde": 0.15,
+    "roc_auc_gain_mde": 0.05
+  },
+  "power_evaluation": {
+    "adequate_power_threshold": 0.8,
+    "analytic_power_at_n16": {
+      "0.08": 0.7054139024424573,
+      "0.1": 0.5159677934423319,
+      "0.12": 0.38464745179032345
+    },
+    "confirmatory_item_count_decision": 16,
+    "decision": "CONFIRMATORY_PACKET_POWER_LIMITED",
+    "decision_sigma_set": [
+      0.08,
+      0.1,
+      0.12
+    ],
+    "expansion_feasible_within_ceiling": false,
+    "expansion_packet_frozen_in_repo": false,
+    "minimum_n_for_adequacy_all_sigmas": 48,
+    "monte_carlo_agrees_at_n16": true,
+    "path": "C",
+    "primary_mde_brier_reduction": 0.05,
+    "underpowered_interpretation_rules": [
+      "If paired bootstrap CI for primary Brier reduction includes zero, verdict is MEASURED_BUT_INDISTINGUISHABLE \u2014 not negative evidence.",
+      "UNDERPOWERED status blocks confirmatory refutation claims.",
+      "Q2/Q3 binomial estimates remain descriptive only at n=16."
+    ]
+  },
+  "primary_endpoint": {
+    "description": "Mean paired per-item Brier reduction (witnessed_structure minus strongest_semantic_control) on adjudicated transfer validity.",
+    "quantity": "paired_brier_reduction"
+  },
+  "receipt_id": "paper3-power-design-decision-20260811",
+  "schema_version": "paper3-power-decision-receipt-v1"
+}

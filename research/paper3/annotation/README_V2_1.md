@@ -2,11 +2,29 @@
 
 This directory contains a **solicitation packet, not annotation evidence**.
 
+## Power-design decision (#248 resolved)
+
+Pre-label power design is **frozen** under `research/paper3/power_design/`.
+Decision path **C** (`CONFIRMATORY_PACKET_POWER_LIMITED`): retain the sixteen-item
+v2.1 confirmatory packet. The registered primary MDE (paired Brier reduction
+0.05) requires approximately **n=48** for adequate power across plausible
+item-level noise; n=16 is underpowered and wide null intervals must be read as
+**inconclusive**, not refutation.
+
+Annotators may now proceed on the **exact v2.1 packet below**. Do not expect a
+superseding packet version from #248.
+
+Frozen bindings for this decision:
+
+- Zero-label observation: `research/paper3/power_design/ZERO_LABELS_AT_POWER_DESIGN.json`
+- Decision receipt: `research/paper3/power_design/DECISION_RECEIPT.json`
+- Power results: `research/paper3/power_design/POWER_RESULTS.json`
+
 ## Volunteer contact
 
-To volunteer for one of the required external roles, comment only with the role and a brief public expertise summary on [GitHub issue #43](https://github.com/SzeChunYiu/RAKL/issues/43), using the [immutable v2.1 packet at commit `c6f2639b0927566c473817b4ebaafaee3a35ad36`](https://github.com/SzeChunYiu/RAKL/tree/c6f2639b0927566c473817b4ebaafaee3a35ad36/research/paper3/annotation). Do not post response files, identity evidence, affiliations, or private conflict material publicly. The coordinator must supply a secure return channel and separately audit identity, expertise, conflicts, role separation, exact bindings, and access chronology.
+To volunteer for one of the required external roles, comment only with the role and a brief public expertise summary on [GitHub issue #217](https://github.com/SzeChunYiu/RAKL/issues/217), using the frozen v2.1 packet hashes recorded in `research/paper3/power_design/DECISION_RECEIPT.json`. Do not post response files, identity evidence, affiliations, or private conflict material publicly. The coordinator must supply a secure return channel and separately audit identity, expertise, conflicts, role separation, exact bindings, and access chronology.
 
-As observed on 2026-08-11, issue #43 has zero public responses; private response status is `CANNOT_CHECK` from the public repository. A solicitation or public comment is not an annotation submission, review, adjudication, provenance-audit evidence, a gate pass, peer review, or publication.
+As observed at the #248 power-design cutoff, issue #217 has zero public annotation responses; private response status is `CANNOT_CHECK` from the public repository. A solicitation or public comment is not an annotation submission, review, adjudication, provenance-audit evidence, a gate pass, peer review, or publication.
 
 ## Frozen public inputs
 
