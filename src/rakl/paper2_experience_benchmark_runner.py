@@ -68,6 +68,10 @@ VERDICT_ENUM_MARKER = "SUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK"
 FORBIDDEN_VERDICT_SYNONYM_MARKER = "Do not emit REJECT, FAIL"
 JSON_SKELETON_MARKER = '{"verdict":"CANNOT_CHECK","selected_evidence_ids":[],"rejected_evidence_ids":[],"rationale_tags":[]}'
 JSON_OBJECT_ONLY_MARKER = 'The first non-whitespace character MUST be "{"'
+EVIDENCE_ID_STRING_ARRAY_MARKER = (
+    'selected_evidence_ids and rejected_evidence_ids MUST be JSON arrays of bare string ids'
+)
+EVIDENCE_ID_OBJECT_FORBIDDEN_MARKER = 'Do not emit objects like {"id":"E1"}'
 JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -83,6 +87,19 @@ def require_json_skeleton_prompt(text: str, *, label: str) -> None:
     for marker in (JSON_SKELETON_MARKER, JSON_OBJECT_ONLY_MARKER, VERDICT_ENUM_MARKER):
         if marker not in text:
             raise RuntimeError(f"experience prompt missing json-skeleton marker:{label}:{marker}")
+
+
+def require_evidence_id_string_array_prompt(text: str, *, label: str) -> None:
+    """Fail closed if the user prompt omits the string-array evidence-id contract.
+
+    Job 3476742 INSTRUMENT_DEFECT: 1.5B ORACLE emitted rejected_evidence_ids as
+    objects like {"id":"E2"} instead of bare strings. The frozen OUTPUT_SCHEMA
+    already requires string items; the runtime user prompt must forbid the
+    object-wrapper shape so parse-validity measures capability, not format drift.
+    """
+    for marker in (EVIDENCE_ID_STRING_ARRAY_MARKER, EVIDENCE_ID_OBJECT_FORBIDDEN_MARKER):
+        if marker not in text:
+            raise RuntimeError(f"experience prompt missing evidence-id string-array marker:{label}:{marker}")
 
 
 def _utc_now() -> str:
@@ -109,6 +126,32 @@ def _state_hash(state: Mapping[str, Any]) -> str:
     return _sha256_bytes(canonical_json_bytes(dict(state)) + b"\n")
 
 
+def _coerce_evidence_id_item(item: Any) -> str | None:
+    """Coerce one evidence-id item to a bare string.
+
+    Accepts already-valid strings. Also unwraps the exact object-wrapper shape
+    observed in job 3476742 INSTRUMENT_DEFECT: {"id": "E2"} -> "E2".
+    Any other object/list/number shape remains invalid.
+    """
+    if isinstance(item, str):
+        return item
+    if isinstance(item, dict) and set(item.keys()) == {"id"} and isinstance(item.get("id"), str):
+        return item["id"]
+    return None
+
+
+def _normalize_evidence_id_list(value: Any) -> list[str] | None:
+    if not isinstance(value, list):
+        return None
+    out: list[str] = []
+    for item in value:
+        coerced = _coerce_evidence_id_item(item)
+        if coerced is None:
+            return None
+        out.append(coerced)
+    return out
+
+
 def _parse_model_json(raw_text: str) -> tuple[dict[str, Any] | None, tuple[str, ...]]:
     text = raw_text.strip()
     if not text:
@@ -129,7 +172,18 @@ def _parse_model_json(raw_text: str) -> tuple[dict[str, Any] | None, tuple[str, 
     missing = tuple(key for key in required if key not in obj)
     if missing:
         return None, ("missing_required_fields",) + missing
-    return obj, ()
+    selected = _normalize_evidence_id_list(obj.get("selected_evidence_ids"))
+    rejected = _normalize_evidence_id_list(obj.get("rejected_evidence_ids"))
+    if selected is None or rejected is None:
+        return None, ("schema_violation", "evidence_ids_not_string_array")
+    tags = obj.get("rationale_tags")
+    if not isinstance(tags, list) or any(not isinstance(item, str) for item in tags):
+        return None, ("schema_violation", "rationale_tags_not_string_array")
+    normalized = dict(obj)
+    normalized["selected_evidence_ids"] = selected
+    normalized["rejected_evidence_ids"] = rejected
+    normalized["rationale_tags"] = list(tags)
+    return normalized, ()
 
 
 def _recall(predicted: list[str], required: list[str]) -> float:
@@ -225,6 +279,8 @@ def build_user_prompt(
         "verdict, selected_evidence_ids, rejected_evidence_ids, rationale_tags.",
         f"verdict MUST be exactly one of: {VERDICT_ENUM_MARKER}",
         f"{FORBIDDEN_VERDICT_SYNONYM_MARKER}, ACCEPT, TRUE, FALSE, or any other verdict synonym.",
+        f"{EVIDENCE_ID_STRING_ARRAY_MARKER} (example: [\"E1\",\"E2\"]).",
+        f'{EVIDENCE_ID_OBJECT_FORBIDDEN_MARKER} inside those arrays.',
         'The first non-whitespace character MUST be "{" and the last MUST be "}".',
         "Do not emit CSV/YAML/prose. Use this exact skeleton shape:",
         JSON_SKELETON_MARKER,
@@ -273,6 +329,7 @@ def build_user_prompt(
     prompt = "\n".join(parts)
     require_verdict_enum_prompt(prompt, label=f"user:{task['task_id']}")
     require_json_skeleton_prompt(prompt, label=f"user:{task['task_id']}")
+    require_evidence_id_string_array_prompt(prompt, label=f"user:{task['task_id']}")
     return prompt
 
 

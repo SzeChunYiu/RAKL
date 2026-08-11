@@ -9,8 +9,10 @@ from rakl.paper2_experience_benchmark_runner import (
     PROTOCOL_SUBJECT_HASH,
     PROTOCOL_SUBJECT_HASH_V1,
     PROTOCOL_SUBJECT_HASH_V1_2,
+    _parse_model_json,
     build_user_prompt,
     execute_experience_benchmark,
+    require_evidence_id_string_array_prompt,
     require_verdict_enum_prompt,
     require_json_skeleton_prompt,
     score_structured_answer,
@@ -84,8 +86,46 @@ def test_verdict_enum_prompt_markers_present() -> None:
     )
     require_verdict_enum_prompt(prompt, label="user")
     require_json_skeleton_prompt(prompt, label="user")
+    require_evidence_id_string_array_prompt(prompt, label="user")
     assert "REJECT" in prompt
     assert '{"verdict":"CANNOT_CHECK"' in prompt
+    assert "bare string ids" in prompt
+    assert '{"id":"E1"}' in prompt
+
+
+def test_parse_unwraps_rejected_evidence_id_objects_from_job_3476742() -> None:
+    """Instrument repair for INSTRUMENT_DEFECT shape from 1.5B ORACLE job 3476742."""
+    raw = (
+        '{"verdict":"CANNOT_CHECK","selected_evidence_ids":[],'
+        '"rejected_evidence_ids":[{"id":"E2"}],'
+        '"rationale_tags":["CONTEXT_MISALIGNED"]}'
+    )
+    predicted, failures = _parse_model_json(raw)
+    assert failures == ()
+    assert predicted is not None
+    assert predicted["rejected_evidence_ids"] == ["E2"]
+    assert predicted["selected_evidence_ids"] == []
+
+    raw_multi = (
+        '{"verdict":"CANNOT_CHECK","selected_evidence_ids":[],'
+        '"rejected_evidence_ids":[{"id":"E1"},{"id":"E2"}],'
+        '"rationale_tags":["CONTEXT_MISALIGNED"]}'
+    )
+    predicted2, failures2 = _parse_model_json(raw_multi)
+    assert failures2 == ()
+    assert predicted2 is not None
+    assert predicted2["rejected_evidence_ids"] == ["E1", "E2"]
+
+
+def test_parse_rejects_non_id_object_evidence_items() -> None:
+    raw = (
+        '{"verdict":"CANNOT_CHECK","selected_evidence_ids":[{"foo":"E1"}],'
+        '"rejected_evidence_ids":[],"rationale_tags":[]}'
+    )
+    predicted, failures = _parse_model_json(raw)
+    assert predicted is None
+    assert "schema_violation" in failures
+    assert "evidence_ids_not_string_array" in failures
 
 
 def test_score_rejects_illegal_verdict_token() -> None:
