@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from rakl.matched_microtrial import MatchedModelConfig, TrialResourceCeiling, TrialResourceUsage
 from rakl.saturation_vector import NoveltyRound, SaturationAxis
 from rakl.v3_metrology import (
@@ -95,17 +97,29 @@ def _packet(*, leak_learning_state: bool = False) -> AttributionPacket:
         AttributionArm.RAKL_SHAM_MEMORY: "sham",
         AttributionArm.RAKL_LEARNING: "learned",
     }
-    runs = []
     scores = {
         AttributionArm.MODEL_ONLY: (False, 0.2),
         AttributionArm.RAKL_RESET: (False, 0.3),
         AttributionArm.RAKL_SHAM_MEMORY: (False, 0.35),
         AttributionArm.RAKL_LEARNING: (True, 0.7),
     }
+    runs = []
     for arm in AttributionArm:
         run = _run("T1", arm, states[arm], success=scores[arm][0], score=scores[arm][1])
         if arm is AttributionArm.RAKL_LEARNING and leak_learning_state:
-            run = AttributionRun(**{**run.__dict__, "state_after_hash": "learned-plus-T1"})
+            run = AttributionRun(
+                run_id=run.run_id,
+                task_id=run.task_id,
+                arm=run.arm,
+                state_before_hash=run.state_before_hash,
+                state_after_hash="learned-plus-T1",
+                success=run.success,
+                score=run.score,
+                failure_signature=run.failure_signature,
+                validity_failures=run.validity_failures,
+                resource_usage=run.resource_usage,
+                output_hash=run.output_hash,
+            )
         runs.append(run)
     model = MatchedModelConfig(
         model_id="model",
@@ -147,8 +161,8 @@ def test_four_arm_attribution_separates_architecture_experience_and_content_lift
     assert validation.matched
     report = assess_attribution(packet)
     assert report.total_success_lift == 1.0
-    assert report.experience_score_lift == 0.4
-    assert report.content_specific_score_lift == 0.35
+    assert report.experience_score_lift == pytest.approx(0.4)
+    assert report.content_specific_score_lift == pytest.approx(0.35)
     assert report.learning_vs_model_outcomes is not None
     assert report.learning_vs_model_outcomes.rakl_only_success == 1
     assert not report.grants_global_capability_claim
