@@ -1,6 +1,6 @@
 """Stable public facade for the RAKL v3 recursive experience substrate.
 
-Legacy RAKL imports remain untouched.  New callers can depend on ``rakl.v3``
+Legacy RAKL imports remain untouched. New callers can depend on ``rakl.v3``
 without knowing how the v3 implementation is split across internal modules.
 """
 
@@ -8,15 +8,19 @@ from .driver_learning import DriverRequest, DriverResult, DriverTask, LearningTu
 from .evolution_archive import (
     EvolutionArchive,
     EvolutionEdge,
+    EvolutionTrialAuthorityBindings,
     RAKLVariant,
     VariantSelection,
     VariantStatus,
     evolution_portrait,
+    evolution_trial_subject_hash,
+    evolution_assurance_subject_hash,
     initialize_evolution_archive,
     promote_incumbent,
     rank_variants_for_task,
     record_evolution_trial,
     register_challenger,
+    variant_promotion_subject_hash,
 )
 from .experience_benchmark import (
     ArmPhaseMetrics,
@@ -28,6 +32,8 @@ from .experience_benchmark import (
     ExperienceBenchmarkValidation,
     ExperienceBenchmarkVerdict,
     assess_experience_benchmark,
+    benchmark_protocol_subject_hash,
+    benchmark_result_subject_hash,
     validate_experience_benchmark,
 )
 from .experience_learning import (
@@ -95,6 +101,18 @@ from .problem_fibre import (
     compile_problem_fibre,
     glue_local_sections,
     knowledge_items_from_legacy_fiber,
+    local_section_subject_hash,
+)
+from .v3_authority import (
+    AttestationPurpose,
+    AttestationResolution,
+    AuthorityTrustPolicy,
+    EvidenceArtifact,
+    ProtectedAttestation,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    issue_protected_attestation,
+    resolve_protected_attestation,
 )
 from .problem_novelty import (
     ProblemNoveltyClass,
@@ -148,12 +166,15 @@ from .v3_runtime import (
 
 __all__ = [
     "ArmPhaseMetrics",
+    "AttestationPurpose",
+    "AttestationResolution",
     "AttributionArm",
     "AttributionArmMetrics",
     "AttributionPacket",
     "AttributionReport",
     "AttributionRun",
     "AttributionValidation",
+    "AuthorityTrustPolicy",
     "BoundaryLessonSpec",
     "ConsolidationOutcome",
     "ConsolidationVerdict",
@@ -163,6 +184,7 @@ __all__ = [
     "EpisodeOutcome",
     "EvolutionArchive",
     "EvolutionEdge",
+    "EvolutionTrialAuthorityBindings",
     "ExperienceBenchmarkArm",
     "ExperienceBenchmarkPacket",
     "ExperienceBenchmarkPhase",
@@ -172,6 +194,7 @@ __all__ = [
     "ExperienceBenchmarkVerdict",
     "ExperienceConditionedPath",
     "ExperienceLedger",
+    "EvidenceArtifact",
     "FailureDiagnosisRevisionSpec",
     "FailureProjectionSpec",
     "FibreKnowledgeItem",
@@ -200,6 +223,8 @@ __all__ = [
     "ProcessAggregate",
     "ProcessOutcome",
     "ProcessTelemetry",
+    "ProtectedAttestation",
+    "ProtectedAuthorityContext",
     "RAKLTrivialityReport",
     "RAKLVariant",
     "RAKLV3State",
@@ -230,7 +255,10 @@ __all__ = [
     "assess_lesson_consolidation",
     "assess_rakl_triviality",
     "assess_saturation_vector",
+    "benchmark_protocol_subject_hash",
+    "benchmark_result_subject_hash",
     "boundary_lesson_from_supported_failure",
+    "canonical_sha256",
     "classify_problem_novelty",
     "compare_state_metrics",
     "compile_problem_fibre",
@@ -239,16 +267,20 @@ __all__ = [
     "episode_memory_view",
     "episode_portrait",
     "episode_to_failure_experience",
+    "evolution_assurance_subject_hash",
     "evolution_portrait",
+    "evolution_trial_subject_hash",
     "experience_memory_views",
     "glue_local_sections",
     "gluing_episode_outcome",
     "gluing_residual_signature",
     "induce_strategy_motifs",
     "initialize_evolution_archive",
+    "issue_protected_attestation",
     "knowledge_items_from_legacy_fiber",
     "lesson_memory_view",
     "lesson_to_research_tool",
+    "local_section_subject_hash",
     "materialize_state_substrate",
     "materialize_unified_substrate",
     "measure_state",
@@ -263,6 +295,7 @@ __all__ = [
     "record_saturation_round",
     "record_task_episode",
     "register_challenger",
+    "resolve_protected_attestation",
     "revise_failure_diagnosis",
     "run_learning_turn",
     "state_fingerprint",
@@ -270,4 +303,5 @@ __all__ = [
     "validate_episode",
     "validate_experience_benchmark",
     "validate_lesson",
+    "variant_promotion_subject_hash",
 ]
