@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/research-memory-review.schema.json",
+  "title": "RAKL Pre-Candidate Research Memory Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_atom_id",
+    "target_context_hash",
+    "tool_inventory_snapshot_hash",
+    "failure_lattice_snapshot_hash",
+    "tool_query_status",
+    "failure_query_status",
+    "candidate_method_families",
+    "evidence_pointers",
+    "artifact_hash"
+  ],
+  "properties": {
+    "target_atom_id": {"type": "string", "minLength": 1},
+    "target_context_hash": {"type": "string", "minLength": 1},
+    "tool_inventory_snapshot_hash": {"type": "string", "minLength": 1},
+    "failure_lattice_snapshot_hash": {"type": "string", "minLength": 1},
+    "tool_query_status": {"enum": ["MATCHES_FOUND", "NO_RELEVANT_MATCH"]},
+    "failure_query_status": {"enum": ["MATCHES_FOUND", "NO_RELEVANT_MATCH"]},
+    "candidate_method_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "relevant_tool_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "relevant_failure_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "selected_tool_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "tool_applicability_notes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "failure_reuse_notes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "unresolved_warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": []
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "artifact_hash": {"type": "string", "minLength": 1}
+  }
+}
