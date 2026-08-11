@@ -1,0 +1,31 @@
+{
+  "schema_version": "paper3-successor-validation-decision-v1",
+  "receipt_id": "paper3-successor-validation-326",
+  "issue": 326,
+  "created_at_utc": "2026-08-11T21:55:00Z",
+  "terminal_status": "POWER_LIMITED_RETAIN_V2_1",
+  "rationale": "Independent zero-label window remains open (demoted AI_OPERATOR payloads are not independent human labels). Path C power design already froze CONFIRMATORY_PACKET_POWER_LIMITED at n=16 with minimum_n_for_adequacy_all_sigmas=48 and expansion_feasible_within_ceiling=false. No label-blind powered expansion packet is frozen in-repo. Retain v2.1 as power-limited; do not post-label enlarge or rescue-tune.",
+  "power_path": "C",
+  "power_decision": "CONFIRMATORY_PACKET_POWER_LIMITED",
+  "minimum_n_for_adequacy_all_sigmas": 48,
+  "expansion_feasible_within_ceiling": false,
+  "successor_source_set_created": false,
+  "successor_public_packet_created": false,
+  "retains_packet": {
+    "version": "v2.1",
+    "source_set": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json",
+    "public_packet": "research/paper3/annotation/EXTERNAL_ANNOTATION_PACKET_V2_1_20260810.json",
+    "prior_power_decision": "CONFIRMATORY_PACKET_POWER_LIMITED",
+    "prior_power_path": "C"
+  },
+  "machine_witness_protocol_status": "DESIGN_FROZEN_NO_OUTPUTS",
+  "anti_circularity_status": "DESIGN_FROZEN_PRE_LABEL",
+  "semantic_control_manifest_status": "BOUND_TO_EXISTING_STRONG_CONTROL_FREEZE",
+  "handoff": {
+    "issue_217": "Closed under demoted AI_OPERATOR; independent external humans remain absent.",
+    "issue_249": "Closed under demoted AI_OPERATOR after pilots 3476753/3476754; not confirmatory independent evidence.",
+    "issue_332": "Tracks the independent-human residual; close under demoted-authority floor only."
+  },
+  "claim_boundary": "Successor-window terminal decision only. No confirmatory gate pass, no independent-review claim, no Constitution-grade authority, no promotional structural-signal claim.",
+  "grants_scientific_authority": false
+}
