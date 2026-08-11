@@ -1,0 +1,48 @@
+{
+  "target_atom_id": "NS-B1a",
+  "target_context_hash": "sha256:d0acf9ae066132883a893e669c09f5969f5e40281c558913b61c8ac0fcc2902d",
+  "tool_inventory_snapshot_hash": "sha256:c0818b3de205c33d656e522acfeb57f28180c57dd948f2aef573142b18d84f89",
+  "failure_lattice_snapshot_hash": "sha256:c6370bcf112dd6ae7ca4583fd48f7e7c3c8a48c4de6fa2ab8b693695ba2b0edc",
+  "tool_query_status": "NO_RELEVANT_MATCH",
+  "failure_query_status": "MATCHES_FOUND",
+  "candidate_method_families": [
+    "dynamics-specific global tail tightness from ancient mild representation",
+    "pressure-aware localized energy flux summation",
+    "critical-element / almost-periodicity modulo translation and scaling",
+    "backward-sequence trace extraction into global L3",
+    "alternative Liouville trigger inherited directly from finite I"
+  ],
+  "relevant_tool_ids": [],
+  "relevant_failure_ids": [
+    "F-C023-SCALAR-COLLAPSE",
+    "F-C024-FRACTIONAL-INTEGRALITY-GAP"
+  ],
+  "selected_tool_ids": [],
+  "tool_applicability_notes": [
+    "No promoted P-vs-NP ResearchTool has PDE preconditions matching mild ancient Navier–Stokes solutions, nonlocal pressure, local energy inequalities, or global spatial tails.",
+    "C024's verified local fractional certificate is a graph-cover LP tool and is not applicable to a PDE trace/tail theorem; no ToolApplicabilityWitness exists.",
+    "The source theorems used in NS-B1a remain literature methods, not promoted RAKL ResearchTools, until a successful target-specific research step is verified and scoped."
+  ],
+  "failure_reuse_notes": [
+    "F-C023-SCALAR-COLLAPSE is relevant only at the abstraction level: a bounded scalar summary can erase load-bearing relational/trajectory structure. For NS-B1a this warns against treating one Type-I scalar bound as a surrogate for spatial tail tightness; it does not prove any PDE impossibility.",
+    "F-C024-FRACTIONAL-INTEGRALITY-GAP is relevant only as a local-to-global aggregation warning: individually valid local budgets may fail to control simultaneous global accumulation. The PDE and graph-cover contexts are structurally different, so the target repeat-failure test is the NS-B1 sparse-tail calibration rather than literal LP reuse.",
+    "Difference witness for both cross-problem warnings: target coordinates now include continuous space-time, diffusion, nonlinear transport, nonlocal pressure and ancient mild evolution; these are absent from the source graph-cover failures and are exactly the candidate escape mechanisms to test."
+  ],
+  "unresolved_warnings": [
+    "The sparse-tail field refutes only a norm-definition embedding on arbitrary divergence-free fields; it is not a Navier–Stokes solution.",
+    "No source-backed theorem currently upgrades finite I to global L3 control on a backward sequence.",
+    "A tail-tightness theorem must not assume finite global L3, fixed/DSS orbit structure, or decay strong enough to imply the conclusion.",
+    "Pressure/far-field estimates must be uniform across expanding radii and cannot hide an infinite shell accumulation.",
+    "Success on NS-B1a would still leave the Type-II sibling residual NS-B2."
+  ],
+  "evidence_pointers": [
+    "research/real_math/millennium/navier_stokes/01_frontier/NS-B1_TYPE_I_IMPLICATION_MATRIX_20260811.md",
+    "research/real_math/millennium/navier_stokes/01_frontier/NS-B1a_CONTEXT_FIBER_20260811.json",
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_RESEARCH_TOOL_INVENTORY_20260811.json@blob:432bf0832c58738bf421a42262f8443fbc943fcb",
+    "research/real_math/millennium/p_vs_np/07_memory/C024_RESEARCH_TOOL_DELTA_20260811.json@blob:3e874f25aab5192c7e5468a7fba2f6979b283f20",
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_FAILURE_EXPERIENCE_LATTICE_20260811.json@blob:bb79c237dbfca5d38ab08807446640f1eb672e39",
+    "research/real_math/millennium/p_vs_np/07_memory/C024_FAILURE_EXPERIENCE_DELTA_20260811.json@blob:11a8767f98d8840aa654a99dc6f4a31b1f8fbd40",
+    "main-snapshot:dd2c23aaa68819a1c1e24bd95fe4ce5f2568d1db"
+  ],
+  "artifact_hash": "sha256:a7087038079cb67bb22048a1f538b6a32a54b54c9667e9089134ccb8728f53c4"
+}
