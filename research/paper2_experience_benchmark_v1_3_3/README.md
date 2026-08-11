@@ -26,3 +26,11 @@ Preregistered escalation: `PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md` remainin
 - reopening #138
 - reinterpreting 3476548 / 3476730 / 3476731 / 3476756 / 3476778 as lift
 - overwriting v1.3_1 / v1.3_2 negative history
+
+## Decision (job 3476788)
+
+Landed native ORACLE **3476788**: success_rate 1/3, parse-valid 3/3, mean_score 0.62.
+Scientific verdict: **MODEL_CAPABILITY_FLOOR_7B**.
+Parents **3476778** (`MODEL_CAPABILITY_FLOOR_3B`), **3476756** (`MODEL_CAPABILITY_FLOOR_1_5B`) and **3476742** (`INSTRUMENT_DEFECT`) remain immutable negative history.
+See `ORACLE_DECISION_RECEIPT_V1_3_3.json` and `PAPER_FACING_NOTE_ORACLE_V1_3_3_ISSUE372.md`.
+Phase-0 / learning staircase remain unauthorized. #138 stays closed.

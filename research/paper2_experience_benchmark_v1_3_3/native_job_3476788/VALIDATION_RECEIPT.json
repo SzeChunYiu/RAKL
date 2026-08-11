@@ -1,0 +1,94 @@
+{
+  "all_outputs_parse_valid": true,
+  "benchmark_id": "paper2-experience-benchmark-v1_3_3",
+  "claim_boundary": "ORACLE decision-table validation for #372 Phase-1 7B only. Not manuscript authority. Not experience-learning efficacy. Not promotional lift. Does not reopen #138. Does not authorize Phase-0 architecture arms from this gate.",
+  "created_at_utc": "2026-08-11T22:45:30.000Z",
+  "diagnostic_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
+  "expected_repo_sha": "a529f15030456adefb4cf5bbedcf5b8f7b35b1f4",
+  "experience_benchmark_7B_authorized": false,
+  "harvest_sha256": "a62cc0f1aa074770e0313df746feec4a550d567022db73ea2ff20583e5a0cea3",
+  "harvest_verdict": "HARVESTED_EXPERIENCE_BENCHMARK_V1_3_3_ORACLE_AWAITING_VALIDATION",
+  "issue": 372,
+  "parent_issue": 247,
+  "learning_loop_mode": "root_cause_v1",
+  "mean_score": 0.625,
+  "oracle_gate_passed": false,
+  "oracle_pass_min_success_rate": 0.6666666666666666,
+  "paper3_issue_217_path": false,
+  "paper_numbers_allowed": false,
+  "parse_valid_runs": 3,
+  "parse_valid_runs_total": 3,
+  "promotional_lift_claim_allowed": false,
+  "protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+  "reinterpret_parent_job_3476548_as_lift": false,
+  "reinterpret_parent_job_3476756_as_lift": false,
+  "reinterpret_parent_job_3476778_as_lift": false,
+  "reopen_issue_138": false,
+  "root_cause": {
+    "action": "Document MODEL_CAPABILITY_FLOOR_7B and stop 7B Phase-0 architecture/learning staircase. Do not submit Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL. Do not reopen #138. No promotional lift.",
+    "classification": "MODEL_CAPABILITY_FLOOR_7B",
+    "decision_table_row": "ORACLE fails (success_rate < 2/3), outputs parse-valid",
+    "learning_staircase_authorized": false,
+    "pipeline_bug": false,
+    "promotional_lift_claim_allowed": false,
+    "reopen_issue_138": false,
+    "stop_7B_architecture_arms": true,
+    "submit_phase0_authorized": false,
+    "summary": "Phase-1 7B ORACLE job 3476788: success_rate=1/3 (0.3333), parse_valid=3/3, mean_score=0.6250. Decision-table classification=MODEL_CAPABILITY_FLOOR_7B. Parents 3476778 FLOOR_3B, 3476756 FLOOR_1_5B, and instrument 3476742 preserved as negative history."
+  },
+  "run_count": 3,
+  "schema_version": "paper2-experience-benchmark-validation-receipt-v1",
+  "scientific_verdict": "MODEL_CAPABILITY_FLOOR_7B",
+  "section": "PHASE1_ORACLE_7B",
+  "slurm_job_id": "3476788",
+  "success_count": 1,
+  "success_rate": 0.3333333333333333,
+  "task_ids": [
+    "T1",
+    "T2",
+    "T3"
+  ],
+  "v4_1_score_reuse_allowed": false,
+  "run_manifest_sha256": "c55f519e91f417a6f1362b711bc0960c114847e50f0b91a082d80e43c187a485",
+  "runs_jsonl_sha256": "1cbb0503bf3148c4cf2ca280d3e77117f5254dd9d0b73672640347e6daa1fc01",
+  "sacct_sha256": "a04f79d0be4cc6f2a7188315deceaa7e90ae2acfd91fa63487e126dcf2aaa8d3",
+  "submission_sha256": "04c241a563d3a861073ec28992d4b08348e4f8986681023ce63f15b345937007",
+  "slurm_elapsed": 169,
+  "slurm_exit_code": "0:0",
+  "slurm_state": "COMPLETED",
+  "task_results": [
+    {
+      "failure_signature": [],
+      "output_sha256": "74861bc9829ccbf802b72e995a9554aa65424878d42425999f0dfad906cb24a2",
+      "parse_valid": true,
+      "score": 1.0,
+      "success": true,
+      "task_id": "T1",
+      "verdict_token": "SUPPORT"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "output_sha256": "f47d0bfece95869896a0589136a47bf72b640ece9bb62de3648ae11ce7ccb4ac",
+      "parse_valid": true,
+      "score": 0.5,
+      "success": false,
+      "task_id": "T2",
+      "verdict_token": "CONTEXT_MISALIGNED"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete"
+      ],
+      "output_sha256": "2220ea33cacbf3c88cb1f62354fa8be9181fa22fc0adaeb1ca155c97bd728d59",
+      "parse_valid": true,
+      "score": 0.375,
+      "success": false,
+      "task_id": "T3",
+      "verdict_token": "CONTEXT_MISALIGNED"
+    }
+  ]
+}
