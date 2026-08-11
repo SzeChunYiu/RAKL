@@ -7,7 +7,7 @@ Use when the target includes a conjecture, theorem, proof, formalization, or a c
 Keep seven questions independent:
 
 1. **Discovery context** — was the active atom understood across equivalent formulations, solved/near-solved analogues and witnessed method-transfer assumptions before candidate generation?
-2. **Research trace** — is there an auditable chronological record of atomization, context, analogy scan, method choice, next action, falsification, residuals and later promotion events?
+2. **Research trace** — is there an auditable chronological record of atomization, context, analogy scan, method choice, expert objections, next action, falsification, residuals and later promotion events?
 3. **Specification** — does the formal statement mean what the researcher intended?
 4. **Truth** — is that exact formal statement proved from the registered assumptions?
 5. **Verifier trust** — what checker, axioms, dependencies and artifact identities does the truth claim rely on?
@@ -49,7 +49,12 @@ Freeze and append an auditable trace conforming to `schemas/math-research-trace.
 2. `CONTEXT_FROZEN` — current context state and exact context-packet hash;
 3. `ANALOGY_SCAN` — retained/refuted analogies or explicit no-safe-bridge result;
 4. `METHOD_TRANSFER_REVIEW` — source methods, enabling assumptions, shared structure and disanalogies;
-5. `NEXT_STEP_PROPOSED` — proposed action, alternatives considered, concise evidence-grounded selection rationale, uncertainty and expected discriminator.
+5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, unresolved uncertainty and recommendation;
+6. `NEXT_STEP_PROPOSED` — proposed action, alternatives considered, concise evidence-grounded selection rationale, uncertainty and expected discriminator.
+
+The pre-candidate expert cell must cover at least: domain/theory, analogy/method transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. These are same-context role-separated passes and must never be labelled independent peer review.
+
+Trace entries are hash-chained. Except for the first event, `previous_event_hash` must equal the previous event's `artifact_hash`. This makes the public chronology tamper-evident.
 
 This is an inspectable scientific decision record, not a raw private chain-of-thought transcript. Record only reproducible state, bounded rationale, evidence, outputs, uncertainties, residuals and next actions.
 
@@ -65,24 +70,25 @@ Call `plan_math_research(..., context_fiber=..., research_trace=...)`. If `candi
 6. Run a cross-domain analogy scan. Abstract away domain nouns and compare roles, constraints, resources, transformations, bottlenecks, information flow, reuse, symmetry, conservation and failure modes. Retain an analogy only when its mapping and disanalogies are explicit.
 7. Build the method-transfer matrix. For each analogue, record shared structure, broken assumptions/disanalogies and the minimum repair question needed for transfer.
 8. Freeze/hash the context packet and record `CONTEXT_FROZEN`, `ANALOGY_SCAN` and `METHOD_TRANSFER_REVIEW` before candidate generation.
-9. Propose the next action and alternatives. Record `NEXT_STEP_PROPOSED` with a concise evidence-grounded rationale and expected discriminator.
-10. Pass `audit_math_context_fiber`, `audit_pre_candidate_trace` and `plan_math_research`.
-11. Only after both gates pass, use LLMs as proposal generators for conjectures, proof ideas, lemmas, representations, auxiliary objects and search actions. Each candidate must point to the context-transfer row, witnessed analogy or residual that motivated it. Record `CANDIDATE_PROPOSED`.
-12. Compile the assurance state into explicit obstructions with `plan_math_research`; use obstruction-guided operator paths as candidate research routes, not truth authority.
-13. Run a **counterexample-first pass** before expensive proof search: exact finite enumeration where possible, randomized/property testing, CAS/SMT/SAT/model finding, boundary and degenerate cases. Record `FALSIFIER_RUN` and `RESULT_RECORDED`.
-14. If a candidate fails, preserve the failure, record `RESIDUAL_OPENED`, and classify the residual. Update the context fiber when the failure reveals a new structural coordinate, disanalogy, method limitation or equivalent formulation. Do not blindly generate another proof from the same unchanged context packet.
-15. Formalize the candidate statement. Bind the informal claim and formal statement with hashes and an explicit `FormalizationWitness`. Record `FORMALIZED`.
-16. Check the formalization by round-trip paraphrase, positive/negative examples, boundary cases, assumptions, quantifier order, domains, and at least one independent review for a new-mathematics claim.
-17. Search for a proof in a theorem prover or other proof-producing system. Treat every failed proof attempt as negative history rather than deleting it.
-18. For any accepted theorem, record a `ProofReceipt` bound to the exact formal statement and source hash. Record `PROOF_CHECKED` only at the actual authority achieved.
-19. Audit all transitive proof dependencies. Finished strict-profile results must not depend on `sorryAx`; unregistered custom axioms are rejected, and compiler/native trust is rejected when independent kernel-level assurance is required.
-20. Recheck generated proof artifacts in an isolated independent checker where the proof ecosystem supports it. Pin checker versions and dependency identities.
-21. Only after truth assurance, open the novelty fiber. Build a notation-normalized and structure-aware theorem fingerprint; search multiple literature corpora, terminology variants, citation neighborhoods, translations, structural equivalents and known stronger parent theorems. Record `NOVELTY_CHECKED`.
-22. Record novelty only as a **bounded, cutoff-scoped certificate**. A later prior-art hit may demote novelty without demoting proof validity.
-23. Evaluate research value separately: generality, compression, explanatory power, connection to open problems, nontriviality, downstream consequences, new representation/invariant/technique and expert interest.
-24. Run same-context consistency review, then genuinely isolated reviewers where independence is required. Record `REVIEWED` with the exact review authority.
-25. Promote to `NEW_MATHEMATICS_CANDIDATE` only when specification alignment, proof assurance, verifier-trust audit, bounded novelty, and research-value review all pass. If claiming strict RAKL-mediated discovery, context chronology and research trace must also pass. Record `PROMOTED` only after those gates.
-26. Release the context fiber, research trace, theorem statement, proof artifact, dependency/axiom audit, checker identities, corpus cutoff, novelty search routes, structural fingerprint/equivalence policy and negative-history summary.
+9. Convene the same-context expert cell. The domain/theory lead checks exact model scope and barriers; the analogy lead attacks transfer assumptions; the adversarial lead designs cheap falsifiers and detects obstruction renaming; the formal-methods lead checks statement/proof obligations and verifier boundaries; the novelty/value lead searches for likely parent results and assesses information gain. Preserve disagreement and record `EXPERT_CONTEXT_REVIEW`.
+10. Propose the next action and alternatives. Record `NEXT_STEP_PROPOSED` with a concise evidence-grounded rationale and expected discriminator.
+11. Pass `audit_math_context_fiber`, `audit_pre_candidate_trace` and `plan_math_research`.
+12. Only after both gates pass, use LLMs as proposal generators for conjectures, proof ideas, lemmas, representations, auxiliary objects and search actions. Each candidate must point to the context-transfer row, witnessed analogy or residual that motivated it. Record `CANDIDATE_PROPOSED`.
+13. Compile the assurance state into explicit obstructions with `plan_math_research`; use obstruction-guided operator paths as candidate research routes, not truth authority.
+14. Run a **counterexample-first pass** before expensive proof search: exact finite enumeration where possible, randomized/property testing, CAS/SMT/SAT/model finding, boundary and degenerate cases. Record `FALSIFIER_RUN` and `RESULT_RECORDED`.
+15. If a candidate fails, preserve the failure, record `RESIDUAL_OPENED`, and classify the residual. Update the context fiber when the failure reveals a new structural coordinate, disanalogy, method limitation or equivalent formulation. Do not blindly generate another proof from the same unchanged context packet.
+16. Formalize the candidate statement. Bind the informal claim and formal statement with hashes and an explicit `FormalizationWitness`. Record `FORMALIZED`.
+17. Check the formalization by round-trip paraphrase, positive/negative examples, boundary cases, assumptions, quantifier order, domains, and at least one independent review for a new-mathematics claim.
+18. Search for a proof in a theorem prover or other proof-producing system. Treat every failed proof attempt as negative history rather than deleting it.
+19. For any accepted theorem, record a `ProofReceipt` bound to the exact formal statement and source hash. Record `PROOF_CHECKED` only at the actual authority achieved.
+20. Audit all transitive proof dependencies. Finished strict-profile results must not depend on `sorryAx`; unregistered custom axioms are rejected, and compiler/native trust is rejected when independent kernel-level assurance is required.
+21. Recheck generated proof artifacts in an isolated independent checker where the proof ecosystem supports it. Pin checker versions and dependency identities.
+22. Only after truth assurance, open the novelty fiber. Build a notation-normalized and structure-aware theorem fingerprint; search multiple literature corpora, terminology variants, citation neighborhoods, translations, structural equivalents and known stronger parent theorems. Record `NOVELTY_CHECKED`.
+23. Record novelty only as a **bounded, cutoff-scoped certificate**. A later prior-art hit may demote novelty without demoting proof validity.
+24. Evaluate research value separately: generality, compression, explanatory power, connection to open problems, nontriviality, downstream consequences, new representation/invariant/technique and expert interest.
+25. Run same-context consistency review, then genuinely isolated reviewers where independence is required. Record `REVIEWED` with the exact review authority.
+26. Promote to `NEW_MATHEMATICS_CANDIDATE` only when specification alignment, proof assurance, verifier-trust audit, bounded novelty, and research-value review all pass. If claiming strict RAKL-mediated discovery, context chronology and research trace must also pass. Record `PROMOTED` only after those gates.
+27. Release the context fiber, research trace, theorem statement, proof artifact, dependency/axiom audit, checker identities, corpus cutoff, novelty search routes, structural fingerprint/equivalence policy and negative-history summary.
 
 The executable reference surfaces are:
 
@@ -100,7 +106,7 @@ docs/MATH_RESEARCH_QUICKSTART.md
 
 ## Long-horizon rule
 
-Do not store mathematical research as one long natural-language transcript. Every verified lemma is a persistent checkpoint in the proof DAG. Every active atom has a versioned context fiber and an append-only public research trace. Generator mistakes should increase search cost or create rejected branches; they must not accumulate as hidden logical debt inside an accepted theorem.
+Do not store mathematical research as one long natural-language transcript. Every verified lemma is a persistent checkpoint in the proof DAG. Every active atom has a versioned context fiber and an append-only hash-chained public research trace. Generator mistakes should increase search cost or create rejected branches; they must not accumulate as hidden logical debt inside an accepted theorem.
 
 When several candidates fail for the same structural reason, do not ask for another unconstrained proof. Promote that repeated residual into a new context atom and search solved sibling contexts and cross-domain analogues for methods that specifically handle the missing structure.
 
@@ -144,11 +150,13 @@ If the last two questions cannot be answered, discard the analogy.
 >
 > Did any cross-domain/everyday situation share the same abstract structure, and if so what is the witnessed mapping and disanalogy?
 >
+> What did each expert lens object to, and which disagreement remains unresolved?
+>
 > What alternatives were considered for the next step and why was this action selected?
 >
 > What result would discriminate or falsify this next step?
 >
-> Were the context packet and trace frozen before the candidate was generated?
+> Were the context packet and hash-chained trace frozen before the candidate was generated?
 
 If these questions are not answered in frozen artifacts, candidate generation is blocked.
 
@@ -168,6 +176,8 @@ If these questions are not answered in frozen artifacts, candidate generation is
 
 - `context_missing` or `context_incomplete` blocks candidate generation in strict RAKL mathematical discovery.
 - `research_trace_missing` or `research_trace_incomplete` blocks candidate generation.
+- `expert_context_review_missing` blocks candidate generation.
+- `trace_hash_chain_broken` blocks strict discovery chronology.
 - `candidate_generated_before_context_freeze` or before required trace events is a chronology failure. The candidate may be evaluated for truth, but it is not a strict context-first RAKL discovery artifact.
 - `literature_list_present` is not equivalent to `method_transfer_mapped`.
 - `analogy_found` is not equivalent to `analogy_transfer_valid`; abstract mapping, disanalogies and falsifier must be explicit.
