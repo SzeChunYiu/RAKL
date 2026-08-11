@@ -19,7 +19,7 @@ The authors' sequential Nature-skills-style passes remain same-context internal 
 | Frozen Git subject | `118b74c17606637a916fc0e1fea8db6508adb847` |
 | Modular source | `paper/epistemic_mechanics_round050/main.tex` |
 | Modular source SHA-256 | `76c20f20e642939c10d6582a1a87233f172cbf7ee6a45f2dbdcdc4db35bee871` |
-| Deterministic builder | `paper/build_epistemic_mechanics.py` |
+| Deterministic builder | `review/paper1/external_solicitation/artifacts/build_epistemic_mechanics.py` (solicitation-era freeze; live `paper/build_epistemic_mechanics.py` may differ) |
 | Builder SHA-256 | `d52c1715b4e1519443a7cef6e26ff2d03f5a8e000bc6a2ae2db0f03ed13b981b` |
 | Builder parameters | `subject_sha=118b74c17606637a916fc0e1fea8db6508adb847`, `software_tests=840` |
 | Staged source SHA-256 | `aa00a64d801ac802d310c818fe7699454db1346ccb2adf5e4d7de28019c20eb1` |

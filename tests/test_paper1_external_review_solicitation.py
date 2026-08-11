@@ -3,12 +3,14 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import re
 import shutil
 import shlex
 import subprocess
+import sys
 
 import pytest
 
@@ -16,7 +18,6 @@ jsonschema = pytest.importorskip("jsonschema")
 Draft202012Validator = jsonschema.Draft202012Validator
 FormatChecker = jsonschema.FormatChecker
 
-from paper.build_epistemic_mechanics import build_epistemic_mechanics_source
 from review.paper1.external_solicitation.validate_response import validate_response_contract
 
 
@@ -26,10 +27,33 @@ MANIFEST_PATH = PACKET / "PACKET_MANIFEST.json"
 SCHEMA_PATH = ROOT / "schemas" / "paper1-external-review-response.schema.json"
 PACKET_SCHEMA_PATH = PACKET / "SCHEMA.json"
 TEMPLATE_PATH = PACKET / "RESPONSE_TEMPLATE.json"
+FROZEN_BUILDER_PATH = PACKET / "artifacts" / "build_epistemic_mechanics.py"
+FROZEN_BUILDER_REPO_PATH = (
+    "review/paper1/external_solicitation/artifacts/build_epistemic_mechanics.py"
+)
 
 SUBJECT_SHA = "118b74c17606637a916fc0e1fea8db6508adb847"
 SOURCE_SHA256 = "76c20f20e642939c10d6582a1a87233f172cbf7ee6a45f2dbdcdc4db35bee871"
 BUILDER_SHA256 = "d52c1715b4e1519443a7cef6e26ff2d03f5a8e000bc6a2ae2db0f03ed13b981b"
+
+
+def _load_frozen_solicitation_builder():
+    """Import the solicitation-era builder, not the live disclosure builder.
+
+    The archived file keeps its original ROOT = parents[1] assumption from when it
+    lived at paper/build_epistemic_mechanics.py. Rebind ROOT/SOURCE to the repo root
+    so reproduction still works from the packet artifacts/ path.
+    """
+    module_name = "paper1_external_solicitation_frozen_builder"
+    spec = importlib.util.spec_from_file_location(module_name, FROZEN_BUILDER_PATH)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    module.ROOT = ROOT
+    module.SOURCE = ROOT / "paper" / "epistemic_mechanics_round050" / "main.tex"
+    return module
+
 
 
 def _sha256(path: Path) -> str:
@@ -122,7 +146,7 @@ def test_manifest_binds_exact_subject_source_builder_and_built_artifacts() -> No
         "sha256": SOURCE_SHA256,
     }
     assert subject["builder"] == {
-        "path": "paper/build_epistemic_mechanics.py",
+        "path": FROZEN_BUILDER_REPO_PATH,
         "sha256": BUILDER_SHA256,
         "entry_point": "build_epistemic_mechanics_source",
     }
@@ -132,7 +156,10 @@ def test_manifest_binds_exact_subject_source_builder_and_built_artifacts() -> No
     }
 
     assert _sha256(ROOT / subject["source"]["path"]) == SOURCE_SHA256
+    assert Path(subject["builder"]["path"]) == Path(FROZEN_BUILDER_REPO_PATH)
     assert _sha256(ROOT / subject["builder"]["path"]) == BUILDER_SHA256
+    # Live disclosure builder must remain unbound from this solicitation freeze.
+    assert _sha256(ROOT / "paper" / "build_epistemic_mechanics.py") != BUILDER_SHA256
 
     staged = ROOT / subject["staged_source"]["path"]
     pdf = ROOT / subject["pdf"]["path"]
@@ -147,7 +174,8 @@ def test_manifest_binds_exact_subject_source_builder_and_built_artifacts() -> No
         pages = int(re.search(r"^Pages:\s+(\d+)$", info, re.MULTILINE).group(1))
         assert pages == subject["pdf"]["pages"]
 
-    expected = build_epistemic_mechanics_source(
+    frozen_builder = _load_frozen_solicitation_builder()
+    expected = frozen_builder.build_epistemic_mechanics_source(
         subject_sha=SUBJECT_SHA,
         software_tests=840,
     )
@@ -230,6 +258,7 @@ def test_manifest_inventory_is_content_bound_and_excludes_self_reference() -> No
         "review/paper1/external_solicitation/validate_response.py",
         "review/paper1/external_solicitation/BUILD_RECEIPT.json",
         "review/paper1/external_solicitation/BRANCH_OBSERVATION.json",
+        "review/paper1/external_solicitation/artifacts/build_epistemic_mechanics.py",
         "review/paper1/external_solicitation/artifacts/main.tex",
         "review/paper1/external_solicitation/artifacts/main.pdf",
         "schemas/paper1-external-review-response.schema.json",
