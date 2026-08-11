@@ -127,7 +127,7 @@ active_obligations:
     route: R004-full-cover
     status: ACTIVE_SUPPORT
     depends_on: [O9d1]
-    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, maximum-degree/matching ceilings, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
+    discriminator: "attempt pair multiplexing, generator separation, quotient/twin compression, maximum-degree/matching ceilings, forest/arboricity ceilings, low-dimensional feature codes, non-disjoint overlap reuse, restrictions/projections, and source-level intersection/cyclic constructions first"
   - id: O9d4
     target: "construct or refute globally correlated complement families whose graph membership cannot be witnessed by one coordinate and whose fibres do not factor as coordinate products"
     route: R004-full-cover
@@ -152,15 +152,22 @@ active_obligations:
   - id: O9d7
     target: "construct or refute growing-degree nonlinear globally correlated graph families that survive quotient compression and all explicit logarithmic intersection/cyclic upper bounds"
     route: R004-full-cover
-    status: ACTIVE
+    status: REFINED_BY_C015
     depends_on: [O9d6]
-    residual: C014-R1
-    discriminator: "apply quotient/twin compression, maximum-degree matching ceiling, exact tiny full-cover search, D_intersection/cyclic constructions, and pair multiplexing before any asymptotic lower-bound attempt"
+    artifacts: [C015, arboricity_cover]
+    result: "growing maximum degree is insufficient: if the graph edge set partitions into a forests then rho <= D_intersection <= 4a ceil(log2 N); constant-arboricity families remain O(log N) even with Delta=Theta(N)"
+  - id: O9d8
+    target: "construct or refute growing-arboricity nonlinear globally correlated graph families that survive quotient, degree, forest, linear, product, and cyclic upper-bound adversaries"
+    route: R004-full-cover
+    status: ACTIVE
+    depends_on: [O9d7]
+    residual: C015-R1
+    discriminator: "apply quotient/twin compression, maximum-degree matching ceiling, arboricity/forest ceiling, exact tiny full-cover search, D_intersection/cyclic constructions, low-dimensional codes, and pair multiplexing before any asymptotic lower-bound attempt"
   - id: O9e
     target: "propagate any surviving asymptotic full/intersection cover lower bound through the exact source transference theorem"
     route: R004-full-cover
     status: OPEN
-    depends_on: [O9d7]
+    depends_on: [O9d8]
 
 negative_checkpoints:
   - id: C002
@@ -183,10 +190,12 @@ negative_checkpoints:
     result: "full graph cover complexity is non-increasing under vertex blow-up; linear syndrome equality/inequality graphs collapse to their rank-k quotient and remain O(log N)"
   - id: C014
     result: "every maximum-degree-Delta bipartite graph has rho <= D_intersection <= Delta*(2 ceil(log2 N)+1); bounded-degree families cannot be super-logarithmic full-cover targets"
+  - id: C015
+    result: "if a bipartite graph edge set partitions into a forests then rho <= D_intersection <= 4a ceil(log2 N); constant-arboricity families remain O(log N) even with linearly growing maximum degree"
 
 finite_checkpoints:
   - id: C008
-    result: "an explicit five-complement-edge 3x3 graph has exact canonical cover number 1 and exact full graph cover number 2"
+    result: "an explicit five-complement-edge 3x3 graph has exact canonical cover number 1 and exact full rho=2"
     authority: "PROOF_DRAFT_FINITE_EXACT / NOVELTY_UNRESOLVED"
     root_impact: "representation discrimination only; no asymptotic circuit lower bound"
 
