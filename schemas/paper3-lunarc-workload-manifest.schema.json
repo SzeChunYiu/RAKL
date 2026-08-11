@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-lunarc-workload-manifest.schema.json",
+  "title": "Paper 3 gate-bound LUNARC workload manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "experiment_id", "workload", "model_mode",
+    "resource_profile", "subject_sha", "gate_receipt_path",
+    "gate_receipt_sha256", "protocol_path", "protocol_sha256",
+    "benchmark_path", "benchmark_sha256", "annotation_import_receipt_path",
+    "annotation_import_receipt_sha256", "task_set_path", "task_set_sha256",
+    "environment_path", "environment_sha256", "seed_schedule_path",
+    "seed_schedule_sha256", "model_revision", "model_artifact_path",
+    "model_artifact_sha256", "input_weights_path", "input_weights_sha256",
+    "python_executable", "runner_path", "runner_sha256",
+    "result_schema_path", "result_schema_sha256", "result_receipt_relpath",
+    "account", "partition", "fs9_output_dir", "batch_script",
+    "batch_script_sha256", "repo_path", "manifest_path"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper3-lunarc-workload-manifest-v1"},
+    "experiment_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+    "workload": {"enum": ["training", "inference"]},
+    "model_mode": {"enum": ["trainable_copy", "frozen"]},
+    "resource_profile": {"enum": ["single_gpu_training_v1", "single_gpu_frozen_inference_v1"]},
+    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "gate_receipt_path": {"$ref": "#/$defs/absolutePath"},
+    "gate_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "protocol_path": {"$ref": "#/$defs/absolutePath"},
+    "protocol_sha256": {"$ref": "#/$defs/sha256"},
+    "benchmark_path": {"$ref": "#/$defs/absolutePath"},
+    "benchmark_sha256": {"$ref": "#/$defs/sha256"},
+    "annotation_import_receipt_path": {"$ref": "#/$defs/absolutePath"},
+    "annotation_import_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "task_set_path": {"$ref": "#/$defs/absolutePath"},
+    "task_set_sha256": {"$ref": "#/$defs/sha256"},
+    "environment_path": {"$ref": "#/$defs/absolutePath"},
+    "environment_sha256": {"$ref": "#/$defs/sha256"},
+    "seed_schedule_path": {"$ref": "#/$defs/absolutePath"},
+    "seed_schedule_sha256": {"$ref": "#/$defs/sha256"},
+    "model_revision": {"type": "string", "pattern": "^[^@\\s]+@[0-9a-f]{40}$"},
+    "model_artifact_path": {"$ref": "#/$defs/absolutePath"},
+    "model_artifact_sha256": {"$ref": "#/$defs/sha256"},
+    "input_weights_path": {"$ref": "#/$defs/absolutePath"},
+    "input_weights_sha256": {"$ref": "#/$defs/sha256"},
+    "python_executable": {"$ref": "#/$defs/absolutePath"},
+    "runner_path": {"$ref": "#/$defs/absolutePath"},
+    "runner_sha256": {"$ref": "#/$defs/sha256"},
+    "result_schema_path": {"$ref": "#/$defs/absolutePath"},
+    "result_schema_sha256": {"$ref": "#/$defs/sha256"},
+    "result_receipt_relpath": {
+      "type": "string",
+      "pattern": "^receipts/[A-Za-z0-9][A-Za-z0-9._-]*\\.json$"
+    },
+    "account": {"const": "lu2026-2-51"},
+    "partition": {"enum": ["gpua100", "gpua100i", "gpua40", "gpua40i"]},
+    "fs9_output_dir": {"type": "string", "pattern": "^/projects/hep/fs9/users/scyiu/RAKL-paper3/[A-Za-z0-9][A-Za-z0-9._-]+$"},
+    "batch_script": {"$ref": "#/$defs/absolutePath"},
+    "batch_script_sha256": {"$ref": "#/$defs/sha256"},
+    "repo_path": {"$ref": "#/$defs/absolutePath"},
+    "manifest_path": {"$ref": "#/$defs/absolutePath"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"workload": {"const": "training"}}},
+      "then": {
+        "properties": {
+          "model_mode": {"const": "trainable_copy"},
+          "resource_profile": {"const": "single_gpu_training_v1"},
+          "batch_script": {"pattern": "/training_after_gate\\.sbatch$"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"workload": {"const": "inference"}}},
+      "then": {
+        "properties": {
+          "model_mode": {"const": "frozen"},
+          "resource_profile": {"const": "single_gpu_frozen_inference_v1"},
+          "batch_script": {"pattern": "/frozen_inference_after_gate\\.sbatch$"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "absolutePath": {"type": "string", "pattern": "^/[^,\\r\\n\\u0000]+$"}
+  }
+}

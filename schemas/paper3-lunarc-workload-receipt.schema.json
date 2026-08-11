@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-lunarc-workload-receipt.schema.json",
+  "title": "Paper 3 LUNARC workload execution receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "created_at_utc", "experiment_id", "workload",
+    "subject_sha", "manifest_sha256", "gate_receipt_sha256", "slurm_job_id",
+    "slurm_account", "slurm_partition", "node", "gpu", "input_weights_sha256_before",
+    "input_weights_sha256_after", "runner_exit_code", "result_receipt_sha256",
+    "failures", "verdict"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper3-lunarc-workload-receipt-v1"},
+    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "workload": {"enum": ["training", "inference"]},
+    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "gate_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "slurm_job_id": {"type": "string", "pattern": "^[0-9]+$"},
+    "slurm_account": {"type": ["string", "null"]},
+    "slurm_partition": {"type": ["string", "null"]},
+    "node": {"type": "string", "minLength": 1},
+    "gpu": {"type": "array", "items": {"type": "string"}},
+    "input_weights_sha256_before": {"$ref": "#/$defs/sha256"},
+    "input_weights_sha256_after": {"$ref": "#/$defs/sha256"},
+    "runner_exit_code": {"type": "integer", "minimum": 0},
+    "result_receipt_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "failures": {"type": "array", "items": {"type": "string"}},
+    "verdict": {"enum": ["PASS", "FAIL_RUNNER", "FAIL_RESULT_RECEIPT", "FAIL_INPUT_MODEL_MUTATED"]}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}
