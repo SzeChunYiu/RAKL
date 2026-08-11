@@ -42,19 +42,24 @@ def _episode() -> TaskEpisode:
     )
 
 
-def test_existing_knowledge_fiber_projects_into_v3_problem_fibre() -> None:
-    legacy = KnowledgeFiber("KF1", "object-1", "construct bridge")
+def _legacy(fiber_id: str, object_id: str, projection_id: str = "P1") -> KnowledgeFiber:
+    legacy = KnowledgeFiber(fiber_id, object_id, "construct bridge")
     legacy.add_projection(
         Projection(
-            projection_id="P1",
-            object_id="object-1",
+            projection_id=projection_id,
+            object_id=object_id,
             facets=("graph", "bridge"),
             claim="a bridge construction exists under the registered scope",
-            source="source-1",
+            source=f"source-{fiber_id}",
             authority=Authority.NORMALIZED_CLAIM,
             tags=("connect",),
         )
     )
+    return legacy
+
+
+def test_existing_knowledge_fiber_projects_into_v3_problem_fibre() -> None:
+    legacy = _legacy("KF1", "object-1")
     atom = ProblemAtom(
         atom_id="A1",
         goal="connect representations",
@@ -63,9 +68,23 @@ def test_existing_knowledge_fiber_projects_into_v3_problem_fibre() -> None:
         desired_effects=("connect",),
     )
     fibre = compile_problem_fibre(atom, legacy_knowledge_fibers=(legacy,))
-    assert tuple(item.item_id for item in fibre.knowledge_items) == ("P1",)
+    assert tuple(item.item_id for item in fibre.knowledge_items) == ("KF1:P1",)
     assert fibre.knowledge_items[0].authority == Authority.NORMALIZED_CLAIM.value
     assert fibre.knowledge_items[0].kind == "legacy_knowledge_projection"
+
+
+def test_legacy_projection_ids_are_namespaced_by_owning_fibre() -> None:
+    first = _legacy("KF1", "object-1", projection_id="P1")
+    second = _legacy("KF2", "object-2", projection_id="P1")
+    atom = ProblemAtom(
+        atom_id="A1",
+        goal="connect representations",
+        context_hash="ctx",
+        structural_coordinates=("graph", "bridge"),
+        desired_effects=("connect",),
+    )
+    fibre = compile_problem_fibre(atom, legacy_knowledge_fibers=(first, second))
+    assert {item.item_id for item in fibre.knowledge_items} == {"KF1:P1", "KF2:P1"}
 
 
 def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
