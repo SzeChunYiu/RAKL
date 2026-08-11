@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/root-coordinate-preservation-receipt-v1.schema.json",
+  "title": "RAKL root-coordinate preservation receipt v1",
+  "description": "Proposal-only, benchmark-object search control. Binds a surrogate/local coordinate to a root coordinate BEFORE expensive candidate search, via an explicit directed bridge with per-edge proof status. Grants no theorem, proof, tool, gluing, novelty or framework authority, and is not required for free-form brainstorming. Congruence on the registered observations is evidence about a projection, never progress on the root claim. The companion runtime is rakl.root_coordinate_preservation; an empty registered_observations set yields CANNOT_CHECK, never congruence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "root_claim_id",
+    "root_coordinate",
+    "surrogate_coordinate",
+    "bridge_edges",
+    "obligations",
+    "known_disanalogies",
+    "source_authority",
+    "target_authority",
+    "cheapest_hostile_world",
+    "registered_observations",
+    "reverification_triggers",
+    "prior_failure_ids",
+    "receipt_canonical_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "root-coordinate-preservation-receipt-v1"},
+    "receipt_id": {"type": "string", "minLength": 1},
+    "root_claim_id": {"type": "string", "minLength": 1},
+    "root_coordinate": {"type": "string", "minLength": 1},
+    "surrogate_coordinate": {"type": "string", "minLength": 1},
+    "bridge_edges": {
+      "description": "Directed surrogate-to-root interface map, one edge per step. CONDITIONAL and UNSPECIFIED are open interfaces: only PROVED discharges an edge.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "edge_id",
+          "source_coordinate",
+          "target_coordinate",
+          "interface_map",
+          "proof_status",
+          "enabling_assumptions"
+        ],
+        "properties": {
+          "edge_id": {"type": "string", "minLength": 1},
+          "source_coordinate": {"type": "string", "minLength": 1},
+          "target_coordinate": {"type": "string", "minLength": 1},
+          "interface_map": {"type": "string", "minLength": 1},
+          "proof_status": {"enum": ["PROVED", "CONDITIONAL", "UNPROVED", "UNSPECIFIED"]},
+          "enabling_assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "obligations": {
+      "description": "Root obligations. A non_compensatory obligation may never be discharged by surrogate evidence alone; surrogate gains do not pay for it.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "obligation_id",
+          "description",
+          "non_compensatory",
+          "discharged_by_surrogate_evidence_only"
+        ],
+        "properties": {
+          "obligation_id": {"type": "string", "minLength": 1},
+          "description": {"type": "string"},
+          "non_compensatory": {"type": "boolean"},
+          "discharged_by_surrogate_evidence_only": {"type": "boolean"}
+        }
+      }
+    },
+    "known_disanalogies": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "source_authority": {
+      "enum": ["ESTABLISHED", "CONDITIONAL", "PROPOSAL_ONLY", "UNSPECIFIED"]
+    },
+    "target_authority": {
+      "enum": ["ESTABLISHED", "CONDITIONAL", "PROPOSAL_ONLY", "UNSPECIFIED"]
+    },
+    "cheapest_hostile_world": {
+      "description": "The cheapest world in which the surrogate is favorable but the root is not. Required: a receipt that cannot name one has not done the work the receipt exists to force.",
+      "type": "string",
+      "minLength": 1
+    },
+    "registered_observations": {
+      "description": "Registered states with their projected surrogate state and registered downstream outcome. Two entries sharing a projection but not an outcome refute the projection.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state_id", "projected_state", "registered_downstream_outcome"],
+        "properties": {
+          "state_id": {"type": "string", "minLength": 1},
+          "projected_state": {"type": "string", "minLength": 1},
+          "registered_downstream_outcome": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "reverification_triggers": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "prior_failure_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "receipt_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
