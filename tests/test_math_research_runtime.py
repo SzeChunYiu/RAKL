@@ -25,6 +25,15 @@ from rakl.research_trace import (
     ResearchTraceEventType,
     TraceGateVerdict,
 )
+from rakl.root_coordinate_preservation import (
+    BridgeEdge,
+    CoordinateAuthority,
+    EdgeProofStatus,
+    Obligation,
+    PreservationGateVerdict,
+    RegisteredStateObservation,
+    RootCoordinatePreservationReceipt,
+)
 
 
 def _signature() -> ProblemSignature:
@@ -267,3 +276,103 @@ def test_rediscovery_is_not_publication_ready_as_new_mathematics() -> None:
         external_mathematical_review=True,
     )
     assert not publication_ready(record)
+
+
+def _preservation_receipt(*, root_claim_id: str = "C") -> RootCoordinatePreservationReceipt:
+    return RootCoordinatePreservationReceipt(
+        receipt_id="RCP-C",
+        root_claim_id=root_claim_id,
+        root_coordinate="root.registered_obligation",
+        surrogate_coordinate="surrogate.projected_measure",
+        bridge_edges=(
+            BridgeEdge(
+                edge_id="E-1",
+                source_coordinate="surrogate.projected_measure",
+                target_coordinate="root.registered_obligation",
+                interface_map="pi: registered_state -> projected_state",
+                proof_status=EdgeProofStatus.PROVED,
+                enabling_assumptions=("projection defined on domain",),
+            ),
+        ),
+        obligations=(
+            Obligation(
+                obligation_id="OB-1",
+                description="root obligation",
+                non_compensatory=True,
+            ),
+        ),
+        known_disanalogies=("surrogate is coarser",),
+        source_authority=CoordinateAuthority.ESTABLISHED,
+        target_authority=CoordinateAuthority.PROPOSAL_ONLY,
+        cheapest_hostile_world="equal projection, different root outcome",
+        registered_observations=(
+            RegisteredStateObservation("S-1", "P-a", "OUT-1"),
+            RegisteredStateObservation("S-2", "P-b", "OUT-2"),
+        ),
+        reverification_triggers=("projection redefined",),
+    )
+
+
+def test_required_preservation_gate_missing_receipt_blocks_candidate_search() -> None:
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
+        require_preservation_gate=True,
+    )
+    assert plan.preservation_gate is not None
+    assert plan.preservation_gate.verdict is PreservationGateVerdict.RECEIPT_MISSING
+    assert not plan.candidate_generation_allowed
+    assert not plan.candidate_paths
+    assert "freeze_surrogate_to_root_preservation_receipt" in plan.pre_candidate_actions
+
+
+def test_stale_preservation_receipt_blocks_candidate_search() -> None:
+    receipt = _preservation_receipt(root_claim_id="C")
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
+        preservation_receipt=receipt,
+        expected_preservation_sha256="0" * 64,
+    )
+    assert plan.preservation_gate is not None
+    assert plan.preservation_gate.verdict is PreservationGateVerdict.RECEIPT_STALE
+    assert not plan.candidate_generation_allowed
+    assert not plan.candidate_paths
+
+
+def test_fresh_preservation_receipt_allows_candidate_search_after_other_gates() -> None:
+    receipt = _preservation_receipt(root_claim_id="C")
+    digest = receipt.document()["receipt_canonical_sha256"]
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
+        preservation_receipt=receipt,
+        expected_preservation_sha256=digest,
+    )
+    assert plan.preservation_gate is not None
+    assert plan.preservation_gate.verdict is PreservationGateVerdict.SEARCH_LICENSED
+    assert plan.candidate_generation_allowed
+    assert plan.candidate_paths
+    assert plan.preservation_gate.advances_root_claim is False
+
+
+def test_absent_preservation_gate_stays_inactive_for_ordinary_planning() -> None:
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
+    )
+    assert plan.preservation_gate is not None
+    assert plan.preservation_gate.verdict is PreservationGateVerdict.NOT_REQUIRED
+    assert plan.candidate_generation_allowed

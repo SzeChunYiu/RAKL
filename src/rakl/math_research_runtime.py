@@ -43,6 +43,12 @@ from .research_trace import (
     TraceGateVerdict,
     audit_pre_candidate_trace,
 )
+from .root_coordinate_preservation import (
+    REQUIRED_PRESERVATION_ACTIONS,
+    PreservationGateReport,
+    RootCoordinatePreservationReceipt,
+    gate_expensive_candidate_search,
+)
 
 
 @dataclass(frozen=True)
@@ -56,6 +62,7 @@ class MathResearchPlan:
     trace_gate: ResearchTraceReport
     pre_candidate_actions: Tuple[str, ...]
     candidate_generation_allowed: bool
+    preservation_gate: PreservationGateReport | None = None
 
 
 def _facts_from_record(
@@ -152,13 +159,16 @@ def plan_math_research(
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
     research_trace: MathResearchTrace | None = None,
+    preservation_receipt: RootCoordinatePreservationReceipt | None = None,
+    require_preservation_gate: bool = False,
+    expected_preservation_sha256: str | None = None,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
     top_k: int = 8,
 ) -> MathResearchPlan:
     """Compile assurance status into obstruction-guided research paths.
 
-    Candidate generation is fail-closed behind three discovery-process gates:
+    Candidate generation is fail-closed behind discovery-process gates:
 
     1. **Context gate** — understand the active atom across structural coordinates,
        equivalent formulations, solved/near-solved analogues, method-transfer
@@ -169,6 +179,10 @@ def plan_math_research(
     3. **Trace gate** — preserve the chronological public decision ledger including
        atomization, context, analogy, expert review, experience-memory review and
        the proposed next step before any candidate is generated.
+    4. **Preservation gate** (issue #124) — when required, or when a surrogate→root
+       preservation receipt is supplied, missing/stale/refuted receipts fail closed
+       before expensive candidate search. Free-form brainstorming that neither
+       requires nor supplies a receipt leaves this gate inactive.
 
     These gates govern reproducible discovery, not theorem truth. Returned paths
     remain planning objects only; theorem and novelty authority stay controlled by
@@ -206,6 +220,14 @@ def plan_math_research(
             ("context_and_memory_gates_must_pass_before_trace_gate",),
         )
 
+    preservation_required = require_preservation_gate or preservation_receipt is not None
+    preservation_gate = gate_expensive_candidate_search(
+        preservation_receipt,
+        expected_root_claim_id=record.claim_id,
+        expected_canonical_sha256=expected_preservation_sha256,
+        required=preservation_required,
+    )
+
     state = derive_planning_state(
         signature=signature,
         record=record,
@@ -225,6 +247,10 @@ def plan_math_research(
     elif trace_gate.verdict is not TraceGateVerdict.PASS:
         paths = ()
         pre_candidate_actions = REQUIRED_TRACE_ACTIONS
+        candidate_generation_allowed = False
+    elif not preservation_gate.licenses_expensive_candidate_search:
+        paths = ()
+        pre_candidate_actions = REQUIRED_PRESERVATION_ACTIONS
         candidate_generation_allowed = False
     else:
         paths = search_operator_paths(
@@ -246,6 +272,7 @@ def plan_math_research(
         trace_gate=trace_gate,
         pre_candidate_actions=pre_candidate_actions,
         candidate_generation_allowed=candidate_generation_allowed,
+        preservation_gate=preservation_gate,
     )
 
 

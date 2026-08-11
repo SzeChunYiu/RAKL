@@ -308,6 +308,130 @@ class PreservationReport:
 
         return self.verdict is not PreservationVerdict.SURROGATE_BRIDGE_REFUTED
 
+    @property
+    def licenses_expensive_candidate_search(self) -> bool:
+        """Whether expensive candidate search may proceed under this receipt.
+
+        Local congruence and an honestly-open interface both license search:
+        the latter is the typed residual to close. Missing observations and a
+        refuted bridge do not.
+        """
+
+        return self.verdict in {
+            PreservationVerdict.BRIDGE_LOCALLY_CONGRUENT,
+            PreservationVerdict.INTERFACE_UNPROVED,
+        }
+
+
+class PreservationGateVerdict(str, Enum):
+    """Outcome of the pre-candidate expensive-search gate (issue #124)."""
+
+    NOT_REQUIRED = "NOT_REQUIRED"
+    SEARCH_LICENSED = "SEARCH_LICENSED"
+    RECEIPT_MISSING = "RECEIPT_MISSING"
+    RECEIPT_STALE = "RECEIPT_STALE"
+    BRIDGE_BLOCKS_SEARCH = "BRIDGE_BLOCKS_SEARCH"
+    CANNOT_CHECK = "CANNOT_CHECK"
+
+
+REQUIRED_PRESERVATION_ACTIONS: Tuple[str, ...] = (
+    "freeze_surrogate_to_root_preservation_receipt",
+    "name_cheapest_hostile_world_where_surrogate_favours_but_root_does_not",
+    "bind_receipt_canonical_sha256_before_candidate_search",
+)
+
+
+@dataclass(frozen=True)
+class PreservationGateReport:
+    """Search-control gate result. Grants no theorem or framework authority."""
+
+    verdict: PreservationGateVerdict
+    reasons: Tuple[str, ...]
+    audit: PreservationReport | None = None
+
+    @property
+    def licenses_expensive_candidate_search(self) -> bool:
+        return self.verdict in {
+            PreservationGateVerdict.NOT_REQUIRED,
+            PreservationGateVerdict.SEARCH_LICENSED,
+        }
+
+    @property
+    def advances_root_claim(self) -> bool:
+        return False
+
+
+def gate_expensive_candidate_search(
+    receipt: RootCoordinatePreservationReceipt | None,
+    *,
+    expected_root_claim_id: str,
+    expected_canonical_sha256: str | None = None,
+    required: bool = True,
+) -> PreservationGateReport:
+    """Fail closed before expensive candidate search when preservation is required.
+
+    Missing and stale receipts never license search. A stale receipt is one whose
+    ``root_claim_id`` or canonical content hash no longer matches the expected
+    binding supplied by the caller. The audit itself still never mints root
+    progress authority.
+    """
+
+    if not required and receipt is None:
+        return PreservationGateReport(
+            PreservationGateVerdict.NOT_REQUIRED,
+            ("preservation_gate_not_required",),
+        )
+
+    if receipt is None:
+        return PreservationGateReport(
+            PreservationGateVerdict.RECEIPT_MISSING,
+            ("root_coordinate_preservation_receipt_missing",),
+        )
+
+    stale_reasons: list[str] = []
+    if not expected_root_claim_id:
+        stale_reasons.append("expected_root_claim_id_missing")
+    elif receipt.root_claim_id != expected_root_claim_id:
+        stale_reasons.append(
+            "receipt_root_claim_id_stale:"
+            f"expected={expected_root_claim_id}:got={receipt.root_claim_id}"
+        )
+
+    actual_hash = str(receipt.document().get("receipt_canonical_sha256", ""))
+    if expected_canonical_sha256 is not None:
+        if not expected_canonical_sha256:
+            stale_reasons.append("expected_canonical_sha256_empty")
+        elif expected_canonical_sha256 != actual_hash:
+            stale_reasons.append(
+                "receipt_canonical_sha256_stale:"
+                f"expected={expected_canonical_sha256}:got={actual_hash}"
+            )
+
+    if stale_reasons:
+        return PreservationGateReport(
+            PreservationGateVerdict.RECEIPT_STALE,
+            tuple(stale_reasons),
+        )
+
+    audit = audit_root_coordinate_preservation(receipt)
+    if audit.verdict is PreservationVerdict.SURROGATE_BRIDGE_REFUTED:
+        return PreservationGateReport(
+            PreservationGateVerdict.BRIDGE_BLOCKS_SEARCH,
+            audit.reasons,
+            audit,
+        )
+    if audit.verdict is PreservationVerdict.CANNOT_CHECK:
+        return PreservationGateReport(
+            PreservationGateVerdict.CANNOT_CHECK,
+            audit.reasons,
+            audit,
+        )
+    return PreservationGateReport(
+        PreservationGateVerdict.SEARCH_LICENSED,
+        (),
+        audit,
+    )
+
 
 def find_congruence_violations(
     observations: Tuple[RegisteredStateObservation, ...],
