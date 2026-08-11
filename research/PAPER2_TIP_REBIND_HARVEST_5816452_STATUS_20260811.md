@@ -45,7 +45,7 @@ history under
 - Verdict
   `NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__COMPARISON_NOT_ESTIMABLE`
 - Committed mirror:
-  `research/paper2_microtrial_v4_1/native_job_3475212/receipts/v4_1/ingest_rebind_5816452992cdafa9d61aa5e821d71f7a562001ce/INGEST_NATIVE_V4_1_JOB_3475212.json`
+  `research/paper2_microtrial_v4_1/native_receipts/INGEST_REBIND_5816452_NATIVE_V4_1_JOB_3475212.json`
 
 Does not touch sibling V4.1 jobs `3476520` / `3476521` / `3476524` (owned by
 `fix/paper2-v4-1-native-ingest-job-id`).
