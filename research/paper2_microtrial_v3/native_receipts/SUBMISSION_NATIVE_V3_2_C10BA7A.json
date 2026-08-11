@@ -1,0 +1,59 @@
+{
+  "account": "lu2026-2-51",
+  "bootstrap_receipt_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3_2/bootstrap-c10ba7a261af02cc42690022226555a3197351ae.json",
+  "bootstrap_receipt_sha256": "9cfd7785adfda06c4d31f6f100ec6808e2beae31c7020b802cb4e6c40fa1ad93",
+  "contract_canonical_sha256": "a9d3097bc7fa42b8e9d1431e84d4ab8189190706d281efc3474b692925df6c75",
+  "created_at_utc": "2026-08-11T01:54:55Z",
+  "evaluated_result_record_count": 0,
+  "executed_sbatch_argv": [
+    [
+      "sbatch",
+      "--parsable",
+      "--account=lu2026-2-51",
+      "--partition=lu48",
+      "--export=ALL,RAKL_STAGING_CONTRACT=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3_2.json,RAKL_EXPECTED_REPO_SHA=c10ba7a261af02cc42690022226555a3197351ae,RAKL_REPO_PATH=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo",
+      "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/experiments/paper2/lunarc/network_probe_v3_2.sbatch"
+    ],
+    [
+      "sbatch",
+      "--parsable",
+      "--account=lu2026-2-51",
+      "--partition=lu48",
+      "--dependency=afterok:3475123",
+      "--export=ALL,RAKL_STAGING_CONTRACT=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3_2.json,RAKL_EXPECTED_REPO_SHA=c10ba7a261af02cc42690022226555a3197351ae,RAKL_REPO_PATH=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo,RAKL_PROBE_JOB_ID=3475123",
+      "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/experiments/paper2/lunarc/stage_cpu_assets_v3_2.sbatch"
+    ]
+  ],
+  "execution_host": "cosmos3.int.lunarc",
+  "expected_repo_sha": "c10ba7a261af02cc42690022226555a3197351ae",
+  "failure_history_preserved": true,
+  "failures": [],
+  "model_execution_performed": false,
+  "observed_repo_sha": "c10ba7a261af02cc42690022226555a3197351ae",
+  "partition": "lu48",
+  "planned_sbatch_argv": [
+    [
+      "sbatch",
+      "--parsable",
+      "--account=lu2026-2-51",
+      "--partition=lu48",
+      "--export=ALL,RAKL_STAGING_CONTRACT=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3_2.json,RAKL_EXPECTED_REPO_SHA=c10ba7a261af02cc42690022226555a3197351ae,RAKL_REPO_PATH=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo",
+      "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/experiments/paper2/lunarc/network_probe_v3_2.sbatch"
+    ],
+    [
+      "sbatch",
+      "--parsable",
+      "--account=lu2026-2-51",
+      "--partition=lu48",
+      "--dependency=afterok:<PROBE_JOB_ID>",
+      "--export=ALL,RAKL_STAGING_CONTRACT=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3_2.json,RAKL_EXPECTED_REPO_SHA=c10ba7a261af02cc42690022226555a3197351ae,RAKL_REPO_PATH=/projects/hep/fs9/users/scyiu/RAKL-paper2/repo,RAKL_PROBE_JOB_ID=<PROBE_JOB_ID>",
+      "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/experiments/paper2/lunarc/stage_cpu_assets_v3_2.sbatch"
+    ]
+  ],
+  "schema_version": "paper2-cpu-staging-submission-receipt-v3.2",
+  "submitted_job_ids": [
+    "3475123",
+    "3475124"
+  ],
+  "verdict": "SUBMITTED_TWO_PHASE_STAGING"
+}

@@ -1,0 +1,129 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-harvest-repair-contract-v3-2-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accepted_bundled_direct_references": {
+      "const": {
+        "pip": "pip @ file:///build/pip-24.3.1-py3-none-any.whl#sha256=3790624780082365f47549d032f3770eeb2b1e8bd1f7b2e02dace1afa361b4ed",
+        "setuptools": "setuptools @ file:///build/setuptools-75.6.0-py3-none-any.whl#sha256=ce74b49e8f7110f9bf04883b730f4765b774ef3ef28f722cce7c273d253aaf7d"
+      }
+    },
+    "authority_status": {
+      "const": "repair_ready_not_reharvested"
+    },
+    "bindings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "frozen_v3_2_contract",
+              "frozen_v3_2_runtime",
+              "harvest_repair_runtime",
+              "harvest_repair_script",
+              "harvest_repair_receipt_schema",
+              "harvest_repair_contract_schema",
+              "native_bootstrap",
+              "native_submission",
+              "native_probe",
+              "native_staging_pass",
+              "native_harvest_cannot_check",
+              "native_sacct",
+              "native_probe_log",
+              "native_stage_log",
+              "native_bundle",
+              "contract_self"
+            ]
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "path",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "maxItems": 16,
+      "minItems": 16,
+      "type": "array"
+    },
+    "contract_self_hash_mode": {
+      "const": "canonical_contract_with_self_sha256_zeroed"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_result_access_permitted": {
+      "const": false
+    },
+    "job_submission_permitted": {
+      "const": false
+    },
+    "model_execution_permitted": {
+      "const": false
+    },
+    "prior_harvest_failure": {
+      "const": [
+        "staging_job_or_receipt_failed"
+      ]
+    },
+    "prior_harvest_verdict": {
+      "const": "HARVEST_CANNOT_CHECK"
+    },
+    "repair_boundary": {
+      "const": "Harvest-only additive validator correction. It must not mutate V3.2 source receipts, submit a job, execute a model, or reinterpret the original CANNOT_CHECK as a pass. A new receipt may promote only after exact revalidation of the same scheduler and receipt chain."
+    },
+    "repair_id": {
+      "const": "PAPER2_CPU_STAGING_V3_2_1_HARVEST_REPAIR"
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-harvest-repair-contract-v3.2.1"
+    },
+    "source_contract_canonical_sha256": {
+      "const": "a9d3097bc7fa42b8e9d1431e84d4ab8189190706d281efc3474b692925df6c75"
+    },
+    "source_job_ids": {
+      "const": [
+        "3475123",
+        "3475124"
+      ]
+    },
+    "source_subject_sha": {
+      "const": "c10ba7a261af02cc42690022226555a3197351ae"
+    },
+    "source_subject_tree": {
+      "const": "4f8053958d9ed4ea6e506ffa6dc8e60ee36715a5"
+    }
+  },
+  "required": [
+    "schema_version",
+    "repair_id",
+    "created_at_utc",
+    "authority_status",
+    "source_subject_sha",
+    "source_subject_tree",
+    "source_contract_canonical_sha256",
+    "source_job_ids",
+    "job_submission_permitted",
+    "model_execution_permitted",
+    "evaluated_result_access_permitted",
+    "prior_harvest_verdict",
+    "prior_harvest_failure",
+    "accepted_bundled_direct_references",
+    "repair_boundary",
+    "contract_self_hash_mode",
+    "bindings"
+  ],
+  "title": "Paper 2 CPU staging V3.2.1 additive harvest-repair contract",
+  "type": "object"
+}
