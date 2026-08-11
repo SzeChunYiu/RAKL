@@ -4,7 +4,7 @@
 
 **Lane:** Wave-1 Lane B
 
-**CAPABLE_MODEL_AVAILABLE:** `false`
+**CAPABLE_MODEL_AVAILABLE:** `false` / `NO_REFUTED` (ladder terminal after FLOOR_7B job 3476788; no further authorized scale)
 
 Versioned successor prep packet. Does **not** overwrite
 `research/paper2_alr_confirmatory_v1/` or
@@ -15,7 +15,7 @@ Versioned successor prep packet. Does **not** overwrite
 - Exact V2 panel/evaluator/protocol hash binding
 - Capability gate freeze (`CAPABLE_MODEL_AVAILABLE=false` until ORACLE ≥2/3)
 - Explicit ban on confirmatory model-job submission while the gate is false
-- Negative-history pointers (3476730/31, 3476742, 3476756, prior ALR / A3↔A4 jobs)
+- Negative-history pointers (3476730/31, 3476742, 3476756, 3476778, 3476788, prior ALR / A3↔A4 jobs)
 
 ## What this packet is not
 

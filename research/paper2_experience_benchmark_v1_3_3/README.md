@@ -34,3 +34,10 @@ Scientific verdict: **MODEL_CAPABILITY_FLOOR_7B**.
 Parents **3476778** (`MODEL_CAPABILITY_FLOOR_3B`), **3476756** (`MODEL_CAPABILITY_FLOOR_1_5B`) and **3476742** (`INSTRUMENT_DEFECT`) remain immutable negative history.
 See `ORACLE_DECISION_RECEIPT_V1_3_3.json` and `PAPER_FACING_NOTE_ORACLE_V1_3_3_ISSUE372.md`.
 Phase-0 / learning staircase remain unauthorized. #138 stays closed.
+
+## Ladder terminus
+
+Preregistered escalation ends at 7B. **TERMINAL_STOP** — no 14B/32B;
+`CAPABLE_MODEL_AVAILABLE=NO_REFUTED` across authorized scales.
+See `LADDER_TERMINUS_DECISION_RECEIPT_FLOOR7B.json` and
+`PAPER_FACING_NOTE_LADDER_TERMINUS_FLOOR7B.md`.

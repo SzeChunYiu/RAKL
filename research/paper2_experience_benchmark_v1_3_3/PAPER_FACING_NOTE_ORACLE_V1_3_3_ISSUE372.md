@@ -32,3 +32,4 @@ Under the frozen v1.3_3 ORACLE gate (`success_rate >= 2/3` with parse-valid outp
 - No reopen of #138
 - No overwrite of v1.3_1 / v1.3_2 / 3476742 / 3476756 / 3476778 negative history
 - CAPABLE_MODEL_AVAILABLE remains **false / NO_REFUTED**
+- Preregistered ladder **terminates** at 7B (no 14B/32B); see `PAPER_FACING_NOTE_LADDER_TERMINUS_FLOOR7B.md`

@@ -2,30 +2,23 @@
   "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
   "authority_boundary": "Reality reconstruction scoreboard. Closed issues are historical terminals, not proof scientific questions were answered. Grants no promotional authority.",
   "capable_model_available": false,
-  "capable_model_note": "ORACLE floors at 0.5B/1.5B/3B with parse-valid success_rate 0/3. Gate remains closed until ORACLE \u22652/3 at some authorized scale. 7B escalation NOT_YET on tip/LUNARC (sibling lane pending).",
+  "capable_model_note": "ORACLE floors at authorized scales 0.5B/1.5B/3B/7B (parse-valid; success_rate < 2/3). Preregistered ladder ends at 7B. CAPABLE_MODEL_AVAILABLE remains NO_REFUTED. No 14B/32B escalation authorized.",
   "confirmed_oracle_chain": [
     {
-      "jobs": [
-        "3476730",
-        "3476731"
-      ],
+      "jobs": ["3476730", "3476731"],
       "packet": "paper2-experience-benchmark-v1_3",
       "parse_valid": "3/3",
       "success": "0/3",
       "verdict": "MODEL_CAPABILITY_FLOOR_0_5B"
     },
     {
-      "jobs": [
-        "3476742"
-      ],
+      "jobs": ["3476742"],
       "note": "parse-valid 1/3; preserved negative history",
       "packet": "paper2-experience-benchmark-v1_3_1",
       "verdict": "INSTRUMENT_DEFECT"
     },
     {
-      "jobs": [
-        "3476756"
-      ],
+      "jobs": ["3476756"],
       "packet": "paper2-experience-benchmark-v1_3_1",
       "parse_valid": "3/3",
       "pr": 349,
@@ -34,38 +27,51 @@
     },
     {
       "decision_receipt": "research/paper2_experience_benchmark_v1_3_2/ORACLE_DECISION_RECEIPT_V1_3_2.json",
-      "jobs": [
-        "3476778"
-      ],
+      "jobs": ["3476778"],
       "mean_score": 0.3333,
       "packet": "paper2-experience-benchmark-v1_3_2",
       "parse_valid": "3/3",
       "pr": 371,
-      "race_duplicate_jobs": [
-        "3476779"
-      ],
+      "race_duplicate_jobs": ["3476779"],
       "success": "0/3",
       "verdict": "MODEL_CAPABILITY_FLOOR_3B"
+    },
+    {
+      "decision_receipt": "research/paper2_experience_benchmark_v1_3_3/ORACLE_DECISION_RECEIPT_V1_3_3.json",
+      "jobs": ["3476788"],
+      "mean_score": 0.625,
+      "packet": "paper2-experience-benchmark-v1_3_3",
+      "parse_valid": "3/3",
+      "prs": [374, 378],
+      "success": "1/3",
+      "verdict": "MODEL_CAPABILITY_FLOOR_7B"
     }
   ],
-  "created_at_utc": "2026-08-11T22:26:35Z",
+  "created_at_utc": "2026-08-11T22:55:00Z",
+  "decision": "TERMINAL_STOP",
   "escalation": {
     "learning_staircase_authorized": false,
-    "next_scale": "Qwen2.5-7B-Instruct",
-    "next_scale_note": "Sibling 7B ORACLE lane reported launched; no v1.3_3 packet, FS9 7B asset, or SLURM job ID visible on tip/LUNARC at scoreboard freeze. Incorporate when sibling returns.",
-    "next_scale_status": "NOT_YET",
+    "next_scale": null,
+    "next_scale_note": "Preregistered capability staircase ends at Qwen2.5-7B-Instruct after MODEL_CAPABILITY_FLOOR_7B on job 3476788. 14B/32B are not authorized. Remaining residual is task/gate revisit under a new versioned protocol, not scale shopping.",
+    "next_scale_status": "LADDER_TERMINUS",
     "phase0_architecture_authorized": false,
-    "preregistered_rule": "research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md remaining moves are 3B+, then 7B if authorized/resources"
+    "preregistered_rule": "research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md remaining moves are 3B+, then 7B (#372); then stop or revisit task/gate",
+    "authorized_scales_exhausted": [
+      "Qwen2.5-0.5B-Instruct",
+      "Qwen2.5-1.5B-Instruct",
+      "Qwen2.5-3B-Instruct",
+      "Qwen2.5-7B-Instruct"
+    ]
   },
   "grants_scientific_authority": false,
   "papers": {
     "paper_ii": {
       "active_successor": {
-        "next": "7B ORACLE if authorized (NOT_YET)",
-        "packet": "paper2-experience-benchmark-v1_3_2",
-        "primary_job": "3476778",
-        "protocol_subject_hash": "c8afd4ca39ff2e4abce968a53bf52dab3854ebbb97ff0e73c3b151f1a42d27e8",
-        "recorded_floor": "MODEL_CAPABILITY_FLOOR_3B"
+        "next": "TERMINAL_STOP — Wave-2 BLOCKED pending task/gate revisit (no further scale escalation)",
+        "packet": "paper2-experience-benchmark-v1_3_3",
+        "primary_job": "3476788",
+        "protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+        "recorded_floor": "MODEL_CAPABILITY_FLOOR_7B"
       },
       "licensed": [
         "architecture/formal obligations",
@@ -73,6 +79,7 @@
         "FLOOR_0_5B",
         "FLOOR_1_5B",
         "FLOOR_3B",
+        "FLOOR_7B",
         "INSTRUMENT_DEFECT history"
       ],
       "not_licensed": [
@@ -80,14 +87,15 @@
         "confirmatory ALR model win",
         "A4>A3 novelty",
         "method-promotion empirical win",
-        "CAPABLE_MODEL_AVAILABLE"
+        "CAPABLE_MODEL_AVAILABLE",
+        "14B/32B ORACLE without new preregistration"
       ],
-      "status": "CAPABILITY_FLOOR_ESCALATING",
+      "status": "CAPABILITY_LADDER_TERMINAL_NO_REFUTED",
       "wave1_lane_b": {
         "model_jobs": "FORBIDDEN_UNTIL_CAPABLE_MODEL",
         "packet": "research/paper2_alr_a3a4_confirmatory_prep_wave1_v1/",
         "pr": 355,
-        "status": "FROZEN_PREP"
+        "status": "FROZEN_PREP_BLOCKED"
       }
     },
     "paper_iii": {
@@ -122,64 +130,49 @@
     }
   },
   "promotional_lift_claim_allowed": false,
-  "receipt_id": "campaign-scoreboard-20260812-wave1-floor3b",
+  "receipt_id": "campaign-scoreboard-20260812-terminal-floor7b",
   "schema_version": "papers-ii-iii-v-campaign-scoreboard-v2",
-  "supersedes": "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json",
-  "tip_main_at_reconstruction": "ec43b2013f4341b9207a94c798c5cb61f8d52963",
+  "supersedes_content_of": "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json (post-FLOOR_3B / 7B-NOT_YET revision)",
+  "tip_main_at_reconstruction": "313fd2eaf0d596f6d5b41e59160b9d79852dc75b",
   "wave1": {
     "lane_a": {
       "jobs": {
-        "oracle_primary": "3476778",
-        "oracle_race": "3476779",
-        "staging": "3476773"
+        "oracle_primary": "3476788",
+        "oracle_3b": "3476778",
+        "oracle_race_3b": "3476779",
+        "staging_7b": "3476784",
+        "probe_7b": "3476783"
       },
-      "prs": [
-        354,
-        357,
-        371
-      ],
-      "status": "FLOOR_3B_RECORDED"
+      "prs": [354, 357, 371, 374, 378],
+      "status": "FLOOR_7B_RECORDED_LADDER_TERMINAL"
     },
     "lane_b": {
-      "issues": [
-        350,
-        352,
-        362
-      ],
+      "issues": [350, 352, 362],
       "pr": 355,
-      "status": "MERGED_PREP"
+      "status": "MERGED_PREP_BLOCKED"
     },
     "lane_c": {
-      "issues": [
-        358,
-        359,
-        363
-      ],
+      "issues": [358, 359, 363],
       "pr": 361,
       "status": "MERGED_BLOCKED_HUMAN"
     },
     "lane_d": {
-      "issues": [
-        353,
-        364
-      ],
+      "issues": [353, 364],
       "pr": 360,
       "status": "MERGED_BLOCKED_HUMAN"
     },
     "lane_e": {
-      "issues": [
-        365,
-        367
-      ],
+      "issues": [365, 367],
       "pr": 368,
       "status": "MERGED_SHAM_FREEZE"
     }
   },
   "wave2_blockers": [
-    "CAPABLE_MODEL_AVAILABLE remains NO_REFUTED (need ORACLE \u22652/3; 7B NOT_YET)",
-    "No Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL until ORACLE passes",
-    "Confirmatory ALR / A3\u2194A4 model jobs forbidden",
-    "Paper-III/V independent humans BLOCKED_HUMAN \u2014 never invent annotators",
-    "Paper-V four-arm confirmatory unauthorized until CAPABLE_MODEL + full packet freeze"
+    "CAPABLE_MODEL_AVAILABLE remains NO_REFUTED across authorized scales 0.5B/1.5B/3B/7B (ladder terminus)",
+    "No Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL — ORACLE never passed",
+    "Confirmatory ALR / A3↔A4 model jobs forbidden",
+    "Paper-III/V independent humans BLOCKED_HUMAN — never invent annotators",
+    "Paper-V four-arm confirmatory unauthorized until CAPABLE_MODEL + full packet freeze",
+    "Further scale escalation (14B/32B) is NOT protocol-legal without a new preregistered amendment; residual is task/gate revisit"
   ]
 }
