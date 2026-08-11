@@ -15,6 +15,8 @@ TERMINAL_RECEIPTS = (
     ROOT / "research/paper2_closest_parent/ISSUE_156_TERMINAL_RECEIPT.json",
     ROOT / "research/paper2_experience_to_method_v1/ISSUE_157_TERMINAL_RECEIPT.json",
     ROOT / "research/paper2_novelty_campaign/ISSUE_158_TERMINAL_RECEIPT.json",
+    ROOT / "research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json",
+    ROOT / "research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json",
 )
 
 
@@ -50,3 +52,14 @@ def test_paper2_empirical_issues_blocked_not_promoted() -> None:
         receipt = _load(path)
         assert receipt["terminal_status"] == "CANNOT_IDENTIFY", path.name
         assert receipt["evaluated_results_accessed"] is False, path.name
+
+
+def test_324_326_wave_residuals_refuse_authority() -> None:
+    r324 = _load(TERMINAL_RECEIPTS[7])
+    r326 = _load(TERMINAL_RECEIPTS[8])
+    assert r324["issue"] == 324
+    assert r324["terminal_status"] == "CANNOT_EXECUTE_CONFIRMATORY_MODEL_COMPARISON"
+    assert r324["grants_scientific_authority"] is False
+    assert r326["issue"] == 326
+    assert r326["terminal_status"] == "POWER_LIMITED_RETAIN_V2_1"
+    assert r326["grants_scientific_authority"] is False
