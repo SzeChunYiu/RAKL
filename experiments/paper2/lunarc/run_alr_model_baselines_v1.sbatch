@@ -18,7 +18,8 @@ set -euo pipefail
 ROOT=/projects/hep/fs9/users/scyiu/RAKL-paper2
 REPO="${REPO:-$ROOT/repo}"
 PYTHON="${PYTHON:-$ROOT/assets/paper2-cpu-v3-2/runtime/python/bin/python3.11}"
-MODEL="${MODEL_DIR:-$ROOT/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct}"
+# Default to HF snapshot hash dir (config.json lives under snapshot/, not repo root).
+MODEL="${MODEL_DIR:-$ROOT/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct/7ae557604adf67be50417f59c2c2f167def9a775}"
 RCP=$ROOT/receipts/alr_baselines_v1
 RUN=$ROOT/runs/alr_baselines_v1
 EXPECTED_REPO_SHA="${EXPECTED_REPO_SHA:?}"
