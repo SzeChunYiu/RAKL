@@ -7,16 +7,20 @@
     "ANNOTATOR_B_RESPONSE.json": "MISSING",
     "AUDIT_ANALYSIS.json": "MISSING",
     "AUDIT_PROTOCOL.md": "DESIGN_ONLY",
-    "AUDIT_UNIVERSE_MANIFEST.json": "MISSING",
+    "AUDIT_UNIVERSE_MANIFEST.json": "FROZEN",
+    "BLINDED_AUDIT_CANDIDATE_FRAME.jsonl": "FROZEN",
     "FINAL_AUDIT_RECEIPT.json": "MISSING",
+    "INTERNAL_STRATIFICATION.jsonl": "FROZEN",
     "PRECISION_POWER_RECEIPT.json": "MISSING",
     "PRE_ADJUDICATION_AGREEMENT.json": "MISSING",
     "PROVENANCE_AUDIT_PUBLIC_RECEIPT.json": "MISSING",
     "PUBLIC_AUDIT_PACKET.json": "MISSING",
     "SAMPLE_PLAN.json": "MISSING",
-    "ZERO_EXTERNAL_NOVELTY_LABELS.json": "MISSING"
+    "ZERO_EXTERNAL_NOVELTY_LABELS.json": "FROZEN",
+    "control_event_universe.jsonl": "FROZEN",
+    "retained_event_universe.jsonl": "FROZEN"
   },
-  "audit_id": "paper5-retained-novelty-audit-v1-STUB",
+  "audit_id": "paper5-retained-novelty-audit-v1",
   "blockers": [
     {
       "class": "HUMAN_ANNOTATORS",
@@ -24,9 +28,9 @@
       "id": "human-role-separation"
     },
     {
-      "class": "AUDIT_UNIVERSE",
-      "detail": "Audit universe cannot be frozen until #253 produces a durable, version-comparable retained-growth event table. Current longitudinal harvest is coverage-observation only with heterogeneous schema versions.",
-      "id": "audit-universe-not-frozen"
+      "class": "SAMPLE_PLAN",
+      "detail": "Phase 0 audit universe is frozen from #253, but stratified sample plan, precision/power receipt, and label-blind PUBLIC_AUDIT_PACKET remain blocked until human roles are assigned.",
+      "id": "sample-plan-not-frozen"
     },
     {
       "class": "RELATED_ISSUE",
@@ -34,7 +38,7 @@
       "id": "related-human-blocker-217"
     }
   ],
-  "claim_boundary": "Protocol/inventory stub only. Internally classified retained-novelty counts remain INTERNAL_METROLOGY. No precision, false-collapse, or axis-validity claim is authorized. Annotator responses and adjudication are absent by construction.",
+  "claim_boundary": "Phase 0 audit-universe freeze only. Internally classified retained-novelty counts remain INTERNAL_METROLOGY. No precision, false-collapse, or axis-validity claim is authorized. Annotator responses and adjudication are absent by construction.",
   "grants_scientific_authority": false,
   "human_roles_required": [
     "annotator_A",
@@ -47,6 +51,10 @@
   "required_artifacts": [
     "AUDIT_PROTOCOL.md",
     "AUDIT_UNIVERSE_MANIFEST.json",
+    "retained_event_universe.jsonl",
+    "control_event_universe.jsonl",
+    "BLINDED_AUDIT_CANDIDATE_FRAME.jsonl",
+    "INTERNAL_STRATIFICATION.jsonl",
     "SAMPLE_PLAN.json",
     "PRECISION_POWER_RECEIPT.json",
     "ZERO_EXTERNAL_NOVELTY_LABELS.json",

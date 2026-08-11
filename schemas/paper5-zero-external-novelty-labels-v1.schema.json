@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-zero-external-novelty-labels-v1.schema.json",
+  "title": "Paper 5 zero external novelty labels receipt",
+  "description": "Payload-free observation that zero external retained-novelty audit labels exist at Phase 0 freeze. Not independent review or construct-validity authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit_epoch_id",
+    "issue",
+    "created_at_utc",
+    "cutoff_timestamp_utc",
+    "framework_repository",
+    "related_issue_253_analysis_id",
+    "grants_scientific_authority",
+    "claim_boundary",
+    "annotation_directory_scan",
+    "counts",
+    "first_external_label_at_utc",
+    "label_payload_accessed",
+    "observation",
+    "state"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-zero-external-novelty-labels-v1"},
+    "audit_epoch_id": {"type": "string", "minLength": 1},
+    "issue": {"const": 255},
+    "created_at_utc": {"type": "string", "minLength": 1},
+    "cutoff_timestamp_utc": {"type": "string", "minLength": 1},
+    "framework_repository": {"const": "SzeChunYiu/RAKL"},
+    "related_issue_253_analysis_id": {"type": "string", "minLength": 1},
+    "grants_scientific_authority": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "annotation_directory_scan": {
+      "type": "object",
+      "required": ["annotation_dir", "files_observed", "forbidden_payload_files", "verdict"],
+      "properties": {
+        "annotation_dir": {"type": "string"},
+        "files_observed": {"type": "array", "items": {"type": "string"}},
+        "forbidden_payload_files": {"type": "array", "items": {"type": "string"}},
+        "unexpected_files": {"type": "array", "items": {"type": "string"}},
+        "verdict": {"type": "string"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": ["external_annotations", "adjudications", "evaluated_results"],
+      "properties": {
+        "external_annotations": {"const": 0},
+        "adjudications": {"const": 0},
+        "evaluated_results": {"const": 0}
+      }
+    },
+    "first_external_label_at_utc": {"type": ["string", "null"]},
+    "label_payload_accessed": {"const": false},
+    "observation": {"const": "ZERO_EXTERNAL_NOVELTY_LABELS"},
+    "state": {"const": "ZERO_LABELS_OBSERVED"}
+  }
+}

@@ -36,12 +36,40 @@ def test_novelty_audit_stub_has_no_fabricated_humans() -> None:
     assert stub["annotator_responses_present"] is False
     assert stub["adjudication_present"] is False
     assert stub["status"] == "AWAITING_HUMAN_ANNOTATORS"
+    assert stub["artifact_status"]["AUDIT_UNIVERSE_MANIFEST.json"] == "FROZEN"
+    assert stub["artifact_status"]["ZERO_EXTERNAL_NOVELTY_LABELS.json"] == "FROZEN"
     assert set(stub["human_roles_required"]) >= {
         "annotator_A",
         "annotator_B",
         "adjudicator",
         "provenance_auditor",
     }
+
+
+def test_audit_universe_manifest_phase0_frozen() -> None:
+    manifest = _load(ROOT / "research/paper5_novelty_audit_v1/AUDIT_UNIVERSE_MANIFEST.json")
+    schema = _load(SCHEMAS / "paper5-audit-universe-manifest-v1.schema.json")
+    Draft202012Validator(schema).validate(manifest)
+    assert manifest["status"] == "AUDIT_UNIVERSE_FROZEN_PHASE0"
+    assert manifest["depends_on_issue"] == 253
+    assert manifest["grants_scientific_authority"] is False
+    assert manifest["event_counts"]["retained_universe"] > 0
+    assert manifest["event_counts"]["control_universe"] > 0
+    import hashlib
+
+    retained_path = ROOT / manifest["retained_event_universe_path"]
+    control_path = ROOT / manifest["control_event_universe_path"]
+    assert hashlib.sha256(retained_path.read_bytes()).hexdigest() == manifest["retained_event_universe_sha256"]
+    assert hashlib.sha256(control_path.read_bytes()).hexdigest() == manifest["control_event_universe_sha256"]
+
+
+def test_zero_external_novelty_labels_receipt() -> None:
+    receipt = _load(ROOT / "research/paper5_novelty_audit_v1/ZERO_EXTERNAL_NOVELTY_LABELS.json")
+    schema = _load(SCHEMAS / "paper5-zero-external-novelty-labels-v1.schema.json")
+    Draft202012Validator(schema).validate(receipt)
+    assert receipt["state"] == "ZERO_LABELS_OBSERVED"
+    assert receipt["counts"]["external_annotations"] == 0
+    assert receipt["label_payload_accessed"] is False
 
 
 def test_coverage_observation_refuses_pooling_and_authority() -> None:
