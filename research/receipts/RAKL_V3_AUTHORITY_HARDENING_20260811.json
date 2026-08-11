@@ -61,13 +61,13 @@
     "full_result": "PASS",
     "full_tests_collected": 1315,
     "git_diff_check": "PASS",
-    "main_commit": "a521d577724dfedb3123e22cdbac457bce4e22f7",
-    "merge_commit": "a816932a4fb80a17616db192679d413a96b03bc7",
+    "main_commit": "337807625a60ba821e123f39d05f085fd9b0a5fa",
+    "merge_commit": "815249dff0f8f38b9af5ce12b4b03038a9f66990",
     "pre_existing_failures": []
   },
   "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
   "paper_files_touched": [],
-  "payload_sha256": "cd6ea0800dcf859faf681c3370b60d386bfb6dabe398ac7369529053dbeea006",
+  "payload_sha256": "aab9351666e709c63e6234e1f98a85dd2c149c2d7f2c7a0011904233b7413e12",
   "pre_existing_failures": [],
   "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
   "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
@@ -127,7 +127,7 @@
     ],
     "status": "REPAIRED_PENDING_FRESH_EXACT_HEAD_REVIEW"
   },
-  "verdict": "INTERNAL_CONFORMANCE_PASS_BLOCK_MERGE_PENDING_FRESH_REVIEW",
+  "verdict": "INTERNAL_CONFORMANCE_PASS_MERGE_ALLOWED_AFTER_REQUIRED_CI",
   "verification": [
     {
       "command": "pytest -q tests/test_rakl_v3*.py",
@@ -143,5 +143,39 @@
       "command": "git diff --check",
       "result": "PASS"
     }
-  ]
+  ],
+  "final_exact_head_review": {
+    "authority_boundary": "same_context_internal_technical_review_not_independent_peer_review",
+    "reviewed_head_commit": "4adcb8e79acb1a070db971e622d6e4ef79e4660d",
+    "reviewed_base_commit": "a521d577724dfedb3123e22cdbac457bce4e22f7",
+    "review_result": "CLEAN",
+    "hostile_worlds_rejected": [
+      "known_manifest_payload_reissued_with_arbitrary_or_mismatched_key",
+      "local_section_replayed_to_P_vs_NP_problem",
+      "report_support_contradiction_pointer_or_packet_mutation",
+      "final_lesson_or_action_mutation",
+      "promotion_attestation_or_packet_replay_corruption",
+      "arbitrary_or_unrecorded_tool_projection",
+      "support_subset_tool_projection_replay",
+      "governance_archive_replay",
+      "benchmark_chronology_or_binding_bypass",
+      "incomplete_v3_method_ownership"
+    ],
+    "focused_tests": "41 passed",
+    "full_tests": "1315 passed",
+    "receipt_and_source_hashes": "PASS",
+    "paper_paths_in_pr_diff": [],
+    "merge_allowed_after_required_ci": true
+  },
+  "current_main_refresh": {
+    "main_commit": "337807625a60ba821e123f39d05f085fd9b0a5fa",
+    "history_merge_commit": "815249dff0f8f38b9af5ce12b4b03038a9f66990",
+    "merge_parents": [
+      "4adcb8e79acb1a070db971e622d6e4ef79e4660d",
+      "337807625a60ba821e123f39d05f085fd9b0a5fa"
+    ],
+    "authority_source_or_test_overlap": false,
+    "conflicts": [],
+    "paper_files_resolved_or_edited_by_this_round": []
+  }
 }
