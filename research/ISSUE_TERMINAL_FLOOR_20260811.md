@@ -15,7 +15,11 @@ Upstream ORACLE evidence (jobs **3476730** primary / **3476731** race duplicate)
 | #158 | `NEGATIVE_NARROWING_PATH_COMPLETE` | `research/paper2_novelty_campaign/ISSUE_158_TERMINAL_RECEIPT.json` |
 | #257 | `PUBLICATION_INGEST_COMPLETE` | `research/ISSUE_257_TERMINAL_RECEIPT.json` |
 | #258 | `CAMPAIGN_TERMINAL_WITH_HONEST_NEGATIVES` | `research/ISSUE_258_TERMINAL_RECEIPT.json` |
+| #324 | `CANNOT_EXECUTE_CONFIRMATORY_MODEL_COMPARISON` | `research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json` |
+| #326 | `POWER_LIMITED_RETAIN_V2_1` | `research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json` |
 
-**Stay open (human / human-dependent only):** #216, #217, #255 (human), #249 (depends #217).
+**Stay open (independent human residual only):** #332 (independent external human review still absent after AI_OPERATOR #217 override). Issues #216/#217/#249/#255 closed under demoted AI_OPERATOR / NON_INDEPENDENT authority only.
+
+#324 freezes confirmatory ALR protocol/co-primary metrics but remains blocked by the #247 capability floor and unexecuted typed-authority arm. #326 reaffirms the independent zero-label window (demoted AI_OPERATOR ≠ independent human label) and retains v2.1 as power-limited.
 
 Publication ingest: `research/PAPERS_II_III_V_STRONGEST_VERSION_STATUS.json` · scoreboard: `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260811.md`

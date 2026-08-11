@@ -1,0 +1,33 @@
+{
+  "claim_boundary": "Protocol freeze only. No machine-witness scores are claimed here; extractor outputs must be frozen in MACHINE_WITNESS_OUTPUTS.jsonl before independent labels are unsealed.",
+  "extractor": {
+    "forbidden_inputs": [
+      "human_transfer_valid_label",
+      "human_witness_subcoordinates",
+      "adjudication_output",
+      "other_annotator_output",
+      "expected_outcome_metadata"
+    ],
+    "kind": "DETERMINISTIC_COORDINATE_RENDER_PLUS_REGISTERED_MODEL_OR_RULE",
+    "module_hooks": [
+      "src/rakl/paper3_confirmatory_gate.py",
+      "src/rakl/paper3_witness_decoupling.py"
+    ],
+    "output_contract": [
+      "role_mapping",
+      "preserved_invariants",
+      "non_preserved_properties",
+      "target_boundary_compatibility",
+      "qoi_alignment",
+      "directionality_completeness",
+      "licensed_transfer_state_or_CANNOT_CHECK"
+    ]
+  },
+  "failures_preserved": true,
+  "grants_scientific_authority": false,
+  "human_labels_may_enter_extractor": false,
+  "issue": 326,
+  "protocol_id": "paper3-machine-witness-v2-1-prelabel",
+  "schema_version": "paper3-machine-witness-protocol-v1",
+  "status": "FROZEN_BEFORE_INDEPENDENT_LABELS"
+}

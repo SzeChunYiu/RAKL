@@ -25,19 +25,23 @@ def _load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def test_issue_217_has_zero_imported_external_payloads() -> None:
+    scan = verify_issue_217_zero_public_responses(ROOT)
+    assert scan["verdict"] == "ZERO_IMPORTED_EXTERNAL_PAYLOADS"
+    assert scan["imported_external_payload_paths"] == []
+    # Demoted AI_OPERATOR lives under research/paper3/ai_operator_v2_1/ (outside
+    # the public annotation dir scan) and must not appear as imported externals.
+    assert (ROOT / "research/paper3/ai_operator_v2_1").is_dir()
+
+
 def test_public_annotation_directory_has_no_completed_judgements() -> None:
     scan = verify_public_annotation_directory(ROOT)
     assert scan["verdict"] == "ZERO_PUBLIC_ANNOTATION_PAYLOADS"
     assert scan["forbidden_payload_files"] == []
     assert "EXTERNAL_ANNOTATION_PACKET_V2_1_20260810.json" in scan["files_observed"]
     assert "SOURCE_ITEM_SET_V2_1_20260810.json" in scan["files_observed"]
-
-
-def test_issue_217_has_zero_imported_external_payloads() -> None:
-    scan = verify_issue_217_zero_public_responses(ROOT)
-    assert scan["verdict"] == "ZERO_IMPORTED_EXTERNAL_PAYLOADS"
-    assert scan["imported_external_payload_paths"] == []
-
+    # Demoted AI_OPERATOR payloads are not nested under the public annotation dir.
+    assert scan.get("demoted_ai_operator_dirs") == []
 
 def test_power_results_and_receipts_exist_and_bind_config() -> None:
     config = _load(CONFIG_PATH)
