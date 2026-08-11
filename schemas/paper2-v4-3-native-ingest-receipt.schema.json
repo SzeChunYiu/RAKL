@@ -1,0 +1,848 @@
+{
+  "$defs": {
+    "armRecord": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "blind_id": {
+                  "const": "BLIND_8E24D5"
+                },
+                "condition": {
+                  "const": "DIRECT_CORPUS"
+                },
+                "parse_error": {
+                  "const": "model output fields do not match the registered answer schema"
+                },
+                "parse_valid": {
+                  "const": false
+                },
+                "score": {
+                  "const": null
+                }
+              },
+              "required": [
+                "blind_id",
+                "condition",
+                "parse_valid",
+                "parse_error",
+                "score"
+              ]
+            },
+            {
+              "properties": {
+                "blind_id": {
+                  "const": "BLIND_3C791A"
+                },
+                "condition": {
+                  "const": "RAKL_CONTEXT"
+                },
+                "parse_error": {
+                  "const": null
+                },
+                "parse_valid": {
+                  "const": true
+                },
+                "score": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "conceptual_correct": {
+                      "const": 2
+                    },
+                    "conceptual_total": {
+                      "const": 5
+                    },
+                    "exact_conceptual_pass": {
+                      "const": false
+                    },
+                    "misalignment_recall": {
+                      "const": 0.0
+                    },
+                    "refutation_precision": {
+                      "const": 0.0
+                    },
+                    "refutation_recall": {
+                      "const": 0.0
+                    },
+                    "required_support_recall": {
+                      "const": 1.0
+                    },
+                    "support_precision": {
+                      "const": 0.875
+                    },
+                    "unsupported_source_count": {
+                      "const": 1
+                    }
+                  },
+                  "required": [
+                    "conceptual_correct",
+                    "conceptual_total",
+                    "exact_conceptual_pass",
+                    "misalignment_recall",
+                    "refutation_precision",
+                    "refutation_recall",
+                    "required_support_recall",
+                    "support_precision",
+                    "unsupported_source_count"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "blind_id",
+                "condition",
+                "parse_valid",
+                "parse_error",
+                "score"
+              ]
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "blind_id": {
+          "enum": [
+            "BLIND_8E24D5",
+            "BLIND_3C791A"
+          ]
+        },
+        "condition": {
+          "enum": [
+            "DIRECT_CORPUS",
+            "RAKL_CONTEXT"
+          ]
+        },
+        "input_tokens": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "parse_error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parse_valid": {
+          "type": "boolean"
+        },
+        "process_high_water_rss_bytes_after_arm": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "provider_api_cost_usd": {
+          "const": 0
+        },
+        "score": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "token_count": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "token_count_per_valid_scientific_success": {
+          "const": "INFINITE"
+        },
+        "unpriced_coordinates": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "wall_time_ms": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "blind_id",
+        "condition",
+        "parse_valid",
+        "parse_error",
+        "score",
+        "input_tokens",
+        "output_tokens",
+        "wall_time_ms",
+        "process_high_water_rss_bytes_after_arm",
+        "provider_api_cost_usd",
+        "unpriced_coordinates",
+        "token_count",
+        "token_count_per_valid_scientific_success"
+      ],
+      "type": "object"
+    },
+    "executionCheckout": {
+      "additionalProperties": false,
+      "properties": {
+        "clean": {
+          "const": true
+        },
+        "head_sha": {
+          "const": "bf94d16847971069912501e9a63f0e97a1e3e159"
+        },
+        "repo_path": {
+          "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo"
+        },
+        "subject_ancestor": {
+          "const": true
+        },
+        "tree_sha": {
+          "const": "407c1854c1810159a8b36a6006a11d22594dce9a"
+        }
+      },
+      "required": [
+        "clean",
+        "head_sha",
+        "repo_path",
+        "subject_ancestor",
+        "tree_sha"
+      ],
+      "type": "object"
+    },
+    "headSha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "sourceFile": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "pattern": "^research/paper2_microtrial_v4_3/native_job_[0-9]+/(?:logs|receipts|runs)/.+$",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "stderr_log",
+            "stdout_log",
+            "allocated_preflight",
+            "snapshot_attestation",
+            "submission_receipt",
+            "scheduler_evidence",
+            "governed_harvest",
+            "blinded_scores",
+            "provider_receipt",
+            "raw_output",
+            "resource_receipt",
+            "result_receipt",
+            "run_manifest",
+            "task_seed_receipt"
+          ]
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "role",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-v4-1-native-ingest-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Governed repository-ingest receipt for native LUNARC V4.3 pendulum job 3476566 (Qwen2.5-1.5B-Instruct). Adaptive non-confirmatory engineering authority only.",
+  "properties": {
+    "claim_boundary": {
+      "const": "Adaptive non-confirmatory engineering evidence only. V4.2 0.5B remains both-arms-scorable with exact_conceptual_pass_arm_count=0; V4.3 1.5B job 3476566 is one-arm-scorable with exact_conceptual_pass_arm_count=0 (RAKL_CONTEXT 2/5). No invented passes, no gate softening, no arm win/loss, paired effect, promotional metric, #138 experience section B authority, general superiority, independent review, or peer-review claim is permitted.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "ingest_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-v4-3-native-ingest-receipt.schema.json"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "native_execution": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "const": "lu2026-2-51"
+        },
+        "execution_checkout": {
+          "$ref": "#/$defs/executionCheckout"
+        },
+        "governed_harvest_failures": {
+          "maxItems": 0,
+          "type": "array"
+        },
+        "governed_harvest_verdict": {
+          "const": "HARVEST_V4_3_TASK_SEED_PASS_NONCONFIRMATORY"
+        },
+        "nodes": {
+          "const": "cn142"
+        },
+        "output_normalization_policy_id": {
+          "const": "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
+        },
+        "packet_head_ancestor_of_execution_head": {
+          "const": true
+        },
+        "packet_head_sha": {
+          "const": "57e9bc041eccc091fdf86a20a7a8c78dff037727"
+        },
+        "packet_parent_sha": {
+          "const": "f5a6a11f089669a715d35bafa0a0c8affce929e3"
+        },
+        "partition": {
+          "const": "lu48"
+        },
+        "post_attestation_result_receipt_sha256": {
+          "const": "114ae797281c3dd0373984bcaf31481c1d686a93200b4fb4a78a262a5c2b9f61"
+        },
+        "pre_post_snapshot_identity_equal": {
+          "const": true
+        },
+        "scheduler_elapsed_seconds": {
+          "const": 108
+        },
+        "scheduler_exit_status": {
+          "const": [
+            "SUCCESS"
+          ]
+        },
+        "scheduler_return_code": {
+          "const": 0
+        },
+        "scheduler_state": {
+          "const": [
+            "COMPLETED"
+          ]
+        },
+        "slurm_job_id": {
+          "const": "3476566"
+        },
+        "snapshot_canonical_sha256": {
+          "const": "4ea189b68b5726f771a3f1b659aa0c680bf8b03521380ea9076cf81413d1f89c"
+        },
+        "snapshot_file_count": {
+          "const": 8
+        },
+        "stderr_warning": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stderr_warning_lines": {
+          "const": 2
+        },
+        "v4_reinterpretation_permitted": {
+          "const": false
+        }
+      },
+      "required": [
+        "slurm_job_id",
+        "account",
+        "partition",
+        "nodes",
+        "scheduler_state",
+        "scheduler_exit_status",
+        "scheduler_return_code",
+        "scheduler_elapsed_seconds",
+        "governed_harvest_verdict",
+        "governed_harvest_failures",
+        "execution_checkout",
+        "packet_parent_sha",
+        "output_normalization_policy_id",
+        "v4_reinterpretation_permitted",
+        "snapshot_file_count",
+        "snapshot_canonical_sha256",
+        "pre_post_snapshot_identity_equal",
+        "post_attestation_result_receipt_sha256",
+        "stderr_warning_lines",
+        "stderr_warning",
+        "packet_head_sha",
+        "packet_head_ancestor_of_execution_head"
+      ],
+      "type": "object"
+    },
+    "object": {
+      "const": "One native LUNARC execution of the adaptive non-confirmatory V4.3 pendulum task/seed replay under two prompt-materialization arms on Qwen2.5-1.5B-Instruct.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "qoi": {
+      "const": "Did the exact receipt chain pass, which frozen V4.3 outputs were parse-valid/scorable, and did any arm achieve exact conceptual success under the unchanged V4.1 gate?",
+      "minLength": 1,
+      "type": "string"
+    },
+    "quantitative_figure_generated": {
+      "const": false
+    },
+    "receipt_id": {
+      "pattern": "^PAPER2_V4_3_NATIVE_JOB_[0-9]+_INGEST_RECEIPT_20260811$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-v4-3-native-ingest-receipt-v1"
+    },
+    "source_bundle": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "path": {
+          "pattern": "^research/paper2_microtrial_v4_3/native_bundles/PAPER2_V4_3_NATIVE_JOB_[0-9]+\\.tar\\.gz$",
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "source_files": {
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "stderr_log"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "stdout_log"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "allocated_preflight"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "snapshot_attestation"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "submission_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "scheduler_evidence"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "governed_harvest"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "blinded_scores"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "provider_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "raw_output"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "resource_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "result_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "run_manifest"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "task_seed_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        }
+      ],
+      "items": {
+        "$ref": "#/$defs/sourceFile"
+      },
+      "maxItems": 18,
+      "minItems": 18,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "task_seed_outcome": {
+      "additionalProperties": false,
+      "properties": {
+        "arm_comparison_estimable": {
+          "const": false
+        },
+        "arm_record_count": {
+          "const": 2
+        },
+        "evaluated_task_seed_unit_count": {
+          "const": 1
+        },
+        "exact_conceptual_pass_arm_count": {
+          "const": 0
+        },
+        "fully_costed": {
+          "const": false
+        },
+        "fully_costed_cost_per_success_estimable": {
+          "const": false
+        },
+        "parse_valid_arm_count": {
+          "const": 1
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "records": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "condition": {
+                    "const": "DIRECT_CORPUS"
+                  }
+                },
+                "required": [
+                  "condition"
+                ],
+                "type": "object"
+              },
+              "maxContains": 1,
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "condition": {
+                    "const": "RAKL_CONTEXT"
+                  }
+                },
+                "required": [
+                  "condition"
+                ],
+                "type": "object"
+              },
+              "maxContains": 1,
+              "minContains": 1
+            }
+          ],
+          "items": {
+            "$ref": "#/$defs/armRecord"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "scorable_arm_count": {
+          "const": 1
+        },
+        "score_comparison_permitted": {
+          "const": false
+        },
+        "seed": {
+          "const": 17
+        },
+        "task_id": {
+          "const": "PENDULUM_SEALED_KNOWN_ANSWER_001"
+        },
+        "valid_scientific_success_arm_count": {
+          "const": 0
+        }
+      },
+      "required": [
+        "task_id",
+        "seed",
+        "arm_record_count",
+        "evaluated_task_seed_unit_count",
+        "parse_valid_arm_count",
+        "scorable_arm_count",
+        "exact_conceptual_pass_arm_count",
+        "valid_scientific_success_arm_count",
+        "arm_comparison_estimable",
+        "score_comparison_permitted",
+        "fully_costed_cost_per_success_estimable",
+        "fully_costed",
+        "reason",
+        "records"
+      ],
+      "type": "object"
+    },
+    "typed_residual": {
+      "additionalProperties": false,
+      "properties": {
+        "next_discriminator": {
+          "const": "SIBLING_OWNS_DIRECT_PARSE_ROOT_CAUSE: do not soften exact_conceptual_pass; do not resubmit from this ingest fiber. Preserve DIRECT parse_valid=false as negative history. Paper-eligible promotional metrics remain BLOCKED (sealed microtrial authority only)."
+        },
+        "null_or_competing_explanations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 2,
+          "type": "array"
+        },
+        "observed_signature": {
+          "const": "DIRECT_CORPUS remains parse-invalid (registered answer schema field mismatch); RAKL_CONTEXT is the sole scorable arm at conceptual 2/5 with exact_conceptual_pass=false under the unchanged V4.1 exact gate on Qwen2.5-1.5B-Instruct."
+        },
+        "residual_id": {
+          "const": "PAPER2_V4_3_DIRECT_PARSE_NULL_AND_1_5B_NO_EXACT_PASS"
+        },
+        "root_cause_ladder": {
+          "const": [
+            "R1_SCHEMA_PARSER_TRANSFORMATION",
+            "R7_PROJECTION_FUNCTIONAL_FORM"
+          ]
+        }
+      },
+      "required": [
+        "residual_id",
+        "root_cause_ladder",
+        "observed_signature",
+        "null_or_competing_explanations",
+        "next_discriminator"
+      ],
+      "type": "object"
+    },
+    "v4_negative_parent": {
+      "additionalProperties": false,
+      "properties": {
+        "frozen_parse_valid_arm_count": {
+          "const": 2
+        },
+        "frozen_scorable_arm_count": {
+          "const": 2
+        },
+        "path": {
+          "const": "research/paper2_microtrial_v4_2/PAPER2_V4_2_NATIVE_JOB_3476540_INGEST_RECEIPT_20260811.json"
+        },
+        "reinterpretation_permitted": {
+          "const": false
+        },
+        "sha256": {
+          "const": "a0038a2a5d476fafbf5f749c6c78557ff81187ad540d10317c2bdf72f640cb37"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "frozen_parse_valid_arm_count",
+        "frozen_scorable_arm_count",
+        "reinterpretation_permitted"
+      ],
+      "type": "object"
+    },
+    "verdict": {
+      "const": "NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__1_5B_NO_EXACT_PASS"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "created_at_utc",
+    "verdict",
+    "object",
+    "qoi",
+    "ingest_schema",
+    "source_bundle",
+    "source_files",
+    "native_execution",
+    "v4_negative_parent",
+    "task_seed_outcome",
+    "typed_residual",
+    "quantitative_figure_generated",
+    "claim_boundary"
+  ],
+  "title": "Paper 2 V4.3 native task-seed ingestion receipt",
+  "type": "object"
+}
