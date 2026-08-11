@@ -17,7 +17,7 @@ RECEIPT_ROOT="$ROOT/receipts/v4_3"
 LOG_ROOT="$ROOT/logs/v4_3"
 RUN_ROOT="$ROOT/runs/v4_3"
 PYTHON="$ROOT/assets/paper2-cpu-v3-2/runtime/python/bin/python3.11"
-SUBMISSION_SCHEMA="$REPO/schemas/paper2-pendulum-submission-receipt-v4-2.schema.json"
+SUBMISSION_SCHEMA="$REPO/schemas/paper2-pendulum-submission-receipt-v4-3.schema.json"
 
 mkdir -p "$RECEIPT_ROOT" "$LOG_ROOT" "$RUN_ROOT"
 export PYTHONDONTWRITEBYTECODE=1
