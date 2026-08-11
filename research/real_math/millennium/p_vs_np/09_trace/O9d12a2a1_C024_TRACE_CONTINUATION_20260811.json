@@ -1,0 +1,90 @@
+{
+  "trace_id": "TRACE-O9d12a2a1-STRICT-20260811-CONTINUATION",
+  "parent_trace_id": "TRACE-O9d12a2a1-STRICT-20260811",
+  "parent_terminal_hash": "sha256:0587200f154cdf6331d41f4cbbcf3e0a7eda9152570006e1b6f4795c912b9476",
+  "entries": [
+    {
+      "event_id": "O9d12a2a1-E08",
+      "atom_id": "O9d12a2a1",
+      "event_type": "CANDIDATE_PROPOSED",
+      "timestamp": "2026-08-11T05:54:00+00:00",
+      "state_summary": "The strict packet passed its machine gate on main; candidate generation is allowed for the frozen atom.",
+      "action_summary": "Freeze C024: a nonnegative fractional packing over semi-filters with at most unit weight adjacent to each pair vertex.",
+      "evidence_pointers": [
+        "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing_potential.md",
+        "Cavalar-Oliveira ECCC TR25-033 Definitions 18-21 and Theorem 30",
+        "sha256:0587200f154cdf6331d41f4cbbcf3e0a7eda9152570006e1b6f4795c912b9476"
+      ],
+      "alternatives_considered": [
+        "full-spectrum matrix potential",
+        "entropy of closure states",
+        "fractional semi-filter packing"
+      ],
+      "decision_rationale": "The cover graph is already an exact set-cover representation. Its fractional dual gives a non-scalar certificate with a one-pair charging law by construction, so it has higher immediate partition power than inventing a target-specific statistic.",
+      "outputs": ["candidate:C024"],
+      "uncertainties": ["whether the fractional relaxation can ever exceed logarithmic scale on an explicit survivor"],
+      "residuals": ["target value unresolved"],
+      "next_steps": ["run counterexample-first local-law checks"],
+      "artifact_hash": "sha256:202f8f6255e0820c2513fa9328ef2cbc6c066ae72f8d60b535c6a07204683482",
+      "previous_event_hash": "sha256:0587200f154cdf6331d41f4cbbcf3e0a7eda9152570006e1b6f4795c912b9476"
+    },
+    {
+      "event_id": "O9d12a2a1-E09",
+      "atom_id": "O9d12a2a1",
+      "event_type": "FALSIFIER_RUN",
+      "timestamp": "2026-08-11T05:55:00+00:00",
+      "state_summary": "C024 claims bounded one-step change only under pair-feasibility and deduplicated covered-filter mass.",
+      "action_summary": "Attack both load-bearing conditions before any target evaluation.",
+      "evidence_pointers": ["research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing_potential.md"],
+      "alternatives_considered": ["drop pair-feasibility", "charge repeated coverage multiplicatively", "keep feasible deduplicated cover mass"],
+      "decision_rationale": "Without pair-feasibility one pair can cover arbitrarily large concentrated weight; without deduplication cyclic reuse can double-count. The repaired definition survives both attacks.",
+      "outputs": ["falsifier:pair_feasibility_required", "falsifier:deduplication_required"],
+      "uncertainties": ["integrality gap may make the surviving certificate weak"],
+      "residuals": ["no local-law refutation after scope restriction"],
+      "next_steps": ["record bounded result and open target-value residual"],
+      "artifact_hash": "sha256:5e71edf2cbab31293f6e709102c762512b53ef8645e46b0c91b1b5f3f39080a2",
+      "previous_event_hash": "sha256:202f8f6255e0820c2513fa9328ef2cbc6c066ae72f8d60b535c6a07204683482"
+    },
+    {
+      "event_id": "O9d12a2a1-E10",
+      "atom_id": "O9d12a2a1",
+      "event_type": "RESULT_RECORDED",
+      "timestamp": "2026-08-11T05:56:00+00:00",
+      "state_summary": "The scoped C024 certificate survives the cheapest local-law attacks.",
+      "action_summary": "Record the source-bound derivation: total feasible semi-filter packing mass lower-bounds rho and therefore cyclic intersection complexity.",
+      "evidence_pointers": [
+        "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing_potential.md",
+        "research/real_math/millennium/p_vs_np/02_problem_dag/C024_delta.yaml",
+        "Cavalar-Oliveira ECCC TR25-033 Theorem 30"
+      ],
+      "alternatives_considered": ["promote as novel theorem", "record only as source-bound proof draft"],
+      "decision_rationale": "The argument is a standard fractional set-cover duality specialization of a source object, so mathematical usefulness does not justify novelty or verified-lemma promotion.",
+      "outputs": ["authority:SOURCE_BOUND_DERIVED_PROOF_DRAFT", "root_authority:NONE"],
+      "uncertainties": ["target-specific feasible mass unknown"],
+      "residuals": ["C024-R1"],
+      "next_steps": ["open O9d12a2a1a"],
+      "artifact_hash": "sha256:b5a2c5c367489f77de4e9573063548c54ac28231b897a4ffe257ef289de7e0fb",
+      "previous_event_hash": "sha256:5e71edf2cbab31293f6e709102c762512b53ef8645e46b0c91b1b5f3f39080a2"
+    },
+    {
+      "event_id": "O9d12a2a1-E11",
+      "atom_id": "O9d12a2a1",
+      "event_type": "RESIDUAL_OPENED",
+      "timestamp": "2026-08-11T05:57:00+00:00",
+      "state_summary": "The generic cyclic-reuse-safe local-law interface now exists, but no super-logarithmic target value is known.",
+      "action_summary": "Open O9d12a2a1a: construct or refute explicit high-mass pair-feasible semi-filter weightings, beginning with a symmetry-reduced G_NEQ calibration.",
+      "evidence_pointers": [
+        "research/real_math/millennium/p_vs_np/02_problem_dag/C024_delta.yaml",
+        "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing_potential.md"
+      ],
+      "alternatives_considered": ["jump directly to QR", "calibrate G_NEQ first", "abandon fractional packing immediately"],
+      "decision_rationale": "G_NEQ is source-calibrated and logarithmic in exact cover complexity; it cheaply reveals whether the fractional certificate preserves even known logarithmic hardness before QR-specific effort.",
+      "outputs": ["residual:O9d12a2a1a", "mode:CONTRASTIVE_DISCRIMINATION", "exploration_state:BOUNDED_EXPLOIT_NEW_REPRESENTATION"],
+      "uncertainties": ["symmetry reduction of the semi-filter LP not yet derived"],
+      "residuals": ["explicit super-log mass unresolved"],
+      "next_steps": ["derive exact/symbolic G_NEQ fractional packing calibration", "compile a ResearchTool only after a transfer/retrieval probe"],
+      "artifact_hash": "sha256:563bad143bdc248d0c9facf5a21ffaa0796fdb7f5c2dfc85162039b57a17fd2c",
+      "previous_event_hash": "sha256:b5a2c5c367489f77de4e9573063548c54ac28231b897a4ffe257ef289de7e0fb"
+    }
+  ]
+}
