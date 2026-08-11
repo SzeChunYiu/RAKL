@@ -86,4 +86,13 @@ Canonical validation remains `validate_experience_benchmark(...)` once Sn and ru
 
 ## Next compute step
 
-On LUNARC FS9 Paper-II checkout at exact `origin/main`: materialize S0, execute both arms' development under the frozen ceiling, freeze Sn, run fresh transfer with LEARNING transfers independently from Sn, harvest `runs.jsonl`, then validate/analyze/plot. Do not submit until the checkout is clean and subject-bound.
+On LUNARC FS9 Paper-II checkout at exact `origin/main` (path `/projects/hep/fs9/users/scyiu/RAKL-paper2`, **not** Paper-III / #217):
+
+```bash
+SHA=$(git -C /projects/hep/fs9/users/scyiu/RAKL-paper2/repo rev-parse refs/remotes/origin/main)
+bash experiments/paper2/lunarc/submit_experience_benchmark_v1.sh "$SHA"
+# after completion:
+bash experiments/paper2/lunarc/harvest_experience_benchmark_v1.sh <job-id>
+```
+
+Bindings are frozen in `BATCH_CONTRACT_V1.json` to `protocol_subject_hash`. V4.1 jobs `3476520/3476521/3476524` remain non-evidence.
