@@ -1,0 +1,84 @@
+\section{Security, governance and failure containment}
+\label{sec:security}
+
+A self-modifying research framework is also an adversarial system. The relevant adversary need not be a malicious external actor. An optimizer that legitimately seeks a higher score can accidentally exploit stale evaluators, contaminated memory, ambiguous identities or permissive authority interfaces. We therefore treat the model, retrieved text and challenger code as untrusted proposal sources with respect to protected authority.
+
+\subsection{Trusted computing base and its boundary}
+
+The intended trusted computing base is deliberately smaller than the research agent. It includes the protected Constitution/authority rules, exact-subject identity checks, evaluator and assurance packet identities, promotion/attestation logic, and the repository or execution mechanisms used to observe these facts. The language model, same-session reviewer roles, generated lessons, retrieved documents and challenger implementation are not trusted to certify themselves.
+
+Content hashes establish identity under the assumed hash function; they do not establish semantic truth. A Git commit proves neither that the mathematical claim is correct nor that the evaluator is well designed. Likewise, a signed governance attestation would establish who approved an exact object, not that the approval was scientifically wise.
+
+\subsection{Memory poisoning and prompt injection}
+
+Persistent experience creates an attack surface absent from stateless agents. A malicious or simply erroneous episode can be repeatedly retrieved and gain influence through consolidation. Retrieved webpages, papers, issues and code comments may contain imperative language that attempts to act as instructions. RAKL therefore separates evidence content from agent-control instructions. External content can support claims or propose actions, but cannot alter the Constitution or coding-agent instruction hierarchy merely by being retrieved.
+
+Derived lessons preserve supporting and contradicting episode lineage. A lesson is not allowed to delete the raw evidence from which it was distilled. This design is motivated both by general provenance principles and by recent empirical work showing that repeated LLM memory consolidation can degrade useful memories even when the underlying episodes remain informative. A later contradicted or superseded lesson remains inspectable rather than overwriting the episodes that expose the error.
+
+Hostile memory tests should include fabricated high-confidence lessons, duplicated episodes, contradictory success/failure histories, stale-context reuse, malicious instruction text embedded in evidence, and a lesson whose apparent support consists of many copies from one lineage.
+
+\subsection{Evidence Sybils and pseudo-independence}
+
+Counting artifacts creates an obvious Sybil vulnerability. Ten summaries of one source do not constitute ten independent sources, and ten role labels in one context do not constitute ten independent reviews. Metrics therefore count source/evidence lineage and process independence rather than raw citation or agent count. Repeated failures derived from one copied episode cannot manufacture a cross-context obstruction pattern; repeated successes from the same lineage cannot manufacture transfer breadth.
+
+\subsection{Evaluator hacking and Goodhart pressure}
+
+An evolving agent will eventually discover regularities in any visible benchmark. The protection strategy is layered:
+
+\begin{itemize}[leftmargin=*]
+\item development tasks are explicitly reusable and may be optimized against;
+\item strong assurance tasks are frozen before the challenger and hidden from the proposer;
+\item assurance exposure is budgeted, and exposure converts a packet into development evidence;
+\item evaluator code, thresholds and subject-identity rules are protected from the challenger they judge;
+\item hostile near-miss tasks measure over-generalization;
+\item no scalar metric can compensate for an authority or integrity failure.
+\end{itemize}
+
+A legitimate evaluator evolution is possible only through a separate governed change between evaluation epochs. This matters because recent self-improving-agent research has begun to explore co-evolving evaluators. Our design does not assert that a fixed evaluator should remain optimal indefinitely; it asserts only that the candidate must not rewrite its own ruler within the trial used to claim improvement.
+
+\subsection{Authority forgery and protected subject binding}
+
+The first v3 integration audit identified a concrete defect class: caller-provided booleans and opaque string identifiers could be mistaken for high-authority evidence. The current implementation has since hardened the known lesson/tool, local-section/gluing, evolution/governance and benchmark authority paths with protected content-bound subject hashes, attestation resolution and fail-closed bindings. Thus the historical defect is retained as negative engineering evidence rather than presented as a property of the current code.
+
+The governing invariant is
+\[
+\text{authority transition}
+\Rightarrow
+\text{resolved exact subject}
++\text{licensed evidence type}
++\text{protected gate}
++\text{scope compatibility}.
+\]
+Internal conformance and hostile tests can show that the implemented path enforces this contract for registered attacks. They do not prove that the trust roots themselves are uncompromised, that every future call site is correct, or that an external evaluator would reproduce the assurance claim. Residual risks therefore include stale or misbound registry entries, protected-key compromise, evaluator contamination, operator override and ordinary implementation defects. Paper 5 distinguishes implementation hardening from independent external assurance.
+
+\subsection{Chronology attacks and backfilling}
+
+If an agent first observes a result and then creates a ``preregistered'' packet that predicts it, the evaluation is contaminated even when every file is internally consistent. Hash-chained traces and frozen packet identities make this harder to hide, but only if the upstream chronology is actually observed. Retrospective results are useful calibration and learning evidence; they simply receive zero prospective credit.
+
+The live case study contains several chronology/provenance repairs, including research results that were downgraded to retrospective calibration rather than being backfilled into a strict discovery trace. We treat this as a positive governance behavior and a process-cost signal at the same time.
+
+\subsection{Cross-task leakage}
+
+Persistent learning is supposed to transfer development experience to fresh tasks, but transfer tasks must not teach one another inside the same assurance packet. The v3 benchmark therefore freezes the learned state after development and starts every fresh-transfer task independently from that exact state. A run whose initial state already contains a prior transfer result invalidates the packet.
+
+The same principle applies across benchmark arms. The sham-memory condition must be constructed before target outcomes and must not accidentally contain semantically equivalent answers or target-specific hints.
+
+\subsection{Supply chain, external tools and model services}
+
+RAKL depends on Python libraries, Git hosting, CI runners, external search services and hosted models. Exact repository hashes do not pin all of these dependencies. Strong release/evaluation receipts should therefore record environment and dependency identities where material, and distinguish an unavailable dependency from a scientific refutation. A supply-chain compromise or hosted-model behavior change can invalidate reproducibility without falsifying the method hypothesis.
+
+\subsection{Denial of service through memory growth}
+
+A persistent system can fail by becoming too large to query. Storage growth is separated from prompt growth; problem fibres and context compilation create bounded working sets. Metrology records useful-context fraction, retrieval miss rate and context size. Compaction or pruning may create derived views, but raw canonical episodes remain evidence roots unless a separately governed retention policy applies. Resource stress tests should include memory stores large enough that naive full-context loading is impossible.
+
+\subsection{Governance attacks and operator powers}
+
+Repository administrators or users with sufficient privileges can bypass software gates. We do not claim cryptographic enforcement against the human owner. Instead the scientific record distinguishes governed promotion from operator override. An override is explicitly logged, cannot self-create evolution evidence and triggers post-deployment containment/attestation work. This boundary is important for honest evaluation of real engineering practice, where emergencies and direct operator instructions exist.
+
+\subsection{Rollback as a first-class operation}
+
+Rollback is not failure erasure. A promoted variant retains the evidence that supported it, while new incidents can produce a new assessment that narrows or reverses the operational decision. The previous incumbent or another assured branch remains addressable in the variant DAG. Rollback tests bind state/schema compatibility and required active paths. If state migration is irreversible, that fact is itself a Class-B/C deployment risk that must be disclosed before promotion.
+
+\subsection{Security success criteria}
+
+For Paper 5, the strongest security claims are negative invariants rather than claims of perfect safety. The target measurements include zero invalid promotions in the registered tests, zero false independent-review credit, zero fresh-transfer state leakage, exact-subject evaluator binding, complete preservation of source episodes through lesson supersession, and successful detection of planted authority/identity attacks. A failure on one of these properties blocks a strong framework-evolution claim even if task performance improves.
