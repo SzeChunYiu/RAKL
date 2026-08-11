@@ -382,3 +382,21 @@ def test_receipt_rejects_structurally_invalid_retrievals() -> None:
         )
     with pytest.raises(ValueError, match="rejection_reason"):
         RejectedRetrieval(retrieval_id="K-1", rejection_reason="")
+
+
+def test_receipt_validates_allowed_outcome_branches_against_enum() -> None:
+    """Receipt construction validates branches against EpisodeOutcome enum (issue #175)."""
+    # Valid enum values should be accepted
+    receipt = _receipt(allowed_outcome_branches=("SUCCESS", "FAILURE", "PARTIAL_SUCCESS"))
+    assert receipt.allowed_outcome_branches == ("SUCCESS", "FAILURE", "PARTIAL_SUCCESS")
+
+    # Invalid/custom strings should be rejected with a clear error
+    with pytest.raises(ValueError, match=r"invalid allowed_outcome_branch: 'custom_branch'"):
+        _receipt(allowed_outcome_branches=("SUCCESS", "custom_branch"))
+
+    with pytest.raises(ValueError, match=r"invalid allowed_outcome_branch: 'maybe'"):
+        _receipt(allowed_outcome_branches=("maybe",))
+
+    # Error message should list all valid values
+    with pytest.raises(ValueError, match="must be one of"):
+        _receipt(allowed_outcome_branches=("not_an_outcome",))
