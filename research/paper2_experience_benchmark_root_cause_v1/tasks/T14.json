@@ -1,0 +1,37 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T14",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CONTEXT_ALIGNMENT",
+  "title": "Time aggregation alignment",
+  "prompt": "Adjudicate: 'Daily peak demand contradicts monthly average demand for the same grid node.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Daily peak: 980 MW on 2026-07-01."
+    },
+    {
+      "id": "E2",
+      "text": "Monthly average: 620 MW for July 2026."
+    },
+    {
+      "id": "E3",
+      "text": "Peak and average aggregate different time summaries of the same node."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "aggregation_alignment_required"
+    ]
+  }
+}

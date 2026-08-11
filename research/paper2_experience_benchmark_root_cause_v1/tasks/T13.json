@@ -1,0 +1,37 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T13",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CONTEXT_ALIGNMENT",
+  "title": "Regime alignment before contradiction",
+  "prompt": "Adjudicate: 'Low-load efficiency data refutes high-load efficiency data for the same turbine.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Low-load test: efficiency 41% at 30% rated power."
+    },
+    {
+      "id": "E2",
+      "text": "High-load test: efficiency 44% at 90% rated power."
+    },
+    {
+      "id": "E3",
+      "text": "Operating regime and load point differ; curves are not directly contradictory."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "regime_alignment_required"
+    ]
+  }
+}

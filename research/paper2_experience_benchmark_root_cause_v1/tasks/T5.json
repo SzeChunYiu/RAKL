@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T5",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "title": "Transfer misalignment rule to finance context",
+  "prompt": "Adjudicate: 'Report A refutes Report B on corporate revenue.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Report A: Q1 revenue for Division North is USD 12M."
+    },
+    {
+      "id": "E2",
+      "text": "Report B: FY average revenue for Division South is USD 4M."
+    },
+    {
+      "id": "E3",
+      "text": "Division, period, and aggregation differ; both can be locally correct."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "scope_mismatch",
+      "not_direct_refutation"
+    ]
+  }
+}

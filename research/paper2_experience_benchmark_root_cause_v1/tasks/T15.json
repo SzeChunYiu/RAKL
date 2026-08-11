@@ -1,0 +1,37 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-root-cause-v1",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "frozen_at_utc": "2026-08-11T22:30:00Z",
+  "task_id": "T15",
+  "phase": "FRESH_TRANSFER",
+  "stratum": "CONTEXT_ALIGNMENT",
+  "title": "Measurement operator alignment",
+  "prompt": "Adjudicate: 'Handheld IR thermometer refutes RTD probe on reactor wall temperature.'",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Handheld IR reads 78 C on painted surface."
+    },
+    {
+      "id": "E2",
+      "text": "Embedded RTD reads 85 C on metal wall after calibration today."
+    },
+    {
+      "id": "E3",
+      "text": "Surface emissivity and contact vs non-contact operators differ."
+    }
+  ],
+  "sealed_answer": {
+    "verdict": "CONTEXT_MISALIGNED",
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "rationale_tags": [
+      "operator_alignment_required"
+    ]
+  }
+}
