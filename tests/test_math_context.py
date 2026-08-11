@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from rakl.math_context import (
+    AnalogyScanStatus,
     ContextGateVerdict,
+    CrossDomainAnalogy,
     MathContextFiber,
     MethodTransfer,
     audit_math_context_fiber,
@@ -20,6 +22,20 @@ def _transfer() -> MethodTransfer:
     )
 
 
+def _daily_analogy() -> CrossDomainAnalogy:
+    return CrossDomainAnalogy(
+        source_kind="everyday",
+        source_situation="a workshop reuses one shared jig for many products instead of rebuilding it",
+        common_abstraction=("shared intermediate resource", "reuse versus recomputation"),
+        source_to_target_mapping=("jig -> shared subcomputation", "product -> output dependency"),
+        shared_constraints=("one reusable object can serve many downstream consumers",),
+        disanalogies=("physical jig capacity is not a Boolean circuit complexity measure",),
+        proposed_principle="charge creation of reusable structure separately from downstream reuse",
+        validation_obligation="define a graph-cover quantity with a proved per-fusion budget and test it on known easy families",
+        provenance_note="ordinary workshop analogy used only for proposal generation",
+    )
+
+
 def _fiber(**overrides: object) -> MathContextFiber:
     values: dict[str, object] = {
         "atom_id": "O1",
@@ -31,6 +47,9 @@ def _fiber(**overrides: object) -> MathContextFiber:
         "method_transfers": (_transfer(),),
         "explicit_disanalogies": ("formula methods charge recomputation; circuits share it",),
         "source_anchors": ("doi:example",),
+        "analogy_scan_status": AnalogyScanStatus.BRIDGES_RETAINED.value,
+        "cross_domain_analogies": (_daily_analogy(),),
+        "analogy_scan_notes": "retained one reuse analogy after explicit disanalogy check",
         "frozen_at": "2026-08-11T04:00:00+00:00",
         "first_candidate_at": "2026-08-11T04:01:00+00:00",
         "packet_hash": "sha256:context",
@@ -78,3 +97,33 @@ def test_method_transfer_must_record_disanalogy_and_repair_question() -> None:
     assert report.verdict is ContextGateVerdict.FAIL
     assert "method_transfer_0:disanalogies_missing" in report.reasons
     assert "method_transfer_0:repair_question_missing" in report.reasons
+
+
+def test_cross_domain_analogy_requires_mapping_disanalogy_and_validation() -> None:
+    bad = CrossDomainAnalogy(
+        source_kind="everyday",
+        source_situation="shared tool",
+        common_abstraction=("reuse",),
+        source_to_target_mapping=(),
+        shared_constraints=("shared resource",),
+        disanalogies=(),
+        proposed_principle="charge shared structure",
+        validation_obligation="",
+        provenance_note="ordinary analogy",
+    )
+    report = audit_math_context_fiber(_fiber(cross_domain_analogies=(bad,)))
+    assert report.verdict is ContextGateVerdict.FAIL
+    assert "cross_domain_analogy_0:source_to_target_mapping_missing" in report.reasons
+    assert "cross_domain_analogy_0:disanalogies_missing" in report.reasons
+    assert "cross_domain_analogy_0:validation_obligation_missing" in report.reasons
+
+
+def test_no_safe_bridge_is_allowed_only_with_explicit_notes() -> None:
+    report = audit_math_context_fiber(
+        _fiber(
+            analogy_scan_status=AnalogyScanStatus.NO_SAFE_BRIDGE_FOUND.value,
+            cross_domain_analogies=(),
+            analogy_scan_notes="searched queueing, shared-resource and caching analogies; none survived the mapping gate",
+        )
+    )
+    assert report.verdict is ContextGateVerdict.PASS
