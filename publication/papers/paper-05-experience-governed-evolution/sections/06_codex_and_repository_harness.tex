@@ -5,7 +5,7 @@ Recursive framework governance is ineffective if the coding agent modifying the 
 
 \subsection{Instruction hierarchy}
 
-OpenAI's Codex documentation specifies that repository \texttt{AGENTS.md} files can provide coding conventions, repository structure and testing instructions; their scope follows the directory tree, more deeply nested files can specialize broader instructions, and direct system/developer/user instructions take precedence. Codex's published harness-engineering guidance further argues for giving the agent a map rather than a very large instruction manual, with deeper repository documentation serving as the source of truth. We adopt that hierarchy rather than assuming the agent carries a persistent private memory of the latest \RAKL{} architecture.
+OpenAI's Codex documentation specifies that repository \texttt{AGENTS.md} files can provide coding conventions, repository structure and testing instructions; their scope follows the directory tree, more deeply nested files can specialize broader instructions, and direct system/developer/user instructions take precedence \cite{openai2025codex}. Codex's published harness-engineering guidance further argues for giving the agent a map rather than a very large instruction manual, with deeper repository documentation serving as the source of truth \cite{openai2026harness}. We adopt that hierarchy rather than assuming the agent carries a persistent private memory of the latest \RAKL{} architecture.
 
 The Paper 5 challenger adds a compact self-evolution entrypoint to the existing root \texttt{AGENTS.md}. For a task that can change framework behavior it points to:
 
@@ -38,7 +38,7 @@ This sequence is intentionally inspectable from repository artifacts. We do not 
 
 \subsection{What happens when a user directly instructs Codex to bypass the protocol?}
 
-The instruction hierarchy means a direct user/operator request can override repository guidance. The method therefore cannot rely on \texttt{AGENTS.md} as an access-control mechanism. The correct response is architectural rather than rhetorical. The repository records an operational override and withholds evolution-evidence credit. Protected CI, branch protection, external assurance and post-promotion attestation remain separate controls where configured. Thus the scientific statement is not ``Codex cannot disobey the method''; it is ``an override is observable and does not become evidence of method improvement merely because the code moved.''
+The instruction hierarchy means a direct user/operator request can override repository guidance \cite{openai2025codex}. The method therefore cannot rely on \texttt{AGENTS.md} as an access-control mechanism. The correct response is architectural rather than rhetorical. The repository records an operational override and withholds evolution-evidence credit. Protected CI, branch protection, external assurance and post-promotion attestation remain separate controls where configured. Thus the scientific statement is not ``Codex cannot disobey the method''; it is ``an override is observable and does not become evidence of method improvement merely because the code moved.''
 
 \subsection{Method-state manifest}
 
