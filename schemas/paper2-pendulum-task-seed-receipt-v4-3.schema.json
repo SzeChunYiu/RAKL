@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "path_hash": {
+      "additionalProperties": false,
+      "properties": {
+        "post_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "post_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "pre_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "pre_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "snapshot_canonical_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "pre_path",
+        "pre_sha256",
+        "post_path",
+        "post_sha256",
+        "snapshot_canonical_sha256"
+      ],
+      "type": "object"
+    },
+    "record": {
+      "additionalProperties": false,
+      "properties": {
+        "blind_id": {
+          "minLength": 8,
+          "type": "string"
+        },
+        "condition": {
+          "enum": [
+            "DIRECT_CORPUS",
+            "RAKL_CONTEXT"
+          ]
+        },
+        "parse_valid": {
+          "type": "boolean"
+        },
+        "raw_output_canonical_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "resource_receipt": {
+          "type": "object"
+        },
+        "score": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "blind_id",
+        "condition",
+        "parse_valid",
+        "raw_output_canonical_sha256",
+        "resource_receipt",
+        "score"
+      ],
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-pendulum-task-seed-receipt-v4-2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "architecture_scope": {
+      "const": [
+        "DIRECT_CORPUS",
+        "RAKL_CONTEXT"
+      ]
+    },
+    "arm_record_count": {
+      "const": 2
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_task_seed_unit_count": {
+      "const": 1
+    },
+    "evidence_access_level": {
+      "const": "COMPLETE_SEALED"
+    },
+    "execution_checkout": {
+      "type": "object"
+    },
+    "execution_packet_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "experiment_id": {
+      "const": "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V4_3_PROMPT_INTERFACE"
+    },
+    "output_normalization": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "contract_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "normalizer_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "normalizer_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "policy_id": {
+          "const": "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
+        },
+        "v4_reinterpretation_permitted": {
+          "const": false
+        }
+      },
+      "required": [
+        "policy_id",
+        "contract_path",
+        "contract_sha256",
+        "normalizer_path",
+        "normalizer_sha256",
+        "v4_reinterpretation_permitted"
+      ],
+      "type": "object"
+    },
+    "packet_parent_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "parse_valid_arm_count": {
+      "maximum": 2,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "receipt_type": {
+      "const": "nonconfirmatory_v4_3_task_seed_execution_index"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/record"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "result_receipt_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "result_receipt_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "run_manifest_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "run_manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "schema_version": {
+      "const": "paper2-pendulum-task-seed-receipt-v4.3"
+    },
+    "scorable_arm_count": {
+      "maximum": 2,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "seed": {
+      "const": 17
+    },
+    "snapshot_attestations": {
+      "$ref": "#/$defs/path_hash"
+    },
+    "task_id": {
+      "const": "PENDULUM_SEALED_KNOWN_ANSWER_001"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_type",
+    "experiment_id",
+    "packet_parent_sha",
+    "execution_packet_sha256",
+    "execution_checkout",
+    "created_at_utc",
+    "task_id",
+    "seed",
+    "evidence_access_level",
+    "architecture_scope",
+    "output_normalization",
+    "run_manifest_path",
+    "run_manifest_sha256",
+    "result_receipt_path",
+    "result_receipt_sha256",
+    "snapshot_attestations",
+    "evaluated_task_seed_unit_count",
+    "arm_record_count",
+    "parse_valid_arm_count",
+    "scorable_arm_count",
+    "records",
+    "claim_boundary"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,26 @@
+{
+  "changed_structural_coordinates": [
+    "model_parameter_scale_0_5B_to_1_5B",
+    "model_snapshot_staging_identity",
+    "model_only_assets_root_overlay",
+    "resource_ceiling_rss_for_larger_weights"
+  ],
+  "cheapest_repeat_failure_test": "After model staging harvest, submit one native V4.3 sealed pendulum job with Qwen2.5-1.5B-Instruct seed 17; require exact_conceptual_pass_arm_count>0 before any paper metric update. Gate/prompts/normalizer unchanged.",
+  "evidence_pointers": [
+    "research/paper2_microtrial_v4_2/PAPER2_V4_2_JOB_3476540_CAPABILITY_LIMIT_RESULT_20260811.md",
+    "research/paper2_microtrial_v4_2/PAPER2_V4_2_NATIVE_JOB_3476540_INGEST_RECEIPT_20260811.json",
+    "research/paper2_microtrial_v4/MODEL_MANIFEST_V4.json"
+  ],
+  "method_family": "same sealed pendulum known-answer microtrial with unchanged exact conceptual gate; larger Instruct snapshot only",
+  "prior_failure_ids": [
+    "F-P2-V42-CAPABILITY-LIMIT-0.5B-NO-EXACT-PASS"
+  ],
+  "prior_falsifier_escape_reason": "Exact conceptual gate, V4.2 prompts, V4.1 normalizer, and seed 17 remain unchanged; only model scale/staging identity and RSS ceiling for larger weights change, so a fresh run can still fail the same scientific gate honestly.",
+  "restored_or_replaced_assumptions": [
+    "0.5B Instruct capacity is the binding residual under an otherwise sealed exact gate",
+    "A 1.5B Instruct snapshot can be staged as a model-only overlay reusing the V3.2 python/runtime"
+  ],
+  "schema_version": "paper2-difference-witness-v1",
+  "target_atom_id": "P2-EMPIRICAL-BRIDGE-PENDULUM-001",
+  "target_context_hash": "85d63b22b19e2c0433c15da5c83000263f38aab2f46f61e3239df3e6efb3c8ce"
+}
