@@ -1,4 +1,4 @@
-"""Proposal-only pre-action fibre receipt (two-phase episode binding).
+"""Pre-action fibre receipt and consequential-operator execution gate.
 
 RAKL v3 freezes the *outcome* as a :class:`~rakl.experience_substrate.TaskEpisode`,
 but nothing binds the stage before it. An agent can notice and execute a useful
@@ -7,25 +7,30 @@ chosen operator and the predeclared falsifier are content-bound. The later
 episode can be recorded honestly and still be, unavoidably, retrospective.
 
 This module emits the missing pre-action half as an immutable, content-hashed
-shell, and derives the chronology status of an episode by *comparing* the two
-halves. The status is never declared: it is re-derived from the pair, so nothing
-an agent asserts after the fact can promote a retrospective episode.
+shell, derives the chronology status of an episode by *comparing* the two halves,
+and exposes a fail-closed **pre-execution gate** for consequential operators.
+The chronology status is never declared: it is re-derived from the pair, so
+nothing an agent asserts after the fact can promote a retrospective episode.
 
 Scope, stated as narrowly as the artifact supports:
 
-* **Not wired into any runtime path.** ``record_task_episode`` is unchanged.
-  Nothing in RAKL calls this module. The issue asks for receipts generated
-  *automatically*; this lands the object and its guard, and automatic
-  enforcement remains a separate, separately reviewable change.
+* **Pre-execution gate, opt-in call sites.**
+  :func:`gate_consequential_operator_execution` / :func:`require_consequential_operator_receipt`
+  refuse execution when fibre, operator, or falsifier are unbound. Callers of
+  consequential operators must invoke the gate; ``record_task_episode`` and
+  symbolic planning transitions remain unchanged so cheap planning is not
+  ceremonially taxed.
 * **No completeness claim.** A verified binding says what was selected and
   rejected, never that the fibre search universe was complete. Retrieval-universe
   coverage is a different object, tracked by RAKL issue #119. (Unrelated to
   :mod:`rakl.discovery_coverage`, which covers a different question again.)
-* **Detection, not prevention.** A post-hoc discriminator substitution is
-  detected because the predeclared discriminator is inside the hashed receipt and
-  the episode references that hash. An actor able to rewrite *both* the receipt
-  and the episode's reference is outside what a pure value module can witness;
-  that guarantee belongs to an append-only store.
+* **Detection plus prevention at the gate boundary.** Post-hoc discriminator
+  substitution is still detected because the predeclared discriminator is inside
+  the hashed receipt and the episode references that hash. The execution gate
+  additionally blocks *starting* a consequential operator without that binding.
+  An actor able to rewrite *both* the receipt and the episode's reference is
+  outside what a pure value module can witness; that guarantee belongs to an
+  append-only store.
 * **No authority.** Emits no proof, lesson, tool, gluing, theorem or
   review-independence authority, and grants none by being present.
 
@@ -324,6 +329,162 @@ def admissible_for_failure_learning(episode: TaskEpisode) -> bool:
     """Retrospective episodes still teach. Chronology is not consulted."""
 
     return episode_is_well_formed(episode)
+
+
+class OperatorExecutionGateVerdict(str, Enum):
+    """Whether a consequential operator may execute under a pre-action receipt.
+
+    Fail-closed asymmetry: only ``ALLOWED`` permits execution. ``BLOCKED`` means
+    the binding is positively missing or mismatched. ``CANNOT_CHECK`` means the
+    receipt is malformed/unverifiable and therefore also refuses execution — an
+    unverifiable chronology claim never reads as permission.
+    """
+
+    ALLOWED = "ALLOWED"
+    BLOCKED = "BLOCKED"
+    CANNOT_CHECK = "CANNOT_CHECK"
+
+
+@dataclass(frozen=True)
+class OperatorExecutionGateReport:
+    """Result of the pre-execution consequential-operator gate."""
+
+    verdict: OperatorExecutionGateVerdict
+    reasons: Tuple[str, ...]
+    receipt_content_hash: str | None = None
+
+    @property
+    def may_execute(self) -> bool:
+        """True only for a verified fibre/operator/falsifier binding."""
+
+        return self.verdict is OperatorExecutionGateVerdict.ALLOWED
+
+    @property
+    def grants_prospective_or_theorem_authority(self) -> bool:
+        """A gate pass authorizes execution chronology only, never theorem truth."""
+
+        return False
+
+
+def gate_consequential_operator_execution(
+    receipt: PreActionFibreReceipt | None,
+    *,
+    intended_operator_id: str,
+    intended_fibre_snapshot_hash: str,
+    intended_falsifier: str,
+    intended_atom_id: str | None = None,
+    intended_context_hash: str | None = None,
+    intended_task_id: str | None = None,
+) -> OperatorExecutionGateReport:
+    """Fail-closed gate: content-bind fibre, operator, and falsifier before execution.
+
+    A consequential operator may execute only when a structurally sound receipt
+    already binds the exact fibre snapshot, chosen operator identity, and
+    predeclared falsifier (discriminator + allowed outcome branches). Missing
+    receipts, mismatches, and unverifiable receipts all refuse execution.
+
+    This gate does not classify cheap/non-consequential actions: callers that
+    invoke it have already decided the action is consequential. Symbolic planning
+    transitions such as ``apply_operator_symbolic`` remain ungated by design.
+    """
+
+    if not (intended_operator_id or "").strip():
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.CANNOT_CHECK,
+            ("intended_operator_id_missing",),
+        )
+    if not (intended_fibre_snapshot_hash or "").strip():
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.CANNOT_CHECK,
+            ("intended_fibre_snapshot_hash_missing",),
+        )
+    if not (intended_falsifier or "").strip():
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.CANNOT_CHECK,
+            ("intended_falsifier_missing",),
+        )
+
+    if receipt is None:
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.BLOCKED,
+            (
+                "no_pre_action_fibre_receipt_before_consequential_operator",
+                "fibre_operator_falsifier_unbound",
+            ),
+        )
+
+    structural = _structural_reasons(receipt)
+    if structural:
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.CANNOT_CHECK,
+            structural,
+            receipt_content_hash=receipt.receipt_canonical_sha256,
+        )
+
+    reasons: list[str] = []
+    if intended_fibre_snapshot_hash != receipt.fibre_snapshot_hash:
+        reasons.append("fibre_snapshot_hash_mismatch")
+    if intended_operator_id not in receipt.operator_ids:
+        reasons.append("operator_id_not_bound_by_receipt")
+    if intended_falsifier != receipt.predeclared_discriminator:
+        reasons.append("falsifier_mismatch")
+    if intended_atom_id is not None and intended_atom_id != receipt.atom_id:
+        reasons.append("atom_id_mismatch")
+    if intended_context_hash is not None and intended_context_hash != receipt.context_hash:
+        reasons.append("context_hash_mismatch")
+    if intended_task_id is not None and intended_task_id != receipt.task_id:
+        reasons.append("task_id_mismatch")
+
+    if reasons:
+        return OperatorExecutionGateReport(
+            OperatorExecutionGateVerdict.BLOCKED,
+            tuple(reasons),
+            receipt_content_hash=receipt.receipt_canonical_sha256,
+        )
+
+    return OperatorExecutionGateReport(
+        OperatorExecutionGateVerdict.ALLOWED,
+        (
+            "fibre_snapshot_bound",
+            "operator_bound",
+            "falsifier_and_outcome_branches_bound",
+        ),
+        receipt_content_hash=receipt.receipt_canonical_sha256,
+    )
+
+
+def require_consequential_operator_receipt(
+    receipt: PreActionFibreReceipt | None,
+    *,
+    intended_operator_id: str,
+    intended_fibre_snapshot_hash: str,
+    intended_falsifier: str,
+    intended_atom_id: str | None = None,
+    intended_context_hash: str | None = None,
+    intended_task_id: str | None = None,
+) -> OperatorExecutionGateReport:
+    """Raise when the consequential-operator gate refuses execution.
+
+    Returns the ``ALLOWED`` report on success so callers can record the receipt
+    content hash beside the subsequent episode.
+    """
+
+    report = gate_consequential_operator_execution(
+        receipt,
+        intended_operator_id=intended_operator_id,
+        intended_fibre_snapshot_hash=intended_fibre_snapshot_hash,
+        intended_falsifier=intended_falsifier,
+        intended_atom_id=intended_atom_id,
+        intended_context_hash=intended_context_hash,
+        intended_task_id=intended_task_id,
+    )
+    if not report.may_execute:
+        joined = ",".join(report.reasons) if report.reasons else report.verdict.value
+        raise ValueError(
+            f"consequential operator blocked by pre-action fibre receipt gate "
+            f"({report.verdict.value}): {joined}"
+        )
+    return report
 
 
 def _structural_reasons(receipt: PreActionFibreReceipt) -> Tuple[str, ...]:
