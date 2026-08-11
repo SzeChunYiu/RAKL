@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "paper2-oracle-capability-gate-v2-exec",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Clinic A reports median morning fasting glucose 5.4 mmol/L in adults aged 40-49."
+    },
+    {
+      "id": "E2",
+      "text": "Clinic B reports median evening post-prandial glucose 7.8 mmol/L in adults aged 70-79."
+    },
+    {
+      "id": "E3",
+      "text": "Age band, sampling time, and fasting vs post-prandial states differ; the two medians are not the same measured quantity."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T23:10:00Z",
+  "phase": "DEVELOPMENT_SEQUENCE",
+  "prompt": "Adjudicate: 'Clinic A contradicts Clinic B about the same glucose quantity.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "different_population",
+      "different_sampling_window",
+      "not_direct_contradiction"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "verdict": "CONTEXT_MISALIGNED"
+  },
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "task_id": "D3",
+  "title": "Context mismatch before contradiction"
+}

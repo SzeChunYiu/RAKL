@@ -26,7 +26,7 @@ Further 14B/32B scale shopping is **not authorized**. This packet freezes the **
 - `CAPABLE_MODEL_AVAILABLE`: **`NO_REFUTED` / false**
 - Learning staircase / Phase-0 / confirmatory ALR / four-arm: **unauthorized**
 - ExperienceBenchmark learning claims: **unlicensed** (see `LEARNING_CLAIMS_LICENSE_STATUS.json`)
-- Executable v2 ORACLE jobs: **not authorized yet** (`PROTOCOL_FROZEN_NOT_YET_EXECUTABLE`)
+- Executable v2 ORACLE jobs: authorized only under successor packet `paper2-oracle-capability-gate-v2-exec` (`e20eeadc…`) at **7B**; this protocol-only packet still does not submit jobs
 - Pilot diagnostic job: **not authorized** (receipt reanalysis only)
 
 ## Predicted discriminator (preregistered)
@@ -38,4 +38,4 @@ Can any authorized-scale (≤7B) ORACLE clear exact success ≥2/3 on a sealed t
 
 ## Next action
 
-Author sealed v2 transfer tasks → freeze executable ORACLE packet → only then consider ORACLE jobs. Do **not** invent a pass.
+Submit V2_0_EXEC 7B ORACLE on sealed T1–T5 after the executable freeze lands on exact `origin/main`. Do **not** invent a pass.

@@ -1,0 +1,64 @@
+{
+  "schema_version": "paper2-experience-benchmark-difference-witness-v1",
+  "difference_witness_id": "PAPER2_ORACLE_CAPABILITY_GATE_V2_0_EXEC_FROM_V2_0_AND_V1_3_3",
+  "issue": 379,
+  "parent_issue": 372,
+  "challenger_packet": "paper2-oracle-capability-gate-v2-exec",
+  "challenger_protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0_EXEC",
+  "parent_protocol_packet": "paper2-oracle-capability-gate-v2",
+  "parent_protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
+  "parent_protocol_subject_hash": "7b186eae72ca69765c1702bc6280a9f5a1ca5c27527b88664dcfe53f644dae09",
+  "parent_v1_3_3_packet": "paper2-experience-benchmark-v1_3_3",
+  "parent_v1_3_3_protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+  "parent_job_id": "3476788",
+  "parent_scientific_verdict": "MODEL_CAPABILITY_FLOOR_7B",
+  "scale_change_from_floored_7B_oracle": false,
+  "task_gate_revisit_not_scale_escalation": true,
+  "explicitly_not_scale_only_escape_from_v1_2": true,
+  "explicitly_not_14B_32B_escalation": true,
+  "learning_staircase_authorized": false,
+  "promotional_lift_claim_allowed": false,
+  "reopen_issue_138": false,
+  "v4_1_score_reuse_allowed": false,
+  "v4_3_pendulum_score_reuse_allowed": false,
+  "preregistered_escalation_source": "ORACLE_CAPABILITY_GATE_V2_0: author sealed v2 transfer tasks then executable ORACLE freeze; authorized ceiling remains <=7B",
+  "what_changed": [
+    "status PROTOCOL_FROZEN_NOT_YET_EXECUTABLE -> PROTOCOL_FROZEN_AWAITING_EXECUTION with oracle_job_authorized=true",
+    "new sealed D1–D3 and T1–T5 task bytes (not identical to v1.3_3 T1–T3)",
+    "transfer set expanded to five strata: REPEATED_FAMILY, CROSS_DOMAIN_TRANSFER, HOSTILE_NEAR_MISS, CONTEXT_ALIGNMENT, MISSING_EVIDENCE",
+    "protocol_subject_hash rebound to executable packet identity e20eeadc…",
+    "first authorized ORACLE scale locked to Qwen2.5-7B-Instruct (ceiling revisit, not 14B/32B)"
+  ],
+  "what_did_not_change": [
+    "EVALUATOR_PROTOCOL EXPERIENCE_V1_EXACT_STRUCTURED_MATCH thresholds (success_threshold=1.0)",
+    "oracle_pass_min_success_rate 2/3 with parse-validity guard",
+    "authorized model ceiling <= Qwen2.5-7B-Instruct",
+    "immutable negative history jobs 3476730/3476731/3476742/3476756/3476778/3476788",
+    "MODEL_CAPABILITY_FLOOR_7B verdict on 3476788",
+    "CAPABLE_MODEL_AVAILABLE=NO_REFUTED until a future parse-valid receipt clears >=2/3",
+    "ban on Phase-0 / confirmatory ALR / four-arm while NO_REFUTED",
+    "AI_OPERATOR != independent human"
+  ],
+  "hardness_axes_preserved": [
+    "CROSS_DOMAIN evidence-id binding under correct high-level misalignment verdict (T2)",
+    "HOSTILE_NEAR_MISS QoI discrimination vs context-misalignment confusion (T3)",
+    "REPEATED_FAMILY calibration-bound exact match (T1)"
+  ],
+  "new_strata_added_without_removing_required_axes": [
+    "CONTEXT_ALIGNMENT true-contradiction under aligned QoI (T4)",
+    "MISSING_EVIDENCE prefer CANNOT_CHECK (T5)"
+  ],
+  "restored_or_replaced_assumptions": [
+    {
+      "broken_in_parent": "V2_0 protocol freeze could not execute because sealed successor tasks were NOT_YET_AUTHORED",
+      "repair": "Author and freeze new sealed D/T bytes with protocol_subject_hash before any evaluated outcome; authorize 7B ORACLE only"
+    },
+    {
+      "broken_in_parent": "Re-running identical v1.3_3 T1–T3 would be confirmatory shopping",
+      "repair": "New task surfaces preserve hardness axes; DifferenceWitness records non-identity of sealed bytes"
+    }
+  ],
+  "why_old_falsifier_may_no_longer_apply": "Parent falsifier was 7B ORACLE success_rate < 2/3 on v1.3_3 sealed T1–T3. This packet changes sealed task bytes while preserving CROSS_DOMAIN evidence-binding and HOSTILE_NEAR_MISS QoI axes and keeping evaluator thresholds unchanged; the parent falsifier continues to block learning claims until a v2_exec receipt clears the gate.",
+  "cheapest_test_that_difference_is_illusory": "If T1–T5 remove HOSTILE_NEAR_MISS or CROSS_DOMAIN evidence-binding requirements, soften success_threshold, or authorize 14B/32B, treat this DifferenceWitness as illusory and reject.",
+  "claim_boundary": "DifferenceWitness for executable sealed-task freeze only. Not an ORACLE pass. Not learning efficacy."
+}

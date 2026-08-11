@@ -1,0 +1,13 @@
+{
+  "max_output_tokens": 512,
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_manifest_path": "research/paper2_oracle_capability_gate_v2_exec/MODEL_MANIFEST_7B.json",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "provider": "local_transformers",
+  "reuse_note": "Reuses already-staged Qwen2.5-7B-Instruct snapshot from paper2-model-qwen25-7b-v1 for ORACLE_CAPABILITY_GATE_V2_0_EXEC after FLOOR_7B terminus and V2_0 protocol freeze. Does NOT reuse microtrial pendulum scores. Does NOT soften EXPERIENCE_V1_EXACT_STRUCTURED_MATCH.",
+  "schema_version": "rakl-experience-benchmark-model-v1",
+  "seed": 17,
+  "snapshot_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-model-qwen25-7b-v1/model/Qwen--Qwen2.5-7B-Instruct/a09a35458c702b33eeacc393d103063234e8bc28",
+  "system_prompt": "You are a careful scientific assistant. Answer only from the sealed evidence provided for this task. Prefer CANNOT_CHECK over unsupported claims.\n\nReturn exactly one JSON object and then stop. The first non-whitespace character MUST be \"{\" and the last MUST be \"}\".\nDo not emit CSV, YAML, markdown fences, or prose outside the JSON object.\n\nUse these exact key names with no leading/trailing spaces:\nverdict, selected_evidence_ids, rejected_evidence_ids, rationale_tags.\n\nThe verdict value MUST be exactly one of these four tokens and no other word:\nSUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK\n\nDo not emit REJECT, FAIL, ACCEPT, TRUE, FALSE, or any other verdict synonym.\n\nEmit an object shaped exactly like this skeleton (replace values; do not copy sealed answers from elsewhere):\n{\"verdict\":\"CANNOT_CHECK\",\"selected_evidence_ids\":[],\"rejected_evidence_ids\":[],\"rationale_tags\":[]}",
+  "temperature": 0.0
+}
