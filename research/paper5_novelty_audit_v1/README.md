@@ -38,3 +38,14 @@ Same-session AI roleplay is **not** independent review.
 ## Claim boundary
 
 This freeze does **not** establish retained-novelty precision, false-collapse rate, axis validity, or semantic-growth authority. Those require frozen human labels and adjudication per `experiments/paper5/NOVELTY_AUDIT_PROTOCOL_V1.md`.
+
+## Demoted AI_OPERATOR substantive track
+
+After #333 closeout stubs, stratified sample/labels/analysis live in `ai_operator_demoted_v1/`:
+
+- `SAMPLE_PLAN.json`, `PRECISION_POWER_RECEIPT.json`, `PUBLIC_AUDIT_PACKET.json`
+- `ANNOTATOR_A_RESPONSE.json` / `ANNOTATOR_B_RESPONSE.json` / `ADJUDICATION.json`
+- `AUDIT_ANALYSIS.json`, `FINAL_AUDIT_RECEIPT.json`, `HONESTY_STAMP_AI_OPERATOR.json`
+
+Authority: `DEMOTED_AI_OPERATOR_NON_INDEPENDENT` only. Independent construct-validity remains fail-closed.
+Root `SAMPLE_PLAN.json` / `PUBLIC_AUDIT_PACKET.json` / `AUDIT_ANALYSIS.json` are **absent** (not silently FROZEN).
