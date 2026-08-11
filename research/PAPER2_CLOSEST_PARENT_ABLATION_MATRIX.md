@@ -82,6 +82,10 @@ for a memory `m = C(O)` derived from observations `O`, over the trust lattice
 `Unknown < External < TrustedTool < UserHistory < User_Confirmed < System`,
 unless a platform-recorded declassification event applies.
 
+Appendix A restates it as a runtime-monitor proposition with a proof sketch, and
+Table 5 enumerates all seven policy stages: memory write, trust transition,
+retrieval, risk labeling, authorization, tool taint, conflict handling.
+
 **RAKL may not claim that derivation must not inflate authority.** That is
 PPMF's, and Paper I already concedes it in
 `sections/01d_transactional_state_nearest_work.tex`. This audit confirms and
@@ -95,6 +99,11 @@ differing in whether the evidence is predictive or mechanistic are
 indistinguishable to PPMF by construction. It cannot express that the first
 must not license the second, because it has no coordinate for what kind of
 support a claim carries.
+
+Every one of PPMF's seven policy stages is keyed on source channel and action
+risk class; none references a kind of scientific support. So this is not an
+argument from what the method summary happened to omit — it is what the complete
+policy table contains.
 
 That is a real residual, and it is much smaller than "RAKL governs provenance".
 

@@ -10,7 +10,7 @@ per parent and governs what any matrix row measured against it may claim.**
 | Parent | arXiv | Version | Evidence level |
 |---|---|---|---|
 | MemTX | 2607.23929 | v2, 2026-07-28 | `FULL_TEXT` |
-| PPMF | 2607.29167 | v1, 2026-07-31 | `FULL_TEXT_PARTIAL` (pp. 1–6; appendices A–I unread) |
+| PPMF | 2607.29167 | v1, 2026-07-31 | `FULL_TEXT_PARTIAL` (pp. 1–6 and 11–16; pp. 7–10 results narrative unread) |
 | AutoSci | 2605.31468 | v1, 2026-05-29 | `ABSTRACT_AND_REPO` |
 | MemClaw | 2606.24535 | v1, 2026-06-23 | `ABSTRACT_ONLY` |
 | AI-scientists audit | 2604.18805 | v1, 2026-04-20 | `ABSTRACT_ONLY` |
@@ -77,7 +77,7 @@ is where RAKL's residual lives.
 
 ---
 
-## PPMF — `FULL_TEXT_PARTIAL` (pp. 1–6)
+## PPMF — `FULL_TEXT_PARTIAL` (pp. 1–6, 11–16)
 
 **Object.** `m = (c, s, τ, h, r, e)` — content, source, trust, transformation
 history, risk labels, external-derived flag. Trust lattice
@@ -108,10 +108,22 @@ PURCHASE and CREDENTIAL. Ambiguous or conflicting support keeps all candidates
 and the gate uses the **least trusted** support. Trusted-tool output inherits
 the least trusted input taint.
 
+**Appendix A.** Restates the invariant as a runtime-monitor proposition with a
+proof sketch: under platform-maintained provenance, append-only confirmation
+events and deterministic support binding, "no action-relevant claim whose least
+supporting source is below required(ρ) can authorize a call of risk ρ, unless a
+scoped declassification event is bound to the same principal, target, risk
+class, and scope". Table 5 enumerates all seven policy stages — memory write,
+trust transition, retrieval, risk labeling, authorization, tool taint, conflict
+handling.
+
 **Scope.** Action and tool risk under indirect prompt injection (cs.CR). `q` is
-"a schema-level claim linking a memory span to an action argument". **No
-representation, mechanism or identification distinction appears anywhere in the
-read sections.**
+"a schema-level claim linking a memory span to an action argument". **Every one
+of the seven policy stages is keyed on source channel and action risk class. No
+stage references a kind of scientific support**, and no representation,
+mechanism or identification distinction appears anywhere in the read sections —
+which now include the formal statement and the complete policy table, not only
+the method summary.
 
 **Stated limitations.** The guarantee is conditional: "platform forgery or
 mislabeling breaks the boundary". Cross-channel attacks that socially engineer a
@@ -194,6 +206,16 @@ annotations distinguish *types* of belief update or only whether one occurred.
 | AutoSci | `BLACK_BOX_PUBLIC_SYSTEM_FEASIBLE` | public MIT code, but needs an authenticated agent runtime and the paper system is on a separate frozen branch; exact reproduction of paper results is not established |
 | MemTX | `FUNCTION_MATCHED_ABLATION_FEASIBLE` | no public implementation located; the commit-discipline function is reproducible as a RAKL-internal arm |
 | PPMF | `FUNCTION_MATCHED_ABLATION_FEASIBLE` | no public implementation located; the non-amplification rule is simple enough to implement faithfully |
+
+**Scope of the "no public implementation located" claim.** GitHub repository
+search for `MemTX transactional memory agent`, `PPMF provenance preserving
+memory firewall` and `provenance memory firewall LLM`, plus GitHub code search
+for `transactional belief commit MemTX` — all zero results on 2026-08-11.
+Neither abstract page links code; PPMF's Appendix B names a project directory
+rather than a repository. An absence claim is only as good as the search behind
+it, so the search is recorded rather than asserted. If either implementation
+surfaces, MemTX moves toward `EXACT_REPRODUCTION_FEASIBLE` and Deliverable 4
+changes.
 | MemClaw | `CONCEPTUAL_COMPARISON_ONLY` | proprietary production service |
 | 2604.18805 | `CONCEPTUAL_COMPARISON_ONLY` | a measurement study, not a system |
 
