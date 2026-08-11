@@ -77,6 +77,13 @@ from .experience_substrate import (
     validate_episode,
     validate_lesson,
 )
+from .failure_learning import (
+    BoundaryLessonSpec,
+    FailureDiagnosisRevisionSpec,
+    boundary_lesson_from_supported_failure,
+    revise_failure_diagnosis,
+)
+from .gluing_learning import gluing_episode_outcome, gluing_residual_signature
 from .problem_fibre import (
     FibreKnowledgeItem,
     GluingObstruction,
@@ -106,6 +113,7 @@ from .saturation_vector import (
     add_novelty_round,
     assess_saturation_vector,
 )
+from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
 from .v3_runtime import (
     ConsolidationOutcome,
     FailureProjectionSpec,
@@ -113,12 +121,15 @@ from .v3_runtime import (
     ToolProjectionSpec,
     compile_state_fibre,
     consolidate_lesson,
+    materialize_state_substrate,
     record_saturation_round,
     record_task_episode,
+    state_fingerprint,
 )
 
 __all__ = [
     "ArmPhaseMetrics",
+    "BoundaryLessonSpec",
     "ConsolidationOutcome",
     "ConsolidationVerdict",
     "DriverRequest",
@@ -136,6 +147,7 @@ __all__ = [
     "ExperienceBenchmarkVerdict",
     "ExperienceConditionedPath",
     "ExperienceLedger",
+    "FailureDiagnosisRevisionSpec",
     "FailureProjectionSpec",
     "FibreKnowledgeItem",
     "GluingObstruction",
@@ -172,6 +184,7 @@ __all__ = [
     "SubstrateRelation",
     "TaskEpisode",
     "ToolProjectionSpec",
+    "UnifiedSubstrateSnapshot",
     "VariantSelection",
     "VariantStatus",
     "add_episode",
@@ -184,6 +197,7 @@ __all__ = [
     "assess_lesson_consolidation",
     "assess_rakl_triviality",
     "assess_saturation_vector",
+    "boundary_lesson_from_supported_failure",
     "classify_problem_novelty",
     "compile_problem_fibre",
     "compile_state_fibre",
@@ -194,11 +208,15 @@ __all__ = [
     "evolution_portrait",
     "experience_memory_views",
     "glue_local_sections",
+    "gluing_episode_outcome",
+    "gluing_residual_signature",
     "induce_strategy_motifs",
     "initialize_evolution_archive",
     "knowledge_items_from_legacy_fiber",
     "lesson_memory_view",
     "lesson_to_research_tool",
+    "materialize_state_substrate",
+    "materialize_unified_substrate",
     "operator_experience_statistic",
     "promote_incumbent",
     "promoted_lesson_version",
@@ -210,7 +228,9 @@ __all__ = [
     "record_saturation_round",
     "record_task_episode",
     "register_challenger",
+    "revise_failure_diagnosis",
     "run_learning_turn",
+    "state_fingerprint",
     "validate_episode",
     "validate_experience_benchmark",
     "validate_lesson",
