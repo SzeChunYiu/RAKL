@@ -20,15 +20,29 @@ sys.modules[SPEC.name] = mod
 SPEC.loader.exec_module(mod)
 
 
-def test_euler_predicate_matches_quadratic_residue_relation_exhaustively():
+def test_constructive_euler_predicate_matches_quadratic_residue_relation_exhaustively():
     for p in (3, 5, 7, 11, 19, 43, 59):
         assert mod.exhaustive_relation_check(p)
+
+
+def test_double_and_add_matches_native_modular_multiplication():
+    for p in (3, 5, 7, 11, 19):
+        for a in range(p):
+            for b in range(p):
+                assert mod.mul_mod_double_and_add(p, a, b) == (a * b) % p
+
+
+def test_square_and_multiply_matches_native_modular_power():
+    for p in (3, 5, 7, 11, 19):
+        for a in range(p):
+            for exponent in range(p):
+                assert mod.pow_mod_square_and_multiply(p, a, exponent) == pow(a, exponent, p)
 
 
 def test_zero_difference_is_not_an_edge():
     for p in (3, 11, 19, 43, 59):
         for x in range(p):
-            assert not mod.qr_relation_via_euler(p, x, x)
+            assert not mod.qr_relation_via_constructive_power(p, x, x)
 
 
 def test_schedule_has_cubic_block_accounting_shape():
