@@ -13,7 +13,7 @@
     "PREREGISTRATION.md": "DESIGN_ONLY",
     "RANDOMIZATION_SCHEDULE.json": "MISSING",
     "RESOURCE_CEILING.json": "MISSING",
-    "SHAM_POLICY.json": "MISSING",
+    "SHAM_POLICY.json": "STUB",
     "TASKS.json": "MISSING",
     "TOOL_POLICY.json": "MISSING",
     "provider_adapter": "MISSING"
@@ -35,8 +35,13 @@
       "id": "provider-adapter-missing"
     },
     {
+      "class": "SHAM_POLICY",
+      "detail": "Active-sham matcher/validator + algorithm identity are frozen at research/paper5_sham_policy_v1/ (policy_canonical_sha256 bound in SHAM_POLICY.json). That algorithm freeze is NOT a confirmatory-packet binding: packet-local SHAM_POLICY.json, sham evaluation-state hash, and task panel remain unbound. Confirmatory four-arm execution stays unauthorized until CAPABLE_MODEL + full packet freeze.",
+      "id": "sham-algorithm-frozen-not-packet-bound"
+    },
+    {
       "class": "TASK_PACKET",
-      "detail": "Power-sized task panel, sham policy, per-arm state hashes, resource ceiling, and randomization schedule are not frozen.",
+      "detail": "Power-sized task panel, per-arm state hashes, resource ceiling, and randomization schedule are not frozen. Sham algorithm identity exists separately at research/paper5_sham_policy_v1/ but is not bound into this confirmatory packet.",
       "id": "task-sham-state-freeze-missing"
     },
     {
