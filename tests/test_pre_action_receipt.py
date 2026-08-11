@@ -352,6 +352,27 @@ def test_receipt_document_hash_is_derived_not_supplied() -> None:
     assert document["receipt_canonical_sha256"] == receipt.receipt_canonical_sha256
 
 
+def test_invalid_outcome_branches_rejected_at_construction() -> None:
+    """Custom strings and mis-cased values are rejected, not deferred to runtime."""
+
+    with pytest.raises(ValueError, match="invalid allowed_outcome_branch"):
+        _receipt(allowed_outcome_branches=("we_think_it_works",))
+    with pytest.raises(ValueError, match="invalid allowed_outcome_branch"):
+        _receipt(allowed_outcome_branches=("success",))
+    with pytest.raises(ValueError, match="invalid allowed_outcome_branch"):
+        _receipt(allowed_outcome_branches=("SUCCESS", "MADE_UP"))
+    # All five valid enum values are accepted
+    _receipt(
+        allowed_outcome_branches=(
+            "SUCCESS",
+            "PARTIAL_SUCCESS",
+            "FAILURE",
+            "BLOCKED",
+            "UNKNOWN",
+        )
+    )
+
+
 def test_receipt_rejects_structurally_invalid_retrievals() -> None:
     with pytest.raises(ValueError, match="payload_hash must be sha256"):
         SelectedRetrieval(
