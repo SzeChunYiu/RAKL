@@ -170,6 +170,7 @@ is read from a committed receipt; `n_seed` is `evaluated_task_seed_unit_count`.
 | V4.1 | 3475212, 3476520, 3476521, 3476524 | 0.5B | parse-invalid | 3/5 | 1 |
 | V4.2 | 3476540 | 0.5B | **3/5** | **3/5** | 1 |
 | V4.3 | 3476566 | **1.5B** | parse-invalid | **2/5** | 1 |
+| V4.3.1 | 3476576 | **1.5B** | **1/5** | **3/5** | 1 |
 
 Three things follow, and they constrain how any later comparison may be reported:
 
@@ -177,9 +178,11 @@ Three things follow, and they constrain how any later comparison may be reported
    `scorable_arm_count = 2`, verdict `NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__CAPABILITY_LIMIT`.
    Any statement that DIRECT_CORPUS has never produced a scorable output in any generation is false and
    must not be repeated.
-2. **In the one generation where both arms parsed, they scored the same: 3/5 vs 3/5.** The apparent
-   RAKL advantage in V4.1 and V4.3 is a *parse-rate* difference, not a demonstrated reasoning
-   difference. This is measured, not hypothesised.
+2. **Two generations have both arms scorable, and they disagree.** V4.2 (0.5B) tied at 3/5 vs 3/5;
+   V4.3.1 (1.5B) split 3/5 RAKL vs 1/5 DIRECT. A single-generation claim that the arms score
+   identically is superseded and must not be repeated. Neither generation licenses a comparison
+   (both report `score_comparison_permitted = False` at n=1), so the honest reading is that the
+   direction is unresolved, not that RAKL leads.
 3. **V4.3 is a regression, not a continuation.** V4.2 repaired the V4.1 serialization residual and got
    both arms scorable; V4.3 lost DIRECT_CORPUS again with a different error (`model output fields do
    not match the registered answer schema`) and simultaneously dropped RAKL_CONTEXT from 3/5 to 2/5
@@ -187,15 +190,47 @@ Three things follow, and they constrain how any later comparison may be reported
    v4-2 -> v4-3 schema change) and should be diagnosed as a defect rather than absorbed as a property
    of the baseline.
 
-The table covers every generation that has produced results. `research/paper2_microtrial_v4_3_1/`
-exists on main but is **staged only** - contracts and prompts, no ingest receipt - so V4.3.1 has no
-outcome to report yet and the table must not be read as excluding it.
+The table covers every generation that has produced results.
 
 The prompts are not rigged. `research/paper2_microtrial_v4_2/RAKL_CONTEXT_PROMPT.txt` with its
 `RAKL CONTEXT MAP` section removed is **byte-identical** to `DIRECT_CORPUS_PROMPT.txt` (1912-byte
 insertion; the `OUTPUT SCHEMA` block and everything after it hash the same). The same holds for the
 staged V4.3.1 pair, with an identical 1912-byte insertion. The asymmetry is real, not an artefact of
 differing output instructions.
+
+### The RAKL arm is shown the answer key, so no arm gap measures reasoning
+
+This constraint dominates every row above and every comparison built on this task.
+
+The `RAKL CONTEXT MAP` block that the RAKL arm receives, and the DIRECT arm does not, answers the
+registered questions close to verbatim:
+
+| Registered question asks | The context map already states |
+|---|---|
+| Q1: whether the first finite-amplitude correction increases or decreases the period | S3 `"projection": "positive first finite-amplitude correction"` |
+| Q2: whether S4 / S5 may be treated as direct contradictions | `S4 -> CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION`, `S5 -> CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION` |
+| Q3: which source is refuted, which evidence supports mass invariance | `S6 --ALIGNED_REFUTATION--> S2+S7`; S6 `"mass-dependence claim retained as negative history"`, S7 `"controlled support for mass invariance"` |
+| Q4: the supporting / context-misaligned / refuted source-id sets | the map *is* those sets, already labelled |
+
+Consequences, which are governance constraints and not interpretations:
+
+- **A RAKL-over-DIRECT gap on this task cannot support a reasoning or architecture claim.** The arms
+  do not differ only in retrieval machinery; they differ in whether the answers were supplied. The
+  V4.3.1 3/5-vs-1/5 split is consistent with answer exposure alone and must never be reported as
+  RAKL capability.
+- **The V4.2 tie is the more informative cell.** RAKL scored 3/5 while holding the answer key and did
+  not beat a baseline that did not. Read as an upper bound this is a negative signal about the arm,
+  not a positive one.
+- **No arm reaches 5/5 in any generation, including with the answer key in context.** That bears
+  directly on `MODEL_CAPABILITY_FLOOR` and is not repaired by model size: both 1.5B generations still
+  report `exact_conceptual_pass_arm_count = 0`.
+- Any future comparison intended to measure retrieval or experience must first remove answer content
+  from the RAKL arm's context, or hold it equal across arms. Until then the arm contrast is
+  `CANNOT_CHECK` for reasoning, whatever the scores do.
+
+This is the same defect class as the Paper III cheap-gate precedent, where the witness features were
+the label restated. It is recorded here so the ladder is not run on a task whose RAKL arm cannot
+produce a negative result for the reason the ladder is testing.
 
 ### Required reporting: two quantities per arm, never blended
 
