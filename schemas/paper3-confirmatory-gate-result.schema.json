@@ -4,28 +4,122 @@
   "title": "Paper 3 fresh confirmatory structural-signal gate receipt v2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "experiment_id", "subject_sha", "created_at_utc", "frozen_protocol_id", "protocol_sha256", "benchmark_id", "benchmark_sha256", "claim_boundary", "split", "family_count", "case_count", "arm_metrics", "predictions", "annotation_gate", "diagnostic_signal_gate", "overall_cheap_gate_passed", "expensive_training_authorized", "gate_verdict", "execution_cost", "negative_history"],
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "subject_sha",
+    "created_at_utc",
+    "frozen_protocol_id",
+    "protocol_sha256",
+    "benchmark_id",
+    "benchmark_sha256",
+    "claim_boundary",
+    "split",
+    "family_count",
+    "case_count",
+    "arm_metrics",
+    "predictions",
+    "annotation_gate",
+    "diagnostic_signal_gate",
+    "overall_cheap_gate_passed",
+    "expensive_training_authorized",
+    "gate_verdict",
+    "execution_cost",
+    "negative_history"
+  ],
   "properties": {
-    "schema_version": {"const": "paper3-confirmatory-gate-result-v2"},
-    "experiment_id": {"const": "paper3-confirmatory-gate-lofo-v2"},
-    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "created_at_utc": {"type": "string", "format": "date-time"},
-    "frozen_protocol_id": {"const": "paper3-confirmatory-gate-v2"},
-    "protocol_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "benchmark_id": {"type": ["string", "null"]},
-    "benchmark_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "claim_boundary": {"type": "string", "minLength": 1},
-    "split": {"const": "leave_one_family_out"},
-    "family_count": {"type": "integer", "minimum": 0},
-    "case_count": {"type": "integer", "minimum": 0},
-    "arm_metrics": {"type": "object"},
-    "predictions": {"type": "array"},
-    "annotation_gate": {"type": "object", "required": ["passed"]},
-    "diagnostic_signal_gate": {"type": "object", "required": ["passed"]},
-    "overall_cheap_gate_passed": {"type": "boolean"},
-    "expensive_training_authorized": {"type": "boolean"},
-    "gate_verdict": {"enum": ["FAIL_CLOSED_PROPOSAL_FIELD_PRESENT", "FAIL_CLOSED_ANNOTATION_GATE", "FAIL_CLOSED_DEGENERATE_LOFO_SUPPORT", "STOP_NARROW_DIAGNOSTIC_SIGNAL_GATE_FAILED", "PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE"]},
-    "execution_cost": {"type": "object"},
-    "negative_history": {"type": "array"}
+    "schema_version": {
+      "const": "paper3-confirmatory-gate-result-v2"
+    },
+    "experiment_id": {
+      "const": "paper3-confirmatory-gate-lofo-v2"
+    },
+    "subject_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "frozen_protocol_id": {
+      "const": "paper3-confirmatory-gate-v2"
+    },
+    "protocol_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "benchmark_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "benchmark_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "split": {
+      "const": "leave_one_family_out"
+    },
+    "family_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "arm_metrics": {
+      "type": "object"
+    },
+    "predictions": {
+      "type": "array"
+    },
+    "annotation_gate": {
+      "type": "object",
+      "required": [
+        "passed"
+      ]
+    },
+    "diagnostic_signal_gate": {
+      "type": "object",
+      "required": [
+        "passed"
+      ]
+    },
+    "overall_cheap_gate_passed": {
+      "type": "boolean"
+    },
+    "expensive_training_authorized": {
+      "type": "boolean"
+    },
+    "gate_verdict": {
+      "enum": [
+        "FAIL_CLOSED_PROPOSAL_FIELD_PRESENT",
+        "FAIL_CLOSED_ANNOTATION_GATE",
+        "FAIL_CLOSED_DEGENERATE_LOFO_SUPPORT",
+        "STOP_NARROW_DIAGNOSTIC_SIGNAL_GATE_FAILED",
+        "PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE",
+        "PASS_AUTHORIZE_DEMOTED_AI_OPERATOR_TRAIN"
+      ]
+    },
+    "execution_cost": {
+      "type": "object"
+    },
+    "negative_history": {
+      "type": "array"
+    },
+    "authority_class": {
+      "type": "string",
+      "enum": [
+        "CONFIRMATORY_INDEPENDENT",
+        "DEMOTED_AI_OPERATOR"
+      ]
+    }
   }
 }

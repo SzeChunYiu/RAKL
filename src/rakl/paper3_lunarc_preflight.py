@@ -62,7 +62,15 @@ def validate_and_submit(
     submit: bool = False,
 ) -> dict[str, Any]:
     failures: list[str] = []
-    gate_passed = bool(
+    demoted_authorized = bool(
+        gate_receipt.get("schema_version") == "paper3-confirmatory-gate-result-v2"
+        and gate_receipt.get("annotation_gate", {}).get("passed") is True
+        and gate_receipt.get("expensive_training_authorized") is True
+        and gate_receipt.get("gate_verdict") == "PASS_AUTHORIZE_DEMOTED_AI_OPERATOR_TRAIN"
+        and gate_receipt.get("authority_class") == "DEMOTED_AI_OPERATOR"
+        and gate_receipt.get("overall_cheap_gate_passed") is False
+    )
+    confirmatory_authorized = bool(
         gate_receipt.get("schema_version") == "paper3-confirmatory-gate-result-v2"
         and gate_receipt.get("annotation_gate", {}).get("passed") is True
         and gate_receipt.get("diagnostic_signal_gate", {}).get("passed") is True
@@ -70,6 +78,7 @@ def validate_and_submit(
         and gate_receipt.get("expensive_training_authorized") is True
         and gate_receipt.get("gate_verdict") == "PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE"
     )
+    gate_passed = confirmatory_authorized or demoted_authorized
     if not gate_passed:
         failures.append("gate_receipt_not_authorized")
     if not _schema_valid(

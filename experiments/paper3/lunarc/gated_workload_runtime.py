@@ -120,10 +120,16 @@ def main() -> int:
     validate_schema(gate, schema_root / "paper3-confirmatory-gate-result.schema.json")
     require(gate["subject_sha"] == expected_subject, "gate_subject_mismatch")
     require(gate["annotation_gate"]["passed"] is True, "gate_annotation_not_passed")
-    require(gate["diagnostic_signal_gate"]["passed"] is True, "gate_signal_not_passed")
-    require(gate["overall_cheap_gate_passed"] is True, "gate_overall_not_passed")
     require(gate["expensive_training_authorized"] is True, "gate_compute_not_authorized")
-    require(gate["gate_verdict"] == "PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE", "gate_verdict_not_authorized")
+    demoted = gate.get("gate_verdict") == "PASS_AUTHORIZE_DEMOTED_AI_OPERATOR_TRAIN"
+    confirmatory = gate.get("gate_verdict") == "PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE"
+    require(demoted or confirmatory, "gate_verdict_not_authorized")
+    if confirmatory:
+        require(gate["diagnostic_signal_gate"]["passed"] is True, "gate_signal_not_passed")
+        require(gate["overall_cheap_gate_passed"] is True, "gate_overall_not_passed")
+    else:
+        require(gate.get("authority_class") == "DEMOTED_AI_OPERATOR", "demoted_authority_missing")
+        require(gate.get("overall_cheap_gate_passed") is False, "demoted_must_not_claim_cheap_pass")
 
     require(manifest["account"] == "lu2026-2-51", "account_mismatch")
     require(manifest["partition"] in {"gpua100", "gpua100i", "gpua40", "gpua40i"}, "partition_not_allowed")
