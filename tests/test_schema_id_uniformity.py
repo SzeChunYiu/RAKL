@@ -66,9 +66,11 @@ def test_every_schema_carries_an_id() -> None:
 def test_all_ids_share_one_base() -> None:
     """All ``$id`` values share the frozen canonical GitHub schemas base.
 
-    Previously 96 schemas were split across four namespaces (GitHub majority,
-    ``example.invalid``, ``rakl.dev``, ``rakl.example``). That split is closed:
-    every schema under ``schemas/`` must now use ``CANONICAL_BASE``.
+Currently passes: all 96 schemas declare ``$id`` under the single
+    canonical base ``https://github.com/SzeChunYiu/RAKL/schemas/``
+    (owner decision made in issue #148; previously split across four
+    namespaces).  Regression anchor: any new schema with a foreign base
+    fails this test.
     """
     bases: dict[str, int] = {}
     foreign: list[str] = []

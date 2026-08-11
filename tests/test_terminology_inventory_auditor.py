@@ -77,7 +77,7 @@ def planted_repo(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     (repo / "schemas" / "thing.schema.json").write_text(
-        '{"$id": "https://example.invalid/rakl/thing.schema.json"}\n', encoding="utf-8"
+        '{"$id": "https://github.com/SzeChunYiu/RAKL/schemas/thing.schema.json"}\n', encoding="utf-8"
     )
 
     _git(repo, "init", "--quiet")
@@ -146,7 +146,7 @@ def test_failure_lattice_is_not_counted_as_misleading(planted_repo: Path) -> Non
 def test_rename_blast_radius_reports_schema_namespaces(planted_repo: Path) -> None:
     radius = auditor.rename_blast_radius(planted_repo)
     assert radius["schema_count"] == 1
-    assert radius["schema_id_namespaces"] == {"https://example.invalid/rakl": 1}
+    assert radius["schema_id_namespaces"] == {"https://github.com/SzeChunYiu/RAKL/schemas": 1}
     assert radius["python_files_importing_rakl"] == 0
 
 

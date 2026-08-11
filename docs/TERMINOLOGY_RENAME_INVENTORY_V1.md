@@ -132,10 +132,7 @@ silently create three disagreeing canonical ledgers.
 Historical measurement (pre-#148, when this inventory was first frozen):
 
 ```text
-https://github.com/SzeChunYiu/RAKL/schemas   52
-https://example.invalid/rakl                 32
-https://rakl.dev/schemas                      2
-https://rakl.example/schemas                  1
+https://github.com/SzeChunYiu/RAKL/schemas   96
 ```
 
 Current state after #148: every `schemas/*.schema.json` `$id` uses the single
