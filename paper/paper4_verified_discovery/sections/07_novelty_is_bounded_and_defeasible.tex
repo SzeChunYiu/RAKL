@@ -1,0 +1,24 @@
+\section{Novelty is bounded and defeasible}
+
+A verified theorem is not automatically new. Newness requires a literature world, an equivalence notion and a cutoff. Define a bounded novelty certificate
+\[
+N_t(T)=(C_{\le t},S,\nu,f(T),R),
+\]
+where $C_{\le t}$ is a named corpus snapshot, $S$ the search routes, $\nu$ a normalization/equivalence procedure, $f(T)$ a theorem fingerprint and $R$ the review record. Search routes should include exact wording, terminology variants, notation normalization, structural similarity, stronger-parent theorem retrieval, citation neighborhoods and multilingual/domain-synonym searches.
+
+\begin{proposition}[Novelty non-monotonicity]
+Let $C_t\subseteq C_{t+1}$ be literature corpora and define $\mathrm{Novel}_{C}(T)=1$ when no equivalent prior result is found in $C$. Then
+\[
+\mathrm{Novel}_{C_t}(T)=1
+\]
+does not imply
+\[
+\mathrm{Novel}_{C_{t+1}}(T)=1.
+\]
+\end{proposition}
+
+\begin{proof}
+Choose a theorem $T'$ equivalent to $T$ such that $T'\notin C_t$ and $T'\in C_{t+1}$. The novelty predicate is true at $t$ and false at $t+1$. \qed
+\end{proof}
+
+Thus novelty authority is defeasible even when proof validity of the fixed statement is unchanged. The licensed statement is ``no equivalent result was found in the registered novelty world at cutoff $t$,'' not ``global novelty has been proved.'' This distinction also explains why rediscovery can be scientifically informative without being mislabelled as new mathematics.

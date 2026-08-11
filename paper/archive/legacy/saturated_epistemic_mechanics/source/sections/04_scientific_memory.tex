@@ -1,0 +1,81 @@
+\section{How information becomes scientific memory}
+The distinction between \emph{scientific projection} and \emph{compression} is central to RAKL's engineering. Raw source bytes, a contextual scientific claim, a canonical atlas object, a compressed summary and an LLM prompt are different objects with different authority ceilings.
+
+\subsection{Raw evidence and contextual projection}
+Let an immutable source record be
+\begin{equation}
+e=(id,bytes,hash,source,cutoff,metadata).
+\end{equation}
+The raw payload is preserved in Tier~0; no LLM rewrite replaces it. Relative to question $q$ and context $\gamma$, a candidate scientific object is proposed through
+\begin{equation}c=\pi_{q,\gamma}(e).
+\end{equation}
+Here $\gamma$ can bind population, regime, time, scale, units, measurement operator, intervention, assumptions and QoI. Projection is therefore a scientific transformation: it determines what part of a source is being asserted under what conditions. The LLM may propose this mapping, but external evidence/provenance must authorize it before canonical insertion.
+
+\subsection{Normalization, identity and provenance}
+Normalization
+\begin{equation}c'=N(c)
+\end{equation}
+can align units, vocabulary, symbols and mathematical coordinates. Examples include converting 100~cm to 1~m or mapping source-specific variable names to a canonical ontology. Normalization changes representation, not scientific authority. Identity resolution then separates exact identity from ancestry and aliasing. Only witnessed exact identity collapses semantic objects; `VERSION\_OF', `DERIVED\_FROM' and `POSSIBLE\_ALIAS' remain distinct relationships. This is deliberately stronger than deduplicating embeddings or text strings.
+
+Each retained object carries provenance
+\begin{equation}p(c')=(source\ pins,selectors,lineage,transform\ ancestry),
+\end{equation}
+consistent with the broader provenance and research-object literature \cite{moreau2013,wilkinson2016,soilandreyes2022,kuhn2018}. The atlas can therefore collapse semantic duplicates while retaining all supporting source lineages.
+
+\subsection{Semantic identity is a scientific hypothesis}
+
+Canonical identity resolution is one of the most consequential operations in the archive because every later count, contradiction and saturation test depends on it. If two genuinely different claims are merged, the system can erase disagreement and manufacture false flatness. If two equivalent claims are kept separate, the system can inflate novelty and evidence counts. Identity therefore carries its own evidence and can be revised.
+
+The identity key is contextual rather than lexical. It includes the scientific object, quantity, population or system, regime, measurement or observation operator, relevant units and transformation conventions, temporal scope, and the proposition role. Which fields are identity-defining is itself domain-dependent. For a thermodynamic state variable, temperature and pressure may be essential. For a clinical effect, population, intervention, comparator and endpoint may dominate. For a causal claim, intervention semantics and time ordering can be identity-bearing even when the surface sentence is unchanged.
+
+This is why embeddings are advisory rather than canonical. A semantic vector can nominate candidate duplicates or contradictions, reducing search cost. The promotion step then asks for a typed identity witness. A contradiction likewise requires more than negative lexical sentiment: the propositions must refer to a common aligned context and assert incompatible content. Many apparent literature disputes dissolve once scale, population or observation operator is made explicit; others become sharper because the alignment shows that the claims truly compete.
+
+Identity resolution also interacts with evidence lineage. Two papers that repeat one dataset may contribute two independently worded projections but only one primary evidence root for corroboration. Conversely, one paper can contain several independent measurements that should not be collapsed because they share a DOI. Evidence object identity and claim identity are therefore separate. A many-to-many relation between them is normal.
+
+The method treats identity errors as first-class reviewer findings. If a later audit shows that a canonical merge was invalid, the atlas splits the object, recomputes downstream contradiction and support relations, and reopens any saturation certificate whose novelty counts depended on the merge. If a split was spurious, the canonical objects can be merged with a successor event while the prior versions remain traceable. This prevents ontology repair from rewriting history.
+
+A publication projection must expose identity choices when they materially affect the argument. For example, a claim that ``seven canonical semantic objects'' were produced by a demo is meaningful only because the normalization basis is frozen and inspectable. The number is not a natural constant of the raw text; it is a result of a declared identity procedure. Treating ontology as measurement makes that dependence explicit.
+
+\subsection{Derived views are not canonical truth}
+RAKL materializes derivative memory views
+\begin{equation}v=T(S)
+\end{equation}
+from canonical source set $S$. A derived lossless view must be reconstructable. A derived lossy view must store source pins and an erasure ledger. In particular,
+\begin{equation}\operatorname{Lossy}(v)=1\Rightarrow\operatorname{CanonicalTruth}(v)=0.
+\end{equation}
+If a strong scientific operation depends on detail removed by a lossy view, the relevant canonical roots are rehydrated before verification. This design differs from replacing project state with a compressed latent representation: compression is a rebuildable storage/materialization operation, not a truth operation.
+
+\subsection{Rehydration is the safety valve of bounded memory}
+
+A bounded context architecture is scientifically useful only if omitted detail can be recovered before it becomes decision-relevant. Every derivative representation therefore carries a pointer to its canonical source and a record of what was erased. Rehydration is triggered not by a fixed compression ratio but by the operation's proof obligations. A summary sufficient for broad retrieval may be insufficient for checking an uncertainty calculation, and an uncertainty summary may still be insufficient for reconstructing the raw instrument signal.
+
+This suggests a three-tier memory policy. \textbf{Archive tier} preserves canonical evidence and transition history. \textbf{Index tier} stores retrieval-oriented structures that can be rebuilt from canonical state. \textbf{Working tier} materializes the operation-specific bounded context. Authority flows from the archive upward; computational attention flows from the working tier downward through rehydration requests. The index is never the sole evidence root.
+
+Rehydration also provides a testable failure mode for context compression. A compressed object is scientifically safe for an operation only if every mandatory field required by that operation is either present or recoverable before verification. If the source pointer is broken, the system must downgrade the object or return \CannotCheck{}. This prevents an attractive summary with an unverifiable origin from accumulating authority merely because it was copied into many prompts.
+
+The same mechanism supports human review. A paper can remain readable by presenting concise claims while every important claim links, through the repository and receipts, to the exact source object and transformation history. The publication is therefore allowed to be much smaller than the atlas without asking the reader to trust an irrecoverable compression.
+
+\subsection{Retrieval and embedding space}
+Tier-1 indexes may use lexical search, graph indexes, materialized summaries or vector embeddings. If $z=E(v)$ is an embedding of view $v$, proximity in $z$ is a navigation signal only:
+\begin{equation}\text{embedding-near}\not\Rightarrow\text{scientifically equivalent}.
+\end{equation}
+Conversely, embedding distance does not prove scientific incompatibility. Candidate neighbours are returned to the typed/contextual layer before they influence scientific state.
+
+\subsection{Bounded prompt materialization}
+For operation $o=(a,f,q,\gamma,\alpha^*,B)$, let $M(o)$ be mandatory epistemic material. The context compiler targets a useful subset $C$ under
+\begin{equation}M(o)\subseteq C,\qquad Tokens(C)\le B.
+\end{equation}
+The reference implementation uses deterministic marginal weighted coverage per token; the optimization notation is a design target, not a guarantee of a globally optimal arbitrary-utility subset. Mandatory context includes target/scope, assumptions, falsifiers, relevant negative history, contradiction sides, authority prerequisites and mechanism ancestry. If $Tokens(M(o))>B$, the operation returns \CannotCompile{} rather than silently dropping evidence.
+
+\paragraph{What ordinary RAKL learning changes.}
+Ordinary \RAKL{} operation is external-state learning, not implicit modification of the base LLM weights. Accepted scientific state, negative history, provenance, method experience and retrieval/materialized views live outside the replaceable model. A contextual scientific projection selects what a source asserts for a registered question and context; normalization aligns units, terminology or coordinates; an optional embedding projects a view into retrieval space; and compression changes a derivative storage/materialization representation. These operations are not interchangeable. Embedding proximity never defines canonical scientific identity, and a lossy summary can save tokens only while retaining source pins and an erasure ledger; it cannot replace the raw evidence required for a strong verification operation.
+
+\subsection{Five representations of the same evidence, and why they must not collapse}
+
+The information lifecycle uses five deliberately different representations. \textbf{Raw evidence} is the immutable acquisition object: source bytes, instrument output, database row or other addressable payload. \textbf{Scientific projection} extracts what that source says about a registered object under a context. \textbf{Canonical semantic identity} determines whether two projections are the same scientific claim, context refinements, contradictions or merely similar. \textbf{Retrieval representation} embeds or indexes objects for efficient access. \textbf{Active materialization} selects and possibly compresses the working set for one operation. These stages can share code, but they may not share semantics by accident.
+
+The distinction prevents several common errors. Two sentences can have high embedding similarity while making scientifically incompatible claims because one negates the other. Two numerically identical measurements can be different objects because their calibration, units or populations differ. Conversely, two differently worded equations can be equivalent after an admissible coordinate transformation. A lossy summary can preserve the conclusion of a source while deleting the exact uncertainty model required for a later verification. None of these cases is handled safely by treating ``same vector neighborhood'' as ``same scientific object.''
+
+Canonicalization is therefore evidence-bearing. A merge requires a witnessed identity relation and records what was considered irrelevant to identity. A split likewise records the context coordinate that made the earlier merge too coarse. This means ontology refinement can change the \emph{measurement basis} used to count atlas cells. Longitudinal knowledge-growth metrics are valid only under a frozen basis or an explicit cross-basis transport. Otherwise the system can manufacture apparent growth by renaming or refining the ontology.
+
+Compression is governed similarly. Lossless physical compression of source bytes is an engineering optimization; lossy semantic compression creates a derivative object with erasure metadata and source pins. The derivative can be used for search or prompt construction, but a verifier may demand rehydration when an erased coordinate becomes relevant. This distinction is why an archive can grow independently of active prompt size without making scientific memory equivalent to one increasingly compressed narrative.

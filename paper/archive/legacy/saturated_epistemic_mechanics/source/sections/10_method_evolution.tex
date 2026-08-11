@@ -1,0 +1,54 @@
+\section{Learning and evolving the method}
+\subsection{Challenge Learning}
+Metacognitive diagnosis is separated from learning control, consistent with recent calls to treat monitoring, evaluation, control and adaptation as distinct AI self-governance functions \cite{ji2026}. A failure is attributed to a candidate cause such as missing evidence, implementation defect, stochastic or underpowered result, wrong strategy, ontology/context gap or method-basis gap. The controller can recommend persistence, strategy switching, help seeking, evidence acquisition, implementation repair, a discriminating challenge, or operator invention/assimilation. A simple learning-progress signal is
+\begin{equation}LP_t(f)=Q_t(f)-Q_{t-k}(f).\end{equation}
+Failure attribution is important: a missing measurement is not automatically a missing reasoning operator.
+
+\subsection{Assimilation and constructive invention}
+An external method is decomposed into an atomic contract
+\begin{equation}C_m=(I_m,O_m,\gamma_m,A_m,P_m,F_m,\alpha_m^+,\alpha_m^-,T_m,B_m),\end{equation}
+recording inputs, outputs, context, assumptions, preconditions, failures, authority it may and may not create, transitions and benchmark identity. A candidate may be equivalent to an incumbent, a parallel local view, shadow-eligible, blocked or rejected. External reputation is not imported as authority. Constructive invention is likewise proposal-only; a new formalism must state variables, interactions, observation map, limiting cases, assumptions, predictions and falsifiers before target evidence can support it. Automated symbolic-law discovery demonstrates why this separation matters: a search procedure can produce compact equations from data \cite{schmidt2009}, but compactness and predictive fit alone do not identify the scientific semantics of the variables or the mechanism that generated them.
+
+\subsection{Constructive invention is downstream of a demonstrated basis gap}
+
+Method invention is the most dangerous capability in a self-modifying research framework because it can turn ordinary failure into unlimited architectural complexity. The constructive-invention pathway therefore begins with a basis test. A residual qualifies as a method-basis gap only when existing registered operators cannot address it without violating their contracts, the gap recurs or is otherwise high-impact, and a discriminator separates ``missing evidence'' from ``missing operation.''
+
+Candidate invention then proceeds from typed residual structure rather than free-form novelty pressure. The system can compose existing operators, alter a representation boundary, introduce a new verification step, add a search route or propose a genuinely new operator. Each candidate must state what function it owns, which existing surfaces it overlaps, the new failure semantics, and what benchmark would refute its necessity. This is the methodological analogue of mechanism ancestry: an invention should explain which residual it closes.
+
+Prior-art assimilation runs before novelty promotion. If an external method already provides the required function, the preferred outcome can be assimilation rather than reinvention. Open-world discovery makes this especially important because vocabulary differences can hide mature methods in another field. A candidate that is semantically subsumed by prior work narrows the framework's novelty boundary and can still be valuable as an integrated implementation.
+
+Complexity is penalized explicitly. A new operator that closes one local defect while creating several new proof obligations may be inferior to a narrower contract correction. This is why paper growth and framework growth share a saturation principle: more components are not evidence of a better method. An addition survives only if it creates a capability or scientific distinction that existing structure cannot express adequately.
+
+Finally, invented methods remain proposal-side until fresh assurance. Same-context tests can establish that an implementation behaves as designed and that the motivating residual is repaired. Stronger claims require protected tasks or realizations not used to design the invention. If those tests fail, the failure is retained and the candidate remains unpromoted.
+
+\subsection{Governed Self-RAKL}
+For incumbent method $M_t$ and challenger $M'$, development improvement
+\begin{equation}\Delta_D=q_D(M')-q_D(M_t)>0\end{equation}
+is local optimization only. Strong scoped evolution evidence additionally requires fresh assurance
+\begin{equation}\Delta_A=q_A(M')-q_A(M_t)>0,\end{equation}
+with frozen candidate/evaluator chronology, matched resources, preserved negative history and all blocking invariants clean. Repeated exposure to the assurance set consumes its evidential value, a concern related to adaptive holdout reuse \cite{dwork2015}. Development improvement with assurance regression is \texttt{META\_OVERFIT}.
+
+\begin{figure}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex,every node/.style={font=\sffamily\footnotesize,align=center},stagebox/.style={draw,rounded corners=1.5pt,minimum width=28mm,minimum height=11mm,fill=black!3},guard/.style={draw,double,rounded corners=1.5pt,minimum width=30mm,minimum height=11mm,fill=black!8},bad/.style={draw,dashed,rounded corners=1.5pt,minimum width=26mm,minimum height=10mm},arrow/.style={->,line width=0.6pt},dashedarrow/.style={->,dashed,line width=0.55pt}]
+\node[stagebox] (m0) at (0,0) {incumbent\\$M_t$}; \node[stagebox] (challenge) at (3.2,0) {challenge /\\weakness diagnosis}; \node[stagebox] (candidate) at (6.4,0) {candidate\\$M'$}; \node[stagebox] (dev) at (9.6,0) {frozen development\\$\Delta_D$}; \node[guard] (assure) at (12.9,0) {fresh assurance\\$\Delta_A$}; \node[guard] (promote) at (16.3,0) {scoped promotion\\or retain incumbent};
+\draw[arrow] (m0) -- (challenge); \draw[arrow] (challenge) -- (candidate); \draw[arrow] (candidate) -- (dev); \draw[arrow] (dev) -- (assure); \draw[arrow] (assure) -- (promote);
+\node[bad] (equiv) at (6.4,-1.7) {equivalent to\\incumbent}; \node[bad] (overfit) at (10.9,-1.7) {$\Delta_D>0$, $\Delta_A<0$\\\texttt{META\_OVERFIT}}; \node[bad] (blocked) at (14.6,-1.7) {blocking invariant\\fails};
+\draw[dashedarrow] (candidate) -- (equiv); \draw[dashedarrow] (assure) -- (overfit); \draw[dashedarrow] (assure) -- (blocked);
+\node[font=\sffamily\scriptsize,text width=60mm,anchor=north west] at (-0.8,-2.6) {The proposer may search, reflect, assimilate external methods, or invent new operators. It cannot write the evaluator or erase failed generations to create an apparent improvement.};
+\node[font=\sffamily\scriptsize,text width=72mm,anchor=north west] at (8.3,-2.6) {Development gain is local optimization. Strong scoped evolution evidence additionally requires material fresh-assurance gain, matched resources, negative-history preservation, and evaluator separation. Same-context bootstrap is first-sign evidence only.};
+\end{tikzpicture}}
+\caption{\textbf{Governed self-evolution.} A candidate can be generated endogenously or assimilated from external work, but development gain is insufficient. Strong scoped evolution evidence requires fresh assurance outside the challenger's write authority. Failed, equivalent, blocked and overfit generations remain in the lineage.}
+\label{fig:selfevolution}
+\end{figure}
+
+\subsection{Method evolution as a protected scientific comparison}
+
+Self-improvement systems often optimize the artifact and the evaluator in one adaptive loop. That creates a familiar risk: the method becomes better at the exposed test rather than better at the underlying capability. The reusable-holdout literature formalizes a related problem in adaptive data analysis \cite{dwork2015}; preregistration traditions similarly separate prospective commitments from result-contingent storytelling \cite{nosek2018}. \RAKL{} imports the chronology, not the institutions: freeze the candidate and blocking criteria before the evidence used to certify the change is exposed.
+
+The closest contemporary engineering comparator is AgentBuild, where scientist-authored contracts constrain an optimizer that edits an agent \cite{shin2026agentbuild}. DGM, EvoSkill and SkillFoundry supply other forms of self-modification and skill evolution \cite{zhang2025,alzubi2026,shen2026}. The \RAKL{} addition is the explicit evidence status of the change. A candidate operator can be useful in development yet remain scientifically unpromoted. If the fresh assurance task regresses, the event is recorded as meta-overfit rather than explained away by retuning the acceptance criterion.
+
+A strong method-change receipt must therefore answer four questions. \textbf{What exact incumbent and challenger were compared?} Version ambiguity invalidates the causal attribution. \textbf{What was frozen before the outcome?} Thresholds, benchmark identity, protected invariants and resource envelope must not move post hoc. \textbf{What evidence was fresh?} A task repeatedly exposed during candidate design is development evidence even if it was originally called a holdout. \textbf{What authority is granted?} Improvement on one method surface under one task family does not authorize a claim of general self-evolution.
+
+The same discipline permits a null result. Self-\RAKL{} can conclude that the incumbent method is not improved, that the failure is an implementation defect rather than a basis gap, or that fresh assurance is unavailable. `NO\_IMPROVEMENT' and \CannotCheck{} are valid scientific outcomes. A recursive method that forces itself to change every round would violate its own negative-history and evidence rules.

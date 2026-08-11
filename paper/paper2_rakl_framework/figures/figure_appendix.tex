@@ -1,0 +1,51 @@
+% Formal/reference-engineering schematics; no new empirical measurements.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+ node distance=7mm,
+ box/.style={draw,rounded corners,align=center,inner sep=4pt,font=\small,text width=2.15cm,minimum height=0.9cm},
+ gate/.style={draw,diamond,aspect=2.0,align=center,inner sep=2pt,font=\small},
+ arr/.style={-{Latex[length=2.2mm]},thick}
+]
+\node[box] (raw) {immutable evidence\\archive};
+\node[box,right=of raw] (atlas) {contextual\\Knowledge Atlas};
+\node[box,right=of atlas] (work) {bounded\\workspace};
+\node[box,right=of work] (prop) {LLM\\proposal};
+\node[gate,below=10mm of atlas] (gate) {promotion /\\falsification gate};
+\draw[arr] (raw)--(atlas);
+\draw[arr] (atlas)--(work);
+\draw[arr] (work)--(prop);
+\draw[arr] (prop)|-(gate);
+\draw[arr] (gate)--(atlas);
+\end{tikzpicture}
+\caption{\textbf{RAKL system architecture.} The model proposes actions inside a bounded workspace; canonical state changes occur only through typed evidence-governed promotion or falsification gates.}
+\label{fig:p2-architecture}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+ node distance=5.5mm,
+ box/.style={draw,rounded corners,align=center,inner sep=4pt,font=\small,text width=1.9cm,minimum height=0.85cm},
+ wide/.style={draw,rounded corners,align=center,inner sep=4pt,font=\small,text width=3.0cm,minimum height=0.85cm},
+ arr/.style={-{Latex[length=2.2mm]},thick},
+ reopen/.style={-{Latex[length=2.2mm]},thick,dashed}
+]
+\node[box] (text) {text};
+\node[box,right=of text] (meaning) {meaning};
+\node[box,right=of meaning] (claim) {claim atom};
+\node[box,right=of claim] (evidence) {evidence relation};
+\node[box,right=of evidence] (knowledge) {authority-qualified\\knowledge};
+\draw[arr] (text)--(meaning);
+\draw[arr] (meaning)--(claim);
+\draw[arr] (claim)--(evidence);
+\draw[arr] (evidence)--(knowledge);
+\node[wide,below=10mm of claim] (residual) {residual / counterexample / falsifier};
+\node[wide,right=8mm of residual] (fiber) {reopen implicated fiber and choose a discriminating action};
+\draw[arr] (residual)--(fiber);
+\draw[reopen] (knowledge) |- (residual);
+\node[font=\footnotesize,above=1.5mm of claim] {$\neq$ at every boundary unless a typed witness licenses the transition};
+\end{tikzpicture}
+\caption{\textbf{Claim--evidence discipline and recursive reopening.} Text, meaning, claims, evidence and knowledge remain distinct typed objects. A falsifier reopens the implicated scientific fiber rather than being averaged into a scalar confidence score.}
+\label{fig:p2-evidence-flow}
+\end{figure}

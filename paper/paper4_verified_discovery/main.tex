@@ -1,0 +1,52 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{remark}{Remark}
+\newcommand{\RAKL}{\textsc{RAKL}}
+\newcommand{\PASS}{\texttt{PASS}}
+\newcommand{\FAIL}{\texttt{FAIL}}
+\newcommand{\CC}{\texttt{CANNOT\_CHECK}}
+\IfFileExists{build_identity.tex}{\input{build_identity.tex}}{\newcommand{\SoftwareTests}{UNBOUND}\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}}
+
+\title{Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large language models can solve difficult mathematical exercises and increasingly operate inside formal proof systems, yet exercise solving is not the same task as mathematical research. Research requires not only a plausible continuation but a correct theorem, a faithful formalization of the intended claim, evidence that the result is not a rediscovery, and a reason the result is worth attention. We introduce a mathematical-research assurance layer for \RAKL{}, an evidence-governed framework for LLM-mediated inquiry. The central design separates five authority coordinates: specification alignment, theorem truth, novelty, research value, and verifier trust. LLMs remain proposal generators; computational testing can refute or prioritize but never promote a conjecture to a theorem; formal proofs are bound to exact statement hashes and audited for axioms and verifier identity; novelty is represented by a bounded, cutoff-scoped and defeasible certificate rather than a claim of global completeness. We prove three architectural results. First, under a sound proof checker and a fail-closed update rule, generator hallucinations cannot by themselves promote a false theorem. Second, verified lemma checkpointing changes long-horizon model error from hidden logical debt into rejected branches and search cost, subject to the remaining specification and verifier trust assumptions. Third, theorem truth and novelty have different order-theoretic behaviour: truth of a fixed proved statement can remain stable while novelty is non-monotone as the literature world expands. We implement these distinctions as a typed state machine and preregister an evaluation suite spanning false conjectures, autoformalization traps, long proof DAGs, rediscovery detection, novelty screening and proof-assistant trust attacks. The result is not an autonomous-mathematician claim; it is an architecture intended to make machine-assisted mathematical discovery auditable enough that creative search can scale without silently scaling mathematical authority.
+\end{abstract}
+
+\input{sections/01_the_gap_between_solving_and_research}
+\input{sections/02_five_independent_authority_coordinates}
+\input{sections/03_typed_research_state_and_persistent_proof_dag}
+\input{sections/04_counterexample_first_search}
+\input{sections/05_formalization_is_a_separate_proof_obligation}
+\input{sections/06_proof_assurance_and_verifier_trust}
+\input{sections/06b_assurance_bound}
+\input{sections/07_novelty_is_bounded_and_defeasible}
+\input{sections/08_the_research_value_gate}
+\input{sections/09_search_policy_from_plausible_continuation_to_obstruction_removal}
+\input{sections/10_rakl_integration}
+\input{sections/11b_reference_implementation}
+\input{figures/figure_appendix}
+\input{sections/11_preregistered_evaluation}
+\input{sections/12_limitations}
+\input{sections/13_conclusion}
+\input{sections/99_references}
+\end{document}

@@ -1,0 +1,72 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,shapes.geometric}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\newcommand{\RAKL}{RAKL}
+\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}
+\newcommand{\SoftwareTests}{UNBOUND}
+\newcommand{\powerset}{\mathcal P}
+\newcommand{\Bool}{\{0,1\}}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\True}{\operatorname{True}}
+\newcommand{\Compat}{\operatorname{Compat}}
+\newcommand{\Align}{\operatorname{Align}}
+\newcommand{\Overlap}{\operatorname{Overlap}}
+\newcommand{\Contradict}{\operatorname{Contradict}}
+\newcommand{\Owner}{\operatorname{Owner}}
+\newcommand{\Fiber}{\operatorname{Fiber}}
+\newcommand{\Fresh}{\operatorname{Fresh}}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+
+\title{Epistemic Mechanics for Evidence-Governed Scientific Research}
+\author{Sze Chun Yiu}
+\date{10 August 2026}
+
+\begin{document}
+\setlength{\emergencystretch}{3em}
+\allowdisplaybreaks
+\maketitle
+
+\begin{abstract}
+Large-language-model research systems can generate hypotheses, search literature and coordinate analyses, but these capabilities do not specify which generated claims are licensed to change a persistent scientific record. We formalize an ``epistemic mechanics'' in which scientific reasoning is controlled transition over an external typed state. Claims are indexed by context, evidence, uncertainty and provenance; compatibility is mediated by explicit alignments; scientific authority is a partial order over multiple coordinates rather than a scalar score; and proposal-generating models have no direct canonical write authority. We show by a three-context parity construction that pairwise compatibility need not imply higher-order gluing, and that incomparable authority states cannot be faithfully collapsed into one total-order scalar. A capacity-bounded workspace may select computationally useful material without conferring evidential authority. Open-World Mechanism Discovery begins from functional signatures rather than framework terminology and can certify only bounded closure; unrestricted open-world completeness cannot be established from a finite transcript without a complete membership oracle. We define bounded epistemic saturation as a stopping condition relative to an explicit research world and show when declared closure operators yield complete lattices of closed states. A pendulum derivation illustrates the transition discipline from evidence through mathematical representation to scoped claims. The result is a formal framework for evidence-governed scientific state, not a claim of empirical superiority or global scientific completeness.
+\end{abstract}
+
+\input{sections/01_introduction_foundations_state}
+\input{sections/01b_claim_evidence_verification}
+\input{sections/01c_agent_native_publishing}
+\input{sections/01d_transactional_state_nearest_work}
+\input{sections/01e_contested_knowledge_nearest_work}
+\input{sections/02_compatibility_authority}
+\input{sections/03_workspace}
+\input{sections/04_owmd}
+\input{sections/04b_open_world_stopping}
+\input{sections/04c_nearest_work_fca}
+\input{sections/04d_recursive_state_termination}
+\input{sections/04e_scientific_mechanism_completion}
+\input{sections/04f_theory_shift_nearest_work}
+\input{sections/05_pendulum_discussion}
+\input{sections/06_appendices}
+\input{sections/06b_authority_ledger_implementation}
+\input{sections/07_bibliography}
+\end{document}

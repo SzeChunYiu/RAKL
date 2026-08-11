@@ -1,0 +1,134 @@
+\section{Transient workspace: access without authority}
+
+Persistent scientific state solves a storage and governance problem, but it does not solve a computational one. A research process with millions of archived objects cannot expose every object to every operator at every step. It needs a bounded active view. The danger is that ``active'' can be confused with ``important,'' then ``important'' with ``credible,'' and finally ``credible'' with ``true.'' The workspace is designed to break that chain.
+
+\subsection{Lineage and novelty boundary}
+
+Shared-workspace mechanisms long predate language-model agents. Blackboard architectures coordinate heterogeneous knowledge sources through a common data structure and control mechanism \cite{hayesroth1985,nii1986}. Global Workspace Theory and Global Neuronal Workspace accounts use competition, limited capacity and broad availability to describe access to information across cognitive processes \cite{baars1988,dehaene2001,mashour2020}. In machine learning, the Consciousness Prior proposed attention to a small subset of variables followed by broad downstream use \cite{bengio2017}; Shared Global Workspace architectures coordinate specialist neural modules through a bandwidth-limited channel \cite{goyal2021}.
+
+RAKL therefore claims no novelty for shared memory, competition, broadcast or limited capacity. Its narrower contribution is an \emph{epistemic boundary}: workspace membership changes computational accessibility while leaving atlas compatibility and authority untouched unless separate certified transitions are executed.
+
+Recent work on language-model representations makes the distinction timely. Gurnee et al. use a Jacobian lens to identify a sparse family of verbalizable representations with properties associated with broad functional access and directed modulation \cite{gurnee2026}. Their framing concerns a functional notion related to access consciousness and does not establish phenomenal consciousness. Their J-space is constructed from sparse non-negative combinations of J-lens directions; for a fixed sparsity level it has a union-of-cones geometry rather than an order-theoretic lattice. The study also leaves open what mechanism causes a representation to enter J-space. These results motivate causal tests of computational access; they do not supply an authority theory for scientific claims.
+
+\subsection{Workspace frame}
+
+Let \(C_t=\{1,\ldots,n\}\) index candidate objects derived from canonical state, current residuals and research goals. Each candidate \(i\) has a partition \(p(i)\), a non-negative computational priority \(u_i\), a stable content reference and a set of typed broadcast targets. The reference partitions are
+\[
+\mathcal P=\{\mathrm{CORE},\mathrm{CHALLENGE},\mathrm{NOVEL},\mathrm{HISTORY}\}.
+\]
+A policy specifies capacity \(\kappa\) and lower reservations \(r_p\) for selected partitions. The selected set is
+\[
+S_t=G_{\kappa,r}(C_t),\qquad |S_t|\le \kappa.
+\]
+The resulting workspace frame is
+\[
+W_t=(S_t,B_t,L_t,X_t,T_t),
+\]
+where \(B_t\) is a typed broadcast map, \(L_t\) a selection ledger, \(X_t\) intervention handles and \(T_t\) lifetime/capacity metadata. A downstream operator receives only the projections addressed to it by \(B_t\) and returns a proposal.
+
+The reservations are epistemically motivated. A pure relevance ranking tends to reinforce the current problem framing. Reserving capacity for challenge, novelty and negative/history material guarantees that the active view cannot be filled entirely by objects that already agree with the dominant hypothesis.
+
+\subsection{Selection as a constrained \texorpdfstring{top-$k$}{top-k} problem}
+
+Under the current reference assumptions, selection has a simple optimization form. Let \(x_i\in\Bool\) indicate whether candidate \(i\) is selected. For disjoint partitions and unit item costs,
+\[
+\begin{aligned}
+\max_{x\in\Bool^n}\quad &\sum_{i=1}^n u_i x_i\\
+\text{subject to}\quad
+&\sum_i x_i\le\kappa,\\
+&\sum_{i:p(i)=p}x_i\ge r_p,\qquad p\in\mathcal R,
+\end{aligned}
+\]
+where \(\mathcal R\subseteq\mathcal P\) is the set of reserved partitions. Feasibility requires at least \(r_p\) candidates in each reserved partition and \(\sum_p r_p\le\kappa\).
+
+The implementation first takes the \(r_p\) highest-priority candidates inside every reserved partition, then fills the remaining capacity by global priority among all unselected candidates.
+
+\begin{theorem}[Optimality of reservation-first greedy selection]
+Assume (i) every candidate belongs to exactly one partition, (ii) every selected item has unit cost, (iii) utilities \(u_i\ge0\) are additive, (iv) reservations are lower bounds only, and (v) the instance is feasible. Then reservation-first selection followed by global greedy fill maximizes \(\sum_i u_i x_i\) subject to the constraints above.
+\end{theorem}
+
+\begin{proof}
+Consider any optimal feasible set \(S^*\). For a reserved partition \(p\), suppose \(S^*\) contains a reserved-slot candidate \(j\) whose utility is lower than an unselected candidate \(i\) among the top \(r_p\) utilities of that partition. Exchanging \(j\) for \(i\) preserves cardinality and all lower-bound constraints and does not decrease the objective. Repeating this exchange yields an optimal solution containing the top \(r_p\) candidates from every reserved partition.
+
+After these mandatory choices are fixed, no residual partition constraint restricts the remaining slots: all lower bounds are already satisfied, partitions are disjoint, and every item consumes one unit of capacity. The residual optimization is therefore ordinary top-$k$ selection over the remaining candidates. Because utilities are non-negative, filling each available slot with the largest remaining utility is optimal. Combining the two stages gives the stated rule.
+\end{proof}
+
+The assumptions matter. Heterogeneous costs turn the fill stage into a knapsack-like problem; pairwise diversity bonuses make utility non-additive; upper quotas or overlapping group memberships couple the reservations. The theorem therefore certifies the current implementation's narrow policy, not a universal workspace optimizer.
+
+\subsection{Access, coherence and authority}
+
+For an item \(a\), define
+\[
+\begin{aligned}
+A_t(a)&=\text{computational accessibility},\\
+C_t(a)&=\text{atlas coherence},\\
+\alpha_t(a)&=\text{epistemic authority}.
+\end{aligned}
+\]
+Workspace selection can change \(A_t\) by construction. It has no direct operator for changing either of the other two quantities.
+
+\begin{proposition}[Authority-preservation invariant]
+Assume workspace transitions can write only workspace state, cognitive provenance and proposals, while an authority increase requires a canonical verification/promotion transition carrying a valid authority certificate. Then a workspace-only transition cannot increase \(\alpha_t(a)\).
+\end{proposition}
+
+\begin{proof}
+The codomain of a workspace-only transition excludes canonical authority coordinates and the certificate-producing promotion operator. Hence the canonical projection onto authority is invariant. Any later authority change must occur in a separate certified transition.
+\end{proof}
+
+The result is intentionally architectural. A model can still become more convinced by seeing an item; the proposition says that such internal or behavioral change is not automatically written into the scientific record.
+
+\begin{proposition}[Coactivation does not imply compatibility]
+For arbitrary selected items \(a,b\),
+\[
+a,b\in S_t\not\Rightarrow \Compat(a,b),
+\]
+and coactivation does not imply the existence of a gluing witness or lattice join.
+\end{proposition}
+
+\begin{proof}
+The gate is defined by partition reservations and computational priorities, not by a compatibility predicate. A contradictory claim can be deliberately placed in the \(\mathrm{CHALLENGE}\) partition and selected together with the claim it attacks. Therefore coactivation is compatible with explicit epistemic incompatibility.
+\end{proof}
+
+This is not a defect. A critic must be able to see mutually incompatible objects simultaneously in order to compare them. The workspace is a debate surface, not a consistency filter.
+
+\subsection{Broadcast and proposal typing}
+
+Let \(\mathcal O\) be the set of downstream operator types. The broadcast map
+\[
+B_t:S_t\longrightarrow\powerset(\mathcal O)
+\]
+controls which operator receives which selected object. A proposal emitted after broadcast has the form
+\[
+p=(\mathrm{id},\mathrm{source\ items},\mathrm{target\ operator},\mathrm{payload}).
+\]
+The source-item list makes computational ancestry explicit. A proposer can therefore say ``this hypothesis was generated after seeing items \(a,b,c\)'' without claiming that those items constitute evidence for the hypothesis.
+
+Memory-oriented language-model architectures show why the distinction is practical. Retrieval-augmented generation supplies external passages to the model \cite{lewis2020}; MemGPT manages tiers of context and external memory \cite{packer2023}; generative agents retrieve memories to guide future behavior \cite{park2023}. In all such systems, memory access changes computation. Epistemic mechanics adds a rule that is external to those memory mechanisms: access provenance is not evidence provenance.
+
+\subsection{Cognitive provenance and interventions}
+
+A cognitive-provenance edge records
+\[
+a\longrightarrow p
+\]
+when selected item \(a\) contributed to downstream proposal \(p\). To test whether the contribution is load-bearing, one can perform registered interventions on candidate/workspace state:
+\[
+do(a\notin S_t),\qquad do(a\mapsto a'),\qquad do(u_a\mapsto\lambda u_a).
+\]
+The intervention language resembles structural causal reasoning \cite{pearl2009,halpern2016}, but the claim remains local to the computational system. If removing \(a\) changes the proposal while other registered conditions are held fixed, then \(a\) is causally relevant to that proposal under the declared intervention model. It does not follow that \(a\) is scientifically true.
+
+Accordingly, the provenance types are separated:
+\[
+\Pi^{\mathrm{cog}}\neq\Pi^{\mathrm{evid}}.
+\]
+A cognitive edge can support explanations of model behavior, ablations and debugging. An evidential edge supports a scientific claim only through a verification identity. There is no default coercion from one type to the other.
+
+\subsection{Workspace lifetime and eviction}
+
+A workspace is intentionally transient. Let \(\ell_t(a)\in\mathbb N\) be the remaining lifetime of selected item \(a\). Between two computational steps, an item can be retained, displaced by a higher-priority item, evicted when its lifetime expires or removed by intervention. This gives access its own temporal semantics. A claim can have high canonical authority while being absent from the current workspace because it is irrelevant to the immediate target; a low-authority challenge can be highly active because falsifying it is useful.
+
+This observation gives a second proof intuition for scalar inadequacy. If workspace prominence and epistemic authority were one monotone scalar, prioritizing a false claim for adversarial testing would incorrectly increase its epistemic standing. Separating the state spaces avoids the contradiction.
+
+\subsection{What the workspace does not solve}
+
+The workspace does not discover remote concepts by itself. If the candidate generator is trapped inside the current vocabulary, a perfectly diverse gate can only rearrange locally generated objects. That failure occurred in the development history that motivated OWMD. The next section therefore moves one level outward: instead of selecting among known candidates, it asks how the system should search for mechanisms it does not yet know how to name.

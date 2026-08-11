@@ -1,0 +1,23 @@
+\section{The gap between solving and research}
+
+A useful caricature of an LLM mathematical solver is a conditional generator
+\[
+G_\theta(s_t)\rightarrow a_t,
+\]
+where the current state $s_t$ contains a problem, partial derivation or proof state and $a_t$ is a plausible next move. This capability can be extremely strong. AlphaProof demonstrates that model-guided search inside Lean can solve formalized olympiad and Putnam-level problems at a level far beyond earlier systems \cite{hubert2025}. Other systems use LLM generation together with executable evaluation or evolutionary search to discover new constructions and algorithms \cite{romera2024,novikov2025,georgiev2025}.
+
+A 2026 position paper focused explicitly on the transition from formal solvers to frontier mathematical research reaches a closely aligned diagnosis: open research adds under-specification, exploration, relational structure, tool integration and human--AI coordination obligations that are absent from fixed-target theorem-proving benchmarks \cite{jiang2026frontier}. That roadmap therefore owns the broad claim that AI4Math must move from solver benchmarks toward research-agent systems.
+
+Formal proof search has also crossed from fixed olympiad-style targets into open-problem research. Tsoukalas et al. report a large-scale formal-proof-search study in which an agent resolved a subset of open Erd\H{o}s problems and OEIS conjectures under machine verification \cite{tsoukalas2026open}. Separately, Ota, Osa and Harada study self-supervised theorem discovery inside a formal axiomatic system, growing a reusable theorem library from axioms and inference rules alone \cite{ota2026discovery}. These systems therefore own important territory around AI-assisted open-problem proof search and formal theorem-library growth.
+
+Long-horizon formalization itself now has a closer systems parent. LeanMarathon uses an evolving blueprint, adversarial target-fidelity review, a proof DAG and CI-gated local repair to formalize research mathematics over long developments \cite{zhang2026leanmarathon}. A separate robustness study shows why target fidelity remains a distinct obligation: current autoformalizers can be unstable under global paraphrase and often fail to faithfully reflect local perturbations of the informal proof \cite{gui2026robust}. The present paper therefore does not claim novelty for proof DAGs, long-horizon blueprint orchestration or the observation that autoformalization can drift. Its residual is assurance-specific: which artifacts may acquire specification, truth, novelty, research-value and verifier-trust authority; which exact receipts bind those promotions; and how those coordinates fail closed under long-horizon machine search.
+
+Mathematical research adds obligations absent from a benchmark with a known target answer. A research agent must decide what is worth proving, survive long branches of failed ideas, distinguish experimental support from proof, ensure that a formal statement matches the intended theorem, identify rediscoveries under different notation, and make a novelty claim whose evidence is necessarily incomplete. A single scalar such as ``mathematical confidence'' is therefore the wrong abstraction.
+
+The frequently invoked long-horizon calculation
+\[
+0.99^{100}\approx 0.366,
+\qquad
+0.99^{1000}\approx 4.3\times 10^{-5}
+\]
+is an appropriate warning for an unchecked chain if local errors can survive into the final answer. It is not the right end-to-end model once every admitted lemma is independently machine checked. In a proof-producing architecture, bad generations can increase search cost without becoming accepted logical premises. This distinction motivates the present work.

@@ -1,0 +1,1 @@
+Legacy top-level paper workspace entries were moved under this directory during the four-paper closeout. Git history preserves exact original objects. Canonical builds are forbidden from depending on this archive.
