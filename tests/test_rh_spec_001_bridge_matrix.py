@@ -18,6 +18,7 @@ from rakl.research_trace import (
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "research/real_math/millennium/riemann_hypothesis"
 MATRIX = BASE / "01_frontier/RH_SPEC_001_OPERATOR_BRIDGE_MATRIX_20260811.json"
+CHILD_CONTEXT = BASE / "01_frontier/RH_SPEC_002_CONTEXT_FIBER_20260811.json"
 CHILD_TRACE = BASE / "09_trace/RH_SPEC_002_OPEN_TRACE_20260811.json"
 
 REQUIRED_OBLIGATIONS = {
@@ -44,6 +45,39 @@ ALLOWED_STATUSES = {
 def _canonical_hash(value: object) -> str:
     raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _load_trace() -> MathResearchTrace:
+    raw = json.loads(CHILD_TRACE.read_text(encoding="utf-8"))
+    entries = []
+    previous = ""
+    for item in raw["entries"]:
+        payload = copy.deepcopy(item)
+        artifact_hash = payload["artifact_hash"]
+        payload["artifact_hash"] = ""
+        assert artifact_hash == _canonical_hash(payload)
+        assert item["previous_event_hash"] == previous
+        previous = artifact_hash
+        entries.append(
+            ResearchTraceEntry(
+                event_id=item["event_id"],
+                atom_id=item["atom_id"],
+                event_type=ResearchTraceEventType(item["event_type"]),
+                timestamp=item["timestamp"],
+                state_summary=item["state_summary"],
+                action_summary=item["action_summary"],
+                evidence_pointers=tuple(item["evidence_pointers"]),
+                alternatives_considered=tuple(item.get("alternatives_considered", ())),
+                decision_rationale=item.get("decision_rationale", ""),
+                outputs=tuple(item.get("outputs", ())),
+                uncertainties=tuple(item.get("uncertainties", ())),
+                residuals=tuple(item.get("residuals", ())),
+                next_steps=tuple(item.get("next_steps", ())),
+                artifact_hash=item["artifact_hash"],
+                previous_event_hash=item.get("previous_event_hash", ""),
+            )
+        )
+    return MathResearchTrace(trace_id=raw["trace_id"], entries=tuple(entries))
 
 
 def test_rh_spec_001_bridge_matrix_selects_limit_child_without_candidate() -> None:
@@ -75,49 +109,17 @@ def test_rh_spec_001_bridge_matrix_selects_limit_child_without_candidate() -> No
     assert "NO_MATHEMATICAL_CANDIDATE" in raw["authority"]
 
 
-def test_rh_spec_002_open_trace_is_valid_but_pre_candidate_incomplete() -> None:
-    raw = json.loads(CHILD_TRACE.read_text(encoding="utf-8"))
-    entries = []
-    previous = ""
-    for item in raw["entries"]:
-        payload = copy.deepcopy(item)
-        artifact_hash = payload["artifact_hash"]
-        payload["artifact_hash"] = ""
-        assert artifact_hash == _canonical_hash(payload)
-        assert item["previous_event_hash"] == previous
-        previous = artifact_hash
-        entries.append(
-            ResearchTraceEntry(
-                event_id=item["event_id"],
-                atom_id=item["atom_id"],
-                event_type=ResearchTraceEventType(item["event_type"]),
-                timestamp=item["timestamp"],
-                state_summary=item["state_summary"],
-                action_summary=item["action_summary"],
-                evidence_pointers=tuple(item["evidence_pointers"]),
-                alternatives_considered=tuple(item.get("alternatives_considered", ())),
-                decision_rationale=item.get("decision_rationale", ""),
-                outputs=tuple(item.get("outputs", ())),
-                uncertainties=tuple(item.get("uncertainties", ())),
-                residuals=tuple(item.get("residuals", ())),
-                next_steps=tuple(item.get("next_steps", ())),
-                artifact_hash=item["artifact_hash"],
-                previous_event_hash=item.get("previous_event_hash", ""),
-            )
-        )
-
-    trace = MathResearchTrace(trace_id=raw["trace_id"], entries=tuple(entries))
+def test_rh_spec_002_trace_completes_pre_candidate_chronology_without_candidate() -> None:
+    context = json.loads(CHILD_CONTEXT.read_text(encoding="utf-8"))
+    trace = _load_trace()
     assert audit_research_trace(trace).verdict is TraceGateVerdict.PASS
-
-    pre = audit_pre_candidate_trace(
-        trace,
-        atom_id="RH-SPEC-002",
-        context_packet_hash="",
-    )
-    assert pre.verdict is TraceGateVerdict.FAIL
-    assert any(
-        reason.startswith("required_trace_event_missing:")
-        for reason in pre.reasons
+    assert (
+        audit_pre_candidate_trace(
+            trace,
+            atom_id="RH-SPEC-002",
+            context_packet_hash=context["packet_hash"],
+        ).verdict
+        is TraceGateVerdict.PASS
     )
     assert all(
         entry.event_type is not ResearchTraceEventType.CANDIDATE_PROPOSED
