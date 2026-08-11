@@ -3,14 +3,16 @@
 The modules behind this facade deliberately separate planning from authority. Path
 search and strategy motifs generate candidate research routes; theorem, novelty and
 publication stages are still controlled by explicit assurance receipts. Strict RAKL
-mathematical discovery additionally requires a frozen context/analogue transfer
-packet before candidate generation.
+mathematical discovery additionally requires a frozen context/analogue-transfer
+packet and an auditable public research trace before candidate generation.
 """
 
 from .math_context import (
     REQUIRED_PRE_CANDIDATE_ACTIONS,
+    AnalogyScanStatus,
     ContextGateReport,
     ContextGateVerdict,
+    CrossDomainAnalogy,
     MathContextFiber,
     MethodTransfer,
     audit_math_context_fiber,
@@ -57,7 +59,6 @@ from .proof_dag import (
     ProofNode,
     ProofNodeKind,
     ProofNodeStatus,
-    ProofReceipt,
     ProofRelation,
     add_edge,
     add_node,
@@ -66,6 +67,16 @@ from .proof_dag import (
     refute_node,
     validate_proof_dag,
     verify_checkpoint,
+)
+from .research_trace import (
+    REQUIRED_PRE_CANDIDATE_EVENTS,
+    REQUIRED_TRACE_ACTIONS,
+    MathResearchTrace,
+    ResearchTraceEntry,
+    ResearchTraceEventType,
+    ResearchTraceReport,
+    TraceGateVerdict,
+    audit_pre_candidate_trace,
 )
 from .strategy_motifs import (
     DEFAULT_STRATEGY_MOTIFS,
@@ -77,10 +88,12 @@ from .strategy_motifs import (
 )
 
 __all__ = [
+    "AnalogyScanStatus",
     "AssuranceReport",
     "AssuranceVerdict",
     "ContextGateReport",
     "ContextGateVerdict",
+    "CrossDomainAnalogy",
     "DEFAULT_OPERATOR_ATLAS",
     "DEFAULT_STRATEGY_MOTIFS",
     "FormalizationWitness",
@@ -88,6 +101,7 @@ __all__ = [
     "MathContextFiber",
     "MathResearchPlan",
     "MathResearchRecord",
+    "MathResearchTrace",
     "MethodTransfer",
     "MotifInstantiation",
     "NoveltyCertificate",
@@ -105,10 +119,16 @@ __all__ = [
     "ProofReceipt",
     "ProofRelation",
     "REQUIRED_PRE_CANDIDATE_ACTIONS",
+    "REQUIRED_PRE_CANDIDATE_EVENTS",
+    "REQUIRED_TRACE_ACTIONS",
     "ResearchOperator",
+    "ResearchTraceEntry",
+    "ResearchTraceEventType",
+    "ResearchTraceReport",
     "StrategyMotif",
     "TerminalCertificate",
     "TerminalKind",
+    "TraceGateVerdict",
     "add_edge",
     "add_node",
     "all_dependencies_verified",
@@ -116,6 +136,7 @@ __all__ = [
     "audit_formalization",
     "audit_math_context_fiber",
     "audit_novelty",
+    "audit_pre_candidate_trace",
     "audit_proof_receipt",
     "classify_math_record",
     "close_with_certificate",
