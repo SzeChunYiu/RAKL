@@ -51,3 +51,5 @@ Does not touch sibling V4.1 jobs `3476520` / `3476521` / `3476524` (owned by
 `fix/paper2-v4-1-native-ingest-job-id`).
 
 `$R` = `/projects/hep/fs9/users/scyiu/RAKL-paper2`
+
+Note: the committed V4.1 rebind mirror lives under `native_receipts/` (outside `native_job_3475212/`) so the golden native-ingest builder does not treat the rebind JSON as an unclassified source file.
