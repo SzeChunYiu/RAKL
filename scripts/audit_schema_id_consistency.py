@@ -186,13 +186,24 @@ def render_human(report: Report) -> str:
         lines.append("findings: none")
     lines.append("")
     lines.append("owner-decision summary:")
-    lines.append(
-        "  The schema family is split across the namespace bases listed above. "
-        "Choosing the single canonical base is an owner decision; the options "
-        "(adopt the GitHub base, adopt a controlled domain, or adopt a non-resolvable "
-        "stable URN) trade off differently against a possible future rename. This "
-        "checker selects no winner and rewrites no $id."
-    )
+    if report.namespace_count == 1 and not report.findings:
+        frozen = (
+            report.expected_base
+            or (report.namespaces[0]["base"] if report.namespaces else "(none)")
+        )
+        lines.append(
+            f"  Unified on {frozen!r}. This checker rewrites no $id and grants no "
+            "authority; use --expected-base to pin the frozen winner against "
+            "regression."
+        )
+    else:
+        lines.append(
+            "  The schema family is split across the namespace bases listed above. "
+            "Choosing the single canonical base is an owner decision; the options "
+            "(adopt the GitHub base, adopt a controlled domain, or adopt a "
+            "non-resolvable stable URN) trade off differently against a possible "
+            "future rename. This checker selects no winner and rewrites no $id."
+        )
     lines.append("")
     lines.append(f"claim_boundary: {report.claim_boundary}")
     return "\n".join(lines)
