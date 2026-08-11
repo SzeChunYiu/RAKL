@@ -121,6 +121,12 @@ that cannot run reports `CANNOT_CHECK` and never `CLEAN` — V1 returns
 `CANNOT_CHECK` on `positional_shortcut` because its labels predate
 `correct_interpretation_index`.
 
+`evaluate_panel_v2` is the fail-closed entry point: it runs the audit first and
+returns `status="BLOCKED"` with `score=None` on a degenerate panel, on a partial
+response set, or on an unknown case. The rule above is therefore enforced rather
+than documented. V1's `evaluate_authority_leakage` could not be reused — it is
+bound to the V1 panel and lives in a source file whose hash is frozen.
+
 **Thresholds are frozen. A panel that trips one is redesigned; the threshold is
 not moved.** `scripts/audit_authority_leakage_panels.py` enforces this with
 distinct exit codes, including exit 2 when the auditor stops reproducing V1's

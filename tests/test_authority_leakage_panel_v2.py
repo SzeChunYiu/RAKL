@@ -20,7 +20,9 @@ from rakl.authority_leakage_benchmark import (
     LABEL_FIELD_NAMES,
     LeakageSubtype,
     TransitionDecision,
+    always_blocked_responder,
     build_proposal_context,
+    frozen_case_panel,
     panel_to_json,
 )
 from rakl.authority_leakage_panel_v2 import (
@@ -29,6 +31,7 @@ from rakl.authority_leakage_panel_v2 import (
     CANDIDATE_ROLES,
     TWIN_PAIRS,
     build_freeze_receipt_v2,
+    evaluate_panel_v2,
     frozen_case_panel_v2,
     place_candidates,
     twin_pairs,
@@ -239,6 +242,43 @@ BENCH_DIR = REPO_ROOT / "benchmarks" / "scientific_transition_authority"
 PROTOCOL_V2_PATH = BENCH_DIR / "PROTOCOL_V2.md"
 RECEIPT_V2_PATH = BENCH_DIR / "FREEZE_RECEIPT_V2.json"
 AUDIT_ARTIFACT_PATH = REPO_ROOT / "research" / "AUTHORITY_LEAKAGE_PANEL_DEGENERACY_AUDIT.json"
+
+
+def test_evaluation_is_blocked_on_a_degenerate_panel() -> None:
+    """PROTOCOL_V2 section 3 as code, not as advice.
+
+    Scoring a panel that cannot return a negative result produces a number
+    measuring the panel, not the responder.
+    """
+
+    result = evaluate_panel_v2(frozen_case_panel(), None)
+    assert result["status"] == "BLOCKED"
+    assert result["score"] is None
+    assert "DEGENERATE" in str(result["reason"])
+
+
+def test_evaluation_is_blocked_on_a_partial_response_set() -> None:
+    result = evaluate_panel_v2(PANEL, [always_blocked_responder(c.visible) for c in PANEL[:-1]])
+    assert result["status"] == "BLOCKED"
+    assert result["score"] is None
+
+
+def test_evaluation_scores_a_clean_panel_with_a_full_response_set() -> None:
+    result = evaluate_panel_v2(PANEL, [always_blocked_responder(c.visible) for c in PANEL])
+    assert result["status"] == "SCORED"
+    score = result["score"]
+    assert isinstance(score, dict)
+    # ALR is never emitted alone: a refuse-everything responder scores a
+    # perfect 0.0 and must be visibly paired with zero recall.
+    assert score["alr"] == pytest.approx(0.0)
+    assert score["valid_upgrade_recall"] == pytest.approx(0.0)
+    assert result["grants_authority"] is False
+
+
+def test_evaluation_without_responses_reports_audit_only() -> None:
+    result = evaluate_panel_v2()
+    assert result["status"] == "AUDIT_ONLY"
+    assert result["score"] is None
 
 
 def test_protocol_and_receipt_are_committed() -> None:

@@ -23,10 +23,15 @@ come back clean for a reason.
 Twinning also fixes the balance: each "this upgrade is not licensed" case is
 paired with a near-identical case where the same upgrade *is* licensed.
 
-Identifiers are opaque (``STA-V2-003B``). Every case carries three candidate
-interpretations — an over-escalating reading, an over-conservative reading and
-the correct one — ordered by a deterministic content-derived rotation so that
-no fixed position is the answer.
+Identifiers are opaque *and unpaired* (``STA-V2-291``): an id reveals neither its
+twin nor whether it is the withholding or the licensing member. Twin membership
+lives in the hidden labels.
+
+Every case carries three candidate interpretations — over-escalating,
+over-conservative and correct — placed by a deterministic draw from all six
+permutations. Rotations were tried first and were wrong: a rotation preserves
+cyclic order, so the correct reading sat immediately after the conservative
+distractor in all 16 cases while the absolute-position audit reported clean.
 
 Nothing here has been run against a model. This module freezes a panel; it
 produces no score and grants no authority.
@@ -38,10 +43,14 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple
+from typing import Mapping, Sequence, Tuple
 
 from .authority_ledger import AuthorityAxis
-from .authority_leakage_audit import AUDIT_THRESHOLDS_FROZEN_AT, audit_panel
+from .authority_leakage_audit import (
+    AUDIT_THRESHOLDS_FROZEN_AT,
+    AuditStatus,
+    audit_panel,
+)
 from .authority_leakage_benchmark import (
     LABEL_FIELD_NAMES,
     CaseStratum,
@@ -50,7 +59,9 @@ from .authority_leakage_benchmark import (
     ScientificTransitionCase,
     StateEdit,
     TransitionDecision,
+    TransitionResponse,
     VisibleCaseContext,
+    score_panel,
 )
 
 __all__ = [
@@ -60,6 +71,7 @@ __all__ = [
     "TWIN_PAIRS",
     "HiddenCaseLabelsV2",
     "build_freeze_receipt_v2",
+    "evaluate_panel_v2",
     "frozen_case_panel_v2",
     "place_candidates",
     "twin_pairs",
@@ -686,6 +698,68 @@ def build_freeze_receipt_v2() -> dict[str, object]:
     blob = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode()
     receipt["artifact_hash"] = hashlib.sha256(blob).hexdigest()
     return receipt
+
+
+def evaluate_panel_v2(
+    cases: Sequence[ScientificTransitionCase] | None = None,
+    responses: Sequence[TransitionResponse] | None = None,
+) -> Mapping[str, object]:
+    """Fail-closed entry point for scoring a V2 panel.
+
+    PROTOCOL_V2 §3 requires a clean degeneracy audit before any evaluated run.
+    Stated in a document that rule is advice; here it is enforced. A degenerate
+    panel returns ``status="BLOCKED"`` with ``score=None`` — scoring a panel
+    that cannot return a negative result produces a number that measures the
+    panel, not the responder.
+
+    Mirrors V1's ``evaluate_authority_leakage`` fail-closed contract, which
+    could not simply be reused: it is bound to the V1 panel and lives in a
+    source file whose hash is frozen.
+    """
+
+    panel = tuple(cases) if cases is not None else frozen_case_panel_v2()
+
+    audit = audit_panel(panel, PANEL_V2_ID)
+    if audit.status is not AuditStatus.CLEAN:
+        return {
+            "status": "BLOCKED",
+            "reason": (
+                f"panel degeneracy audit returned {audit.status.value}: "
+                + "; ".join(audit.degenerate_checks() or ("a check could not run",))
+            ),
+            "audit": audit.to_dict(),
+            "score": None,
+            "grants_authority": False,
+        }
+
+    if responses is None:
+        return {
+            "status": "AUDIT_ONLY",
+            "reason": "panel is clean; no responses supplied so nothing was scored",
+            "audit": audit.to_dict(),
+            "score": None,
+            "grants_authority": False,
+        }
+
+    supplied = {response.case_id for response in responses}
+    missing = sorted(case.case_id for case in panel if case.case_id not in supplied)
+    if missing:
+        return {
+            "status": "BLOCKED",
+            "reason": "missing responses for cases: " + ", ".join(missing),
+            "audit": audit.to_dict(),
+            "score": None,
+            "grants_authority": False,
+        }
+
+    score = score_panel(panel, responses)
+    return {
+        "status": "SCORED",
+        "reason": "",
+        "audit": audit.to_dict(),
+        "score": dict(score.headline()),
+        "grants_authority": False,
+    }
 
 
 def twin_pairs() -> Tuple[Tuple[ScientificTransitionCase, ScientificTransitionCase], ...]:
