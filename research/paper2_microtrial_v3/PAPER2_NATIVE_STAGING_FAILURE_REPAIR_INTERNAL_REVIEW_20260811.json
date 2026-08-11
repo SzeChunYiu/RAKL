@@ -1,0 +1,97 @@
+{
+  "blocking_concerns": [],
+  "checks": {
+    "evaluated_result_records_in_material_native_tranche": 0,
+    "jobs_submitted_in_repair_iteration": 0,
+    "model_executions_in_material_native_tranche": 0,
+    "parent_targeted_tests_after_final_repair": {
+      "failed": 0,
+      "passed": 24
+    },
+    "protected_v3_runtime_sha256": "73195a4368fcabef68520a5b666eb8cc2a96f26ceed0e1f62199060e96de62fb",
+    "reviewer_targeted_tests": {
+      "failed": 0,
+      "passed": 21
+    }
+  },
+  "claim_boundary": "Internal same-context review only. This is not independent review, peer review, V3.1 native staging success, model execution, empirical/performance evidence, acceptance or publication.",
+  "concern_ledger": [
+    {
+      "concern_id": "P2-V31-HR-B01",
+      "finding": "The first V3.1 draft could label a negative harvest preserved without exact scheduler rows, exact stage job lineage or observed candidate preservation.",
+      "planted_former_exploit_negative_history_preserved": false,
+      "planted_former_exploit_verdict": "HARVEST_CANNOT_CHECK",
+      "resolution": "Require one root scheduler row per distinct submitted job, exact probe/stage job ids, terminal negative scheduler evidence and matching on-disk candidate/final observations; otherwise HARVEST_CANNOT_CHECK. Preservation ambiguity receives STAGING_FAILED_PRESERVATION_UNVERIFIED.",
+      "severity": "blocking",
+      "state": "closed"
+    }
+  ],
+  "created_at_utc": "2026-08-11T00:44:22Z",
+  "nonblocking_concerns": [],
+  "object": "Native V3 staging failure preservation and V3.1 repair packet",
+  "passes": [
+    {
+      "concerns": [
+        "P2-V31-HR-B01"
+      ],
+      "pass_id": "initial_hostile_review",
+      "verdict": "BLOCKED"
+    },
+    {
+      "concerns": [],
+      "pass_id": "post_repair_hostile_review",
+      "verdict": "PASS"
+    }
+  ],
+  "review_class": "internal_same_context_recursive_hostile_review_not_independent_not_peer_review",
+  "review_id": "paper2-v3-native-failure-v3-1-repair-internal-review-20260811",
+  "reviewed_artifacts": [
+    {
+      "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_STAGING_FAILURE_REPAIR_RECEIPT_20260811.json",
+      "role": "native_failure_and_repair_synthesis",
+      "sha256": "809241fe2ed5ad3df008a186a51ac8a6c06cb116eec47e1725f15f2b88a3f6cb"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3_1.json",
+      "role": "v3_1_contract",
+      "sha256": "d6634bceda0c9eb386d54f94828aef09c2a51373c8192e9db88c4d55190d46c4"
+    },
+    {
+      "path": "src/rakl/paper2_cpu_staging_v3_1.py",
+      "role": "v3_1_runtime",
+      "sha256": "0685ed7492a84a6075d41c15e7b355066c055952586f7d73ba08b2c656eda4c2"
+    },
+    {
+      "path": "tests/test_paper2_cpu_staging_v3_1.py",
+      "role": "v3_1_hostile_tests",
+      "sha256": "abc49f8c2de545ff7605a705ad5c1a503a418ef183b51937d75ff232a7964860"
+    },
+    {
+      "path": "tests/test_paper2_staging_download_repair.py",
+      "role": "download_repair_tests",
+      "sha256": "e59a525774cd2fa40d1f3cff3e977cc35451495b46d536b65c3b8a87776f861c"
+    },
+    {
+      "path": "tests/test_paper2_native_staging_failure_repair_receipt.py",
+      "role": "synthesis_lineage_tests",
+      "sha256": "032aad7e7be43ca490859f2905aa9c220d1f90f91ccfebe42c981c506ee86dce"
+    },
+    {
+      "path": "research/PAPER2_CPU_STAGING_V3_HOSTILE_REVIEW_20260810.md",
+      "role": "human_readable_internal_hostile_review",
+      "sha256": "bb7d50e5d0f7cf0eef9dcf21179f293220288027adb9a66a22d274be54674c10"
+    },
+    {
+      "path": "research/PAPER2_CPU_STAGING_V3_STATUS_20260810.md",
+      "role": "status",
+      "sha256": "6bdd1875c66792061828d2e0fb245fbe97f05b4264d3e7522e5f3093a3fdfb19"
+    },
+    {
+      "path": "research/PAPER2_MICROTRIAL_MANUSCRIPT_STATUS_20260810.md",
+      "role": "manuscript_status",
+      "sha256": "7a995bebc4a1d976e2fa2080730afdbd8fdf145c2294216303affc960ea46d0e"
+    }
+  ],
+  "schema_version": "paper2-native-staging-failure-repair-internal-review-v1",
+  "verdict": "PASS__V3_FAILURE_PRESERVED__V3_1_REPAIR_READY_NOT_SUBMITTED"
+}

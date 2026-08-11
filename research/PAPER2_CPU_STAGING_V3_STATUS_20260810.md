@@ -191,3 +191,53 @@ result, jobs submitted, model executions and evaluated result records remain
 **zero**. Native asset staging, harvest, an execution packet and empirical or
 performance evidence remain absent. A separately reviewed and merged iteration
 is required before any staging-only job submission.
+
+## First authorized native staging result
+
+The first authorized staging-only submission used exact merged subject
+`1a9d3079571e1f1278e32061665be885845bd5cf` and submitted exactly two jobs.
+Network-probe job `3475080` completed on `cn004` in six seconds with exit code
+`0:0`; its atomic receipt reports `NETWORK_PROBE_PASS` and 38/38 HEAD responses
+with HTTP status 200. Dependent staging job `3475081` failed on `cn004` in four
+seconds with exit code `2:0`. Its preserved receipt reports
+`STAGING_FAILED_PRESERVED`, `HTTP Error 403: Forbidden`, retained candidate
+`/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/.paper2-cpu-v3-candidate-3475081`,
+and no final promoted path.
+
+Both chronological harvests are retained rather than collapsed: the first at
+`2026-08-11T00:20:47Z` and repeat at `2026-08-11T00:23:03Z` report
+`HARVEST_STAGING_NEGATIVE_PRESERVED` against the same two scheduler rows. The
+raw `sacct --json`, both job logs, every native receipt and the exact negative
+bundle are checked in with byte hashes bound by
+`PAPER2_NATIVE_STAGING_FAILURE_REPAIR_RECEIPT_20260811.json`.
+
+A read-only manifest-order inspection found 25 present artifacts, all 25 with
+the expected byte count and SHA-256, followed by first missing artifact
+`wheel:torch==2.8.0+cpu` at manifest index 25. Because V3 did not record the
+active artifact in its exception receipt, this localizes the strongest
+deterministic candidate for the 403 but does **not** directly prove that the
+Torch URL raised it. The observed implementation asymmetry is exact: HEAD used
+a bound User-Agent while GET used a bare URL. This supports a versioned repair,
+not reinterpretation of the failure.
+
+## Versioned V3.1 repair boundary
+
+The downloader correction is a new V3.1 runtime and contract. It sends the same
+bound User-Agent on HEAD and GET and records the exact artifact id, URL and HTTP
+status on a future failure. The protected V3 runtime, contract and failed
+candidate remain immutable negative history; V3.1 uses distinct candidate,
+final, receipt and failure paths. Local hostile tests exercise User-Agent
+equality and an exact artifact/status-bearing synthetic 403 receipt. A recursive
+internal review then planted incomplete and contradictory negative-harvest
+worlds. V3.1 now requires exactly one scheduler root row per submitted job,
+exact probe/stage job-id lineage, and observed candidate/final presence matching
+the typed failure receipt; missing or ambiguous evidence returns
+`HARVEST_CANNOT_CHECK` rather than negative-preserved authority.
+
+The V3.1 operator state is `REPAIR_READY_NOT_SUBMITTED`. No retry job has been
+submitted, V3.1 has no native staging result, and successful V3.1 staging cannot
+be inferred from local tests. Across this native tranche the exact counts are:
+jobs submitted **2**, model executions **0**, evaluated result records **0**.
+No Paper 2 empirical/performance result or quantitative figure exists, and no
+V3 execution packet may be frozen unless a later authorized V3.1 native staging
+and harvest pass is preserved.
