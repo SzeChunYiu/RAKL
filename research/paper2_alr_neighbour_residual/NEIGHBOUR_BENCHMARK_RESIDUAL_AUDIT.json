@@ -1,0 +1,88 @@
+{
+  "artifact_hash": "ffaa9a26dd56826800819ea77e5d05837e06e0cb69c1cee2d6a3e815f61f3660",
+  "created_at_utc": "2026-08-11T21:10:00Z",
+  "grants_scientific_authority": false,
+  "issue_refs": [
+    "https://github.com/SzeChunYiu/RAKL/issues/154"
+  ],
+  "model_baselines_executed": false,
+  "novelty_licensed": false,
+  "rows": [
+    {
+      "benchmark_id": "arxiv_2604_18805_scientific_agent_process_audit",
+      "claim_allowed_today": "RESIDUAL_GAP_DEMONSTRATED_FULL_TEXT_PENDING",
+      "evidence_level": "ABSTRACT_ONLY",
+      "labels_scientific_authority_deltas": "no",
+      "primary_pointers": [
+        "https://arxiv.org/abs/2604.18805"
+      ],
+      "residual_gap": "Measures whether evidence was used and whether belief moved; does not label which scientific-authority coordinate was licensed to move, nor ALR subtypes.",
+      "separates_experience_from_evidence": "no",
+      "separates_pred_mech_ident": "no",
+      "unit_of_evaluation": "process / evidence-use failures over large scientific-agent run corpora"
+    },
+    {
+      "benchmark_id": "arxiv_2605_10246_sciintegrity_bench",
+      "claim_allowed_today": "RESIDUAL_GAP_DEMONSTRATED_FULL_TEXT_PENDING",
+      "evidence_level": "ABSTRACT_ONLY",
+      "labels_scientific_authority_deltas": "no",
+      "primary_pointers": [
+        "https://arxiv.org/abs/2605.10246"
+      ],
+      "residual_gap": "Integrity traps are a subset of ALR family 12 (missing evidence) but do not provide typed authority-delta scoring, valid-upgrade recall, or experience\u2260evidence separation.",
+      "separates_experience_from_evidence": "no",
+      "separates_pred_mech_ident": "no",
+      "unit_of_evaluation": "integrity under completion pressure / missing-evidence traps"
+    },
+    {
+      "benchmark_id": "see_schema_family_paper2_cited",
+      "claim_allowed_today": "RESIDUAL_GAP_DEMONSTRATED",
+      "evidence_level": "SECONDARY_VIA_PAPER2_BIBLIOGRAPHY",
+      "labels_scientific_authority_deltas": "no",
+      "primary_pointers": [
+        "Paper II bibliography SEE/SCHEMA citations"
+      ],
+      "residual_gap": "Extraction/schema correctness is not licensed scientific-state-edit adjudication.",
+      "separates_experience_from_evidence": "no",
+      "separates_pred_mech_ident": "partial_at_best",
+      "unit_of_evaluation": "schema / structured scientific extraction accuracy"
+    },
+    {
+      "benchmark_id": "authmember_provenance_authority_benches_paper1",
+      "claim_allowed_today": "RESIDUAL_GAP_DEMONSTRATED",
+      "evidence_level": "VIA_PAPER1_ASSIMILATION_AND_MATRIX",
+      "labels_scientific_authority_deltas": "memory_scoped_only",
+      "primary_pointers": [
+        "research/PAPER2_CLOSEST_PARENT_ABLATION_MATRIX.json",
+        "Paper I nearest-work sections"
+      ],
+      "residual_gap": "Provenance/use permission is inherited; they do not measure prediction\u2260mechanism, mechanism\u2260identification, or experience\u2260scientific-evidence ALR subtypes.",
+      "separates_experience_from_evidence": "sometimes_provenance_vs_claim",
+      "separates_pred_mech_ident": "usually_no",
+      "unit_of_evaluation": "memory / provenance / use-permission authority"
+    },
+    {
+      "benchmark_id": "ALR_V2_THIS_PROTOCOL",
+      "claim_allowed_today": "CANDIDATE_RESIDUAL_NOVELTY_UNLICENSED",
+      "evidence_level": "PROTOCOL_AND_PANEL_FROZEN",
+      "labels_scientific_authority_deltas": "yes",
+      "primary_pointers": [
+        "benchmarks/scientific_transition_authority/PROTOCOL_V2.md",
+        "src/rakl/authority_leakage_panel_v2.py"
+      ],
+      "residual_gap": "Candidate residual only. Novelty not licensed until fuller primary-source reads close ABSTRACT_ONLY rows and evaluated model baselines exist.",
+      "separates_experience_from_evidence": "yes",
+      "separates_pred_mech_ident": "yes",
+      "unit_of_evaluation": "scientific state transition + typed authority delta (ALR + valid-upgrade recall)"
+    }
+  ],
+  "schema_version": "paper2-alr-neighbour-residual-audit-v1",
+  "status": "RESIDUAL_DEMONSTRATED_NOVELTY_UNLICENSED",
+  "still_open": [
+    "full-text coding-scheme read for arXiv:2604.18805",
+    "full-text SciIntegrity-Bench rubric read for arXiv:2605.10246",
+    "any evaluated model baseline under frozen ALR V2",
+    "independent annotation for subjective cases or explicit development-only mark"
+  ],
+  "summary": "Nearest audited families measure process failures, integrity traps, extraction accuracy, or memory/provenance authority. None currently provide the ALR unit: typed scientific-authority transition legality with paired valid-upgrade recall. This demonstrates a residual measurement gap; it does not license benchmark novelty."
+}

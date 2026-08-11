@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-experience-to-method-protocol-v2.schema.json",
+  "title": "Paper II experience-to-method promotion protocol v2",
+  "description": "Machine-checkable design freeze for issue #157. Supersedes the six-field closeout stub for design purposes; grants no scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "issue",
+    "arms",
+    "task_families",
+    "assurance_chronometry",
+    "admissibility_gates",
+    "upstream_blockers",
+    "execution_coordinates",
+    "grants_scientific_authority",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper2-experience-to-method-protocol-v2"},
+    "status": {
+      "enum": ["DRAFT", "PROTOCOL_FROZEN", "CANNOT_IDENTIFY", "INSUFFICIENT_EVIDENCE"]
+    },
+    "issue": {"const": 157},
+    "arms": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["arm_id", "intervention"],
+        "properties": {
+          "arm_id": {
+            "enum": [
+              "A_RESET_NO_LESSON",
+              "B_REFLECTION_ONLY",
+              "C_UNRESTRICTED_LESSON",
+              "D_RAKL_PROTECTED_LESSON",
+              "E_SHAM_LESSON"
+            ]
+          },
+          "intervention": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "task_families": {
+      "type": "array",
+      "minItems": 6,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "assurance_chronometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_frozen_before_assurance",
+        "candidate_change_requires_new_version",
+        "required_freeze_fields"
+      ],
+      "properties": {
+        "candidate_frozen_before_assurance": {"const": true},
+        "candidate_change_requires_new_version": {"const": true},
+        "required_freeze_fields": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "admissibility_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["G1_verified_corrective_object", "G2_retrieval_calls", "noninterference_with_scientific_authority"],
+      "properties": {
+        "G1_verified_corrective_object": {
+          "type": "object",
+          "required": ["pseudo_lessons_count_toward_gate", "on_failure"],
+          "properties": {
+            "pseudo_lessons_count_toward_gate": {"const": false},
+            "on_failure": {"const": "CANNOT_IDENTIFY"}
+          }
+        },
+        "G2_retrieval_calls": {
+          "type": "object",
+          "required": ["minimum_retrieval_calls_per_retrieving_task", "whole_state_stuffing_counts_as_failure"],
+          "properties": {
+            "minimum_retrieval_calls_per_retrieving_task": {"type": "integer", "minimum": 1},
+            "whole_state_stuffing_counts_as_failure": {"const": true}
+          }
+        },
+        "noninterference_with_scientific_authority": {"const": true}
+      }
+    },
+    "upstream_blockers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "execution_coordinates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_status", "pending_freeze_sentinels"],
+      "properties": {
+        "protocol_status": {"type": "string"},
+        "pending_freeze_sentinels": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "grants_scientific_authority": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  }
+}

@@ -200,19 +200,21 @@ Degenerate responders used only for score validation:
 
 Neither may dominate on both ALR and valid-upgrade recall.
 
-## 9. Neighbouring-benchmark residual (audit stub)
+## 9. Neighbouring-benchmark residual (demonstrated; novelty unlicensed)
 
-This table records the **intended residual**, not a completed primary-source
-novelty verdict. Filling the "residual gap" column with primary readings is a
-separate deliverable; until then, no benchmark-novelty claim is licensed.
+Machine-readable audit:
+`research/paper2_alr_neighbour_residual/NEIGHBOUR_BENCHMARK_RESIDUAL_AUDIT.json`
+(status `RESIDUAL_DEMONSTRATED_NOVELTY_UNLICENSED`). The residual **measurement
+gap** against nearest families is demonstrated; benchmark novelty remains
+unlicensed while ABSTRACT_ONLY full-text reads and model baselines are open.
 
-| Benchmark / family | Unit of evaluation | Labels scientific authority deltas? | Separates pred/mech/ident? | Separates experience from evidence? | Residual gap (provisional) |
+| Benchmark / family | Unit of evaluation | Labels scientific authority deltas? | Separates pred/mech/ident? | Separates experience from evidence? | Residual gap |
 |---|---|---|---|---|---|
-| Scientific-agent process audits (`arXiv:2604.18805`) | process / evidence-use failures over runs | no typed authority axes | no | no | process failures ≠ typed authority-upgrade legality |
-| SciIntegrity-Bench (`arXiv:2605.10246`) | integrity under completion pressure | no | no | no | integrity traps ≠ full transition/authority matrix |
+| Scientific-agent process audits (`arXiv:2604.18805`) | process / evidence-use failures over runs | no | no | no | process failures ≠ typed authority-upgrade legality (full-text coding scheme still pending) |
+| SciIntegrity-Bench (`arXiv:2605.10246`) | integrity under completion pressure | no | no | no | integrity traps ⊂ missing-evidence family; not full ALR matrix (full-text rubric pending) |
 | SEE / SCHEMA (Paper-II cited) | schema / structured scientific extraction | no | partial at best | no | extraction accuracy ≠ licensed state-edit |
-| AuthMem / provenance-authority benches (Paper-I assimilations) | memory / provenance authority | memory-scoped | usually no | sometimes provenance vs claim | not experience≠evidence + typed scientific axes |
-| This protocol (ALR V1) | scientific state transition + authority delta | yes | yes | yes | **candidate residual**; novelty not claimed until primary audit closes |
+| AuthMem / provenance-authority benches (Paper-I assimilations) | memory / provenance authority | memory-scoped only | usually no | sometimes provenance vs claim | not experience≠evidence + typed scientific axes |
+| This protocol (ALR V1/V2) | scientific state transition + authority delta | yes | yes | yes | **candidate residual**; novelty not claimed until pending full-text reads + evaluated baselines close |
 
 ## 10. Claim boundary
 

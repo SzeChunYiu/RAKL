@@ -92,6 +92,17 @@ depend on `CANNOT_CHECK` matrix rows — writing an intervention contract agains
 a parent function nobody has read would fix the wrong variable. Read AutoSci's
 SciFlow and SciEvolve sections first.
 
+## Cheap conformance (landed; not empirical)
+
+Deterministic A3 vs A4 conformance fixtures live in
+`src/rakl/ablation_a3_a4_conformance.py` with receipt
+`research/paper2_closest_parent/A3_A4_CONFORMANCE_RECEIPT.json`.
+
+They prove the intended mechanism difference on hostile prediction→mechanism and
+mechanism→identification escalations, plus a legal upgrade control and a shared
+provenance reject. **No model ablation has been run.** Arms are still not named
+after external systems.
+
 ## Before any arm is run
 
 1. Resolve the six `CANNOT_CHECK` rows, or run without them and report them as

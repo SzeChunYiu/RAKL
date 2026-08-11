@@ -1,0 +1,75 @@
+{
+  "schema_version": "paper2-experience-to-method-protocol-v2",
+  "status": "DRAFT",
+  "issue": 157,
+  "arms": [
+    {
+      "arm_id": "A_RESET_NO_LESSON",
+      "intervention": "No persistent lesson carried forward."
+    },
+    {
+      "arm_id": "B_REFLECTION_ONLY",
+      "intervention": "Same-session reflection text only; no structured Lesson object."
+    },
+    {
+      "arm_id": "C_UNRESTRICTED_LESSON",
+      "intervention": "Candidate Lesson reusable after development evidence only."
+    },
+    {
+      "arm_id": "D_RAKL_PROTECTED_LESSON",
+      "intervention": "Candidate frozen, protected fresh assurance, then promote/reject/narrow."
+    },
+    {
+      "arm_id": "E_SHAM_LESSON",
+      "intervention": "Optional matched memory object with non-causal content."
+    }
+  ],
+  "task_families": [
+    "genuine_reusable_repair",
+    "development_only_overfit",
+    "boundary_scoped_lesson",
+    "false_diagnosis_missing_evidence",
+    "contradictory_experience",
+    "superseded_lesson"
+  ],
+  "assurance_chronometry": {
+    "candidate_frozen_before_assurance": true,
+    "candidate_change_requires_new_version": true,
+    "required_freeze_fields": [
+      "candidate_bytes_hash",
+      "development_episode_ids",
+      "assurance_tasks_and_evaluator",
+      "model_tool_resource_contract",
+      "promotion_threshold_and_blockers",
+      "allowed_candidate_revisions",
+      "chronology_receipt"
+    ]
+  },
+  "admissibility_gates": {
+    "G1_verified_corrective_object": {
+      "pseudo_lessons_count_toward_gate": false,
+      "on_failure": "CANNOT_IDENTIFY"
+    },
+    "G2_retrieval_calls": {
+      "minimum_retrieval_calls_per_retrieving_task": 1,
+      "whole_state_stuffing_counts_as_failure": true
+    },
+    "noninterference_with_scientific_authority": true
+  },
+  "upstream_blockers": [
+    "#238/#247 discriminative verified-lesson path + capability gate",
+    "#242 integrated scientific-authority surface",
+    "#154 ALR metrics when co-reporting authority outcomes"
+  ],
+  "execution_coordinates": {
+    "protocol_status": "DRAFT_NOT_PROTOCOL_FROZEN",
+    "pending_freeze_sentinels": [
+      "PENDING_FREEZE_MODEL_REVISION",
+      "PENDING_FREEZE_ASSURANCE_TASK_PANEL_HASH",
+      "PENDING_FREEZE_RESOURCE_CEILING_HASH",
+      "PENDING_FREEZE_EVALUATOR_HASH"
+    ]
+  },
+  "grants_scientific_authority": false,
+  "claim_boundary": "Design/preregistration draft only. No arms executed; no method-evolution claim."
+}
