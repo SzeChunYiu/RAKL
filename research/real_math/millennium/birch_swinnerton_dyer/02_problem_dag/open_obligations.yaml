@@ -1,7 +1,7 @@
 root: BSD
 authority: OPEN_NO_SOLUTION_CERTIFICATE
 control_issue: 90
-active_atom: BSD-S001
+active_atom: BSD-S001c
 nodes:
   - id: BSD-RANK
     statement: "ord_{s=1} L(E,s) = rank E(Q) for every elliptic curve E/Q"
@@ -12,13 +12,22 @@ nodes:
   - id: BSD-S001
     parent: [BSD-RANK, BSD-LEADING]
     statement: "identify the minimal comparison object/identity connecting arbitrary-rank p-primary Selmer/Iwasawa structure to complex analytic rank and the global leading term"
-    state: PRE_CANDIDATE_CONTEXT_FROZEN
+    state: SOURCE_BOUND_REFINED
     children:
       - BSD-S001a
       - BSD-S001b
+      - BSD-S001c
   - id: BSD-S001a
-    statement: "audit projection sufficiency: what global coordinates are lost by a fixed-p Selmer/Iwasawa output?"
-    state: NEXT
+    statement: "audit projection sufficiency: what global coordinates are directly present in fixed-p Selmer/Iwasawa output and which require additional comparison input?"
+    state: SOURCE_BOUND_AUDIT_COMPLETE
+    result: "fixed-p arithmetic controls selected p-primary coordinates under exact hypotheses but does not by itself supply the other-primary, archimedean, or complex Taylor coordinates; no impossibility claim is made because an independent rigidity/comparison theorem could relate them"
   - id: BSD-S001b
-    statement: "search determinant/higher-rank explicit reciprocity identities that restore the missing complex/global coordinates"
-    state: QUEUED
+    statement: "identify a determinant/higher-rank explicit reciprocity interface for the missing complex/global coordinates"
+    state: REFINED_BY_PRIMARY_SOURCE
+    result: "Burns-Kurihara-Sano arXiv:1910.07404 already supplies an exterior/determinant-line and Bockstein-regulator interface through the Generalized Perrin-Riou Conjecture; determinant invention is therefore not the live first obstruction"
+  - id: BSD-S001c
+    statement: "audit whether an independent, non-BSD-assuming comparison can identify the algebraic/p-adic Kato-zeta determinant/Bockstein object with the complex leading-term object strongly enough to force arbitrary-rank analytic-rank equality and the required BSD leading data"
+    state: NEXT
+    warnings:
+      - "in Burns-Kurihara-Sano arXiv:1910.07404 the canonical eta^BSD is defined using the complex leading term, so that formulation cannot itself be used as an independent reconstruction of the complex BSD term"
+      - "equivalences or consequences that assume BSD_p, BSD, an Iwasawa main conjecture, Sha finiteness, or other root-level input must preserve those assumptions explicitly"

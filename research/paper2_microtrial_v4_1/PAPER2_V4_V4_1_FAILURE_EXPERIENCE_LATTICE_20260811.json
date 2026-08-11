@@ -1,0 +1,122 @@
+{
+  "experiences": [
+    {
+      "artifact_hash": "sha256:7a2118206284067f8325bbe1c9d17df2fb13068f5e980a0b5d0977ae9f2dfc9b",
+      "atom_id": "P2-EMPIRICAL-BRIDGE-PENDULUM-001",
+      "broken_assumptions": [
+        "both prompt materializations would emit a bare JSON object under the frozen interface"
+      ],
+      "candidate_id": "PENDULUM-MICROTRIAL-V4-JOB-3475193",
+      "competing_diagnoses": [
+        "output interface/parser mismatch",
+        "prompt-dependent serialization",
+        "0.5B model instruction-following limit",
+        "ignored generation-flag warning"
+      ],
+      "context_packet_hash": "sha256:e482ce91aa74c3dcba6b573a7201dc61eae12de3f909479e649a2db6cc70e7a2",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": [
+        "research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json",
+        "sha256:cb73e662832f913264b999140443d061bdcd18e07d725aaf9da16362397abd48",
+        "research/paper2_microtrial_v4_1/PAPER2_V4_V4_1_PUBLIC_FAILURE_TRACE_20260811.json#P2-V4-E01-RESULT"
+      ],
+      "failure_id": "F-P2-V4-BOTH-ARMS-PARSE-NULL",
+      "failure_mode": "both frozen arm outputs are parse-invalid under the bare-JSON-object evaluator",
+      "falsifier_or_attempt": "run the frozen native V4 evaluator on both exact arm outputs without post-hoc extraction",
+      "local_repair_attempts": [
+        "freeze V4.1 exact single-lowercase-json-fence policy only after preserving V4 nulls; never rescore V4"
+      ],
+      "method_family": "same-model prompt-materialization bridge with strict structured-output evaluation",
+      "observed_result": "receipt chain passed but both outputs failed the frozen bare-object parser and both scores remained null",
+      "research_trace_event_id": "P2-V4-E01-RESULT",
+      "residual_signature": [
+        "zero parse-valid arms",
+        "zero scorable arms",
+        "JSON fences rejected by frozen parser",
+        "paired arm effect unidentified"
+      ],
+      "scope_conditions": [
+        "native job 3475193",
+        "Qwen2.5-0.5B-Instruct revision 7ae5576",
+        "pendulum known-answer task",
+        "seed 17",
+        "DIRECT_CORPUS and RAKL_CONTEXT",
+        "V4 bare-object parser"
+      ],
+      "selected_diagnosis": "R1 serialization mismatch is supported for both exact outputs; scientific content and causal prompt effects remain unscored",
+      "timestamp": "2026-08-11T04:31:00+00:00"
+    },
+    {
+      "artifact_hash": "sha256:4eabadf64ca9ed21c9df3ab26f393c9a46681a7e2e323d490b382555cb10a438",
+      "atom_id": "P2-EMPIRICAL-BRIDGE-PENDULUM-001",
+      "broken_assumptions": [
+        "the shared exact output contract would yield two scorable arm records",
+        "the sole scorable output would satisfy the exact conceptual success gate"
+      ],
+      "candidate_id": "PENDULUM-MICROTRIAL-V4.1-JOB-3475212",
+      "competing_diagnoses": [
+        "prompt architecture affects serialization independently of content",
+        "0.5B model capacity is insufficient for exact structured reasoning",
+        "task/seed-specific output variance",
+        "combined R1 interface and R7 scientific-output mismatch"
+      ],
+      "context_packet_hash": "sha256:a818611e36ab8d94a8f895fb271291e3f5f46e008bbd867c04f75a8ee6184bf8",
+      "diagnosis_status": "SUPPORTED",
+      "evidence_pointers": [
+        "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3475212_INGEST_RECEIPT_20260811.json",
+        "sha256:70a07279ab7380dd5f2ea0ae14a87f9d2cf7aafacca028595ba22f0e5537ea92",
+        "research/paper2_microtrial_v4_1/PAPER2_V4_V4_1_PUBLIC_FAILURE_TRACE_20260811.json#P2-V41-E02-RESULT"
+      ],
+      "failure_id": "F-P2-V41-ZERO-VALID-SUCCESS",
+      "failure_mode": "one arm remains unscorable and the sole scorable arm fails the exact conceptual gate",
+      "falsifier_or_attempt": "apply the frozen V4.1 exact normalizer and exact conceptual gate to the fresh native two-arm outputs",
+      "local_repair_attempts": [
+        "exact single-fence parser admitted one arm without reinterpreting V4",
+        "no further parser rescue or successor candidate authorized before dual memory review"
+      ],
+      "method_family": "same-model prompt-materialization bridge with strict structured-output evaluation",
+      "observed_result": "RAKL_CONTEXT was scorable at 3/5 but not an exact pass; DIRECT_CORPUS remained parse-null; zero valid successes and no paired comparison resulted",
+      "research_trace_event_id": "P2-V41-E02-RESULT",
+      "residual_signature": [
+        "DIRECT_CORPUS parse-invalid null",
+        "RAKL_CONTEXT conceptual score 3/5",
+        "zero exact conceptual passes",
+        "zero valid scientific successes",
+        "paired arm effect unidentified"
+      ],
+      "scope_conditions": [
+        "adaptive non-confirmatory V4.1 fresh only to V4.1 outputs",
+        "native job 3475212",
+        "Qwen2.5-0.5B-Instruct revision 7ae5576",
+        "pendulum known-answer task",
+        "seed 17",
+        "COMPLETE_SEALED evidence only",
+        "DIRECT_CORPUS and RAKL_CONTEXT"
+      ],
+      "selected_diagnosis": "bounded joint R1 serialization and R7 scientific-output residual under this exact context; causal architecture attribution remains unidentified",
+      "timestamp": "2026-08-11T05:35:00+00:00"
+    }
+  ],
+  "links": [
+    {
+      "evidence_pointers": [
+        "research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json",
+        "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3475212_INGEST_RECEIPT_20260811.json"
+      ],
+      "rationale": "Both are the same native one-task/seed, same-model prompt-materialization bridge; V4.1 changes only the adaptively frozen exact serialization policy. This relation does not assert identical cause.",
+      "relation": "SAME_METHOD_FAMILY_AS",
+      "source_id": "F-P2-V4-BOTH-ARMS-PARSE-NULL",
+      "target_id": "F-P2-V41-ZERO-VALID-SUCCESS"
+    },
+    {
+      "evidence_pointers": [
+        "research/paper2_microtrial_v4_1/PAPER2_V4_V4_1_PUBLIC_FAILURE_TRACE_20260811.json#P2-V4-E01-RESULT",
+        "research/paper2_microtrial_v4_1/PAPER2_V4_V4_1_PUBLIC_FAILURE_TRACE_20260811.json#P2-V41-E02-RESULT"
+      ],
+      "rationale": "Both preserve an output-serialization residual and leave a paired effect unidentified; V4.1 additionally exposes a scientific-output failure in its sole scorable arm.",
+      "relation": "SHARES_RESIDUAL_WITH",
+      "source_id": "F-P2-V4-BOTH-ARMS-PARSE-NULL",
+      "target_id": "F-P2-V41-ZERO-VALID-SUCCESS"
+    }
+  ]
+}
