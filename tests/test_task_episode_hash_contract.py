@@ -105,6 +105,8 @@ def test_runtime_rejects_hash_shapes_that_used_to_bypass_digest_check() -> None:
         episode.artifact_hash + "0",
         "g" * 64,
         "not-a-digest",
+        episode.artifact_hash + "\n",
+        episode.artifact_hash + "\r\n",
     ):
         assert "episode:artifact_hash_invalid" in validate_episode(
             replace(episode, artifact_hash=malformed)
@@ -129,6 +131,8 @@ def test_task_episode_schema_matches_runtime_raw_sha256_contract() -> None:
         payload["artifact_hash"] + "0",
         "g" * 64,
         "not-a-digest",
+        payload["artifact_hash"] + "\n",
+        payload["artifact_hash"] + "\r\n",
     ):
         hostile = dict(payload, artifact_hash=malformed)
         assert list(validator.iter_errors(hostile))
@@ -143,6 +147,8 @@ def test_lesson_runtime_rejects_hash_shapes_that_bypass_digest_check() -> None:
         lesson.artifact_hash + "0",
         "G" * 64,
         "not-a-digest",
+        lesson.artifact_hash + "\n",
+        lesson.artifact_hash + "\r\n",
     ):
         assert "lesson:artifact_hash_invalid" in validate_lesson(
             replace(lesson, artifact_hash=malformed)
@@ -163,5 +169,7 @@ def test_lesson_schema_matches_runtime_raw_sha256_contract() -> None:
         payload["artifact_hash"] + "0",
         "G" * 64,
         "not-a-digest",
+        payload["artifact_hash"] + "\n",
+        payload["artifact_hash"] + "\r\n",
     ):
         assert list(validator.iter_errors(dict(payload, artifact_hash=malformed)))
