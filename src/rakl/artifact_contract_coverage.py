@@ -21,14 +21,17 @@ credit and mints no framework authority.
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import re
+import sys
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from enum import Enum
 from fnmatch import fnmatch
-from typing import Any, Mapping, Tuple
+from pathlib import Path
+from typing import Any, Mapping, Sequence, Tuple
 
 
 RECEIPT_SCHEMA_VERSION = "artifact-contract-coverage-v1"
@@ -702,3 +705,363 @@ def audit_artifact_contract_coverage(
             "coverage receipt grants no strict-process credit and no framework authority",
         ),
     )
+
+
+# ---------------------------------------------------------------------------
+# Stdlib triad checker (issue #134): schema + hash field + test coverage
+# ---------------------------------------------------------------------------
+#
+# The inventory auditor above needs observations supplied by a caller.  CI also
+# needs a zero-observation check that a *registered* authority/chronology
+# family still has its canonical schema, declared hash identity field(s), and
+# at least one test that mentions it — before a PR can claim process credit for
+# introducing or relying on that family.  Missing any leg fails closed.
+
+
+class TriadLegStatus(str, Enum):
+    """Per-family outcome for one schema/hash/test triad."""
+
+    TRIAD_SATISFIED = "TRIAD_SATISFIED"
+    SCHEMA_MISSING = "SCHEMA_MISSING"
+    SCHEMA_UNREADABLE = "SCHEMA_UNREADABLE"
+    HASH_FIELD_MISSING = "HASH_FIELD_MISSING"
+    OWNER_MODULE_MISSING = "OWNER_MODULE_MISSING"
+    TEST_COVERAGE_MISSING = "TEST_COVERAGE_MISSING"
+
+
+class TriadCoverageVerdict(str, Enum):
+    """Overall triad-checker outcome for a registry."""
+
+    ALL_TRIADS_SATISFIED = "ALL_TRIADS_SATISFIED"
+    TRIAD_INCOMPLETE = "TRIAD_INCOMPLETE"
+    REGISTRY_EMPTY = "REGISTRY_EMPTY"
+
+
+#: CI / PromotionPacket expected-check name for this stdlib checker.
+ARTIFACT_CONTRACT_COVERAGE_CHECK_NAME = "artifact-contract-coverage"
+
+
+@dataclass(frozen=True)
+class AuthorityChronologyArtifactFamily:
+    """One authority- or chronology-bearing artifact family under the triad gate.
+
+    ``required_hash_fields`` must appear somewhere in the schema property tree
+    (top-level or nested).  Nested event/item hashes count: a research trace
+    binds identity per entry, not only at the envelope.
+    """
+
+    artifact_type: str
+    schema_filename: str
+    owner_module: str
+    required_hash_fields: Tuple[str, ...]
+    test_markers: Tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not self.artifact_type or not self.schema_filename:
+            raise ValueError("artifact family requires artifact_type and schema_filename")
+        if not self.owner_module:
+            raise ValueError("artifact family requires owner_module")
+        if not self.required_hash_fields:
+            raise ValueError("artifact family requires at least one hash field")
+        if not self.test_markers:
+            raise ValueError("artifact family requires at least one test marker")
+
+
+#: Frozen registry of authority/chronology families that must keep a live triad.
+#: Adding a new family here is the deliberate act that opts it into CI credit
+#: gating; discovery-by-heuristic is intentionally rejected (unowned types stay
+#: explicit via the inventory auditor above).
+DEFAULT_AUTHORITY_CHRONOLOGY_FAMILIES: Tuple[AuthorityChronologyArtifactFamily, ...] = (
+    AuthorityChronologyArtifactFamily(
+        artifact_type="math_context_fiber",
+        schema_filename="math-context-fiber.schema.json",
+        owner_module="rakl.math_context",
+        required_hash_fields=("packet_hash",),
+        test_markers=("math-context-fiber", "MathContextFiber", "math_context"),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="research_memory_review",
+        schema_filename="research-memory-review.schema.json",
+        owner_module="rakl.research_memory",
+        required_hash_fields=("artifact_hash",),
+        test_markers=("research-memory-review", "ResearchMemoryReview", "research_memory"),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="math_research_trace",
+        schema_filename="math-research-trace.schema.json",
+        owner_module="rakl.research_trace",
+        required_hash_fields=("artifact_hash",),
+        test_markers=("math-research-trace", "MathResearchTrace", "research_trace"),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="research_tool_inventory",
+        schema_filename="research-tool-inventory.schema.json",
+        owner_module="rakl.research_tool_inventory",
+        required_hash_fields=("artifact_hash",),
+        test_markers=(
+            "research-tool-inventory",
+            "ResearchTool",
+            "research_tool_inventory",
+        ),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="failure_experience_lattice",
+        schema_filename="failure-experience-lattice.schema.json",
+        owner_module="rakl.failure_lattice",
+        required_hash_fields=("artifact_hash", "context_packet_hash"),
+        test_markers=(
+            "failure-experience-lattice",
+            "FailureExperience",
+            "failure_lattice",
+        ),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="artifact_contract_coverage",
+        schema_filename="artifact-contract-coverage-v1.schema.json",
+        owner_module="rakl.artifact_contract_coverage",
+        required_hash_fields=("receipt_canonical_sha256",),
+        test_markers=(
+            "artifact-contract-coverage",
+            "ArtifactContractCoverageReceipt",
+            "artifact_contract_coverage",
+        ),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="root_coordinate_preservation",
+        schema_filename="root-coordinate-preservation-receipt-v1.schema.json",
+        owner_module="rakl.root_coordinate_preservation",
+        required_hash_fields=("receipt_canonical_sha256",),
+        test_markers=(
+            "root-coordinate-preservation",
+            "RootCoordinatePreservationReceipt",
+            "root_coordinate_preservation",
+        ),
+    ),
+    AuthorityChronologyArtifactFamily(
+        artifact_type="task_episode",
+        schema_filename="task-episode.schema.json",
+        owner_module="rakl.experience_substrate",
+        required_hash_fields=("artifact_hash",),
+        test_markers=("task-episode", "TaskEpisode", "task_episode"),
+    ),
+)
+
+
+@dataclass(frozen=True)
+class TriadFinding:
+    artifact_type: str
+    status: TriadLegStatus
+    reasons: Tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "artifact_type": self.artifact_type,
+            "status": self.status.value,
+            "reasons": list(self.reasons),
+        }
+
+
+@dataclass(frozen=True)
+class TriadCoverageReport:
+    verdict: TriadCoverageVerdict
+    findings: Tuple[TriadFinding, ...]
+    reasons: Tuple[str, ...]
+
+    @property
+    def permits_promotion_credit(self) -> bool:
+        """True only when every registered family still has a live triad."""
+
+        return self.verdict is TriadCoverageVerdict.ALL_TRIADS_SATISFIED
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": "artifact-contract-triad-coverage-v1",
+            "check_name": ARTIFACT_CONTRACT_COVERAGE_CHECK_NAME,
+            "verdict": self.verdict.value,
+            "findings": [finding.to_dict() for finding in self.findings],
+            "reasons": list(self.reasons),
+            "permits_promotion_credit": self.permits_promotion_credit,
+            "grants_framework_authority": False,
+            "is_independent_review": False,
+        }
+
+
+def _collect_schema_property_names(node: object, into: set[str]) -> None:
+    if isinstance(node, dict):
+        props = node.get("properties")
+        if isinstance(props, dict):
+            into.update(str(key) for key in props)
+        for value in node.values():
+            _collect_schema_property_names(value, into)
+    elif isinstance(node, list):
+        for value in node:
+            _collect_schema_property_names(value, into)
+
+
+def _owner_module_path(repo_root: Path, owner_module: str) -> Path:
+    parts = owner_module.split(".")
+    if parts[0] != "rakl":
+        return repo_root / "src" / Path(*parts).with_suffix(".py")
+    return repo_root / "src" / Path(*parts).with_suffix(".py")
+
+
+def _tests_mention_markers(repo_root: Path, markers: Sequence[str]) -> bool:
+    tests_root = repo_root / "tests"
+    if not tests_root.is_dir():
+        return False
+    for path in sorted(tests_root.rglob("test_*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if any(marker in text for marker in markers):
+            return True
+    return False
+
+
+def assess_artifact_family_triad(
+    family: AuthorityChronologyArtifactFamily,
+    *,
+    repo_root: Path,
+) -> TriadFinding:
+    """Check one family's schema + hash-field + owner + test triad."""
+
+    schema_path = repo_root / "schemas" / family.schema_filename
+    if not schema_path.is_file():
+        return TriadFinding(
+            family.artifact_type,
+            TriadLegStatus.SCHEMA_MISSING,
+            (f"schema_missing:{family.schema_filename}",),
+        )
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return TriadFinding(
+            family.artifact_type,
+            TriadLegStatus.SCHEMA_UNREADABLE,
+            (f"schema_unreadable:{family.schema_filename}:{exc.__class__.__name__}",),
+        )
+
+    property_names: set[str] = set()
+    _collect_schema_property_names(schema, property_names)
+    missing_hashes = tuple(
+        field for field in family.required_hash_fields if field not in property_names
+    )
+    if missing_hashes:
+        return TriadFinding(
+            family.artifact_type,
+            TriadLegStatus.HASH_FIELD_MISSING,
+            tuple(f"hash_field_missing:{field}" for field in missing_hashes),
+        )
+
+    owner_path = _owner_module_path(repo_root, family.owner_module)
+    if not owner_path.is_file():
+        return TriadFinding(
+            family.artifact_type,
+            TriadLegStatus.OWNER_MODULE_MISSING,
+            (f"owner_module_missing:{family.owner_module}",),
+        )
+
+    if not _tests_mention_markers(repo_root, family.test_markers):
+        return TriadFinding(
+            family.artifact_type,
+            TriadLegStatus.TEST_COVERAGE_MISSING,
+            (
+                "test_coverage_missing:"
+                + ",".join(family.test_markers),
+            ),
+        )
+
+    return TriadFinding(
+        family.artifact_type,
+        TriadLegStatus.TRIAD_SATISFIED,
+        (
+            f"schema_present:{family.schema_filename}",
+            "required_hash_fields_declared",
+            f"owner_module_present:{family.owner_module}",
+            "test_marker_matched",
+        ),
+    )
+
+
+def check_authority_chronology_triads(
+    *,
+    repo_root: Path | str,
+    families: Tuple[AuthorityChronologyArtifactFamily, ...] | None = None,
+) -> TriadCoverageReport:
+    """Fail closed unless every registered authority/chronology family has a triad.
+
+    This is the stdlib CI checker for issue #134.  It performs no network access
+    and grants no framework authority; a green result only means the registered
+    families still have schema + hash identity + test coverage.
+    """
+
+    root = Path(repo_root)
+    registry = families if families is not None else DEFAULT_AUTHORITY_CHRONOLOGY_FAMILIES
+    if not registry:
+        return TriadCoverageReport(
+            TriadCoverageVerdict.REGISTRY_EMPTY,
+            (),
+            ("authority_chronology_registry_empty",),
+        )
+
+    findings = tuple(
+        assess_artifact_family_triad(family, repo_root=root) for family in registry
+    )
+    defects = tuple(
+        finding
+        for finding in findings
+        if finding.status is not TriadLegStatus.TRIAD_SATISFIED
+    )
+    if defects:
+        return TriadCoverageReport(
+            TriadCoverageVerdict.TRIAD_INCOMPLETE,
+            findings,
+            tuple(
+                f"{finding.status.value}:{finding.artifact_type}"
+                for finding in defects
+            ),
+        )
+    return TriadCoverageReport(
+        TriadCoverageVerdict.ALL_TRIADS_SATISFIED,
+        findings,
+        (
+            "every registered authority/chronology family has schema+hash+test coverage",
+            "triad checker grants no framework authority and is not independent review",
+        ),
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI entrypoint for the CI-targeted triad checker."""
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Check that registered authority/chronology artifact families still "
+            "have schema + hash-field + test coverage (issue #134)."
+        )
+    )
+    parser.add_argument(
+        "--repo",
+        type=Path,
+        default=Path.cwd(),
+        help="Repository root (defaults to cwd)",
+    )
+    parser.add_argument(
+        "--json",
+        type=Path,
+        default=None,
+        help="Optional path to write the machine-readable triad report",
+    )
+    args = parser.parse_args(argv)
+    report = check_authority_chronology_triads(repo_root=args.repo)
+    payload = json.dumps(report.to_dict(), indent=2, sort_keys=True) + "\n"
+    if args.json is not None:
+        args.json.parent.mkdir(parents=True, exist_ok=True)
+        args.json.write_text(payload, encoding="utf-8")
+    sys.stdout.write(payload)
+    return 0 if report.permits_promotion_credit else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
