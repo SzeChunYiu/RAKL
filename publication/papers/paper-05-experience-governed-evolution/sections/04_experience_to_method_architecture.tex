@@ -11,13 +11,13 @@ Every consequential attempt enters the fast loop first:
 The episode is frozen before root-cause interpretation. This ordering prevents a later explanation from rewriting the evidence it is supposed to explain.
 
 The slow loop operates on already-recorded episodes:
-\[
+\rakldisp{
 \text{episodes}
 \rightarrow\text{contrastive analysis}
 \rightarrow\text{lesson proposal}
 \rightarrow\text{replay/transfer validation}
 \rightarrow\text{scoped method update}.
-\]
+}
 A failed fresh transfer bounds or contradicts a lesson rather than being averaged away. Promotion creates a new lesson version; it does not mutate the source episodes or silently replace the old lesson.
 
 This architecture responds to a known failure mode of agentic memory. Continually rewriting consolidated memory can degrade performance even when the underlying experiences were useful, while retaining raw episodes can remain competitive \cite{zhang2026faultymemory}. RAKL therefore treats consolidation as a defeasible derived view rather than the canonical memory root.
@@ -25,12 +25,12 @@ This architecture responds to a known failure mode of agentic memory. Continuall
 \subsection{Authority of a lesson}
 
 A lesson can occupy a bounded authority ladder such as
-\[
+\rakldisp{
 \texttt{CANDIDATE}
 <\texttt{VERIFIED\_LOCAL}
 <\texttt{CONDITIONALLY\_REUSABLE}
 <\texttt{PROOF\_BACKED},
-\]
+}
 with \texttt{SUPERSEDED} representing historical lineage rather than a higher state. The order is not automatic. A candidate reflection cannot become reusable because the same LLM says it sounds general. A reusable lesson requires independently registered verification and a fresh successful transfer under the relevant implementation contract, or a separately valid proof-backed route.
 
 The current v3 implementation still contains authority-bearing surfaces whose caller-supplied identifiers and flags require stronger content-bound resolution before promotion-grade use. Paper 5 therefore treats new v3 experience in the live mathematical programme as proposal/shadow evidence until these paths are hardened.
@@ -38,7 +38,7 @@ The current v3 implementation still contains authority-bearing surfaces whose ca
 \subsection{Failure learning is an evidence ladder}
 
 Failure learning uses a deliberately slower promotion chain:
-\[
+\rakldisp{
 \TaskEpisode{}(\text{non-success})
 \rightarrow
 \text{observed failure}
@@ -52,7 +52,7 @@ Failure learning uses a deliberately slower promotion chain:
 \text{boundary lesson candidate}
 \rightarrow
 \text{cross-context validation}.
-\]
+}
 The reason is causal. A failed proof attempt may have failed because the theorem is false, because a representation was weak, because the source was incomplete, because a tool was unavailable, because the context packet was wrong, or because CI failed. Treating the first plausible narrative as the causal obstruction would poison future routing.
 
 Diagnosis revisions are append-only versions. A later diagnosis can supersede an earlier one without erasing the original observation. A raw failure cannot directly mint a globally blocking impossibility; only an independently verified impossibility can block reuse, and only inside its registered scope.
@@ -60,25 +60,25 @@ Diagnosis revisions are append-only versions. A later diagnosis can supersede an
 \subsection{Experience affects routing, not theorem truth}
 
 For operator $o$ in target context $c$, an experience statistic can summarize matched episodes, successes, partial successes, failures and costs. One illustrative routing score is
-\[
+\rakldisp{
 \operatorname{score}(o\mid c)=
 C(o)+D_V(o)+R_B(o)
 -\lambda_s\widehat p_s(o\mid c)
 +\lambda_f\widehat p_f(o\mid c)
 -\lambda_e U_o,
-\]
+}
 where $C$ is execution cost, $D_V$ verification debt, $R_B$ boundary risk, $\widehat p_s$ and $\widehat p_f$ smoothed success and failure/block rates, and $U_o$ a small exploration bonus for undersampled operators. The exact coefficients are a policy choice to be evaluated, not epistemic constants.
 
 The hard rule is structural:
-\[
+\rakldisp{
 \boxed{\text{experience-conditioned priority} \neq \text{epistemic authority}}.
-\]
+}
 A high empirical success rate cannot weaken a proof obligation. A historically poor operator may still be used if the current DifferenceWitness restores a previously broken assumption. This avoids turning experience into a self-reinforcing blacklist.
 
 \subsection{Strategy motifs and expertise}
 
 Repeated successful contiguous operator sequences can be proposed as strategy motifs. For example, a cross-domain motif may take the form
-\[
+\rakldisp{
 \text{freeze root coordinate}
 \rightarrow
 \text{identify surrogate}
@@ -88,7 +88,7 @@ Repeated successful contiguous operator sequences can be proposed as strategy mo
 \text{audit preservation map}
 \rightarrow
 \text{rotate representation if the map fails}.
-\]
+}
 The motif is not accepted because it occurred frequently. Contradictory episodes containing the same sequence remain attached to the motif, and applicability is context-indexed.
 
 This separates two kinds of reusable knowledge that recent systems often combine under ``skills.'' Agent Workflow Memory learns reusable routines \cite{wang2024awm}; AutoSkills constructs multi-level skill hierarchies \cite{wang2026autoskills}; and XSkill separates action-level experience from task-level skills \cite{jiang2026xskill}. RAKL uses a similar intuition but adds evidence lineage, falsifiers, authority boundaries and cross-context contradiction as first-class fields because the target application is open-ended research rather than only task completion.
@@ -157,7 +157,7 @@ The intended recursion is therefore not
 \text{LLM rewrites itself and declares success}.
 \]
 It is
-\[
+\rakldisp{
 \text{observed research}
 \rightarrow
 \text{bounded method hypothesis}
@@ -169,5 +169,5 @@ It is
 \text{fresh assurance}
 \rightarrow
 \text{governed promotion or rejection}.
-\]
+}
 The next sections make this engineering loop explicit.

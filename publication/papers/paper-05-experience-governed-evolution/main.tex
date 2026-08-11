@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{booktabs,tabularx,array,longtable}
 \usepackage{graphicx}
+\usepackage{ltablex}
 \usepackage{enumitem}
 \usepackage{xurl}
 \usepackage[T1]{fontenc}
@@ -18,6 +19,20 @@
 \newcommand{\TaskEpisode}{\texttt{TaskEpisode}}
 \newcommand{\Lesson}{\texttt{Lesson}}
 \newcommand{\CANNOTCHECK}{\texttt{CANNOT\_CHECK}}
+
+% Shrink-only display math: renders at natural size, scales down only when it
+% would overflow \linewidth. Zero upscaling. Depends only on graphicx (\resizebox).
+\setlength{\emergencystretch}{3em}
+\newsavebox{\raklmathbox}
+\newcommand{\rakldisp}[1]{%
+  \par\savebox{\raklmathbox}{\(\displaystyle #1\)}%
+  \begin{center}
+  \ifdim\wd\raklmathbox>\linewidth
+    \resizebox{\linewidth}{!}{\usebox{\raklmathbox}}%
+  \else
+    \usebox{\raklmathbox}%
+  \fi
+  \end{center}\par}
 
 \title{From Experience to Method: Evidence-Governed Continual Evolution of LLM Research Systems}
 \author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}
