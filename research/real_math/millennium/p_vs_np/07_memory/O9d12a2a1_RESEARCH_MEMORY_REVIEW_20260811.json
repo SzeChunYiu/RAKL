@@ -1,0 +1,52 @@
+{
+  "target_atom_id": "O9d12a2a1",
+  "target_context_hash": "sha256:33d5edc3f2ff8b93a9fb165e44bba144d411152db9e716ea5a67c7770cfc01e0",
+  "tool_inventory_snapshot_hash": "sha256:b536b2e586cc6fcb11f54453e8324ffc09873bf2a269d5c1b23e4a77651f053d",
+  "failure_lattice_snapshot_hash": "sha256:5de800278bb35c9cd1562a29dba1b8ee8cd07bee11fa762e6a16db6f28c4a487",
+  "tool_query_status": "MATCHES_FOUND",
+  "failure_query_status": "MATCHES_FOUND",
+  "candidate_method_families": [
+    "multi-coordinate cyclic-state potential",
+    "fixed-point closure potential",
+    "fusion-Lipschitz non-scalar matrix or set-system invariant",
+    "structural spectral potential conditioned on a separately proved fusion-relevant property"
+  ],
+  "relevant_tool_ids": [
+    "T-PNP-UPPER-FIRST",
+    "T-PNP-EXTREMAL-CALIBRATION"
+  ],
+  "relevant_failure_ids": [
+    "F-C010-MULTIPLEXING",
+    "F-C011-COORDINATE-WITNESS",
+    "F-C013-QUOTIENT-COMPRESSION",
+    "F-C021-CHEAP-ADJACENCY",
+    "F-C023-SCALAR-COLLAPSE"
+  ],
+  "selected_tool_ids": [
+    "T-PNP-UPPER-FIRST",
+    "T-PNP-EXTREMAL-CALIBRATION"
+  ],
+  "tool_applicability_notes": [
+    "T-PNP-UPPER-FIRST is applicable as a planning screen: any eventual invariant/target must first survive known explicit cover/adjacency upper constructions; it creates no lower-bound authority.",
+    "T-PNP-EXTREMAL-CALIBRATION is applicable as a falsifier for any low-dimensional statistic: search for an extremal cheap-cover family before investing in the statistic; because the new family is intentionally non-scalar, calibration must use structurally varied cheap families rather than only IP_t."
+  ],
+  "failure_reuse_notes": [
+    "C010 and C011 jointly warn that nominal repetition/coupling is insufficient when local witnesses can be globally multiplexed.",
+    "C013 warns that large globally correlated graphs can still collapse through quotient/twin structure.",
+    "C021 warns that explicit adjacency computation can compile directly into a cheap unrestricted cover, so target-first hardness intuition is unsafe.",
+    "C023 blocks only universal nondecreasing scalar-ratio templates; it does not blacklist non-scalar or fusion-conditioned spectral information.",
+    "All imported failures are legacy pre-strict-context records with SUPPORTED diagnoses only; none is treated as VERIFIED_IMPOSSIBILITY."
+  ],
+  "unresolved_warnings": [
+    "A candidate potential can look additive on an acyclic derivation yet fail under cyclic reuse or free unions.",
+    "A non-scalar spectral object may still be structure-blind if its update law ignores the legal fusion semantics.",
+    "QR remains a poor first evaluation target until the potential survives generic compression families; C021 already gives a nearly logarithmic explicit upper ceiling.",
+    "Historical success/failure memories predate strict context chronology and are used only as scoped experience, not as strict-discovery authority."
+  ],
+  "evidence_pointers": [
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_RESEARCH_TOOL_INVENTORY_20260811.json",
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_FAILURE_EXPERIENCE_LATTICE_20260811.json",
+    "research/real_math/millennium/p_vs_np/03_routes/R004_C023_ROUTE_DELTA_20260811.md"
+  ],
+  "artifact_hash": "sha256:5c4267ad41ff908e92d2ee010551d0093eba5b5181afc0b2134515fe21dc21c4"
+}
