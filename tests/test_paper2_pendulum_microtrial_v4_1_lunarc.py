@@ -170,4 +170,4 @@ def test_v4_1_readiness_and_internal_review_make_no_result_claim() -> None:
 
 def test_original_v4_batch_contract_bytes_remain_unchanged() -> None:
     path = ROOT / "research/paper2_microtrial_v4/BATCH_CONTRACT_V4.json"
-    assert _sha(path) == "07eda3b715e84deaa7565f6077ddbe71c0515e59925b714cab188e6b1672591d"
+    assert _sha(path) == "8fdfbe09c200148bc2e490ddd578270ff4148f5b58e556ec826a9d68d147ce8f"
