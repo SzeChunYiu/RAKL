@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
+from hashlib import sha256
+
 from rakl.core import Authority, KnowledgeFiber, Projection
 from rakl.experience_memory import experience_memory_views
 from rakl.experience_substrate import (
@@ -11,6 +14,7 @@ from rakl.experience_substrate import (
     TaskEpisode,
     add_episode,
     add_lesson,
+    episode_content_bytes,
 )
 from rakl.multires_memory import MemoryViewKind, MemoryViewVerdict, validate_memory_view
 from rakl.problem_fibre import ProblemAtom, compile_problem_fibre
@@ -23,7 +27,7 @@ from rakl.problem_novelty import (
 
 
 def _episode() -> TaskEpisode:
-    return TaskEpisode(
+    draft = TaskEpisode(
         episode_id="E1",
         task_id="task",
         atom_id="A1",
@@ -37,9 +41,10 @@ def _episode() -> TaskEpisode:
         outcome=EpisodeOutcome.SUCCESS,
         residual_signature=(),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:E1",
+        artifact_hash="",
         timestamp="2026-08-11T09:00:00+00:00",
     )
+    return replace(draft, artifact_hash=sha256(episode_content_bytes(draft)).hexdigest())
 
 
 def _legacy(fiber_id: str, object_id: str, projection_id: str = "P1") -> KnowledgeFiber:

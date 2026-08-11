@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
+from hashlib import sha256
+
 import pytest
 
 from rakl.evolution import EvolutionTrial, EvolutionVerdict
@@ -25,6 +28,7 @@ from rakl.experience_substrate import (
     LessonKind,
     TaskEpisode,
     add_episode,
+    episode_content_bytes,
 )
 from rakl.failure_lattice import FailureDiagnosisStatus
 from rakl.problem_fibre import (
@@ -58,7 +62,7 @@ def _episode(
 ) -> TaskEpisode:
     if outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS} and not residual:
         residual = ("bridge",)
-    return TaskEpisode(
+    draft = TaskEpisode(
         episode_id=episode_id,
         task_id=f"task-{episode_id}",
         atom_id="A1",
@@ -72,10 +76,11 @@ def _episode(
         outcome=outcome,
         residual_signature=residual,
         evidence_pointers=(f"artifact:{episode_id}",),
-        artifact_hash=f"sha256:{episode_id}",
+        artifact_hash="",
         timestamp="2026-08-11T08:30:00+00:00",
         cost=cost,
     )
+    return replace(draft, artifact_hash=sha256(episode_content_bytes(draft)).hexdigest())
 
 
 def _lesson() -> Lesson:
