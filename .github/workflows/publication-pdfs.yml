@@ -1,0 +1,149 @@
+name: publication-pdfs
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[test]"
+      - name: Install PDF build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
+            lmodern poppler-utils
+      - name: Generate receipt-bound Paper II figures
+        run: |
+          python -m rakl.mini_research_metrology
+          python -m rakl.mini_archive_demo
+          python paper/generate_demo_figures.py
+      - name: Stage four exact-source manuscripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_SHA="$(git rev-parse HEAD)"
+          mkdir -p build/publication/paper-01 build/publication/paper-02 build/publication/paper-03 build/publication/paper-04
+          python paper/build_epistemic_mechanics.py \
+            --output build/publication/paper-01/main.tex \
+            --subject-sha "$HEAD_SHA" --software-tests 1
+          python paper/build_saturated_epistemic_mechanics.py \
+            --stage build/publication/paper-02 \
+            --subject-sha "$HEAD_SHA" --software-tests 1
+          rm -rf build/publication/paper-03
+          cp -a publication/papers/paper-03-directional-structural-witnesses build/publication/paper-03
+          python paper/build_math_research_assurance.py \
+            --output build/publication/paper-04/main.tex \
+            --subject-sha "$HEAD_SHA" --software-tests 1
+          cp publication/papers/paper-04-verified-discovery/main.tex build/publication/paper-04/canonical-main.tex
+
+      - name: Bind author metadata to staged release sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          author_old = r"\author{Sze Chun Yiu}"
+          author_new = r"\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}"
+          date_old = r"\date{10 August 2026}"
+          date_new = r"\date{11 August 2026}"
+          paths = [
+              Path("build/publication/paper-01/main.tex"),
+              Path("build/publication/paper-02/main.tex"),
+              Path("build/publication/paper-04/main.tex"),
+              Path("build/publication/paper-04/canonical-main.tex"),
+          ]
+          for path in paths:
+              text = path.read_text(encoding="utf-8")
+              if author_old not in text:
+                  raise SystemExit(f"author anchor missing: {path}")
+              text = text.replace(author_old, author_new, 1)
+              if date_old in text:
+                  text = text.replace(date_old, date_new, 1)
+              path.write_text(text, encoding="utf-8")
+
+          p3 = Path("build/publication/paper-03/main.tex")
+          p3_text = p3.read_text(encoding="utf-8")
+          for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
+              if required not in p3_text:
+                  raise SystemExit(f"Paper III author metadata missing: {required}")
+          PY
+
+      - name: Compile and preflight all four PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for paper in paper-01 paper-02 paper-03 paper-04; do
+            dir="build/publication/$paper"
+            echo "=== $paper ==="
+            (
+              cd "$dir"
+              latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex | tee latexmk.stdout.log
+              test -s main.pdf
+              pdfinfo main.pdf | tee pdfinfo.txt
+              pdffonts main.pdf | tee pdffonts.txt
+              pdftotext main.pdf main.txt
+              if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
+                echo "Blocking LaTeX/PDF warning in $paper" >&2
+                exit 1
+              fi
+              grep -F 'Sze Chun Yiu' main.txt
+              grep -F 'Stockholm University' main.txt
+              grep -F 'sze-chun.yiu@fysik.su.se' main.txt
+              mkdir -p renders
+              pdftoppm -png -r 160 main.pdf renders/page >/dev/null
+              pages="$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')"
+              test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -eq "$pages"
+            )
+          done
+
+      - name: Upload canonical publication build
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: canonical-publication-pdfs-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          path: |
+            build/publication/paper-01/main.tex
+            build/publication/paper-01/main.pdf
+            build/publication/paper-01/main.log
+            build/publication/paper-01/pdfinfo.txt
+            build/publication/paper-01/pdffonts.txt
+            build/publication/paper-01/main.txt
+            build/publication/paper-01/renders/*.png
+            build/publication/paper-02/main.tex
+            build/publication/paper-02/main.pdf
+            build/publication/paper-02/main.log
+            build/publication/paper-02/pdfinfo.txt
+            build/publication/paper-02/pdffonts.txt
+            build/publication/paper-02/main.txt
+            build/publication/paper-02/renders/*.png
+            build/publication/paper-03/main.tex
+            build/publication/paper-03/main.pdf
+            build/publication/paper-03/main.log
+            build/publication/paper-03/pdfinfo.txt
+            build/publication/paper-03/pdffonts.txt
+            build/publication/paper-03/main.txt
+            build/publication/paper-03/renders/*.png
+            build/publication/paper-04/main.tex
+            build/publication/paper-04/canonical-main.tex
+            build/publication/paper-04/main.pdf
+            build/publication/paper-04/main.log
+            build/publication/paper-04/pdfinfo.txt
+            build/publication/paper-04/pdffonts.txt
+            build/publication/paper-04/main.txt
+            build/publication/paper-04/renders/*.png
+          if-no-files-found: error
