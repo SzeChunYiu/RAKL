@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from hashlib import sha256
 from typing import Iterable, Tuple
 
 from .breakthrough_learning import ExpertiseChunk
@@ -69,6 +70,17 @@ class ConsolidationOutcome:
     report: LessonConsolidationReport
     promoted_lesson_id: str | None
     projected_tool_id: str | None
+
+
+def state_fingerprint(state: RAKLV3State) -> str:
+    """Return an opaque deterministic identity for a frozen v3 value state.
+
+    The v3 state is composed of immutable dataclasses/tuples, so its repr is stable
+    for equal in-process values.  This fingerprint is a benchmark/version identity,
+    not a cryptographic attestation of external artifacts referenced by the state.
+    """
+
+    return sha256(repr(state).encode("utf-8")).hexdigest()
 
 
 def record_task_episode(
