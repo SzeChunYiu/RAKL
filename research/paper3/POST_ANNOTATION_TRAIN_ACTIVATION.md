@@ -59,3 +59,17 @@ stage→harvest window.
 
 Shipping this checklist does not authorize training. Descriptor READY with
 `training_authorized=false` is staging evidence only.
+
+
+## AI_OPERATOR demoted override (issue #217)
+
+When no external humans are available and an explicit operator override
+authorizes AI_OPERATOR completion:
+
+1. Import AI_OPERATOR submissions / adjudication / provenance with honest stamps
+   (`annotator_class=AI_OPERATOR`, `independent_external_human=false`).
+2. Build demoted gate via `build_demoted_ai_operator_gate_receipt`.
+3. Submit only through `python -m rakl.paper3_ai_operator_workload` (never claim
+   confirmatory `PASS_AUTHORIZE_CONDITIONAL_NEXT_PHASE`).
+4. Keep issue #217/#249 honesty: external human review remains absent.
+
