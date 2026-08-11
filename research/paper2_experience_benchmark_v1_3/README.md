@@ -31,5 +31,6 @@ v1.3 is the #247 successor after #238 / PR #299 (`learning_loop_mode=root_cause_
 ## Phase-1 ORACLE result
 
 - Decision: see `ORACLE_DECISION_RECEIPT_V1_3.json`
+- Paper-facing note: `PAPER_FACING_NOTE_ORACLE_FLOOR_ISSUE247.md`
 - Native landings: `native_job_3476730/`, `native_job_3476731/` (duplicate preserved)
 - Staircase/1.5B: **not** authorized from this gate
