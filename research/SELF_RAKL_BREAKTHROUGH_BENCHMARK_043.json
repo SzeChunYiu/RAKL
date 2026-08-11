@@ -1,0 +1,152 @@
+{
+  "benchmark_id": "SELF_RAKL_BREAKTHROUGH_BENCHMARK_043",
+  "status": "FROZEN_DEVELOPMENT_PROPOSAL",
+  "created_at": "2026-08-11T04:56:00Z",
+  "subject": "RAKL human-breakthrough learning layer candidates from SELF_RAKL_RESEARCH_043",
+  "authority": "METHOD_DEVELOPMENT_ONLY",
+  "comparators": [
+    "fixed_rakl_without_candidate_layer",
+    "generic_reflection_only",
+    "candidate_layer_enabled"
+  ],
+  "resource_matching": {
+    "same_base_model": true,
+    "same_external_source_budget": true,
+    "same_tool_budget": true,
+    "same_max_candidate_count": true,
+    "same_evaluator": true
+  },
+  "blocking_invariants": [
+    "no_unsupported_truth_promotion",
+    "no_novelty_from_confidence",
+    "no_candidate_before_strict_discovery_gates_when_claimed_strict",
+    "same_context_roles_not_independent",
+    "negative_history_preserved",
+    "no_post_result_threshold_change",
+    "no_hidden_evaluator_access"
+  ],
+  "task_families": [
+    {
+      "id": "B043-T01-DEEP-STRUCTURE",
+      "target_layer": "deep_structure_rerepresentation",
+      "construction": "Provide problems with strongly matched surface vocabulary but different governing relations, plus problems with different vocabulary but the same governing relation.",
+      "success": "candidate identifies governing relational structure and selects representation/tool by deep structure rather than surface nouns",
+      "reject_layer_if": "candidate adds cost without improving hidden structural classification/transfer"
+    },
+    {
+      "id": "B043-T02-CHUNK-RETRIEVAL",
+      "target_layer": "expertise_chunk_compiler_and_retrieval_rehearsal",
+      "construction": "Hide a previously validated tool/failure behind novel terminology and changed surface context.",
+      "success": "relevant experience is retrieved with high precision from structural cues under bounded context",
+      "reject_layer_if": "full archive reading is still required or false-positive transfer rises materially"
+    },
+    {
+      "id": "B043-T03-CONTRAST",
+      "target_layer": "contrastive_discrimination",
+      "construction": "Create paired atoms differing in exactly one load-bearing assumption so the correct method flips.",
+      "success": "candidate names the discriminating coordinate before seeing canonical explanation and transfers it to a third case",
+      "reject_layer_if": "comparison produces surface memorization without third-case transfer"
+    },
+    {
+      "id": "B043-T04-PRODUCTIVE-PRIOR",
+      "target_layer": "isolated_naive_prior_probe",
+      "construction": "Compare strict context-first with an isolated pre-source non-authoritative generation probe followed by the same context packet.",
+      "success": "probe improves later identification of assumptions/disanalogies or transfer without increasing anchoring/unsupported candidate claims",
+      "reject_layer_if": "probe causes fixation, leakage, or worse downstream candidate diversity"
+    },
+    {
+      "id": "B043-T05-ROUTINE-MODE",
+      "target_layer": "mode_switch_policy",
+      "construction": "Provide an atom exactly inside a mature tool scope with no conflicting evidence.",
+      "success": "routine mode uses the validated chunk/tool with low additional cost",
+      "reject_layer_if": "reflection overhead is invoked unnecessarily and degrades efficiency"
+    },
+    {
+      "id": "B043-T06-REFLECTIVE-MODE",
+      "target_layer": "mode_switch_policy",
+      "construction": "Provide a superficially familiar atom containing one hidden applicability violation or conflicting cue.",
+      "success": "system switches from routine reuse to reflective representation/assumption audit before candidate promotion",
+      "reject_layer_if": "system blindly reuses the mature tool or reflection cannot localize the conflict"
+    },
+    {
+      "id": "B043-T07-FIXATION",
+      "target_layer": "fixation_reset",
+      "construction": "Seed an attractive first representation/candidate family whose entire class is refuted by a hidden counterexample.",
+      "success": "after bounded repeated failure, reset produces a materially distinct representation/method family under matched total budget",
+      "reject_layer_if": "reset only paraphrases the original family or destroys useful constraints/provenance"
+    },
+    {
+      "id": "B043-T08-INCUBATION-ROTATION",
+      "target_layer": "incubation_context_rotation",
+      "construction": "Compare immediate same-context retries with a delayed/fresh-context rehydration that exposes only problem kernel, constraints, and normalized failure summary.",
+      "success": "fresh-context condition increases structural candidate diversity or information gain without losing mandatory constraints",
+      "reject_layer_if": "benefit disappears under matched token/tool budget or critical context is forgotten"
+    },
+    {
+      "id": "B043-T09-EXPLORE-EXPLOIT",
+      "target_layer": "exploration_exploitation_controller",
+      "construction": "Create a sequence where a known method gives short-run partial gains but cannot close the final obstruction, while a costly novel method family can.",
+      "success": "controller exploits while productive, then allocates exploration before indefinite lock-in",
+      "reject_layer_if": "controller explores too early/late relative to matched epistemic-gain baseline"
+    },
+    {
+      "id": "B043-T10-RECOMBINATION",
+      "target_layer": "controlled_recombination",
+      "construction": "A conventional route is nearly complete but needs one mechanism from a distant domain; irrelevant distant mechanisms are included as distractors.",
+      "success": "system preserves conventional backbone, imports only structurally witnessed component, and runs incompatibility falsifier first",
+      "reject_layer_if": "novelty search produces arbitrary cross-domain combinations or verification debt explodes"
+    },
+    {
+      "id": "B043-T11-BROKERAGE",
+      "target_layer": "structural_hole_brokerage",
+      "construction": "Relevant mechanism resides in a source community with low lexical/topic similarity but matching relational structure.",
+      "success": "brokerage sampler retrieves the distant mechanism more often than semantic-neighborhood-only search",
+      "reject_layer_if": "additional diversity produces no structural gain or too many false analogies"
+    },
+    {
+      "id": "B043-T12-EFFECTUAL-PROBE",
+      "target_layer": "effectual_probe_mode",
+      "construction": "Global prediction/solution search is expensive or underdetermined but a bounded controllable experiment can strongly partition surviving hypotheses.",
+      "success": "system chooses the controllable high-partition probe instead of speculative global planning",
+      "reject_layer_if": "probe has lower actual information gain per cost than baseline route"
+    },
+    {
+      "id": "B043-T13-SELF-EXPLANATION",
+      "target_layer": "explanation_reconstruction",
+      "construction": "After a verified local result, remove the original narrative and ask for reconstruction from frozen statement/premises plus counterfactual predictions.",
+      "success": "system reconstructs load-bearing mechanism and passes a structurally varied transfer probe",
+      "reject_layer_if": "explanation fluency does not correlate with transfer or creates unsupported authority"
+    },
+    {
+      "id": "B043-T14-COMPETENCE-FRONTIER",
+      "target_layer": "deliberate_practice_scheduler",
+      "construction": "Provide a family of graduated hidden variants around one method's applicability boundary across multiple episodes.",
+      "success": "scheduler targets unstable boundary, uses feedback, and improves fresh transfer accuracy faster per cost than random/easy practice",
+      "reject_layer_if": "practice selection overfits development variants or reduces assurance reserve"
+    },
+    {
+      "id": "B043-T15-META-POLICY-CREDIT",
+      "target_layer": "learning_policy_credit_assignment",
+      "construction": "Across episodes, different mode-selection policies have distinct verified downstream information gains.",
+      "success": "policy update increases fresh-task mode/tool selection quality without rewriting authority or evaluator thresholds",
+      "reject_layer_if": "self-reported success or development-only reward causes meta-overfit"
+    }
+  ],
+  "primary_metrics": [
+    "fresh_task_goal_progress",
+    "epistemic_partition_power_per_cost",
+    "hidden_deep_structure_transfer_accuracy",
+    "tool_retrieval_precision_recall",
+    "failure_warning_retrieval_precision_recall",
+    "repeated_failure_redundancy",
+    "time_to_representation_correction",
+    "mode_switch_precision_recall",
+    "novel_method_family_discovery_per_cost",
+    "explanation_transfer_accuracy",
+    "unsupported_claim_rate",
+    "verification_debt",
+    "token_and_tool_cost"
+  ],
+  "promotion_rule": "No layer becomes mandatory from this development benchmark alone. A layer with positive development delta must survive fresh assurance on tasks not used to design it, under frozen resources and invariants.",
+  "failure_rule": "Null/negative results are retained. A failed layer may be narrowed, repaired, or superseded but not rescued by changing the evaluator after results are seen."
+}

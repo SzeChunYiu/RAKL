@@ -35,7 +35,7 @@ current RAKL
 -> narrow promotion or retained negative result
 ```
 
-A same-context run that finds and repairs a real weakness is useful **first-sign evidence only**. Strong self-evolution evidence requires the frozen bootstrap benchmark in `research/SELF_RAKL_BOOTSTRAP_BENCHMARK_041.json` and fresh assurance.
+A same-context run that finds and repairs a real weakness is useful **first-sign evidence only**. Strong self-evolution evidence requires a frozen development benchmark plus fresh assurance on tasks not used to design the repair.
 
 ## Minimum search route families
 
@@ -44,6 +44,13 @@ Do not claim method-search saturation after reading only LLM-agent papers. Befor
 ```text
 scientific method / philosophy of science / metascience
 metacognition / self-regulated learning / expert learning
+expertise acquisition / deliberate practice / adaptive expertise
+cognitive problem solving / insight / representation restructuring
+learning science / productive failure / contrastive learning / self-explanation
+memory / retrieval / spacing / interleaving / chunking / script formation
+creativity / design fixation / incubation / recombination
+entrepreneurship / effectuation / action under uncertainty
+organizational learning / exploration-exploitation / brokerage across communities
 active learning / experiment design / optimal control
 formal methods / truth maintenance / belief revision / provenance
 knowledge representation / local-to-global consistency
@@ -55,15 +62,45 @@ scientific visualization / human factors / communication
 at least two domain-specific non-LLM research workflows
 ```
 
+The purpose of the human/expertise routes is not anthropomorphic imitation. Extract abstract mechanisms such as representation change, chunk/script compilation, retrieval cues, practice-frontier scheduling, contrastive discrimination, reflective mode switching, anti-fixation, bounded exploration, cross-boundary brokerage, recombination, controllable probing, and learning-policy credit assignment.
+
 For every route:
 
 1. extract atomic mechanisms, not framework reputations;
 2. normalize semantic equivalents;
 3. preserve assumptions, resource requirements and evidence scope;
-4. record genuinely new operators, corroboration, novelty corrections and negative findings;
-5. repeat from materially different query vocabulary until semantic gain is flat or the route is explicitly blocked.
+4. map each mechanism to the current canonical method surfaces before proposing a new surface;
+5. record whether the gap is missing method, missing implementation, missing routing, missing retrieval, missing benchmark, or merely missing documentation;
+6. record genuinely new operators, corroboration, novelty corrections and negative findings;
+7. repeat from materially different query vocabulary until semantic gain is flat or the route is explicitly blocked.
 
 Search-budget exhaustion while new semantic objects are still arriving is `NOT_SATURATED`.
+
+## Human-breakthrough candidate architecture
+
+`research/SELF_RAKL_RESEARCH_043.md` is a source-bound candidate synthesis, not a promoted method change. It identifies possible layers including:
+
+```text
+isolated naive-prior probe
+expertise chunk/script compiler
+retrieval-rehearsal and transfer benchmark
+competence-frontier deliberate-practice scheduler
+contrastive discrimination curriculum
+explanation reconstruction challenge
+routine-vs-reflective mode switch
+fixation reset / incubation context rotation
+exploration-exploitation controller
+structural-hole brokerage sampler
+controlled conventional-plus-atypical recombination
+effectual probe mode
+learning-policy credit assignment
+```
+
+The development benchmark is frozen in `research/SELF_RAKL_BREAKTHROUGH_BENCHMARK_043.json`.
+
+These candidates must remain proposal-only until they produce a positive matched development delta and then survive fresh assurance. Literature support, intuitive human plausibility, or one successful P-vs-NP episode is insufficient for promotion.
+
+A candidate implementation may live in a proposal-only module such as `src/rakl/breakthrough_learning.py`; its outputs must not mint truth, novelty, review independence, or method authority.
 
 ## Failure attribution before self-modification
 
@@ -74,12 +111,14 @@ MISSING_EVIDENCE_OR_MEASUREMENT
 IMPLEMENTATION_DEFECT
 STOCHASTIC_OR_UNDERPOWERED_RESULT
 WRONG_EXISTING_STRATEGY_OR_ROUTING
+RETRIEVAL_OR_MEMORY_ACCESS_FAILURE
+REPRESENTATION_OR_FIXATION_FAILURE
 ONTOLOGY_OR_CONTEXT_GAP
 METHOD_BASIS_GAP
 OBJECTIVE_OR_EVALUATOR_DEFECT
 ```
 
-Only a supported `METHOD_BASIS_GAP` routes directly to operator assimilation/invention. Missing evidence routes to evidence acquisition; implementation defects route to code repair; uncertain cases require a discriminating challenge.
+Only a supported `METHOD_BASIS_GAP` routes directly to operator assimilation/invention. Missing evidence routes to evidence acquisition; implementation defects route to code repair; retrieval failures route to memory/context policy; representation/fixation failures route to re-representation or anti-fixation challenge; uncertain cases require a discriminating challenge.
 
 ## Candidate construction
 
@@ -101,16 +140,29 @@ benchmark/evaluator identity
 
 Semantic renaming of an incumbent method is not improvement.
 
+For human-breakthrough-derived candidates, also freeze:
+
+```text
+source mechanism family
+which current method surface is insufficient
+trigger condition for invoking the candidate
+condition where the candidate should stay inactive
+expected cost/latency
+risk of fixation, over-reflection or exploration explosion
+transfer/generalization test
+```
+
 ## Evaluation chronology
 
 1. Freeze incumbent source/evidence cutoff and resource profile.
 2. Freeze development benchmark and blocking meta-QoIs.
 3. Freeze candidate identity before candidate outcomes are revealed.
 4. Run development known-answer and hostile worlds.
-5. If development improves, execute a **fresh assurance** task/realization not used to design the repair.
-6. Compare fixed RAKL, generic reflection, unconstrained self-editing and governed RAKL under matched resources when the claim is comparative.
-7. Preserve every failed, null, blocked and meta-overfit generation.
-8. Promote only through the normal protected method-change gate.
+5. Include at least one case where the candidate should **not** activate; unnecessary reflection/exploration is a failure mode.
+6. If development improves, execute a **fresh assurance** task/realization not used to design the repair.
+7. Compare fixed RAKL, generic reflection, unconstrained self-editing and governed RAKL under matched resources when the claim is comparative.
+8. Preserve every failed, null, blocked and meta-overfit generation.
+9. Promote only through the normal protected method-change gate.
 
 Development improvement
 
@@ -152,6 +204,17 @@ verdict
 next reopen trigger
 ```
 
+For human-breakthrough searches, also report:
+
+```text
+mechanisms found across domains
+normalized cross-domain commonality
+current RAKL owner for each mechanism
+true missing layers versus renamed incumbents
+activation and non-activation conditions
+benchmark tasks that can falsify the layer
+```
+
 ## Safety
 
 - The self-improver may not change evaluation criteria after seeing its own result.
@@ -159,4 +222,6 @@ next reopen trigger
 - Same-context role separation is not independent review.
 - A method-search saturation claim is local to the registered source/query/evidence universe.
 - `NO_IMPROVEMENT` is a valid result; do not force a change merely to demonstrate recursion.
+- Human-like is not a validation criterion. Only matched task improvement under preserved assurance matters.
+- Reflection, exploration, incubation, and analogy all have costs and failure modes; more of them is not automatically better.
 - Constitutional changes remain proposal-only under separate amendment governance.

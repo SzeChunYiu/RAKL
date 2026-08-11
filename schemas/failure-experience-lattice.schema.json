@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/failure-experience-lattice.schema.json",
+  "title": "RAKL Failure Experience Lattice",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["experiences", "links"],
+  "properties": {
+    "experiences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "failure_id",
+          "atom_id",
+          "candidate_id",
+          "context_packet_hash",
+          "research_trace_event_id",
+          "method_family",
+          "failure_mode",
+          "residual_signature",
+          "scope_conditions",
+          "competing_diagnoses",
+          "selected_diagnosis",
+          "diagnosis_status",
+          "evidence_pointers",
+          "falsifier_or_attempt",
+          "observed_result",
+          "timestamp",
+          "artifact_hash"
+        ],
+        "properties": {
+          "failure_id": {"type": "string", "minLength": 1},
+          "atom_id": {"type": "string", "minLength": 1},
+          "candidate_id": {"type": "string", "minLength": 1},
+          "context_packet_hash": {"type": "string", "minLength": 1},
+          "research_trace_event_id": {"type": "string", "minLength": 1},
+          "method_family": {"type": "string", "minLength": 1},
+          "failure_mode": {"type": "string", "minLength": 1},
+          "residual_signature": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "broken_assumptions": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "scope_conditions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "competing_diagnoses": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "selected_diagnosis": {"type": "string"},
+          "diagnosis_status": {
+            "enum": ["OBSERVED_ONLY", "HYPOTHESIS", "SUPPORTED", "VERIFIED_IMPOSSIBILITY", "SUPERSEDED"]
+          },
+          "evidence_pointers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "falsifier_or_attempt": {"type": "string", "minLength": 1},
+          "observed_result": {"type": "string", "minLength": 1},
+          "local_repair_attempts": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "artifact_hash": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "target_id", "relation", "rationale"],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "target_id": {"type": "string", "minLength": 1},
+          "relation": {
+            "enum": [
+              "INSTANCE_OF",
+              "SHARES_RESIDUAL_WITH",
+              "SHARES_BROKEN_ASSUMPTION_WITH",
+              "SAME_METHOD_FAMILY_AS",
+              "CONTEXT_SPECIALIZATION_OF",
+              "SUPERSEDES_DIAGNOSIS",
+              "CONTRADICTED_BY_SUCCESS",
+              "RESOLVED_BY",
+              "TRANSFER_WARNING_FOR",
+              "MOTIVATES_META_ATOM"
+            ]
+          },
+          "rationale": {"type": "string", "minLength": 1},
+          "evidence_pointers": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          }
+        }
+      }
+    }
+  }
+}

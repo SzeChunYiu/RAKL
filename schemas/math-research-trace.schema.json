@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/math-research-trace.schema.json",
+  "title": "RAKL Mathematical Research Trace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["trace_id", "entries"],
+  "properties": {
+    "trace_id": {"type": "string", "minLength": 1},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "atom_id",
+          "event_type",
+          "timestamp",
+          "state_summary",
+          "action_summary",
+          "evidence_pointers",
+          "artifact_hash"
+        ],
+        "properties": {
+          "event_id": {"type": "string", "minLength": 1},
+          "atom_id": {"type": "string", "minLength": 1},
+          "event_type": {
+            "enum": [
+              "PROBLEM_FROZEN",
+              "ATOMIZED",
+              "CONTEXT_FROZEN",
+              "ANALOGY_SCAN",
+              "METHOD_TRANSFER_REVIEW",
+              "EXPERT_CONTEXT_REVIEW",
+              "EXPERIENCE_MEMORY_REVIEW",
+              "NEXT_STEP_PROPOSED",
+              "CANDIDATE_PROPOSED",
+              "FALSIFIER_RUN",
+              "RESULT_RECORDED",
+              "RESIDUAL_OPENED",
+              "FORMALIZED",
+              "PROOF_CHECKED",
+              "NOVELTY_CHECKED",
+              "REVIEWED",
+              "PROMOTED"
+            ]
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "state_summary": {"type": "string", "minLength": 1},
+          "action_summary": {"type": "string", "minLength": 1},
+          "evidence_pointers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "alternatives_considered": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "decision_rationale": {"type": "string", "default": ""},
+          "outputs": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "residuals": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "next_steps": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "default": []
+          },
+          "artifact_hash": {"type": "string", "minLength": 1},
+          "previous_event_hash": {"type": "string", "default": ""}
+        }
+      }
+    }
+  }
+}

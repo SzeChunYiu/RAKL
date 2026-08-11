@@ -1,4 +1,4 @@
-version: 0.6.0
+version: 0.6.6
 
 always_load:
   - static/core/principles.md
@@ -59,6 +59,18 @@ workflow_composition:
       - mathematical-research
       - mechanism-invention
   mathematical-research:
+    required_pre_candidate_steps:
+      - freeze-atomic-context-fiber
+      - map-solved-and-near-solved-analogues
+      - run-cross-domain-and-everyday-analogy-scan
+      - build-method-transfer-matrix
+      - run-role-separated-expert-context-review
+      - query-success-derived-tool-inventory
+      - review-global-failure-experience-lattice
+      - freeze-dual-experience-memory-review
+      - record-auditable-pre-candidate-trace
+      - hash-chain-trace-chronology
+      - freeze-context-memory-and-trace-chronology
     recommended_pre_steps:
       - perspective-discovery
       - literature-absorption
@@ -74,6 +86,7 @@ workflow_composition:
       - perspective-discovery
       - mathematical-research
       - mechanism-invention
+      - self-rakl
   mechanism-invention:
     recommended_pre_steps:
       - failure-diagnosis
@@ -91,6 +104,12 @@ invention_resources:
   problem_solving_algebra: src/rakl/problem_solving_algebra.py
   strategy_motifs: src/rakl/strategy_motifs.py
   proof_dag: src/rakl/proof_dag.py
+  mathematical_context_gate: src/rakl/math_context.py
+  mathematical_research_trace: src/rakl/research_trace.py
+  success_research_tool_inventory: src/rakl/research_tool_inventory.py
+  failure_experience_lattice: src/rakl/failure_lattice.py
+  dual_experience_memory_gate: src/rakl/research_memory.py
+  metacognitive_gap_auditor: src/rakl/metacognition.py
   mathematical_research_runtime: src/rakl/math_research_runtime.py
   mathematical_research_api: src/rakl/math_research_api.py
   dimensional_oracle: src/rakl/math_oracles.py
@@ -103,6 +122,29 @@ invariants:
   - evidence_before_narrative
   - apple_projection_before_theory_competition
   - context_before_contradiction
+  - atomic_context_fiber_before_candidate_generation
+  - analogue_method_transfer_before_invention
+  - cross_domain_analogy_requires_structural_witness
+  - everyday_analogy_is_proposal_only
+  - role_separated_expert_context_review_before_candidate
+  - same_context_expert_roles_are_not_independent_review
+  - successful_step_requires_scope_before_tool_promotion
+  - success_derived_tool_reuse_requires_applicability_witness
+  - success_tool_inventory_and_failure_lattice_are_dual_experience_memory
+  - global_failure_memory_review_before_new_candidate
+  - failure_observation_is_not_automatically_failure_cause
+  - local_failure_never_globally_blacklists_a_method
+  - method_reuse_requires_scope_or_difference_witness_when_prior_failure_is_relevant
+  - only_verified_impossibility_can_globally_block_within_its_registered_scope
+  - repeated_unclassified_failures_may_open_ontology_or_method_basis_gap
+  - context_packet_chronology_precedes_candidate
+  - dual_experience_memory_review_precedes_candidate
+  - auditable_research_trace_precedes_candidate
+  - research_trace_hash_chain_is_tamper_evident
+  - every_material_step_records_state_evidence_residual_and_next_action
+  - research_trace_is_decision_record_not_private_chain_of_thought
+  - literature_list_is_not_method_transfer_matrix
+  - repeated_same_basis_failure_reopens_context
   - normalize_before_multiplying
   - representation_is_not_mechanism
   - llm_is_proposer_not_authority
@@ -144,3 +186,8 @@ schemas:
   knowledge_fiber: ../../schemas/knowledge-fiber.schema.json
   typed_lattice: ../../schemas/typed-lattice.schema.json
   formalism: ../../schemas/formalism.schema.json
+  mathematical_context_fiber: ../../schemas/math-context-fiber.schema.json
+  mathematical_research_trace: ../../schemas/math-research-trace.schema.json
+  research_tool_inventory: ../../schemas/research-tool-inventory.schema.json
+  research_memory_review: ../../schemas/research-memory-review.schema.json
+  failure_experience_lattice: ../../schemas/failure-experience-lattice.schema.json

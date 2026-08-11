@@ -3,6 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple
 
+from .math_context import (
+    REQUIRED_PRE_CANDIDATE_ACTIONS,
+    ContextGateReport,
+    ContextGateVerdict,
+    MathContextFiber,
+    audit_math_context_fiber,
+)
 from .math_research_assurance import (
     AssuranceReport,
     AssuranceVerdict,
@@ -22,6 +29,20 @@ from .problem_solving_algebra import (
     ResearchOperator,
     search_operator_paths,
 )
+from .research_memory import (
+    REQUIRED_MEMORY_ACTIONS,
+    ResearchMemoryReport,
+    ResearchMemoryReview,
+    ResearchMemoryVerdict,
+    audit_research_memory_review,
+)
+from .research_trace import (
+    REQUIRED_TRACE_ACTIONS,
+    MathResearchTrace,
+    ResearchTraceReport,
+    TraceGateVerdict,
+    audit_pre_candidate_trace,
+)
 
 
 @dataclass(frozen=True)
@@ -30,10 +51,39 @@ class MathResearchPlan:
     planning_state: ProblemState
     candidate_paths: Tuple[PathCandidate, ...]
     next_blockers: Tuple[ObstructionKind, ...]
+    context_gate: ContextGateReport
+    memory_gate: ResearchMemoryReport
+    trace_gate: ResearchTraceReport
+    pre_candidate_actions: Tuple[str, ...]
+    candidate_generation_allowed: bool
 
 
-def _facts_from_record(record: MathResearchRecord) -> frozenset[str]:
+def _facts_from_record(
+    record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
+    research_trace: MathResearchTrace | None = None,
+) -> frozenset[str]:
     facts: set[str] = set()
+    context_report = audit_math_context_fiber(context_fiber)
+    if context_report.verdict is ContextGateVerdict.PASS and context_fiber is not None:
+        facts.add("context_fiber_frozen")
+        facts.add("analogue_method_transfer_mapped")
+        facts.add("cross_domain_analogy_scan_complete")
+        memory_report = audit_research_memory_review(
+            memory_review,
+            atom_id=context_fiber.atom_id,
+            context_hash=context_fiber.packet_hash,
+        )
+        if memory_report.verdict is ResearchMemoryVerdict.PASS:
+            facts.add("success_and_failure_experience_reviewed")
+        trace_report = audit_pre_candidate_trace(
+            research_trace,
+            atom_id=context_fiber.atom_id,
+            context_packet_hash=context_fiber.packet_hash,
+        )
+        if trace_report.verdict is TraceGateVerdict.PASS:
+            facts.add("auditable_research_trace_complete")
     if record.computational_support:
         facts.add("counterexample_screen_complete")
     if record.formalization is not None:
@@ -71,9 +121,6 @@ def _obstructions_from_record(record: MathResearchRecord) -> frozenset[Obstructi
     if proof.verdict is not AssuranceVerdict.PASS:
         blockers.add(ObstructionKind.PROOF_GAP)
 
-    # Novelty and value are deliberately downstream of proof authority.  They
-    # remain visible as future blockers so the path planner can expose the full
-    # publication route, but cannot compensate for the proof blocker.
     novelty = audit_novelty(record.novelty)
     if novelty.stage is not MathClaimStage.VERIFIED_REDISCOVERY and novelty.verdict is not AssuranceVerdict.PASS:
         blockers.add(ObstructionKind.NOVELTY_GAP)
@@ -86,11 +133,14 @@ def derive_planning_state(
     *,
     signature: ProblemSignature,
     record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
+    research_trace: MathResearchTrace | None = None,
 ) -> ProblemState:
     return ProblemState(
         state_id=record.claim_id,
         signature=signature,
-        facts=_facts_from_record(record),
+        facts=_facts_from_record(record, context_fiber, memory_review, research_trace),
         obstructions=_obstructions_from_record(record),
     )
 
@@ -99,29 +149,103 @@ def plan_math_research(
     *,
     signature: ProblemSignature,
     record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
+    research_trace: MathResearchTrace | None = None,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
     top_k: int = 8,
 ) -> MathResearchPlan:
-    """Compile assurance status into obstruction-guided candidate research paths.
+    """Compile assurance status into obstruction-guided research paths.
 
-    The returned paths are planning objects only.  Canonical theorem/novelty
-    authority is still determined exclusively by ``classify_math_record``.
+    Candidate generation is fail-closed behind three discovery-process gates:
+
+    1. **Context gate** — understand the active atom across structural coordinates,
+       equivalent formulations, solved/near-solved analogues, method-transfer
+       assumptions/disanalogies and witnessed cross-domain analogy search.
+    2. **Experience-memory gate** — query both the scoped success-derived tool
+       inventory and global failure-experience lattice, recording applicable tools,
+       prior failure warnings, reuse scope/difference witnesses, and empty searches.
+    3. **Trace gate** — preserve the chronological public decision ledger including
+       atomization, context, analogy, expert review, experience-memory review and
+       the proposed next step before any candidate is generated.
+
+    These gates govern reproducible discovery, not theorem truth. Returned paths
+    remain planning objects only; theorem and novelty authority stay controlled by
+    the mathematical assurance layer.
     """
 
     assurance = classify_math_record(record)
-    state = derive_planning_state(signature=signature, record=record)
-    paths = search_operator_paths(
-        state,
-        operators,
-        max_depth=max_depth,
-        top_k=top_k,
+    context_gate = audit_math_context_fiber(context_fiber)
+
+    if context_gate.verdict is ContextGateVerdict.PASS and context_fiber is not None:
+        memory_gate = audit_research_memory_review(
+            memory_review,
+            atom_id=context_fiber.atom_id,
+            context_hash=context_fiber.packet_hash,
+        )
+    else:
+        memory_gate = ResearchMemoryReport(
+            ResearchMemoryVerdict.CANNOT_CHECK,
+            ("context_gate_must_pass_before_memory_gate",),
+        )
+
+    if (
+        context_gate.verdict is ContextGateVerdict.PASS
+        and memory_gate.verdict is ResearchMemoryVerdict.PASS
+        and context_fiber is not None
+    ):
+        trace_gate = audit_pre_candidate_trace(
+            research_trace,
+            atom_id=context_fiber.atom_id,
+            context_packet_hash=context_fiber.packet_hash,
+        )
+    else:
+        trace_gate = ResearchTraceReport(
+            TraceGateVerdict.CANNOT_CHECK,
+            ("context_and_memory_gates_must_pass_before_trace_gate",),
+        )
+
+    state = derive_planning_state(
+        signature=signature,
+        record=record,
+        context_fiber=context_fiber,
+        memory_review=memory_review,
+        research_trace=research_trace,
     )
+
+    if context_gate.verdict is not ContextGateVerdict.PASS:
+        paths: Tuple[PathCandidate, ...] = ()
+        pre_candidate_actions = REQUIRED_PRE_CANDIDATE_ACTIONS
+        candidate_generation_allowed = False
+    elif memory_gate.verdict is not ResearchMemoryVerdict.PASS:
+        paths = ()
+        pre_candidate_actions = REQUIRED_MEMORY_ACTIONS
+        candidate_generation_allowed = False
+    elif trace_gate.verdict is not TraceGateVerdict.PASS:
+        paths = ()
+        pre_candidate_actions = REQUIRED_TRACE_ACTIONS
+        candidate_generation_allowed = False
+    else:
+        paths = search_operator_paths(
+            state,
+            operators,
+            max_depth=max_depth,
+            top_k=top_k,
+        )
+        pre_candidate_actions = ()
+        candidate_generation_allowed = True
+
     return MathResearchPlan(
         assurance=assurance,
         planning_state=state,
         candidate_paths=paths,
         next_blockers=tuple(sorted(state.obstructions, key=lambda item: item.value)),
+        context_gate=context_gate,
+        memory_gate=memory_gate,
+        trace_gate=trace_gate,
+        pre_candidate_actions=pre_candidate_actions,
+        candidate_generation_allowed=candidate_generation_allowed,
     )
 
 
