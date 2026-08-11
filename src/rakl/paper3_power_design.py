@@ -77,7 +77,12 @@ def analytic_power_mean_ci_excludes_zero(
 
 
 def verify_public_annotation_directory(repo_root: Path) -> dict[str, Any]:
-    """Ensure the public annotation dir holds frozen inputs only."""
+    """Ensure the public annotation dir holds frozen inputs only.
+
+    Demoted AI_OPERATOR trees (explicit independent_external_human=false) may
+    live under a carved-out subdirectory; they are not public external-human
+    payloads and do not satisfy Constitution-grade #217 review.
+    """
     annotation_dir = repo_root / ANNOTATION_DIR
     if not annotation_dir.is_dir():
         raise ValueError(f"missing annotation directory: {annotation_dir}")
@@ -85,9 +90,18 @@ def verify_public_annotation_directory(repo_root: Path) -> dict[str, Any]:
     files: list[str] = []
     forbidden: list[str] = []
     unexpected: list[str] = []
+    demoted_ai_operator_dirs: list[str] = []
 
     for path in sorted(annotation_dir.iterdir()):
         if path.name.startswith("."):
+            continue
+        if path.is_dir():
+            if path.name == "ai_operator_v2_1":
+                demoted_ai_operator_dirs.append(
+                    path.relative_to(repo_root).as_posix()
+                )
+                continue
+            forbidden.append(str(path.relative_to(repo_root)))
             continue
         if not path.is_file():
             forbidden.append(str(path.relative_to(repo_root)))
@@ -109,6 +123,7 @@ def verify_public_annotation_directory(repo_root: Path) -> dict[str, Any]:
     return {
         "annotation_dir": str(ANNOTATION_DIR),
         "files_observed": files,
+        "demoted_ai_operator_dirs": demoted_ai_operator_dirs,
         "forbidden_payload_files": forbidden,
         "unexpected_files": unexpected,
         "verdict": "ZERO_PUBLIC_ANNOTATION_PAYLOADS" if ok else "FORBIDDEN_PAYLOAD_PRESENT",
@@ -126,6 +141,10 @@ def verify_issue_217_zero_public_responses(repo_root: Path) -> dict[str, Any]:
     for path in repo_root.rglob("*.json"):
         rel = path.relative_to(repo_root).as_posix()
         if "/paper3/annotation/" not in rel:
+            continue
+        # Demoted AI_OPERATOR payloads are operator-override compute enablers,
+        # not imported independent external-human responses for #217.
+        if "/ai_operator_v2_1/" in rel:
             continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
