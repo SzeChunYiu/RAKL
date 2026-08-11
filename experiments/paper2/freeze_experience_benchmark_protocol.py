@@ -44,11 +44,22 @@ PROTOCOL_SUBJECT_HASH_V1_3 = "ed116353230dc526fa45657d1a81afab26a460fe3b8411480a
 
 
 def _is_v1_3_family(benchmark_id: str) -> bool:
-    return benchmark_id.endswith("v1_3") or benchmark_id.endswith("v1_3_1")
+    return (
+        benchmark_id.endswith("v1_3")
+        or benchmark_id.endswith("v1_3_1")
+        or benchmark_id.endswith("v1_3_2")
+    )
 
 
 def _is_v1_3_1(benchmark_id: str) -> bool:
     return benchmark_id.endswith("v1_3_1")
+
+
+def _is_v1_3_2(benchmark_id: str) -> bool:
+    return benchmark_id.endswith("v1_3_2")
+
+
+PROTOCOL_SUBJECT_HASH_V1_3_1 = "61b9fd42f2a58713f04de1e6a170a0e233beeb057c38f01939e384b7b4cb2bc3"
 
 
 def _load_json(path: Path) -> dict:
@@ -173,11 +184,14 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
     protocol_subject_hash = benchmark_protocol_subject_hash(packet)
 
     issue = 247 if _is_v1_3_family(benchmark_id) else 138
-    section = (
-        "PHASE1_ORACLE_1_5B"
-        if _is_v1_3_1(benchmark_id)
-        else ("PHASE0_1_ORACLE_FIRST" if _is_v1_3_family(benchmark_id) else "B1")
-    )
+    if _is_v1_3_2(benchmark_id):
+        section = "PHASE1_ORACLE_3B"
+    elif _is_v1_3_1(benchmark_id):
+        section = "PHASE1_ORACLE_1_5B"
+    elif _is_v1_3_family(benchmark_id):
+        section = "PHASE0_1_ORACLE_FIRST"
+    else:
+        section = "B1"
     arms = (
         [
             "ORACLE_PROCEDURE_UPPER_BOUND",
@@ -190,7 +204,34 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         else ["RESET_BASELINE", "LEARNING_ENABLED"]
     )
     learning_loop_mode = "root_cause_v1" if _is_v1_3_family(benchmark_id) else "legacy_v1_2"
-    if _is_v1_3_1(benchmark_id):
+    if _is_v1_3_2(benchmark_id):
+        primary_execution = {
+            "first_job_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
+            "first_job_scope": "FRESH_TRANSFER_ONLY",
+            "oracle_pass_min_success_rate": 2.0 / 3.0,
+            "model_scale": "Qwen2.5-3B-Instruct",
+            "forbid_1_5B_until_oracle_gate": False,
+            "forbid_scale_only_difference_witness_on_v1_2": True,
+            "parent_1_5B_oracle_floor_job": "3476756",
+            "parent_1_5B_oracle_verdict": "MODEL_CAPABILITY_FLOOR_1_5B",
+            "parent_1_5B_instrument_defect_job": "3476742",
+            "parent_0_5B_oracle_floor_jobs": ["3476730", "3476731"],
+            "parent_0_5B_oracle_verdict": "MODEL_CAPABILITY_FLOOR_0_5B",
+            "preregistered_escalation": "3B+",
+        }
+        parent_negative_history = {
+            "parent_packet": "paper2-experience-benchmark-v1_3_1",
+            "parent_job_id": "3476756",
+            "parent_instrument_defect_job_id": "3476742",
+            "parent_protocol_subject_hash": PROTOCOL_SUBJECT_HASH_V1_3_1,
+            "parent_scientific_verdict": "MODEL_CAPABILITY_FLOOR_1_5B",
+            "reopen_issue_138": False,
+            "reinterpret_as_lift": False,
+            "not_scale_only_escape_from_v1_2": True,
+            "v1_2_parent_job_id": "3476548",
+            "v1_3_0_5B_floor_jobs": ["3476730", "3476731"],
+        }
+    elif _is_v1_3_1(benchmark_id):
         primary_execution = {
             "first_job_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
             "first_job_scope": "FRESH_TRANSFER_ONLY",
@@ -326,7 +367,24 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         # Preserve historical freeze field set for v1/v1.1 check-only.
         del freeze_packet["learning_loop_mode"]
 
-    if _is_v1_3_1(benchmark_id):
+    if _is_v1_3_2(benchmark_id):
+        next_compute_step = (
+            "On LUNARC FS9 Paper-II checkout at exact origin/main: stage Qwen2.5-3B-Instruct "
+            "then submit ORACLE_PROCEDURE_UPPER_BOUND @ 3B on FRESH_TRANSFER only "
+            "(learning_loop_mode=root_cause_v1; staged assets paper2-model-qwen25-3b-v1). "
+            "Parent is floored v1.3_1 1.5B ORACLE (3476756); keep 3476742 as INSTRUMENT_DEFECT. "
+            "Do not submit learning/architecture staircase until ORACLE passes. "
+            "Do not reopen #138. No promotional lift claims. Do not overwrite v1.3_1 history."
+        )
+        forbidden_extra = [
+            "scale-only DifferenceWitness reusing broken v1.2 learning loop",
+            "claim learning lift from 3B ORACLE alone",
+            "submit RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL before 3B ORACLE gate",
+            "reopen #138 or reinterpret jobs 3476548/3476730/3476731/3476756 as lift",
+            "overwrite or rewrite v1.3_1 / 3476742 negative history",
+            "reuse V4.3/V4.3.1/V4.4 pendulum scores as ExperienceBenchmark evidence",
+        ]
+    elif _is_v1_3_1(benchmark_id):
         next_compute_step = (
             "On LUNARC FS9 Paper-II checkout at exact origin/main: submit "
             "ORACLE_PROCEDURE_UPPER_BOUND @ Qwen2.5-1.5B on FRESH_TRANSFER only "
@@ -434,6 +492,8 @@ def main() -> int:
     _refuse_if_results_present(packet_dir)
     if args.benchmark_id:
         benchmark_id = args.benchmark_id
+    elif packet_dir.name.endswith("v1_3_2"):
+        benchmark_id = "paper2-experience-benchmark-v1_3_2"
     elif packet_dir.name.endswith("v1_3_1"):
         benchmark_id = "paper2-experience-benchmark-v1_3_1"
     elif packet_dir.name.endswith("v1_3"):
@@ -446,6 +506,8 @@ def main() -> int:
         benchmark_id = "paper2-experience-benchmark-v1"
     if args.frozen_at:
         frozen_at = args.frozen_at
+    elif _is_v1_3_2(benchmark_id):
+        frozen_at = "2026-08-11T22:15:00Z"
     elif _is_v1_3_1(benchmark_id):
         frozen_at = "2026-08-11T21:30:00Z"
     elif _is_v1_3_family(benchmark_id):

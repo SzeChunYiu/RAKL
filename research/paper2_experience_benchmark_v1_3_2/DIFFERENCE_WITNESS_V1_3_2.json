@@ -1,0 +1,53 @@
+{
+  "challenger_packet": "paper2-experience-benchmark-v1_3_2",
+  "challenger_protocol_subject_hash": "c8afd4ca39ff2e4abce968a53bf52dab3854ebbb97ff0e73c3b151f1a42d27e8",
+  "cheapest_test_that_difference_is_illusory": "Run Phase-1 3B ORACLE FRESH_TRANSFER-only under the same root_cause_v1 gate and #343 schema. If parse-valid success_rate < 2/3, MODEL_CAPABILITY_FLOOR_3B. If INSTRUMENT_DEFECT, repair harness before any architecture arms.",
+  "difference_witness_id": "PAPER2_EXPERIENCE_V1_3_2_ORACLE_3B_FROM_FLOORED_1_5B",
+  "explicitly_not_scale_only_escape_from_v1_2": true,
+  "issue": 247,
+  "learning_staircase_authorized": false,
+  "paper3_issue_217_path": false,
+  "parent_instrument_defect_job_id": "3476742",
+  "parent_job_id": "3476756",
+  "parent_packet": "paper2-experience-benchmark-v1_3_1",
+  "parent_protocol_subject_hash": "61b9fd42f2a58713f04de1e6a170a0e233beeb057c38f01939e384b7b4cb2bc3",
+  "parent_scientific_verdict": "MODEL_CAPABILITY_FLOOR_1_5B",
+  "preregistered_escalation_source": "research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md remaining moves are 3B+",
+  "promotional_lift_claim_allowed": false,
+  "reinterpret_parent_job_3476548_as_lift": false,
+  "reinterpret_parent_job_3476756_as_lift": false,
+  "reopen_issue_138": false,
+  "restored_or_replaced_assumptions": [
+    {
+      "broken_in_parent": "1.5B Instruct capacity under ORACLE_PROCEDURE_UPPER_BOUND (MODEL_CAPABILITY_FLOOR_1_5B on 3476756; parse-valid 3/3)",
+      "repair": "Same ORACLE gate/protocol/schema at Qwen2.5-3B-Instruct; not a learning-loop change; not an instrument rewrite of 3476742"
+    }
+  ],
+  "scale_change_from_floored_1_5B_oracle": true,
+  "scale_only_witness_forbidden_reason": "v1.2 job 3476548 remains unreinterpretable as lift; RC1/RC2 were repaired in v1.3 before prior scale steps. This witness records model-scale change FROM floored 1.5B ORACLE only, following the preregistered 3B+ escalation rule.",
+  "schema_version": "paper2-experience-benchmark-difference-witness-v1",
+  "v4_1_score_reuse_allowed": false,
+  "v4_3_pendulum_score_reuse_allowed": false,
+  "what_changed": [
+    "model_scale Qwen2.5-1.5B-Instruct -> Qwen2.5-3B-Instruct",
+    "model_revision 989aa7980e4cf806f80c7fef2b1adb7bc71aa306 -> aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "snapshot_path -> assets/paper2-model-qwen25-3b-v1 staged identity",
+    "model_manifest_path -> research/paper2_experience_benchmark_v1_3_2/MODEL_MANIFEST_3B.json",
+    "resource_ceiling_id label EXPERIENCE_V1_Qwen2.5-3B_CPU (token ceilings unchanged)"
+  ],
+  "what_did_not_change": [
+    "learning_loop_mode=root_cause_v1",
+    "diagnostic_arm ORACLE_PROCEDURE_UPPER_BOUND",
+    "FRESH_TRANSFER-only Phase-1 scope (T1/T2/T3)",
+    "OUTPUT_SCHEMA enum and JSON skeleton prompt contract",
+    "PR #343 rejected_evidence_ids string-array / object-unwrap interface",
+    "EVALUATOR_PROTOCOL scoring thresholds",
+    "task sealed answers D1\u2013D3/T1\u2013T3 bytes",
+    "SYSTEM_PROMPT.txt bytes",
+    "initial S0 schema",
+    "oracle_pass_min_success_rate 2/3 with parse-validity guard",
+    "issue ownership #247; #138 stays closed",
+    "immutable v1.3_1 / 3476742 / 3476756 negative history"
+  ],
+  "why_old_falsifier_may_no_longer_apply": "Parent falsifier was 1.5B ORACLE success_rate < 2/3 with parse-valid outputs. Larger Instruct snapshot may clear that capability floor without claiming learning efficacy."
+}
