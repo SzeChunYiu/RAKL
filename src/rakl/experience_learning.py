@@ -60,6 +60,17 @@ def _episode_map(ledger: ExperienceLedger) -> dict[str, TaskEpisode]:
     return {episode.episode_id: episode for episode in ledger.episodes}
 
 
+def _positive_evidence_ids(evidence: LessonConsolidationEvidence) -> Tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(
+            evidence.supporting_episode_ids
+            + evidence.diagnostic_episode_ids
+            + evidence.replay_episode_ids
+            + evidence.fresh_transfer_episode_ids
+        )
+    )
+
+
 def assess_lesson_consolidation(
     ledger: ExperienceLedger,
     candidate: Lesson,
@@ -79,12 +90,13 @@ def assess_lesson_consolidation(
     referenced |= set(evidence.replay_episode_ids)
     referenced |= set(evidence.fresh_transfer_episode_ids)
     missing = referenced - set(episodes)
+    positive_ids = _positive_evidence_ids(evidence)
     if missing:
         return LessonConsolidationReport(
             ConsolidationVerdict.CANNOT_CHECK,
             LessonAuthority.CANDIDATE,
             tuple(f"unknown_episode:{item}" for item in sorted(missing)),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
     if set(candidate.supporting_episode_ids) - set(evidence.supporting_episode_ids):
@@ -92,7 +104,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.CANNOT_CHECK,
             LessonAuthority.CANDIDATE,
             ("candidate_support_not_covered_by_consolidation_packet",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
     if not evidence.supporting_episode_ids:
@@ -114,7 +126,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.CONTRADICTED,
             LessonAuthority.VERIFIED_LOCAL if evidence.verification_artifact_ids else LessonAuthority.CANDIDATE,
             tuple(f"fresh_transfer_failed:{item}" for item in failed_transfer),
-            evidence.supporting_episode_ids,
+            positive_ids,
             tuple(dict.fromkeys(evidence.contradicting_episode_ids + failed_transfer)),
         )
 
@@ -124,14 +136,14 @@ def assess_lesson_consolidation(
                 ConsolidationVerdict.CANNOT_CHECK,
                 LessonAuthority.CANDIDATE,
                 ("proof_backing_without_registered_verification_artifact",),
-                evidence.supporting_episode_ids,
+                positive_ids,
                 evidence.contradicting_episode_ids,
             )
         return LessonConsolidationReport(
             ConsolidationVerdict.PROOF_BACKED,
             LessonAuthority.PROOF_BACKED,
             ("registered proof backing and verification support the scoped lesson",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
 
@@ -140,7 +152,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.CANDIDATE_ONLY,
             LessonAuthority.CANDIDATE,
             ("reflection_or_outcome_pattern_observed_without_external_verification",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
 
@@ -149,7 +161,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.VERIFIED_LOCAL,
             LessonAuthority.VERIFIED_LOCAL,
             ("lesson verified in source/replay scope but fresh transfer is absent",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
 
@@ -163,7 +175,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.VERIFIED_LOCAL,
             LessonAuthority.VERIFIED_LOCAL,
             ("fresh transfer is not uniformly successful; retain local authority and refine boundary",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
     if evidence.evaluator_separated is not True:
@@ -171,7 +183,7 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.CANNOT_CHECK,
             LessonAuthority.VERIFIED_LOCAL,
             ("fresh_transfer_evaluator_not_separated",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
     if evidence.evidence_lineage_independent is not True:
@@ -179,14 +191,14 @@ def assess_lesson_consolidation(
             ConsolidationVerdict.CANNOT_CHECK,
             LessonAuthority.VERIFIED_LOCAL,
             ("fresh_transfer_evidence_lineage_not_independent",),
-            evidence.supporting_episode_ids,
+            positive_ids,
             evidence.contradicting_episode_ids,
         )
     return LessonConsolidationReport(
         ConsolidationVerdict.CONDITIONALLY_REUSABLE,
         LessonAuthority.CONDITIONALLY_REUSABLE,
         ("verified source lesson transferred successfully to fresh independent evidence",),
-        evidence.supporting_episode_ids,
+        positive_ids,
         evidence.contradicting_episode_ids,
     )
 
@@ -207,7 +219,7 @@ def promoted_lesson_version(
         candidate,
         lesson_id=new_lesson_id,
         authority=report.target_authority,
-        supporting_episode_ids=tuple(dict.fromkeys(evidence.supporting_episode_ids)),
+        supporting_episode_ids=report.supporting_episode_ids,
         contradicting_episode_ids=tuple(dict.fromkeys(report.contradicting_episode_ids)),
         evidence_pointers=tuple(dict.fromkeys(candidate.evidence_pointers + evidence.verification_artifact_ids + evidence.proof_certificate_ids)),
         artifact_hash=artifact_hash,
