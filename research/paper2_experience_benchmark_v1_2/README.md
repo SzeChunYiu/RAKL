@@ -1,6 +1,6 @@
 # Paper II — ExperienceBenchmark v1.2 (JSON-skeleton prompt repair)
 
-Status: `PROTOCOL_FROZEN_AWAITING_EXECUTION` / `NO_EMPIRICAL_RESULT`
+Status: `EXECUTED_NEGATIVE_NO_SUCCESS_LIFT` / job **3476548**
 
 ## Why v1.2 exists
 
