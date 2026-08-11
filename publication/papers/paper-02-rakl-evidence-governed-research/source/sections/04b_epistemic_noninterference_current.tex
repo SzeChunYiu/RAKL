@@ -6,10 +6,43 @@ The v3 experience substrate is designed to change future search behaviour withou
 \]
 unless the sequence contains a separately registered evidence-bearing promotion transition.  The invariant is not monotonicity: refutation may legitimately revoke active authority while preserving the historical certificate and challenge record.
 
-The executable checker in \path{src/rakl/epistemic_noninterference.py} distinguishes scientific authority from computational access, retrieval priority, proposal probability, strategy preference, lesson reuse and scientific-evidence identity.  Its planted hostile worlds cover experience-to-evidence leakage, repetition-to-authority, routing-to-authority, reflection-to-authority, failure-to-impossibility, provenance-to-independence, prediction-to-mechanism, mechanism-to-identification, workspace-to-authority and self-evolution-to-authority.  Benign controls verify both that non-authority state can actually move and that a legal evidence-bearing promotion can still change authority.  Mutation tests reject trivial checkers that always pass, always fail, or relabel the absence of an integration surface as success.
+The executable checker in
+\path{src/rakl/epistemic_noninterference.py}
+distinguishes scientific authority from computational access, retrieval
+priority, proposal probability, strategy preference, lesson reuse and
+scientific-evidence identity.  Its planted hostile worlds cover
+experience-to-evidence leakage, repetition-to-authority,
+routing-to-authority, reflection-to-authority, failure-to-impossibility,
+provenance-to-independence, prediction-to-mechanism,
+mechanism-to-identification, workspace-to-authority and
+self-evolution-to-authority.  Benign controls verify both that
+non-authority state can actually move and that a legal evidence-bearing
+promotion can still change authority.  Mutation tests reject trivial
+checkers that always pass, always fail, or relabel the absence of an
+integration surface as success.
 
-At the present evidence cutoff the result is deliberately narrower than a deployment guarantee.  \texttt{RAKLV3State} composes the experience substrate but does not yet compose \texttt{AuthorityLedger} or a persistent canonical scientific-state store.  The checker therefore reports \texttt{NO\_INTEGRATION\_SURFACE}, not \texttt{PASS}, for the full v3 runtime.  This means the architecture specifies and tests the intended boundary at the integration interface; it does not yet demonstrate end-to-end enforcement across one composed experience-plus-scientific-authority state machine.
+At the present evidence cutoff the result is deliberately narrower than a
+deployment guarantee.  \texttt{RAKLV3State} composes the experience
+substrate but does not yet compose \texttt{AuthorityLedger} or a
+persistent canonical scientific-state store.  The checker therefore
+reports \path{NO_INTEGRATION_SURFACE}, not \texttt{PASS}, for the full
+v3 runtime.  This means the architecture specifies and tests the intended
+boundary at the integration interface; it does not yet demonstrate
+end-to-end enforcement across one composed experience-plus-scientific-authority
+state machine.
 
-The audit also exposed a concrete future hazard: the read-only unified substrate can materialize several distinct authority-like notions into generic metadata even though lesson authority, tool authority, projection authority and scientific authority are not interchangeable.  Any future composition that reads such metadata as one scalar authority would violate the type discipline.  This is why the noninterference contract is retained as an executable integration obligation rather than described only in prose.
+The audit also exposed a concrete future hazard: the read-only unified
+substrate can materialize several distinct authority-like notions into
+generic metadata even though lesson authority, tool authority, projection
+authority and scientific authority are not interchangeable.  Any future
+composition that reads such metadata as one scalar authority would violate
+the type discipline.  This is why the noninterference contract is retained
+as an executable integration obligation rather than described only in prose.
 
-V3 additionally separates retained experience from canonical admission.  A \texttt{TaskEpisode} may be preserved as \texttt{PROPOSAL\_SHADOW\_STORED} without satisfying the stronger \texttt{CANONICAL\_INVENTORY\_ADMITTED} gate, and protected consumers fail closed if a shadow object is presented as canonical inventory.  This makes persistence itself non-authoritative: storing a trajectory is not the same operation as admitting it to a protected scientific or method inventory.
+V3 additionally separates retained experience from canonical admission.  A
+\texttt{TaskEpisode} may be preserved as \path{PROPOSAL_SHADOW_STORED}
+without satisfying the stronger \path{CANONICAL_INVENTORY_ADMITTED} gate,
+and protected consumers fail closed if a shadow object is presented as
+canonical inventory.  This makes persistence itself non-authoritative:
+storing a trajectory is not the same operation as admitting it to a
+protected scientific or method inventory.
