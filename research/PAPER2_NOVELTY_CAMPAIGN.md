@@ -359,7 +359,7 @@ needed to enforce that separation measurably matter?
 |---|---|---|---|---|
 | **#154** | V2 twin panel + degeneracy gate (#267); neighbour residual audit receipt | No model baselines | **No** | Full-text parent coding/rubric reads still pending for 2604.18805 / 2605.10246; ALR/valid-upgrade from evaluated runs; subjective annotation or development-only mark |
 | **#155** | 2×2 preregistration + G1/G2 schema (#273) | No cells executed | **No** | Blocked on #238/#247 discriminative learning + capability; #154 scored ALR; execution coords still `PENDING_FREEZE_*` |
-| **#156** | Function matrix + A0–A7 ladder (#275); **A3↔A4 cheap conformance receipt** | No matched empirical ablations | **No** | Resolve AutoSci/`CANNOT_CHECK` rows; run matched A3 vs A4 benefit/cost with uncertainty after #247/#154/#155 |
+| **#156** | Function matrix + ladder (#275); A3↔A4 conformance (#300); **matched empirical packet+runner frozen** | Packet `EMPIRICS_UNRUN`; no model arm scores | **No** | AutoSci/`CANNOT_CHECK` disposition; model/policy responder payloads for benefit/cost + uncertainty |
 | **#157** | Experience→method preregistration draft + v2 schema | No arms executed | **No** | Same upstream blockers as #155; freeze assurance panel hashes before any promotion claim |
 | **#158** | Coordination doc | Campaign incomplete | **No** | Umbrella stays open until child empirics + #257 manuscript promotion gates clear |
 | **#152** | Noninterference surface (prior) | Conformance/hostile suites exist | Track separately | Integrated surface required before governance empirics |
