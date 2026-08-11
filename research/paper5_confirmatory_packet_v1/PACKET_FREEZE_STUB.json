@@ -1,0 +1,75 @@
+{
+  "artifact_status": {
+    "DEVELOPMENT_MANIFEST.json": "MISSING",
+    "EVALUATOR_BINDING.json": "MISSING",
+    "EXECUTOR_MANIFEST.json": "MISSING",
+    "FREEZE_RECEIPT.json": "MISSING",
+    "INFERENCE_PLAN.json": "DESIGN_ONLY",
+    "INITIAL_STATE_S0.json": "MISSING",
+    "LEARNED_STATE_MANIFEST.json": "MISSING",
+    "MODEL_CONFIG.json": "MISSING",
+    "OUTPUT_SCHEMA.json": "DESIGN_ONLY",
+    "PACKET_MANIFEST.json": "STUB",
+    "PREREGISTRATION.md": "DESIGN_ONLY",
+    "RANDOMIZATION_SCHEDULE.json": "MISSING",
+    "RESOURCE_CEILING.json": "MISSING",
+    "SHAM_POLICY.json": "MISSING",
+    "TASKS.json": "MISSING",
+    "TOOL_POLICY.json": "MISSING",
+    "provider_adapter": "MISSING"
+  },
+  "blockers": [
+    {
+      "class": "LEARNING_SEMANTICS",
+      "detail": "Do not freeze a confirmatory packet on the known ExperienceBenchmark v1.2 pseudo-lesson / whole-state-dump learning semantics. Upstream repair remains open on #238.",
+      "id": "issue-238-learning-loop"
+    },
+    {
+      "class": "MODEL_CAPABILITY_GATE",
+      "detail": "Primary confirmatory model must be selected by the frozen capability-floor rule from #247 before any four-arm outcomes. No model revision is frozen in this stub.",
+      "id": "issue-247-capability-staircase"
+    },
+    {
+      "class": "PROVIDER_ADAPTER",
+      "detail": "Environment-specific executor adapter bytes are not frozen. Harness self-test adapter is explicitly non-scientific and cannot be pointed at a real packet.",
+      "id": "provider-adapter-missing"
+    },
+    {
+      "class": "TASK_PACKET",
+      "detail": "Power-sized task panel, sham policy, per-arm state hashes, resource ceiling, and randomization schedule are not frozen.",
+      "id": "task-sham-state-freeze-missing"
+    },
+    {
+      "class": "LUNARC_COMPUTE",
+      "detail": "Confirmatory four-arm execution requires LUNARC/HPC resources for the registered task×arm×repetition schedule. No confirmatory job is authorized by this stub.",
+      "id": "lunarc-four-arm-resources"
+    }
+  ],
+  "claim_boundary": "Freeze-stub inventory only. Status is NOT_CONFIRMATORY_PACKET_FROZEN_AND_EXECUTABLE. Zero confirmatory outcomes may be opened from this packet. Grants no scientific authority. Design text in experiments/paper5/ATTRIBUTION_PREREGISTRATION_V1.md remains a frozen design proposal, not a completed packet identity.",
+  "evaluated_results_accessed": false,
+  "grants_scientific_authority": false,
+  "handoff_status": "NOT_CONFIRMATORY_PACKET_FROZEN_AND_EXECUTABLE",
+  "issue": 250,
+  "packet_id": "paper5-confirmatory-four-arm-v1-STUB",
+  "required_artifacts": [
+    "PREREGISTRATION.md",
+    "PACKET_MANIFEST.json",
+    "TASKS.json",
+    "DEVELOPMENT_MANIFEST.json",
+    "MODEL_CONFIG.json",
+    "RESOURCE_CEILING.json",
+    "TOOL_POLICY.json",
+    "OUTPUT_SCHEMA.json",
+    "EVALUATOR_BINDING.json",
+    "SHAM_POLICY.json",
+    "INITIAL_STATE_S0.json",
+    "LEARNED_STATE_MANIFEST.json",
+    "RANDOMIZATION_SCHEDULE.json",
+    "INFERENCE_PLAN.json",
+    "EXECUTOR_MANIFEST.json",
+    "FREEZE_RECEIPT.json",
+    "provider_adapter"
+  ],
+  "schema_version": "paper5-confirmatory-packet-freeze-stub-v1",
+  "status": "BLOCKED_AWAITING_UPSTREAM"
+}

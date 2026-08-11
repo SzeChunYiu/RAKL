@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-longitudinal-coverage-observation-v1.schema.json",
+  "title": "Paper 5 longitudinal coverage observation",
+  "description": "Receipt for a read-only harvest of RAKL_math cycle-metrology blobs. Observation only: does not authorize pooled retained-growth curves, manuscript result ingest, or scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "observation_id",
+    "observed_at_utc",
+    "source_repository",
+    "source_checkout_sha",
+    "harvester_version",
+    "harvester_path",
+    "universe_path",
+    "universe_sha256",
+    "coverage_report",
+    "at_risk_ref_count",
+    "status",
+    "comparable_across_declared_versions",
+    "grants_scientific_authority",
+    "claim_boundary",
+    "blocking_residuals"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-longitudinal-coverage-observation-v1"},
+    "observation_id": {"type": "string", "minLength": 1},
+    "observed_at_utc": {"type": "string", "minLength": 1},
+    "source_repository": {"const": "SzeChunYiu/RAKL_math"},
+    "source_checkout_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "harvester_version": {"type": "string", "minLength": 1},
+    "harvester_path": {"type": "string", "minLength": 1},
+    "universe_path": {"type": "string", "minLength": 1},
+    "universe_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "coverage_report": {"type": "object"},
+    "at_risk_ref_count": {"type": "integer", "minimum": 0},
+    "status": {"const": "COVERAGE_OBSERVATION_ONLY"},
+    "comparable_across_declared_versions": {"const": false},
+    "grants_scientific_authority": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "blocking_residuals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

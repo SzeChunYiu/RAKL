@@ -1,0 +1,64 @@
+{
+  "adjudication_present": false,
+  "annotator_responses_present": false,
+  "artifact_status": {
+    "ADJUDICATION.json": "MISSING",
+    "ANNOTATOR_A_RESPONSE.json": "MISSING",
+    "ANNOTATOR_B_RESPONSE.json": "MISSING",
+    "AUDIT_ANALYSIS.json": "MISSING",
+    "AUDIT_PROTOCOL.md": "DESIGN_ONLY",
+    "AUDIT_UNIVERSE_MANIFEST.json": "MISSING",
+    "FINAL_AUDIT_RECEIPT.json": "MISSING",
+    "PRECISION_POWER_RECEIPT.json": "MISSING",
+    "PRE_ADJUDICATION_AGREEMENT.json": "MISSING",
+    "PROVENANCE_AUDIT_PUBLIC_RECEIPT.json": "MISSING",
+    "PUBLIC_AUDIT_PACKET.json": "MISSING",
+    "SAMPLE_PLAN.json": "MISSING",
+    "ZERO_EXTERNAL_NOVELTY_LABELS.json": "MISSING"
+  },
+  "audit_id": "paper5-retained-novelty-audit-v1-STUB",
+  "blockers": [
+    {
+      "class": "HUMAN_ANNOTATORS",
+      "detail": "Independent annotator A, annotator B, distinct adjudicator, and provenance auditor are not available. Same-session AI roleplay is not independent review and must not mint construct-validity evidence.",
+      "id": "human-role-separation"
+    },
+    {
+      "class": "AUDIT_UNIVERSE",
+      "detail": "Audit universe cannot be frozen until #253 produces a durable, version-comparable retained-growth event table. Current longitudinal harvest is coverage-observation only with heterogeneous schema versions.",
+      "id": "audit-universe-not-frozen"
+    },
+    {
+      "class": "RELATED_ISSUE",
+      "detail": "External human review/annotation capacity is the same blocker class as #217; do not fabricate responses to close this issue.",
+      "id": "related-human-blocker-217"
+    }
+  ],
+  "claim_boundary": "Protocol/inventory stub only. Internally classified retained-novelty counts remain INTERNAL_METROLOGY. No precision, false-collapse, or axis-validity claim is authorized. Annotator responses and adjudication are absent by construction.",
+  "grants_scientific_authority": false,
+  "human_roles_required": [
+    "annotator_A",
+    "annotator_B",
+    "adjudicator",
+    "provenance_auditor"
+  ],
+  "issue": 255,
+  "protocol_path": "experiments/paper5/NOVELTY_AUDIT_PROTOCOL_V1.md",
+  "required_artifacts": [
+    "AUDIT_PROTOCOL.md",
+    "AUDIT_UNIVERSE_MANIFEST.json",
+    "SAMPLE_PLAN.json",
+    "PRECISION_POWER_RECEIPT.json",
+    "ZERO_EXTERNAL_NOVELTY_LABELS.json",
+    "PUBLIC_AUDIT_PACKET.json",
+    "ANNOTATOR_A_RESPONSE.json",
+    "ANNOTATOR_B_RESPONSE.json",
+    "PRE_ADJUDICATION_AGREEMENT.json",
+    "ADJUDICATION.json",
+    "PROVENANCE_AUDIT_PUBLIC_RECEIPT.json",
+    "AUDIT_ANALYSIS.json",
+    "FINAL_AUDIT_RECEIPT.json"
+  ],
+  "schema_version": "paper5-novelty-audit-freeze-stub-v1",
+  "status": "AWAITING_HUMAN_ANNOTATORS"
+}

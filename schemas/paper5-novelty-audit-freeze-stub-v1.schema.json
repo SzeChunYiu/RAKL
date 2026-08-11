@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-novelty-audit-freeze-stub-v1.schema.json",
+  "title": "Paper 5 retained-novelty audit freeze stub",
+  "description": "Protocol/inventory stub for the independent retained-novelty audit (#255). Does not create annotator responses, adjudication, or construct-validity claims. Same-session AI roleplay is not independent review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit_id",
+    "issue",
+    "status",
+    "protocol_path",
+    "required_artifacts",
+    "artifact_status",
+    "blockers",
+    "human_roles_required",
+    "grants_scientific_authority",
+    "claim_boundary",
+    "annotator_responses_present",
+    "adjudication_present"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-novelty-audit-freeze-stub-v1"},
+    "audit_id": {"type": "string", "minLength": 1},
+    "issue": {"const": 255},
+    "status": {
+      "enum": [
+        "PROTOCOL_STUB_ONLY",
+        "AWAITING_HUMAN_ANNOTATORS",
+        "POWER_OR_PRECISION_LIMITED"
+      ]
+    },
+    "protocol_path": {"type": "string", "minLength": 1},
+    "required_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "artifact_status": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "enum": ["MISSING", "DESIGN_ONLY", "STUB", "FROZEN", "BLOCKED"]
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "class", "detail"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "class": {
+            "enum": [
+              "HUMAN_ANNOTATORS",
+              "AUDIT_UNIVERSE",
+              "SAMPLE_PLAN",
+              "ROLE_SEPARATION",
+              "RELATED_ISSUE"
+            ]
+          },
+          "detail": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "human_roles_required": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "enum": [
+          "annotator_A",
+          "annotator_B",
+          "adjudicator",
+          "provenance_auditor"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "grants_scientific_authority": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "annotator_responses_present": {"const": false},
+    "adjudication_present": {"const": false}
+  }
+}
