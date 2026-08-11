@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-sham-policy-v1.schema.json",
+  "title": "Paper 5 active sham-memory construction policy v1",
+  "description": "Frozen construction algorithm identity for the RAKL_SHAM_MEMORY arm (ATTRIBUTION_PREREGISTRATION_V1 §4). Binds algorithm + seed + matching tolerances before any confirmatory four-arm outcome is opened. Grants no scientific authority and does not authorize confirmatory execution by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_id",
+    "algorithm_id",
+    "algorithm_version",
+    "construction_seed",
+    "object_types",
+    "selection_rule",
+    "budget_matching",
+    "leakage_audit",
+    "forbidden_mechanisms",
+    "claim_boundary",
+    "grants_scientific_authority",
+    "authorizes_confirmatory_execution",
+    "evaluated_results_accessed",
+    "preregistration_path",
+    "matcher_module",
+    "policy_canonical_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-sham-policy-v1"},
+    "policy_id": {"type": "string", "minLength": 1},
+    "algorithm_id": {"type": "string", "minLength": 1},
+    "algorithm_version": {"type": "string", "minLength": 1},
+    "construction_seed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Frozen PRNG seed for reproducible sham construction. Changing the seed changes policy identity."
+    },
+    "object_types": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["episode", "failure", "lesson", "tool", "motif"]
+      }
+    },
+    "selection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mechanism",
+        "require_disjoint_family",
+        "require_structural_incompatibility",
+        "preserve_source_lineage_ids",
+        "forbid_target_answer_fields",
+        "forbid_eligible_true_match_signatures"
+      ],
+      "properties": {
+        "mechanism": {
+          "const": "matched_irrelevant_disjoint_family",
+          "description": "Primary sham mechanism: select controls from disjoint families under a frozen rule while matching budgets. Not gibberish-only."
+        },
+        "require_disjoint_family": {"type": "boolean", "const": true},
+        "require_structural_incompatibility": {"type": "boolean", "const": true},
+        "preserve_source_lineage_ids": {"type": "boolean", "const": true},
+        "forbid_target_answer_fields": {"type": "boolean", "const": true},
+        "forbid_eligible_true_match_signatures": {"type": "boolean", "const": true}
+      }
+    },
+    "budget_matching": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "match_object_count",
+        "match_type_histogram",
+        "token_budget_rel_tolerance",
+        "token_budget_abs_tolerance",
+        "recency_rank_abs_tolerance",
+        "report_mismatch_as_limitation"
+      ],
+      "properties": {
+        "match_object_count": {"type": "boolean", "const": true},
+        "match_type_histogram": {"type": "boolean", "const": true},
+        "token_budget_rel_tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Relative |sham_tokens - learned_tokens| / max(learned_tokens,1) allowed before hard fail."
+        },
+        "token_budget_abs_tolerance": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Absolute token difference allowed in addition to relative tolerance."
+        },
+        "recency_rank_abs_tolerance": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Allowed mean absolute recency-rank difference across matched objects."
+        },
+        "report_mismatch_as_limitation": {"type": "boolean", "const": true}
+      }
+    },
+    "leakage_audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reject_answer_substring_overlap",
+        "reject_solution_artifact_ids",
+        "reject_eligible_structural_signature_overlap",
+        "reject_gibberish_only_controls",
+        "min_content_token_length"
+      ],
+      "properties": {
+        "reject_answer_substring_overlap": {"type": "boolean", "const": true},
+        "reject_solution_artifact_ids": {"type": "boolean", "const": true},
+        "reject_eligible_structural_signature_overlap": {"type": "boolean", "const": true},
+        "reject_gibberish_only_controls": {"type": "boolean", "const": true},
+        "min_content_token_length": {"type": "integer", "minimum": 1}
+      }
+    },
+    "forbidden_mechanisms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "grants_scientific_authority": {"const": false},
+    "authorizes_confirmatory_execution": {"const": false},
+    "evaluated_results_accessed": {"const": false},
+    "preregistration_path": {
+      "const": "experiments/paper5/ATTRIBUTION_PREREGISTRATION_V1.md"
+    },
+    "matcher_module": {
+      "const": "experiments/paper5/active_sham.py"
+    },
+    "notes": {"type": ["string", "null"]},
+    "policy_canonical_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical SHA-256 of this policy document with the policy_canonical_sha256 field itself set to the empty string before hashing (self-binding)."
+    }
+  }
+}

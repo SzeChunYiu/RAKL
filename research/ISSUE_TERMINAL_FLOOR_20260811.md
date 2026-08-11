@@ -17,8 +17,9 @@ Upstream ORACLE evidence (jobs **3476730** primary / **3476731** race duplicate)
 | #258 | `CAMPAIGN_TERMINAL_WITH_HONEST_NEGATIVES` | `research/ISSUE_258_TERMINAL_RECEIPT.json` |
 | #324 | `CANNOT_EXECUTE_CONFIRMATORY_MODEL_COMPARISON` | `research/paper2_alr_confirmatory_v1/ISSUE_324_TERMINAL_RECEIPT.json` |
 | #326 | `POWER_LIMITED_RETAIN_V2_1` | `research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json` |
+| #332 | `CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS` | `research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json` |
 
-**Stay open (independent human residual only):** #332 (independent external human review still absent after AI_OPERATOR #217 override). Issues #216/#217/#249/#255 closed under demoted AI_OPERATOR / NON_INDEPENDENT authority only.
+**Human residual closed under demoted floor:** #216/#217/#249/#255/#332. Demoted AI_OPERATOR / NON_INDEPENDENT only; Constitution-grade independent review remains absent and unclaimed. Demoted Paper3 pilots: jobs **3476753** (train) / **3476754** (inference).
 
 #324 freezes confirmatory ALR protocol/co-primary metrics but remains blocked by the #247 capability floor and unexecuted typed-authority arm. #326 reaffirms the independent zero-label window (demoted AI_OPERATOR ≠ independent human label) and retains v2.1 as power-limited.
 

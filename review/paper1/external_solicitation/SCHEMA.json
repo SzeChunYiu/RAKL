@@ -23,19 +23,37 @@
     "declaration"
   ],
   "properties": {
-    "schema_version": {"const": "paper1-external-review-response-v1"},
+    "schema_version": {
+      "const": "paper1-external-review-response-v1"
+    },
     "response_status": {
-      "enum": ["template-example-not-submitted", "frozen-external-reviewer-response"]
+      "enum": [
+        "template-example-not-submitted",
+        "frozen-external-reviewer-response",
+        "frozen-ai-operator-demoted-review"
+      ]
     },
     "response_id": {
       "type": "string",
       "pattern": "^P1-EXT-RESP-[A-Z0-9]{4}-R[0-9]{2}$"
     },
-    "review_round": {"type": "integer", "minimum": 1, "maximum": 99},
-    "packet_id": {"const": "paper1-external-review-solicitation-20260810-v1"},
-    "packet_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "review_round": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99
+    },
+    "packet_id": {
+      "const": "paper1-external-review-solicitation-20260810-v1"
+    },
+    "packet_manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
     "review_lens": {
-      "enum": ["formal_methods", "novelty_prior_art", "editorial_significance"]
+      "enum": [
+        "formal_methods",
+        "novelty_prior_art",
+        "editorial_significance"
+      ]
     },
     "reviewer": {
       "type": "object",
@@ -59,23 +77,64 @@
           "type": "string",
           "pattern": "^P1-REVIEWER-[A-Z0-9][A-Z0-9-]{2,63}$"
         },
-        "concern_code": {"type": "string", "pattern": "^[A-Z0-9]{4}$"},
-        "role": {
-          "enum": ["formal_methods_reviewer", "novelty_prior_art_reviewer", "editorial_significance_reviewer"]
+        "concern_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{4}$"
         },
-        "expertise_summary": {"type": "string", "minLength": 16},
-        "affiliation_disclosure": {"type": "string", "minLength": 12},
-        "independent_of_authors_and_project": {"type": "boolean"},
-        "independence_basis": {"type": "string", "minLength": 16},
-        "conflicts_disclosed": {"type": "boolean"},
+        "role": {
+          "enum": [
+            "formal_methods_reviewer",
+            "novelty_prior_art_reviewer",
+            "editorial_significance_reviewer"
+          ]
+        },
+        "expertise_summary": {
+          "type": "string",
+          "minLength": 16
+        },
+        "affiliation_disclosure": {
+          "type": "string",
+          "minLength": 12
+        },
+        "independent_of_authors_and_project": {
+          "type": "boolean"
+        },
+        "independence_basis": {
+          "type": "string",
+          "minLength": 16
+        },
+        "conflicts_disclosed": {
+          "type": "boolean"
+        },
         "conflicts": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
-        "financial_interests_disclosed": {"type": "boolean"},
-        "prior_collaboration_disclosed": {"type": "boolean"},
-        "reviewer_asserts_independence_eligibility": {"type": "boolean"}
+        "financial_interests_disclosed": {
+          "type": "boolean"
+        },
+        "prior_collaboration_disclosed": {
+          "type": "boolean"
+        },
+        "reviewer_asserts_independence_eligibility": {
+          "type": "boolean"
+        },
+        "annotator_kind": {
+          "enum": [
+            "HUMAN_INDEPENDENT",
+            "AI_OPERATOR"
+          ]
+        },
+        "independence_class": {
+          "enum": [
+            "INDEPENDENT",
+            "NON_INDEPENDENT"
+          ]
+        }
       }
     },
     "artifact_binding": {
@@ -105,7 +164,9 @@
         "pdf_sha256": {
           "const": "b6a07517699a52151260c6c321f239af61b1e07089c079a1eac9f7c0ac1352af"
         },
-        "pdf_pages": {"const": 44}
+        "pdf_pages": {
+          "const": 44
+        }
       }
     },
     "attestations": {
@@ -120,12 +181,33 @@
         "conflicts_disclosed"
       ],
       "properties": {
-        "human_reviewer": {"type": "boolean"},
-        "artifact_hashes_verified_before_review": {"type": "boolean"},
-        "no_author_response_access_before_freeze": {"type": "boolean"},
-        "no_other_reviewer_response_access_before_freeze": {"type": "boolean"},
-        "judgement_not_written_by_authors": {"type": "boolean"},
-        "conflicts_disclosed": {"type": "boolean"}
+        "human_reviewer": {
+          "type": "boolean"
+        },
+        "artifact_hashes_verified_before_review": {
+          "type": "boolean"
+        },
+        "no_author_response_access_before_freeze": {
+          "type": "boolean"
+        },
+        "no_other_reviewer_response_access_before_freeze": {
+          "type": "boolean"
+        },
+        "judgement_not_written_by_authors": {
+          "type": "boolean"
+        },
+        "conflicts_disclosed": {
+          "type": "boolean"
+        },
+        "annotator_kind": {
+          "const": "AI_OPERATOR"
+        },
+        "independence_class": {
+          "const": "NON_INDEPENDENT"
+        },
+        "does_not_mint_independent_review": {
+          "const": true
+        }
       }
     },
     "chronology": {
@@ -139,18 +221,32 @@
         "other_reviewer_response_first_accessed_at_utc"
       ],
       "properties": {
-        "artifact_accessed_at_utc": {"$ref": "#/$defs/utcDateTime"},
-        "response_frozen_at_utc": {"$ref": "#/$defs/utcDateTime"},
-        "attestation_signed_at_utc": {"$ref": "#/$defs/utcDateTime"},
-        "author_response_first_accessed_at_utc": {"$ref": "#/$defs/nullableUtcDateTime"},
-        "other_reviewer_response_first_accessed_at_utc": {"$ref": "#/$defs/nullableUtcDateTime"}
+        "artifact_accessed_at_utc": {
+          "$ref": "#/$defs/utcDateTime"
+        },
+        "response_frozen_at_utc": {
+          "$ref": "#/$defs/utcDateTime"
+        },
+        "attestation_signed_at_utc": {
+          "$ref": "#/$defs/utcDateTime"
+        },
+        "author_response_first_accessed_at_utc": {
+          "$ref": "#/$defs/nullableUtcDateTime"
+        },
+        "other_reviewer_response_first_accessed_at_utc": {
+          "$ref": "#/$defs/nullableUtcDateTime"
+        }
       }
     },
-    "review_evidence": {"type": "object"},
+    "review_evidence": {
+      "type": "object"
+    },
     "concerns": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/concern"}
+      "items": {
+        "$ref": "#/$defs/concern"
+      }
     },
     "overall_assessment": {
       "type": "object",
@@ -173,13 +269,24 @@
             "cannot_assess"
           ]
         },
-        "summary": {"type": "string", "minLength": 20},
-        "strongest_contribution": {"type": "string", "minLength": 12},
-        "most_serious_limitation": {"type": "string", "minLength": 12},
+        "summary": {
+          "type": "string",
+          "minLength": 20
+        },
+        "strongest_contribution": {
+          "type": "string",
+          "minLength": 12
+        },
+        "most_serious_limitation": {
+          "type": "string",
+          "minLength": 12
+        },
         "blocking_concern_ids": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"$ref": "#/$defs/concernId"}
+          "items": {
+            "$ref": "#/$defs/concernId"
+          }
         }
       }
     },
@@ -193,66 +300,130 @@
         "information_accurate_to_best_of_knowledge"
       ],
       "properties": {
-        "external_reviewer_response": {"type": "boolean"},
-        "peer_review_acceptance": {"const": false},
-        "journal_decision": {"const": false},
-        "information_accurate_to_best_of_knowledge": {"type": "boolean"}
+        "external_reviewer_response": {
+          "type": "boolean"
+        },
+        "peer_review_acceptance": {
+          "const": false
+        },
+        "journal_decision": {
+          "const": false
+        },
+        "information_accurate_to_best_of_knowledge": {
+          "type": "boolean"
+        },
+        "authority_class": {
+          "enum": [
+            "CONFIRMATORY_INDEPENDENT",
+            "DEMOTED_AI_OPERATOR_NON_INDEPENDENT"
+          ]
+        }
       }
     }
   },
   "allOf": [
     {
-      "if": {"properties": {"review_lens": {"const": "formal_methods"}}},
-      "then": {
+      "if": {
         "properties": {
-          "reviewer": {"properties": {"role": {"const": "formal_methods_reviewer"}}},
-          "concerns": {
-            "items": {
-              "properties": {
-                "concern_id": {"pattern": "^P1-EXT-(FORMAL|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"}
-              }
-            }
-          },
-          "review_evidence": {"$ref": "#/$defs/formalEvidence"}
+          "review_lens": {
+            "const": "formal_methods"
+          }
         }
-      }
-    },
-    {
-      "if": {"properties": {"review_lens": {"const": "novelty_prior_art"}}},
+      },
       "then": {
         "properties": {
-          "reviewer": {"properties": {"role": {"const": "novelty_prior_art_reviewer"}}},
-          "concerns": {
-            "items": {
-              "properties": {
-                "concern_id": {"pattern": "^P1-EXT-(NOVELTY|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"}
+          "reviewer": {
+            "properties": {
+              "role": {
+                "const": "formal_methods_reviewer"
               }
             }
           },
-          "review_evidence": {"$ref": "#/$defs/noveltyEvidence"}
-        }
-      }
-    },
-    {
-      "if": {"properties": {"review_lens": {"const": "editorial_significance"}}},
-      "then": {
-        "properties": {
-          "reviewer": {"properties": {"role": {"const": "editorial_significance_reviewer"}}},
           "concerns": {
             "items": {
               "properties": {
-                "concern_id": {"pattern": "^P1-EXT-(EDITORIAL|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"}
+                "concern_id": {
+                  "pattern": "^P1-EXT-(FORMAL|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"
+                }
               }
             }
           },
-          "review_evidence": {"$ref": "#/$defs/editorialEvidence"}
+          "review_evidence": {
+            "$ref": "#/$defs/formalEvidence"
+          }
         }
       }
     },
     {
       "if": {
         "properties": {
-          "response_status": {"const": "frozen-external-reviewer-response"}
+          "review_lens": {
+            "const": "novelty_prior_art"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reviewer": {
+            "properties": {
+              "role": {
+                "const": "novelty_prior_art_reviewer"
+              }
+            }
+          },
+          "concerns": {
+            "items": {
+              "properties": {
+                "concern_id": {
+                  "pattern": "^P1-EXT-(NOVELTY|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"
+                }
+              }
+            }
+          },
+          "review_evidence": {
+            "$ref": "#/$defs/noveltyEvidence"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "review_lens": {
+            "const": "editorial_significance"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reviewer": {
+            "properties": {
+              "role": {
+                "const": "editorial_significance_reviewer"
+              }
+            }
+          },
+          "concerns": {
+            "items": {
+              "properties": {
+                "concern_id": {
+                  "pattern": "^P1-EXT-(EDITORIAL|ARTIFACT)-[A-Z0-9]{4}-R[0-9]{2}-[0-9]{3}$"
+                }
+              }
+            }
+          },
+          "review_evidence": {
+            "$ref": "#/$defs/editorialEvidence"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "response_status": {
+            "const": "frozen-external-reviewer-response"
+          }
         }
       },
       "then": {
@@ -264,22 +435,52 @@
           },
           "reviewer": {
             "properties": {
-              "expertise_summary": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-              "affiliation_disclosure": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-              "independence_basis": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-              "conflicts_disclosed": {"const": true},
-              "financial_interests_disclosed": {"const": true},
-              "prior_collaboration_disclosed": {"const": true}
+              "expertise_summary": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              },
+              "affiliation_disclosure": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              },
+              "independence_basis": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              },
+              "conflicts_disclosed": {
+                "const": true
+              },
+              "financial_interests_disclosed": {
+                "const": true
+              },
+              "prior_collaboration_disclosed": {
+                "const": true
+              }
             }
           },
           "attestations": {
             "properties": {
-              "human_reviewer": {"const": true},
-              "artifact_hashes_verified_before_review": {"const": true},
-              "no_author_response_access_before_freeze": {"const": true},
-              "no_other_reviewer_response_access_before_freeze": {"const": true},
-              "judgement_not_written_by_authors": {"const": true},
-              "conflicts_disclosed": {"const": true}
+              "human_reviewer": {
+                "const": true
+              },
+              "artifact_hashes_verified_before_review": {
+                "const": true
+              },
+              "no_author_response_access_before_freeze": {
+                "const": true
+              },
+              "no_other_reviewer_response_access_before_freeze": {
+                "const": true
+              },
+              "judgement_not_written_by_authors": {
+                "const": true
+              },
+              "conflicts_disclosed": {
+                "const": true
+              }
             }
           },
           "concerns": {
@@ -287,64 +488,140 @@
               "properties": {
                 "exact_location": {
                   "properties": {
-                    "section": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-                    "locator": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-                    "quoted_anchor": {"not": {"pattern": "^EXAMPLE ONLY:"}}
+                    "section": {
+                      "not": {
+                        "pattern": "^EXAMPLE ONLY:"
+                      }
+                    },
+                    "locator": {
+                      "not": {
+                        "pattern": "^EXAMPLE ONLY:"
+                      }
+                    },
+                    "quoted_anchor": {
+                      "not": {
+                        "pattern": "^EXAMPLE ONLY:"
+                      }
+                    }
                   }
                 },
-                "finding": {"not": {"pattern": "^EXAMPLE ONLY:"}},
+                "finding": {
+                  "not": {
+                    "pattern": "^EXAMPLE ONLY:"
+                  }
+                },
                 "requested_evidence_or_correction": {
-                  "not": {"pattern": "^EXAMPLE ONLY:"}
+                  "not": {
+                    "pattern": "^EXAMPLE ONLY:"
+                  }
                 }
               }
             }
           },
           "overall_assessment": {
             "properties": {
-              "summary": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-              "strongest_contribution": {"not": {"pattern": "^EXAMPLE ONLY:"}},
-              "most_serious_limitation": {"not": {"pattern": "^EXAMPLE ONLY:"}}
+              "summary": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              },
+              "strongest_contribution": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              },
+              "most_serious_limitation": {
+                "not": {
+                  "pattern": "^EXAMPLE ONLY:"
+                }
+              }
             }
           },
           "declaration": {
             "properties": {
-              "external_reviewer_response": {"const": true},
-              "information_accurate_to_best_of_knowledge": {"const": true}
-            }
+              "external_reviewer_response": {
+                "const": true
+              },
+              "information_accurate_to_best_of_knowledge": {
+                "const": true
+              },
+              "journal_decision": {
+                "const": false
+              }
+            },
+            "required": [
+              "journal_decision"
+            ]
           }
         }
       }
     },
     {
       "if": {
-        "properties": {"response_status": {"const": "template-example-not-submitted"}}
+        "properties": {
+          "response_status": {
+            "const": "template-example-not-submitted"
+          }
+        }
       },
       "then": {
         "properties": {
           "reviewer": {
             "properties": {
-              "independent_of_authors_and_project": {"const": false},
-              "reviewer_asserts_independence_eligibility": {"const": false},
-              "conflicts_disclosed": {"const": false},
-              "financial_interests_disclosed": {"const": false},
-              "prior_collaboration_disclosed": {"const": false}
+              "independent_of_authors_and_project": {
+                "const": false
+              },
+              "reviewer_asserts_independence_eligibility": {
+                "const": false
+              },
+              "conflicts_disclosed": {
+                "const": false
+              },
+              "financial_interests_disclosed": {
+                "const": false
+              },
+              "prior_collaboration_disclosed": {
+                "const": false
+              }
             }
           },
           "attestations": {
             "properties": {
-              "human_reviewer": {"const": false},
-              "artifact_hashes_verified_before_review": {"const": false},
-              "no_author_response_access_before_freeze": {"const": false},
-              "no_other_reviewer_response_access_before_freeze": {"const": false},
-              "judgement_not_written_by_authors": {"const": false},
-              "conflicts_disclosed": {"const": false}
+              "human_reviewer": {
+                "const": false
+              },
+              "artifact_hashes_verified_before_review": {
+                "const": false
+              },
+              "no_author_response_access_before_freeze": {
+                "const": false
+              },
+              "no_other_reviewer_response_access_before_freeze": {
+                "const": false
+              },
+              "judgement_not_written_by_authors": {
+                "const": false
+              },
+              "conflicts_disclosed": {
+                "const": false
+              }
             }
           },
           "declaration": {
             "properties": {
-              "external_reviewer_response": {"const": false},
-              "information_accurate_to_best_of_knowledge": {"const": false}
-            }
+              "external_reviewer_response": {
+                "const": false
+              },
+              "information_accurate_to_best_of_knowledge": {
+                "const": false
+              },
+              "journal_decision": {
+                "const": false
+              }
+            },
+            "required": [
+              "journal_decision"
+            ]
           }
         }
       }
@@ -354,7 +631,9 @@
         "properties": {
           "reviewer": {
             "properties": {
-              "reviewer_asserts_independence_eligibility": {"const": true}
+              "reviewer_asserts_independence_eligibility": {
+                "const": true
+              }
             }
           }
         }
@@ -363,16 +642,106 @@
         "properties": {
           "reviewer": {
             "properties": {
-              "independent_of_authors_and_project": {"const": true},
-              "conflicts": {"maxItems": 0}
+              "independent_of_authors_and_project": {
+                "const": true
+              },
+              "conflicts": {
+                "maxItems": 0
+              }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "response_status": {
+            "const": "frozen-ai-operator-demoted-review"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reviewer": {
+            "properties": {
+              "annotator_kind": {
+                "const": "AI_OPERATOR"
+              },
+              "independence_class": {
+                "const": "NON_INDEPENDENT"
+              },
+              "independent_of_authors_and_project": {
+                "const": false
+              },
+              "reviewer_asserts_independence_eligibility": {
+                "const": false
+              }
+            },
+            "required": [
+              "annotator_kind",
+              "independence_class",
+              "independent_of_authors_and_project",
+              "reviewer_asserts_independence_eligibility"
+            ]
+          },
+          "attestations": {
+            "properties": {
+              "human_reviewer": {
+                "const": false
+              },
+              "annotator_kind": {
+                "const": "AI_OPERATOR"
+              },
+              "independence_class": {
+                "const": "NON_INDEPENDENT"
+              },
+              "does_not_mint_independent_review": {
+                "const": true
+              },
+              "conflicts_disclosed": {
+                "const": true
+              }
+            },
+            "required": [
+              "human_reviewer",
+              "annotator_kind",
+              "independence_class",
+              "does_not_mint_independent_review",
+              "conflicts_disclosed"
+            ]
+          },
+          "declaration": {
+            "properties": {
+              "external_reviewer_response": {
+                "const": false
+              },
+              "peer_review_acceptance": {
+                "const": false
+              },
+              "authority_class": {
+                "const": "DEMOTED_AI_OPERATOR_NON_INDEPENDENT"
+              },
+              "journal_decision": {
+                "const": false
+              }
+            },
+            "required": [
+              "external_reviewer_response",
+              "peer_review_acceptance",
+              "authority_class",
+              "journal_decision"
+            ]
           }
         }
       }
     }
   ],
   "$defs": {
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "utcDateTime": {
       "type": "string",
       "format": "date-time",
@@ -380,8 +749,12 @@
     },
     "nullableUtcDateTime": {
       "oneOf": [
-        {"type": "null"},
-        {"$ref": "#/$defs/utcDateTime"}
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/utcDateTime"
+        }
       ]
     },
     "concernId": {
@@ -391,15 +764,42 @@
     "exactLocation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["page", "section", "locator_type", "locator", "quoted_anchor"],
+      "required": [
+        "page",
+        "section",
+        "locator_type",
+        "locator",
+        "quoted_anchor"
+      ],
       "properties": {
-        "page": {"type": "integer", "minimum": 1, "maximum": 44},
-        "section": {"type": "string", "minLength": 3},
-        "locator_type": {
-          "enum": ["paragraph", "equation", "algorithm", "table", "figure", "source", "artifact"]
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 44
         },
-        "locator": {"type": "string", "minLength": 3},
-        "quoted_anchor": {"type": "string", "minLength": 12}
+        "section": {
+          "type": "string",
+          "minLength": 3
+        },
+        "locator_type": {
+          "enum": [
+            "paragraph",
+            "equation",
+            "algorithm",
+            "table",
+            "figure",
+            "source",
+            "artifact"
+          ]
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 3
+        },
+        "quoted_anchor": {
+          "type": "string",
+          "minLength": 12
+        }
       }
     },
     "concern": {
@@ -416,57 +816,120 @@
         "prior_art_references"
       ],
       "properties": {
-        "concern_id": {"$ref": "#/$defs/concernId"},
-        "severity": {"enum": ["blocking", "major", "minor", "note"]},
-        "status": {"enum": ["open", "closed_by_evidence_in_review", "withdrawn"]},
-        "exact_location": {"$ref": "#/$defs/exactLocation"},
-        "finding": {"type": "string", "minLength": 12},
-        "requested_evidence_or_correction": {"type": "string", "minLength": 12},
+        "concern_id": {
+          "$ref": "#/$defs/concernId"
+        },
+        "severity": {
+          "enum": [
+            "blocking",
+            "major",
+            "minor",
+            "note"
+          ]
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed_by_evidence_in_review",
+            "withdrawn"
+          ]
+        },
+        "exact_location": {
+          "$ref": "#/$defs/exactLocation"
+        },
+        "finding": {
+          "type": "string",
+          "minLength": 12
+        },
+        "requested_evidence_or_correction": {
+          "type": "string",
+          "minLength": 12
+        },
         "falsifier_or_counterexample": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "prior_art_references": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     "formalEvidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["claims_checked", "counterexample_search_summary", "executable_correspondence_checked"],
+      "required": [
+        "claims_checked",
+        "counterexample_search_summary",
+        "executable_correspondence_checked"
+      ],
       "properties": {
         "claims_checked": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 12}
+          "items": {
+            "type": "string",
+            "minLength": 12
+          }
         },
-        "counterexample_search_summary": {"type": "string", "minLength": 20},
-        "executable_correspondence_checked": {"type": "boolean"}
+        "counterexample_search_summary": {
+          "type": "string",
+          "minLength": 20
+        },
+        "executable_correspondence_checked": {
+          "type": "boolean"
+        }
       }
     },
     "noveltyEvidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["searches", "nearest_works", "corpus_cutoff_utc"],
+      "required": [
+        "searches",
+        "nearest_works",
+        "corpus_cutoff_utc"
+      ],
       "properties": {
-        "corpus_cutoff_utc": {"$ref": "#/$defs/utcDateTime"},
+        "corpus_cutoff_utc": {
+          "$ref": "#/$defs/utcDateTime"
+        },
         "searches": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["source", "query", "accessed_at_utc", "scope_notes"],
+            "required": [
+              "source",
+              "query",
+              "accessed_at_utc",
+              "scope_notes"
+            ],
             "properties": {
-              "source": {"type": "string", "minLength": 3},
-              "query": {"type": "string", "minLength": 3},
-              "accessed_at_utc": {"$ref": "#/$defs/utcDateTime"},
-              "scope_notes": {"type": "string", "minLength": 12}
+              "source": {
+                "type": "string",
+                "minLength": 3
+              },
+              "query": {
+                "type": "string",
+                "minLength": 3
+              },
+              "accessed_at_utc": {
+                "$ref": "#/$defs/utcDateTime"
+              },
+              "scope_notes": {
+                "type": "string",
+                "minLength": 12
+              }
             }
           }
         },
@@ -476,13 +939,34 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["citation", "version_or_date", "source_locator", "claimed_overlap", "distinction_assessment"],
+            "required": [
+              "citation",
+              "version_or_date",
+              "source_locator",
+              "claimed_overlap",
+              "distinction_assessment"
+            ],
             "properties": {
-              "citation": {"type": "string", "minLength": 8},
-              "version_or_date": {"type": "string", "minLength": 4},
-              "source_locator": {"type": "string", "minLength": 8},
-              "claimed_overlap": {"type": "string", "minLength": 12},
-              "distinction_assessment": {"type": "string", "minLength": 12}
+              "citation": {
+                "type": "string",
+                "minLength": 8
+              },
+              "version_or_date": {
+                "type": "string",
+                "minLength": 4
+              },
+              "source_locator": {
+                "type": "string",
+                "minLength": 8
+              },
+              "claimed_overlap": {
+                "type": "string",
+                "minLength": 12
+              },
+              "distinction_assessment": {
+                "type": "string",
+                "minLength": 12
+              }
             }
           }
         }
@@ -491,12 +975,28 @@
     "editorialEvidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["intended_venue_scope", "intended_audience", "significance_basis", "all_figures_and_tables_inspected"],
+      "required": [
+        "intended_venue_scope",
+        "intended_audience",
+        "significance_basis",
+        "all_figures_and_tables_inspected"
+      ],
       "properties": {
-        "intended_venue_scope": {"type": "string", "minLength": 8},
-        "intended_audience": {"type": "string", "minLength": 8},
-        "significance_basis": {"type": "string", "minLength": 20},
-        "all_figures_and_tables_inspected": {"type": "boolean"}
+        "intended_venue_scope": {
+          "type": "string",
+          "minLength": 8
+        },
+        "intended_audience": {
+          "type": "string",
+          "minLength": 8
+        },
+        "significance_basis": {
+          "type": "string",
+          "minLength": 20
+        },
+        "all_figures_and_tables_inspected": {
+          "type": "boolean"
+        }
       }
     }
   }

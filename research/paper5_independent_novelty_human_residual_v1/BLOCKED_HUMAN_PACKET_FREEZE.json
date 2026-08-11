@@ -1,0 +1,88 @@
+{
+  "schema_version": "paper5-independent-novelty-blocked-human-freeze-v1",
+  "freeze_id": "paper5-independent-novelty-human-residual-v1-20260811",
+  "parent_issue": 255,
+  "successor_issue": 353,
+  "audit_id": "paper5-retained-novelty-audit-v1",
+  "audit_epoch_id": "paper5-retained-novelty-audit-epoch-20260811",
+  "freeze_status": "BLOCKED_HUMAN",
+  "terminal_status": "CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS",
+  "scientific_verdict": "DEMOTED_AI_OPERATOR_PATH_COMPLETE__INDEPENDENT_NOVELTY_AUDIT_ABSENT",
+  "created_at_utc": "2026-08-12T00:16:00Z",
+  "base_main_sha": "91f182a3e7ad7ba670babbec5f49a1304da2d933",
+  "protocol_path": "experiments/paper5/NOVELTY_AUDIT_PROTOCOL_V1.md",
+  "protocol_sha256": "55b6ae4d7a81de5aed17f492084c941242497c3ebf97153157cf4da00382a167",
+  "human_roles_required": [
+    "annotator_A",
+    "annotator_B",
+    "adjudicator",
+    "provenance_auditor"
+  ],
+  "human_roles_assigned": {
+    "annotator_A": null,
+    "annotator_B": null,
+    "adjudicator": null,
+    "provenance_auditor": null
+  },
+  "humans_invented": false,
+  "independent_external_human": false,
+  "independent_review_claimed": false,
+  "confirmatory_authority": false,
+  "grants_scientific_authority": false,
+  "promotional_lift_claim_allowed": false,
+  "constitution_grade_independent_peer_review": false,
+  "acceptance_assessment": {
+    "independent_annotator_a_present": false,
+    "independent_annotator_b_present": false,
+    "distinct_external_adjudicator_present": false,
+    "distinct_external_provenance_auditor_present": false,
+    "independent_public_audit_packet_released": false,
+    "independent_sample_plan_frozen_for_humans": false,
+    "independent_labels_present": false,
+    "demoted_ai_operator_artifacts_present": true,
+    "demoted_track_treated_as_independent": false,
+    "constitution_grade_independent_review_claimed": false
+  },
+  "phase0_substrate": {
+    "audit_universe_manifest_path": "research/paper5_novelty_audit_v1/AUDIT_UNIVERSE_MANIFEST.json",
+    "audit_universe_manifest_sha256": "dc6afa9557a848420eb1a378a27dddf3a6a0f55e0a56daf3ea47306cdcb9d619",
+    "zero_external_novelty_labels_path": "research/paper5_novelty_audit_v1/ZERO_EXTERNAL_NOVELTY_LABELS.json",
+    "zero_external_novelty_labels_sha256": "c3e294afc336b16b926c4790a6385f20f963f777d387814dc0189a8f6f0cfd0d",
+    "blinded_audit_candidate_frame_path": "research/paper5_novelty_audit_v1/BLINDED_AUDIT_CANDIDATE_FRAME.jsonl",
+    "blinded_audit_candidate_frame_sha256": "973a43beee297002aad86ac0eadf0d3cd601501b3fdfc272ec392971c844ce0b",
+    "audit_freeze_stub_path": "research/paper5_novelty_audit_v1/AUDIT_FREEZE_STUB.json",
+    "audit_freeze_stub_sha256": "8e8b2b8998e8e91cd4042c6e503d7c5b31bdb7786c4e56dee259740b79a4d269"
+  },
+  "demoted_track_non_authority": {
+    "path": "research/paper5_novelty_audit_v1/ai_operator_demoted_v1/",
+    "completion_path": "research/paper5_novelty_audit_v1/AI_OPERATOR_DEMOTED_COMPLETION.json",
+    "completion_sha256": "7dc2b0a4edede5e48eefe32abb8b1a4d2fa4d9ae0d62ab5a69c018d807393eb1",
+    "final_receipt_path": "research/paper5_novelty_audit_v1/ai_operator_demoted_v1/FINAL_AUDIT_RECEIPT.json",
+    "final_receipt_sha256": "d5b10cda2a6262e09003ea95baf1582abaa4fa9ed271cd05d6a162f3a7a8d34d",
+    "honesty_stamp_path": "research/paper5_novelty_audit_v1/ai_operator_demoted_v1/HONESTY_STAMP_AI_OPERATOR.json",
+    "honesty_stamp_sha256": "d7ff7b13ab59c2d0f1af188e72ddca1e43f04f1200ee238756ebed49c32c842f",
+    "authority_class": "DEMOTED_AI_OPERATOR_NON_INDEPENDENT",
+    "may_satisfy_this_issue": false
+  },
+  "blockers": [
+    {
+      "id": "independent-human-roles-absent",
+      "class": "BLOCKED_HUMAN",
+      "detail": "No real independent annotators, adjudicator, or provenance auditor are available. Same-session AI roleplay is not independent review and must not mint construct-validity evidence."
+    },
+    {
+      "id": "demoted-track-not-independent",
+      "class": "TRACK_SEPARATION",
+      "detail": "ai_operator_demoted_v1/ contains NON_INDEPENDENT labels under DEMOTED_AI_OPERATOR authority only. It cannot fulfill #353."
+    }
+  ],
+  "operator_policy": "No external humans available for strongest-version independent novelty audit. Freeze BLOCKED_HUMAN residual rather than inventing independent review or promoting the demoted track.",
+  "claim_boundary": "Versioned independent-human residual freeze only. Does not mint retained-novelty precision, false-collapse rate, axis validity, Constitution-grade independent review, or promotional Paper-V semantic-growth authority. Demoted AI_OPERATOR metrics remain demoted.",
+  "residual_authorization": "Genuine independent external human responses on a versioned independent packet bound to the Phase-0 audit universe would be required to reopen a Constitution-grade construct-validity track. Until then, manuscript claims must remain INTERNAL_METROLOGY and/or DEMOTED_AI_OPERATOR_NON_INDEPENDENT.",
+  "related_artifacts": {
+    "chronology": "research/paper5_independent_novelty_human_residual_v1/CHRONOLOGY.json",
+    "track_separation": "research/paper5_independent_novelty_human_residual_v1/TRACK_SEPARATION.json",
+    "independent_packet_manifest": "research/paper5_independent_novelty_human_residual_v1/INDEPENDENT_HUMAN_PACKET_MANIFEST.json",
+    "paper3_analogue": "research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json"
+  }
+}

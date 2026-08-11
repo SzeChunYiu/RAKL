@@ -1,0 +1,59 @@
+{
+  "arms": {
+    "FAILURE_MEMORY_ONLY": {
+      "intervention": "Immutable failed episodes + failure lattice; no reusable pseudo-lessons",
+      "measures": "Value of negative history alone"
+    },
+    "FULL_RAKL_SELECTIVE": {
+      "authorized_only_after_oracle_pass": true,
+      "intervention": "Corrected experience state + target-conditioned selective retrieval with receipts",
+      "measures": "Q3 retrieval + Q5 transfer under selective RAKL"
+    },
+    "ORACLE_PROCEDURE_UPPER_BOUND": {
+      "intervention": "Frozen family-general checklist injected; no D/T task-specific answer or evidence id",
+      "measures": "Q4 execution capacity / capability floor",
+      "pass_rule": "FRESH_TRANSFER success_rate >= 2/3 with parse-valid outputs",
+      "phase1_first": true
+    },
+    "RESET": {
+      "intervention": "Exact S0; no prior task state",
+      "measures": "Matched no-memory baseline"
+    },
+    "VERIFIED_DEVELOPMENT_LESSONS": {
+      "intervention": "Only evaluator-verified scoped D-derived method lessons; no T labels/evidence ids",
+      "measures": "Q2 corrective lesson induction/readout"
+    }
+  },
+  "authority_boundary": "Causal table freeze only. No empirical arm result is authorized by this file.",
+  "benchmark_id": "paper2-experience-benchmark-v1_3_3",
+  "execution_order": [
+    "ORACLE_PROCEDURE_UPPER_BOUND",
+    "RESET",
+    "FAILURE_MEMORY_ONLY",
+    "VERIFIED_DEVELOPMENT_LESSONS",
+    "FULL_RAKL_SELECTIVE"
+  ],
+  "frozen_before_model_output": true,
+  "issue": 372,
+  "parent_issue": 247,
+  "learning_loop_mode": "root_cause_v1",
+  "optional_control": {
+    "WHOLE_STATE_DUMP": {
+      "included_in_v1_3_3_first_jobs": false,
+      "note": "Mechanism/cost control only; must not be called full RAKL"
+    }
+  },
+  "packet": "paper2-experience-benchmark-v1_3_3",
+  "parent_oracle_floor": {
+    "decision_receipt": "research/paper2_experience_benchmark_v1_3_2/ORACLE_DECISION_RECEIPT_V1_3_2.json",
+    "instrument_defect_job": "3476742",
+    "jobs": [
+      "3476778"
+    ],
+    "packet": "paper2-experience-benchmark-v1_3_2",
+    "verdict": "MODEL_CAPABILITY_FLOOR_3B"
+  },
+  "protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+  "schema_version": "paper2-experience-benchmark-phase0-causal-arms-v1",
+  "stop_rule": "Parent v1.3_2 3B ORACLE floored (MODEL_CAPABILITY_FLOOR_3B on 3476778; 3476742 remains INSTRUMENT_DEFECT; 3476756 remains FLOOR_1_5B). Phase-1 next job is 7B ORACLE FRESH_TRANSFER only under same root_cause_v1 gate and #343 schema. If 7B ORACLE fails parse-valid success_rate < 2/3, classify MODEL_CAPABILITY_FLOOR_7B. Do not submit learning/architecture arms until ORACLE passes. Do not reopen #138. Do not overwrite v1.3_1/v1.3_2 history. Land on #372."
+}

@@ -1,0 +1,68 @@
+{
+  "CAPABLE_MODEL_AVAILABLE": false,
+  "capable_model_rule": {
+    "note": "CAPABLE_MODEL_AVAILABLE flips true only when an authorized ORACLE receipt records success_rate \u2265 2/3. Parse-valid-only floors do not clear the gate.",
+    "required_oracle_success_rate_float": 0.6666666666666666,
+    "required_oracle_success_rate_min": "2/3",
+    "scope": "any authorized ExperienceBenchmark ORACLE scale under the frozen capability/format gate"
+  },
+  "capable_model_score": "NO_REFUTED",
+  "claim_boundary": "Capability gate freeze only. FLOOR_3B recorded. Does not authorize confirmatory ALR or A3\u2194A4 execution. 7B ORACLE NOT_YET.",
+  "current_oracle_lineage": [
+    {
+      "issue": 247,
+      "jobs": [
+        "3476730",
+        "3476731"
+      ],
+      "oracle_gate_passed": false,
+      "parse_valid": "3/3",
+      "receipt": "research/paper2_experience_benchmark_v1_3/ORACLE_DECISION_RECEIPT_V1_3.json",
+      "scale": "0.5B",
+      "scientific_verdict": "MODEL_CAPABILITY_FLOOR_0_5B",
+      "success_rate": "0/3"
+    },
+    {
+      "instrument_defect_parent_job": "3476742",
+      "issue": 247,
+      "jobs": [
+        "3476742",
+        "3476756"
+      ],
+      "landed_pr": 349,
+      "oracle_gate_passed": false,
+      "parse_valid": "3/3",
+      "primary_job": "3476756",
+      "receipt": "research/paper2_experience_benchmark_v1_3_1/ORACLE_DECISION_RECEIPT_V1_3_1.json",
+      "scale": "1.5B",
+      "scientific_verdict": "MODEL_CAPABILITY_FLOOR_1_5B",
+      "success_rate": "0/3"
+    },
+    {
+      "issue": 247,
+      "jobs": [
+        "3476778"
+      ],
+      "landed_pr": 371,
+      "mean_score": 0.3333,
+      "oracle_gate_passed": false,
+      "parse_valid": "3/3",
+      "primary_job": "3476778",
+      "race_duplicate_jobs": [
+        "3476779"
+      ],
+      "receipt": "research/paper2_experience_benchmark_v1_3_2/ORACLE_DECISION_RECEIPT_V1_3_2.json",
+      "scale": "3B",
+      "scientific_verdict": "MODEL_CAPABILITY_FLOOR_3B",
+      "success_rate": "0/3"
+    }
+  ],
+  "escalation_next": {
+    "scale": "7B",
+    "status": "NOT_YET"
+  },
+  "gate_status": "CAPABLE_MODEL_UNAVAILABLE__NO_REFUTED",
+  "grants_scientific_authority": false,
+  "schema_version": "paper2-alr-a3a4-wave1-capability-gate-v1",
+  "updated_at_utc": "2026-08-11T22:26:35Z"
+}

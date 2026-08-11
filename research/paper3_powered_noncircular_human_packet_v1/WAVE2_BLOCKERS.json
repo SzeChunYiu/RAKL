@@ -1,0 +1,39 @@
+{
+  "blockers": [
+    {
+      "class": "BLOCKED_HUMAN",
+      "clears_with": "independent_external_human_artifacts_imported_under_frozen_packet_hashes",
+      "detail": "Real independent annotators A/B, distinct adjudicator, and distinct provenance auditor remain unavailable. Clear only with genuine external humans; never with AI_OPERATOR.",
+      "id": "W2-P3-HUMAN-ROLES"
+    },
+    {
+      "class": "POWERED_PACKET_EXPANSION",
+      "clears_with": "SOURCE_ITEM_SET + PUBLIC_ANNOTATION_PACKET frozen at n\u224848 before any independent label",
+      "detail": "Label-blind curated expansion to approximately n=48 natural-domain items is not frozen. Required for POWERED_SUCCESSOR_FROZEN_ZERO_LABELS under registered paired-Brier MDE 0.05.",
+      "id": "W2-P3-N48-SOURCE-EXPANSION"
+    },
+    {
+      "class": "PRELABEL_CHANNEL_FREEZE",
+      "clears_with": "extractor outputs frozen on exact powered packet before unsealing human labels",
+      "detail": "MACHINE_WITNESS_OUTPUTS.jsonl not frozen before labels.",
+      "id": "W2-P3-MACHINE-WITNESS-OUTPUTS"
+    },
+    {
+      "class": "PRELABEL_CHANNEL_FREEZE",
+      "clears_with": "label-blind semantic scores frozen on exact powered packet",
+      "detail": "SEMANTIC_CONTROL_SCORES.jsonl not frozen for powered packet items.",
+      "id": "W2-P3-SEMANTIC-CONTROL-SCORES"
+    },
+    {
+      "class": "DOWNSTREAM_GATE",
+      "clears_with": "BLOCKED_HUMAN cleared AND packet channels frozen AND confirmatory import gate pass",
+      "detail": "#249-class confirmatory + downstream utility remains blocked until independent human artifacts exist on a frozen packet.",
+      "id": "W2-P3-CONFIRMATORY-EXECUTION"
+    }
+  ],
+  "claim_boundary": "Wave-2 blocker inventory only. Grants no authority.",
+  "created_at_utc": "2026-08-12T00:15:00Z",
+  "grants_scientific_authority": false,
+  "packet_id": "paper3-powered-noncircular-external-validation-v1-20260812",
+  "schema_version": "paper3-powered-human-wave2-blockers-v1"
+}
