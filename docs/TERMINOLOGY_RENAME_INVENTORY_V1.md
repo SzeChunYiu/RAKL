@@ -126,10 +126,10 @@ silently create three disagreeing canonical ledgers.
 |---|---|
 | Python distribution/import name | `rakl` (`pyproject.toml`) |
 | Python files importing `rakl` | **143** |
-| Schema files | **87** |
-| Distinct schema `$id` namespaces | **4** |
+| Schema files | **96** |
+| Distinct schema `$id` namespaces | **1** (canonical; see #148) |
 
-The `$id` namespaces are already inconsistent on current main:
+Historical measurement (pre-#148, when this inventory was first frozen):
 
 ```text
 https://github.com/SzeChunYiu/RAKL/schemas   52
@@ -138,13 +138,11 @@ https://rakl.dev/schemas                      2
 https://rakl.example/schemas                  1
 ```
 
-Two consequences:
-
-1. A repository rename would break the **52** schemas whose `$id` is bound to the current
-   GitHub path, while leaving the other 35 untouched — a partial, silent inconsistency.
-2. The four-namespace split is a **pre-existing defect independent of #137** and should be
-   tracked separately; resolving it is a prerequisite for any coherent rename, not a
-   consequence of one.
+Current state after #148: every `schemas/*.schema.json` `$id` uses the single
+canonical base `https://github.com/SzeChunYiu/RAKL/schemas/`. The former
+four-namespace split was an independent consistency defect (tracked as #148), not
+a rename consequence. A repository rename would still rewrite that one GitHub-bound
+base; the difference is that the blast radius is now uniform rather than partial.
 
 Not yet inventoried here, and required before any Class-3 decision: `RAKL_math` framework
 pin/config/submodule paths, external URLs, published citation strings, and historical
@@ -165,7 +163,7 @@ C3  reader understandability      — a new reader is not misled within one minu
 C4  memorability
 C5  continuity with published work — including BOTH existing published expansions (§3)
 C6  migration cost                — measured against §5 and §6, not estimated
-C7  package/repository stability  — `import rakl`, 87 schema `$id`s, CI, RAKL_math pins
+C7  package/repository stability  — `import rakl`, 96 schema `$id`s, CI, RAKL_math pins
 C8  searchability / ambiguity     — distinguishable from existing projects
 C9  domain coverage               — science + mathematics + engineering
 C10 capability coverage           — knowledge + experience + planning + verification + self-evolution
@@ -194,8 +192,8 @@ choice made against unmeasured cost.
 
 ## 9. What a successor session must do next
 
-1. Resolve the four-namespace schema `$id` defect (§6) as its own issue — it blocks coherent
-   Class-3 reasoning and is independently wrong today.
+1. ~~Resolve the four-namespace schema `$id` defect (§6)~~ — closed by #148; Class-3
+   rename reasoning may now treat schema `$id` as one uniform GitHub-bound base.
 2. Decide how to record, not erase, the singular/plural expansion split (§3).
 3. Complete the Class-3 inventory across `RAKL_math`, external URLs and citation strings.
 4. Only then run step 5 (adversarial review of candidates against §7) and step 10 (publish a
