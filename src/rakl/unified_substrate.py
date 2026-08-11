@@ -5,6 +5,7 @@ from hashlib import sha256
 from typing import Iterable, Tuple
 
 from .core import KnowledgeFiber
+from .evolution_archive import EvolutionArchive, VariantStatus
 from .experience_substrate import (
     ExperienceLedger,
     SubstrateEdge,
@@ -41,18 +42,23 @@ def _failure_node_id(failure_id: str) -> str:
     return f"failure:{failure_id}"
 
 
+def _variant_node_id(variant_id: str) -> str:
+    return f"variant:{variant_id}"
+
+
 def materialize_unified_substrate(
     *,
     experience: ExperienceLedger,
     tools: ResearchToolInventory,
     failures: FailureExperienceLattice,
     legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
+    evolution: EvolutionArchive | None = None,
 ) -> UnifiedSubstrateSnapshot:
     """Build one typed relational overlay without changing specialized authority.
 
     The overlay gives RAKL one queryable identity space for epistemic objects,
-    operators, episodes, obstructions, strategies, and meta-method lessons while
-    preserving the specialized stores as the owners of their own semantics.
+    operators, episodes, obstructions, strategies, and meta-method variants while
+    preserving specialized stores as the owners of their own semantics.
     """
 
     nodes: list[SubstrateNode] = list(experience.nodes)
@@ -168,6 +174,41 @@ def materialize_unified_substrate(
                         evidence_pointers=tool.evidence_pointers,
                     )
                 )
+
+    if evolution is not None:
+        variant_ids = {variant.variant_id for variant in evolution.variants}
+        for variant in evolution.variants:
+            add_node(
+                SubstrateNode(
+                    node_id=_variant_node_id(variant.variant_id),
+                    kind=SubstrateKind.META_METHOD,
+                    label=f"RAKL-variant:{variant.variant_id}",
+                    payload_hash=variant.method_hash,
+                    source_ids=variant.parent_ids,
+                    metadata=(
+                        ("status", variant.status.value),
+                        ("capability_tags", "|".join(variant.capability_tags)),
+                        ("incumbent", str(variant.variant_id == evolution.incumbent_id).lower()),
+                    ),
+                )
+            )
+        for variant in evolution.variants:
+            for parent_id in variant.parent_ids:
+                if parent_id in variant_ids:
+                    edges.append(
+                        SubstrateEdge(
+                            source_id=_variant_node_id(variant.variant_id),
+                            target_id=_variant_node_id(parent_id),
+                            relation=(
+                                SubstrateRelation.SUPERSEDES
+                                if variant.status is VariantStatus.INCUMBENT
+                                else SubstrateRelation.DERIVED_FROM
+                            ),
+                            rationale="Self-RAKL variant ancestry preserved in the common substrate",
+                        )
+                    )
+                else:
+                    unresolved.append(f"variant_parent_link_missing:{variant.variant_id}:{parent_id}")
 
     if len({node.node_id for node in nodes}) != len(nodes):
         raise ValueError("unified substrate node identities are not unique")
