@@ -14,6 +14,11 @@ from rakl.math_research_assurance import (
 )
 from rakl.math_research_runtime import plan_math_research, publication_ready
 from rakl.problem_solving_algebra import ObstructionKind, ProblemSignature
+from rakl.research_memory import (
+    MemoryQueryStatus,
+    ResearchMemoryReview,
+    ResearchMemoryVerdict,
+)
 from rakl.research_trace import (
     MathResearchTrace,
     ResearchTraceEntry,
@@ -53,8 +58,23 @@ def _context() -> MathContextFiber:
         analogy_scan_status=AnalogyScanStatus.NO_SAFE_BRIDGE_FOUND.value,
         analogy_scan_notes="cross-domain scan completed; no bridge survived mapping/disanalogy checks",
         frozen_at="2026-08-11T04:00:00+00:00",
-        first_candidate_at="2026-08-11T04:10:00+00:00",
+        first_candidate_at="2026-08-11T04:20:00+00:00",
         packet_hash="sha256:context",
+    )
+
+
+def _memory() -> ResearchMemoryReview:
+    return ResearchMemoryReview(
+        target_atom_id="atom-C",
+        target_context_hash="sha256:context",
+        tool_inventory_snapshot_hash="sha256:tools",
+        failure_lattice_snapshot_hash="sha256:failures",
+        tool_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH,
+        failure_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH,
+        candidate_method_families=("transferable method",),
+        unresolved_warnings=("no prior experience match; proceed with ordinary falsifier",),
+        evidence_pointers=("snapshot:tools", "snapshot:failures"),
+        artifact_hash="sha256:memory",
     )
 
 
@@ -65,12 +85,16 @@ def _trace() -> MathResearchTrace:
         ResearchTraceEventType.ANALOGY_SCAN,
         ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
         ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
+        ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW,
         ResearchTraceEventType.NEXT_STEP_PROPOSED,
     )
     entries = []
     previous_hash = ""
     for i, event_type in enumerate(types, start=1):
         artifact_hash = f"sha256:event-{i}"
+        outputs = (f"output:{i}",)
+        if event_type is ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW:
+            outputs = ("sha256:memory",)
         entries.append(
             ResearchTraceEntry(
                 event_id=f"e{i}",
@@ -84,7 +108,7 @@ def _trace() -> MathResearchTrace:
                 else (f"artifact:{i}",),
                 alternatives_considered=("A", "B"),
                 decision_rationale="bounded public rationale",
-                outputs=(f"output:{i}",),
+                outputs=outputs,
                 uncertainties=("one unresolved issue",),
                 next_steps=("next atomic action",),
                 artifact_hash=artifact_hash,
@@ -141,24 +165,37 @@ def test_missing_context_blocks_candidate_generation_fail_closed() -> None:
     assert "search_solved_and_near_solved_analogous_contexts" in plan.pre_candidate_actions
 
 
-def test_context_without_trace_still_blocks_candidate_generation() -> None:
+def test_context_without_memory_review_blocks_candidate_generation() -> None:
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
         context_fiber=_context(),
     )
     assert plan.context_gate.verdict is ContextGateVerdict.PASS
-    assert plan.trace_gate.verdict is TraceGateVerdict.CANNOT_CHECK
+    assert plan.memory_gate.verdict is ResearchMemoryVerdict.CANNOT_CHECK
     assert not plan.candidate_generation_allowed
-    assert not plan.candidate_paths
-    assert "record_atomization_result" in plan.pre_candidate_actions
+    assert "query_global_failure_experience_lattice" in plan.pre_candidate_actions
 
 
-def test_context_and_trace_expose_normal_research_blockers_and_paths() -> None:
+def test_context_and_memory_without_trace_still_blocks_candidate_generation() -> None:
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
         context_fiber=_context(),
+        memory_review=_memory(),
+    )
+    assert plan.memory_gate.verdict is ResearchMemoryVerdict.PASS
+    assert plan.trace_gate.verdict is TraceGateVerdict.CANNOT_CHECK
+    assert not plan.candidate_generation_allowed
+    assert "record_atomization_result" in plan.pre_candidate_actions
+
+
+def test_all_process_gates_expose_normal_research_blockers_and_paths() -> None:
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
         research_trace=_trace(),
     )
     blockers = set(plan.next_blockers)
@@ -168,6 +205,7 @@ def test_context_and_trace_expose_normal_research_blockers_and_paths() -> None:
     assert ObstructionKind.NOVELTY_GAP in blockers
     assert ObstructionKind.RESEARCH_VALUE_GAP in blockers
     assert plan.context_gate.verdict is ContextGateVerdict.PASS
+    assert plan.memory_gate.verdict is ResearchMemoryVerdict.PASS
     assert plan.trace_gate.verdict is TraceGateVerdict.PASS
     assert plan.candidate_generation_allowed
     assert plan.candidate_paths
@@ -177,7 +215,11 @@ def test_context_and_trace_expose_normal_research_blockers_and_paths() -> None:
 def test_verified_proof_removes_proof_blocker_but_not_novelty_or_value() -> None:
     record = MathResearchRecord(claim_id="C", formalization=_formalization(), proof=_proof())
     plan = plan_math_research(
-        signature=_signature(), record=record, context_fiber=_context(), research_trace=_trace()
+        signature=_signature(),
+        record=record,
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
     )
     blockers = set(plan.next_blockers)
     assert ObstructionKind.PROOF_GAP not in blockers
@@ -196,7 +238,11 @@ def test_only_all_noncompensatory_gates_make_record_publication_ready() -> None:
         external_mathematical_review=True,
     )
     plan = plan_math_research(
-        signature=_signature(), record=record, context_fiber=_context(), research_trace=_trace()
+        signature=_signature(),
+        record=record,
+        context_fiber=_context(),
+        memory_review=_memory(),
+        research_trace=_trace(),
     )
     assert plan.next_blockers == ()
     assert publication_ready(record)
