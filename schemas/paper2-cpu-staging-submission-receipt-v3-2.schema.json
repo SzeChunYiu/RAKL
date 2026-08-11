@@ -1,0 +1,184 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-submission-receipt-v3-2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "READY_NOT_SUBMITTED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "maxItems": 0
+          },
+          "submitted_job_ids": {
+            "maxItems": 0,
+            "minItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "SUBMITTED_TWO_PHASE_STAGING"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "maxItems": 0
+          },
+          "submitted_job_ids": {
+            "maxItems": 2,
+            "minItems": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PARTIAL_SUBMISSION_FAILURE"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          },
+          "submitted_job_ids": {
+            "maxItems": 1,
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "REFUSE_PREFLIGHT_VALIDATION"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          },
+          "submitted_job_ids": {
+            "maxItems": 0,
+            "minItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "SUBMISSION_FAILURE"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "contract_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_result_record_count": {
+      "const": 0
+    },
+    "expected_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "failures": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "observed_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-submission-receipt-v3.2"
+    },
+    "submitted_job_ids": {
+      "items": {
+        "pattern": "^[0-9]+$",
+        "type": "string"
+      },
+      "maxItems": 2,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "verdict": {
+      "enum": [
+        "REFUSE_PREFLIGHT_VALIDATION",
+        "READY_NOT_SUBMITTED",
+        "SUBMISSION_FAILURE",
+        "PARTIAL_SUBMISSION_FAILURE",
+        "SUBMITTED_TWO_PHASE_STAGING"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "contract_canonical_sha256",
+    "expected_repo_sha",
+    "observed_repo_sha",
+    "failures",
+    "model_execution_performed",
+    "submitted_job_ids",
+    "evaluated_result_record_count",
+    "verdict"
+  ],
+  "title": "Paper 2 CPU staging V3.2 submission receipt",
+  "type": "object"
+}

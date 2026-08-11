@@ -1,0 +1,337 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-result-receipt-v3-2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_PASS_ATOMICALLY_PROMOTED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "artifact_count": {
+            "const": 38
+          },
+          "failures": {
+            "maxItems": 0
+          },
+          "installed_distributions": {
+            "minProperties": 31
+          },
+          "observed_files": {
+            "maxItems": 38,
+            "minItems": 38
+          },
+          "pip_check_returncode": {
+            "const": 0
+          },
+          "pip_check_stdout": {
+            "const": "No broken requirements found."
+          },
+          "pip_freeze_all": {
+            "minItems": 31
+          }
+        },
+        "required": [
+          "probe_receipt_path",
+          "probe_receipt_sha256",
+          "probe_slurm_job_id",
+          "repository_attestation",
+          "candidate_path",
+          "final_path",
+          "artifact_count",
+          "observed_files",
+          "installed_versions",
+          "installed_distributions",
+          "pip_check_returncode",
+          "pip_check_stdout",
+          "pip_freeze_all",
+          "torch_cpu_smoke",
+          "standalone_python_smoke",
+          "platform_receipt",
+          "fs9_disk_usage_before_staging"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_FAILED_PRESERVED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "candidate_preserved": {
+            "const": true
+          },
+          "failures": {
+            "minItems": 1
+          },
+          "final_exists": {
+            "const": false
+          }
+        },
+        "required": [
+          "probe_receipt_path",
+          "probe_receipt_sha256",
+          "probe_slurm_job_id",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists",
+          "error_type",
+          "error_detail"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_FAILED_PRESERVATION_UNVERIFIED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        },
+        "required": [
+          "probe_receipt_path",
+          "probe_receipt_sha256",
+          "probe_slurm_job_id",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists",
+          "error_type",
+          "error_detail"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_REFUSED"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        },
+        "required": [
+          "probe_receipt_path",
+          "probe_receipt_sha256",
+          "probe_slurm_job_id",
+          "candidate_path",
+          "candidate_preserved",
+          "final_path",
+          "final_exists"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "artifact_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "candidate_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "candidate_preserved": {
+      "type": "boolean"
+    },
+    "contract_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "error_detail": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "error_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "evaluated_result_record_count": {
+      "const": 0
+    },
+    "expected_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "failures": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "final_exists": {
+      "type": "boolean"
+    },
+    "final_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "fs9_disk_usage_before_staging": {
+      "additionalProperties": false,
+      "properties": {
+        "free": {
+          "minimum": 6000000000,
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "used": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "used",
+        "free"
+      ],
+      "type": "object"
+    },
+    "installed_distributions": {
+      "type": "object"
+    },
+    "installed_versions": {
+      "type": "object"
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "observed_files": {
+      "items": {
+        "properties": {
+          "artifact_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "bytes": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "pip_check_returncode": {
+      "type": "integer"
+    },
+    "pip_check_stdout": {
+      "type": "string"
+    },
+    "pip_freeze_all": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "platform_receipt": {
+      "type": "object"
+    },
+    "probe_receipt_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "probe_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "probe_slurm_job_id": {
+      "pattern": "^[0-9]+$",
+      "type": "string"
+    },
+    "repository_attestation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-result-receipt-v3.2"
+    },
+    "slurm_job_id": {
+      "pattern": "^[0-9]+$",
+      "type": "string"
+    },
+    "standalone_python_smoke": {
+      "type": "object"
+    },
+    "torch_cpu_smoke": {
+      "type": "object"
+    },
+    "verdict": {
+      "enum": [
+        "STAGING_REFUSED",
+        "STAGING_FAILED_PRESERVED",
+        "STAGING_PASS_ATOMICALLY_PROMOTED",
+        "STAGING_FAILED_PRESERVATION_UNVERIFIED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "contract_canonical_sha256",
+    "expected_repo_sha",
+    "slurm_job_id",
+    "failures",
+    "model_execution_performed",
+    "evaluated_result_record_count",
+    "verdict"
+  ],
+  "title": "Paper 2 CPU staging V3.2 result receipt",
+  "type": "object"
+}

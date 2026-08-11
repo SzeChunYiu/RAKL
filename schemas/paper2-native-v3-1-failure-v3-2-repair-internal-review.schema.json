@@ -1,0 +1,84 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-native-v3-1-failure-v3-2-repair-internal-review.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "blocking_concerns": {
+      "maxItems": 0,
+      "type": "array"
+    },
+    "checks": {
+      "type": "object"
+    },
+    "concern_ledger": {
+      "maxItems": 7,
+      "minItems": 7,
+      "type": "array"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "passes": {
+      "maxItems": 4,
+      "minItems": 4,
+      "type": "array"
+    },
+    "reviewed_artifacts": {
+      "items": {
+        "properties": {
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "minItems": 20,
+      "type": "array"
+    },
+    "schema_binding": {
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-native-v3-1-failure-v3-2-repair-internal-review.schema.json"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "paper2-native-v3-1-failure-v3-2-repair-internal-review-v1"
+    },
+    "verdict": {
+      "const": "PASS__V3_1_FAILURE_PRESERVED__V3_2_REPAIR_READY_NOT_SUBMITTED"
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "schema_binding",
+    "reviewed_artifacts",
+    "passes",
+    "concern_ledger",
+    "blocking_concerns",
+    "checks",
+    "verdict"
+  ],
+  "title": "Paper 2 V3.1 failure and V3.2 repair internal review receipt",
+  "type": "object"
+}

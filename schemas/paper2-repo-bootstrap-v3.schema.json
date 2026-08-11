@@ -1,0 +1,118 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-repo-bootstrap-v3.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "enum": [
+              "BOOTSTRAP_PASS_EXISTING_EXACT_CHECKOUT",
+              "BOOTSTRAP_PASS_ATOMICALLY_PROMOTED"
+            ]
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "checkout_clean": {
+            "const": true
+          },
+          "detached_head": {
+            "const": true
+          },
+          "exit_status": {
+            "const": 0
+          },
+          "observed_repo_sha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": "string"
+          },
+          "observed_repo_tree": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "observed_repo_sha",
+          "observed_repo_tree",
+          "checkout_clean",
+          "detached_head",
+          "github_remote"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "checkout_clean": {
+      "type": "boolean"
+    },
+    "detached_head": {
+      "type": "boolean"
+    },
+    "evaluated_result_record_count": {
+      "const": 0
+    },
+    "exit_status": {
+      "type": "integer"
+    },
+    "expected_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "github_remote": {
+      "const": "https://github.com/SzeChunYiu/RAKL.git"
+    },
+    "jobs_submitted": {
+      "const": 0
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "observed_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "observed_repo_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_repo_tree": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_version": {
+      "const": "paper2-repo-bootstrap-v3"
+    },
+    "verdict": {
+      "enum": [
+        "BOOTSTRAP_PASS_EXISTING_EXACT_CHECKOUT",
+        "BOOTSTRAP_PASS_ATOMICALLY_PROMOTED",
+        "BOOTSTRAP_REFUSED",
+        "BOOTSTRAP_FAILED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "observed_at_utc",
+    "expected_repo_sha",
+    "exit_status",
+    "jobs_submitted",
+    "model_execution_performed",
+    "evaluated_result_record_count",
+    "verdict"
+  ],
+  "title": "Paper 2 repository bootstrap V3 receipt",
+  "type": "object"
+}

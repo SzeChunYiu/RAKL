@@ -1,0 +1,348 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-contract-v3-2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_extraction_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "extract_regular_content_before_links": {
+          "const": true
+        },
+        "materialize_links_without_following_unvalidated_filesystem_paths": {
+          "const": true
+        },
+        "permit_hardlinks_only_through_acyclic_archive_member_chains_to_regular_files": {
+          "const": true
+        },
+        "permit_parent_relative_symlinks_only_with_in_root_targets": {
+          "const": true
+        },
+        "permit_relative_symlinks_with_in_root_targets": {
+          "const": true
+        },
+        "prevalidate_complete_archive_before_write": {
+          "const": true
+        },
+        "reject_absolute_link_targets": {
+          "const": true
+        },
+        "reject_absolute_member_paths": {
+          "const": true
+        },
+        "reject_devices_fifos_and_unknown_types": {
+          "const": true
+        },
+        "reject_duplicate_normalized_names": {
+          "const": true
+        },
+        "reject_link_ancestor_collisions": {
+          "const": true
+        },
+        "reject_link_cycles": {
+          "const": true
+        },
+        "reject_member_path_escapes": {
+          "const": true
+        },
+        "reject_missing_link_targets": {
+          "const": true
+        },
+        "reject_normalized_link_target_escapes": {
+          "const": true
+        }
+      },
+      "required": [
+        "prevalidate_complete_archive_before_write",
+        "reject_absolute_member_paths",
+        "reject_member_path_escapes",
+        "reject_duplicate_normalized_names",
+        "reject_link_ancestor_collisions",
+        "reject_devices_fifos_and_unknown_types",
+        "reject_absolute_link_targets",
+        "reject_missing_link_targets",
+        "reject_link_cycles",
+        "reject_normalized_link_target_escapes",
+        "permit_relative_symlinks_with_in_root_targets",
+        "permit_parent_relative_symlinks_only_with_in_root_targets",
+        "permit_hardlinks_only_through_acyclic_archive_member_chains_to_regular_files",
+        "extract_regular_content_before_links",
+        "materialize_links_without_following_unvalidated_filesystem_paths"
+      ],
+      "type": "object"
+    },
+    "authority_status": {
+      "const": "repair_ready_not_submitted"
+    },
+    "bindings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "sha256_mode": {
+            "const": "canonical_contract_with_self_sha256_zeroed"
+          }
+        },
+        "required": [
+          "role",
+          "path",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "minItems": 17,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "bootstrap_policy": {
+      "additionalProperties": {
+        "const": true,
+        "type": "boolean"
+      },
+      "required": [
+        "exact_repo_sha_required",
+        "exact_origin_url_required",
+        "detached_checkout_required",
+        "clean_tree_required",
+        "atomic_candidate_promotion_required",
+        "successful_bootstrap_receipt_required_before_submission",
+        "existing_repo_never_silently_mutated"
+      ],
+      "type": "object"
+    },
+    "candidate_root": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/.paper2-cpu-v3-2-candidate"
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "construction_parent_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "PAPER2_CPU_STAGING_V3_2"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "failure_policy": {
+      "additionalProperties": {
+        "const": true,
+        "type": "boolean"
+      },
+      "required": [
+        "preserve_failed_candidate_and_receipt",
+        "never_reuse_existing_candidate_or_final",
+        "partial_submission_job_id_must_be_receipted",
+        "preserve_v3_failure_lineage",
+        "preserve_v3_1_failure_lineage"
+      ],
+      "type": "object"
+    },
+    "failure_root": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/failures/v3_2"
+    },
+    "final_root": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2"
+    },
+    "fs9_root": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2"
+    },
+    "model_execution_permitted": {
+      "const": false
+    },
+    "predecessor_failure": {
+      "additionalProperties": false,
+      "properties": {
+        "archive_observation_verdict": {
+          "const": "ALL_38_ARTIFACTS_EXACT__ARCHIVE_RELATIVE_LINK_POLICY_MISMATCH_LOCALIZED"
+        },
+        "contract_id": {
+          "const": "PAPER2_CPU_STAGING_V3_1"
+        },
+        "error_detail": {
+          "const": "archive unsafe member:python/bin/2to3"
+        },
+        "error_type": {
+          "const": "ValueError"
+        },
+        "preserved_candidate_path": {
+          "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/.paper2-cpu-v3-1-candidate-3475099"
+        },
+        "probe_job_id": {
+          "const": "3475098"
+        },
+        "staging_job_id": {
+          "const": "3475099"
+        },
+        "staging_verdict": {
+          "const": "STAGING_FAILED_PRESERVED"
+        }
+      },
+      "required": [
+        "contract_id",
+        "probe_job_id",
+        "staging_job_id",
+        "staging_verdict",
+        "error_type",
+        "error_detail",
+        "preserved_candidate_path",
+        "archive_observation_verdict"
+      ],
+      "type": "object"
+    },
+    "promotion_policy": {
+      "additionalProperties": {
+        "const": true,
+        "type": "boolean"
+      },
+      "required": [
+        "same_filesystem_candidate_and_final_required",
+        "final_must_not_exist",
+        "atomic_rename_required",
+        "all_artifacts_hash_and_size_verified_before_promotion",
+        "offline_hash_locked_install_required",
+        "installed_version_equality_required"
+      ],
+      "type": "object"
+    },
+    "receipt_root": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/receipts/v3_2"
+    },
+    "repair_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-contract-v3.2"
+    },
+    "staging_attestation_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "construction_parent_ancestor_required": {
+          "const": true
+        },
+        "full_distribution_set_equality_required": {
+          "const": true
+        },
+        "minimum_free_bytes": {
+          "minimum": 6000000000,
+          "type": "integer"
+        },
+        "pip_check_required": {
+          "const": true
+        },
+        "pip_freeze_all_required": {
+          "const": true
+        },
+        "platform_architecture": {
+          "const": "x86_64"
+        },
+        "repository_tree_sha_required": {
+          "const": true
+        },
+        "tensor_device": {
+          "const": "cpu"
+        },
+        "torch_cuda_must_be_null": {
+          "const": true
+        },
+        "torch_version": {
+          "const": "2.8.0+cpu"
+        }
+      },
+      "required": [
+        "minimum_free_bytes",
+        "pip_check_required",
+        "full_distribution_set_equality_required",
+        "pip_freeze_all_required",
+        "torch_version",
+        "torch_cuda_must_be_null",
+        "tensor_device",
+        "platform_architecture",
+        "repository_tree_sha_required",
+        "construction_parent_ancestor_required"
+      ],
+      "type": "object"
+    },
+    "submission_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "clean_checkout_required": {
+          "const": true
+        },
+        "default_operator_mode": {
+          "const": "READY_NOT_SUBMITTED"
+        },
+        "exact_repo_sha_required": {
+          "const": true
+        },
+        "lunarc_login_host_required": {
+          "const": true
+        },
+        "network_probe_must_precede_staging": {
+          "const": true
+        },
+        "observed_account_partition_association_required": {
+          "const": true
+        },
+        "retry_requires_new_explicit_operator_action": {
+          "const": true
+        }
+      },
+      "required": [
+        "exact_repo_sha_required",
+        "clean_checkout_required",
+        "lunarc_login_host_required",
+        "observed_account_partition_association_required",
+        "network_probe_must_precede_staging",
+        "default_operator_mode",
+        "retry_requires_new_explicit_operator_action"
+      ],
+      "type": "object"
+    },
+    "supersedes_contract_id": {
+      "const": "PAPER2_CPU_STAGING_V3_1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_id",
+    "supersedes_contract_id",
+    "authority_status",
+    "construction_parent_sha",
+    "created_at_utc",
+    "fs9_root",
+    "candidate_root",
+    "final_root",
+    "receipt_root",
+    "failure_root",
+    "model_execution_permitted",
+    "bootstrap_policy",
+    "submission_policy",
+    "predecessor_failure",
+    "archive_extraction_policy",
+    "promotion_policy",
+    "staging_attestation_policy",
+    "failure_policy",
+    "bindings",
+    "claim_boundary",
+    "repair_boundary"
+  ],
+  "title": "Paper 2 CPU staging V3.2 repair contract",
+  "type": "object"
+}
