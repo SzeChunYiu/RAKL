@@ -12,7 +12,7 @@ import jsonschema
 
 
 POLICY_ID = "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
-PROTOCOL_ID = "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V4_3_PROMPT_INTERFACE"
+PROTOCOL_ID = "PAPER2_PENDULUM_SEALED_KNOWN_ANSWER_V4_3"
 
 
 def _sha256(path: Path) -> str:
@@ -47,20 +47,20 @@ def build(args: argparse.Namespace) -> None:
 
     if packet.get("protocol_id") != PROTOCOL_ID:
         raise RuntimeError("V4.3 protocol identity mismatch")
-    if packet.get("chronology_class") != "ADAPTIVE_PROMPT_INTERFACE_REPLAY_FRESH_ONLY_TO_V4_3_OUTPUTS":
+    if packet.get("chronology_class") != "MODEL_SCALE_STAGING_REPLAY_FRESH_ONLY_TO_V4_3_OUTPUTS":
         raise RuntimeError("V4.3 adaptive chronology class mismatch")
-    if packet.get("parent_v4_1_results_opened_before_v4_3_freeze") is not True:
+    if packet.get("v4_2_capability_limit_known_before_freeze") is not True:
         raise RuntimeError("V4.3 parent-result access disclosure missing")
-    if packet.get("evaluated_results_opened_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_1_KNOWN":
+    if packet.get("evaluated_results_opened_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_2_KNOWN":
         raise RuntimeError("V4.3 result-access scope mismatch")
-    if packet.get("evaluated_task_seed_unit_count_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_1_KNOWN":
+    if packet.get("evaluated_task_seed_unit_count_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_2_KNOWN":
         raise RuntimeError("V4.3 evaluated-unit scope mismatch")
     if packet.get("output_normalization_policy_id") != POLICY_ID:
         raise RuntimeError("V4.3 normalization policy identity mismatch")
     if packet.get("v4_3_outputs_opened_before_freeze") is not False:
         raise RuntimeError("V4.3 freeze chronology mismatch")
-    if packet.get("v4_1_negative_history", {}).get("reinterpretation_permitted") is not False:
-        raise RuntimeError("V4 reinterpretation prohibition missing")
+    if packet.get("threshold_or_score_change_permitted") is not False:
+        raise RuntimeError("V4.3 exact-gate change prohibition missing")
     if packet.get("registered_task_id") != "PENDULUM_SEALED_KNOWN_ANSWER_001":
         raise RuntimeError("V4.3 task identity mismatch")
     if packet.get("seed_schedule") != [17]:
