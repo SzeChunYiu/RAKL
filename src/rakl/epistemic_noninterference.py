@@ -20,26 +20,34 @@ this repository are the :class:`~rakl.authority_ledger.AuthorityAxis` values
 
 Scope and honesty note
 ----------------------
-On the current framework revision the v3 experience state
-(:class:`~rakl.v3_runtime.RAKLV3State`) does **not** compose an
-``AuthorityLedger``: the two families are unreachable from one another. This
-module therefore reports :data:`NoninterferenceStatus.NO_INTEGRATION_SURFACE`
-for that state rather than ``PASS``. An accidental absence of a channel is not
-an enforced invariant, and reporting it as a pass would manufacture the result.
-The invariant is consequently a *prospective* guard on integration code that
-composes the two families. See ``docs/EPISTEMIC_NONINTERFERENCE.md``.
+Until #242 the v3 experience state (:class:`~rakl.v3_runtime.RAKLV3State`) did
+**not** compose an ``AuthorityLedger``, so this module reported
+:data:`NoninterferenceStatus.NO_INTEGRATION_SURFACE` for that state rather than
+``PASS``: an accidental absence of a channel is not an enforced invariant, and
+reporting it as a pass would have manufactured the result. That historical
+finding is preserved verbatim in ``docs/EPISTEMIC_NONINTERFERENCE.md`` §9.
 
-This module is proposal-only. It is wired into no promotion gate and mints no
-authority of its own.
+As of #242 the v3 state composes
+:class:`~rakl.v3_scientific_authority.ScientificAuthorityProjection`, so the
+experience-to-authority channel is *reachable* and the invariant is exercised
+against a real composition surface via :func:`project_v3_state`.
+``NO_INTEGRATION_SURFACE`` remains a live status for any caller that supplies an
+uncomposed state; it was not repurposed into a pass.
+
+What this still does not establish: model capability, empirical superiority, or
+low authority leakage under generated outputs. This module is proposal-only. It
+is wired into no promotion gate and mints no authority of its own.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, is_dataclass
 from enum import Enum
-from typing import Iterable, Mapping, Sequence, Tuple
+from hashlib import sha256
+from pathlib import Path
+from typing import Iterable, Mapping, Sequence, Tuple, get_args, get_origin, get_type_hints
 
-from .authority_ledger import AuthorityAxis, AuthorityLedger
+from .authority_ledger import AuthorityAxis, AuthorityCertificate, AuthorityLedger
 from .experience_substrate import ExperienceLedger, LessonAuthority
 
 __all__ = [
@@ -53,13 +61,16 @@ __all__ = [
     "NoninterferenceReport",
     "NoninterferenceStatus",
     "NonAuthorityCoordinate",
+    "SourceBinding",
     "StateFamily",
     "Transition",
     "TransitionKind",
+    "bind_sources",
     "check_epistemic_noninterference",
     "describe_integration_surface",
     "pi_auth",
     "pi_non_authority",
+    "project_v3_state",
 ]
 
 
@@ -274,6 +285,12 @@ class LeakFamily(str, Enum):
     MECHANISM_TO_IDENTIFICATION = "MECHANISM_TO_IDENTIFICATION"
     WORKSPACE_TO_AUTHORITY = "WORKSPACE_TO_AUTHORITY"
     SELF_EVOLUTION_TO_AUTHORITY = "SELF_EVOLUTION_TO_AUTHORITY"
+    #: Added in #242. ``pi_auth`` is non-monotone, so *withdrawing* authority
+    #: moves it exactly as minting does. Before #242 a revocation labelled
+    #: ``EVIDENCE_BEARING_PROMOTION`` produced zero findings and reported PASS,
+    #: because the promotion contract only inspected added grants. That made the
+    #: "refutation-driven revocation" control vacuous: it could not fail.
+    UNATTESTED_REVOCATION = "UNATTESTED_REVOCATION"
 
 
 #: Which threat family an authority change under a non-promotion transition is.
@@ -309,6 +326,9 @@ class Transition:
     #: Only meaningful for EVIDENCE_BEARING_PROMOTION: the roots claimed as
     #: independent support for the grants introduced by this transition.
     claimed_evidence_root_ids: Tuple[str, ...] = ()
+    #: Only meaningful for EVIDENCE_BEARING_PROMOTION that *removes* grants: the
+    #: roots claimed as refuting evidence for a revocation or supersession.
+    claimed_refutation_root_ids: Tuple[str, ...] = ()
     #: Set when the promotion's own assurance was produced by the proposer.
     self_attested: bool = False
 
@@ -335,7 +355,44 @@ class NoninterferenceStatus(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
-REPORT_SCHEMA_VERSION = "epistemic-noninterference-report-v1"
+#: Bumped for #242: the report now carries ``legal_revocations`` and
+#: ``source_bindings``. v1 remains the frozen schema for pre-#242 receipts.
+REPORT_SCHEMA_VERSION = "epistemic-noninterference-report-v2"
+
+
+@dataclass(frozen=True)
+class SourceBinding:
+    """SHA-256 over the exact bytes of one checker or suite file.
+
+    Binds a report to the identity of the code that produced it, so a receipt
+    cannot be re-read as evidence about a later, different checker.
+    """
+
+    path: str
+    sha256: str
+
+
+def bind_sources(paths: Iterable[Path | str], *, root: Path | str) -> Tuple[SourceBinding, ...]:
+    """Digest each named file, recording paths relative to ``root``.
+
+    A missing file raises rather than being silently skipped: a binding that
+    quietly omits the file it claims to pin is worse than no binding.
+    """
+
+    base = Path(root)
+    bindings: list[SourceBinding] = []
+    for item in paths:
+        resolved = Path(item)
+        if not resolved.is_absolute():
+            resolved = base / resolved
+        payload = resolved.read_bytes()
+        bindings.append(
+            SourceBinding(
+                path=str(resolved.relative_to(base)),
+                sha256=sha256(payload).hexdigest(),
+            )
+        )
+    return tuple(sorted(bindings, key=lambda item: item.path))
 
 
 @dataclass(frozen=True)
@@ -346,6 +403,17 @@ class NoninterferenceReport:
     checked_transitions: int = 0
     legal_promotions: int = 0
     families_exercised: frozenset[LeakFamily] = frozenset()
+    legal_revocations: int = 0
+    source_bindings: Tuple[SourceBinding, ...] = ()
+
+    def with_source_bindings(
+        self, bindings: Tuple[SourceBinding, ...]
+    ) -> "NoninterferenceReport":
+        """Attach source identity. Never changes the verdict."""
+
+        from dataclasses import replace as _replace
+
+        return _replace(self, source_bindings=bindings)
 
     @property
     def holds(self) -> bool:
@@ -387,7 +455,12 @@ class NoninterferenceReport:
             "reasons": list(self.reasons),
             "checked_transitions": self.checked_transitions,
             "legal_promotions": self.legal_promotions,
+            "legal_revocations": self.legal_revocations,
             "families_exercised": sorted(family.value for family in self.families_exercised),
+            "source_bindings": [
+                {"path": binding.path, "sha256": binding.sha256}
+                for binding in self.source_bindings
+            ],
             "holds": self.holds,
             "grants_authority": False,
         }
@@ -424,10 +497,31 @@ def _check_promotion(
     transition: Transition,
     added: Sequence[AuthorityGrant],
     roots: Mapping[str, EvidenceRoot],
+    removed: Sequence[AuthorityGrant] = (),
 ) -> Tuple[NoninterferenceFinding, ...]:
     """Verify a registered promotion actually satisfies the authority contract."""
 
     findings: list[NoninterferenceFinding] = []
+
+    # Withdrawal moves pi_auth too. Before #242 this branch did not exist, so a
+    # bare-string revocation labelled as a promotion passed with zero findings.
+    if removed:
+        refuting = [
+            roots[root_id]
+            for root_id in transition.claimed_refutation_root_ids
+            if root_id in roots
+        ]
+        if not any(root.kind in _SCIENTIFIC_ROOT_KINDS for root in refuting):
+            findings.append(
+                NoninterferenceFinding(
+                    transition.transition_id,
+                    transition.kind,
+                    LeakFamily.UNATTESTED_REVOCATION,
+                    "authority was withdrawn without registered refuting evidence "
+                    "about nature",
+                    tuple(removed),
+                )
+            )
 
     if transition.self_attested and added:
         findings.append(
@@ -528,6 +622,7 @@ def check_epistemic_noninterference(
     findings: list[NoninterferenceFinding] = []
     families: set[LeakFamily] = set()
     legal_promotions = 0
+    legal_revocations = 0
 
     previous = pi_auth(initial)
     composed = initial.authority is not None
@@ -538,11 +633,14 @@ def check_epistemic_noninterference(
         removed = tuple(sorted(previous - current, key=lambda g: (g.claim_id, g.axis.value, g.scope_id)))
 
         if step.kind is TransitionKind.EVIDENCE_BEARING_PROMOTION:
-            step_findings = _check_promotion(step, added, roots)
+            step_findings = _check_promotion(step, added, roots, removed)
             findings.extend(step_findings)
             families.update(finding.family for finding in step_findings)
-            if added and not step_findings:
-                legal_promotions += 1
+            if not step_findings:
+                if added:
+                    legal_promotions += 1
+                if removed:
+                    legal_revocations += 1
         elif added or removed:
             family = _LEAK_FAMILY_BY_KIND.get(step.kind, LeakFamily.EXPERIENCE_TO_EVIDENCE)
             families.add(family)
@@ -567,6 +665,7 @@ def check_epistemic_noninterference(
             len(steps),
             legal_promotions,
             frozenset(families),
+            legal_revocations,
         )
     if not composed:
         return NoninterferenceReport(
@@ -579,6 +678,7 @@ def check_epistemic_noninterference(
             len(steps),
             legal_promotions,
             frozenset(),
+            legal_revocations,
         )
     return NoninterferenceReport(
         NoninterferenceStatus.PASS,
@@ -587,6 +687,7 @@ def check_epistemic_noninterference(
         len(steps),
         legal_promotions,
         frozenset(),
+        legal_revocations,
     )
 
 
@@ -606,21 +707,97 @@ class IntegrationSurfaceReport:
     reasons: Tuple[str, ...]
 
 
+#: Types whose presence means AuthorityAxis-bearing authority is reachable.
+_AUTHORITY_CARRIER_TYPES = (AuthorityLedger, AuthorityCertificate, AuthorityAxis)
+
+
+def _carries_authority(annotation: object, _depth: int = 0) -> bool:
+    """Resolve an annotation and report whether scientific authority is reachable.
+
+    Deliberately *not* a substring match on the annotation text. A check that
+    asks "does the type name contain 'Authority'" can only return the answer the
+    integrator named into it, and would miss a real carrier reached through a
+    differently-named wrapper. This walks the resolved types instead.
+    """
+
+    if _depth > 4:
+        return False
+    origin = get_origin(annotation)
+    if origin is not None:
+        return any(_carries_authority(arg, _depth + 1) for arg in get_args(annotation))
+    if not isinstance(annotation, type):
+        return False
+    if annotation in _AUTHORITY_CARRIER_TYPES:
+        return True
+    if is_dataclass(annotation):
+        try:
+            hints = get_type_hints(annotation)
+        except Exception:  # pragma: no cover - unresolvable forward refs
+            hints = {item.name: item.type for item in fields(annotation)}
+        return any(_carries_authority(hint, _depth + 1) for hint in hints.values())
+    return False
+
+
+def project_v3_state(
+    state: object,
+    *,
+    routing_scores: Tuple[Tuple[str, float], ...] = (),
+    access_counts: Tuple[Tuple[str, int], ...] = (),
+) -> ComposedResearchState:
+    """Project a live :class:`~rakl.v3_runtime.RAKLV3State` into ``X_t``.
+
+    This is what makes the invariant testable against the *real* runtime rather
+    than a hand-built world: attacks call the actual v3 transition functions and
+    project the states they return.
+
+    The authority ledger is rebuilt fresh from the state's immutable projection
+    on every call, so two projections of two states never share mutable
+    structure. Sharing one live ledger would make ``pi_auth(before)`` and
+    ``pi_auth(after)`` read the same object and silently mask every leak.
+
+    ``evidence_roots`` are derived from the registered content-bound evidence, so
+    the promotion contract is checked against what the runtime actually holds and
+    not against a caller-supplied list.
+    """
+
+    from .v3_scientific_authority import ledger_from_projection
+
+    projection = state.scientific_authority  # type: ignore[attr-defined]
+    return ComposedResearchState(
+        experience=state.experience,  # type: ignore[attr-defined]
+        authority=ledger_from_projection(projection),
+        evidence_roots=tuple(
+            EvidenceRoot(
+                root_id=item.evidence_id,
+                kind=item.kind,
+                supports_axes=frozenset(item.supports_axes),
+                upstream_root_id=item.upstream_evidence_id,
+            )
+            for item in projection.evidence
+        ),
+        routing_scores=routing_scores,
+        access_counts=access_counts,
+    )
+
+
 def describe_integration_surface() -> IntegrationSurfaceReport:
     """Audit whether ``RAKLV3State`` reaches the scientific-authority ledger.
 
     Determined structurally from the live dataclass rather than asserted, so the
-    report follows the code if a future revision wires the two together.
+    report follows the code if a future revision rewires the two families.
     """
 
     from . import v3_runtime
 
     state_fields = tuple(item.name for item in fields(v3_runtime.RAKLV3State))
-    annotations = {
-        item.name: str(item.type) for item in fields(v3_runtime.RAKLV3State)
-    }
+    try:
+        annotations = get_type_hints(v3_runtime.RAKLV3State)
+    except Exception:  # pragma: no cover - unresolvable forward refs
+        annotations = {item.name: item.type for item in fields(v3_runtime.RAKLV3State)}
     carriers = tuple(
-        name for name, annotation in annotations.items() if "Authority" in annotation
+        name
+        for name in state_fields
+        if _carries_authority(annotations.get(name))
     )
     composed = bool(carriers)
     reasons: list[str] = []
@@ -633,6 +810,13 @@ def describe_integration_surface() -> IntegrationSurfaceReport:
             "the invariant is therefore prospective: it constrains integration "
             "code that composes the two families, and cannot be reported as an "
             "enforced property of the current revision"
+        )
+    else:
+        reasons.append(
+            "RAKLV3State composes scientific authority via "
+            + ", ".join(carriers)
+            + "; the experience-to-authority channel is reachable and the "
+            "invariant is exercised against a real composition surface (#242)"
         )
     return IntegrationSurfaceReport(
         composed=composed,

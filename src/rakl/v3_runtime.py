@@ -29,6 +29,38 @@ from .saturation_vector import NoveltyRound, SaturationVectorState, add_novelty_
 from .strategy_motifs import StrategyMotif
 from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
 from .v3_authority import ProtectedAuthorityContext
+from .v3_scientific_authority import (
+    ScientificAuthorityProjection,
+    ScientificEvidenceBinding,
+    ScientificTransitionOutcome,
+    promote_scientific_authority,
+    register_scientific_claim,
+    register_scientific_evidence,
+    revoke_scientific_authority,
+    supersede_scientific_authority,
+)
+
+__all__ = [
+    "ConsolidationOutcome",
+    "FailureProjectionSpec",
+    "RAKLV3State",
+    "ScientificAuthorityProjection",
+    "ScientificEvidenceBinding",
+    "ScientificTransitionOutcome",
+    "ToolProjectionSpec",
+    "compile_state_fibre",
+    "consolidate_lesson",
+    "materialize_state_substrate",
+    "promote_scientific_authority",
+    "record_saturation_round",
+    "record_task_episode",
+    "register_scientific_claim",
+    "register_scientific_evidence",
+    "revoke_scientific_authority",
+    "state_fingerprint",
+    "state_fingerprint_v2",
+    "supersede_scientific_authority",
+]
 
 
 @dataclass(frozen=True)
@@ -59,13 +91,19 @@ class ToolProjectionSpec:
 
 @dataclass(frozen=True)
 class RAKLV3State:
-    """Persistent external learning state used by a replaceable LLM driver."""
+    """Persistent external learning state used by a replaceable LLM driver.
+
+    ``scientific_authority`` is appended last so positional construction by
+    existing v3 consumers keeps working, and it defaults to an empty projection
+    so experience-only callers are unaffected (refs #242).
+    """
 
     experience: ExperienceLedger = ExperienceLedger()
     tools: ResearchToolInventory = ResearchToolInventory()
     failures: FailureExperienceLattice = FailureExperienceLattice()
     saturation: SaturationVectorState = SaturationVectorState()
     evolution: EvolutionArchive | None = None
+    scientific_authority: ScientificAuthorityProjection = ScientificAuthorityProjection()
 
 
 @dataclass(frozen=True)
@@ -76,15 +114,46 @@ class ConsolidationOutcome:
     projected_tool_id: str | None
 
 
-def state_fingerprint(state: RAKLV3State) -> str:
-    """Return an opaque deterministic identity for a frozen v3 value state.
+#: Coordinates covered by the v1 fingerprint contract, in their original order.
+#: Frozen: appending a coordinate here would silently change historical benchmark
+#: identity, which issue #242 §7 forbids. New coordinates go into v2.
+_V1_FINGERPRINT_FIELDS: Tuple[str, ...] = (
+    "experience",
+    "tools",
+    "failures",
+    "saturation",
+    "evolution",
+)
 
-    The v3 state is composed of immutable dataclasses/tuples, so its repr is stable
-    for equal in-process values.  This fingerprint is a benchmark/version identity,
-    not a cryptographic attestation of external artifacts referenced by the state.
+
+def state_fingerprint(state: RAKLV3State) -> str:
+    """Return the **v1** deterministic identity for a frozen v3 value state.
+
+    The v1 contract covers the experience-side coordinates only, reproducing the
+    exact bytes hashed before the scientific-authority coordinate was composed in
+    (refs #242).  Historical benchmark identities therefore remain valid: a state
+    carrying no scientific authority fingerprints exactly as it did on the
+    pre-integration revision.
+
+    This is a benchmark/version identity, not a cryptographic attestation of
+    external artifacts referenced by the state.  Use
+    :func:`state_fingerprint_v2` when scientific authority must be part of the
+    identity.
     """
 
-    return sha256(repr(state).encode("utf-8")).hexdigest()
+    body = ", ".join(f"{name}={getattr(state, name)!r}" for name in _V1_FINGERPRINT_FIELDS)
+    return sha256(f"RAKLV3State({body})".encode("utf-8")).hexdigest()
+
+
+def state_fingerprint_v2(state: RAKLV3State) -> str:
+    """Return the **v2** identity, covering scientific authority as well.
+
+    Two states that differ only in their scientific-authority projection share a
+    v1 fingerprint and differ under v2.  Benchmarks that must be sensitive to
+    authority movement have to pin v2 explicitly rather than inherit it.
+    """
+
+    return sha256(("v2:" + repr(state)).encode("utf-8")).hexdigest()
 
 
 def record_task_episode(

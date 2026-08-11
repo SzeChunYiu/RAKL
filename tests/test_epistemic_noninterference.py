@@ -25,6 +25,7 @@ from rakl.authority_ledger import (
 )
 from rakl.epistemic_noninterference import (
     ComposedResearchState,
+    bind_sources,
     EvidenceRoot,
     EvidenceRootKind,
     LeakFamily,
@@ -266,7 +267,13 @@ def test_legal_evidence_bearing_promotion_is_accepted() -> None:
 
 
 def test_registered_revocation_is_legal() -> None:
-    """Refutation must be able to shrink the authority projection."""
+    """Refutation must be able to shrink the authority projection.
+
+    Tightened at #242: the transition must now declare the *registered refuting
+    evidence*. Before that, this control passed with no refuting evidence at all,
+    which made it vacuous — it could not fail. See
+    ``test_unattested_revocation_is_a_leak`` for the world it could not catch.
+    """
 
     before = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
     after = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
@@ -274,9 +281,61 @@ def test_registered_revocation_is_legal() -> None:
 
     report = check_epistemic_noninterference(
         _state(ledger=before),
-        (Transition("t1", TransitionKind.EVIDENCE_BEARING_PROMOTION, _state(ledger=after)),),
+        (
+            Transition(
+                "t1",
+                TransitionKind.EVIDENCE_BEARING_PROMOTION,
+                _state(ledger=after),
+                claimed_refutation_root_ids=("obs-mechanism",),
+            ),
+        ),
     )
     assert report.status is NoninterferenceStatus.PASS
+    assert report.legal_revocations == 1
+
+
+def test_unattested_revocation_is_a_leak() -> None:
+    """``pi_auth`` is non-monotone, so withdrawal moves it exactly as minting does.
+
+    Regression for a hole found while integrating #242 and verified against the
+    pre-fix code: a revocation labelled ``EVIDENCE_BEARING_PROMOTION`` with a
+    bare reason string produced zero findings and reported ``PASS``, because the
+    promotion contract inspected only *added* grants.
+    """
+
+    before = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
+    after = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
+    after.revoke("cert-0", reason="I changed my mind")
+
+    report = check_epistemic_noninterference(
+        _state(ledger=before),
+        (Transition("t1", TransitionKind.EVIDENCE_BEARING_PROMOTION, _state(ledger=after)),),
+    )
+    assert report.status is NoninterferenceStatus.LEAK_DETECTED
+    assert report.families_detected() == frozenset({LeakFamily.UNATTESTED_REVOCATION})
+    assert report.legal_revocations == 0
+
+
+def test_experience_backed_revocation_is_still_a_leak() -> None:
+    """A lesson or episode cannot refute a claim about nature either."""
+
+    before = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
+    after = _ledger_with(("claim-1", AuthorityAxis.MECHANISM, "regime-A"))
+    after.revoke("cert-0", reason="our runs kept failing")
+
+    report = check_epistemic_noninterference(
+        _state(ledger=before),
+        (
+            Transition(
+                "t1",
+                TransitionKind.EVIDENCE_BEARING_PROMOTION,
+                _state(ledger=after),
+                claimed_refutation_root_ids=("ep-1", "lesson-1"),
+            ),
+        ),
+    )
+    assert report.status is NoninterferenceStatus.LEAK_DETECTED
+    assert LeakFamily.UNATTESTED_REVOCATION in report.families_detected()
 
 
 # --------------------------------------------------------------------------
@@ -434,6 +493,9 @@ def test_every_threat_family_has_a_planted_world() -> None:
         LeakFamily.PREDICTION_TO_MECHANISM,
         LeakFamily.MECHANISM_TO_IDENTIFICATION,
         LeakFamily.SELF_EVOLUTION_TO_AUTHORITY,
+        # planted by test_unattested_revocation_is_a_leak and
+        # test_experience_backed_revocation_is_still_a_leak (#242)
+        LeakFamily.UNATTESTED_REVOCATION,
     }
     assert exercised == set(LeakFamily)
 
@@ -491,17 +553,23 @@ def test_uncomposed_state_reports_no_integration_surface_not_pass() -> None:
     assert not report.holds
 
 
-def test_current_framework_revision_has_no_integration_surface() -> None:
+def test_current_framework_revision_composes_an_integration_surface() -> None:
     """Structural audit of main, derived from the live dataclass.
 
-    If a future revision composes an authority ledger into the v3 state this
-    test fails, which is the intended signal to re-scope the invariant from
-    prospective to enforced.
+    Inverted at #242. The prior assertion was ``composed is False``, with the
+    documented intent that composing an authority ledger into the v3 state should
+    fail that test as the signal to re-scope the invariant from prospective to
+    enforced. That re-scope has now happened: ``RAKLV3State`` carries a
+    ``ScientificAuthorityProjection``, so the leak channel is reachable and the
+    invariant is exercised against a real surface.
+
+    The historical negative finding is preserved verbatim in
+    ``docs/EPISTEMIC_NONINTERFERENCE.md`` §9 rather than being overwritten.
     """
 
     surface = describe_integration_surface()
-    assert surface.composed is False
-    assert surface.authority_axis_carriers == ()
+    assert surface.composed is True
+    assert surface.authority_axis_carriers == ("scientific_authority",)
     assert "experience" in surface.v3_state_fields
     assert surface.reasons
 
@@ -511,25 +579,54 @@ def test_report_never_grants_authority() -> None:
     assert report.grants_authority is False
 
 
-def test_noninterference_report_to_dict_validates_against_v1_schema() -> None:
-    """Authority-boundary export must match the frozen JSON schema (#152)."""
+def test_noninterference_report_to_dict_validates_against_v2_schema() -> None:
+    """Authority-boundary export must match the frozen JSON schema (#152, #242).
+
+    Bumped to v2 at #242: the report gained ``legal_revocations`` and
+    ``source_bindings``, and v1 declares ``additionalProperties: false``. v1
+    stays on disk as the frozen contract for pre-#242 receipts.
+    """
 
     import json
     from pathlib import Path
 
     from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 
+    root = Path(__file__).resolve().parents[1]
     report = check_epistemic_noninterference(
         _state(),
         (Transition("t1", TransitionKind.RECORD_EPISODE, _state(episodes=("ep-1",))),),
+    ).with_source_bindings(
+        bind_sources(("src/rakl/epistemic_noninterference.py",), root=root)
     )
     payload = report.to_dict()
-    schema_path = (
-        Path(__file__).resolve().parents[1]
-        / "schemas"
-        / "epistemic-noninterference-report-v1.schema.json"
-    )
+    schema_path = root / "schemas" / "epistemic-noninterference-report-v2.schema.json"
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(payload)
     assert payload["grants_authority"] is False
     assert payload["status"] == "NO_INTEGRATION_SURFACE"
+    assert payload["source_bindings"][0]["path"] == "src/rakl/epistemic_noninterference.py"
+
+
+def test_schema_id_matches_its_filename() -> None:
+    """Guards the copy-paste failure mode that previously blocked every PR."""
+
+    import json
+    from pathlib import Path
+
+    schema_dir = Path(__file__).resolve().parents[1] / "schemas"
+    for name in (
+        "epistemic-noninterference-report-v1.schema.json",
+        "epistemic-noninterference-report-v2.schema.json",
+    ):
+        schema = json.loads((schema_dir / name).read_text(encoding="utf-8"))
+        assert schema["$id"].endswith("/" + name), name
+
+
+def test_source_binding_refuses_to_silently_skip_a_missing_file() -> None:
+    """A binding that quietly omits the file it claims to pin is worse than none."""
+
+    from pathlib import Path
+
+    with pytest.raises(FileNotFoundError):
+        bind_sources(("src/rakl/does_not_exist.py",), root=Path(__file__).resolve().parents[1])

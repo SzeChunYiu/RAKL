@@ -29,6 +29,13 @@ class AttestationPurpose(str, Enum):
     GOVERNANCE_PROMOTION = "GOVERNANCE_PROMOTION"
     BENCHMARK_FREEZE = "BENCHMARK_FREEZE"
     BENCHMARK_MATCH = "BENCHMARK_MATCH"
+    # Scientific-authority purposes (refs #242). Kept distinct from the
+    # LESSON_* / TOOL_PROJECTION method-authority purposes on purpose: reusing a
+    # method-authority purpose to mint AuthorityAxis authority would be exactly
+    # the cross-authority flattening EPISTEMIC_NONINTERFERENCE forbids.
+    SCIENTIFIC_AUTHORITY_PROMOTION = "SCIENTIFIC_AUTHORITY_PROMOTION"
+    SCIENTIFIC_AUTHORITY_REVOCATION = "SCIENTIFIC_AUTHORITY_REVOCATION"
+    SCIENTIFIC_AUTHORITY_SUPERSESSION = "SCIENTIFIC_AUTHORITY_SUPERSESSION"
 
 
 def _parse_time(value: str) -> datetime | None:
@@ -187,6 +194,14 @@ PROTECTED_ATTESTATION_MANIFEST: dict[str, str] = {
     "governance": "0ecfa661bf7702920fcf977ff741e4f4b9263a284a989dc619ac9311be9cf161",
     "freeze": "c81a942cebfbaeb37f3e8aaa5f86ff83fbe4cb42f6a55241b1526fb4fde22994",
     "match": "b28ec3d25ab5751950d8660cd967e044c5bffe3a1fa28f8a9fad49909d852c89",
+    # Scientific-authority assurance fixtures (refs #242). Each digest pins one
+    # exact attestation, and its subject_hash pins one exact scientific
+    # assertion, so these entries cannot be reused for a different claim, axis,
+    # scope or evidence set. Deployment roots still require a separately reviewed
+    # manifest update and external evaluator custody.
+    "scientific-promotion": "d42509209fdaaeb8bfec72f9a72a0b7c0b300008207f28ea973c8c2abedffa64",
+    "scientific-revocation": "3f9d4a01c5a1d2606d5071a5fbacb54071bdaeb3b99489739977913287264f15",
+    "scientific-supersession": "68115a64619d0ab36476c79e0dfabaf9cdcf3b010a5ff7a668c2ea6a29cfbd6c",
 }
 
 

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/epistemic-noninterference-report-v2.schema.json",
+  "title": "RAKL epistemic noninterference report v2",
+  "description": "Proposal-only diagnostic for Paper II authority noninterference (issues #152, #242). PASS means pi_auth was unchanged under non-promotion transitions and every registered promotion satisfied the authority contract; NO_INTEGRATION_SURFACE means the experience and authority families are not composed (unreachability is not enforcement). v2 adds legal_revocations and source_bindings, and the UNATTESTED_REVOCATION family: pi_auth is non-monotone, so withdrawal of authority moves it exactly as minting does. Never mints scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "findings",
+    "reasons",
+    "checked_transitions",
+    "legal_promotions",
+    "legal_revocations",
+    "families_exercised",
+    "source_bindings",
+    "holds",
+    "grants_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "epistemic-noninterference-report-v2"},
+    "status": {
+      "enum": [
+        "PASS",
+        "LEAK_DETECTED",
+        "NO_INTEGRATION_SURFACE",
+        "CANNOT_CHECK"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["transition_id", "kind", "family", "reason", "added_grants"],
+        "properties": {
+          "transition_id": {"type": "string", "minLength": 1},
+          "kind": {
+            "enum": [
+              "RECORD_EPISODE",
+              "RECORD_FAILURE",
+              "CONSOLIDATE_LESSON",
+              "PROJECT_TOOL",
+              "REUSE_LESSON",
+              "RETRIEVE",
+              "UPDATE_ROUTING_POLICY",
+              "WORKSPACE_LOAD",
+              "WORKSPACE_EVICT",
+              "REFLECT",
+              "SELF_EVOLUTION_WIN",
+              "EVIDENCE_BEARING_PROMOTION"
+            ]
+          },
+          "family": {
+            "enum": [
+              "EXPERIENCE_TO_EVIDENCE",
+              "REPETITION_TO_AUTHORITY",
+              "ROUTING_TO_AUTHORITY",
+              "REFLECTION_TO_AUTHORITY",
+              "FAILURE_TO_IMPOSSIBILITY",
+              "PROVENANCE_TO_INDEPENDENCE",
+              "PREDICTION_TO_MECHANISM",
+              "MECHANISM_TO_IDENTIFICATION",
+              "WORKSPACE_TO_AUTHORITY",
+              "SELF_EVOLUTION_TO_AUTHORITY",
+              "UNATTESTED_REVOCATION"
+            ]
+          },
+          "reason": {"type": "string", "minLength": 1},
+          "added_grants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["claim_id", "axis", "scope_id", "partial"],
+              "properties": {
+                "claim_id": {"type": "string", "minLength": 1},
+                "axis": {
+                  "enum": ["G", "R", "M", "I", "D"]
+                },
+                "scope_id": {"type": "string", "minLength": 1},
+                "partial": {"type": "boolean"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "checked_transitions": {"type": "integer", "minimum": 0},
+    "legal_promotions": {"type": "integer", "minimum": 0},
+    "legal_revocations": {"type": "integer", "minimum": 0},
+    "families_exercised": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_bindings": {
+      "description": "SHA-256 over the exact bytes of each checker or suite file this report was produced by. Binds the verdict to code identity so a receipt cannot be re-read as evidence about a later, different checker.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "holds": {"type": "boolean"},
+    "grants_authority": {"const": false}
+  }
+}

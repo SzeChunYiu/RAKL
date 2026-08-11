@@ -1,0 +1,227 @@
+{
+  "receipt_id": "RAKL_V3_NONINTERFERENCE_INTEGRATION_20260811",
+  "date": "2026-08-11",
+  "issue": 242,
+  "status": "FRAMEWORK_INTEGRATION / NONINTERFERENCE_REAL_SURFACE / NO_EMPIRICAL_SUPERIORITY_CLAIM",
+  "parent_commit": "fca6a868b6fc2b85f8351f8c120291acb14d8776",
+  "quantity_of_interest": "whether RAKLV3State composes a scientific-authority coordinate that the EPISTEMIC_NONINTERFERENCE checker can attack as a real surface, with authority binding that is subject/certificate-bound rather than declaration-bound",
+  "verdict": {
+    "integration_surface_composed": true,
+    "authority_axis_carriers": [
+      "scientific_authority"
+    ],
+    "noninterference_status": "PASS",
+    "no_integration_surface_eliminated": true,
+    "grants_authority": false
+  },
+  "noninterference_report": {
+    "schema_version": "epistemic-noninterference-report-v2",
+    "status": "PASS",
+    "findings": [],
+    "reasons": [],
+    "checked_transitions": 1,
+    "legal_promotions": 0,
+    "legal_revocations": 0,
+    "families_exercised": [],
+    "source_bindings": [
+      {
+        "path": "schemas/epistemic-noninterference-report-v2.schema.json",
+        "sha256": "8deaeeb0b18bf737080738d15165b3776276d08c8f1638c62ffab859fd9cfc2c"
+      },
+      {
+        "path": "src/rakl/authority_ledger.py",
+        "sha256": "3a045599c1ffb022e73a5580c34ffc83ce034296a917f2489bb60815e2458d26"
+      },
+      {
+        "path": "src/rakl/epistemic_noninterference.py",
+        "sha256": "66019b2dd8a4e594535d132554286b2e2937572e1abbc7eb8d1af8bc9ca72cfb"
+      },
+      {
+        "path": "src/rakl/v3_authority.py",
+        "sha256": "77da0496436f83eddd6e04e8149b0a4826d3b177379f66a53a2af22666badfdd"
+      },
+      {
+        "path": "src/rakl/v3_runtime.py",
+        "sha256": "e36b70cdd10669616d5d1b029ea8f5cd8dd377cf7104c11fcb3991558cc5935f"
+      },
+      {
+        "path": "src/rakl/v3_scientific_authority.py",
+        "sha256": "29d15016a03a661beafc09cd669c713a270aab9cd88bcecb482b819c27fbd9b9"
+      },
+      {
+        "path": "tests/test_epistemic_noninterference.py",
+        "sha256": "d14f8eaab683daa3df10f6981ba8661ea45c17a8bf0c6af97218b8e02ea7adbe"
+      },
+      {
+        "path": "tests/test_v3_scientific_authority_noninterference.py",
+        "sha256": "24d67f813399b02d6086cd3dfe3dde03593e1f8c92c5468f22fef225f22c4e8f"
+      }
+    ],
+    "holds": true,
+    "grants_authority": false
+  },
+  "suite": {
+    "files": [
+      "tests/test_v3_scientific_authority_noninterference.py",
+      "tests/test_epistemic_noninterference.py"
+    ],
+    "collected": 70,
+    "returncode": 0,
+    "all_passed": true
+  },
+  "evidence_strata": {
+    "contract_enforced": {
+      "description": "attacks on promote_scientific_authority / revoke_scientific_authority, the only functions that can move pi_auth; these go red if the runtime contract is removed",
+      "families": [
+        "EXPERIENCE_TO_EVIDENCE",
+        "PROVENANCE_TO_INDEPENDENCE",
+        "PREDICTION_TO_MECHANISM",
+        "MECHANISM_TO_IDENTIFICATION",
+        "SELF_EVOLUTION_TO_AUTHORITY",
+        "UNATTESTED_REVOCATION"
+      ]
+    },
+    "structural_plus_anti_vacuity": {
+      "description": "derived coordinates (R_t is recomputed, not stored). pi_auth invariance is asserted together with an assertion that the non-authority projection actually moved, so a runtime that learns nothing does not pass by doing nothing. WEAKER: would also hold under unreachability.",
+      "families": [
+        "REPETITION_TO_AUTHORITY",
+        "ROUTING_TO_AUTHORITY",
+        "REFLECTION_TO_AUTHORITY",
+        "FAILURE_TO_IMPOSSIBILITY",
+        "WORKSPACE_TO_AUTHORITY"
+      ]
+    },
+    "honesty_note": "The ten families are NOT uniform in strength. A flat '10/10 PASS' would overstate the result and is deliberately not reported."
+  },
+  "mutation_testing": {
+    "policy": "planted in the INTEGRATION path, not the checker; docs 6.1 already records three checker mutations and re-planting there would validate nothing new",
+    "all_caught": true,
+    "post_restore_failures": [],
+    "mutations": [
+      {
+        "mutation": "M1_experience_evidence_guard_removed",
+        "description": "lesson confidence / routing score / repeated failure -> scientific authority",
+        "mutated_file": "src/rakl/v3_scientific_authority.py",
+        "caught": true,
+        "failing_tests": [
+          "test_planted_shortcut_cannot_mint_scientific_authority[lesson_confidence_to_scientific_authority]",
+          "test_planted_shortcut_cannot_mint_scientific_authority[repeated_failure_to_impossibility_authority]",
+          "test_planted_shortcut_cannot_mint_scientific_authority[routing_score_to_authority]",
+          "test_runtime_refuses_experience_evidence_even_when_mixed_with_real_evidence"
+        ]
+      },
+      {
+        "mutation": "M2_independent_lineage_guard_removed",
+        "description": "source count -> independent evidence count",
+        "mutated_file": "src/rakl/v3_scientific_authority.py",
+        "caught": true,
+        "failing_tests": [
+          "test_planted_shortcut_cannot_mint_scientific_authority[source_count_to_independent_evidence_count]"
+        ]
+      },
+      {
+        "mutation": "M3_axis_escalation_guard_removed",
+        "description": "predictive success -> mechanism authority",
+        "mutated_file": "src/rakl/v3_scientific_authority.py",
+        "caught": true,
+        "failing_tests": [
+          "test_planted_shortcut_cannot_mint_scientific_authority[predictive_success_to_mechanism_authority]"
+        ]
+      },
+      {
+        "mutation": "M4_attestation_resolution_skipped",
+        "description": "declaration-bound regression: authority minted without a subject-bound certificate",
+        "mutated_file": "src/rakl/v3_scientific_authority.py",
+        "caught": true,
+        "failing_tests": [
+          "test_altering_the_proposition_invalidates_the_attestation",
+          "test_attestation_absent_from_the_release_manifest_is_refused",
+          "test_attestation_bound_to_a_different_claim_is_refused",
+          "test_declaration_alone_cannot_mint_authority",
+          "test_method_authority_purpose_cannot_mint_scientific_authority",
+          "test_self_attested_promotion_is_refused"
+        ]
+      },
+      {
+        "mutation": "M5_record_episode_mints_authority",
+        "description": "experience transition silently mints scientific authority",
+        "mutated_file": "src/rakl/v3_runtime.py",
+        "caught": true,
+        "failing_tests": [
+          "test_authority_projection_does_not_alias_across_transitions",
+          "test_integrated_state_reports_a_real_verdict_not_no_integration_surface",
+          "test_record_episode_moves_experience_and_not_authority",
+          "test_record_failure_moves_the_failure_lattice_and_not_authority"
+        ]
+      },
+      {
+        "mutation": "M6_unattested_revocation_check_removed",
+        "description": "revocation smuggled under a promotion label (the pre-#242 hole)",
+        "mutated_file": "src/rakl/epistemic_noninterference.py",
+        "caught": true,
+        "failing_tests": [
+          "test_checker_catches_a_revocation_smuggled_under_a_promotion_label"
+        ]
+      }
+    ]
+  },
+  "negative_findings_preserved": [
+    {
+      "finding": "shared mutable AuthorityLedger blinds the checker completely",
+      "detail": "with one live ledger aliased across two states, a real authority mint under RECORD_EPISODE reported PASS. Reproduced before the integration was written; motivated the immutable ScientificAuthorityProjection.",
+      "guarded_by": "test_authority_projection_does_not_alias_across_transitions"
+    },
+    {
+      "finding": "unattested revocation passed silently (pre-#242 hole)",
+      "detail": "_check_promotion inspected only added grants, so a revocation with a bare reason string labelled EVIDENCE_BEARING_PROMOTION produced zero findings and reported PASS. The section-5 refutation-driven revocation control was therefore vacuous: it could not fail. Verified against pre-fix code.",
+      "resolution": "strengthened, not relaxed: added LeakFamily.UNATTESTED_REVOCATION, Transition.claimed_refutation_root_ids, separate legal_revocations counter, and a runtime refutation-evidence requirement",
+      "guarded_by": "test_unattested_revocation_is_a_leak, test_checker_catches_a_revocation_smuggled_under_a_promotion_label"
+    },
+    {
+      "finding": "describe_integration_surface used a substring match on annotation text",
+      "detail": "'Authority' in str(field.type) can only return the answer an integrator named into it and would miss a carrier reached through a differently-named wrapper. Replaced with resolved-type traversal to a real AuthorityLedger / AuthorityCertificate / AuthorityAxis carrier."
+    }
+  ],
+  "backward_compatibility": {
+    "v1_fingerprint_contract": "experience, tools, failures, saturation, evolution",
+    "v1_default_state_digest": "ca002a22cd0bc9f783ffa457f3009d560fca1fb6f933484791e8d2d4ec356a8e",
+    "v1_unchanged_from_pre_integration": true,
+    "v2_fingerprint_contract": "all coordinates including scientific authority",
+    "note": "the coordinate is appended last and defaults to empty, so positional construction and experience-only consumers are unaffected"
+  },
+  "compute_evidence_boundary": "Executable architecture invariant only. Establishes NO model capability, NO empirical superiority, and NO claim about authority leakage under generated outputs. Model-level ALR remains #154; learning x governance remains #155. Paper II wording deliberately unchanged in this lane.",
+  "source_bindings": [
+    {
+      "path": "schemas/epistemic-noninterference-report-v2.schema.json",
+      "sha256": "8deaeeb0b18bf737080738d15165b3776276d08c8f1638c62ffab859fd9cfc2c"
+    },
+    {
+      "path": "src/rakl/authority_ledger.py",
+      "sha256": "3a045599c1ffb022e73a5580c34ffc83ce034296a917f2489bb60815e2458d26"
+    },
+    {
+      "path": "src/rakl/epistemic_noninterference.py",
+      "sha256": "66019b2dd8a4e594535d132554286b2e2937572e1abbc7eb8d1af8bc9ca72cfb"
+    },
+    {
+      "path": "src/rakl/v3_authority.py",
+      "sha256": "77da0496436f83eddd6e04e8149b0a4826d3b177379f66a53a2af22666badfdd"
+    },
+    {
+      "path": "src/rakl/v3_runtime.py",
+      "sha256": "e36b70cdd10669616d5d1b029ea8f5cd8dd377cf7104c11fcb3991558cc5935f"
+    },
+    {
+      "path": "src/rakl/v3_scientific_authority.py",
+      "sha256": "29d15016a03a661beafc09cd669c713a270aab9cd88bcecb482b819c27fbd9b9"
+    },
+    {
+      "path": "tests/test_epistemic_noninterference.py",
+      "sha256": "d14f8eaab683daa3df10f6981ba8661ea45c17a8bf0c6af97218b8e02ea7adbe"
+    },
+    {
+      "path": "tests/test_v3_scientific_authority_noninterference.py",
+      "sha256": "24d67f813399b02d6086cd3dfe3dde03593e1f8c92c5468f22fef225f22c4e8f"
+    }
+  ]
+}

@@ -223,6 +223,7 @@ V3_IMPLEMENTATION_OWNER_MAP = {
     "src/rakl/unified_substrate.py": "memory",
     "src/rakl/evolution_archive.py": "objective_evolution",
     "src/rakl/v3_runtime.py": "software_architecture_execution",
+    "src/rakl/v3_scientific_authority.py": "authority_promotion",
     "src/rakl/driver_learning.py": "software_architecture_execution",
     "src/rakl/v3.py": "software_architecture_execution",
 }
