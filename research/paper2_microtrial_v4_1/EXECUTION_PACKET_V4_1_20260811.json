@@ -1,4 +1,5 @@
 {
+  "adaptive_replay_status": "FROZEN_ADAPTIVE_CANDIDATE_REQUIRES_POST_MERGE_BATCH_HEAD_BINDING",
   "architecture_scope": [
     "DIRECT_CORPUS",
     "RAKL_CONTEXT"
@@ -26,7 +27,7 @@
     },
     "execution_contract": {
       "path": "research/paper2_microtrial_v4_1/EXECUTION_CONTRACT_V4_1.json",
-      "sha256": "f2f206531f56ef79d42e7aa45941111d067f5023de2142201ec74a7c40342bc7"
+      "sha256": "f483f250e1b27c038c9d53ead5b6363ecec2ddf5c55afa40e9131eb5177f5a13"
     },
     "lunarc_read_only_observation": {
       "path": "research/paper2_microtrial_v4/LUNARC_READ_ONLY_OBSERVATION_V4_20260811.json",
@@ -50,11 +51,11 @@
     },
     "output_normalization_contract": {
       "path": "research/paper2_microtrial_v4_1/OUTPUT_NORMALIZATION_CONTRACT_V4_1.json",
-      "sha256": "ea861192c7ba08397a1db887c82141623ce7848ee3b733c6f9c7b62a63a44ebf"
+      "sha256": "69ef7c0ce1c6d3dcfa8855c099fd7e9f7ff8c63ef5f4ea4b338fd2ac0ed33ae6"
     },
     "output_normalizer": {
       "path": "src/rakl/paper2_pendulum_microtrial_v4_1.py",
-      "sha256": "2961686e056a1252f5b28ca29c5099a04239d5e63f9caca051f1cbbc48e2a61c"
+      "sha256": "8dec8a60963bf6913f2c350fb63a597e773fb2e301edd53f8c89329590414052"
     },
     "prices": {
       "path": "research/paper2_microtrial_v1/PRICE_SHEET.json",
@@ -94,22 +95,25 @@
     },
     "v4_native_ingest": {
       "path": "research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json",
-      "sha256": "6ef0edffd57b34c43bb2015a5120e7f571429dfa6ccdd5e3182fe4ba2bc3de03"
+      "sha256": "cb73e662832f913264b999140443d061bdcd18e07d725aaf9da16362397abd48"
     }
   },
-  "chronology_note": "The subject SHA is the synchronized main parent at branch creation. Every additive runner, prompt, corpus, question, evaluator, model, tokenizer, environment, resource, price, blinding, and schema artifact is separately byte-bound below before any output is opened.",
-  "claim_boundary": "Non-confirmatory V4.1 repair run only. V4 remains two parse-invalid null scores; V4.1 cannot establish an arm win, matched architecture effect or general superiority.",
+  "chronology_class": "ADAPTIVE_PARSER_REPLAY_FRESH_ONLY_TO_V4_1_OUTPUTS",
+  "chronology_note": "Adaptive parser-repair freeze created after inspecting the V4 result and exact V4 serialization. It is fresh only with respect to V4.1 outputs. Exact candidate artifacts are byte-bound before V4.1 output access; a later post-merge batch contract must separately bind the exact merged origin/main checkout head.",
+  "claim_boundary": "Adaptive non-confirmatory V4.1 parser-engineering replay only, designed after V4 result inspection and fresh only to V4.1 outputs. V4 remains two parse-invalid null scores; V4.1 cannot establish an arm win, matched architecture effect or general superiority.",
   "context": "One sealed known-answer task, seed 17, the same model/evidence/prompts/resources as V4, and a versioned output-serialization intervention only.",
   "evaluated_results_opened_before_freeze": false,
+  "evaluated_results_opened_before_freeze_scope": "V4_1_OUTPUTS_ONLY_PARENT_V4_KNOWN",
   "evaluated_task_seed_unit_count_before_freeze": 0,
+  "evaluated_task_seed_unit_count_before_freeze_scope": "V4_1_OUTPUTS_ONLY_PARENT_V4_KNOWN",
   "evidence_access_level": "COMPLETE_SEALED",
   "expected_download": {
     "download_or_execution_performed_during_freeze": false,
     "mebibytes": 953.291,
     "model_and_tokenizer_bytes": 999597690,
-    "model_execution_permitted_by_this_packet": true
+    "model_execution_permitted_by_this_packet": false
   },
-  "freeze_created_at_utc": "2026-08-11T04:10:30Z",
+  "freeze_created_at_utc": "2026-08-11T04:38:20Z",
   "native_staging_lineage": {
     "chronology_corrected_synthesis_sha256": "3299a064a6793fb67a0c519fc2e9ff2fc729812ed56b98ac82e13b4b36314ae2",
     "final_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2",
@@ -120,10 +124,10 @@
   },
   "object": "One immutable Qwen2.5-0.5B-Instruct snapshot answering the sealed pendulum known-answer task under DIRECT_CORPUS and RAKL_CONTEXT prompt materializations at COMPLETE_SEALED evidence access.",
   "output_normalization_policy_id": "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1",
-  "parent_v4_outputs_observed_before_v4_1_freeze": true,
+  "parent_v4_results_opened_before_v4_1_freeze": true,
   "protocol_id": "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V4_1_OUTPUT_NORMALIZATION",
-  "qoi": "Can a chronology-fresh exact-fence normalization successor produce schema-parseable task/seed receipts without heuristic extraction or changing the V4 null result?",
-  "refreeze_reason": "V4 native job 3475193 completed its governed receipt chain but both raw outputs failed the bare-JSON parser. V4.1 freezes an exact, non-heuristic serialization rule after preserving V4 as negative history and before any V4.1 output exists.",
+  "qoi": "Can an adaptive exact-fence parser replay, frozen only before V4.1 output access, produce schema-parseable task/seed receipts without heuristic extraction or changing the V4 null result?",
+  "refreeze_reason": "After inspecting V4 native job 3475193 and preserving both bare-parser failures as nulls, V4.1 adaptively freezes an exact, non-heuristic serialization rule before any V4.1 output exists. This is not an untouched scientific discriminator.",
   "registered_task_id": "PENDULUM_SEALED_KNOWN_ANSWER_001",
   "result_access_policy": "Run only after semantic preflight PASS from the frozen LUNARC checkout. Before model access, write an exact clean-checkout run manifest; preserve its hash in raw, provider, resource, blinded-score and final receipts.",
   "schema_version": "paper2-pendulum-microtrial-execution-v1",

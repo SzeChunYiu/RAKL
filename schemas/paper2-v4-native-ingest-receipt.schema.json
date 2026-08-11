@@ -1,4 +1,141 @@
 {
+  "$defs": {
+    "armRecord": {
+      "allOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "blind_id": {
+              "enum": [
+                "BLIND_8E24D5",
+                "BLIND_3C791A"
+              ]
+            },
+            "condition": {
+              "enum": [
+                "DIRECT_CORPUS",
+                "RAKL_CONTEXT"
+              ]
+            },
+            "input_tokens": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "output_tokens": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "parse_error": {
+              "const": "model output is not a JSON object"
+            },
+            "parse_valid": {
+              "const": false
+            },
+            "process_high_water_rss_bytes_after_arm": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "raw_output_file_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "raw_output_shape_posthoc_diagnostic": {
+              "enum": [
+                "JSON_FENCE_WITH_TRAILING_PROSE",
+                "PURE_SINGLE_JSON_FENCE"
+              ]
+            },
+            "score": {
+              "type": "null"
+            },
+            "wall_time_ms": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "blind_id",
+            "condition",
+            "input_tokens",
+            "output_tokens",
+            "parse_error",
+            "parse_valid",
+            "process_high_water_rss_bytes_after_arm",
+            "raw_output_file_sha256",
+            "raw_output_shape_posthoc_diagnostic",
+            "score",
+            "wall_time_ms"
+          ],
+          "type": "object"
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "blind_id": {
+                  "const": "BLIND_8E24D5"
+                },
+                "condition": {
+                  "const": "DIRECT_CORPUS"
+                },
+                "raw_output_shape_posthoc_diagnostic": {
+                  "const": "JSON_FENCE_WITH_TRAILING_PROSE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "blind_id": {
+                  "const": "BLIND_3C791A"
+                },
+                "condition": {
+                  "const": "RAKL_CONTEXT"
+                },
+                "raw_output_shape_posthoc_diagnostic": {
+                  "const": "PURE_SINGLE_JSON_FENCE"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "executionCheckout": {
+      "additionalProperties": false,
+      "properties": {
+        "clean": {
+          "const": true
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "repo_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "subject_ancestor": {
+          "const": true
+        },
+        "tree_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clean",
+        "head_sha",
+        "repo_path",
+        "subject_ancestor",
+        "tree_sha"
+      ],
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-v4-native-ingest-receipt.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -11,7 +148,112 @@
       "format": "date-time",
       "type": "string"
     },
+    "ingest_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "schemas/paper2-v4-native-ingest-receipt.schema.json"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "type": "object"
+    },
     "native_execution": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "execution_checkout": {
+          "$ref": "#/$defs/executionCheckout"
+        },
+        "governed_harvest_failures": {
+          "maxItems": 0,
+          "type": "array"
+        },
+        "governed_harvest_verdict": {
+          "const": "HARVEST_TASK_SEED_PASS_NONCONFIRMATORY"
+        },
+        "nodes": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "packet_parent_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "partition": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "post_attestation_result_receipt_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "pre_post_snapshot_identity_equal": {
+          "const": true
+        },
+        "scheduler_elapsed_seconds": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scheduler_exit_status": {
+          "const": [
+            "SUCCESS"
+          ]
+        },
+        "scheduler_return_code": {
+          "const": 0
+        },
+        "scheduler_state": {
+          "const": [
+            "COMPLETED"
+          ]
+        },
+        "slurm_job_id": {
+          "const": "3475193"
+        },
+        "snapshot_canonical_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "snapshot_file_count": {
+          "const": 8
+        },
+        "stderr_warning": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stderr_warning_lines": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "account",
+        "execution_checkout",
+        "governed_harvest_failures",
+        "governed_harvest_verdict",
+        "nodes",
+        "packet_parent_sha",
+        "partition",
+        "post_attestation_result_receipt_sha256",
+        "pre_post_snapshot_identity_equal",
+        "scheduler_elapsed_seconds",
+        "scheduler_exit_status",
+        "scheduler_return_code",
+        "scheduler_state",
+        "slurm_job_id",
+        "snapshot_canonical_sha256",
+        "snapshot_file_count",
+        "stderr_warning",
+        "stderr_warning_lines"
+      ],
       "type": "object"
     },
     "object": {
@@ -26,7 +268,7 @@
       "const": false
     },
     "receipt_id": {
-      "const": "PAPER2_V4_NATIVE_JOB_3475193_INGEST_20260811"
+      "const": "PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811"
     },
     "schema_version": {
       "const": "paper2-v4-native-ingest-receipt-v1"
@@ -39,12 +281,11 @@
           "type": "integer"
         },
         "path": {
-          "minLength": 1,
+          "pattern": "^research/paper2_microtrial_v4/native_bundles/[^/]+\\.tar\\.gz$",
           "type": "string"
         },
         "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "type": "string"
+          "$ref": "#/$defs/sha256"
         }
       },
       "required": [
@@ -55,6 +296,233 @@
       "type": "object"
     },
     "source_files": {
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "stderr_log"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "stdout_log"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "bootstrap_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "governed_harvest"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "snapshot_attestation"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "repository_rollover_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "scheduler_evidence"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "submission_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "blinded_scores"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "provider_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "raw_output"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "resource_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 2,
+          "minContains": 2
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "result_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "run_manifest"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "task_seed_receipt"
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "maxContains": 1,
+          "minContains": 1
+        }
+      ],
       "items": {
         "additionalProperties": false,
         "properties": {
@@ -63,16 +531,30 @@
             "type": "integer"
           },
           "path": {
-            "minLength": 1,
+            "pattern": "^research/paper2_microtrial_v4/native_job_3475193/(?:logs|receipts|runs)/.+$",
             "type": "string"
           },
           "role": {
-            "minLength": 1,
-            "type": "string"
+            "enum": [
+              "stderr_log",
+              "stdout_log",
+              "bootstrap_receipt",
+              "governed_harvest",
+              "snapshot_attestation",
+              "repository_rollover_receipt",
+              "scheduler_evidence",
+              "submission_receipt",
+              "blinded_scores",
+              "provider_receipt",
+              "raw_output",
+              "resource_receipt",
+              "result_receipt",
+              "run_manifest",
+              "task_seed_receipt"
+            ]
           },
           "sha256": {
-            "pattern": "^[0-9a-f]{64}$",
-            "type": "string"
+            "$ref": "#/$defs/sha256"
           }
         },
         "required": [
@@ -85,12 +567,129 @@
       },
       "maxItems": 19,
       "minItems": 19,
-      "type": "array"
+      "type": "array",
+      "uniqueItems": true
     },
     "task_seed_outcome": {
+      "additionalProperties": false,
+      "properties": {
+        "arm_record_count": {
+          "const": 2
+        },
+        "evaluated_task_seed_unit_count": {
+          "const": 1
+        },
+        "frozen_parse_valid_arm_count": {
+          "const": 0
+        },
+        "frozen_scorable_arm_count": {
+          "const": 0
+        },
+        "posthoc_normalized_scores_authorized": {
+          "const": false
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "records": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "blind_id": {
+                    "const": "BLIND_8E24D5"
+                  }
+                },
+                "required": [
+                  "blind_id"
+                ],
+                "type": "object"
+              },
+              "maxContains": 1,
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "blind_id": {
+                    "const": "BLIND_3C791A"
+                  }
+                },
+                "required": [
+                  "blind_id"
+                ],
+                "type": "object"
+              },
+              "maxContains": 1,
+              "minContains": 1
+            }
+          ],
+          "items": {
+            "$ref": "#/$defs/armRecord"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "score_comparison_permitted": {
+          "const": false
+        },
+        "seed": {
+          "const": 17
+        },
+        "task_id": {
+          "const": "PENDULUM_SEALED_KNOWN_ANSWER_001"
+        }
+      },
+      "required": [
+        "arm_record_count",
+        "evaluated_task_seed_unit_count",
+        "frozen_parse_valid_arm_count",
+        "frozen_scorable_arm_count",
+        "posthoc_normalized_scores_authorized",
+        "reason",
+        "records",
+        "score_comparison_permitted",
+        "seed",
+        "task_id"
+      ],
       "type": "object"
     },
     "typed_residual": {
+      "additionalProperties": false,
+      "properties": {
+        "next_discriminator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "null_or_competing_explanations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "observed_signature": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "residual_id": {
+          "const": "PAPER2_V4_OUTPUT_SERIALIZATION_MISMATCH"
+        },
+        "root_cause_ladder": {
+          "const": "R1_SCHEMA_PARSER_TRANSFORMATION"
+        }
+      },
+      "required": [
+        "next_discriminator",
+        "null_or_competing_explanations",
+        "observed_signature",
+        "residual_id",
+        "root_cause_ladder"
+      ],
       "type": "object"
     },
     "verdict": {
@@ -104,6 +703,7 @@
     "verdict",
     "object",
     "qoi",
+    "ingest_schema",
     "source_bundle",
     "source_files",
     "native_execution",

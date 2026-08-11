@@ -39,7 +39,8 @@ The exact archive, 19 extracted evidence files and every byte/hash are bound in
 The immediate residual is `R1_SCHEMA_PARSER_TRANSFORMATION`: both generations
 used Markdown fences while the frozen parser required a bare object.  This does
 not establish that the answer content was scientifically correct.  A distinct
-V4.1 candidate is frozen after preserving V4 and before any V4.1 output:
+adaptive V4.1 parser-replay candidate is frozen after inspecting and preserving
+V4, but before any V4.1 output:
 
 - accept a bare JSON object; or
 - remove exactly one lowercase newline-delimited `json` fence with whitespace
@@ -47,6 +48,7 @@ V4.1 candidate is frozen after preserving V4 and before any V4.1 output:
 - reject trailing prose, multiple/uppercase/unlabelled fences, substring
   extraction, invalid JSON and non-object JSON.
 
-V4.1 changes neither the answer schema nor score thresholds.  It has not been
-merged, submitted or executed, and cannot retroactively authorize a V4 score.
+V4.1 is fresh only to V4.1 outputs, not an untouched discriminator, and changes
+neither the answer schema nor score thresholds.  It has not been merged,
+submitted or executed, and cannot retroactively authorize a V4 score.
 The broader Paper-2 matched empirical claim remains unevaluated.

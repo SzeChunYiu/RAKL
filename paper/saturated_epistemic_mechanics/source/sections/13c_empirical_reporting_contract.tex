@@ -51,7 +51,7 @@ prompt materializations, \texttt{DIRECT\_CORPUS} and
 questions, evaluator, no-tool policy and resource ceiling.  Native job 3475193
 completed in 64 seconds with scheduler return code zero and emitted two arm
 records plus one task--seed index binding the raw output,
-resource receipt and deterministic score for both arms.  All eight staged
+resource receipt and deterministic score record for both arms.  All eight staged
 model/tokenizer files are byte- and hash-attested immediately before and after
 inference; the post-inference attestation also binds the result receipt.  The
 packet parent identity and executed clean checkout SHA/tree remain separate
@@ -76,8 +76,10 @@ model and one deterministic seed.  Its only purpose was to test the real
 inference and receipt chain before expanding the task panel.  The exact negative
 outcome is preserved in
 \path{research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json}.
-A chronology-fresh V4.1 successor freezes a non-heuristic serialization rule:
+An adaptive V4.1 parser-engineering replay, frozen after V4 result inspection
+but before any V4.1 output, fixes a non-heuristic serialization rule:
 bare JSON or exactly one lowercase \texttt{json} fence is admissible, while
 trailing prose, multiple/nonexact fences and substring extraction remain invalid.
-V4.1 does not reinterpret V4 and has not been submitted or executed.  The full
-matched empirical claim remains open.
+It is fresh only to V4.1 outputs, is not an untouched discriminator, does not
+reinterpret V4, and has not been submitted or executed.  The full matched
+empirical claim remains open.
