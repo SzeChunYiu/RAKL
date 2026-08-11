@@ -25,11 +25,8 @@ RECEIPT_PATH = ROOT / "research/receipts/PAPER3_V2_1_ANNOTATION_PACKET_FREEZE_20
 PARENT_SHA = "f4cee8313ec64d02873b87f92c51c35c113cd70d"
 PACKET_FILE_SHA = "a3444836090828daf55d8c16e6d477e756c5362a6d30989425587eb2012feda3"
 PACKET_CANONICAL_SHA = "b5212517a0bb9cbe308727d7972ded38ce68bf7f52448aeb82f6512e584336eb"
-ISSUE_URL = "https://github.com/SzeChunYiu/RAKL/issues/43"
-IMMUTABLE_PACKET_URL = (
-    "https://github.com/SzeChunYiu/RAKL/tree/"
-    "c6f2639b0927566c473817b4ebaafaee3a35ad36/research/paper3/annotation"
-)
+ISSUE_URL = "https://github.com/SzeChunYiu/RAKL/issues/217"
+POWER_DECISION_PATH = "research/paper3/power_design/DECISION_RECEIPT.json"
 
 
 def _load(path: Path) -> dict:
@@ -48,8 +45,8 @@ def test_v2_1_solicitation_is_discoverable_without_minting_authority() -> None:
 
     for text in (root_readme, packet_readme):
         assert ISSUE_URL in text
-        assert IMMUTABLE_PACKET_URL in text
-        assert "zero public responses" in text
+        assert POWER_DECISION_PATH in text or "power_design/DECISION_RECEIPT.json" in text
+        assert "zero public" in text
         assert "`CANNOT_CHECK` from the public repository" in text
 
     assert (

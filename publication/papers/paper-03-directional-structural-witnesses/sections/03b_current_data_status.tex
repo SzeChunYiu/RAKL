@@ -19,3 +19,15 @@ missing data are human labels and adjudication, not additional same-session
 model generations.  Until those artifacts exist, the correct paper status is
 \path{BLOCKED_ON_HUMAN_ANNOTATION}; training/inference and confirmatory
 Paper-III numbers remain fail-closed.
+
+\subsection{Pre-label power design}
+
+Before any external judgement, a label-blind power study (\#248) registered a
+primary paired Brier-reduction MDE of 0.05 and simulated paired bootstrap/sign-flip
+resolution under plausible item-level noise.  The frozen v2.1 sixteen-item packet
+is \emph{underpowered} for that MDE: adequate resolution requires roughly
+$n\approx 48$ items across the registered noise envelope, whereas the solicited
+confirmatory set remains $n=16$.  The study therefore scopes external validation as
+\path{CONFIRMATORY\_PACKET\_POWER\_LIMITED}: indistinguishable outcomes are
+inconclusive rather than negative evidence, and confirmatory refutation claims
+remain blocked when intervals include zero.
