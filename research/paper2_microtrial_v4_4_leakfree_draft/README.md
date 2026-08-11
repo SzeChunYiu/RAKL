@@ -1,6 +1,6 @@
 # V4.4 leak-free prompt draft (NOT an execution packet)
 
-Status: **DRAFT staging**. Executable successor after positive-control PASS: `research/paper2_microtrial_v4_4/`.
+Status: **DRAFT staging / NOT EXECUTABLE**. Executable successor after positive-control PASS: `research/paper2_microtrial_v4_4/`.
 
 ## Why this exists
 
