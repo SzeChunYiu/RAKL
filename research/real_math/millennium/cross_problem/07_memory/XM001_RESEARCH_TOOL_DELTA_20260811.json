@@ -1,0 +1,51 @@
+{
+  "tool": {
+    "tool_id": "T-XM-ROOT-BRIDGE-STABILITY-AUDIT",
+    "name": "Root-bridge stability audit",
+    "kind": "cross_problem_diagnostic_screen",
+    "abstraction": "Before strengthening a surrogate/local/finite certificate, freeze the exact passage to the root quantity and try to construct the cheapest family on which the surrogate premise remains valid while the root-normalized conclusion collapses.",
+    "source_atom_id": "XM-ROOT-BRIDGE-001",
+    "source_candidate_id": "XM001",
+    "source_result_ids": ["XM001-YM-S1-SCALED-GAP-CALIBRATION"],
+    "source_context_hash": "sha256:bc11ed85c3987cd24998512641afbf0e8317d09aabf665f06852ef2a8c02f120",
+    "authority": "VERIFIED_LOCAL",
+    "preconditions": [
+      "a precise surrogate object and surrogate certificate are defined",
+      "the target root quantity or implication and the surrogate-to-root lift/limit/assembly map are explicitly defined",
+      "a target-specific DifferenceWitness states why the source calibration and target failure mode are structurally comparable and mathematically different"
+    ],
+    "structural_signature": [
+      "surrogate certificate is locally or finite-scale valid",
+      "root conclusion requires an additional lift, limit, normalization, compactness, integrality, realization, or assembly step",
+      "the missing preservation property can be stated quantitatively or as an exact logical implication"
+    ],
+    "operation": "write the tuple (surrogate, certificate, root object, bridge map, preservation property), then search for the cheapest exact sequence/family satisfying the surrogate premises while violating the root-normalized conclusion; if found, retire the weak bridge and record the minimum strengthened obligation",
+    "guaranteed_effects": [
+      "an exact counterexample proves that the stated surrogate premises alone are insufficient for the stated root conclusion",
+      "a successful falsifier localizes the next proof obligation to a target-specific preservation/uniformity/faithfulness condition rather than further surrogate optimization"
+    ],
+    "non_guarantees": [
+      "does not prove that the actual target theory realizes the adversarial sequence",
+      "does not prove the strengthened bridge condition",
+      "does not identify a universal common obstruction across Millennium problems",
+      "does not create theorem, novelty, independent-review, or root-solution authority"
+    ],
+    "validation_obligations": [
+      "preserve units and normalization of the target root quantity",
+      "state order of limits and all uniformity domains",
+      "separate a counterexample to an inference form from a counterexample inside the target theory",
+      "provide a fresh DifferenceWitness for every cross-domain reuse",
+      "record the weakest surviving bridge statement after falsification"
+    ],
+    "evidence_pointers": [
+      "research/real_math/millennium/cross_problem/04_candidates/XM001_root_bridge_stability_audit.md",
+      "research/real_math/millennium/p_vs_np/07_memory/C024_FAILURE_EXPERIENCE_DELTA_20260811.json",
+      "issue:85:YM-S1",
+      "tests/test_cross_millennium_xm001_result.py"
+    ],
+    "known_failure_ids": ["F-XM001-POINTWISE-GAP-COLLAPSE"],
+    "successful_reuse_ids": [],
+    "proof_backing": [],
+    "artifact_hash": "sha256:fa7c52385880128d6114b0d71f37f362dd382c1d91141e43497685b047c46a77"
+  }
+}
