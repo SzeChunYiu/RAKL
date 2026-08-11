@@ -77,6 +77,7 @@ from .research_trace import (
     ResearchTraceReport,
     TraceGateVerdict,
     audit_pre_candidate_trace,
+    audit_research_trace,
 )
 from .strategy_motifs import (
     DEFAULT_STRATEGY_MOTIFS,
@@ -138,6 +139,7 @@ __all__ = [
     "audit_novelty",
     "audit_pre_candidate_trace",
     "audit_proof_receipt",
+    "audit_research_trace",
     "classify_math_record",
     "close_with_certificate",
     "dependency_closure",
