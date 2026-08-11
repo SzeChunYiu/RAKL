@@ -124,9 +124,11 @@ proposed next action
 content hash and timestamp
 ```
 
-For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, and `NEXT_STEP_PROPOSED`.
+For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, `EXPERT_CONTEXT_REVIEW`, `EXPERIENCE_MEMORY_REVIEW`, and `NEXT_STEP_PROPOSED`.
 
 `EXPERT_CONTEXT_REVIEW` records role-separated same-context passes over domain knowledge, analogy transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. Preserve disagreement and unresolved uncertainty; do not represent these roles as independent peer review.
+
+`EXPERIENCE_MEMORY_REVIEW` records the dual experience-memory query over the scoped success-derived tool inventory and the global failure-experience lattice: method families searched, relevant tool/failure ids or explicit `NO_RELEVANT_MATCH`, applicability and reuse-scope warnings, and the memory-review artifact hash. Accumulated experience guides search; it never mints theorem truth.
 
 Trace entries are tamper-evident: except for the first event, `previous_event_hash` must equal the preceding event's `artifact_hash`.
 
@@ -134,12 +136,12 @@ This is a reproducible scientific decision ledger, not a raw private chain-of-th
 
 ## I. Pre-candidate gate
 
-Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
+Do not invent or propose a candidate while the active context/method-transfer/analogy packet, expert context review, dual experience-memory review, or public trace is missing, incomplete, unfrozen, hash-chain-invalid, or chronologically later than the candidate.
 
 When a runtime gate exists, obey it. For mathematical research, call:
 
 ```text
-plan_math_research(..., context_fiber=..., research_trace=...)
+plan_math_research(..., context_fiber=..., memory_review=..., research_trace=...)
 ```
 
 If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.
