@@ -1,0 +1,122 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-pendulum-task-seed-receipt-v4.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "architecture_scope": {
+      "const": [
+        "DIRECT_CORPUS",
+        "RAKL_CONTEXT"
+      ]
+    },
+    "arm_record_count": {
+      "const": 2
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_task_seed_unit_count": {
+      "const": 1
+    },
+    "evidence_access_level": {
+      "const": "COMPLETE_SEALED"
+    },
+    "execution_checkout": {
+      "type": "object"
+    },
+    "experiment_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "packet_parent_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "receipt_type": {
+      "const": "nonconfirmatory_task_seed_execution_index"
+    },
+    "records": {
+      "items": {
+        "type": "object"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "result_receipt_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "result_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-pendulum-task-seed-receipt-v4"
+    },
+    "seed": {
+      "const": 17
+    },
+    "snapshot_attestations": {
+      "additionalProperties": false,
+      "properties": {
+        "post_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "post_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "pre_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "pre_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "snapshot_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pre_path",
+        "pre_sha256",
+        "post_path",
+        "post_sha256",
+        "snapshot_canonical_sha256"
+      ],
+      "type": "object"
+    },
+    "task_id": {
+      "const": "PENDULUM_SEALED_KNOWN_ANSWER_001"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_type",
+    "experiment_id",
+    "packet_parent_sha",
+    "execution_checkout",
+    "created_at_utc",
+    "task_id",
+    "seed",
+    "evidence_access_level",
+    "architecture_scope",
+    "result_receipt_path",
+    "result_receipt_sha256",
+    "snapshot_attestations",
+    "evaluated_task_seed_unit_count",
+    "arm_record_count",
+    "records",
+    "claim_boundary"
+  ],
+  "type": "object"
+}
