@@ -49,6 +49,22 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         1,
     )
 
+    # Freshness hardening: two 2026 primary-source neighbors make the
+    # solver-versus-research and formalization/evaluation boundary explicit.
+    research_gap_anchor = (
+        "Mathematical research adds obligations absent from a benchmark with a known target answer."
+    )
+    if text.count(research_gap_anchor) != 1:
+        raise RuntimeError("Paper IV research-gap anchor changed")
+    research_gap_delta = r"""
+Recent work makes the same frontier distinction from complementary directions. Jiang et al. argue that formal-mathematics systems must move from predefined problem solving toward open-ended research agents with explicit support for exploration, abstraction and human--AI collaboration \cite{jiang2026frontier}. MA-ProofBench, meanwhile, evaluates 200 formalized mathematical-analysis theorems produced through a human-led, LLM-assisted formalization pipeline with independent expert review and reports substantial difficulty even for current models \cite{pu2026maproof}. These results strengthen the need to separate proof search, specification fidelity and research-level assurance rather than treating benchmark proof success as an end-to-end research certificate.
+""".strip()
+    text = text.replace(
+        research_gap_anchor,
+        research_gap_anchor + "\n\n" + research_gap_delta,
+        1,
+    )
+
     evaluation_anchor = r"\section{Preregistered evaluation}"
     if text.count(evaluation_anchor) != 1:
         raise RuntimeError("Paper IV release-section anchor changed")
@@ -58,7 +74,7 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         1,
     )
 
-    # The semantic promotion chain is intentionally long.  Render it as a
+    # The semantic promotion chain is intentionally long. Render it as a
     # two-row aligned relation rather than a single unbreakable display on A4.
     promotion_old = """\\[
 \\texttt{CONJECTURE}
@@ -92,6 +108,37 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         raise RuntimeError("AlphaProof DOI/year anchor changed")
     text = text.replace(alpha_old, alpha_new, 1)
 
+    bibliography_anchor = r"\begin{thebibliography}{9}"
+    if text.count(bibliography_anchor) != 1:
+        raise RuntimeError("Paper IV bibliography anchor changed")
+    text = text.replace(bibliography_anchor, r"\begin{thebibliography}{11}", 1)
+
+    bibliography_end = r"\end{thebibliography}"
+    if text.count(bibliography_end) != 1:
+        raise RuntimeError("Paper IV bibliography end anchor changed")
+    freshness_bib = r"""
+\bibitem{jiang2026frontier}
+E. Jiang et al., ``From Solvers to Research: Large Language Model-Driven Formal Mathematics at the Research Frontier,'' arXiv:2607.07779 (2026).
+
+\bibitem{pu2026maproof}
+L. Pu et al., ``MA-ProofBench: A Two-Tiered Evaluation of LLMs for Theorem Proving in Mathematical Analysis,'' arXiv:2606.13782 (2026).
+""".strip()
+    text = text.replace(
+        bibliography_end,
+        freshness_bib + "\n\n" + bibliography_end,
+        1,
+    )
+
+    release_disclosure = r"""
+\section*{Code, materials and AI-use disclosure}
+The public research artifact is maintained at \url{https://github.com/SzeChunYiu/RAKL}. The release package binds the manuscript to an exact Git subject, passing-test count, hostile assurance benchmark receipt and publication-artifact manifest. The repository contains the typed mathematical-research assurance runtime, benchmark task packet, workflow specification and release builder used by this paper. Language models were used as research, coding and drafting tools; they are not authors and their generated proposals receive no mathematical authority without the verification and governance steps described in the paper. Personal author metadata, funding and competing-interest declarations are supplied separately at submission and are not inferred by the build system.
+""".strip()
+    text = text.replace(
+        r"\begin{thebibliography}{11}",
+        release_disclosure + "\n\n" + r"\begin{thebibliography}{11}",
+        1,
+    )
+
     required_fragments = (
         subject_sha,
         rf"\newcommand{{\SoftwareTests}}{{{software_tests}}}",
@@ -99,9 +146,12 @@ def build_math_research_assurance_source(*, subject_sha: str, software_tests: in
         r"\section{Typed discovery search and reference implementation}",
         r"\section{Preregistered evaluation}",
         r"\section{Limitations}",
-        r"\begin{thebibliography}{9}",
+        r"\section*{Code, materials and AI-use disclosure}",
+        r"\begin{thebibliography}{11}",
         r"\begin{aligned}",
         "Nature} 651, 607--613 (2026). doi:10.1038/s41586-025-09833-y.",
+        r"\cite{jiang2026frontier}",
+        r"\cite{pu2026maproof}",
     )
     for fragment in required_fragments:
         if fragment not in text:
