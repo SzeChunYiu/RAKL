@@ -1,0 +1,56 @@
+\section{Atomic LLM research lifecycle}
+The current reference implementation makes 17 stages explicit. This is important for both scientific reasoning and coding-agent use: a user can tell which steps are model-proposed, which are deterministic state operations, and where verification must occur. Table~\ref{tab:lifecycle} summarizes the public contract; typed inputs/outputs, state read/write sets, failure states and code owners are machine-readable in the implementation.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Reference atomic research lifecycle.} `Proposal' means the LLM may suggest an output but cannot authorize canonical scientific state.}
+\label{tab:lifecycle}
+\begin{tabularx}{\textwidth}{@{}r l Y l l@{}}
+\toprule
+\# & Stage & Main transformation & LLM role & Authority/storage \\
+\midrule
+1 & REGISTER\_TASK & freeze target, QoI, context, cutoff and blockers & none & Tier 0 / none \\
+2 & INGEST\_EVIDENCE & store exact source identity and bytes & none & Tier 0 / none \\
+3 & DECOMPOSE\_SOURCE & propose atomic claims/evidence units & proposal & Tier 1 / proposal \\
+4 & PROJECT\_CONTEXT & bind population, scale, regime and observation & proposal & Tier 1 / representation \\
+5 & NORMALIZE\_OBJECT & align terms, units and coordinates & proposal & Tier 1 / representation \\
+6 & RESOLVE\_IDENTITY & exact identity vs version/derivation/alias & none & Tier 0 ledger \\
+7 & BIND\_PROVENANCE & bind source selectors and evidence lineage & none & Tier 0 / verify \\
+8 & UPDATE\_ATLAS & insert licensed contextual objects & none & Tier 0 / gated \\
+9 & MAP\_RELATIONS & test equivalence, compatibility, derivation, contradiction & proposal & Tier 0 / verify \\
+10 & COMPILE\_WORKING\_CONTEXT & materialize mandatory target set & none & Tier 2 \\
+11 & GENERATE\_PROPOSAL & propose claim, model, query, experiment or method & proposal & Tier 3 / proposal \\
+12 & VERIFY\_PROPOSAL & test evidence, falsifiers and benchmarks & none & Tier 0 / verify \\
+13 & CANONICAL\_UPDATE & apply only licensed verification outcome & none & Tier 0 / gated \\
+14 & DIAGNOSE\_RESIDUAL & type unexplained discrepancy or obstruction & proposal & Tier 0 / proposal \\
+15 & SELECT\_NEXT\_ACTION & search, experiment, assimilate, invent, help or stop & proposal & method memory \\
+16 & CHECK\_SATURATION & semantic and lineage novelty accounting & none & Tier 0 / verify \\
+17 & CONSOLIDATE\_METHOD\_EXPERIENCE & propose reusable procedural skill & proposal & method memory \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The verifier rejects a canonical-update step that lacks a prior verification event, rejects LLM use as direct ingest authority, fails when mandatory prompt material is incomplete, and prevents a lossy derived view from supporting a strong-authority operation unless the relevant raw evidence is rehydrated. Thus the formal slogan ``LLM proposes, evidence governs'' has an executable trace contract rather than depending on prompt wording.
+
+\subsection{Why the lifecycle has explicit stages}
+
+The 17-stage lifecycle is not intended to prescribe one linear conversation. It defines authority boundaries that remain valid even when stages are revisited recursively. A search result may reopen context normalization; a failed experiment may reopen decomposition; a new method residual may route to Self-\RAKL{} and later return to scientific execution. The lifecycle is therefore a typed control graph presented as an ordered checklist for auditability.
+
+The first stages freeze the object, question, quantity of interest, context and evidence cutoff because later comparison is meaningless if these drift after results are visible. Search and ingestion then create raw candidates, not knowledge. Projection and normalization determine what the sources actually claim under the registered context. Compatibility and contradiction analysis operate only after those projections exist. Candidate mechanisms, mappings and experiments are generated downstream of this normalized state, while verification and promotion remain external gates.
+
+Three stages deserve particular emphasis. First, \emph{negative-history registration} happens at the time a failure occurs, not during final summarization. This prevents later survivor bias. Second, \emph{model criticism} is distinct from candidate selection. Winning a tournament does not show that the winner is adequate; it only shows that it is preferable among the candidates under the chosen metric. Third, \emph{saturation audit} occurs after semantic deduplication and route accounting. Token exhaustion or repeated model answers cannot substitute for that audit.
+
+The lifecycle also separates scientific and method residuals. Suppose a real experiment falsifies every current candidate model. The scientific residual is the unexplained observation. A method residual exists only if the current research machinery lacks an operation required to investigate that observation. The system should not ``improve itself'' merely because the science is hard. This two-level residual accounting protects Self-\RAKL{} from turning every project setback into unbounded framework growth.
+
+\subsection{Failure semantics across the lifecycle}
+
+The lifecycle is designed so that each stage has a characteristic failure vocabulary. Search can fail through source unavailability, route closure or ambiguous retrieval. Projection can fail through missing context or uninterpretable measurement semantics. Normalization can fail through unresolved identity. Gluing can fail through incompatibility or obstruction. Mechanism compilation can fail because no candidate ancestry reaches the target. Verification can fail because evidence is absent, corrupted or outside scope. Promotion can fail because the proposed authority effect is stronger than the certificate. Saturation can fail because a route, cut or residual remains open.
+
+These failures should not be normalized into one generic exception. Their types determine the next scientifically meaningful action. Retrying a source outage is sensible; retrying a structural non-identifiability with more temperature-zero sampling may not be. A context mismatch calls for alignment; a mechanism-family miss may call for ontology escape; an evaluator-dependence failure calls for fresh assurance rather than another self-critique turn.
+
+The lifecycle also records \emph{who or what discovered the failure}. A deterministic test, a domain reviewer, a second model, a later paper and a real experiment have different evidence lineages. This matters for Self-\RAKL{} because a framework repair discovered by an external source should not be counted as internally autonomous self-discovery. The repair can still improve the method; the provenance determines the self-evolution claim it supports.
+
+A robust execution engine therefore needs idempotent recovery. Re-running a stage after a transient failure must not duplicate canonical claims or lose the prior failed event. A newly successful transition is a successor with shared ancestry. This is another benefit of content-addressed evidence and versioned transitions: retries do not require pretending that the failed attempt never occurred.
+
+Finally, terminal failure is allowed. Some research questions are not answerable under the available evidence, ethical constraints or resource envelope. `BLOCKED', `PARTIALLY\_IDENTIFIED', \CannotCheck{} and scoped null results are scientifically informative endpoints. A system that always emits a positive hypothesis or a completed narrative is less epistemically expressive than one that can stop with a typed reason.

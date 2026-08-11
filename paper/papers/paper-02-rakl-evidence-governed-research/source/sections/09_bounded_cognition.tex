@@ -1,0 +1,41 @@
+\section{Bounded scientific cognition}
+Canonical archive size and active prompt size are different resources. For operation
+\begin{equation}o=(a,f,q,\gamma,\alpha^*,B),\end{equation}
+let $M(o)$ denote mandatory epistemic material: target/scope, assumptions, falsifiers, relevant negative history, contradiction sides, authority prerequisites, mechanism ancestry and evaluator/benchmark identity. The compiler defines the constrained objective
+\begin{equation}C^*(o)=\arg\max_{C\subseteq V(o)}U(C\mid o),\qquad M(o)\subseteq C,\qquad \operatorname{Tokens}(C)\le B.\end{equation}
+The current reference algorithm is a deterministic constrained-coverage heuristic; no global optimality is claimed for arbitrary utilities. If $\operatorname{Tokens}(M(o))>B$, the correct state is \CannotCompile{}, not silent truncation. Compact views remain reconstructable projections with source pointers and erasure metadata.
+
+A key long-project target is archive-scale invariance. For an unchanged scientific target,
+\begin{equation}\frac{\partial E[\text{active context tokens}]}{\partial N_{\text{irrelevant archive objects}}}\approx0\end{equation}
+while mandatory recall remains one. Frozen known-answer tests add $1\times$, $10\times$ and $100\times$ unrelated distractor records and require identical selected records and active token cost.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.94\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex,every node/.style={font=\sffamily\footnotesize,align=center},tier/.style={draw,rounded corners=1.5pt,minimum width=42mm,minimum height=12mm,fill=black!3},mandatory/.style={draw,rounded corners=1.5pt,minimum width=38mm,minimum height=9mm,fill=black!8},arrow/.style={->,line width=0.6pt}]
+\node[tier] (archive) at (0,2.4) {Tier 0\\immutable canonical archive};
+\node[tier] (index) at (0,0.8) {Tier 1\\rebuildable multi-resolution views / indexes};
+\node[tier] (working) at (0,-0.8) {Tier 2\\query-specific epistemic working set};
+\node[tier] (prompt) at (0,-2.4) {Tier 3\\actual LLM prompt};
+\draw[arrow] (archive) -- (index); \draw[arrow] (index) -- node[right]{retrieve / rehydrate} (working); \draw[arrow] (working) -- node[right]{compile} (prompt);
+\node[mandatory] (neg) at (6.0,2.2) {negative history}; \node[mandatory] (fals) at (6.0,1.05) {falsifiers / assumptions}; \node[mandatory] (contr) at (6.0,-0.10) {contradiction sides}; \node[mandatory] (anc) at (6.0,-1.25) {authority + mechanism ancestry};
+\node[draw,dashed,rounded corners=2pt,fit=(neg)(anc),inner sep=3mm,label={[font=\sffamily\scriptsize]above:mandatory set $M(o)$}] (mand) {};
+\draw[arrow] (mand.west) -- (working.east);
+\node[draw,dashed,rounded corners=1.5pt,text width=40mm,minimum height=13mm] (fail) at (6.0,-2.75) {$Tokens(M(o))>B$\\$\Rightarrow$ \texttt{CANNOT\_COMPILE}};
+\draw[arrow,dashed] (mand.south) -- (fail.north);
+\node[font=\sffamily\scriptsize,text width=45mm,anchor=north] at (0,-3.45) {Archive growth does not imply prompt growth. Compact views remain reconstructable projections with raw-source pointers and erasure metadata.};
+\node[font=\sffamily\scriptsize,text width=50mm,anchor=north] at (6.0,-3.45) {For a fixed target, irrelevant archive growth should have approximately zero effect on active tokens. Mandatory scientific material is never traded away for a smaller prompt.};
+\end{tikzpicture}}
+\caption{\textbf{Bounded scientific cognition.} The archive and method history can grow while the model sees only a target-specific working set. Some atoms are mandatory because dropping them changes epistemic validity. If they cannot fit, the operation fails closed rather than silently compressing them away.}
+\label{fig:context}
+\end{figure}
+
+\subsection{Context is a scientific resource, not only a token resource}
+
+Context selection changes what a model can notice, compare and use. It is therefore part of the experimental condition of an LLM-mediated research workflow. A comparison between two systems is not matched if one receives a carefully engineered evidence packet while the other receives a raw corpus and the preprocessing cost is ignored. \RAKL{} treats retrieval, compression and prompt materialization as intervention components whose tokens, tool calls, latency and erased information must be reported.
+
+The mandatory set \(M(o)\) implements a non-compensatory constraint. It contains objects whose omission could invalidate the operation: target definition, context, blocking assumptions, falsifiers, relevant counterevidence, contradiction sides, mechanism ancestry when a mechanism claim is being tested, and evaluator identity when a method change is being assessed. Utility ranking is applied only after this set is protected. A highly relevant supportive source cannot compensate for omission of decisive counterevidence.
+
+Long-context capability changes the engineering frontier but not the epistemic rule. Even if a model can accept an entire archive, materialization still determines ordering, salience and the form in which evidence appears. The ``lost in the middle'' literature illustrates that nominal context capacity is not identical to effective access \cite{liu2024}. Conversely, aggressive compression can make evidence easy to attend to while erasing details required for validation. The correct objective is therefore not minimum tokens alone but a Pareto surface over mandatory retention, reconstruction fidelity, scientific outcome and cost.
+
+This framing makes \CannotCompile{} meaningful. If the mandatory set exceeds the available context, the system has learned something about the operation: its current formulation cannot be executed safely under the resource envelope. Valid responses include narrowing the target, decomposing the operation, using a larger model/context window, moving a computation into an external tool, or acquiring a better structured representation. Silent truncation is not among them.
