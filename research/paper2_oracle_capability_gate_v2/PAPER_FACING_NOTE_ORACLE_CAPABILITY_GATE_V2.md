@@ -39,3 +39,8 @@ Can any authorized-scale (≤7B) ORACLE clear exact success ≥2/3 on a sealed t
 ## Next action
 
 Submit V2_0_EXEC 7B ORACLE on sealed T1–T5 after the executable freeze lands on exact `origin/main`. Do **not** invent a pass.
+
+## Executable successor result (landed)
+
+Job **3476813** under `ORACLE_CAPABILITY_GATE_V2_0_EXEC` is parse-valid **5/5** at success **2/5** (mean **0.500**) and classifies `MODEL_CAPABILITY_FLOOR_7B_V2_EXEC`.
+`CAPABLE_MODEL_AVAILABLE` remains **NO_REFUTED**. Wave-2 confirmatory unlock: **no**. See `research/paper2_oracle_capability_gate_v2_exec/ORACLE_DECISION_RECEIPT_V2_EXEC.json`.

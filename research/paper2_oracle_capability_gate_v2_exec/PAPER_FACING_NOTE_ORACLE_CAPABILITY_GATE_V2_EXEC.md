@@ -2,19 +2,28 @@
 
 ## Status
 
-Executable sealed-task freeze under `ORACLE_CAPABILITY_GATE_V2_0_EXEC`.  
-`CAPABLE_MODEL_AVAILABLE` remains **NO_REFUTED**. No learning-efficacy claim.
+Executable sealed-task ORACLE under `ORACLE_CAPABILITY_GATE_V2_0_EXEC` completed on job **3476813**.  
+`CAPABLE_MODEL_AVAILABLE` remains **NO_REFUTED**. No learning-efficacy claim. Wave-2 confirmatory unlock: **no**.
 
-## What changed vs protocol-only V2_0
+## Gate result
 
-- Authored sealed D1–D3 / T1–T5 (new bytes; not identical to floored v1.3_3 T1–T3).
-- Bound tasks + model + unchanged evaluator into `protocol_subject_hash` **before** any evaluated outcome.
-- Authorized first ORACLE at **Qwen2.5-7B-Instruct** only (V2 ceiling revisit).
+| Metric | Value |
+|--------|------:|
+| Job | 3476813 |
+| Scale | Qwen2.5-7B-Instruct |
+| success_rate | **2/5** |
+| parse_valid | **5/5** |
+| mean_score | **0.5000** |
+| Threshold | ≥2/3 exact success + parse-valid |
+| Verdict | `MODEL_CAPABILITY_FLOOR_7B_V2_EXEC` (V2_GATE_FAIL) |
 
-## Gate
-
-Exact success rate ≥ **2/3** on T1–T5 under `EXPERIENCE_V1_EXACT_STRUCTURED_MATCH`, parse-valid outputs required.
+Per-task: T1 SUPPORT success; T2 CONTEXT_MISALIGNED partial; T3/T4 fail; T5 CANNOT_CHECK success.
 
 ## Preserved negatives
 
-Floor jobs 3476730 / 3476731 / 3476742 / 3476756 / 3476778 / 3476788 remain binding history.
+Floor jobs 3476730 / 3476731 / 3476742 / 3476756 / 3476778 / 3476788 remain binding history. No 14B/32B. No Phase-0.
+
+## Receipts
+
+- Validation: `native_job_3476813/VALIDATION_RECEIPT.json`
+- Decision: `ORACLE_DECISION_RECEIPT_V2_EXEC.json`
