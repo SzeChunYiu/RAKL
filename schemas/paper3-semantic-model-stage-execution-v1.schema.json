@@ -3,33 +3,208 @@
   "$id": "https://example.invalid/rakl/paper3-semantic-model-stage-execution-v1.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "created_at_utc", "verdict", "expected_repo_sha", "frozen_parent_sha", "contract_sha256", "slurm_job_id", "slurm_account", "slurm_partition", "node", "model_id", "model_revision", "final_model_path", "observed_model_files", "failures", "model_execution_performed", "descriptor_record_count", "label_access", "claim_boundary"],
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "verdict",
+    "expected_repo_sha",
+    "frozen_parent_sha",
+    "contract_sha256",
+    "slurm_job_id",
+    "slurm_account",
+    "slurm_partition",
+    "node",
+    "model_id",
+    "model_revision",
+    "final_model_path",
+    "observed_model_files",
+    "failures",
+    "model_execution_performed",
+    "descriptor_record_count",
+    "label_access",
+    "claim_boundary",
+    "runtime_tree_sha256",
+    "runtime_staging_receipt_sha256"
+  ],
   "properties": {
-    "schema_version": {"const": "paper3-semantic-model-stage-execution-v1"},
-    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
-    "verdict": {"enum": ["STAGING_PASS_ATOMICALLY_PROMOTED", "STAGING_CANNOT_CHECK"]},
-    "expected_repo_sha": {"$ref": "#/$defs/gitsha"},
-    "frozen_parent_sha": {"$ref": "#/$defs/gitsha"},
-    "contract_sha256": {"$ref": "#/$defs/sha256"},
-    "slurm_job_id": {"type": "string", "pattern": "^[0-9]+$"},
-    "slurm_account": {"const": "lu2026-2-51"},
-    "slurm_partition": {"const": "lu48"},
-    "node": {"type": "string", "minLength": 1},
-    "model_id": {"const": "BAAI/bge-reranker-v2-m3"},
-    "model_revision": {"const": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"},
-    "final_model_path": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper3/assets/BAAI--bge-reranker-v2-m3/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"},
-    "observed_model_files": {"type": "array", "items": {"$ref": "#/$defs/file"}},
-    "failures": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "model_execution_performed": {"const": false},
-    "descriptor_record_count": {"const": 0},
-    "label_access": {"$ref": "#/$defs/label_access"},
-    "claim_boundary": {"type": "string", "minLength": 1}
+    "schema_version": {
+      "const": "paper3-semantic-model-stage-execution-v1"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "verdict": {
+      "enum": [
+        "STAGING_PASS_ATOMICALLY_PROMOTED",
+        "STAGING_CANNOT_CHECK"
+      ]
+    },
+    "expected_repo_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "frozen_parent_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "contract_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "slurm_job_id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "slurm_account": {
+      "const": "lu2026-2-51"
+    },
+    "slurm_partition": {
+      "const": "lu48"
+    },
+    "node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_id": {
+      "const": "BAAI/bge-reranker-v2-m3"
+    },
+    "model_revision": {
+      "const": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+    },
+    "final_model_path": {
+      "const": "/projects/hep/fs9/users/scyiu/RAKL-paper3/assets/BAAI--bge-reranker-v2-m3/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+    },
+    "observed_model_files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/file"
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "descriptor_record_count": {
+      "const": 0
+    },
+    "label_access": {
+      "$ref": "#/$defs/label_access"
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_tree_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runtime_staging_receipt_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
   },
-  "allOf": [{"if": {"properties": {"verdict": {"const": "STAGING_PASS_ATOMICALLY_PROMOTED"}}}, "then": {"properties": {"observed_model_files": {"minItems": 6, "maxItems": 6}, "failures": {"maxItems": 0}}}, "else": {"properties": {"failures": {"minItems": 1}}}}],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "STAGING_PASS_ATOMICALLY_PROMOTED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "observed_model_files": {
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "failures": {
+            "maxItems": 0
+          },
+          "runtime_tree_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "runtime_staging_receipt_sha256": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gitsha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "file": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "bytes": {"type": "integer", "minimum": 1}, "sha256": {"$ref": "#/$defs/sha256"}}},
-    "label_access": {"type": "object", "additionalProperties": false, "required": ["external_annotation_accessed", "adjudication_accessed", "evaluated_result_accessed"], "properties": {"external_annotation_accessed": {"const": false}, "adjudication_accessed": {"const": false}, "evaluated_result_accessed": {"const": false}}}
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitsha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "label_access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_annotation_accessed",
+        "adjudication_accessed",
+        "evaluated_result_accessed"
+      ],
+      "properties": {
+        "external_annotation_accessed": {
+          "const": false
+        },
+        "adjudication_accessed": {
+          "const": false
+        },
+        "evaluated_result_accessed": {
+          "const": false
+        }
+      }
+    }
   }
 }

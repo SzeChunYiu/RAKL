@@ -13,7 +13,10 @@ from semantic_descriptor_common import (
     inspect_model_files,
     load_json,
     root_sacct_row,
+    tree_sha256,
     utc_now,
+    validate_label_chronology,
+    validate_repo_and_contract,
     validate_schema,
 )
 
@@ -27,6 +30,7 @@ def build_harvest(
     submission_path: Path,
     execution_path: Path,
     sacct_path: Path,
+    label_chronology_path: Path | None,
     output: Path,
 ) -> dict[str, Any]:
     contract = load_json(contract_path)
@@ -36,6 +40,16 @@ def build_harvest(
         submission, repo / "schemas/paper3-semantic-lunarc-submission-v1.schema.json"
     )
     failures: list[str] = []
+    _, repo_failures = validate_repo_and_contract(
+        repo=repo,
+        contract_path=contract_path,
+        expected_repo_sha=str(submission.get("expected_repo_sha", "")),
+    )
+    failures.extend(repo_failures)
+    if file_sha256(contract_path) != submission.get("contract_sha256"):
+        failures.append("contract_file_hash_mismatch")
+    if submission.get("frozen_parent_sha") != contract.get("frozen_parent_sha"):
+        failures.append("submission_parent_mismatch")
     row, sacct_failures = root_sacct_row(sacct, job_id)
     failures.extend(sacct_failures)
     if submission.get("slurm_job_id") != job_id:
@@ -48,6 +62,9 @@ def build_harvest(
     descriptor_sha: str | None = None
     descriptor_status: str | None = None
     descriptor_count = 0
+    stage_runtime_tree_sha: str | None = None
+    label_chronology_sha: str | None = None
+    label_chronology_state: str | None = None
     try:
         execution = load_json(execution_path)
         execution_schema = (
@@ -63,6 +80,8 @@ def build_harvest(
             failures.append("execution_checkout_sha_mismatch")
         if execution.get("contract_sha256") != submission.get("contract_sha256"):
             failures.append("execution_contract_hash_mismatch")
+        if execution.get("frozen_parent_sha") != submission.get("frozen_parent_sha"):
+            failures.append("execution_parent_mismatch")
         expected_verdict = (
             "STAGING_PASS_ATOMICALLY_PROMOTED"
             if phase == "model-stage"
@@ -80,7 +99,35 @@ def build_harvest(
             failures.extend(asset_failures)
             if observed != execution.get("observed_model_files"):
                 failures.append("promoted_model_differs_from_stage_receipt")
+            stage_runtime_tree_sha = execution.get("runtime_tree_sha256")
+            runtime_root = Path(contract["runtime"]["runtime_root"])
+            if (
+                not isinstance(stage_runtime_tree_sha, str)
+                or tree_sha256(runtime_root) != stage_runtime_tree_sha
+            ):
+                failures.append("stage_runtime_tree_differs_at_harvest")
+            if execution.get("runtime_staging_receipt_sha256") != contract[
+                "runtime"
+            ]["staging_receipt_sha256"]:
+                failures.append("stage_runtime_provenance_mismatch")
         else:
+            if execution.get("stage_harvest_sha256") != submission.get(
+                "parent_stage_harvest_sha256"
+            ):
+                failures.append("execution_stage_harvest_hash_mismatch")
+            if execution.get("parent_stage_job_id") != submission.get(
+                "parent_stage_job_id"
+            ):
+                failures.append("execution_parent_stage_job_mismatch")
+            if execution.get("stage_runtime_tree_sha256") != submission.get(
+                "stage_runtime_tree_sha256"
+            ):
+                failures.append("execution_stage_runtime_hash_mismatch")
+            if execution.get("pre_execution_label_observation_sha256") != submission.get(
+                "pre_execution_label_observation_sha256"
+            ):
+                failures.append("execution_pre_label_observation_hash_mismatch")
+            stage_runtime_tree_sha = execution.get("stage_runtime_tree_sha256")
             descriptor_path = Path(str(execution.get("descriptor_path", "")))
             if not descriptor_path.is_file():
                 failures.append("descriptor_receipt_missing")
@@ -109,10 +156,32 @@ def build_harvest(
                 failures.extend(
                     validate_semantic_descriptor_receipt(source, protocol, descriptor)
                 )
+                if label_chronology_path is None:
+                    failures.append("label_chronology_receipt_missing")
+                else:
+                    chronology = load_json(label_chronology_path)
+                    validate_schema(
+                        chronology,
+                        repo / "schemas/paper3-label-chronology-v1.schema.json",
+                    )
+                    label_chronology_sha = file_sha256(label_chronology_path)
+                    label_chronology_state = chronology.get("state")
+                    failures.extend(
+                        validate_label_chronology(
+                            chronology,
+                            descriptor_created_at_utc=str(
+                                descriptor.get("created_at_utc", "")
+                            ),
+                        )
+                    )
     except Exception as exc:
         failures.append(f"execution_or_result_invalid:{type(exc).__name__}")
 
     failures = list(dict.fromkeys(failures))
+    row_state = row.get("state") if isinstance(row, dict) else None
+    row_exit = row.get("exit_code") if isinstance(row, dict) else None
+    row_return = row_exit.get("return_code") if isinstance(row_exit, dict) else None
+    row_time = row.get("time") if isinstance(row, dict) else None
     if phase == "model-stage":
         verdict = (
             "HARVEST_MODEL_STAGE_PASS"
@@ -131,13 +200,20 @@ def build_harvest(
         "phase": expected_phase,
         "verdict": verdict,
         "slurm_job_id": job_id,
-        "slurm_state": None if row is None else row.get("state", {}).get("current"),
+        "slurm_state": None
+        if not isinstance(row_state, dict)
+        else row_state.get("current"),
         "slurm_exit_status": None
         if row is None
-        else row.get("exit_code", {}).get("status"),
+        else row_exit.get("status") if isinstance(row_exit, dict) else None,
         "slurm_exit_code": None
         if row is None
-        else row.get("exit_code", {}).get("return_code", {}).get("number"),
+        else row_return.get("number") if isinstance(row_return, dict) else None,
+        "slurm_account": None if row is None else row.get("account"),
+        "slurm_partition": None if row is None else row.get("partition"),
+        "slurm_elapsed_seconds": None
+        if row is None
+        else row_time.get("elapsed") if isinstance(row_time, dict) else None,
         "expected_repo_sha": submission.get("expected_repo_sha"),
         "frozen_parent_sha": submission.get("frozen_parent_sha"),
         "contract_sha256": submission.get("contract_sha256"),
@@ -146,6 +222,13 @@ def build_harvest(
         "descriptor_receipt_sha256": descriptor_sha,
         "descriptor_status": descriptor_status,
         "descriptor_record_count": descriptor_count,
+        "parent_stage_job_id": submission.get("parent_stage_job_id"),
+        "parent_stage_harvest_sha256": submission.get(
+            "parent_stage_harvest_sha256"
+        ),
+        "stage_runtime_tree_sha256": stage_runtime_tree_sha,
+        "label_chronology_receipt_sha256": label_chronology_sha,
+        "label_chronology_state": label_chronology_state,
         "failures": failures,
         "training_authorized": False,
         "claim_boundary": (
@@ -172,6 +255,7 @@ def main() -> int:
     parser.add_argument("--submission", type=Path, required=True)
     parser.add_argument("--execution", type=Path, required=True)
     parser.add_argument("--sacct", type=Path, required=True)
+    parser.add_argument("--label-chronology", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     build_harvest(
@@ -182,6 +266,9 @@ def main() -> int:
         submission_path=args.submission.resolve(),
         execution_path=args.execution.resolve(),
         sacct_path=args.sacct.resolve(),
+        label_chronology_path=(
+            None if args.label_chronology is None else args.label_chronology.resolve()
+        ),
         output=args.output.resolve(),
     )
     return 0

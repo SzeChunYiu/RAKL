@@ -23,6 +23,12 @@ def utc_now() -> str:
     )
 
 
+def parse_utc(value: Any) -> datetime:
+    if not isinstance(value, str) or not value.endswith("Z"):
+        raise ValueError("expected_utc_timestamp")
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
 def load_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -94,6 +100,11 @@ def validate_repo_and_contract(
         contract = load_json(contract_path)
     except Exception:
         return {}, ["contract_unreadable"]
+    contract_schema = repo / "schemas/paper3-semantic-lunarc-contract-v1.schema.json"
+    try:
+        validate_schema(contract, contract_schema)
+    except Exception:
+        failures.append("contract_schema_invalid")
     try:
         observed = command(repo, "git", "rev-parse", "HEAD")
         if observed != expected_repo_sha:
@@ -151,20 +162,81 @@ def inspect_model_files(
     return observed, failures
 
 
-def root_sacct_row(value: dict[str, Any], job_id: str) -> tuple[dict[str, Any] | None, list[str]]:
+def root_sacct_row(
+    value: dict[str, Any], job_id: str
+) -> tuple[dict[str, Any] | None, list[str]]:
     failures: list[str] = []
     rows = value.get("jobs")
     if not isinstance(rows, list):
         return None, ["sacct_jobs_missing"]
-    matches = [row for row in rows if str(row.get("job_id")) == job_id]
+    matches = [
+        row
+        for row in rows
+        if isinstance(row, dict) and str(row.get("job_id")) == job_id
+    ]
     if len(matches) != 1:
         return None, ["sacct_root_job_not_unique"]
     row = matches[0]
-    states = row.get("state", {}).get("current", [])
+    state = row.get("state")
+    states = state.get("current") if isinstance(state, dict) else None
     if states != ["COMPLETED"]:
         failures.append("slurm_root_not_completed")
-    status = row.get("exit_code", {}).get("status", [])
-    number = row.get("exit_code", {}).get("return_code", {}).get("number")
+    exit_code = row.get("exit_code")
+    status = exit_code.get("status") if isinstance(exit_code, dict) else None
+    return_code = exit_code.get("return_code") if isinstance(exit_code, dict) else None
+    if not isinstance(return_code, dict) or return_code.get("set") is not True:
+        failures.append("slurm_root_exit_unset")
+    number = return_code.get("number") if isinstance(return_code, dict) else None
     if status != ["SUCCESS"] or number != 0:
         failures.append("slurm_root_exit_nonzero")
+    if row.get("account") != ACCOUNT:
+        failures.append("slurm_root_account_mismatch")
+    if row.get("partition") != PARTITION:
+        failures.append("slurm_root_partition_mismatch")
+    time = row.get("time")
+    elapsed = time.get("elapsed") if isinstance(time, dict) else None
+    if not isinstance(elapsed, int) or elapsed < 0:
+        failures.append("slurm_root_elapsed_invalid")
     return row, failures
+
+
+def validate_label_chronology(
+    value: dict[str, Any], *, descriptor_created_at_utc: str
+) -> list[str]:
+    """Validate a payload-free chronology observation against one descriptor."""
+
+    failures: list[str] = []
+    try:
+        descriptor_at = parse_utc(descriptor_created_at_utc)
+        observation_at = parse_utc(value.get("created_at_utc"))
+    except (TypeError, ValueError):
+        return ["label_chronology_timestamp_invalid"]
+    counts = value.get("counts")
+    if not isinstance(counts, dict):
+        failures.append("label_chronology_counts_invalid")
+        counts = {}
+    if value.get("label_payload_accessed") is not False:
+        failures.append("label_chronology_payload_accessed")
+    state = value.get("state")
+    first_label = value.get("first_external_label_at_utc")
+    if state == "ZERO_LABELS_OBSERVED":
+        if first_label is not None or any(
+            counts.get(key) != 0
+            for key in ("external_annotations", "adjudications", "evaluated_results")
+        ):
+            failures.append("zero_label_observation_counts_invalid")
+        if observation_at <= descriptor_at:
+            failures.append("zero_label_observation_not_after_descriptor")
+    elif state == "FIRST_LABEL_RECORDED":
+        try:
+            first_label_at = parse_utc(first_label)
+        except (TypeError, ValueError):
+            failures.append("first_external_label_timestamp_invalid")
+        else:
+            if descriptor_at >= first_label_at:
+                failures.append("descriptor_not_before_first_external_label")
+        if counts.get("external_annotations", 0) < 1:
+            failures.append("first_label_count_invalid")
+    else:
+        failures.append("label_chronology_state_invalid")
+    return list(dict.fromkeys(failures))

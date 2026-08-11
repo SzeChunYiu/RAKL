@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 2 || ! "$1" =~ ^(model-stage|descriptor)$ || ! "$2" =~ ^[0-9]+$ ]]; then
-  echo "usage: $0 <model-stage|descriptor> <slurm-job-id>" >&2
+if [[ $# -lt 2 || $# -gt 3 || ! "$1" =~ ^(model-stage|descriptor)$ || ! "$2" =~ ^[0-9]+$ ]]; then
+  echo "usage: $0 <model-stage|descriptor> <slurm-job-id> [post-descriptor-label-chronology.json]" >&2
   exit 64
 fi
 
@@ -16,30 +16,41 @@ CONTRACT="$REPO/research/paper3_semantic_descriptor_lunarc/CONTRACT_V1.json"
 SACCT="$RECEIPT_ROOT/sacct-${PHASE}-${JOB_ID}.json"
 
 if [[ "$PHASE" == model-stage ]]; then
+  [[ $# -eq 2 ]] || { echo "model-stage harvest takes no chronology receipt" >&2; exit 64; }
   SUBMISSION="$RECEIPT_ROOT/model-stage-submission-${JOB_ID}.json"
   EXECUTION="$RECEIPT_ROOT/model-stage-execution-${JOB_ID}.json"
   OUTPUT="$RECEIPT_ROOT/harvest-model-stage-${JOB_ID}.json"
 else
+  [[ $# -eq 3 ]] || { echo "descriptor harvest requires post-descriptor label chronology" >&2; exit 64; }
   SUBMISSION="$RECEIPT_ROOT/descriptor-submission-${JOB_ID}.json"
   EXECUTION="$RECEIPT_ROOT/descriptor-execution-${JOB_ID}.json"
   OUTPUT="$RECEIPT_ROOT/harvest-descriptor-${JOB_ID}.json"
+  LABEL_CHRONOLOGY="$3"
 fi
 
 mkdir -p "$RECEIPT_ROOT"
-sacct -j "$JOB_ID" --json > "$SACCT"
+SACCT_TMP="${SACCT}.tmp"
+sacct -j "$JOB_ID" --json > "$SACCT_TMP"
+mv "$SACCT_TMP" "$SACCT"
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONNOUSERSITE=1
 export PYTHONPATH="$REPO/src"
 test -x "$PYTHON"
 
-"$PYTHON" "$REPO/experiments/paper3/lunarc/build_semantic_descriptor_harvest.py" \
+ARGS=(
+  "$REPO/experiments/paper3/lunarc/build_semantic_descriptor_harvest.py"
   --phase "$PHASE" \
   --job-id "$JOB_ID" \
   --repo "$REPO" \
   --contract "$CONTRACT" \
   --submission "$SUBMISSION" \
   --execution "$EXECUTION" \
-  --sacct "$SACCT" \
+  --sacct "$SACCT"
   --output "$OUTPUT"
+)
+if [[ "$PHASE" == descriptor ]]; then
+  ARGS+=(--label-chronology "$LABEL_CHRONOLOGY")
+fi
+"$PYTHON" "${ARGS[@]}"
 
 echo "$OUTPUT"

@@ -1,17 +1,48 @@
 {
   "blocking_concerns": [],
   "checks": [
-    {"concern": "A login-node or local process could generate model scores.", "disposition": "PASS", "evidence": "Only run_semantic_descriptor.sbatch invokes semantic_descriptor_runtime.py; submit and harvest scripts never invoke the model."},
-    {"concern": "Registry LFS hashes could be treated as locally verified.", "disposition": "PASS", "evidence": "The allocated stage job downloads the exact revision, locally recomputes all six sizes and SHA-256 values, and promotes atomically only on an exact match."},
-    {"concern": "Descriptor inference could run before stage authority.", "disposition": "PASS", "evidence": "The descriptor submitter requires a schema-valid HARVEST_MODEL_STAGE_PASS bound to the same exact checkout SHA; the compute-node runtime revalidates that harvest."},
-    {"concern": "The shared Paper 2 runtime could be silently modified.", "disposition": "PASS", "evidence": "Bytecode and user-site writes are disabled, caches target node-local temporary storage, and a content-tree digest must remain equal before and after inference."},
-    {"concern": "Missing SentencePiece could trigger an unregistered substitution.", "disposition": "PASS", "evidence": "The frozen local tokenizer.json must load as a fast tokenizer and pass a pair probe; otherwise the descriptor returns typed CANNOT_CHECK."},
-    {"concern": "A descriptor could be confused with a structural-signal or efficiency result.", "disposition": "PASS", "evidence": "Submission, execution, harvest and readiness receipts explicitly deny structural-signal, training, efficiency, break-even and review authority."}
+    {
+      "concern": "A stale rebased parent could make the merged-main gate impossible.",
+      "disposition": "PASS_PREEXECUTION",
+      "evidence": "The contract now binds merged strong-control head f86fb72eee1331fe083ce6de86bafe7fd727764f; native submission still requires the exact clean current origin/main SHA."
+    },
+    {
+      "concern": "The shared Paper 2 runtime could be silently modified before inference.",
+      "disposition": "PASS_PREEXECUTION",
+      "evidence": "The allocated model-stage job receipts the exact runtime-tree SHA; stage harvest binds it, descriptor submission/runtime require it, and inference verifies the same digest before and after."
+    },
+    {
+      "concern": "A descriptor could be promoted without proven pre-label chronology.",
+      "disposition": "PASS_PREEXECUTION",
+      "evidence": "The freeze-time issue-43 zero-label receipt is preflight-only. Descriptor harvest additionally requires a payload-free observation after the descriptor or a first-label cutoff proving strict timestamp order."
+    },
+    {
+      "concern": "Stage, submission, execution and harvest receipts could be mixed across jobs or contracts.",
+      "disposition": "PASS_PREEXECUTION",
+      "evidence": "Contract, parent, repository, stage job, stage-harvest, runtime-tree and pre-label-observation identities are checked across the chain."
+    },
+    {
+      "concern": "An unset or wrong-lane sacct row could create scheduler authority.",
+      "disposition": "PASS_PREEXECUTION",
+      "evidence": "Harvest requires the unique root row to be COMPLETED/SUCCESS with return_code.set=true, code zero, exact account and partition, and nonnegative elapsed time."
+    },
+    {
+      "concern": "A descriptor could be confused with a structural-signal or efficiency result.",
+      "disposition": "PASS",
+      "evidence": "No job was submitted and all artifacts deny structural-signal, training, efficiency, break-even, independent-review and peer-review authority."
+    }
   ],
-  "created_at_utc": "2026-08-11T04:37:53Z",
-  "independence": {"independent_external_review": false, "peer_review": false, "same_context_internal_review": true},
+  "created_at_utc": "2026-08-11T04:48:47Z",
+  "independence": {
+    "independent_external_review": false,
+    "peer_review": false,
+    "same_context_internal_review": true
+  },
   "review_class": "same_context_internal_not_independent",
   "schema_version": "paper3-semantic-lunarc-internal-review-v1",
-  "subject": {"path": "research/receipts/PAPER3_SEMANTIC_DESCRIPTOR_LUNARC_READINESS_20260811.json", "sha256": "c1a235a61ab19150e5fa3ea4aa7d1d7715735054428e84caa5d17a849a191609"},
-  "verdict": "PASS_PREEXECUTION_CONTRACT_ONLY_NATIVE_JOBS_STILL_CANNOT_CHECK"
+  "subject": {
+    "path": "research/receipts/PAPER3_SEMANTIC_DESCRIPTOR_LUNARC_READINESS_20260811.json",
+    "sha256": "f5895926150d3766ffbe3c993a1dd3319bd3bf9e4b42b5fd5cdc755dec65017b"
+  },
+  "verdict": "PASS_PREEXECUTION_CONTRACT_ONLY_NATIVE_JOBS_AND_POST_DESCRIPTOR_CHRONOLOGY_STILL_CANNOT_CHECK"
 }

@@ -17,6 +17,7 @@ from semantic_descriptor_common import (
     atomic_write_json,
     file_sha256,
     inspect_model_files,
+    tree_sha256,
     utc_now,
     validate_repo_and_contract,
     validate_schema,
@@ -41,6 +42,8 @@ def _receipt_base(
         "model_revision": contract.get("model", {}).get("revision"),
         "final_model_path": contract.get("fs9", {}).get("model_dir"),
         "observed_model_files": [],
+        "runtime_tree_sha256": None,
+        "runtime_staging_receipt_sha256": None,
         "failures": failures,
         "model_execution_performed": False,
         "descriptor_record_count": 0,
@@ -74,6 +77,23 @@ def run_stage(*, repo: Path, contract_path: Path, output: Path) -> dict[str, Any
         contract=contract, expected_repo_sha=expected_repo_sha, failures=failures
     )
     schema = repo / "schemas/paper3-semantic-model-stage-execution-v1.schema.json"
+    runtime_root = Path(str(contract.get("runtime", {}).get("runtime_root", "")))
+    runtime_receipt = Path(
+        str(contract.get("runtime", {}).get("staging_receipt_path", ""))
+    )
+    expected_runtime_receipt_sha = contract.get("runtime", {}).get(
+        "staging_receipt_sha256"
+    )
+    if not runtime_root.is_dir():
+        receipt["failures"].append("runtime_root_missing")
+    else:
+        receipt["runtime_tree_sha256"] = tree_sha256(runtime_root)
+    if not runtime_receipt.is_file():
+        receipt["failures"].append("runtime_staging_receipt_missing")
+    else:
+        receipt["runtime_staging_receipt_sha256"] = file_sha256(runtime_receipt)
+        if receipt["runtime_staging_receipt_sha256"] != expected_runtime_receipt_sha:
+            receipt["failures"].append("runtime_staging_receipt_mismatch")
     if failures:
         validate_schema(receipt, schema)
         atomic_write_json(output, receipt)

@@ -22,6 +22,10 @@ OUTPUT="$ROOT/semantic_descriptor_v1/receipts/descriptor-execution-${SLURM_JOB_I
 : "${RAKL_CONTRACT_SHA256:?RAKL_CONTRACT_SHA256 is required}"
 : "${RAKL_STAGE_HARVEST_PATH:?RAKL_STAGE_HARVEST_PATH is required}"
 : "${RAKL_STAGE_HARVEST_SHA256:?RAKL_STAGE_HARVEST_SHA256 is required}"
+: "${RAKL_STAGE_JOB_ID:?RAKL_STAGE_JOB_ID is required}"
+: "${RAKL_STAGE_RUNTIME_TREE_SHA256:?RAKL_STAGE_RUNTIME_TREE_SHA256 is required}"
+: "${RAKL_PRE_LABEL_OBSERVATION_PATH:?RAKL_PRE_LABEL_OBSERVATION_PATH is required}"
+: "${RAKL_PRE_LABEL_OBSERVATION_SHA256:?RAKL_PRE_LABEL_OBSERVATION_SHA256 is required}"
 : "${SLURM_JOB_ID:?SLURM_JOB_ID is required}"
 
 export PYTHONDONTWRITEBYTECODE=1
@@ -38,6 +42,7 @@ test "$(git -C "$REPO" rev-parse HEAD)" = "$RAKL_EXPECTED_REPO_SHA"
 test -z "$(git -C "$REPO" status --porcelain --untracked-files=all)"
 test "$(sha256sum "$CONTRACT" | awk '{print $1}')" = "$RAKL_CONTRACT_SHA256"
 test "$(sha256sum "$RAKL_STAGE_HARVEST_PATH" | awk '{print $1}')" = "$RAKL_STAGE_HARVEST_SHA256"
+test "$(sha256sum "$RAKL_PRE_LABEL_OBSERVATION_PATH" | awk '{print $1}')" = "$RAKL_PRE_LABEL_OBSERVATION_SHA256"
 
 cd "$REPO"
 PYTHONPATH="$REPO/src" exec "$PYTHON" \

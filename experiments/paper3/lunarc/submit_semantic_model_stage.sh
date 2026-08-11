@@ -45,7 +45,7 @@ out=pathlib.Path(sys.argv[1]); schema_path=pathlib.Path(sys.argv[2]); contract_p
 sys.path.insert(0,str(contract_path.parents[2]/'experiments/paper3/lunarc'))
 from semantic_descriptor_common import atomic_write_json,load_json,utc_now,validate_schema
 contract=load_json(contract_path)
-receipt={"schema_version":"paper3-semantic-lunarc-submission-v1","created_at_utc":utc_now(),"phase":"MODEL_STAGE","verdict":"SUBMITTED_MODEL_STAGE_BATCH","expected_repo_sha":sha,"frozen_parent_sha":contract["frozen_parent_sha"],"contract_sha256":hashlib.sha256(contract_path.read_bytes()).hexdigest(),"slurm_job_id":job,"parent_stage_job_id":None,"parent_stage_harvest_sha256":None,"model_execution_observed_by_submitter":False,"descriptor_record_count_observed_by_submitter":0,"claim_boundary":"Submission receipt only; allocated execution and harvest are required before staged-model authority."}
+receipt={"schema_version":"paper3-semantic-lunarc-submission-v1","created_at_utc":utc_now(),"phase":"MODEL_STAGE","verdict":"SUBMITTED_MODEL_STAGE_BATCH","expected_repo_sha":sha,"frozen_parent_sha":contract["frozen_parent_sha"],"contract_sha256":hashlib.sha256(contract_path.read_bytes()).hexdigest(),"slurm_job_id":job,"parent_stage_job_id":None,"parent_stage_harvest_sha256":None,"stage_runtime_tree_sha256":None,"pre_execution_label_observation_sha256":None,"model_execution_observed_by_submitter":False,"descriptor_record_count_observed_by_submitter":0,"claim_boundary":"Submission receipt only; allocated execution and harvest are required before staged-model and runtime-tree authority."}
 validate_schema(receipt,schema_path); atomic_write_json(out,receipt)
 PY
 

@@ -3,35 +3,367 @@
   "$id": "https://example.invalid/rakl/paper3-semantic-lunarc-harvest-v1.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "created_at_utc", "phase", "verdict", "slurm_job_id", "slurm_state", "slurm_exit_status", "slurm_exit_code", "expected_repo_sha", "frozen_parent_sha", "contract_sha256", "submission_receipt_sha256", "execution_receipt_sha256", "descriptor_receipt_sha256", "descriptor_status", "descriptor_record_count", "failures", "training_authorized", "claim_boundary"],
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "phase",
+    "verdict",
+    "slurm_job_id",
+    "slurm_state",
+    "slurm_exit_status",
+    "slurm_exit_code",
+    "expected_repo_sha",
+    "frozen_parent_sha",
+    "contract_sha256",
+    "submission_receipt_sha256",
+    "execution_receipt_sha256",
+    "descriptor_receipt_sha256",
+    "descriptor_status",
+    "descriptor_record_count",
+    "failures",
+    "training_authorized",
+    "claim_boundary",
+    "slurm_account",
+    "slurm_partition",
+    "slurm_elapsed_seconds",
+    "parent_stage_job_id",
+    "parent_stage_harvest_sha256",
+    "stage_runtime_tree_sha256",
+    "label_chronology_receipt_sha256",
+    "label_chronology_state"
+  ],
   "properties": {
-    "schema_version": {"const": "paper3-semantic-lunarc-harvest-v1"},
-    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
-    "phase": {"enum": ["MODEL_STAGE", "DESCRIPTOR"]},
-    "verdict": {"enum": ["HARVEST_MODEL_STAGE_PASS", "HARVEST_MODEL_STAGE_CANNOT_CHECK", "HARVEST_DESCRIPTOR_READY", "HARVEST_DESCRIPTOR_CANNOT_CHECK"]},
-    "slurm_job_id": {"type": "string", "pattern": "^[0-9]+$"},
-    "slurm_state": {"type": ["array", "null"], "items": {"type": "string"}},
-    "slurm_exit_status": {"type": ["array", "null"], "items": {"type": "string"}},
-    "slurm_exit_code": {"type": ["integer", "null"]},
-    "expected_repo_sha": {"$ref": "#/$defs/gitsha"},
-    "frozen_parent_sha": {"$ref": "#/$defs/gitsha"},
-    "contract_sha256": {"$ref": "#/$defs/sha256"},
-    "submission_receipt_sha256": {"$ref": "#/$defs/sha256"},
-    "execution_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
-    "descriptor_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
-    "descriptor_status": {"type": ["string", "null"]},
-    "descriptor_record_count": {"type": "integer", "minimum": 0},
-    "failures": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "training_authorized": {"const": false},
-    "claim_boundary": {"type": "string", "minLength": 1}
+    "schema_version": {
+      "const": "paper3-semantic-lunarc-harvest-v1"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "phase": {
+      "enum": [
+        "MODEL_STAGE",
+        "DESCRIPTOR"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "HARVEST_MODEL_STAGE_PASS",
+        "HARVEST_MODEL_STAGE_CANNOT_CHECK",
+        "HARVEST_DESCRIPTOR_READY",
+        "HARVEST_DESCRIPTOR_CANNOT_CHECK"
+      ]
+    },
+    "slurm_job_id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "slurm_state": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "slurm_exit_status": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "slurm_exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "expected_repo_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "frozen_parent_sha": {
+      "$ref": "#/$defs/gitsha"
+    },
+    "contract_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "submission_receipt_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "execution_receipt_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "descriptor_receipt_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "descriptor_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "descriptor_record_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "training_authorized": {
+      "const": false
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slurm_account": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "slurm_partition": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "slurm_elapsed_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "parent_stage_job_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "parent_stage_harvest_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stage_runtime_tree_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "label_chronology_receipt_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "label_chronology_state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
   },
   "allOf": [
-    {"if": {"properties": {"verdict": {"enum": ["HARVEST_MODEL_STAGE_PASS", "HARVEST_DESCRIPTOR_READY"]}}}, "then": {"properties": {"slurm_state": {"const": ["COMPLETED"]}, "slurm_exit_status": {"const": ["SUCCESS"]}, "slurm_exit_code": {"const": 0}, "execution_receipt_sha256": {"$ref": "#/$defs/sha256"}, "failures": {"maxItems": 0}}}, "else": {"properties": {"failures": {"minItems": 1}}}},
-    {"if": {"properties": {"phase": {"const": "MODEL_STAGE"}}}, "then": {"properties": {"verdict": {"enum": ["HARVEST_MODEL_STAGE_PASS", "HARVEST_MODEL_STAGE_CANNOT_CHECK"]}, "descriptor_receipt_sha256": {"type": "null"}, "descriptor_status": {"type": "null"}, "descriptor_record_count": {"const": 0}}}},
-    {"if": {"properties": {"verdict": {"const": "HARVEST_DESCRIPTOR_READY"}}}, "then": {"properties": {"phase": {"const": "DESCRIPTOR"}, "descriptor_receipt_sha256": {"$ref": "#/$defs/sha256"}, "descriptor_status": {"const": "READY"}, "descriptor_record_count": {"minimum": 1}}}}
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "enum": [
+              "HARVEST_MODEL_STAGE_PASS",
+              "HARVEST_DESCRIPTOR_READY"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "slurm_state": {
+            "const": [
+              "COMPLETED"
+            ]
+          },
+          "slurm_exit_status": {
+            "const": [
+              "SUCCESS"
+            ]
+          },
+          "slurm_exit_code": {
+            "const": 0
+          },
+          "execution_receipt_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "failures": {
+            "maxItems": 0
+          },
+          "slurm_account": {
+            "const": "lu2026-2-51"
+          },
+          "slurm_partition": {
+            "const": "lu48"
+          },
+          "slurm_elapsed_seconds": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "phase": {
+            "const": "MODEL_STAGE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "enum": [
+              "HARVEST_MODEL_STAGE_PASS",
+              "HARVEST_MODEL_STAGE_CANNOT_CHECK"
+            ]
+          },
+          "descriptor_receipt_sha256": {
+            "type": "null"
+          },
+          "descriptor_status": {
+            "type": "null"
+          },
+          "descriptor_record_count": {
+            "const": 0
+          },
+          "parent_stage_job_id": {
+            "type": "null"
+          },
+          "parent_stage_harvest_sha256": {
+            "type": "null"
+          },
+          "label_chronology_receipt_sha256": {
+            "type": "null"
+          },
+          "label_chronology_state": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "HARVEST_DESCRIPTOR_READY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "phase": {
+            "const": "DESCRIPTOR"
+          },
+          "descriptor_receipt_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "descriptor_status": {
+            "const": "READY"
+          },
+          "descriptor_record_count": {
+            "minimum": 1
+          },
+          "parent_stage_job_id": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "parent_stage_harvest_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "stage_runtime_tree_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "label_chronology_receipt_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "label_chronology_state": {
+            "enum": [
+              "ZERO_LABELS_OBSERVED",
+              "FIRST_LABEL_RECORDED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "HARVEST_MODEL_STAGE_PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "stage_runtime_tree_sha256": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    }
   ],
   "$defs": {
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gitsha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitsha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    }
   }
 }

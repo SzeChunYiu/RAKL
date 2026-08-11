@@ -19,6 +19,7 @@ from semantic_descriptor_common import (
     file_sha256,
     inspect_model_files,
     load_json,
+    parse_utc,
     tree_sha256,
     utc_now,
     validate_repo_and_contract,
@@ -45,6 +46,13 @@ def _base(
         "frozen_parent_sha": contract.get("frozen_parent_sha"),
         "contract_sha256": os.environ.get("RAKL_CONTRACT_SHA256"),
         "stage_harvest_sha256": os.environ.get("RAKL_STAGE_HARVEST_SHA256"),
+        "parent_stage_job_id": os.environ.get("RAKL_STAGE_JOB_ID"),
+        "stage_runtime_tree_sha256": os.environ.get(
+            "RAKL_STAGE_RUNTIME_TREE_SHA256"
+        ),
+        "pre_execution_label_observation_sha256": os.environ.get(
+            "RAKL_PRE_LABEL_OBSERVATION_SHA256"
+        ),
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
         "slurm_account": os.environ.get("SLURM_JOB_ACCOUNT"),
         "slurm_partition": os.environ.get("SLURM_JOB_PARTITION"),
@@ -118,8 +126,42 @@ def run_descriptor(
             receipt["failures"].append("stage_harvest_not_passed")
         if stage_harvest.get("expected_repo_sha") != expected_repo_sha:
             receipt["failures"].append("stage_checkout_sha_mismatch")
+        if stage_harvest.get("slurm_job_id") != os.environ.get("RAKL_STAGE_JOB_ID"):
+            receipt["failures"].append("stage_harvest_job_id_mismatch")
+        if stage_harvest.get("contract_sha256") != os.environ.get(
+            "RAKL_CONTRACT_SHA256"
+        ):
+            receipt["failures"].append("stage_harvest_contract_mismatch")
+        if stage_harvest.get("frozen_parent_sha") != contract.get(
+            "frozen_parent_sha"
+        ):
+            receipt["failures"].append("stage_harvest_parent_mismatch")
+        if stage_harvest.get("stage_runtime_tree_sha256") != os.environ.get(
+            "RAKL_STAGE_RUNTIME_TREE_SHA256"
+        ):
+            receipt["failures"].append("stage_runtime_tree_hash_mismatch")
     except Exception:
         receipt["failures"].append("stage_harvest_invalid")
+
+    try:
+        observation_path = Path(os.environ["RAKL_PRE_LABEL_OBSERVATION_PATH"])
+        observation = load_json(observation_path)
+        validate_schema(
+            observation,
+            repo / "schemas/paper3-label-chronology-v1.schema.json",
+        )
+        if file_sha256(observation_path) != os.environ.get(
+            "RAKL_PRE_LABEL_OBSERVATION_SHA256"
+        ):
+            receipt["failures"].append("pre_label_observation_hash_mismatch")
+        if observation.get("state") != "ZERO_LABELS_OBSERVED":
+            receipt["failures"].append("pre_label_observation_not_zero")
+        if parse_utc(observation.get("created_at_utc")) < parse_utc(
+            contract.get("chronology", {}).get("zero_label_observed_at_utc")
+        ):
+            receipt["failures"].append("pre_label_observation_predates_contract")
+    except Exception:
+        receipt["failures"].append("pre_label_observation_invalid")
 
     model_dir = Path(str(contract.get("fs9", {}).get("model_dir", "")))
     expected_files = contract.get("model", {}).get("required_files", [])
@@ -135,6 +177,10 @@ def run_descriptor(
         receipt["failures"].append("runtime_root_missing")
     else:
         receipt["runtime_tree_sha256_before"] = tree_sha256(runtime_root)
+        if receipt["runtime_tree_sha256_before"] != receipt[
+            "stage_runtime_tree_sha256"
+        ]:
+            receipt["failures"].append("stage_runtime_tree_sha256_mismatch")
     if (
         not runtime_receipt.is_file()
         or file_sha256(runtime_receipt)
