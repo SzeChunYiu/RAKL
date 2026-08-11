@@ -45,6 +45,25 @@ An analogy may generate a proposal but never supplies theorem authority. Surface
 
 Do not treat a list of papers or a literature summary as a context fiber. The required object is a **method-transfer matrix** explaining why a method works elsewhere and exactly what blocks its transfer here.
 
+## Global failure experience lattice
+
+A failed candidate is both local negative history and a reusable global experience record. After every material failure/refutation, update `src/rakl/failure_lattice.py` / `schemas/failure-experience-lattice.schema.json` with:
+
+- exact atom, candidate, context-packet hash and public research-trace event id;
+- method family and falsifier/proof attempt;
+- observed result and residual signature;
+- competing diagnoses, selected bounded diagnosis and diagnosis status;
+- broken assumptions and exact scope conditions;
+- evidence pointers, local repair attempts, timestamp and artifact hash.
+
+Then connect the failure to structurally related prior failures using typed relations. Do not equate correlation with cause. Maintain the global portrait of recurring failure modes, broken assumptions, unresolved diagnoses and verified impossibilities.
+
+Before proposing the next candidate, query the global failure lattice for the method family, structural coordinates, assumptions and residuals relevant to the active atom. Record the relevant failure ids and reuse assessment in the public trace/next-step packet.
+
+A prior failure is a warning, **not a blacklist**. Reusing the same method is allowed when the new context differs materially or new evidence/derivation exists. For a close prior failure, supply a `DifferenceWitness` stating what changed, which failed assumption is restored/replaced, why the old falsifier may no longer apply, and the cheapest test that could show the claimed difference is illusory. Only a verified impossibility result may block reuse, and only inside its registered scope.
+
+Repeated unclassified failures are not an invitation to keep guessing. Route them to the existing metacognitive auditor as an ontology/method-basis gap candidate and reopen perspective/context search.
+
 ## Role-separated pre-candidate review
 
 Before selecting the next mathematical action, run a same-context expert cell with at least these lenses:
@@ -67,10 +86,10 @@ Before the first candidate for an atom, the trace must contain, in chronological
 2. `CONTEXT_FROZEN` — current context snapshot and context-packet hash;
 3. `ANALOGY_SCAN` — retained/refuted cross-domain analogies or explicit no-safe-bridge result;
 4. `METHOD_TRANSFER_REVIEW` — solved/near-solved contexts, transferable methods, enabling assumptions and disanalogies;
-5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties and recommendation;
-6. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator.
+5. `EXPERT_CONTEXT_REVIEW` — role-separated objections, disagreements, uncertainties, recommendation, and the global failure-memory review/reuse warnings relevant to the proposed action;
+6. `NEXT_STEP_PROPOSED` — proposed next action, alternatives considered, concise evidence-grounded selection rationale, uncertainties and expected discriminator, including how relevant prior failures were avoided, repaired, deliberately retried or found inapplicable.
 
-After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash.
+After candidate generation, keep recording `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED`, `RESIDUAL_OPENED`, `FORMALIZED`, `PROOF_CHECKED`, `NOVELTY_CHECKED`, `REVIEWED` and `PROMOTED` events as applicable. Each event must bind evidence/artifact pointers and a content hash. Every material failed result must also emit/update a failure-experience record.
 
 Trace entries are hash-chained: except for the first event, `previous_event_hash` must equal the prior event's `artifact_hash`. This makes chronology tamper-evident and prevents silent insertion or rewriting from looking like an original discovery path.
 
