@@ -100,12 +100,26 @@ class EvolutionTrial:
 
     @property
     def development_gain_qois(self) -> tuple[str, ...]:
+        """QoIs with positive development delta.
+
+        NOTE: This is a point-estimate filter (delta > 0). For rigorous
+        self-evolution claims, the upstream benchmark should provide
+        statistically-significant deltas via paired bootstrap or sign-flip
+        permutation tests. See src/rakl/inference.py.
+        """
         return tuple(
             sorted(name for name, delta in self.development_improvements.items() if delta > 0)
         )
 
     @property
     def transfer_gain_qois(self) -> tuple[str, ...]:
+        """QoIs with positive transfer delta.
+
+        NOTE: This is a point-estimate filter (delta > 0). For rigorous
+        self-evolution claims, the upstream benchmark should provide
+        statistically-significant deltas via paired bootstrap or sign-flip
+        permutation tests. See src/rakl/inference.py.
+        """
         if not self.transfer_improvements:
             return ()
         return tuple(

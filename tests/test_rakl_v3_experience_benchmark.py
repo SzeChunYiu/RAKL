@@ -178,7 +178,14 @@ def test_matched_experience_benchmark_measures_learning_and_transfer() -> None:
     assert report.transfer_success_delta == 1.0
     assert report.transfer_score_delta == pytest.approx(0.6)
     assert report.transfer_repeat_failure_delta == pytest.approx(-0.5)
-    assert report.transfer_gain_observed
+    # With only 2 transfer tasks, inference returns INSUFFICIENT_N (bootstrap unstable)
+    # This is correct edge-case behavior; the inference module is separately tested.
+    assert report.transfer_success_inference_status.value == "INSUFFICIENT_N"
+    assert report.transfer_score_inference_status.value == "INSUFFICIENT_N"
+    assert report.transfer_success_excludes_null is False
+    assert report.transfer_score_excludes_null is False
+    # INSUFFICIENT_N means transfer_gain_observed is False (cannot distinguish)
+    assert not report.transfer_gain_observed
     assert not report.grants_global_capability_claim
 
 
@@ -202,6 +209,24 @@ def test_labels_and_booleans_cannot_claim_frozen_or_matched_without_receipts() -
     report = assess_experience_benchmark(replace(packet, frozen_before_runs=True))
     assert report.verdict is ExperienceBenchmarkVerdict.INVALID
     assert any("resolved_protected_attestation_missing" in item for item in report.validation.problems)
+
+
+def test_experience_benchmark_inference_surfaced_for_insufficient_n() -> None:
+    """Verify that INSUFFICIENT_N status is correctly surfaced to the report.
+
+    The inference module's bootstrap/perm logic is fully tested in test_inference.py.
+    This test verifies that experience_benchmark correctly propagates the edge-case
+    status when n<3 transfer tasks are provided.
+    """
+    packet, context = _packet()
+    report = assess_experience_benchmark(packet, context)
+    # 2 transfer tasks should trigger INSUFFICIENT_N
+    assert report.transfer_success_inference_status.value == "INSUFFICIENT_N"
+    assert report.transfer_score_inference_status.value == "INSUFFICIENT_N"
+    # INSUFFICIENT_N means excludes_null=False and transfer_gain_observed=False
+    assert report.transfer_success_excludes_null is False
+    assert report.transfer_score_excludes_null is False
+    assert not report.transfer_gain_observed
 
 
 def test_forged_output_bytes_and_posthoc_freeze_are_rejected() -> None:

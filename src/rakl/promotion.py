@@ -61,6 +61,14 @@ class PromotionPacket:
 
     @property
     def has_positive_improvement(self) -> bool:
+        """Whether any meta-QoI shows a positive point-estimate delta.
+
+        NOTE: This is a point-estimate filter (value > 0). For rigorous
+        promotion decisions, the upstream benchmark should provide
+        statistically-significant deltas via paired bootstrap or sign-flip
+        permutation tests. See src/rakl/inference.py for proper inference
+        helpers that distinguish signal from noise.
+        """
         if not self.improvements:
             return False
         return any(value > 0 for value in self.improvements.values())
