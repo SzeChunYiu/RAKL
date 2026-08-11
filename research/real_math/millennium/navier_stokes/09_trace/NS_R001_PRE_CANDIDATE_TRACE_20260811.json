@@ -202,6 +202,96 @@
       ],
       "artifact_hash": "sha256:784d5182bf4849a8de9a8a40980af3e6f39d6a8bb831d3df78aa634885227042",
       "previous_event_hash": "sha256:4913203826157a4398bf33a16026ffda58caa716f50e583073ac33029ae95292"
+    },
+    {
+      "event_id": "NS-R001-E008",
+      "atom_id": "NS-R001",
+      "event_type": "FALSIFIER_RUN",
+      "timestamp": "2026-08-11T06:32:10+00:00",
+      "state_summary": "The frozen pre-candidate next action is being executed as a route-family scaling screen; no theorem candidate is introduced.",
+      "action_summary": "Evaluate energy-norm-only critical-control routes on the smooth divergence-free concentration family U_lambda=lambda^(3/2) phi(lambda x) psi(lambda^2 t).",
+      "evidence_pointers": [
+        "research/real_math/millennium/navier_stokes/01_frontier/NS_R001_ENERGY_CRITICAL_ATLAS_20260811.md",
+        "tests/test_navier_stokes_r001_energy_atlas.py",
+        "issue #88"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "energy_pair_scaling_exponent:0",
+        "velocity_serrin_critical_scaling_exponent:1/2",
+        "pressure_critical_scaling_exponent:1",
+        "CKN_natural_scale_cubic_exponent:3/2"
+      ],
+      "uncertainties": [
+        "U_lambda is an adversarial divergence-free history, not a Navier-Stokes solution",
+        "the screen does not test equation-specific geometric or dynamical depletion"
+      ],
+      "residuals": [],
+      "next_steps": [],
+      "artifact_hash": "sha256:19c344b0d631abda6a71b70cb158703f0cb68ab73c945e9b32bdcf7fdf81f4f1",
+      "previous_event_hash": "sha256:784d5182bf4849a8de9a8a40980af3e6f39d6a8bb831d3df78aa634885227042"
+    },
+    {
+      "event_id": "NS-R001-E009",
+      "atom_id": "NS-R001",
+      "event_type": "RESULT_RECORDED",
+      "timestamp": "2026-08-11T06:32:20+00:00",
+      "state_summary": "Exact scaling separates fixed Leray energy-class control from every sampled/general Serrin-critical velocity norm and corresponding pressure-critical norm on arbitrary smooth divergence-free histories.",
+      "action_summary": "Record the scoped route-pruning result and its non-solution boundary.",
+      "evidence_pointers": [
+        "research/real_math/millennium/navier_stokes/01_frontier/NS_R001_ENERGY_CRITICAL_ATLAS_20260811.md",
+        "tests/test_navier_stokes_r001_energy_atlas.py",
+        "Terence Tao, arXiv:1402.0290"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "scoped_no_go:energy_pair_plus_generic_divergence_free_structure_cannot_uniformly_control_velocity_serrin_critical_norms_on_arbitrary_smooth_histories",
+        "scoped_no_go:quadratic_pressure_CZ_mapping_does_not_repair_the_gap_on_arbitrary_smooth_histories",
+        "root_status:OPEN_NO_SOLUTION_CERTIFICATE"
+      ],
+      "uncertainties": [
+        "true Navier-Stokes dynamics may exclude the adversarial history family by additional structure",
+        "the load-bearing true-evolution coordinate remains unidentified"
+      ],
+      "residuals": [
+        "identify an equation-specific mechanism that prevents energy-class concentration from realizing the A1 critical blowup pattern"
+      ],
+      "next_steps": [],
+      "artifact_hash": "sha256:84872b8a33ecc706ab9ea107450e5350fb858939b7060d05991c927669394489",
+      "previous_event_hash": "sha256:19c344b0d631abda6a71b70cb158703f0cb68ab73c945e9b32bdcf7fdf81f4f1"
+    },
+    {
+      "event_id": "NS-R001-E010",
+      "atom_id": "NS-R001",
+      "event_type": "RESIDUAL_OPENED",
+      "timestamp": "2026-08-11T06:32:30+00:00",
+      "state_summary": "The energy-only interpolation family is screened out at the arbitrary-history level; NS-R001 remains open because actual solution trajectories have additional constraints.",
+      "action_summary": "Refine NS-R001a to search for the first true-evolution coordinate that excludes A1-type concentration and is absent from Tao's averaged blowup mechanism.",
+      "evidence_pointers": [
+        "research/real_math/millennium/navier_stokes/02_problem_dag/NS_R001.yaml",
+        "research/real_math/millennium/navier_stokes/01_frontier/NS_R001_ENERGY_CRITICAL_ATLAS_20260811.md",
+        "research/real_math/millennium/navier_stokes/08_reviews/NS_R001_EXPERT_CONTEXT_REVIEW_20260811.md"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "residual:NS-R001a"
+      ],
+      "uncertainties": [
+        "whether the first useful coordinate is vorticity/strain geometry, pressure cancellation, frequency-local flux, causal persistence, or another exact identity"
+      ],
+      "residuals": [
+        "NS-R001a:true-evolution coordinate preventing arbitrary energy-class critical concentration"
+      ],
+      "next_steps": [
+        "build explicit smooth divergence-free strain/vorticity-alignment atlas",
+        "separate static geometric possibility from dynamically admissible Navier-Stokes evolution",
+        "after exact-head strict-packet CI passes, use the atlas to choose the first theorem candidate"
+      ],
+      "artifact_hash": "sha256:d36aeb976738bf1a4172ce76df562978ee97943b0067bf4cdd0e6137253d5a7a",
+      "previous_event_hash": "sha256:84872b8a33ecc706ab9ea107450e5350fb858939b7060d05991c927669394489"
     }
   ]
 }
