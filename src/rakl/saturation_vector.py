@@ -83,8 +83,9 @@ def assess_saturation_vector(
     """Assess bounded semantic flatness separately for each RAKL view.
 
     Paper count, token count, or repeated same-route searches do not establish
-    saturation.  An axis is flat only after independent route families add zero
-    retained novelty and no recent native residual explicitly reopens that axis.
+    saturation.  An axis is flat only after the active window contains no retained
+    novelty on that axis, multiple independent route families are flat, and no
+    native residual explicitly reopens that axis.
     """
 
     if min_independent_flat_routes < 1 or window < 1:
@@ -104,7 +105,11 @@ def assess_saturation_vector(
                 flat_routes.append(round_.route_family)
             if axis in round_.residual_axes:
                 reopen_residuals.extend(round_.residual_signature or (f"residual:{round_.round_id}",))
-        flat = len(flat_routes) >= min_independent_flat_routes and not reopen_residuals
+        flat = (
+            recent_novelty == 0
+            and len(flat_routes) >= min_independent_flat_routes
+            and not reopen_residuals
+        )
         reports.append(
             SaturationAxisReport(
                 axis=axis,
@@ -122,6 +127,8 @@ def assess_saturation_vector(
         if not report.flat:
             if report.reopen_residuals:
                 reasons.append(f"{axis.value}:reopened_by_native_residual")
+            elif report.recent_retained_novelty > 0:
+                reasons.append(f"{axis.value}:recent_retained_novelty")
             elif len(report.independent_flat_route_families) < min_independent_flat_routes:
                 reasons.append(f"{axis.value}:insufficient_independent_flat_routes")
     return SaturationVectorReport(
