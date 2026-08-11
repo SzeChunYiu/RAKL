@@ -592,33 +592,44 @@ def discover_shortcut_candidates(
 ) -> ShortcutCandidateSet:
     """Derive SEARCH/JUMP/GLUE proposal candidates from one frozen memory.
 
-    SEARCH is deliberately conservative: it is a viable same-domain episode.
-    JUMP is a viable structurally similar episode from another registered domain.
-    GLUE candidates are pairs whose *combined verified source effects* cover the
-    desired transition.  Interface compatibility is not assumed; an explicit
-    TransformationCompositionWitness remains mandatory.
+    Strict SEARCH/JUMP candidates must cover the *entire* desired transition.
+    Verified partial-effect episodes remain available to GLUE, where their
+    combined recorded effects must cover the target before interface validation.
+    Proposal-only episodes never consume strict ``top_k`` slots.
     """
 
     memory_reasons = validate_transformation_memory(memory)
     if memory_reasons:
         raise ValueError("invalid transformation memory: " + ", ".join(memory_reasons))
 
-    matches = rank_obstruction_transformations(target, memory.episodes, top_k=top_k)
+    strict_episodes = tuple(
+        episode
+        for episode in memory.episodes
+        if episode.authority in _VERIFIED_SOURCE_AUTHORITIES
+    )
+    matches = rank_obstruction_transformations(target, strict_episodes, top_k=top_k)
     viable: list[StructuralMatch] = []
     for match in matches:
         episode = find_transformation_episode(memory, match.episode_id)
         if episode is not None and _source_episode_viable(match, episode):
             viable.append(match)
 
-    direct = tuple(match for match in viable if match.source_domain == target.domain)
-    jump = tuple(match for match in viable if match.source_domain != target.domain)
-
     desired = set(target.desired_transition)
+    complete = tuple(
+        match for match in viable if set(match.matched_effects) >= desired
+    )
+    direct = tuple(
+        match for match in complete if match.source_domain == target.domain
+    )
+    jump = tuple(
+        match for match in complete if match.source_domain != target.domain
+    )
+
     glue_sets: list[Tuple[str, ...]] = []
     partial = tuple(
         match
         for match in viable
-        if match.matched_effects and set(match.matched_effects) != desired
+        if match.matched_effects and set(match.matched_effects) < desired
     )
     for left, right in combinations(partial, 2):
         if set(left.matched_effects) | set(right.matched_effects) >= desired:
