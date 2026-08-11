@@ -1,6 +1,6 @@
 # Strongest-version campaign scoreboard — 2026-08-11
 
-**Refs:** #258 (umbrella stays OPEN — Paper III human blockers + #257 publication remain)
+**Refs:** #258 **CLOSED** — programme terminal-with-nulls; human residual only (#216/#217/#255/#249). #257 publication ingest **CLOSED**.
 
 | Paper | Issue | State | Terminal verdict |
 |-------|------:|-------|------------------|
@@ -12,7 +12,9 @@
 | V | #253 | CLOSED | longitudinal harvest + `CANNOT_MEASURE` honesty |
 | V | #255 | OPEN | `AWAITING_HUMAN_ANNOTATORS` |
 | III | #249 | OPEN | blocked on #217 humans |
-| all | #257 | OPEN | publication ingest pending terminal evidence |
+| all | #257 | CLOSED | publication ingest + claim audit complete |
+| all | #258 | CLOSED | campaign umbrella terminal-with-nulls |
 | all | #216/#217 | OPEN | human reviewers/annotators |
 
-Index: `research/ISSUE_TERMINAL_FLOOR_20260811.md`
+Index: `research/ISSUE_TERMINAL_FLOOR_20260811.md`  
+Publication status: `research/PAPERS_II_III_V_STRONGEST_VERSION_STATUS.json`
