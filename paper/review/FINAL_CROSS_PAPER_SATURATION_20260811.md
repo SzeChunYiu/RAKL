@@ -1,6 +1,6 @@
 # Final cross-paper bounded saturation screen — 11 August 2026
 
-This record is an **internal Nature-style closeout screen**, not independent peer review, journal review or journal acceptance. Its purpose is to document the final bounded-open-world literature and claim-boundary pass across the four canonical publication packages.
+This record is an **internal Nature-style closeout screen**, not independent peer review, journal review or journal acceptance. Its purpose is to document the final bounded-open-world literature, current-main evidence synchronization and claim-boundary pass across the four canonical publication packages.
 
 ## Search routes refreshed at closeout
 
@@ -14,10 +14,12 @@ The final screen rechecked recent work on scientific-agent evidence grounding an
 
 Paper III's final audit additionally assimilates the strongest-feasible modern-semantic-control residual by freezing a content-bound BGE reranker before external labels. The exact asset is not staged and no score exists, so the formalism/conformance paper remains fail-closed on natural-generalization and efficiency claims.
 
+After the literature screen, the canonical publication tree was synchronized to current main parent `9c6f10aff9cad923f903dd51169a80a97530d586`. The only post-freeze manuscript-source delta on main was Paper II's empirical-reporting section. It records the native V4 execution and adaptive V4.1 replay as receipt-bound negative/non-confirmatory evidence: V4 had no scorable arms; V4.1 had one scorable arm but zero exact conceptual passes; no paired effect, matched superiority result or new quantitative performance figure is licensed. The exact negative history is retained rather than silently omitted from the publication package.
+
 ## Cross-paper reviewer disposition
 
 - **Paper I:** no new source displaces the scoped compatibility/closure, authority and epistemic-mechanics results. Mathematical claims remain conditional on their stated hypotheses; no global lattice or scalar-authority claim is made.
-- **Paper II:** new agent-verification/provenance work narrows generic novelty but is compatible with the manuscript's residual: evidence-governed scientific state transitions, negative history, context/estimand alignment and authority gating. Native staging remains infrastructure evidence, not model-performance evidence.
+- **Paper II:** new agent-verification/provenance work narrows generic novelty but is compatible with the manuscript's residual: evidence-governed scientific state transitions, negative history, context/estimand alignment and authority gating. Native V4/V4.1 execution evidence is incorporated under an explicitly non-confirmatory boundary and does not support matched empirical superiority or a comparative efficiency claim.
 - **Paper III:** the modern semantic-control and independent-annotation residuals are explicit and fail closed. Publication readiness is only as a formalism/conformance paper.
 - **Paper IV:** recent autoformalization/proof-verification work reinforces rather than removes the need for separate specification-fidelity and checker-trust coordinates. Proof validity, novelty and research value remain distinct authorities.
 
