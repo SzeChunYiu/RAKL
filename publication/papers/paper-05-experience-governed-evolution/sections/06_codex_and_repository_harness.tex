@@ -1,0 +1,78 @@
+\section{Informing coding agents: repository-native method state and Codex harness}
+\label{sec:codex}
+
+Recursive framework governance is ineffective if the coding agent modifying the package does not know which method version is incumbent, which rules are protected, or how a proposed change will be evaluated. Conversely, putting every historical fact into a giant system prompt consumes context and quickly becomes stale. We therefore use the repository itself as the durable system of record and make the coding-agent entrypoint a navigation layer.
+
+\subsection{Instruction hierarchy}
+
+OpenAI's Codex documentation specifies that repository \texttt{AGENTS.md} files can provide coding conventions, repository structure and testing instructions; their scope follows the directory tree, more deeply nested files can specialize broader instructions, and direct system/developer/user instructions take precedence. Codex's published harness-engineering guidance further argues for giving the agent a map rather than a very large instruction manual, with deeper repository documentation serving as the source of truth. We adopt that hierarchy rather than assuming the agent carries a persistent private memory of the latest \RAKL{} architecture.
+
+The Paper 5 challenger adds a compact self-evolution entrypoint to the existing root \texttt{AGENTS.md}. For a task that can change framework behavior it points to:
+
+\begin{enumerate}[leftmargin=*]
+\item \texttt{RAKL\_VERSION.json}, a machine-readable method-state manifest;
+\item \texttt{docs/RAKL\_UPGRADE\_PROTOCOL.md}, the governed challenger lifecycle;
+\item \texttt{docs/RAKL\_METROLOGY.md}, the frozen measurement vocabulary;
+\item \texttt{src/rakl/method\_specs.py}, the canonical process contracts;
+\item protected promotion/evolution/attestation surfaces relevant to the requested change.
+\end{enumerate}
+
+The intent is not to make \texttt{AGENTS.md} the constitution itself. A future engineering cleanup should further reduce the root file toward a table-of-contents role while preserving exact deeper sources of truth.
+
+\subsection{Startup protocol for a framework-editing Codex session}
+
+Before editing a framework method, a coding agent should execute the following observable startup sequence:
+
+\begin{enumerate}[leftmargin=*]
+\item resolve the current exact \texttt{main} Git SHA and method-state manifest;
+\item classify the request as Class A, B or C;
+\item locate the affected method contract and protected evaluator/authority surfaces;
+\item inspect the relevant case-study episodes, diagnoses or lessons motivating the change;
+\item freeze the upgrade proposal, target metrics, benchmark/evaluator identities, negative controls and rollback plan when Class B/C;
+\item create or use a challenger branch rather than silently rewriting the incumbent;
+\item implement the smallest change that tests the stated mechanism;
+\item run exact-subject tests and emit a machine-readable handoff containing parent, candidate, metrics, blockers and rollback identity.
+\end{enumerate}
+
+This sequence is intentionally inspectable from repository artifacts. We do not require disclosure of hidden model chain-of-thought.
+
+\subsection{What happens when a user directly instructs Codex to bypass the protocol?}
+
+The instruction hierarchy means a direct user/operator request can override repository guidance. The method therefore cannot rely on \texttt{AGENTS.md} as an access-control mechanism. The correct response is architectural rather than rhetorical. The repository records an operational override and withholds evolution-evidence credit. Protected CI, branch protection, external assurance and post-promotion attestation remain separate controls where configured. Thus the scientific statement is not ``Codex cannot disobey the method''; it is ``an override is observable and does not become evidence of method improvement merely because the code moved.''
+
+\subsection{Method-state manifest}
+
+The proposal-only \texttt{RAKL\_VERSION.json} introduced on the Paper 5 branch names the current method generation, exact Git subject at proposal freeze, software package version, constitution epoch, protected evaluation surfaces and known upgrade gaps. A canonical future form should also bind active schema versions, evaluator bundle hashes, migration status and last attested promotion.
+
+The manifest solves a practical coordination problem. A newly started Codex session, human developer or other coding agent can determine the intended incumbent without relying on conversational memory. At the same time, the exact Git SHA prevents a friendly version label such as ``3.1'' from hiding divergent code.
+
+\subsection{Package/API version versus method version}
+
+Software consumers need ordinary API compatibility semantics, whereas scientific evaluation needs method identity. These are different concerns. A serialization bug might require a Python package patch without changing research behavior. Conversely, a routing-policy change might constitute a new research method even if public Python APIs remain backward compatible. The manifest therefore records both. Release artifacts should additionally use the repository's content-addressed release manifest so that binaries or generated documents can be tied to an exact source subject.
+
+\subsection{State and schema migration}
+
+Persistent experience means framework upgrades cannot treat state migration as an implementation footnote. A new version must state whether old episodes, lessons, failures, tools and saturation records are:
+
+\begin{itemize}[leftmargin=*]
+\item byte-compatible and directly readable;
+\item translated by a content-bound deterministic migration;
+\item retained only as legacy read-only evidence;
+\item or incompatible and therefore excluded from the challenger evaluation.
+\end{itemize}
+
+A migration must never manufacture higher authority. If a new schema can express stronger authority than the old one, imported objects retain the old effective authority until independently revalidated. Migration tests include round-trip identity where promised, source-pin preservation, supersession lineage and rollback compatibility.
+
+\subsection{Concurrent agents and branch isolation}
+
+Long-running research may involve several solution agents, a meta-observer and one or more coding agents. Concurrent work creates race conditions in both software and epistemic state. The safe default is immutable source episodes plus isolated challenger branches. A framework engineer should rebase or merge current \texttt{main} before final evaluation, recompute exact subject hashes and rerun candidate checks. A benchmark packet bound to an earlier head cannot be silently claimed for a later integrated head.
+
+The same principle applies to mathematical applications. \texttt{RAKL\_math} remains the application-state repository; reusable framework mutations belong in \texttt{RAKL}. Application evidence may motivate a framework issue but cannot write itself directly into framework authority.
+
+\subsection{Reproducibility under model-service drift}
+
+Repository state can be exactly versioned; hosted model behavior may not be perfectly reproducible even under the same public model name. Strong experiments therefore record model identity/revision when available, prompt hashes, temperature, seed where supported, token ceilings, tool policy, external retrieval policy and wall-time/resources. If an exact model revision is unavailable later, the replication is a new condition rather than an exact rerun. Framework evolution claims should be robust enough to survive matched tests across more than one model/revision when the claim is intended to generalize beyond a specific model.
+
+\subsection{Why the coding agent is part of the experiment}
+
+The coding agent is not merely infrastructure. Its engineering behavior supplies additional Self-RAKL case evidence: evaluator drift, CI repair, migration defects, stale instructions, over-large context files, unsafe authority interfaces and rollback friction are all observable framework-process outcomes. Paper 5 therefore treats engineering incidents as \TaskEpisode{}-like evidence at the meta-method level rather than cleaning them from the historical record once fixed.
