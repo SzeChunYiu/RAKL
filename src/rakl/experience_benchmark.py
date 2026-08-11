@@ -484,7 +484,7 @@ def assess_experience_benchmark(
             None,
         )
         if base_run is not None and learn_run is not None:
-            success_diffs.append(1.0 if learn_run.success else 0.0 - (1.0 if base_run.success else 0.0))
+            success_diffs.append((1.0 if learn_run.success else 0.0) - (1.0 if base_run.success else 0.0))
             score_diffs.append(learn_run.score - base_run.score)
 
     # Compute statistical inference for transfer metrics
