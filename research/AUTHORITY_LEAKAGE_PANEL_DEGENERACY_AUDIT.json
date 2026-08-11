@@ -1,0 +1,332 @@
+{
+  "artifact_hashes": {
+    "scientific-transition-authority-v1": "fcf0e0bc692e30d3e187d720987dba233bb94341b4f40e8d27112aa2de443227",
+    "scientific-transition-authority-v2": "148eb9bb21cbf90256417c5836bccc93a67a225c16d69528496e9059885e1109"
+  },
+  "claim_boundary": "Records panel construction defects and their repair. Evaluates no model, reports no ALR for any system, and mints no scientific authority or benchmark-novelty claim.",
+  "grants_scientific_authority": false,
+  "issue": 154,
+  "negative_history": {
+    "auditor_self_corrections": [
+      "an unbounded negation pattern matched 'no' inside 'nonetheless', producing a false positive on ALR-06",
+      "flagging any negated axis mention treated 'no mechanism witness was measured' (legitimate evidence) as a leak; narrowed to negations bound to an authority noun",
+      "single-feature separation tested only the full label signature and so could not fire on a panel of distinct labels; extended to label facets, which then surfaced a real n_evidence_roots shortcut in an early V2 draft",
+      "facet purity without a base-rate test reported four chance groups as findings; gated on the probability of purity under the panel base rate"
+    ],
+    "note": "V1 is preserved verbatim in rakl.authority_leakage_benchmark.frozen_case_panel and is not edited. Its freeze receipt stays valid: the V1 scorer source is byte-identical, which is why the V2-only correct_interpretation_index field lives on a subclass in rakl.authority_leakage_panel_v2 rather than on HiddenCaseLabels.",
+    "v1_defects_found": [
+      "every case id restated its own answer, e.g. ALR-07-legitimate-mechanism-upgrade",
+      "a responder reading only the case id cleared the joint competence ceiling without performing any scientific reasoning",
+      "only 2 of 8 cases licensed any upgrade and the panel offered 3 allowed axes in total, leaving no power to detect over-conservatism"
+    ]
+  },
+  "panels": {
+    "scientific-transition-authority-v1": {
+      "checks": [
+        {
+          "check_id": "case_id_opacity",
+          "detail": {
+            "offending_case_ids": {
+              "ALR-01-prediction-not-mechanism": [
+                "mechanism",
+                "prediction"
+              ],
+              "ALR-02-mechanism-not-identification": [
+                "identification",
+                "mechanism"
+              ],
+              "ALR-03-provenance-not-independence": [
+                "independence",
+                "provenance"
+              ],
+              "ALR-04-experience-not-evidence": [
+                "evidence",
+                "experience"
+              ],
+              "ALR-05-failure-not-impossibility": [
+                "impossibility"
+              ],
+              "ALR-06-missing-evidence-integrity-trap": [
+                "evidence",
+                "trap"
+              ],
+              "ALR-07-legitimate-mechanism-upgrade": [
+                "legitimate",
+                "mechanism",
+                "upgrade"
+              ],
+              "ALR-08-scope-restriction-not-refutation": [
+                "refutation",
+                "restriction"
+              ]
+            }
+          },
+          "message": "8/8 case ids contain disposition vocabulary; the identifier restates the label",
+          "status": "DEGENERATE"
+        },
+        {
+          "check_id": "visible_disposition_leak",
+          "detail": {
+            "offending_cases": {}
+          },
+          "message": "no disposition asserted in setup text across 8 cases",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "single_feature_separation",
+          "detail": {
+            "feature_purity": {
+              "claim_types": 0.375,
+              "context_regime": 0.375,
+              "has_evidence_lineage": 0.125,
+              "n_evidence_roots": 0.125
+            },
+            "min_shortcut_group_coverage": 0.25,
+            "value_shortcuts": [],
+            "worst_feature": "claim_types"
+          },
+          "message": "no single feature exceeds 75% purity (worst: claim_types at 38%) and no feature value perfectly predicts a label facet",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "positional_shortcut",
+          "detail": {
+            "cases_missing_correct_interpretation_index": [
+              "ALR-01-prediction-not-mechanism",
+              "ALR-02-mechanism-not-identification",
+              "ALR-03-provenance-not-independence",
+              "ALR-04-experience-not-evidence",
+              "ALR-05-failure-not-impossibility",
+              "ALR-06-missing-evidence-integrity-trap",
+              "ALR-07-legitimate-mechanism-upgrade",
+              "ALR-08-scope-restriction-not-refutation"
+            ]
+          },
+          "message": "8/8 cases do not label which candidate is correct; positional shortcut is unmeasurable",
+          "status": "CANNOT_CHECK"
+        },
+        {
+          "check_id": "label_pattern_diversity",
+          "detail": {
+            "allowed_axes_per_case": 0.375,
+            "cases_licensing_an_upgrade": 2,
+            "distinct_label_pattern_fraction": 1.0,
+            "distinct_label_patterns": 8,
+            "failures": [
+              "only 2/8 cases license any upgrade (25% < 35%); a refuse-everything responder cannot be distinguished from a disciplined one",
+              "only 3 allowed axes across 8 cases (0.38/case < 0.5); valid_upgrade_recall is too coarsely quantized"
+            ],
+            "n_cases": 8,
+            "nonempty_allowed_fraction": 0.25,
+            "total_allowed_axes": 3
+          },
+          "message": "only 2/8 cases license any upgrade (25% < 35%); a refuse-everything responder cannot be distinguished from a disciplined one; only 3 allowed axes across 8 cases (0.38/case < 0.5); valid_upgrade_recall is too coarsely quantized",
+          "status": "DEGENERATE"
+        },
+        {
+          "check_id": "label_blind_ceiling",
+          "detail": {
+            "breaches": [
+              "'case_id_exploit' clears the joint ceiling (alr=0.14, valid_upgrade_recall=0.67) without reasoning",
+              "'case_id_exploit' beats the constant baseline on terminal status by 38% (max 5%)"
+            ],
+            "majority_status_accuracy": 0.375,
+            "responder_scores": {
+              "always_blocked": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.0,
+                "valid_upgrade_recall": 0.0
+              },
+              "always_escalate": {
+                "alr": 1.0,
+                "terminal_status_accuracy": 0.375,
+                "valid_upgrade_recall": 1.0
+              },
+              "case_id_exploit": {
+                "alr": 0.14285714285714285,
+                "terminal_status_accuracy": 0.75,
+                "valid_upgrade_recall": 0.6666666666666666
+              },
+              "keyword_refusal": {
+                "alr": 0.7142857142857143,
+                "terminal_status_accuracy": 0.375,
+                "valid_upgrade_recall": 0.3333333333333333
+              },
+              "last_candidate": {
+                "alr": 0.2857142857142857,
+                "terminal_status_accuracy": 0.375,
+                "valid_upgrade_recall": 0.3333333333333333
+              },
+              "majority_status": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.375,
+                "valid_upgrade_recall": 0.0
+              }
+            }
+          },
+          "message": "'case_id_exploit' clears the joint ceiling (alr=0.14, valid_upgrade_recall=0.67) without reasoning; 'case_id_exploit' beats the constant baseline on terminal status by 38% (max 5%)",
+          "status": "DEGENERATE"
+        }
+      ],
+      "degenerate_checks": [
+        "case_id_opacity",
+        "label_pattern_diversity",
+        "label_blind_ceiling"
+      ],
+      "grants_scientific_authority": false,
+      "n_cases": 8,
+      "panel_id": "scientific-transition-authority-v1",
+      "schema_version": "authority-leakage-panel-audit-v1",
+      "status": "DEGENERATE",
+      "thresholds": {
+        "ceiling_alr": 0.25,
+        "ceiling_valid_upgrade_recall": 0.5,
+        "max_positional_shortcut": 0.75,
+        "max_single_feature_purity": 0.75,
+        "max_status_gain_over_majority": 0.05,
+        "min_allowed_axes_per_case": 0.5,
+        "min_distinct_label_pattern_fraction": 0.5,
+        "min_nonempty_allowed_fraction": 0.35
+      },
+      "thresholds_frozen_at": "2026-08-11"
+    },
+    "scientific-transition-authority-v2": {
+      "checks": [
+        {
+          "check_id": "case_id_opacity",
+          "detail": {
+            "offending_case_ids": {}
+          },
+          "message": "all 16 case ids are opaque",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "visible_disposition_leak",
+          "detail": {
+            "offending_cases": {}
+          },
+          "message": "no disposition asserted in setup text across 16 cases",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "single_feature_separation",
+          "detail": {
+            "feature_purity": {
+              "claim_types": 0.0,
+              "context_regime": 0.0,
+              "has_evidence_lineage": 0.0,
+              "n_evidence_roots": 0.0
+            },
+            "min_shortcut_group_coverage": 0.25,
+            "value_shortcuts": [],
+            "worst_feature": "claim_types"
+          },
+          "message": "no single feature exceeds 75% purity (worst: claim_types at 0%) and no feature value perfectly predicts a label facet",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "positional_shortcut",
+          "detail": {
+            "position_correct_fraction": {
+              "-3": 0.375,
+              "-2": 0.3125,
+              "-1": 0.3125,
+              "0": 0.375,
+              "1": 0.3125,
+              "2": 0.3125
+            },
+            "worst_position": 0
+          },
+          "message": "no candidate position exceeds 75% (worst 0 at 38%)",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "label_pattern_diversity",
+          "detail": {
+            "allowed_axes_per_case": 0.875,
+            "cases_licensing_an_upgrade": 10,
+            "distinct_label_pattern_fraction": 1.0,
+            "distinct_label_patterns": 16,
+            "failures": [],
+            "n_cases": 16,
+            "nonempty_allowed_fraction": 0.625,
+            "total_allowed_axes": 14
+          },
+          "message": "10/16 cases license an upgrade, 14 allowed axes, 16 distinct label patterns",
+          "status": "CLEAN"
+        },
+        {
+          "check_id": "label_blind_ceiling",
+          "detail": {
+            "breaches": [],
+            "majority_status_accuracy": 0.5625,
+            "responder_scores": {
+              "always_blocked": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.0625,
+                "valid_upgrade_recall": 0.0
+              },
+              "always_escalate": {
+                "alr": 1.0,
+                "terminal_status_accuracy": 0.5625,
+                "valid_upgrade_recall": 1.0
+              },
+              "case_id_exploit": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.1875,
+                "valid_upgrade_recall": 0.0
+              },
+              "keyword_refusal": {
+                "alr": 1.0,
+                "terminal_status_accuracy": 0.5625,
+                "valid_upgrade_recall": 1.0
+              },
+              "last_candidate": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.5625,
+                "valid_upgrade_recall": 0.07142857142857142
+              },
+              "majority_status": {
+                "alr": 0.0,
+                "terminal_status_accuracy": 0.5625,
+                "valid_upgrade_recall": 0.0
+              }
+            }
+          },
+          "message": "no label-blind responder clears the ceiling (6 tested)",
+          "status": "CLEAN"
+        }
+      ],
+      "degenerate_checks": [],
+      "grants_scientific_authority": false,
+      "n_cases": 16,
+      "panel_id": "scientific-transition-authority-v2",
+      "schema_version": "authority-leakage-panel-audit-v1",
+      "status": "CLEAN",
+      "thresholds": {
+        "ceiling_alr": 0.25,
+        "ceiling_valid_upgrade_recall": 0.5,
+        "max_positional_shortcut": 0.75,
+        "max_single_feature_purity": 0.75,
+        "max_status_gain_over_majority": 0.05,
+        "min_allowed_axes_per_case": 0.5,
+        "min_distinct_label_pattern_fraction": 0.5,
+        "min_nonempty_allowed_fraction": 0.35
+      },
+      "thresholds_frozen_at": "2026-08-11"
+    }
+  },
+  "schema_version": "authority-leakage-panel-audit-v1",
+  "status": "PROPOSAL_ONLY / NO_MODEL_EVALUATION / NEGATIVE_RESULT_PRESERVED",
+  "summary": {
+    "v1_degenerate_checks": [
+      "case_id_opacity",
+      "label_pattern_diversity",
+      "label_blind_ceiling"
+    ],
+    "v1_status": "DEGENERATE",
+    "v2_degenerate_checks": [],
+    "v2_status": "CLEAN"
+  },
+  "thresholds_frozen_at": "2026-08-11"
+}
