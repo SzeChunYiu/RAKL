@@ -1,0 +1,80 @@
+{
+  "bindings": [
+    {"path": "experiments/paper3/lunarc/semantic_descriptor_common.py", "role": "common_runtime", "sha256": "bf043c18cb12043f30c038757b2b2157bb493cb53eb98e0426ff40bb1940ff58"},
+    {"path": "experiments/paper3/lunarc/stage_semantic_model.py", "role": "stage_runtime", "sha256": "7969936ee9866ddbc10f577ed0e1931a8818cc6f9bc1a26629b3422e70a97068"},
+    {"path": "experiments/paper3/lunarc/stage_semantic_model.sbatch", "role": "stage_batch", "sha256": "071290a5dab9a589d19f6db2d5badb51f522accae2f50cad71449c9c021f0317"},
+    {"path": "experiments/paper3/lunarc/submit_semantic_model_stage.sh", "role": "stage_submitter", "sha256": "cc36b569b6183ce1424c6627d860fef2c241622e1af7a2e7ca0bf150ccd51f7b"},
+    {"path": "experiments/paper3/lunarc/semantic_descriptor_runtime.py", "role": "descriptor_runtime", "sha256": "b6d7fd8f2c560c3a2cef47740745830d635a5af3a42f5c8e3cf930f848f53525"},
+    {"path": "experiments/paper3/lunarc/run_semantic_descriptor.sbatch", "role": "descriptor_batch", "sha256": "38352bd43641a5a606c2c70c85f7109ec1a197c657d5f6a985571758aacb4646"},
+    {"path": "experiments/paper3/lunarc/submit_semantic_descriptor.sh", "role": "descriptor_submitter", "sha256": "5418f99016b71bfe1f6fa1814e831c1be10df7fb59bf1c67310e9426b4277048"},
+    {"path": "experiments/paper3/lunarc/build_semantic_descriptor_harvest.py", "role": "harvest_builder", "sha256": "929bb32cf8a6f840188458199779809f5f7c12555c0fbf1e544e1b30d91794de"},
+    {"path": "experiments/paper3/lunarc/harvest_semantic_descriptor.sh", "role": "harvest_wrapper", "sha256": "16776e12a2c34f73a3887d316b36d4d1ac723bc0a26963e81f685caf0633a4ff"},
+    {"path": "src/rakl/paper3_strong_control.py", "role": "frozen_descriptor_implementation", "sha256": "0f23f49b5cc385d156c42a7835ed76df6613bb5110762590dab93cdef95ce24b"},
+    {"path": "research/PAPER3_STRONG_CONTROL_PROTOCOL_V1_20260811.json", "role": "frozen_protocol", "sha256": "b7893692d618c785c1b4de48e2b43bc972f660737af7cb0ae1b86c0a93733cb4"},
+    {"path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json", "role": "frozen_source_set", "sha256": "e4f32f267b013fc008902b90194d7195f4feb01fa3ac391110c25ad574ece7d3"},
+    {"path": "research/paper2_microtrial_v3/native_receipts/STAGING_PASS_NATIVE_V3_2_JOB_3475124.json", "role": "shared_runtime_provenance", "sha256": "f269788a78d216932879d2ea98eee3c1b84322b2345330406d8a7c6d81802c26"},
+    {"path": "schemas/paper3-semantic-lunarc-submission-v1.schema.json", "role": "submission_schema", "sha256": "72e4126589d11cbd2cd87051157489b6939ceedfa21bafcfde73061921cab06e"},
+    {"path": "schemas/paper3-semantic-model-stage-execution-v1.schema.json", "role": "stage_execution_schema", "sha256": "daaa2cd4f60d8aa3c10fa4fc574a7d0035efb6fe4a6972a91de00f194f740483"},
+    {"path": "schemas/paper3-semantic-descriptor-execution-v1.schema.json", "role": "descriptor_execution_schema", "sha256": "4b3b296f1e318dfff931e0bdea6209507e9760f8cf8d9a90b0b17d4dc6498e39"},
+    {"path": "schemas/paper3-semantic-lunarc-harvest-v1.schema.json", "role": "harvest_schema", "sha256": "2dc71066819df4453051275e8d3215fe7e9d4438c85e62a7679aa40d57dc41b2"},
+    {"path": "schemas/paper3-semantic-lunarc-contract-v1.schema.json", "role": "contract_schema", "sha256": "e3b942ff1b06a50d66b4cbeffd639c5af4fe5e95d5ed5dcb43a413088ed32788"}
+  ],
+  "chronology": {
+    "descriptor_before_external_labels": true,
+    "evaluated_results_accessed": false,
+    "jobs_submitted_at_freeze": 0,
+    "model_stage_before_descriptor": true
+  },
+  "claim_boundary": "Allocated LUNARC staging and label-blind descriptor execution contract only. It creates no descriptor at freeze, no structural-signal, training-efficiency, inference-efficiency or break-even result, and no independent or peer review.",
+  "contract_id": "paper3-label-blind-bge-lunarc-v1",
+  "frozen_at_utc": "2026-08-11T04:37:23Z",
+  "frozen_parent_sha": "23f18c73740aefbfbf3bb4f49ab3a3f548b5ee2a",
+  "fs9": {
+    "model_dir": "/projects/hep/fs9/users/scyiu/RAKL-paper3/assets/BAAI--bge-reranker-v2-m3/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "receipt_root": "/projects/hep/fs9/users/scyiu/RAKL-paper3/semantic_descriptor_v1/receipts",
+    "root": "/projects/hep/fs9/users/scyiu/RAKL-paper3",
+    "run_root": "/projects/hep/fs9/users/scyiu/RAKL-paper3/semantic_descriptor_v1/runs"
+  },
+  "model": {
+    "model_id": "BAAI/bge-reranker-v2-m3",
+    "required_files": [
+      {"bytes": 795, "path": "config.json", "sha256": "13dcd6c31d9fec9d1d8e158702072f62d7fa7d312a64b9fe057bec9a08cfe41a"},
+      {"bytes": 2271071852, "path": "model.safetensors", "sha256": "d9e3e081faff1eefb84019509b2f5558fd74c1a05a2c7db22f74174fcedb5286"},
+      {"bytes": 5069051, "path": "sentencepiece.bpe.model", "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"},
+      {"bytes": 964, "path": "special_tokens_map.json", "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"},
+      {"bytes": 17098273, "path": "tokenizer.json", "sha256": "69564b696052886ed0ac63fa393e928384e0f8caada38c1f4864a9bfbf379c15"},
+      {"bytes": 1173, "path": "tokenizer_config.json", "sha256": "7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4"}
+    ],
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+  },
+  "object": "Content-semantic relatedness of each frozen Paper-3 v2.1 source/target description pair, excluding proposed structural witnesses and outcome labels.",
+  "protocol": {
+    "canonical_sha256": "89e2604a92e7f990a721e47d27d70478ca42d3a223372cc903b15a06af8fe6fd",
+    "file_sha256": "b7893692d618c785c1b4de48e2b43bc972f660737af7cb0ae1b86c0a93733cb4",
+    "path": "research/PAPER3_STRONG_CONTROL_PROTOCOL_V1_20260811.json"
+  },
+  "qoi": "Does witnessed structure add held-out transfer discrimination beyond a modern content-bound cross-encoder rather than surface-token overlap?",
+  "runtime": {
+    "fast_tokenizer_required": true,
+    "packages": {"python": "3.11.13", "safetensors": "0.6.2", "tokenizers": "0.21.4", "torch": "2.8.0+cpu", "transformers": "4.55.0"},
+    "python": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python/bin/python3.11",
+    "runtime_root": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python",
+    "sentencepiece_optional_only_if_fast_probe_passes": true,
+    "shared_assets_read_only": true,
+    "staging_receipt_path": "/projects/hep/fs9/users/scyiu/RAKL-paper3/repo/research/paper2_microtrial_v3/native_receipts/STAGING_PASS_NATIVE_V3_2_JOB_3475124.json",
+    "staging_receipt_sha256": "f269788a78d216932879d2ea98eee3c1b84322b2345330406d8a7c6d81802c26"
+  },
+  "scheduler": {
+    "account": "lu2026-2-51",
+    "descriptor_device": "cpu",
+    "descriptor_is_separate_allocated_batch": true,
+    "partition": "lu48",
+    "stage_is_allocated_batch": true
+  },
+  "schema_version": "paper3-semantic-lunarc-contract-v1",
+  "source_set": {
+    "canonical_sha256": "c1995bb0aef2a18c2bf48690cc346d551648aa8cb46b9eeb06220ce88911f623",
+    "file_sha256": "e4f32f267b013fc008902b90194d7195f4feb01fa3ac391110c25ad574ece7d3",
+    "path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json"
+  }
+}

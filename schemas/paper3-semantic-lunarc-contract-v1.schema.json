@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-semantic-lunarc-contract-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "frozen_at_utc", "frozen_parent_sha", "object", "qoi", "chronology", "scheduler", "fs9", "source_set", "protocol", "model", "runtime", "bindings", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "paper3-semantic-lunarc-contract-v1"},
+    "contract_id": {"const": "paper3-label-blind-bge-lunarc-v1"},
+    "frozen_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "frozen_parent_sha": {"$ref": "#/$defs/gitsha"},
+    "object": {"type": "string", "minLength": 1},
+    "qoi": {"type": "string", "minLength": 1},
+    "chronology": {"type": "object", "additionalProperties": false, "required": ["model_stage_before_descriptor", "descriptor_before_external_labels", "evaluated_results_accessed", "jobs_submitted_at_freeze"], "properties": {"model_stage_before_descriptor": {"const": true}, "descriptor_before_external_labels": {"const": true}, "evaluated_results_accessed": {"const": false}, "jobs_submitted_at_freeze": {"const": 0}}},
+    "scheduler": {"type": "object", "additionalProperties": false, "required": ["account", "partition", "stage_is_allocated_batch", "descriptor_is_separate_allocated_batch", "descriptor_device"], "properties": {"account": {"const": "lu2026-2-51"}, "partition": {"const": "lu48"}, "stage_is_allocated_batch": {"const": true}, "descriptor_is_separate_allocated_batch": {"const": true}, "descriptor_device": {"const": "cpu"}}},
+    "fs9": {"type": "object", "additionalProperties": false, "required": ["root", "model_dir", "run_root", "receipt_root"], "properties": {"root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper3"}, "model_dir": {"type": "string", "pattern": "^/projects/hep/fs9/users/scyiu/RAKL-paper3/assets/"}, "run_root": {"type": "string", "pattern": "^/projects/hep/fs9/users/scyiu/RAKL-paper3/semantic_descriptor_v1/runs$"}, "receipt_root": {"type": "string", "pattern": "^/projects/hep/fs9/users/scyiu/RAKL-paper3/semantic_descriptor_v1/receipts$"}}},
+    "source_set": {"$ref": "#/$defs/json_binding"},
+    "protocol": {"$ref": "#/$defs/json_binding"},
+    "model": {"type": "object", "additionalProperties": false, "required": ["model_id", "revision", "required_files"], "properties": {"model_id": {"const": "BAAI/bge-reranker-v2-m3"}, "revision": {"const": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"}, "required_files": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/file"}}}},
+    "runtime": {"type": "object", "additionalProperties": false, "required": ["python", "runtime_root", "staging_receipt_path", "staging_receipt_sha256", "shared_assets_read_only", "packages", "fast_tokenizer_required", "sentencepiece_optional_only_if_fast_probe_passes"], "properties": {"python": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python/bin/python3.11"}, "runtime_root": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python"}, "staging_receipt_path": {"const": "/projects/hep/fs9/users/scyiu/RAKL-paper3/repo/research/paper2_microtrial_v3/native_receipts/STAGING_PASS_NATIVE_V3_2_JOB_3475124.json"}, "staging_receipt_sha256": {"$ref": "#/$defs/sha256"}, "shared_assets_read_only": {"const": true}, "packages": {"type": "object", "additionalProperties": false, "required": ["python", "torch", "transformers", "tokenizers", "safetensors"], "properties": {"python": {"const": "3.11.13"}, "torch": {"const": "2.8.0+cpu"}, "transformers": {"const": "4.55.0"}, "tokenizers": {"const": "0.21.4"}, "safetensors": {"const": "0.6.2"}}}, "fast_tokenizer_required": {"const": true}, "sentencepiece_optional_only_if_fast_probe_passes": {"const": true}}},
+    "bindings": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["role", "path", "sha256"], "properties": {"role": {"type": "string", "minLength": 1}, "path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}}}},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitsha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "json_binding": {"type": "object", "additionalProperties": false, "required": ["path", "file_sha256", "canonical_sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "file_sha256": {"$ref": "#/$defs/sha256"}, "canonical_sha256": {"$ref": "#/$defs/sha256"}}},
+    "file": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "bytes": {"type": "integer", "minimum": 1}, "sha256": {"$ref": "#/$defs/sha256"}}}
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-semantic-descriptor-execution-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "created_at_utc", "verdict", "expected_repo_sha", "frozen_parent_sha", "contract_sha256", "stage_harvest_sha256", "slurm_job_id", "slurm_account", "slurm_partition", "node", "runtime", "runtime_tree_sha256_before", "runtime_tree_sha256_after", "model_files_before", "model_files_after", "descriptor_path", "descriptor_sha256", "descriptor_status", "descriptor_record_count", "failures", "label_access", "training_authorized", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "paper3-semantic-descriptor-execution-v1"},
+    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "verdict": {"enum": ["DESCRIPTOR_EXECUTION_PASS", "DESCRIPTOR_EXECUTION_CANNOT_CHECK"]},
+    "expected_repo_sha": {"$ref": "#/$defs/gitsha"},
+    "frozen_parent_sha": {"$ref": "#/$defs/gitsha"},
+    "contract_sha256": {"$ref": "#/$defs/sha256"},
+    "stage_harvest_sha256": {"$ref": "#/$defs/sha256"},
+    "slurm_job_id": {"type": "string", "pattern": "^[0-9]+$"},
+    "slurm_account": {"const": "lu2026-2-51"},
+    "slurm_partition": {"const": "lu48"},
+    "node": {"type": "string", "minLength": 1},
+    "runtime": {"type": "object", "additionalProperties": false, "required": ["python", "packages", "sentencepiece_available", "fast_tokenizer_probe_passed", "device", "dtype", "local_files_only"], "properties": {"python": {"type": "string"}, "packages": {"type": "object", "additionalProperties": {"type": "string"}}, "sentencepiece_available": {"type": "boolean"}, "fast_tokenizer_probe_passed": {"type": "boolean"}, "device": {"const": "cpu"}, "dtype": {"const": "float32"}, "local_files_only": {"const": true}}},
+    "runtime_tree_sha256_before": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "runtime_tree_sha256_after": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "model_files_before": {"type": "array", "items": {"$ref": "#/$defs/file"}},
+    "model_files_after": {"type": "array", "items": {"$ref": "#/$defs/file"}},
+    "descriptor_path": {"type": ["string", "null"]},
+    "descriptor_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "descriptor_status": {"type": ["string", "null"]},
+    "descriptor_record_count": {"type": "integer", "minimum": 0},
+    "failures": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "label_access": {"$ref": "#/$defs/label_access"},
+    "training_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "allOf": [{"if": {"properties": {"verdict": {"const": "DESCRIPTOR_EXECUTION_PASS"}}}, "then": {"properties": {"runtime": {"properties": {"fast_tokenizer_probe_passed": {"const": true}}}, "descriptor_status": {"const": "READY"}, "descriptor_record_count": {"minimum": 1}, "failures": {"maxItems": 0}, "descriptor_path": {"type": "string", "minLength": 1}, "descriptor_sha256": {"$ref": "#/$defs/sha256"}, "model_files_before": {"minItems": 6, "maxItems": 6}, "model_files_after": {"minItems": 6, "maxItems": 6}, "runtime_tree_sha256_before": {"$ref": "#/$defs/sha256"}, "runtime_tree_sha256_after": {"$ref": "#/$defs/sha256"}}}, "else": {"properties": {"failures": {"minItems": 1}}}}],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitsha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "file": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "bytes": {"type": "integer", "minimum": 1}, "sha256": {"$ref": "#/$defs/sha256"}}},
+    "label_access": {"type": "object", "additionalProperties": false, "required": ["external_annotation_accessed", "adjudication_accessed", "evaluated_result_accessed"], "properties": {"external_annotation_accessed": {"const": false}, "adjudication_accessed": {"const": false}, "evaluated_result_accessed": {"const": false}}}
+  }
+}
