@@ -211,6 +211,7 @@ def materialize_state_substrate(
         tools=state.tools,
         failures=state.failures,
         legacy_knowledge_fibers=legacy_knowledge_fibers,
+        evolution=state.evolution,
     )
 
 
