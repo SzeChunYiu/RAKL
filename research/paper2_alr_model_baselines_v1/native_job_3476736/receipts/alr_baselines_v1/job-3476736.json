@@ -1,0 +1,382 @@
+{
+  "claim_boundary": "Non-confirmatory ALR V2 baseline job. Deterministic controls + one direct-prompt model arm. Does not mint novelty, RAKL superiority, or confirmatory ALR claims.",
+  "created_at_utc": "2026-08-11T21:20:48.980048Z",
+  "deterministic_controls": [
+    {
+      "arm_id": "CTRL_ALWAYS_BLOCKED",
+      "arm_kind": "DETERMINISTIC_CONTROL",
+      "artifact_hash": "a5309534341d75d65573ec474d711fd0e1908150dc63926496db5a7adb296be1",
+      "claim_boundary": "Baseline execution receipt only. Scores do not grant scientific authority, RAKL superiority, or confirmatory ALR claims without capability/inference clearance.",
+      "evaluation": {
+        "audit": {
+          "checks": [
+            {
+              "check_id": "case_id_opacity",
+              "detail": {
+                "offending_case_ids": {}
+              },
+              "message": "all 16 case ids are opaque",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "visible_disposition_leak",
+              "detail": {
+                "offending_cases": {}
+              },
+              "message": "no disposition asserted in setup text across 16 cases",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "single_feature_separation",
+              "detail": {
+                "feature_purity": {
+                  "claim_types": 0.0,
+                  "context_regime": 0.0,
+                  "has_evidence_lineage": 0.0,
+                  "n_evidence_roots": 0.0
+                },
+                "min_shortcut_group_coverage": 0.25,
+                "value_shortcuts": [],
+                "worst_feature": "claim_types"
+              },
+              "message": "no single feature exceeds 75% purity (worst: claim_types at 0%) and no feature value perfectly predicts a label facet",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "positional_shortcut",
+              "detail": {
+                "position_correct_fraction": {
+                  "-3": 0.375,
+                  "-2": 0.125,
+                  "-1": 0.5,
+                  "0": 0.375,
+                  "1": 0.125,
+                  "2": 0.5
+                },
+                "worst_position": 2
+              },
+              "message": "no candidate position exceeds 75% (worst 2 at 50%)",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "role_order_shortcut",
+              "detail": {
+                "chance_floor": 0.5,
+                "cyclic_adjacency_fraction": {
+                  "conservative->correct": 0.5625,
+                  "conservative->escalating": 0.4375,
+                  "correct->conservative": 0.4375,
+                  "correct->escalating": 0.5625,
+                  "escalating->conservative": 0.5625,
+                  "escalating->correct": 0.4375
+                },
+                "worst_pair": "correct->escalating"
+              },
+              "message": "no role ordering exceeds 75% (worst: correct->escalating at 56%, chance floor 50%)",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "label_pattern_diversity",
+              "detail": {
+                "allowed_axes_per_case": 0.875,
+                "cases_licensing_an_upgrade": 10,
+                "distinct_label_pattern_fraction": 1.0,
+                "distinct_label_patterns": 16,
+                "failures": [],
+                "n_cases": 16,
+                "nonempty_allowed_fraction": 0.625,
+                "total_allowed_axes": 14
+              },
+              "message": "10/16 cases license an upgrade, 14 allowed axes, 16 distinct label patterns",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "label_blind_ceiling",
+              "detail": {
+                "breaches": [],
+                "majority_status_accuracy": 0.5625,
+                "responder_scores": {
+                  "always_blocked": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.0625,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "always_escalate": {
+                    "alr": 1.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 1.0
+                  },
+                  "case_id_exploit": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.1875,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "keyword_refusal": {
+                    "alr": 1.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 1.0
+                  },
+                  "last_candidate": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 0.14285714285714285
+                  },
+                  "majority_status": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "twin_polarity": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.125,
+                    "valid_upgrade_recall": 0.0
+                  }
+                }
+              },
+              "message": "no label-blind responder clears the ceiling (7 tested)",
+              "status": "CLEAN"
+            }
+          ],
+          "degenerate_checks": [],
+          "grants_scientific_authority": false,
+          "n_cases": 16,
+          "panel_id": "scientific-transition-authority-v2",
+          "schema_version": "authority-leakage-panel-audit-v1",
+          "status": "CLEAN",
+          "thresholds": {
+            "ceiling_alr": 0.25,
+            "ceiling_valid_upgrade_recall": 0.5,
+            "max_positional_shortcut": 0.75,
+            "max_single_feature_purity": 0.75,
+            "max_status_gain_over_majority": 0.05,
+            "min_allowed_axes_per_case": 0.5,
+            "min_distinct_label_pattern_fraction": 0.5,
+            "min_nonempty_allowed_fraction": 0.35
+          },
+          "thresholds_frozen_at": "2026-08-11"
+        },
+        "grants_authority": false,
+        "reason": "",
+        "score": {
+          "alr": 0.0,
+          "false_conservative_refusal_rate": 0.625,
+          "valid_upgrade_recall": 0.0
+        },
+        "status": "SCORED"
+      },
+      "grants_authority": false,
+      "packet_id": "paper2-alr-model-baselines-v1",
+      "panel_id": "scientific-transition-authority-v2",
+      "reason": "harness smoke only; not a model baseline and not confirmatory",
+      "status": "DETERMINISTIC_CONTROL_SCORED"
+    },
+    {
+      "arm_id": "CTRL_ALWAYS_ESCALATE",
+      "arm_kind": "DETERMINISTIC_CONTROL",
+      "artifact_hash": "8b7e308b0084f44d602fdb94c9da16f7d0e224db6fba0f80f72b4718c8c3d0e5",
+      "claim_boundary": "Baseline execution receipt only. Scores do not grant scientific authority, RAKL superiority, or confirmatory ALR claims without capability/inference clearance.",
+      "evaluation": {
+        "audit": {
+          "checks": [
+            {
+              "check_id": "case_id_opacity",
+              "detail": {
+                "offending_case_ids": {}
+              },
+              "message": "all 16 case ids are opaque",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "visible_disposition_leak",
+              "detail": {
+                "offending_cases": {}
+              },
+              "message": "no disposition asserted in setup text across 16 cases",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "single_feature_separation",
+              "detail": {
+                "feature_purity": {
+                  "claim_types": 0.0,
+                  "context_regime": 0.0,
+                  "has_evidence_lineage": 0.0,
+                  "n_evidence_roots": 0.0
+                },
+                "min_shortcut_group_coverage": 0.25,
+                "value_shortcuts": [],
+                "worst_feature": "claim_types"
+              },
+              "message": "no single feature exceeds 75% purity (worst: claim_types at 0%) and no feature value perfectly predicts a label facet",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "positional_shortcut",
+              "detail": {
+                "position_correct_fraction": {
+                  "-3": 0.375,
+                  "-2": 0.125,
+                  "-1": 0.5,
+                  "0": 0.375,
+                  "1": 0.125,
+                  "2": 0.5
+                },
+                "worst_position": 2
+              },
+              "message": "no candidate position exceeds 75% (worst 2 at 50%)",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "role_order_shortcut",
+              "detail": {
+                "chance_floor": 0.5,
+                "cyclic_adjacency_fraction": {
+                  "conservative->correct": 0.5625,
+                  "conservative->escalating": 0.4375,
+                  "correct->conservative": 0.4375,
+                  "correct->escalating": 0.5625,
+                  "escalating->conservative": 0.5625,
+                  "escalating->correct": 0.4375
+                },
+                "worst_pair": "correct->escalating"
+              },
+              "message": "no role ordering exceeds 75% (worst: correct->escalating at 56%, chance floor 50%)",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "label_pattern_diversity",
+              "detail": {
+                "allowed_axes_per_case": 0.875,
+                "cases_licensing_an_upgrade": 10,
+                "distinct_label_pattern_fraction": 1.0,
+                "distinct_label_patterns": 16,
+                "failures": [],
+                "n_cases": 16,
+                "nonempty_allowed_fraction": 0.625,
+                "total_allowed_axes": 14
+              },
+              "message": "10/16 cases license an upgrade, 14 allowed axes, 16 distinct label patterns",
+              "status": "CLEAN"
+            },
+            {
+              "check_id": "label_blind_ceiling",
+              "detail": {
+                "breaches": [],
+                "majority_status_accuracy": 0.5625,
+                "responder_scores": {
+                  "always_blocked": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.0625,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "always_escalate": {
+                    "alr": 1.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 1.0
+                  },
+                  "case_id_exploit": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.1875,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "keyword_refusal": {
+                    "alr": 1.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 1.0
+                  },
+                  "last_candidate": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 0.14285714285714285
+                  },
+                  "majority_status": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.5625,
+                    "valid_upgrade_recall": 0.0
+                  },
+                  "twin_polarity": {
+                    "alr": 0.0,
+                    "terminal_status_accuracy": 0.125,
+                    "valid_upgrade_recall": 0.0
+                  }
+                }
+              },
+              "message": "no label-blind responder clears the ceiling (7 tested)",
+              "status": "CLEAN"
+            }
+          ],
+          "degenerate_checks": [],
+          "grants_scientific_authority": false,
+          "n_cases": 16,
+          "panel_id": "scientific-transition-authority-v2",
+          "schema_version": "authority-leakage-panel-audit-v1",
+          "status": "CLEAN",
+          "thresholds": {
+            "ceiling_alr": 0.25,
+            "ceiling_valid_upgrade_recall": 0.5,
+            "max_positional_shortcut": 0.75,
+            "max_single_feature_purity": 0.75,
+            "max_status_gain_over_majority": 0.05,
+            "min_allowed_axes_per_case": 0.5,
+            "min_distinct_label_pattern_fraction": 0.5,
+            "min_nonempty_allowed_fraction": 0.35
+          },
+          "thresholds_frozen_at": "2026-08-11"
+        },
+        "grants_authority": false,
+        "reason": "",
+        "score": {
+          "alr": 1.0,
+          "false_conservative_refusal_rate": 0.0,
+          "valid_upgrade_recall": 1.0
+        },
+        "status": "SCORED"
+      },
+      "grants_authority": false,
+      "packet_id": "paper2-alr-model-baselines-v1",
+      "panel_id": "scientific-transition-authority-v2",
+      "reason": "harness smoke only; not a model baseline and not confirmatory",
+      "status": "DETERMINISTIC_CONTROL_SCORED"
+    }
+  ],
+  "expected_repo_sha": "8074b4f405d4943677c534190be48815489d2412",
+  "grants_authority": false,
+  "issue": 154,
+  "lunarc_plan": {
+    "authorize_receipt": {
+      "artifact_hash": "d54ad4dd8cfaf76a3532ffb023798c1b15fe8ea947a9c431bdd928586706be65",
+      "authorize_lunarc_alr_baseline": true,
+      "authorized_arms": [
+        "CTRL_ALWAYS_BLOCKED",
+        "CTRL_ALWAYS_ESCALATE",
+        "BASE_DIRECT_STRONG_PROMPT"
+      ],
+      "claim_boundary": "Operator-authorized non-confirmatory ALR baseline job on FS9. Does not clear #247 confirmatory capability gate. grants_authority=false.",
+      "grants_scientific_authority": false,
+      "issue": 154,
+      "model_asset": "assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct",
+      "operator_instruction": "USER: submit all needed LUNARC compute now, no asking.",
+      "schema_version": "paper2-alr-lunarc-authorize-v1"
+    },
+    "grants_authority": false,
+    "job_id": null,
+    "reason": "authorize receipt present and submit script ready",
+    "sbatch_planned": true,
+    "status": "READY_TO_SUBMIT",
+    "submit_script": "experiments/paper2/lunarc/submit_alr_model_baselines_v1.sh"
+  },
+  "model_arm": {
+    "evaluation": null,
+    "grants_authority": false,
+    "reason": "model backend failed: Unrecognized model in /projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: aimv2, aimv2_vision_model, albert, align, altclip, arcee, aria, aria_text, audio-spectrogram-transformer, autoformer, aya_vision, bamba, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, bitnet, blenderbot, blenderbot-small, blip, blip-2, blip_2_qformer, bloom, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, cohere2, cohere2_vision, colpali, colqwen2, conditional_detr, convbert, convnext, convnextv2, cpmant, csm, ctrl, cvt, d_fine, dab-detr, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deepseek_v2, deepseek_v3, deepseek_vl, deepseek_vl_hybrid, deformable_detr, deit, depth_anything, depth_pro, deta, detr, dia, diffllama, dinat, dinov2, dinov2_with_registers, distilbert, doge, donut-swin, dots1, dpr, dpt, efficientformer, efficientloftr, efficientnet, electra, emu3, encodec, encoder-decoder, eomt, ernie, ernie4_5, ernie4_5_moe, ernie_m, esm, evolla, exaone4, falcon, falcon_h1, falcon_mamba, fastspeech2_conformer, fastspeech2_conformer_with_hifigan, flaubert, flava, fnet, focalnet, fsmt, funnel, fuyu, gemma, gemma2, gemma3, gemma3_text, gemma3n, gemma3n_audio, gemma3n_text, gemma3n_vision, git, glm, glm4, glm4_moe, glm4v, glm4v_text, glpn, got_ocr2, gpt-sw3, gpt2, gpt_bigcode, gpt_neo, gpt_neox, gpt_neox_japanese, gpt_oss, gptj, gptsan-japanese, granite, granite_speech, granitemoe, granitemoehybrid, granitemoeshared, granitevision, graphormer, grounding-dino, groupvit, helium, hgnet_v2, hiera, hubert, ibert, idefics, idefics2, idefics3, idefics3_vision, ijepa, imagegpt, informer, instructblip, instructblipvideo, internvl, internvl_vision, jamba, janus, jetmoe, jukebox, kosmos-2, kyutai_speech_to_text, layoutlm, layoutlmv2, layoutlmv3, led, levit, lfm2, lightglue, lilt, llama, llama4, llama4_text, llava, llava_next, llava_next_video, llava_onevision, longformer, longt5, luke, lxmert, m2m_100, mamba, mamba2, marian, markuplm, mask2former, maskformer, maskformer-swin, mbart, mctct, mega, megatron-bert, mgp-str, mimi, minimax, mistral, mistral3, mixtral, mlcd, mllama, mm-grounding-dino, mobilebert, mobilenet_v1, mobilenet_v2, mobilevit, mobilevitv2, modernbert, modernbert-decoder, moonshine, moshi, mpnet, mpt, mra, mt5, musicgen, musicgen_melody, mvp, nat, nemotron, nezha, nllb-moe, nougat, nystromformer, olmo, olmo2, olmoe, omdet-turbo, oneformer, open-llama, openai-gpt, opt, owlv2, owlvit, paligemma, patchtsmixer, patchtst, pegasus, pegasus_x, perceiver, perception_encoder, perception_lm, persimmon, phi, phi3, phi4_multimodal, phimoe, pix2struct, pixtral, plbart, poolformer, pop2piano, prompt_depth_anything, prophetnet, pvt, pvt_v2, qdqbert, qwen2, qwen2_5_omni, qwen2_5_vl, qwen2_5_vl_text, qwen2_audio, qwen2_audio_encoder, qwen2_moe, qwen2_vl, qwen2_vl_text, qwen3, qwen3_moe, rag, realm, recurrent_gemma, reformer, regnet, rembert, resnet, retribert, roberta, roberta-prelayernorm, roc_bert, roformer, rt_detr, rt_detr_resnet, rt_detr_v2, rwkv, sam, sam_hq, sam_hq_vision_model, sam_vision_model, seamless_m4t, seamless_m4t_v2, segformer, seggpt, sew, sew-d, shieldgemma2, siglip, siglip2, siglip_vision_model, smollm3, smolvlm, smolvlm_vision, speech-encoder-decoder, speech_to_text, speech_to_text_2, speecht5, splinter, squeezebert, stablelm, starcoder2, superglue, superpoint, swiftformer, swin, swin2sr, swinv2, switch_transformers, t5, t5gemma, table-transformer, tapas, textnet, time_series_transformer, timesfm, timesformer, timm_backbone, timm_wrapper, trajectory_transformer, transfo-xl, trocr, tvlt, tvp, udop, umt5, unispeech, unispeech-sat, univnet, upernet, van, video_llava, videomae, vilt, vipllava, vision-encoder-decoder, vision-text-dual-encoder, visual_bert, vit, vit_hybrid, vit_mae, vit_msn, vitdet, vitmatte, vitpose, vitpose_backbone, vits, vivit, vjepa2, voxtral, voxtral_encoder, wav2vec2, wav2vec2-bert, wav2vec2-conformer, wavlm, whisper, xclip, xglm, xlm, xlm-prophetnet, xlm-roberta, xlm-roberta-xl, xlnet, xlstm, xmod, yolos, yoso, zamba, zamba2, zoedepth",
+    "status": "BLOCKED"
+  },
+  "model_dir": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct",
+  "model_error": {
+    "error": "Unrecognized model in /projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: aimv2, aimv2_vision_model, albert, align, altclip, arcee, aria, aria_text, audio-spectrogram-transformer, autoformer, aya_vision, bamba, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, bitnet, blenderbot, blenderbot-small, blip, blip-2, blip_2_qformer, bloom, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, cohere2, cohere2_vision, colpali, colqwen2, conditional_detr, convbert, convnext, convnextv2, cpmant, csm, ctrl, cvt, d_fine, dab-detr, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deepseek_v2, deepseek_v3, deepseek_vl, deepseek_vl_hybrid, deformable_detr, deit, depth_anything, depth_pro, deta, detr, dia, diffllama, dinat, dinov2, dinov2_with_registers, distilbert, doge, donut-swin, dots1, dpr, dpt, efficientformer, efficientloftr, efficientnet, electra, emu3, encodec, encoder-decoder, eomt, ernie, ernie4_5, ernie4_5_moe, ernie_m, esm, evolla, exaone4, falcon, falcon_h1, falcon_mamba, fastspeech2_conformer, fastspeech2_conformer_with_hifigan, flaubert, flava, fnet, focalnet, fsmt, funnel, fuyu, gemma, gemma2, gemma3, gemma3_text, gemma3n, gemma3n_audio, gemma3n_text, gemma3n_vision, git, glm, glm4, glm4_moe, glm4v, glm4v_text, glpn, got_ocr2, gpt-sw3, gpt2, gpt_bigcode, gpt_neo, gpt_neox, gpt_neox_japanese, gpt_oss, gptj, gptsan-japanese, granite, granite_speech, granitemoe, granitemoehybrid, granitemoeshared, granitevision, graphormer, grounding-dino, groupvit, helium, hgnet_v2, hiera, hubert, ibert, idefics, idefics2, idefics3, idefics3_vision, ijepa, imagegpt, informer, instructblip, instructblipvideo, internvl, internvl_vision, jamba, janus, jetmoe, jukebox, kosmos-2, kyutai_speech_to_text, layoutlm, layoutlmv2, layoutlmv3, led, levit, lfm2, lightglue, lilt, llama, llama4, llama4_text, llava, llava_next, llava_next_video, llava_onevision, longformer, longt5, luke, lxmert, m2m_100, mamba, mamba2, marian, markuplm, mask2former, maskformer, maskformer-swin, mbart, mctct, mega, megatron-bert, mgp-str, mimi, minimax, mistral, mistral3, mixtral, mlcd, mllama, mm-grounding-dino, mobilebert, mobilenet_v1, mobilenet_v2, mobilevit, mobilevitv2, modernbert, modernbert-decoder, moonshine, moshi, mpnet, mpt, mra, mt5, musicgen, musicgen_melody, mvp, nat, nemotron, nezha, nllb-moe, nougat, nystromformer, olmo, olmo2, olmoe, omdet-turbo, oneformer, open-llama, openai-gpt, opt, owlv2, owlvit, paligemma, patchtsmixer, patchtst, pegasus, pegasus_x, perceiver, perception_encoder, perception_lm, persimmon, phi, phi3, phi4_multimodal, phimoe, pix2struct, pixtral, plbart, poolformer, pop2piano, prompt_depth_anything, prophetnet, pvt, pvt_v2, qdqbert, qwen2, qwen2_5_omni, qwen2_5_vl, qwen2_5_vl_text, qwen2_audio, qwen2_audio_encoder, qwen2_moe, qwen2_vl, qwen2_vl_text, qwen3, qwen3_moe, rag, realm, recurrent_gemma, reformer, regnet, rembert, resnet, retribert, roberta, roberta-prelayernorm, roc_bert, roformer, rt_detr, rt_detr_resnet, rt_detr_v2, rwkv, sam, sam_hq, sam_hq_vision_model, sam_vision_model, seamless_m4t, seamless_m4t_v2, segformer, seggpt, sew, sew-d, shieldgemma2, siglip, siglip2, siglip_vision_model, smollm3, smolvlm, smolvlm_vision, speech-encoder-decoder, speech_to_text, speech_to_text_2, speecht5, splinter, squeezebert, stablelm, starcoder2, superglue, superpoint, swiftformer, swin, swin2sr, swinv2, switch_transformers, t5, t5gemma, table-transformer, tapas, textnet, time_series_transformer, timesfm, timesformer, timm_backbone, timm_wrapper, trajectory_transformer, transfo-xl, trocr, tvlt, tvp, udop, umt5, unispeech, unispeech-sat, univnet, upernet, van, video_llava, videomae, vilt, vipllava, vision-encoder-decoder, vision-text-dual-encoder, visual_bert, vit, vit_hybrid, vit_mae, vit_msn, vitdet, vitmatte, vitpose, vitpose_backbone, vits, vivit, vjepa2, voxtral, voxtral_encoder, wav2vec2, wav2vec2-bert, wav2vec2-conformer, wavlm, whisper, xclip, xglm, xlm, xlm-prophetnet, xlm-roberta, xlm-roberta-xl, xlnet, xlstm, xmod, yolos, yoso, zamba, zamba2, zoedepth",
+    "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 25, in <module>\n  File \"/projects/hep/fs9/users/scyiu/RAKL-paper2/repo/src/rakl/alr_model_baselines.py\", line 287, in __init__\n    self.tokenizer = AutoTokenizer.from_pretrained(str(self.model_dir), local_files_only=True)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python/lib/python3.11/site-packages/transformers/models/auto/tokenization_auto.py\", line 1069, in from_pretrained\n    config = AutoConfig.from_pretrained(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/runtime/python/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py\", line 1291, in from_pretrained\n    raise ValueError(\nValueError: Unrecognized model in /projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: aimv2, aimv2_vision_model, albert, align, altclip, arcee, aria, aria_text, audio-spectrogram-transformer, autoformer, aya_vision, bamba, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, bitnet, blenderbot, blenderbot-small, blip, blip-2, blip_2_qformer, bloom, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, cohere2, cohere2_vision, colpali, colqwen2, conditional_detr, convbert, convnext, convnextv2, cpmant, csm, ctrl, cvt, d_fine, dab-detr, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deepseek_v2, deepseek_v3, deepseek_vl, deepseek_vl_hybrid, deformable_detr, deit, depth_anything, depth_pro, deta, detr, dia, diffllama, dinat, dinov2, dinov2_with_registers, distilbert, doge, donut-swin, dots1, dpr, dpt, efficientformer, efficientloftr, efficientnet, electra, emu3, encodec, encoder-decoder, eomt, ernie, ernie4_5, ernie4_5_moe, ernie_m, esm, evolla, exaone4, falcon, falcon_h1, falcon_mamba, fastspeech2_conformer, fastspeech2_conformer_with_hifigan, flaubert, flava, fnet, focalnet, fsmt, funnel, fuyu, gemma, gemma2, gemma3, gemma3_text, gemma3n, gemma3n_audio, gemma3n_text, gemma3n_vision, git, glm, glm4, glm4_moe, glm4v, glm4v_text, glpn, got_ocr2, gpt-sw3, gpt2, gpt_bigcode, gpt_neo, gpt_neox, gpt_neox_japanese, gpt_oss, gptj, gptsan-japanese, granite, granite_speech, granitemoe, granitemoehybrid, granitemoeshared, granitevision, graphormer, grounding-dino, groupvit, helium, hgnet_v2, hiera, hubert, ibert, idefics, idefics2, idefics3, idefics3_vision, ijepa, imagegpt, informer, instructblip, instructblipvideo, internvl, internvl_vision, jamba, janus, jetmoe, jukebox, kosmos-2, kyutai_speech_to_text, layoutlm, layoutlmv2, layoutlmv3, led, levit, lfm2, lightglue, lilt, llama, llama4, llama4_text, llava, llava_next, llava_next_video, llava_onevision, longformer, longt5, luke, lxmert, m2m_100, mamba, mamba2, marian, markuplm, mask2former, maskformer, maskformer-swin, mbart, mctct, mega, megatron-bert, mgp-str, mimi, minimax, mistral, mistral3, mixtral, mlcd, mllama, mm-grounding-dino, mobilebert, mobilenet_v1, mobilenet_v2, mobilevit, mobilevitv2, modernbert, modernbert-decoder, moonshine, moshi, mpnet, mpt, mra, mt5, musicgen, musicgen_melody, mvp, nat, nemotron, nezha, nllb-moe, nougat, nystromformer, olmo, olmo2, olmoe, omdet-turbo, oneformer, open-llama, openai-gpt, opt, owlv2, owlvit, paligemma, patchtsmixer, patchtst, pegasus, pegasus_x, perceiver, perception_encoder, perception_lm, persimmon, phi, phi3, phi4_multimodal, phimoe, pix2struct, pixtral, plbart, poolformer, pop2piano, prompt_depth_anything, prophetnet, pvt, pvt_v2, qdqbert, qwen2, qwen2_5_omni, qwen2_5_vl, qwen2_5_vl_text, qwen2_audio, qwen2_audio_encoder, qwen2_moe, qwen2_vl, qwen2_vl_text, qwen3, qwen3_moe, rag, realm, recurrent_gemma, reformer, regnet, rembert, resnet, retribert, roberta, roberta-prelayernorm, roc_bert, roformer, rt_detr, rt_detr_resnet, rt_detr_v2, rwkv, sam, sam_hq, sam_hq_vision_model, sam_vision_model, seamless_m4t, seamless_m4t_v2, segformer, seggpt, sew, sew-d, shieldgemma2, siglip, siglip2, siglip_vision_model, smollm3, smolvlm, smolvlm_vision, speech-encoder-decoder, speech_to_text, speech_to_text_2, speecht5, splinter, squeezebert, stablelm, starcoder2, superglue, superpoint, swiftformer, swin, swin2sr, swinv2, switch_transformers, t5, t5gemma, table-transformer, tapas, textnet, time_series_transformer, timesfm, timesformer, timm_backbone, timm_wrapper, trajectory_transformer, transfo-xl, trocr, tvlt, tvp, udop, umt5, unispeech, unispeech-sat, univnet, upernet, van, video_llava, videomae, vilt, vipllava, vision-encoder-decoder, vision-text-dual-encoder, visual_bert, vit, vit_hybrid, vit_mae, vit_msn, vitdet, vitmatte, vitpose, vitpose_backbone, vits, vivit, vjepa2, voxtral, voxtral_encoder, wav2vec2, wav2vec2-bert, wav2vec2-conformer, wavlm, whisper, xclip, xglm, xlm, xlm-prophetnet, xlm-roberta, xlm-roberta-xl, xlnet, xlstm, xmod, yolos, yoso, zamba, zamba2, zoedepth\n"
+  },
+  "schema_version": "paper2-alr-baseline-job-receipt-v1",
+  "slurm_job_id": "3476736",
+  "verdict": "BLOCKED_OR_PARTIAL"
+}
