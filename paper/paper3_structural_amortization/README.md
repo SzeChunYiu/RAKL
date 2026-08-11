@@ -2,7 +2,7 @@
 
 Title: **Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**
 
-Status: formalism + deterministic conformance + internal cheap diagnostic + pre-label strong-control freeze. The paper is ready for submission only under that formalism/conformance claim boundary. The internal 44-pair diagnostic is permanently non-confirmatory; a fresh 16-item label-blind v2.1 external-annotation packet and a content-bound `BAAI/bge-reranker-v2-m3` control are frozen, but zero external judgements/adjudications and zero modern-semantic-control scores exist. Training, inference and efficiency claims therefore remain fail-closed.
+Status: formalism + deterministic conformance + internal cheap diagnostic + pre-label strong-control freeze. The paper is ready for submission only under that formalism/conformance claim boundary. The internal 44-pair diagnostic is permanently non-confirmatory; a fresh 16-item label-blind v2.1 external-annotation packet and a content-bound `BAAI/bge-reranker-v2-m3` control are frozen, but zero external judgements/adjudications and zero modern-semantic-control scores exist. The native semantic-control successor is now frozen as a two-job LUNARC CPU lane (asset staging, then offline descriptor execution), but neither job has been submitted and no descriptor exists. Training, inference and efficiency claims therefore remain fail-closed.
 
 ## Local package
 
@@ -21,4 +21,4 @@ The central controlled benchmark crosses semantic similarity with structural sim
 
 ## Claim boundary
 
-The project does **not** claim novelty for skill graphs, data selection, structural priors, reasoning-primitive induction, trace compilation, abstract reasoning or workflow amortization in isolation. It also does not yet claim natural cross-domain generalization, superiority over a modern content encoder, a universal shared learning/reasoning substrate, or efficiency gains. The publishable residual is the scoped directional witness/gate, deterministic conformance result, auditable internal diagnostic, frozen strong-control/annotation programme and falsifiable cost-to-capability evaluation ladder.
+The project does **not** claim novelty for skill graphs, data selection, structural priors, reasoning-primitive induction, trace compilation, abstract reasoning or workflow amortization in isolation. It also does not yet claim natural cross-domain generalization, superiority over a modern content encoder, a universal shared learning/reasoning substrate, or efficiency gains. The publishable residual is the scoped directional witness/gate, deterministic conformance result, auditable internal diagnostic, frozen strong-control/annotation programme, fail-closed native semantic-descriptor execution contract and falsifiable cost-to-capability evaluation ladder.
