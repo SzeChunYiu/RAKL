@@ -50,12 +50,18 @@ def main() -> None:
     axes[0].set_title("Invocations")
     axes[0].set_xlabel("Count")
 
-    axes[1].barh(y, [f(row, "valid_completion_rate") for row in rows], label="Valid completion")
-    axes[1].barh(y, [f(row, "blocked_rate") for row in rows], left=[f(row, "valid_completion_rate") for row in rows], label="Blocked")
-    left2 = [f(row, "valid_completion_rate") + f(row, "blocked_rate") for row in rows]
-    axes[1].barh(y, [f(row, "cannot_check_rate") for row in rows], left=left2, label="Cannot check")
+    valid = [f(row, "valid_completion_rate") for row in rows]
+    failure = [f(row, "failure_rate") for row in rows]
+    blocked = [f(row, "blocked_rate") for row in rows]
+    cannot_check = [f(row, "cannot_check_rate") for row in rows]
+    axes[1].barh(y, valid, label="Valid completion")
+    axes[1].barh(y, failure, left=valid, label="Failure")
+    left2 = [valid[i] + failure[i] for i in range(len(rows))]
+    axes[1].barh(y, blocked, left=left2, label="Blocked")
+    left3 = [left2[i] + blocked[i] for i in range(len(rows))]
+    axes[1].barh(y, cannot_check, left=left3, label="Cannot check")
     axes[1].set_xlim(0, 1)
-    axes[1].set_title("Selected outcome rates")
+    axes[1].set_title("Outcome rates")
     axes[1].set_xlabel("Rate")
     axes[1].legend(frameon=False, fontsize=7)
 
