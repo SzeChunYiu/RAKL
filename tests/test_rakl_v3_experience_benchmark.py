@@ -174,6 +174,12 @@ def _packet() -> tuple[ExperienceBenchmarkPacket, ProtectedAuthorityContext]:
 def test_matched_experience_benchmark_measures_learning_and_transfer() -> None:
     packet, context = _packet()
     report = assess_experience_benchmark(packet, context)
+    if not report.validation.matched:
+        print("\n=== VALIDATION FAILED ===")
+        print("Problems:", report.validation.problems)
+        print("Packet runs:", [f"{r.run_id} ({r.task_id})" for r in packet.runs])
+        print("Context artifacts:", [a.artifact_id for a in context.artifacts])
+        print("Context attestations:", [(att.attestation_id, att.purpose, att.issued_at) for att in context.attestations])
     assert report.verdict is ExperienceBenchmarkVerdict.VALID_MEASUREMENT
     assert report.validation.matched
     assert report.development_success_delta == 0.5
