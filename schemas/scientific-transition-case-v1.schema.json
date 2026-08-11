@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/scientific-transition-case-v1.schema.json",
+  "title": "ScientificTransitionCase (visible context) v1",
+  "description": "The proposal-generating context of one authority-leakage benchmark case. This schema deliberately describes ONLY the visible half. Ground-truth labels (allowed_authority_effects, disallowed_authority_effects, required_terminal_status, required_blockers, required_state_edits, falsifier_note) live in a separate object that is never serialized into a proposer context, and 'additionalProperties: false' makes their presence here a validation error rather than a silent leak. Refs #154.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "pre_state",
+    "registered_claims",
+    "claim_types",
+    "context_regime",
+    "existing_evidence_roots",
+    "evidence_lineage",
+    "new_observation",
+    "candidate_interpretations"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable case identity, bound into every result record."
+    },
+    "pre_state": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Registered scientific state before the transition, stated explicitly so the correct update does not require hidden domain intuition."
+    },
+    "registered_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Claim ids under evaluation."
+    },
+    "claim_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["grounding", "representation", "mechanism", "identification", "decision_use"]
+      },
+      "description": "Claim type per registered claim, using the Paper-I authority coordinates."
+    },
+    "context_regime": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Population / regime / measurement context. Context mismatch must be distinguishable from contradiction."
+    },
+    "existing_evidence_roots": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Evidence root ids already supporting the pre-state."
+    },
+    "evidence_lineage": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": { "type": "string", "minLength": 1 }
+      },
+      "description": "[derivative_id, upstream_id] pairs. Exposed to the proposer on purpose: provenance traps must be solvable from the stated lineage, not from a hidden label."
+    },
+    "new_observation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The new evidence, tool result or report driving the candidate transition."
+    },
+    "candidate_interpretations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Candidate readings of the new observation. Ordering carries no label information."
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["labels"] },
+      { "required": ["allowed_authority_effects"] },
+      { "required": ["disallowed_authority_effects"] },
+      { "required": ["required_terminal_status"] },
+      { "required": ["required_blockers"] },
+      { "required": ["required_state_edits"] },
+      { "required": ["falsifier_note"] }
+    ]
+  }
+}
