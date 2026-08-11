@@ -30,8 +30,11 @@ class FailureDiagnosisRevisionSpec:
     def __post_init__(self) -> None:
         if not self.new_failure_id or not self.selected_diagnosis or not self.artifact_hash or not self.timestamp:
             raise ValueError("diagnosis revision requires new identity, selected diagnosis, artifact hash, and timestamp")
-        if self.diagnosis_status is FailureDiagnosisStatus.OBSERVED_ONLY:
-            raise ValueError("diagnosis revision cannot regress to OBSERVED_ONLY")
+        if self.diagnosis_status in {
+            FailureDiagnosisStatus.OBSERVED_ONLY,
+            FailureDiagnosisStatus.SUPERSEDED,
+        }:
+            raise ValueError("diagnosis revision must represent an active evidential diagnosis state")
         if not self.new_evidence_pointers:
             raise ValueError("diagnosis revision requires new evidence")
 
