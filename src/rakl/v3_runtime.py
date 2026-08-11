@@ -114,8 +114,13 @@ def consolidate_lesson(
     """Slow learning loop: validate an abstraction, version it, and optionally expose it as a tool."""
 
     experience = state.experience
-    if candidate.lesson_id not in {lesson.lesson_id for lesson in experience.lessons}:
+    recorded_by_id = {lesson.lesson_id: lesson for lesson in experience.lessons}
+    recorded = recorded_by_id.get(candidate.lesson_id)
+    if recorded is None:
         experience = add_lesson(experience, candidate)
+    elif recorded != candidate:
+        raise ValueError("candidate lesson identity already exists with different content")
+
     report = assess_lesson_consolidation(experience, candidate, evidence)
     if report.verdict in {ConsolidationVerdict.CANNOT_CHECK, ConsolidationVerdict.CANDIDATE_ONLY, ConsolidationVerdict.CONTRADICTED}:
         return ConsolidationOutcome(replace(state, experience=experience), report, None, None)
