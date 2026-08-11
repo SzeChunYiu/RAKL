@@ -20,6 +20,7 @@ class ResearchTraceEventType(str, Enum):
     METHOD_TRANSFER_REVIEW = "METHOD_TRANSFER_REVIEW"
     EXPERT_CONTEXT_REVIEW = "EXPERT_CONTEXT_REVIEW"
     EXPERIENCE_MEMORY_REVIEW = "EXPERIENCE_MEMORY_REVIEW"
+    OBSTRUCTION_TRANSFORMATION_REVIEW = "OBSTRUCTION_TRANSFORMATION_REVIEW"
     NEXT_STEP_PROPOSED = "NEXT_STEP_PROPOSED"
     CANDIDATE_PROPOSED = "CANDIDATE_PROPOSED"
     FALSIFIER_RUN = "FALSIFIER_RUN"
@@ -78,6 +79,7 @@ REQUIRED_PRE_CANDIDATE_EVENTS: Tuple[ResearchTraceEventType, ...] = (
     ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
     ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
     ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW,
+    ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW,
     ResearchTraceEventType.NEXT_STEP_PROPOSED,
 )
 
@@ -88,6 +90,7 @@ REQUIRED_TRACE_ACTIONS: Tuple[str, ...] = (
     "record_method_transfer_matrix_and_disanalogies",
     "record_role_separated_expert_context_review",
     "record_success_tool_and_failure_lattice_memory_review",
+    "record_obstruction_transformation_search_jump_glue_lift_review",
     "record_proposed_next_step_with_alternatives_and_decision_rationale",
 )
 
@@ -166,6 +169,7 @@ def audit_research_trace(trace: MathResearchTrace | None) -> ResearchTraceReport
         if entry.event_type in {
             ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
             ResearchTraceEventType.EXPERIENCE_MEMORY_REVIEW,
+            ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW,
             ResearchTraceEventType.NEXT_STEP_PROPOSED,
             ResearchTraceEventType.CANDIDATE_PROPOSED,
         }:
@@ -183,6 +187,12 @@ def audit_research_trace(trace: MathResearchTrace | None) -> ResearchTraceReport
                 reasons.append(f"{prefix}:memory_review_outputs_missing")
             if not entry.uncertainties:
                 reasons.append(f"{prefix}:memory_review_warnings_or_uncertainties_missing")
+
+        if entry.event_type is ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW:
+            if not entry.outputs:
+                reasons.append(f"{prefix}:shortcut_review_outputs_missing")
+            if not entry.uncertainties:
+                reasons.append(f"{prefix}:shortcut_review_warnings_or_uncertainties_missing")
 
         if entry.event_type is ResearchTraceEventType.NEXT_STEP_PROPOSED:
             if not entry.next_steps:
@@ -215,6 +225,7 @@ def audit_pre_candidate_trace(
     *,
     atom_id: str,
     context_packet_hash: str,
+    obstruction_transformation_review_hash: str = "",
 ) -> ResearchTraceReport:
     """Require a chronological public research ledger before candidate generation."""
 
@@ -250,6 +261,19 @@ def audit_pre_candidate_trace(
             for entry in context_entries
         ):
             reasons.append("trace_context_event_not_bound_to_context_packet_hash")
+
+    shortcut_entries = [
+        entry
+        for entry in atom_entries
+        if entry.event_type is ResearchTraceEventType.OBSTRUCTION_TRANSFORMATION_REVIEW
+    ]
+    if shortcut_entries and obstruction_transformation_review_hash:
+        if not any(
+            obstruction_transformation_review_hash in entry.evidence_pointers
+            or obstruction_transformation_review_hash in entry.outputs
+            for entry in shortcut_entries
+        ):
+            reasons.append("trace_shortcut_event_not_bound_to_review_hash")
 
     candidate_positions = [
         i
