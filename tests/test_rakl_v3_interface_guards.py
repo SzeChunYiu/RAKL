@@ -55,7 +55,9 @@ def test_explicit_interface_keys_hide_private_local_assignments() -> None:
     )
     assert report.compatible
     assert report.global_assignments == (("shared", "1"),)
-    assert report.grants_solution_authority
+    # Structural compatibility is not a proof certificate.  The deprecated
+    # verified booleans cannot grant solution authority.
+    assert not report.grants_solution_authority
 
 
 def test_declared_interface_must_be_present_in_local_section() -> None:

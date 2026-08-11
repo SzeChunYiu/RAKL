@@ -5,6 +5,12 @@ from enum import Enum
 from typing import Iterable, Tuple
 
 from .evolution import EvolutionAssessment, EvolutionTrial, EvolutionVerdict, SelfEvolutionAssessor
+from .v3_authority import (
+    AttestationPurpose,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    resolve_protected_attestation,
+)
 
 
 class VariantStatus(str, Enum):
@@ -60,6 +66,89 @@ class VariantSelection:
     status: VariantStatus
 
 
+@dataclass(frozen=True)
+class EvolutionTrialAuthorityBindings:
+    development_benchmark_artifact: Tuple[str, str]
+    assurance_benchmark_artifact: Tuple[str, str]
+    candidate_method_artifact: Tuple[str, str]
+    result_receipt_artifact: Tuple[str, str]
+
+    @property
+    def artifact_ids(self) -> Tuple[str, ...]:
+        return tuple(item[0] for item in (
+            self.development_benchmark_artifact,
+            self.assurance_benchmark_artifact,
+            self.candidate_method_artifact,
+            self.result_receipt_artifact,
+        ))
+
+    @property
+    def artifact_hashes(self) -> Tuple[str, ...]:
+        return tuple(item[1] for item in (
+            self.development_benchmark_artifact,
+            self.assurance_benchmark_artifact,
+            self.candidate_method_artifact,
+            self.result_receipt_artifact,
+        ))
+
+
+def evolution_trial_subject_hash(trial: EvolutionTrial) -> str:
+    """Exact content identity for the evidence packet evaluated by Self-RAKL."""
+
+    return canonical_sha256(
+        {
+            "parent_version": trial.parent_version,
+            "child_version": trial.child_version,
+            "development_benchmark_id": trial.development_benchmark_id,
+            "development_improvements": sorted(trial.development_improvements.items()),
+            "assurance_benchmark_id": trial.assurance_benchmark_id,
+            "transfer_improvements": sorted((trial.transfer_improvements or {}).items()),
+            "transfer_regressions": sorted((trial.transfer_regressions or {}).items()),
+            "tests_passed": trial.tests_passed,
+            "receipt_present": trial.receipt_present,
+            "development_benchmark_frozen_before_result": trial.development_benchmark_frozen_before_result,
+            "assurance_benchmark_frozen_before_mutation": trial.assurance_benchmark_frozen_before_mutation,
+            "assurance_hidden_from_proposer": trial.assurance_hidden_from_proposer,
+            "assurance_evaluator_separate": trial.assurance_evaluator_separate,
+            "candidate_identity_verified": trial.candidate_identity_verified,
+            "resource_comparability_verified": trial.resource_comparability_verified,
+            "history_preserved": trial.history_preserved,
+            "blocking_failures": list(trial.blocking_failures),
+            "assurance_exposure_limit": trial.assurance_exposure_limit,
+            "assurance_exposures_before_trial": trial.assurance_exposures_before_trial,
+        }
+    )
+
+
+def evolution_assurance_subject_hash(
+    trial: EvolutionTrial,
+    bindings: EvolutionTrialAuthorityBindings,
+) -> str:
+    return canonical_sha256(
+        {
+            "trial_subject_hash": evolution_trial_subject_hash(trial),
+            "development_benchmark": list(bindings.development_benchmark_artifact),
+            "assurance_benchmark": list(bindings.assurance_benchmark_artifact),
+            "candidate_method": list(bindings.candidate_method_artifact),
+            "result_receipt": list(bindings.result_receipt_artifact),
+        }
+    )
+
+
+def variant_promotion_subject_hash(archive: EvolutionArchive, variant_id: str) -> str:
+    target = next((item for item in archive.variants if item.variant_id == variant_id), None)
+    if target is None:
+        raise ValueError("variant does not exist")
+    return canonical_sha256(
+        {
+            "target": repr(target),
+            "incumbent_id": archive.incumbent_id,
+            "all_variants": [repr(item) for item in archive.variants],
+            "evolution_edges": [repr(item) for item in archive.edges],
+        }
+    )
+
+
 def initialize_evolution_archive(incumbent: RAKLVariant) -> EvolutionArchive:
     if incumbent.status is not VariantStatus.INCUMBENT:
         incumbent = replace(incumbent, status=VariantStatus.INCUMBENT)
@@ -85,6 +174,9 @@ def record_evolution_trial(
     trial_id: str,
     child_variant_id: str,
     trial: EvolutionTrial,
+    authority_context: ProtectedAuthorityContext | None = None,
+    assurance_attestation_id: str | None = None,
+    authority_bindings: EvolutionTrialAuthorityBindings | None = None,
 ) -> tuple[EvolutionArchive, EvolutionAssessment]:
     """Record assurance evidence without automatically changing the incumbent."""
 
@@ -102,6 +194,43 @@ def record_evolution_trial(
         raise ValueError(f"duplicate evolution trial id: {trial_id}")
 
     assessment = SelfEvolutionAssessor.assess(trial)
+    if assessment.verdict is EvolutionVerdict.SCOPED_EVOLUTION_EVIDENCE:
+        if authority_bindings is None:
+            resolution_reasons = ("exact_evolution_authority_bindings_missing",)
+            subject_hash = evolution_trial_subject_hash(trial)
+            required_ids: Tuple[str, ...] = ()
+            required_hashes: Tuple[str, ...] = ()
+        else:
+            resolution_reasons = ()
+            subject_hash = evolution_assurance_subject_hash(trial, authority_bindings)
+            required_ids = authority_bindings.artifact_ids
+            required_hashes = authority_bindings.artifact_hashes
+        resolution = resolve_protected_attestation(
+            authority_context,
+            assurance_attestation_id,
+            purpose=AttestationPurpose.EVOLUTION_ASSURANCE,
+            subject_hash=subject_hash,
+            required_artifact_ids=required_ids,
+            required_artifact_hashes=required_hashes,
+        )
+        attestation = None
+        if authority_context is not None and assurance_attestation_id:
+            attestation = next(
+                (item for item in authority_context.attestations if item.attestation_id == assurance_attestation_id),
+                None,
+            )
+        reasons = list(resolution_reasons + resolution.reasons)
+        if attestation is not None and not attestation.evidence_bindings:
+            reasons.append("evolution_assurance_attestation_has_no_resolved_benchmark_evidence")
+        if reasons:
+            assessment = EvolutionAssessment(
+                verdict=EvolutionVerdict.CANNOT_CHECK,
+                reasons=tuple(reasons),
+                development_gain_qois=assessment.development_gain_qois,
+                transfer_gain_qois=assessment.transfer_gain_qois,
+                transfer_regression_qois=assessment.transfer_regression_qois,
+                assurance_fresh=assessment.assurance_fresh,
+            )
     if assessment.verdict is EvolutionVerdict.SCOPED_EVOLUTION_EVIDENCE:
         next_status = VariantStatus.ASSURED
     elif assessment.verdict in {EvolutionVerdict.META_OVERFIT, EvolutionVerdict.NO_IMPROVEMENT, EvolutionVerdict.BLOCKED}:
@@ -127,18 +256,29 @@ def promote_incumbent(
     archive: EvolutionArchive,
     variant_id: str,
     *,
-    governance_approved: bool,
+    governance_approved: bool | None = None,
+    authority_context: ProtectedAuthorityContext | None = None,
+    governance_attestation_id: str | None = None,
 ) -> EvolutionArchive:
     """Promote an assured branch only after an explicit governance decision."""
 
-    if not governance_approved:
-        raise ValueError("explicit governance approval is required for incumbent promotion")
     by_id = {variant.variant_id: variant for variant in archive.variants}
     target = by_id.get(variant_id)
     if target is None:
         raise ValueError("variant does not exist")
     if target.status is not VariantStatus.ASSURED:
         raise ValueError("only an assured variant can become incumbent")
+    resolution = resolve_protected_attestation(
+        authority_context,
+        governance_attestation_id,
+        purpose=AttestationPurpose.GOVERNANCE_PROMOTION,
+        subject_hash=variant_promotion_subject_hash(archive, variant_id),
+    )
+    if not resolution.valid:
+        raise ValueError(
+            "protected governance attestation is required for incumbent promotion: "
+            + ", ".join(resolution.reasons)
+        )
     updated: list[RAKLVariant] = []
     for variant in archive.variants:
         if variant.variant_id == variant_id:

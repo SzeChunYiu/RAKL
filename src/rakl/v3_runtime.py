@@ -28,6 +28,7 @@ from .research_tool_inventory import ResearchToolInventory, add_research_tool
 from .saturation_vector import NoveltyRound, SaturationVectorState, add_novelty_round
 from .strategy_motifs import StrategyMotif
 from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
+from .v3_authority import ProtectedAuthorityContext
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,9 @@ class ToolProjectionSpec:
     name: str
     kind: str
     known_failure_ids: Tuple[str, ...] = ()
+    projection_attestation_id: str | None = None
+    projection_authority_context: ProtectedAuthorityContext | None = None
+    projection_artifact_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -146,7 +150,7 @@ def consolidate_lesson(
         report=report,
         evidence=evidence,
     )
-    experience = add_lesson(experience, promoted)
+    experience = add_lesson(experience, promoted, authority_context=evidence.authority_context)
     tools = state.tools
     projected_tool_id: str | None = None
     if tool_spec is not None:
@@ -159,6 +163,9 @@ def consolidate_lesson(
             name=tool_spec.name,
             kind=tool_spec.kind,
             known_failure_ids=tool_spec.known_failure_ids,
+            authority_context=tool_spec.projection_authority_context or evidence.authority_context,
+            projection_attestation_id=tool_spec.projection_attestation_id,
+            projection_artifact_id=tool_spec.projection_artifact_id,
         )
         tools = add_research_tool(tools, tool)
         projected_tool_id = tool.tool_id

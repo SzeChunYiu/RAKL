@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from statistics import mean
 from typing import Iterable, Tuple
+
+from .v3_authority import (
+    AttestationPurpose,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    resolve_protected_attestation,
+)
 
 from .matched_microtrial import (
     MatchedModelConfig,
@@ -28,6 +36,17 @@ class ExperienceBenchmarkVerdict(str, Enum):
     INVALID = "INVALID"
 
 
+def _timestamp(value: str) -> datetime | None:
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
+
+
 @dataclass(frozen=True)
 class ExperienceBenchmarkRun:
     run_id: str
@@ -41,6 +60,8 @@ class ExperienceBenchmarkRun:
     failure_signature: Tuple[str, ...]
     resource_usage: TrialResourceUsage
     output_hash: str
+    output_artifact_id: str = ""
+    executed_at: str = ""
 
     def __post_init__(self) -> None:
         if not self.run_id or not self.task_id or not self.state_before_hash or not self.state_after_hash or not self.output_hash:
@@ -65,6 +86,13 @@ class ExperienceBenchmarkPacket:
     learned_state_after_development_hash: str
     runs: Tuple[ExperienceBenchmarkRun, ...]
     frozen_before_runs: bool
+    evaluator_artifact_id: str = ""
+    tool_policy_artifact_id: str = ""
+    output_schema_artifact_id: str = ""
+    task_artifact_ids: Tuple[Tuple[str, str], ...] = ()
+    packet_frozen_at: str = ""
+    freeze_attestation_id: str | None = None
+    match_attestation_id: str | None = None
 
     def __post_init__(self) -> None:
         required = (
@@ -86,6 +114,8 @@ class ExperienceBenchmarkPacket:
         expected = self.development_task_ids + self.transfer_task_ids
         if len(set(expected)) != len(expected):
             raise ValueError("benchmark task ids must be unique")
+        if len({task_id for task_id, _ in self.task_artifact_ids}) != len(self.task_artifact_ids):
+            raise ValueError("benchmark task artifact bindings must be unique")
 
 
 @dataclass(frozen=True)
@@ -141,12 +171,65 @@ def _runs_by_task(packet: ExperienceBenchmarkPacket) -> dict[str, list[Experienc
     return grouped
 
 
-def validate_experience_benchmark(packet: ExperienceBenchmarkPacket) -> ExperienceBenchmarkValidation:
+def benchmark_protocol_subject_hash(packet: ExperienceBenchmarkPacket) -> str:
+    """Hash the pre-result benchmark packet, including exact artifact identities."""
+
+    return canonical_sha256(
+        {
+            "benchmark_id": packet.benchmark_id,
+            "model": repr(packet.model),
+            "resource_ceiling": repr(packet.resource_ceiling),
+            "tool_policy_id": packet.tool_policy_id,
+            "output_schema_id": packet.output_schema_id,
+            "evaluator_protocol_hash": packet.evaluator_protocol_hash,
+            "initial_state_hash": packet.initial_state_hash,
+            "development_task_ids": list(packet.development_task_ids),
+            "transfer_task_ids": list(packet.transfer_task_ids),
+            "evaluator_artifact_id": packet.evaluator_artifact_id,
+            "tool_policy_artifact_id": packet.tool_policy_artifact_id,
+            "output_schema_artifact_id": packet.output_schema_artifact_id,
+            "task_artifact_ids": [list(item) for item in packet.task_artifact_ids],
+            "packet_frozen_at": packet.packet_frozen_at,
+        }
+    )
+
+
+def benchmark_result_subject_hash(packet: ExperienceBenchmarkPacket) -> str:
+    return canonical_sha256(
+        {
+            "protocol_subject_hash": benchmark_protocol_subject_hash(packet),
+            "learned_state_after_development_hash": packet.learned_state_after_development_hash,
+            "runs": [
+                {
+                    "run_id": run.run_id,
+                    "task_id": run.task_id,
+                    "arm": run.arm.value,
+                    "phase": run.phase.value,
+                    "state_before_hash": run.state_before_hash,
+                    "state_after_hash": run.state_after_hash,
+                    "success": run.success,
+                    "score": run.score,
+                    "failure_signature": list(run.failure_signature),
+                    "resource_usage": repr(run.resource_usage),
+                    "output_hash": run.output_hash,
+                    "output_artifact_id": run.output_artifact_id,
+                    "executed_at": run.executed_at,
+                }
+                for run in packet.runs
+            ],
+        }
+    )
+
+
+def validate_experience_benchmark(
+    packet: ExperienceBenchmarkPacket,
+    authority_context: ProtectedAuthorityContext | None = None,
+) -> ExperienceBenchmarkValidation:
     """Fail closed on chronology, state leakage, task mismatch, or resource mismatch."""
 
     problems: list[str] = []
-    if not packet.frozen_before_runs:
-        problems.append("benchmark_packet_not_frozen_before_runs")
+    # The legacy boolean is not an authority input.  Protected content and
+    # chronology receipts below decide whether the packet was actually frozen.
     if packet.resource_ceiling.max_model_output_tokens != packet.model.max_output_tokens:
         problems.append("model_output_tokens_do_not_match_registered_ceiling")
 
@@ -157,6 +240,50 @@ def validate_experience_benchmark(packet: ExperienceBenchmarkPacket) -> Experien
     missing = expected_set - set(grouped)
     problems.extend(f"unexpected_task:{task_id}" for task_id in sorted(unexpected))
     problems.extend(f"missing_task:{task_id}" for task_id in sorted(missing))
+
+    task_artifacts = dict(packet.task_artifact_ids)
+    if set(task_artifacts) != expected_set:
+        problems.append("task_artifact_bindings_do_not_match_registered_tasks")
+    protocol_artifact_ids = tuple(
+        item
+        for item in (
+            packet.evaluator_artifact_id,
+            packet.tool_policy_artifact_id,
+            packet.output_schema_artifact_id,
+        )
+        if item
+    ) + tuple(task_artifacts.get(task_id, "") for task_id in expected_tasks)
+    if not packet.packet_frozen_at or not packet.evaluator_artifact_id or not packet.tool_policy_artifact_id or not packet.output_schema_artifact_id:
+        problems.append("benchmark_protocol_content_bindings_incomplete")
+    freeze = resolve_protected_attestation(
+        authority_context,
+        packet.freeze_attestation_id,
+        purpose=AttestationPurpose.BENCHMARK_FREEZE,
+        subject_hash=benchmark_protocol_subject_hash(packet),
+        required_artifact_ids=protocol_artifact_ids,
+    )
+    problems.extend(f"freeze:{reason}" for reason in freeze.reasons)
+
+    artifacts = {item.artifact_id: item for item in authority_context.artifacts} if authority_context is not None else {}
+    evaluator_artifact = artifacts.get(packet.evaluator_artifact_id)
+    if evaluator_artifact is None or evaluator_artifact.payload_sha256 != packet.evaluator_protocol_hash:
+        problems.append("evaluator_protocol_bytes_not_bound_to_declared_hash")
+    freeze_attestation = None
+    if authority_context is not None:
+        freeze_attestation = next((item for item in authority_context.attestations if item.attestation_id == packet.freeze_attestation_id), None)
+    packet_frozen = _timestamp(packet.packet_frozen_at)
+    if packet_frozen is None:
+        problems.append("benchmark_packet_frozen_at_invalid")
+    if freeze_attestation is not None:
+        freeze_subject_time = _timestamp(freeze_attestation.subject_frozen_at)
+        if freeze_subject_time != packet_frozen:
+            problems.append("freeze_attestation_subject_time_mismatch")
+        for artifact_id in protocol_artifact_ids:
+            artifact = artifacts.get(artifact_id)
+            if artifact is not None and packet_frozen is not None:
+                artifact_frozen = _timestamp(artifact.frozen_at)
+                if artifact_frozen is None or artifact_frozen > packet_frozen:
+                    problems.append(f"protocol_artifact_not_frozen_before_packet:{artifact_id}")
 
     for task_id in expected_tasks:
         task_runs = grouped.get(task_id, [])
@@ -176,6 +303,19 @@ def validate_experience_benchmark(packet: ExperienceBenchmarkPacket) -> Experien
                 problems.append(f"task_phase_mismatch:{run.run_id}")
             resource_report = validate_resource_usage(run.resource_usage, packet.resource_ceiling)
             problems.extend(f"{run.run_id}:{problem}" for problem in resource_report.problems)
+            output = artifacts.get(run.output_artifact_id)
+            if not run.output_artifact_id or output is None:
+                problems.append(f"run_output_artifact_unresolved:{run.run_id}")
+            elif not output.content_valid or output.payload_sha256 != run.output_hash:
+                problems.append(f"run_output_bytes_hash_mismatch:{run.run_id}")
+            executed = _timestamp(run.executed_at)
+            freeze_issued = _timestamp(freeze_attestation.issued_at) if freeze_attestation is not None else None
+            if executed is None:
+                problems.append(f"run_execution_chronology_missing:{run.run_id}")
+            elif freeze_issued is not None and executed <= freeze_issued:
+                problems.append(f"run_not_after_frozen_packet:{run.run_id}")
+            if output is not None and executed is not None and _timestamp(output.frozen_at) != executed:
+                problems.append(f"run_output_chronology_mismatch:{run.run_id}")
 
     baseline_runs = {
         run.task_id: run
@@ -212,6 +352,26 @@ def validate_experience_benchmark(packet: ExperienceBenchmarkPacket) -> Experien
 
     if len({run.run_id for run in packet.runs}) != len(packet.runs):
         problems.append("duplicate_run_id")
+
+    output_ids = tuple(run.output_artifact_id for run in packet.runs if run.output_artifact_id)
+    matched = resolve_protected_attestation(
+        authority_context,
+        packet.match_attestation_id,
+        purpose=AttestationPurpose.BENCHMARK_MATCH,
+        subject_hash=benchmark_result_subject_hash(packet),
+        required_artifact_ids=protocol_artifact_ids + output_ids,
+    )
+    problems.extend(f"match:{reason}" for reason in matched.reasons)
+    if authority_context is not None and packet.match_attestation_id:
+        match_attestation = next((item for item in authority_context.attestations if item.attestation_id == packet.match_attestation_id), None)
+        if match_attestation is not None:
+            match_issued = _timestamp(match_attestation.issued_at)
+            match_subject_frozen = _timestamp(match_attestation.subject_frozen_at)
+            run_times = tuple(_timestamp(run.executed_at) for run in packet.runs)
+            if match_issued is None or any(item is None or match_issued <= item for item in run_times):
+                problems.append("match_attestation_not_after_all_runs")
+            if match_subject_frozen is None or any(item is None or match_subject_frozen < item for item in run_times):
+                problems.append("match_subject_not_frozen_after_all_runs")
 
     return ExperienceBenchmarkValidation(not problems, tuple(problems))
 
@@ -261,8 +421,11 @@ def _metrics(
     )
 
 
-def assess_experience_benchmark(packet: ExperienceBenchmarkPacket) -> ExperienceBenchmarkReport:
-    validation = validate_experience_benchmark(packet)
+def assess_experience_benchmark(
+    packet: ExperienceBenchmarkPacket,
+    authority_context: ProtectedAuthorityContext | None = None,
+) -> ExperienceBenchmarkReport:
+    validation = validate_experience_benchmark(packet, authority_context)
     if not validation.matched:
         return ExperienceBenchmarkReport(
             verdict=ExperienceBenchmarkVerdict.INVALID,

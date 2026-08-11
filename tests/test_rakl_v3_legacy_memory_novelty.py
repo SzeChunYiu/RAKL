@@ -100,7 +100,7 @@ def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
         supporting_episode_ids=("E1",),
         contradicting_episode_ids=(),
         falsifier="registered counterexample",
-        authority=LessonAuthority.VERIFIED_LOCAL,
+        authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate target",),
         evidence_pointers=("artifact:E1",),
         artifact_hash="sha256:L1",
