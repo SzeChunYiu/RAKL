@@ -76,6 +76,14 @@ REQUIRED_PRE_CANDIDATE_EVENTS: Tuple[ResearchTraceEventType, ...] = (
     ResearchTraceEventType.NEXT_STEP_PROPOSED,
 )
 
+REQUIRED_TRACE_ACTIONS: Tuple[str, ...] = (
+    "record_atomization_result",
+    "record_current_context_snapshot_and_context_packet_hash",
+    "record_cross_domain_analogy_scan_result",
+    "record_method_transfer_matrix_and_disanalogies",
+    "record_proposed_next_step_with_alternatives_and_decision_rationale",
+)
+
 
 def _parse_time(value: str) -> datetime | None:
     if not value:
