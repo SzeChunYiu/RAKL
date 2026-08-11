@@ -31,11 +31,13 @@ from rakl.root_coordinate_preservation import (
     CoordinateAuthority,
     EdgeProofStatus,
     Obligation,
+    PreservationGateVerdict,
     PreservationVerdict,
     RegisteredStateObservation,
     RootCoordinatePreservationReceipt,
     audit_root_coordinate_preservation,
     find_congruence_violations,
+    gate_expensive_candidate_search,
 )
 
 SCHEMA_PATH = (
@@ -359,3 +361,87 @@ def test_document_hash_covers_the_bridge_and_the_hostile_world() -> None:
             mutated.document()["receipt_canonical_sha256"]
             != original.document()["receipt_canonical_sha256"]
         ), field_name
+
+
+def test_locally_congruent_receipt_licenses_expensive_candidate_search() -> None:
+    report = audit_root_coordinate_preservation(_receipt())
+    assert report.verdict is PreservationVerdict.BRIDGE_LOCALLY_CONGRUENT
+    assert report.licenses_expensive_candidate_search is True
+
+
+def test_missing_preservation_receipt_fails_closed_before_expensive_search() -> None:
+    gate = gate_expensive_candidate_search(
+        None,
+        expected_root_claim_id="ROOT-1",
+        required=True,
+    )
+    assert gate.verdict is PreservationGateVerdict.RECEIPT_MISSING
+    assert gate.licenses_expensive_candidate_search is False
+    assert "root_coordinate_preservation_receipt_missing" in gate.reasons
+
+
+def test_stale_root_claim_id_fails_closed() -> None:
+    receipt = _receipt(root_claim_id="ROOT-1")
+    gate = gate_expensive_candidate_search(
+        receipt,
+        expected_root_claim_id="ROOT-OTHER",
+        required=True,
+    )
+    assert gate.verdict is PreservationGateVerdict.RECEIPT_STALE
+    assert gate.licenses_expensive_candidate_search is False
+    assert any(reason.startswith("receipt_root_claim_id_stale:") for reason in gate.reasons)
+
+
+def test_stale_canonical_hash_fails_closed() -> None:
+    receipt = _receipt()
+    gate = gate_expensive_candidate_search(
+        receipt,
+        expected_root_claim_id="ROOT-1",
+        expected_canonical_sha256="0" * 64,
+        required=True,
+    )
+    assert gate.verdict is PreservationGateVerdict.RECEIPT_STALE
+    assert gate.licenses_expensive_candidate_search is False
+    assert any(
+        reason.startswith("receipt_canonical_sha256_stale:") for reason in gate.reasons
+    )
+
+
+def test_fresh_bound_receipt_licenses_search() -> None:
+    receipt = _receipt(root_claim_id="ROOT-1")
+    digest = receipt.document()["receipt_canonical_sha256"]
+    gate = gate_expensive_candidate_search(
+        receipt,
+        expected_root_claim_id="ROOT-1",
+        expected_canonical_sha256=digest,
+        required=True,
+    )
+    assert gate.verdict is PreservationGateVerdict.SEARCH_LICENSED
+    assert gate.licenses_expensive_candidate_search is True
+    assert gate.advances_root_claim is False
+
+
+def test_refuted_bridge_blocks_expensive_search() -> None:
+    receipt = _receipt(
+        registered_observations=(
+            RegisteredStateObservation("S-a", "P-same", "OUT-1"),
+            RegisteredStateObservation("S-b", "P-same", "OUT-2"),
+        )
+    )
+    gate = gate_expensive_candidate_search(
+        receipt,
+        expected_root_claim_id="ROOT-1",
+        required=True,
+    )
+    assert gate.verdict is PreservationGateVerdict.BRIDGE_BLOCKS_SEARCH
+    assert gate.licenses_expensive_candidate_search is False
+
+
+def test_unrequired_absent_receipt_does_not_block_brainstorming() -> None:
+    gate = gate_expensive_candidate_search(
+        None,
+        expected_root_claim_id="ROOT-1",
+        required=False,
+    )
+    assert gate.verdict is PreservationGateVerdict.NOT_REQUIRED
+    assert gate.licenses_expensive_candidate_search is True
