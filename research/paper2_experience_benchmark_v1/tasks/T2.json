@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-v1",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Paper X reports 92% conversion for catalyst Alpha at 300 C in batch mode."
+    },
+    {
+      "id": "E2",
+      "text": "Paper Y reports 61% conversion for catalyst Alpha at 180 C in continuous flow."
+    },
+    {
+      "id": "E3",
+      "text": "Temperature and reactor mode differ; both can be locally correct without mutual refutation."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T18:21:15Z",
+  "phase": "FRESH_TRANSFER",
+  "prompt": "Adjudicate: 'Paper X refutes Paper Y on catalyst efficiency.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "scope_mismatch",
+      "not_direct_refutation"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "verdict": "CONTEXT_MISALIGNED"
+  },
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "task_id": "T2",
+  "title": "Useful transfer of misalignment rule"
+}

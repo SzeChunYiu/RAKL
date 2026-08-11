@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-v1",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Source A: peak weekday traffic volume on Bridge North is 12_000 vehicles/hour."
+    },
+    {
+      "id": "E2",
+      "text": "Source B: weekend average traffic on Bridge South is 4_000 vehicles/hour."
+    },
+    {
+      "id": "E3",
+      "text": "Bridge North and Bridge South are different spans; weekday peak ≠ weekend average."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T18:21:15Z",
+  "phase": "DEVELOPMENT_SEQUENCE",
+  "prompt": "Adjudicate: 'Source A contradicts Source B about the same measured quantity.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "different_object",
+      "different_aggregation",
+      "not_direct_contradiction"
+    ],
+    "rejected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "selected_evidence_ids": [
+      "E3"
+    ],
+    "verdict": "CONTEXT_MISALIGNED"
+  },
+  "stratum": "CROSS_DOMAIN_TRANSFER",
+  "task_id": "D3",
+  "title": "Context mismatch before contradiction"
+}
