@@ -22,19 +22,21 @@ import jsonschema
 
 ROOT = Path(__file__).resolve().parents[3]
 V4 = ROOT / "research/paper2_microtrial_v4"
-V41 = ROOT / "research/paper2_microtrial_v4_2"
+V41_PARENT = ROOT / "research/paper2_microtrial_v4_1"
+V42 = ROOT / "research/paper2_microtrial_v4_2"
 SCHEMA = ROOT / "schemas/paper2-v4-2-native-ingest-receipt.schema.json"
 POLICY_ID = "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
 TASK_ID = "PENDULUM_SEALED_KNOWN_ANSWER_001"
 CONDITIONS = {"DIRECT_CORPUS", "RAKL_CONTEXT"}
 PACKET_HEAD_SHA = "f3211f86d1b7665e44cfa08fa4ec6e257d77c9eb"
 OUTCOME_REASON = (
-    "DIRECT_CORPUS remains parse-invalid/null under the frozen exact V4.2 "
-    "normalizer; RAKL_CONTEXT is scorable but fails the exact conceptual gate "
-    "(3/5). Both arms therefore have zero valid scientific successes and infinite "
-    "observed token count per success, while one scorable arm cannot estimate a "
-    "paired contrast and local zero provider API charge omits registered cost "
-    "coordinates."
+    "V4.2 field-polarity + stop-after-JSON repaired the V4.1 DIRECT fence+prose "
+    "serialization residual: both arms are parse_valid/scorable. Both still answer "
+    "only 3/5 conceptual fields and fail the unchanged exact conceptual gate. "
+    "Zero valid scientific successes remain; arm comparison is not estimable; "
+    "this is a 0.5B capability/scientific-output limit under the frozen gate, "
+    "not a scorer/parser/tip bug. Local zero provider API charge omits registered "
+    "cost coordinates."
 )
 
 
@@ -331,10 +333,10 @@ def _bundle_members(bundle: Path) -> dict[str, tuple[int, str]]:
 
 
 def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> dict[str, Any]:
-    native = V41 / f"native_job_{job_id}"
+    native = V42 / f"native_job_{job_id}"
     run = native / f"runs/v4_2/{TASK_ID}-seed-17-job-{job_id}"
     receipt_root = native / "receipts/v4_2"
-    bundle = V41 / f"native_bundles/PAPER2_V4_2_NATIVE_JOB_{job_id}.tar.gz"
+    bundle = V42 / f"native_bundles/PAPER2_V4_2_NATIVE_JOB_{job_id}.tar.gz"
     _require(native.is_dir(), f"native directory missing: {native}")
     _require(bundle.is_file(), f"transport bundle missing: {bundle}")
     _require(SCHEMA.is_file(), f"ingest schema missing: {SCHEMA}")
@@ -367,12 +369,12 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
     result = documents["result"]
     task_seed = documents["task_seed"]
     component_schemas = {
-        "submission": ROOT / "schemas/paper2-pendulum-submission-receipt-v4-1.schema.json",
+        "submission": ROOT / "schemas/paper2-pendulum-submission-receipt-v4-2.schema.json",
         "snapshot_pre": ROOT / "schemas/paper2-model-snapshot-attestation-v4.schema.json",
         "snapshot_post": ROOT / "schemas/paper2-model-snapshot-attestation-v4.schema.json",
-        "harvest": ROOT / "schemas/paper2-pendulum-native-harvest-receipt-v4-1.schema.json",
+        "harvest": ROOT / "schemas/paper2-pendulum-native-harvest-receipt-v4-2.schema.json",
         "result": ROOT / "schemas/paper2-pendulum-microtrial-result.schema.json",
-        "task_seed": ROOT / "schemas/paper2-pendulum-task-seed-receipt-v4-1.schema.json",
+        "task_seed": ROOT / "schemas/paper2-pendulum-task-seed-receipt-v4-2.schema.json",
     }
     for name, schema_path in component_schemas.items():
         _validate(documents[name], schema_path)
@@ -440,7 +442,7 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
 
     _require(task_seed["task_id"] == TASK_ID and task_seed["seed"] == 17, "task/seed mismatch")
     _require(task_seed["arm_record_count"] == 2 and task_seed["evaluated_task_seed_unit_count"] == 1, "task/seed counts mismatch")
-    _require(task_seed["parse_valid_arm_count"] == 1 and task_seed["scorable_arm_count"] == 1, "task/seed parse counts mismatch")
+    _require(task_seed["parse_valid_arm_count"] == 2 and task_seed["scorable_arm_count"] == 2, "task/seed parse counts mismatch")
     _require(task_seed["output_normalization"]["policy_id"] == POLICY_ID, "task/seed policy mismatch")
     _require(task_seed["output_normalization"]["v4_reinterpretation_permitted"] is False, "task/seed enables V4 reinterpretation")
     result_records = {record["condition"]: record for record in result["records"]}
@@ -454,18 +456,32 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
         _require(source["score"]["parse_valid"] == index["parse_valid"], f"parse flag mismatch: {condition}")
     direct = task_records["DIRECT_CORPUS"]
     rakl = task_records["RAKL_CONTEXT"]
-    _require(direct["parse_valid"] is False and direct["score"]["score"] is None, "DIRECT_CORPUS must remain parse-null")
-    _require(rakl["parse_valid"] is True and isinstance(rakl["score"]["score"], dict), "RAKL_CONTEXT must be the sole scorable arm")
-    _require(rakl["score"]["score"]["exact_conceptual_pass"] is False, "unexpected exact conceptual pass")
+    _require(direct["parse_valid"] is True and isinstance(direct["score"]["score"], dict), "DIRECT_CORPUS must be parse-valid under V4.2")
+    _require(rakl["parse_valid"] is True and isinstance(rakl["score"]["score"], dict), "RAKL_CONTEXT must be parse-valid under V4.2")
+    _require(direct["score"]["score"]["exact_conceptual_pass"] is False, "unexpected DIRECT exact conceptual pass")
+    _require(rakl["score"]["score"]["exact_conceptual_pass"] is False, "unexpected RAKL exact conceptual pass")
+    _require(direct["score"]["score"]["conceptual_correct"] == 3, "unexpected DIRECT conceptual_correct")
+    _require(rakl["score"]["score"]["conceptual_correct"] == 3, "unexpected RAKL conceptual_correct")
     _verify_standalone_evidence(
         native=native, run=run, result=result, task_seed=task_seed, job_id=job_id
     )
 
-    v4_ingest = V4 / "PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json"
-    v4_negative = _load(v4_ingest)
-    _require(manifest["bound_artifact_sha256"]["v4_native_ingest"] == _sha(v4_ingest), "V4 negative-parent binding mismatch")
-    _require(v4_negative["task_seed_outcome"]["frozen_scorable_arm_count"] == 0, "V4 negative history changed")
-    _require(v4_negative["task_seed_outcome"]["score_comparison_permitted"] is False, "V4 comparison enabled")
+    v41_ingest = (
+        V41_PARENT / "PAPER2_V4_1_NATIVE_JOB_3476520_INGEST_RECEIPT_20260811.json"
+    )
+    v41_negative = _load(v41_ingest)
+    _require(
+        manifest["bound_artifact_sha256"]["v4_1_native_ingest_parent"] == _sha(v41_ingest),
+        "V4.1 negative-parent binding mismatch",
+    )
+    _require(
+        v41_negative["task_seed_outcome"]["exact_conceptual_pass_arm_count"] == 0,
+        "V4.1 exact-pass history changed",
+    )
+    _require(
+        v41_negative["task_seed_outcome"]["score_comparison_permitted"] is False,
+        "V4.1 comparison enabled",
+    )
 
     source_files = []
     cardinality: dict[str, int] = {}
@@ -507,7 +523,7 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
         "schema_version": "paper2-v4-2-native-ingest-receipt-v1",
         "receipt_id": f"PAPER2_V4_2_NATIVE_JOB_{job_id}_INGEST_RECEIPT_20260811",
         "created_at_utc": created_at_utc,
-        "verdict": "NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__COMPARISON_NOT_ESTIMABLE",
+        "verdict": "NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__CAPABILITY_LIMIT",
         "object": "One native LUNARC execution of the adaptive non-confirmatory V4.2 pendulum task/seed replay under two prompt-materialization arms.",
         "qoi": "Did the exact receipt chain pass, which frozen V4.2 outputs were parse-valid/scorable, and did any arm achieve exact conceptual success?",
         "ingest_schema": {
@@ -545,26 +561,26 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
             "stderr_warning": "Transformers reported temperature/top_p/top_k generation flags as invalid or ignored; retained as execution evidence and not used to grant or deny score authority.",
         },
         "v4_negative_parent": {
-            "path": v4_ingest.relative_to(ROOT).as_posix(),
-            "sha256": _sha(v4_ingest),
-            "frozen_parse_valid_arm_count": v4_negative["task_seed_outcome"]["frozen_parse_valid_arm_count"],
-            "frozen_scorable_arm_count": v4_negative["task_seed_outcome"]["frozen_scorable_arm_count"],
+            "path": v41_ingest.relative_to(ROOT).as_posix(),
+            "sha256": _sha(v41_ingest),
+            "frozen_parse_valid_arm_count": v41_negative["task_seed_outcome"]["parse_valid_arm_count"],
+            "frozen_scorable_arm_count": v41_negative["task_seed_outcome"]["scorable_arm_count"],
             "reinterpretation_permitted": False,
         },
         "task_seed_outcome": _summarize_task_seed(task_seed),
         "typed_residual": {
-            "residual_id": "PAPER2_V4_2_ONE_ARM_UNSCORABLE_AND_NO_EXACT_PASS",
-            "root_cause_ladder": ["R1_SCHEMA_PARSER_TRANSFORMATION", "R7_PROJECTION_FUNCTIONAL_FORM"],
-            "observed_signature": "The exact single-fence rule admits RAKL_CONTEXT but rejects DIRECT_CORPUS trailing prose; the admitted RAKL_CONTEXT record answers 3/5 conceptual fields correctly and fails the exact conceptual gate.",
+            "residual_id": "PAPER2_V4_2_BOTH_ARMS_PARSE_NO_EXACT_PASS_0_5B_CAPABILITY_LIMIT",
+            "root_cause_ladder": ["R7_PROJECTION_FUNCTIONAL_FORM", "R8_MODEL_CAPACITY_LIMIT"],
+            "observed_signature": "V4.2 prompt-interface repair makes both arms parse_valid; both answer 3/5 conceptual fields and fail the unchanged exact conceptual gate under Qwen2.5-0.5B-Instruct seed 17.",
             "null_or_competing_explanations": [
-                "Prompt architecture may affect serialization independently of scientific content.",
-                "The 0.5B model may be below the task's exact structured-reasoning requirement under either prompt materialization.",
+                "Residual scientific false answers may still be prompt-wording sensitive even after explicit field polarity.",
+                "The 0.5B Instruct snapshot is below the sealed task's exact structured-reasoning requirement under either prompt materialization.",
                 "One known-answer task and deterministic seed cannot distinguish a systematic architecture effect from task-specific output variance.",
             ],
-            "next_discriminator": "CANNOT_PROPOSE_UNTIL_DUAL_MEMORY_REVIEW: do not rescue or rerun these outputs, and do not select a successor experiment in this ingest iteration. Before any future candidate, freeze a ResearchMemoryReview over both the success-tool inventory and failure-experience lattice, then apply the ordinary pre-candidate governance gates.",
+            "next_discriminator": "BLOCKED_ON_MODEL_SIZE_WITHOUT_NEW_PACKET: do not soften exact_conceptual_pass. A larger Instruct model requires a new frozen staging/model packet; V4.2 scripts bind only the 0.5B snapshot. Do not use as #138 experience §B. Before any future candidate, freeze dual memory review under the new packet.",
         },
         "quantitative_figure_generated": False,
-        "claim_boundary": "Adaptive non-confirmatory engineering evidence only. V4 remains two parse-invalid nulls; V4.2 has one parse-valid/scorable arm and zero exact conceptual passes. No arm win/loss, paired effect, finite or fully costed cost-per-success comparison, matched architecture-by-evidence estimate, general superiority, independent review, or peer-review claim is permitted.",
+        "claim_boundary": "Adaptive non-confirmatory engineering evidence only. V4 remains two parse-invalid nulls; V4.1 remains one scorable arm / zero exact passes; V4.2 repairs DIRECT parse and yields two scorable arms that both fail exact conceptual pass (3/5) under the unchanged gate — a 0.5B capability limit. No arm win/loss, paired effect, promotional metric, #138 experience §B authority, general superiority, independent review, or peer-review claim is permitted.",
     }
     verify_ingest_receipt(receipt)
     return receipt

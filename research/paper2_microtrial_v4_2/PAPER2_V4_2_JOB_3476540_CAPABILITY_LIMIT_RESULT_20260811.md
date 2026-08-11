@@ -21,3 +21,6 @@ Serialization residual (R1) was repaired. Remaining zero exact passes are a **0.
 
 ## Next discriminator (optional)
 Larger model or different task under a new frozen packet — not threshold softening.
+
+## Repo ingest
+`research/paper2_microtrial_v4_2/PAPER2_V4_2_NATIVE_JOB_3476540_INGEST_RECEIPT_20260811.json` (both arms parse; zero exact passes).

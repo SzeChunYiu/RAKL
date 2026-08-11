@@ -14,13 +14,54 @@
                   "const": "DIRECT_CORPUS"
                 },
                 "parse_error": {
-                  "const": "V4.2 output normalization rejected nonexact serialization"
+                  "const": null
                 },
                 "parse_valid": {
-                  "const": false
+                  "const": true
                 },
                 "score": {
-                  "const": null
+                  "additionalProperties": false,
+                  "properties": {
+                    "conceptual_correct": {
+                      "const": 3
+                    },
+                    "conceptual_total": {
+                      "const": 5
+                    },
+                    "exact_conceptual_pass": {
+                      "const": false
+                    },
+                    "misalignment_recall": {
+                      "const": 0.0
+                    },
+                    "refutation_precision": {
+                      "const": 0.0
+                    },
+                    "refutation_recall": {
+                      "const": 0.0
+                    },
+                    "required_support_recall": {
+                      "const": 0.2857142857142857
+                    },
+                    "support_precision": {
+                      "const": 1.0
+                    },
+                    "unsupported_source_count": {
+                      "const": 0
+                    }
+                  },
+                  "required": [
+                    "conceptual_correct",
+                    "conceptual_total",
+                    "exact_conceptual_pass",
+                    "misalignment_recall",
+                    "refutation_precision",
+                    "refutation_recall",
+                    "required_support_recall",
+                    "support_precision",
+                    "unsupported_source_count"
+                  ],
+                  "type": "object"
                 }
               },
               "required": [
@@ -227,7 +268,7 @@
           "type": "integer"
         },
         "path": {
-          "pattern": "^research/paper2_microtrial_v4_1/native_job_[0-9]+/(?:logs|receipts|runs)/.+$",
+          "pattern": "^research/paper2_microtrial_v4_2/native_job_[0-9]+/(?:logs|receipts|runs)/.+$",
           "type": "string"
         },
         "role": {
@@ -420,7 +461,7 @@
           "type": "integer"
         },
         "path": {
-          "pattern": "^research/paper2_microtrial_v4_1/native_bundles/PAPER2_V4_2_NATIVE_JOB_[0-9]+\\.tar\\.gz$",
+          "pattern": "^research/paper2_microtrial_v4_2/native_bundles/PAPER2_V4_2_NATIVE_JOB_[0-9]+\\.tar\\.gz$",
           "type": "string"
         },
         "sha256": {
@@ -677,7 +718,7 @@
           "const": false
         },
         "parse_valid_arm_count": {
-          "const": 1
+          "const": 2
         },
         "reason": {
           "minLength": 1,
@@ -725,7 +766,7 @@
           "uniqueItems": true
         },
         "scorable_arm_count": {
-          "const": 1
+          "const": 2
         },
         "score_comparison_permitted": {
           "const": false
@@ -778,12 +819,12 @@
           "type": "string"
         },
         "residual_id": {
-          "const": "PAPER2_V4_2_ONE_ARM_UNSCORABLE_AND_NO_EXACT_PASS"
+          "const": "PAPER2_V4_2_BOTH_ARMS_PARSE_NO_EXACT_PASS_0_5B_CAPABILITY_LIMIT"
         },
         "root_cause_ladder": {
           "const": [
-            "R1_SCHEMA_PARSER_TRANSFORMATION",
-            "R7_PROJECTION_FUNCTIONAL_FORM"
+            "R7_PROJECTION_FUNCTIONAL_FORM",
+            "R8_MODEL_CAPACITY_LIMIT"
           ]
         }
       },
@@ -800,13 +841,13 @@
       "additionalProperties": false,
       "properties": {
         "frozen_parse_valid_arm_count": {
-          "const": 0
+          "const": 1
         },
         "frozen_scorable_arm_count": {
-          "const": 0
+          "const": 1
         },
         "path": {
-          "const": "research/paper2_microtrial_v4/PAPER2_V4_NATIVE_JOB_3475193_INGEST_RECEIPT_20260811.json"
+          "const": "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3476520_INGEST_RECEIPT_20260811.json"
         },
         "reinterpretation_permitted": {
           "const": false
@@ -825,7 +866,7 @@
       "type": "object"
     },
     "verdict": {
-      "const": "NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__COMPARISON_NOT_ESTIMABLE"
+      "const": "NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__CAPABILITY_LIMIT"
     }
   },
   "required": [
