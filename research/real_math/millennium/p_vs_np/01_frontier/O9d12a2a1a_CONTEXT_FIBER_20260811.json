@@ -1,0 +1,144 @@
+{
+  "atom_id": "O9d12a2a1a",
+  "object_context": "Strict child of C024. Construct or refute a correlation-sensitive lift of semi-filter packing for unrestricted Cavalar-Oliveira cover complexity that restores simultaneous consistency across multiple integral pair/fusion choices, retains a proved bounded per-fusion budget, recovers the logarithmic G_NEQ calibration, and still leaves room for an omega(log N) lower bound on some explicit full-cover target.",
+  "structural_coordinates": [
+    "cover complexity is an integral set cover over pair vertices versus semi-filter vertices and equals cyclic intersection complexity",
+    "C024's fractional LP has a sound one-pair budget but loses simultaneous integrality/correlation across pair choices",
+    "G_NEQ has exact cover complexity log_2 N and its Proposition 40 proof recursively normalizes pairs to disjoint complementary partitions",
+    "a selected family of k normalized cuts induces at most 2^k joint binary signatures on distinguished generator traces",
+    "canonical-cover information is globally logarithmically bounded by C009 and cannot by itself yield the required super-log full-cover lower bound",
+    "the surviving target must depend on higher-order semi-filter/closure correlations rather than only independent weights or first-order generator labels",
+    "any lifted relaxation must preserve a legal per-fusion charging law and survive C010 multiplexing, C013 quotient, C021 cheap-adjacency, C023 scalar-collapse, and C024 integrality-gap adversaries"
+  ],
+  "equivalent_formulations": [
+    "strengthen the cover-graph LP with joint consistency constraints across several selected pair vertices",
+    "define an information/entropy certificate for the simultaneous pattern induced by an integral family of fusion pairs",
+    "calibrate whether joint binary signatures of distinguished generator traces recover the G_NEQ logarithmic lower bound",
+    "determine whether every generator-signature-only lift has an O(log N) capacity ceiling and therefore must be replaced by higher-order semi-filter closure state",
+    "search for a lifted packing whose target value can be omega(log N) while one legal fusion changes the certificate by O(1)"
+  ],
+  "solved_analogues": [
+    "Cavalar-Oliveira Proposition 40: rho(G_NEQ)=log_2 N by recursively normalizing covering pairs and halving the surviving row/column universe",
+    "C009: canonical cover complexity is globally at most logarithmic, so canonical/generator-separation state cannot be the final super-log invariant"
+  ],
+  "near_solved_analogues": [
+    "Karchmer-Kushilevitz-Nisan 1995 fractional-cover LP methods in communication complexity, including limits of fractional relaxations for stronger deterministic/formula lower bounds",
+    "Chlamtac-Friggstad-Georgiou 2012 set-cover lift-and-project analysis: strong generic consistency hierarchies can retain logarithmic integrality gaps without additional structure"
+  ],
+  "method_transfers": [
+    {
+      "source_context": "Cavalar-Oliveira 2025 Proposition 40 lower bound for G_NEQ",
+      "method": "normalize each covering pair on the canonical G_NEQ witness family to a disjoint complementary partition, then reason about the joint information supplied by the entire integral family rather than one fractional pair at a time",
+      "shared_structure": [
+        "the target object is the same cover graph and the same integral family of pair vertices",
+        "the obstruction is simultaneous coverage of many semi-filters",
+        "each selected normalized pair supplies one binary partition coordinate on the G_NEQ diagonal witness universe"
+      ],
+      "required_assumptions": [
+        "the normalization lemmas used for G_NEQ canonical semi-filters apply only inside that calibration",
+        "coverage is evaluated for an integral family of pairs chosen simultaneously"
+      ],
+      "disanalogies": [
+        "the G_NEQ normalization exploits the special canonical semi-filter geometry and does not represent arbitrary full semi-filters",
+        "recovering log N on G_NEQ is only a calibration floor, not evidence of a super-log full-cover invariant"
+      ],
+      "repair_question": "What higher-order state survives outside G_NEQ once first-order binary generator signatures are shown to have only logarithmic capacity?",
+      "source_anchors": [
+        "Cavalar-Oliveira, Boolean Circuit Complexity and Two-Dimensional Cover Problems, ECCC TR25-033, Definition 21 and Proposition 40",
+        "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md"
+      ]
+    },
+    {
+      "source_context": "fractional set cover and lift-and-project consistency hierarchies",
+      "method": "repair an integrality gap by adding joint marginals/consistency constraints over multiple choices before attempting target-specific optimization",
+      "shared_structure": [
+        "C024 is a set-cover LP relaxation with a logarithmic calibration gap",
+        "the missing coordinate is compatibility among several choices rather than feasibility of each local choice separately",
+        "lifted variables can encode correlations absent from first-order marginals"
+      ],
+      "required_assumptions": [
+        "the lifted constraints correspond to real simultaneous pair choices in the cover graph",
+        "a per-fusion lower-bound accounting rule remains provable after lifting"
+      ],
+      "disanalogies": [
+        "generic Sherali-Adams/Lovasz-Schrijver hierarchy behavior does not determine the bespoke semi-filter cover graph",
+        "known set-cover hierarchy gaps are algorithmic integrality-gap results, not circuit lower bounds"
+      ],
+      "repair_question": "Which minimum-order consistency coordinate is specific enough to the semi-filter preservation law to escape generic set-cover logarithmic gaps?",
+      "source_anchors": [
+        "Karchmer, Kushilevitz, Nisan, Fractional Covers and Communication Complexity, SIAM J. Discrete Math. 8(1), 1995",
+        "Chlamtac, Friggstad, Georgiou, Understanding Set Cover: Sub-exponential Time Approximations and Lift-and-Project Methods, arXiv:1204.5489"
+      ]
+    },
+    {
+      "source_context": "binary separating codes / elementary information counting",
+      "method": "represent each selected binary test by one signature coordinate and use the number of distinct joint signatures as an exact capacity bound",
+      "shared_structure": [
+        "an integral family of k normalized cuts is simultaneously applied to a fixed witness universe",
+        "objects that must be separated by some chosen cut need distinct joint signatures",
+        "k binary coordinates realize at most 2^k distinguishable signatures"
+      ],
+      "required_assumptions": [
+        "the candidate certificate depends only on a fixed polynomial-size set of distinguished traces and pairwise separation of their signatures",
+        "each selected pair contributes at most one binary coordinate to that representation"
+      ],
+      "disanalogies": [
+        "full semi-filter preservation depends on membership of arbitrary subsets of U and their intersections, not merely identities of original generator traces",
+        "a high-order closure-state certificate may have an exponentially larger effective state space and is not covered by the first-order signature capacity bound"
+      ],
+      "repair_question": "Can an exact higher-order closure signature be defined whose per-fusion information increase is bounded but whose state capacity is super-logarithmic in graph side size?",
+      "source_anchors": [
+        "elementary pigeonhole/counting principle for binary signatures",
+        "Cavalar-Oliveira 2025 Claim 41 and Lemmas 42-43 inside Proposition 40"
+      ]
+    }
+  ],
+  "explicit_disanalogies": [
+    "restoring joint consistency is not sufficient by itself: a low-order signature representation can still have only logarithmic information capacity",
+    "generic lift-and-project hierarchy strength does not transfer automatically to the semi-filter cover graph",
+    "G_NEQ is a calibration witness, not a candidate hard family for super-log cover complexity",
+    "canonical semi-filters and unrestricted semi-filters are distinct; C009 already closes the super-log canonical lane",
+    "cross-Millennium failures currently on main provide representation warnings but no target-applicable P-vs-NP theorem or reusable lower-bound tool"
+  ],
+  "source_anchors": [
+    "research/real_math/millennium/p_vs_np/02_problem_dag/C024_delta.yaml",
+    "research/real_math/millennium/p_vs_np/04_candidates/C024_fractional_semifilter_packing.md",
+    "research/real_math/millennium/p_vs_np/07_memory/C024_FAILURE_EXPERIENCE_DELTA_20260811.json",
+    "Cavalar-Oliveira 2025 ECCC TR25-033, Definitions 18-21 and Proposition 40",
+    "Karchmer-Kushilevitz-Nisan 1995, Fractional Covers and Communication Complexity",
+    "Chlamtac-Friggstad-Georgiou 2012, arXiv:1204.5489"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "information/coding and access-control identification",
+      "source_situation": "A collection of k binary checks assigns every object a joint k-bit badge; pairwise conflicts can be resolved only when conflicting objects receive different badges, so at most 2^k identities can be distinguished.",
+      "common_abstraction": [
+        "many simultaneous obligations share a common family of binary decisions",
+        "local decisions compose into a joint signature",
+        "capacity of the representation, not local validity of each decision, limits what can be distinguished"
+      ],
+      "source_to_target_mapping": [
+        "binary check -> normalized integral cover pair in the G_NEQ calibration",
+        "object identity -> distinguished generator trace/diagonal witness",
+        "conflict requiring different badges -> canonical semi-filter requiring some selected pair to separate its two witnesses",
+        "number of badge bits -> number of selected fusion pairs"
+      ],
+      "shared_constraints": [
+        "the same selected decisions must work simultaneously for all obligations",
+        "a coordinate is shared globally rather than chosen separately for each obligation"
+      ],
+      "disanalogies": [
+        "general semi-filters contain arbitrary subsets and preservation constraints, not only pairwise identity conflicts",
+        "a full-cover certificate may require higher-order closure relations that cannot be compressed into badges on original traces"
+      ],
+      "proposed_principle": "Use joint-signature capacity as the first correlation-restoring calibration after C024, then deliberately try to prove that this repair is still too low-order before investing in a hierarchy.",
+      "validation_obligation": "After the strict gate passes, derive the exact G_NEQ signature lower bound from Proposition 40 normalization and then prove or refute an O(log N) capacity ceiling for every certificate that depends only on polynomially many generator-wise binary signatures.",
+      "provenance_note": "Proposal-only structural analogy. It supplies no graph-cover lower-bound authority."
+    }
+  ],
+  "analogy_scan_notes": "Scanned set-cover hierarchies, communication complexity, coding/separating systems, and cross-Millennium representation failures. Retained only the joint-signature capacity bridge because it has an exact G_NEQ mapping and an immediate hostile capacity test.",
+  "frozen_at": "2026-08-11T07:03:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:daa6e99832bd994ff5b081b861521f7465ef37b468d274eb08c93e0001358b89"
+}
