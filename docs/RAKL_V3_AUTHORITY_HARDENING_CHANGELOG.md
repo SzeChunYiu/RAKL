@@ -54,7 +54,7 @@ The corrected reference implementation accepts authority only for exact attestat
 
 ## Latest-main integration
 
-The branch was merged with then-current `origin/main` `decd1a4eae2b10cfdbb98e76b5023e2a756fa7a8` at merge commit `c1a2a98183feb9da1731f70fd4979078ac176e5a`. The only overlapping edit was the independently introduced robust float assertion in the v3 benchmark test; the merged file retains `pytest.approx` without duplication. Post-integration verification is 40 focused v3 tests passed, 1314 full tests passed, and `git diff --check` passed.
+The branch was first merged with `origin/main` `decd1a4eae2b10cfdbb98e76b5023e2a756fa7a8` at merge commit `c1a2a98183feb9da1731f70fd4979078ac176e5a`; the only overlapping edit was the independently introduced robust float assertion in the v3 benchmark test. Before final review, the branch was fresh-fetched and history-merged with exact latest `origin/main` `a521d577724dfedb3123e22cdbac457bce4e22f7` at merge commit `a816932a4fb80a17616db192679d413a96b03bc7`. The intervening main changes were publication/workflow/script-only and produced no overlap with the authority-hardening source, tests, receipt, or changelog. Post-second-repair verification is 41 focused v3 tests passed, 1315 full tests passed, and `git diff --check` passed.
 
 ## Recursive same-context review repair
 
