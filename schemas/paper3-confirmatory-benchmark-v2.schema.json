@@ -4,76 +4,538 @@
   "title": "Paper 3 independently annotated confirmatory benchmark v2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "benchmark_id", "authority_status", "subject_sha", "source_set_id", "source_set_sha256", "source_set_frozen_at_utc", "packet_id", "packet_sha256", "packet_frozen_at_utc", "protocol_id", "protocol_sha256", "rubric_id", "rubric_sha256", "provenance_audit_sha256", "negative_history_benchmark_sha256", "annotation_completed_at_utc", "adjudication_completed_at_utc", "coordinate_exact_agreement", "coordinate_conflict_count", "cases"],
+  "required": [
+    "schema_version",
+    "benchmark_id",
+    "authority_status",
+    "subject_sha",
+    "source_set_id",
+    "source_set_sha256",
+    "source_set_frozen_at_utc",
+    "packet_id",
+    "packet_sha256",
+    "packet_frozen_at_utc",
+    "protocol_id",
+    "protocol_sha256",
+    "rubric_id",
+    "rubric_sha256",
+    "provenance_audit_sha256",
+    "negative_history_benchmark_sha256",
+    "annotation_completed_at_utc",
+    "adjudication_completed_at_utc",
+    "coordinate_exact_agreement",
+    "coordinate_conflict_count",
+    "cases"
+  ],
   "properties": {
-    "schema_version": {"const": "paper3-confirmatory-benchmark-v2"},
-    "benchmark_id": {"type": "string", "minLength": 1},
-    "authority_status": {"const": "independently_annotated_and_adjudicated_v2"},
-    "subject_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "source_set_id": {"type": "string", "minLength": 1},
-    "source_set_sha256": {"$ref": "#/$defs/sha256"},
-    "source_set_frozen_at_utc": {"$ref": "#/$defs/utcTimestamp"},
-    "packet_id": {"type": "string", "minLength": 1},
-    "packet_sha256": {"$ref": "#/$defs/sha256"},
-    "packet_frozen_at_utc": {"$ref": "#/$defs/utcTimestamp"},
-    "protocol_id": {"const": "paper3-confirmatory-gate-v2"},
-    "protocol_sha256": {"$ref": "#/$defs/sha256"},
-    "rubric_id": {"type": "string", "minLength": 1},
-    "rubric_sha256": {"$ref": "#/$defs/sha256"},
-    "provenance_audit_sha256": {"$ref": "#/$defs/sha256"},
-    "negative_history_benchmark_sha256": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
-    "annotation_completed_at_utc": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/utcTimestamp"}},
-    "adjudication_completed_at_utc": {"$ref": "#/$defs/utcTimestamp"},
-    "coordinate_exact_agreement": {"$ref": "#/$defs/agreement"},
-    "coordinate_conflict_count": {"$ref": "#/$defs/conflicts"},
-    "cases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/case"}}
+    "schema_version": {
+      "const": "paper3-confirmatory-benchmark-v2"
+    },
+    "benchmark_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_status": {
+      "enum": [
+        "independently_annotated_and_adjudicated_v2",
+        "ai_operator_annotated_and_adjudicated_non_independent_v2"
+      ]
+    },
+    "subject_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_set_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "source_set_frozen_at_utc": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "packet_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "packet_frozen_at_utc": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "protocol_id": {
+      "const": "paper3-confirmatory-gate-v2"
+    },
+    "protocol_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "rubric_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rubric_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "provenance_audit_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "negative_history_benchmark_sha256": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sha256"
+      }
+    },
+    "annotation_completed_at_utc": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/utcTimestamp"
+      }
+    },
+    "adjudication_completed_at_utc": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "coordinate_exact_agreement": {
+      "$ref": "#/$defs/agreement"
+    },
+    "coordinate_conflict_count": {
+      "$ref": "#/$defs/conflicts"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
   },
   "$defs": {
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "utcTimestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
-    "nonEmptyStrings": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "utcTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "agreement": {
-      "type": "object", "additionalProperties": false,
-      "required": ["semantic_similarity_high", "structural_match", "roles_preserved", "typed_relations_preserved", "invariant_preserved", "boundary_matched", "qoi_matched", "directional_mapping_complete", "transfer_valid"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_similarity_high",
+        "structural_match",
+        "roles_preserved",
+        "typed_relations_preserved",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete",
+        "transfer_valid"
+      ],
       "properties": {
-        "semantic_similarity_high": {"type": "number", "minimum": 0, "maximum": 1}, "structural_match": {"type": "number", "minimum": 0, "maximum": 1}, "roles_preserved": {"type": "number", "minimum": 0, "maximum": 1}, "typed_relations_preserved": {"type": "number", "minimum": 0, "maximum": 1}, "invariant_preserved": {"type": "number", "minimum": 0, "maximum": 1}, "boundary_matched": {"type": "number", "minimum": 0, "maximum": 1}, "qoi_matched": {"type": "number", "minimum": 0, "maximum": 1}, "directional_mapping_complete": {"type": "number", "minimum": 0, "maximum": 1}, "transfer_valid": {"type": "number", "minimum": 0, "maximum": 1}
+        "semantic_similarity_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "structural_match": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "roles_preserved": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "typed_relations_preserved": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "invariant_preserved": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "boundary_matched": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "qoi_matched": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "directional_mapping_complete": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transfer_valid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
       }
     },
     "conflicts": {
-      "type": "object", "additionalProperties": false,
-      "required": ["semantic_similarity_high", "structural_match", "roles_preserved", "typed_relations_preserved", "invariant_preserved", "boundary_matched", "qoi_matched", "directional_mapping_complete", "transfer_valid"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_similarity_high",
+        "structural_match",
+        "roles_preserved",
+        "typed_relations_preserved",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete",
+        "transfer_valid"
+      ],
       "properties": {
-        "semantic_similarity_high": {"type": "integer", "minimum": 0}, "structural_match": {"type": "integer", "minimum": 0}, "roles_preserved": {"type": "integer", "minimum": 0}, "typed_relations_preserved": {"type": "integer", "minimum": 0}, "invariant_preserved": {"type": "integer", "minimum": 0}, "boundary_matched": {"type": "integer", "minimum": 0}, "qoi_matched": {"type": "integer", "minimum": 0}, "directional_mapping_complete": {"type": "integer", "minimum": 0}, "transfer_valid": {"type": "integer", "minimum": 0}
+        "semantic_similarity_high": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "structural_match": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "roles_preserved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "typed_relations_preserved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "invariant_preserved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "boundary_matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qoi_matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "directional_mapping_complete": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transfer_valid": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "judgements": {
-      "type": "object", "additionalProperties": false,
-      "required": ["semantic_similarity_high", "structural_match", "roles_preserved", "typed_relations_preserved", "invariant_preserved", "boundary_matched", "qoi_matched", "directional_mapping_complete", "transfer_valid"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_similarity_high",
+        "structural_match",
+        "roles_preserved",
+        "typed_relations_preserved",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete",
+        "transfer_valid"
+      ],
       "properties": {
-        "semantic_similarity_high": {"type": "boolean"}, "structural_match": {"type": "boolean"}, "roles_preserved": {"type": "boolean"}, "typed_relations_preserved": {"type": "boolean"}, "invariant_preserved": {"type": "boolean"}, "boundary_matched": {"type": "boolean"}, "qoi_matched": {"type": "boolean"}, "directional_mapping_complete": {"type": "boolean"}, "transfer_valid": {"type": "boolean"}
+        "semantic_similarity_high": {
+          "type": "boolean"
+        },
+        "structural_match": {
+          "type": "boolean"
+        },
+        "roles_preserved": {
+          "type": "boolean"
+        },
+        "typed_relations_preserved": {
+          "type": "boolean"
+        },
+        "invariant_preserved": {
+          "type": "boolean"
+        },
+        "boundary_matched": {
+          "type": "boolean"
+        },
+        "qoi_matched": {
+          "type": "boolean"
+        },
+        "directional_mapping_complete": {
+          "type": "boolean"
+        },
+        "transfer_valid": {
+          "type": "boolean"
+        }
       }
     },
     "annotationRecord": {
-      "type": "object", "additionalProperties": false,
-      "required": ["annotation_id", "annotator_id", "annotator_type", "human_or_expert", "independent_of_benchmark_author", "status", "judgements", "rationale", "evidence_refs", "completed_at_utc"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "annotation_id",
+        "annotator_id",
+        "annotator_type",
+        "human_or_expert",
+        "independent_of_benchmark_author",
+        "status",
+        "judgements",
+        "rationale",
+        "evidence_refs",
+        "completed_at_utc"
+      ],
       "properties": {
-        "annotation_id": {"type": "string", "minLength": 1}, "annotator_id": {"type": "string", "minLength": 1}, "annotator_type": {"const": "externally_provenanced_human_or_domain_expert"}, "human_or_expert": {"const": true}, "independent_of_benchmark_author": {"const": true}, "status": {"const": "final"}, "judgements": {"$ref": "#/$defs/judgements"}, "rationale": {"type": "string", "minLength": 1}, "evidence_refs": {"$ref": "#/$defs/nonEmptyStrings"}, "completed_at_utc": {"$ref": "#/$defs/utcTimestamp"}
+        "annotation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "annotator_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "annotator_type": {
+          "enum": [
+            "externally_provenanced_human_or_domain_expert",
+            "ai_operator_non_independent"
+          ]
+        },
+        "human_or_expert": {
+          "type": "boolean"
+        },
+        "independent_of_benchmark_author": {
+          "type": "boolean"
+        },
+        "status": {
+          "const": "final"
+        },
+        "judgements": {
+          "$ref": "#/$defs/judgements"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "completed_at_utc": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "annotator_kind": {
+          "enum": [
+            "HUMAN_OR_DOMAIN_EXPERT",
+            "AI_OPERATOR"
+          ]
+        },
+        "independence_class": {
+          "enum": [
+            "INDEPENDENT_EXTERNAL",
+            "NON_INDEPENDENT_SAME_OPERATOR"
+          ]
+        }
       }
     },
     "adjudication": {
-      "type": "object", "additionalProperties": false,
-      "required": ["adjudicator_id", "human_or_expert", "independent_of_benchmark_author", "status", "judgements", "resolution_rationale", "evidence_refs", "completed_at_utc"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adjudicator_id",
+        "human_or_expert",
+        "independent_of_benchmark_author",
+        "status",
+        "judgements",
+        "resolution_rationale",
+        "evidence_refs",
+        "completed_at_utc"
+      ],
       "properties": {
-        "adjudicator_id": {"type": "string", "minLength": 1}, "human_or_expert": {"const": true}, "independent_of_benchmark_author": {"const": true}, "status": {"const": "final"}, "judgements": {"$ref": "#/$defs/judgements"}, "resolution_rationale": {"type": "string", "minLength": 1}, "evidence_refs": {"$ref": "#/$defs/nonEmptyStrings"}, "completed_at_utc": {"$ref": "#/$defs/utcTimestamp"}
+        "adjudicator_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "human_or_expert": {
+          "type": "boolean"
+        },
+        "independent_of_benchmark_author": {
+          "type": "boolean"
+        },
+        "status": {
+          "const": "final"
+        },
+        "judgements": {
+          "$ref": "#/$defs/judgements"
+        },
+        "resolution_rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "completed_at_utc": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "annotator_kind": {
+          "enum": [
+            "HUMAN_OR_DOMAIN_EXPERT",
+            "AI_OPERATOR"
+          ]
+        },
+        "independence_class": {
+          "enum": [
+            "INDEPENDENT_EXTERNAL",
+            "NON_INDEPENDENT_SAME_OPERATOR"
+          ]
+        }
       }
     },
     "case": {
-      "type": "object", "additionalProperties": false,
-      "required": ["case_id", "family", "source_domain", "target_domain", "qoi", "source_evidence", "target_evidence", "semantic_similarity_high", "structural_match", "roles_preserved", "typed_relations_preserved", "invariant_preserved", "boundary_matched", "qoi_matched", "directional_mapping_complete", "transfer_valid", "quadrant", "annotation_records", "adjudication", "confirmatory_eligible"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "family",
+        "source_domain",
+        "target_domain",
+        "qoi",
+        "source_evidence",
+        "target_evidence",
+        "semantic_similarity_high",
+        "structural_match",
+        "roles_preserved",
+        "typed_relations_preserved",
+        "invariant_preserved",
+        "boundary_matched",
+        "qoi_matched",
+        "directional_mapping_complete",
+        "transfer_valid",
+        "quadrant",
+        "annotation_records",
+        "adjudication",
+        "confirmatory_eligible"
+      ],
       "properties": {
-        "case_id": {"type": "string", "minLength": 1}, "family": {"type": "string", "minLength": 1}, "source_domain": {"type": "string", "minLength": 1}, "target_domain": {"type": "string", "minLength": 1}, "source_surface_terms": {"$ref": "#/$defs/nonEmptyStrings"}, "target_surface_terms": {"$ref": "#/$defs/nonEmptyStrings"}, "source_skill_tags": {"$ref": "#/$defs/nonEmptyStrings"}, "target_skill_tags": {"$ref": "#/$defs/nonEmptyStrings"}, "source_dependencies": {"$ref": "#/$defs/nonEmptyStrings"}, "target_dependencies": {"$ref": "#/$defs/nonEmptyStrings"}, "candidate_load_bearing_invariant": {"type": "string", "minLength": 1}, "candidate_load_bearing_boundary": {"type": "string", "minLength": 1}, "qoi": {"type": "string", "minLength": 1}, "source_evidence": {"$ref": "#/$defs/nonEmptyStrings"}, "target_evidence": {"$ref": "#/$defs/nonEmptyStrings"},
-        "semantic_similarity_high": {"type": "boolean"}, "structural_match": {"type": "boolean"}, "roles_preserved": {"type": "boolean"}, "typed_relations_preserved": {"type": "boolean"}, "invariant_preserved": {"type": "boolean"}, "boundary_matched": {"type": "boolean"}, "qoi_matched": {"type": "boolean"}, "directional_mapping_complete": {"type": "boolean"}, "transfer_valid": {"type": "boolean"},
-        "quadrant": {"enum": ["Q1", "Q2", "Q3", "Q4"]}, "annotation_records": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/annotationRecord"}}, "adjudication": {"$ref": "#/$defs/adjudication"}, "confirmatory_eligible": {"const": true}
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_surface_terms": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "target_surface_terms": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "source_skill_tags": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "target_skill_tags": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "source_dependencies": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "target_dependencies": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "candidate_load_bearing_invariant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidate_load_bearing_boundary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "qoi": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_evidence": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "target_evidence": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "semantic_similarity_high": {
+          "type": "boolean"
+        },
+        "structural_match": {
+          "type": "boolean"
+        },
+        "roles_preserved": {
+          "type": "boolean"
+        },
+        "typed_relations_preserved": {
+          "type": "boolean"
+        },
+        "invariant_preserved": {
+          "type": "boolean"
+        },
+        "boundary_matched": {
+          "type": "boolean"
+        },
+        "qoi_matched": {
+          "type": "boolean"
+        },
+        "directional_mapping_complete": {
+          "type": "boolean"
+        },
+        "transfer_valid": {
+          "type": "boolean"
+        },
+        "quadrant": {
+          "enum": [
+            "Q1",
+            "Q2",
+            "Q3",
+            "Q4"
+          ]
+        },
+        "annotation_records": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/annotationRecord"
+          }
+        },
+        "adjudication": {
+          "$ref": "#/$defs/adjudication"
+        },
+        "confirmatory_eligible": {
+          "type": "boolean"
+        }
       }
     }
   }

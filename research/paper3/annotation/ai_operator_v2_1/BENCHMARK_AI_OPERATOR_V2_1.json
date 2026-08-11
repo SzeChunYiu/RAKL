@@ -1,0 +1,2229 @@
+{
+  "adjudication_completed_at_utc": "2026-08-11T21:40:00Z",
+  "annotation_completed_at_utc": [
+    "2026-08-11T21:10:00Z",
+    "2026-08-11T21:20:00Z"
+  ],
+  "authority_status": "ai_operator_annotated_and_adjudicated_non_independent_v2",
+  "benchmark_id": "paper3-natural-cross-domain-source-set-v2-1-20260810:ai-operator-adjudicated:paper3-natural-transfer-external-annotation-v2-1-20260810",
+  "cases": [
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+          "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": true,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-6dabfe1fb311a2300189:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Ford\u2013Fulkerson min-cut maps to Boykov energy min-cuts when pairwise terms are graph-representable; low surface overlap.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-6dabfe1fb311a2300189:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Ford\u2013Fulkerson min-cut maps to Boykov energy min-cuts when pairwise terms are graph-representable; low surface overlap.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Finite-capacity network or graph representation with an additive cut objective and explicit terminals.",
+      "candidate_load_bearing_invariant": "A separating cut bounds any feasible source-to-sink throughput, and a minimum admissible cut identifies the tight capacity certificate.",
+      "case_id": "p3src-001",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "bottleneck_min_cut",
+      "invariant_preserved": true,
+      "qoi": "Can the source cut certificate be reused to characterize the target optimum?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "source_domain": "rail capacity networks",
+      "source_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "source_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "source_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "pixel graph",
+        "pairwise penalties",
+        "terminal labels"
+      ],
+      "target_domain": "image labelling",
+      "target_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "target_skill_tags": [
+        "graph cut",
+        "energy minimization"
+      ],
+      "target_surface_terms": [
+        "pixels",
+        "labels",
+        "energy",
+        "cut"
+      ],
+      "transfer_valid": true,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+          "DOI:10.1007/978-3-030-04651-4_16 | Min-Max-Flow Based Algorithm for Evacuation Network Planning in Restricted Spaces | https://doi.org/10.1007/978-3-030-04651-4_16"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": false,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-0151ebbf6feb4c731a68:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+            "DOI:10.1007/978-3-030-04651-4_16 | Min-Max-Flow Based Algorithm for Evacuation Network Planning in Restricted Spaces | https://doi.org/10.1007/978-3-030-04651-4_16"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Witness coordinates hold for idealized fixed-capacity throughput, but operational evacuation QoI remains unsafe under behavioral congestion; transfer not licensed (decoupled).",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-0151ebbf6feb4c731a68:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5",
+            "DOI:10.1007/978-3-030-04651-4_16 | Min-Max-Flow Based Algorithm for Evacuation Network Planning in Restricted Spaces | https://doi.org/10.1007/978-3-030-04651-4_16"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": false,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Witness coordinates hold for idealized fixed-capacity throughput, but operational evacuation QoI remains unsafe under behavioral congestion; transfer not licensed (decoupled).",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Steady or discretized flow with fixed edge capacities; congestion dynamics and behavioral feedback must be outside the claimed QoI.",
+      "candidate_load_bearing_invariant": "A separating cut bounds the maximum simultaneous throughput between registered origins and exits.",
+      "case_id": "p3src-002",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "bottleneck_min_cut",
+      "invariant_preserved": true,
+      "qoi": "Does the source bottleneck certificate bound evacuation throughput under the target model?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "source_domain": "rail capacity networks",
+      "source_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "source_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "source_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "space graph",
+        "door capacities",
+        "origins and exits"
+      ],
+      "target_domain": "building evacuation",
+      "target_evidence": [
+        "DOI:10.1007/978-3-030-04651-4_16 | Min-Max-Flow Based Algorithm for Evacuation Network Planning in Restricted Spaces | https://doi.org/10.1007/978-3-030-04651-4_16"
+      ],
+      "target_skill_tags": [
+        "evacuation planning",
+        "route capacity"
+      ],
+      "target_surface_terms": [
+        "rooms",
+        "exits",
+        "evacuees",
+        "routes"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1080/00207543.2012.695878 | Bottleneck identification in supply chain networks | https://doi.org/10.1080/00207543.2012.695878",
+          "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": false,
+          "semantic_similarity_high": false,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-8d8f2f1e9714b658a592:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00207543.2012.695878 | Bottleneck identification in supply chain networks | https://doi.org/10.1080/00207543.2012.695878",
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Supply-chain bottleneck objects include inventory/substitution dynamics absent from conservation flow; boundary fails.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-8d8f2f1e9714b658a592:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00207543.2012.695878 | Bottleneck identification in supply chain networks | https://doi.org/10.1080/00207543.2012.695878",
+            "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Supply-chain bottleneck objects include inventory/substitution dynamics absent from conservation flow; boundary fails.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "Capacitated network abstraction with compatible conservation assumptions and without unmodelled substitution or inventory dynamics.",
+      "candidate_load_bearing_invariant": "End-to-end throughput cannot exceed the capacity of a separating bottleneck set.",
+      "case_id": "p3src-003",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "bottleneck_min_cut",
+      "invariant_preserved": true,
+      "qoi": "Can the supply-chain bottleneck object certify rail-network throughput?",
+      "qoi_matched": true,
+      "quadrant": "Q4",
+      "roles_preserved": false,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "multi-echelon network",
+        "random or fixed capacities"
+      ],
+      "source_domain": "supply chain networks",
+      "source_evidence": [
+        "DOI:10.1080/00207543.2012.695878 | Bottleneck identification in supply chain networks | https://doi.org/10.1080/00207543.2012.695878"
+      ],
+      "source_skill_tags": [
+        "bottleneck identification",
+        "supply network"
+      ],
+      "source_surface_terms": [
+        "suppliers",
+        "plants",
+        "inventory",
+        "bottleneck"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "directed network",
+        "edge capacities",
+        "source and sink"
+      ],
+      "target_domain": "rail capacity networks",
+      "target_evidence": [
+        "DOI:10.4153/CJM-1956-045-5 | Ford and Fulkerson (1956), Maximal Flow Through a Network | https://doi.org/10.4153/CJM-1956-045-5"
+      ],
+      "target_skill_tags": [
+        "maximum flow",
+        "capacity constraint"
+      ],
+      "target_surface_terms": [
+        "rail",
+        "capacity",
+        "cities",
+        "flow"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114",
+          "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": true,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-b31fb5883b05a197f550:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114",
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Same image-labelling vocabulary but higher-order/non-submodular terms break graph-cut representability (near-miss).",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-b31fb5883b05a197f550:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114",
+            "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Same image-labelling vocabulary but higher-order/non-submodular terms break graph-cut representability (near-miss).",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "Target objective may include higher-order or non-submodular terms that violate the graph-cut construction assumptions.",
+      "candidate_load_bearing_invariant": "A minimum cut is an exact or bounded optimizer only when the target energy admits the required graph-representable form.",
+      "case_id": "p3src-004",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "bottleneck_min_cut",
+      "invariant_preserved": false,
+      "qoi": "Does the source graph-cut certificate remain licensed for the target image objective?",
+      "qoi_matched": true,
+      "quadrant": "Q3",
+      "roles_preserved": true,
+      "semantic_similarity_high": true,
+      "source_dependencies": [
+        "pairwise penalties",
+        "terminal labels"
+      ],
+      "source_domain": "image labelling",
+      "source_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "source_skill_tags": [
+        "graph cut",
+        "energy minimization"
+      ],
+      "source_surface_terms": [
+        "pixels",
+        "labels",
+        "energy",
+        "cut"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "higher-order nonlocal constraints",
+        "no guaranteed cut representation"
+      ],
+      "target_domain": "image labelling",
+      "target_evidence": [
+        "DOI:10.1109/34.969114 | Boykov, Veksler and Zabih (2001), Fast approximate energy minimization via graph cuts | https://doi.org/10.1109/34.969114"
+      ],
+      "target_skill_tags": [
+        "non-submodular labelling",
+        "global topology"
+      ],
+      "target_surface_terms": [
+        "pixels",
+        "labels",
+        "nonlocal loss",
+        "topology"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+          "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": true,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-d201c820070f26f974c9:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+            "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Gale\u2013Shapley stability transfers to school-choice deferred acceptance under fixed preferences/priorities/capacities.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-d201c820070f26f974c9:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+            "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Gale\u2013Shapley stability transfers to school-choice deferred acceptance under fixed preferences/priorities/capacities.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Preferences or priorities and capacities are fixed for the run; stability is the QoI rather than welfare or truthfulness in an altered mechanism.",
+      "candidate_load_bearing_invariant": "Deferred acceptance yields a stable assignment relative to the registered preference and priority relation.",
+      "case_id": "p3src-005",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "matching_allocation",
+      "invariant_preserved": true,
+      "qoi": "Can the source stability argument certify absence of blocking pairs in the target assignment?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "two-sided preferences",
+        "blocking pairs"
+      ],
+      "source_domain": "two-sided marriage matching",
+      "source_evidence": [
+        "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827"
+      ],
+      "source_skill_tags": [
+        "stable matching",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "men",
+        "women",
+        "marriage",
+        "preferences"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "student preferences",
+        "school priorities",
+        "capacities"
+      ],
+      "target_domain": "public high-school assignment",
+      "target_evidence": [
+        "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+      ],
+      "target_skill_tags": [
+        "school assignment",
+        "deferred acceptance"
+      ],
+      "target_surface_terms": [
+        "students",
+        "schools",
+        "priorities",
+        "choices"
+      ],
+      "transfer_valid": true,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167",
+          "DOI:10.1097/00001888-199506000-00007 | A reexamination of the NRMP matching algorithm | https://doi.org/10.1097/00001888-199506000-00007"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": true,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-e2bf0d479a2a70cf576e:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167",
+            "DOI:10.1097/00001888-199506000-00007 | A reexamination of the NRMP matching algorithm | https://doi.org/10.1097/00001888-199506000-00007"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Shared matching vocabulary, but NRMP couples constraints are unmapped; boundary and typed relations fail.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-e2bf0d479a2a70cf576e:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167",
+            "DOI:10.1097/00001888-199506000-00007 | A reexamination of the NRMP matching algorithm | https://doi.org/10.1097/00001888-199506000-00007"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": true,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Shared matching vocabulary, but NRMP couples constraints are unmapped; boundary and typed relations fail.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "The target algorithm, capacities, couples constraints and preference semantics must match the stability theorem actually invoked.",
+      "candidate_load_bearing_invariant": "The assignment is stable when no admissible applicant-program pair blocks it under the registered priorities.",
+      "case_id": "p3src-006",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "matching_allocation",
+      "invariant_preserved": true,
+      "qoi": "Does the school-assignment stability object transfer to the registered residency mechanism?",
+      "qoi_matched": true,
+      "quadrant": "Q3",
+      "roles_preserved": true,
+      "semantic_similarity_high": true,
+      "source_dependencies": [
+        "student preferences",
+        "school priorities",
+        "capacities"
+      ],
+      "source_domain": "public high-school assignment",
+      "source_evidence": [
+        "DOI:10.1257/000282805774670167 | Abdulkadiroglu, Pathak and Roth (2005), The New York City High School Match | https://doi.org/10.1257/000282805774670167"
+      ],
+      "source_skill_tags": [
+        "school assignment",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "students",
+        "schools",
+        "priorities",
+        "choices"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "applicant ranks",
+        "program ranks",
+        "capacities"
+      ],
+      "target_domain": "medical residency assignment",
+      "target_evidence": [
+        "DOI:10.1097/00001888-199506000-00007 | A reexamination of the NRMP matching algorithm | https://doi.org/10.1097/00001888-199506000-00007"
+      ],
+      "target_skill_tags": [
+        "resident matching",
+        "deferred acceptance"
+      ],
+      "target_surface_terms": [
+        "applicants",
+        "programs",
+        "rank lists",
+        "positions"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+          "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": false,
+          "roles_preserved": false,
+          "semantic_similarity_high": false,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-0801329f5316399a5a2c:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+            "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": false,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Two-sided pair stability is not cycle packing; feasible-set object and QoI differ.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-0801329f5316399a5a2c:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827",
+            "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": false,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Two-sided pair stability is not cycle packing; feasible-set object and QoI differ.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "Two-sided pair stability and directed cycle packing are distinct unless a mapping preserves feasibility and the registered QoI.",
+      "candidate_load_bearing_invariant": "A reusable matching argument must preserve the feasible-set object and the property optimized or certified.",
+      "case_id": "p3src-007",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "matching_allocation",
+      "invariant_preserved": false,
+      "qoi": "Can the source matching certificate license the target exchange allocation?",
+      "qoi_matched": false,
+      "quadrant": "Q4",
+      "roles_preserved": false,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "two-sided preferences",
+        "blocking pairs"
+      ],
+      "source_domain": "two-sided marriage matching",
+      "source_evidence": [
+        "DOI:10.1080/00029890.1962.11989827 | Gale and Shapley (1962), College Admissions and the Stability of Marriage | https://doi.org/10.1080/00029890.1962.11989827"
+      ],
+      "source_skill_tags": [
+        "stable matching",
+        "deferred acceptance"
+      ],
+      "source_surface_terms": [
+        "men",
+        "women",
+        "marriage",
+        "preferences"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "directed compatibility graph",
+        "cycle length constraints"
+      ],
+      "target_domain": "kidney exchange",
+      "target_evidence": [
+        "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+      ],
+      "target_skill_tags": [
+        "kidney exchange",
+        "cycle packing"
+      ],
+      "target_surface_terms": [
+        "donors",
+        "recipients",
+        "compatibility",
+        "cycles"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202",
+          "DOI:10.1001/archsurg.2011.147 | HLA-DR Matching in Organ Allocation | https://doi.org/10.1001/archsurg.2011.147"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": false,
+          "roles_preserved": false,
+          "semantic_similarity_high": true,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-1fdac43ffdaf3d347d51:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202",
+            "DOI:10.1001/archsurg.2011.147 | HLA-DR Matching in Organ Allocation | https://doi.org/10.1001/archsurg.2011.147"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": false,
+            "roles_preserved": false,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Shared medical vocabulary without reciprocal exchange cycles.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-1fdac43ffdaf3d347d51:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202",
+            "DOI:10.1001/archsurg.2011.147 | HLA-DR Matching in Organ Allocation | https://doi.org/10.1001/archsurg.2011.147"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": false,
+            "roles_preserved": false,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Shared medical vocabulary without reciprocal exchange cycles.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "A waiting-list allocation may share medical vocabulary while lacking reciprocal exchange cycles.",
+      "candidate_load_bearing_invariant": "Transfer requires preservation of exchange cycles, feasibility constraints and the allocation QoI.",
+      "case_id": "p3src-008",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "matching_allocation",
+      "invariant_preserved": false,
+      "qoi": "Does the kidney-exchange structural object certify the target allocation?",
+      "qoi_matched": false,
+      "quadrant": "Q3",
+      "roles_preserved": false,
+      "semantic_similarity_high": true,
+      "source_dependencies": [
+        "directed compatibility graph",
+        "cycle length constraints"
+      ],
+      "source_domain": "kidney exchange",
+      "source_evidence": [
+        "DOI:10.1111/tri.12202 | Allocation and matching in kidney exchange programs | https://doi.org/10.1111/tri.12202"
+      ],
+      "source_skill_tags": [
+        "kidney exchange",
+        "cycle packing"
+      ],
+      "source_surface_terms": [
+        "donors",
+        "recipients",
+        "compatibility",
+        "cycles"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "one-way allocation",
+        "medical priority",
+        "compatibility constraints"
+      ],
+      "target_domain": "deceased-donor organ allocation",
+      "target_evidence": [
+        "DOI:10.1001/archsurg.2011.147 | HLA-DR Matching in Organ Allocation | https://doi.org/10.1001/archsurg.2011.147"
+      ],
+      "target_skill_tags": [
+        "organ allocation",
+        "compatibility scoring"
+      ],
+      "target_surface_terms": [
+        "donors",
+        "recipients",
+        "HLA",
+        "waiting list"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+          "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": true,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-52eb94da9058e55154a4:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+            "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Diffusion generator to heat equation is licensed under registered diffusivity and boundary/initial data.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-52eb94da9058e55154a4:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+            "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Diffusion generator to heat equation is licensed under registered diffusivity and boundary/initial data.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Constant or registered diffusivity and compatible boundary/initial conditions; advection, jumps and reactions are excluded unless represented.",
+      "candidate_load_bearing_invariant": "The diffusion generator produces a parabolic evolution with variance or spatial spread proportional to elapsed time.",
+      "case_id": "p3src-009",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "diffusion_transport",
+      "invariant_preserved": true,
+      "qoi": "Can the source diffusion object determine the target spreading law?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "independent increments",
+        "diffusion coefficient"
+      ],
+      "source_domain": "suspended-particle Brownian motion",
+      "source_evidence": [
+        "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806"
+      ],
+      "source_skill_tags": [
+        "stochastic diffusion",
+        "mean-square displacement"
+      ],
+      "source_surface_terms": [
+        "particles",
+        "liquid",
+        "displacement",
+        "temperature"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "temperature field",
+        "thermal diffusivity",
+        "initial boundary data"
+      ],
+      "target_domain": "heat conduction",
+      "target_evidence": [
+        "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+      ],
+      "target_skill_tags": [
+        "heat equation",
+        "parabolic PDE"
+      ],
+      "target_surface_terms": [
+        "temperature",
+        "heat",
+        "space",
+        "time"
+      ],
+      "transfer_valid": true,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+          "DOI:10.1086/260062 | Black and Scholes (1973), The Pricing of Options and Corporate Liabilities | https://doi.org/10.1086/260062"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": false,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-59de9cec78a97362918e:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+            "DOI:10.1086/260062 | Black and Scholes (1973), The Pricing of Options and Corporate Liabilities | https://doi.org/10.1086/260062"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": false,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Physical Brownian can be mapped into a pricing PDE, but without risk-neutral/hedging witness the pricing QoI is not licensed (decoupled).",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-59de9cec78a97362918e:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806",
+            "DOI:10.1086/260062 | Black and Scholes (1973), The Pricing of Options and Corporate Liabilities | https://doi.org/10.1086/260062"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Physical Brownian can be mapped into a pricing PDE, but without risk-neutral/hedging witness the pricing QoI is not licensed (decoupled).",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Continuous diffusion, registered volatility and hedging assumptions; jumps, transaction costs and incomplete markets are outside the boundary.",
+      "candidate_load_bearing_invariant": "A diffusion generator can be mapped into a parabolic evolution after the target variables and measure are specified.",
+      "case_id": "p3src-010",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "diffusion_transport",
+      "invariant_preserved": true,
+      "qoi": "Can the Brownian diffusion representation support the registered option-pricing evolution?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "independent increments",
+        "diffusion coefficient"
+      ],
+      "source_domain": "suspended-particle Brownian motion",
+      "source_evidence": [
+        "DOI:10.1002/andp.19053220806 | Einstein (1905), Brownian motion of suspended particles | https://doi.org/10.1002/andp.19053220806"
+      ],
+      "source_skill_tags": [
+        "stochastic diffusion",
+        "mean-square displacement"
+      ],
+      "source_surface_terms": [
+        "particles",
+        "liquid",
+        "displacement",
+        "temperature"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "price process",
+        "volatility",
+        "self-financing hedge"
+      ],
+      "target_domain": "option pricing",
+      "target_evidence": [
+        "DOI:10.1086/260062 | Black and Scholes (1973), The Pricing of Options and Corporate Liabilities | https://doi.org/10.1086/260062"
+      ],
+      "target_skill_tags": [
+        "stochastic pricing",
+        "hedging PDE"
+      ],
+      "target_surface_terms": [
+        "option",
+        "stock",
+        "volatility",
+        "price"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1201/9780203719763 | Groundwater Contaminant Transport | https://doi.org/10.1201/9780203719763",
+          "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": true,
+          "roles_preserved": false,
+          "semantic_similarity_high": false,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-9b50a01379c401fa09d2:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1201/9780203719763 | Groundwater Contaminant Transport | https://doi.org/10.1201/9780203719763",
+            "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Advection/reaction/anisotropy block reduction to heat diffusion.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-9b50a01379c401fa09d2:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1201/9780203719763 | Groundwater Contaminant Transport | https://doi.org/10.1201/9780203719763",
+            "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": false,
+            "semantic_similarity_high": false,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Advection/reaction/anisotropy block reduction to heat diffusion.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "Advection, reaction, anisotropy and source terms must be absent, negligible or explicitly mapped before using a heat-diffusion solution.",
+      "candidate_load_bearing_invariant": "A diffusion-only mapping requires conservation and a compatible second-order spreading operator.",
+      "case_id": "p3src-011",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "diffusion_transport",
+      "invariant_preserved": false,
+      "qoi": "Can the source transport equation be reduced to the target heat-spreading object?",
+      "qoi_matched": true,
+      "quadrant": "Q4",
+      "roles_preserved": false,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "porous flow",
+        "dispersion tensor",
+        "source terms"
+      ],
+      "source_domain": "groundwater contaminant transport",
+      "source_evidence": [
+        "DOI:10.1201/9780203719763 | Groundwater Contaminant Transport | https://doi.org/10.1201/9780203719763"
+      ],
+      "source_skill_tags": [
+        "transport PDE",
+        "dispersion"
+      ],
+      "source_surface_terms": [
+        "aquifer",
+        "solute",
+        "advection",
+        "dispersion"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "temperature field",
+        "thermal diffusivity",
+        "initial boundary data"
+      ],
+      "target_domain": "heat conduction",
+      "target_evidence": [
+        "DOI:10.1007/978-981-97-4476-3_18 | Heat Diffusion Equation and Brownian Motion | https://doi.org/10.1007/978-981-97-4476-3_18"
+      ],
+      "target_skill_tags": [
+        "heat equation",
+        "parabolic PDE"
+      ],
+      "target_surface_terms": [
+        "temperature",
+        "heat",
+        "space",
+        "time"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd",
+          "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": true,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-d3ae98a20cfdd17fd941:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd",
+            "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Same epidemic vocabulary, but nonlocal jumps/policy feedback break local-diffusion license.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-d3ae98a20cfdd17fd941:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd",
+            "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Same epidemic vocabulary, but nonlocal jumps/policy feedback break local-diffusion license.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "Long-range jumps, network rewiring or intervention feedback can invalidate a fixed local-diffusion representation.",
+      "candidate_load_bearing_invariant": "A local diffusion operator licenses reuse only when the target propagation kernel and reaction boundary are preserved.",
+      "case_id": "p3src-012",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "diffusion_transport",
+      "invariant_preserved": false,
+      "qoi": "Does the source diffusion mechanism license the target propagation forecast?",
+      "qoi_matched": true,
+      "quadrant": "Q3",
+      "roles_preserved": true,
+      "semantic_similarity_high": true,
+      "source_dependencies": [
+        "local diffusion operator",
+        "reaction term",
+        "fixed network"
+      ],
+      "source_domain": "spatial epidemic diffusion",
+      "source_evidence": [
+        "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+      ],
+      "source_skill_tags": [
+        "reaction-diffusion",
+        "epidemic dynamics"
+      ],
+      "source_surface_terms": [
+        "infection",
+        "network",
+        "diffusion",
+        "pattern"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "nonlocal mobility kernel",
+        "policy feedback",
+        "changing contacts"
+      ],
+      "target_domain": "spatial epidemic propagation",
+      "target_evidence": [
+        "DOI:10.1209/0295-5075/ac58bd | Pattern dynamics in the epidemic model with diffusion network | https://doi.org/10.1209/0295-5075/ac58bd"
+      ],
+      "target_skill_tags": [
+        "nonlocal epidemic spread",
+        "time-varying control"
+      ],
+      "target_surface_terms": [
+        "infection",
+        "network",
+        "long-range jumps",
+        "interventions"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1016/j.orl.2014.06.012 | Weighing the heaviest Polya urn | https://doi.org/10.1016/j.orl.2014.06.012",
+          "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": true,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-c67d731fc216e802f5fd:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1016/j.orl.2014.06.012 | Weighing the heaviest Polya urn | https://doi.org/10.1016/j.orl.2014.06.012",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Polya reinforcement maps to Arthur increasing-returns lock-in under positive feedback.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-c67d731fc216e802f5fd:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1016/j.orl.2014.06.012 | Weighing the heaviest Polya urn | https://doi.org/10.1016/j.orl.2014.06.012",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Polya reinforcement maps to Arthur increasing-returns lock-in under positive feedback.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Positive reinforcement and limited switching must remain active; strong resets or dominant intrinsic fitness require separate modelling.",
+      "candidate_load_bearing_invariant": "Early random increments alter later transition probabilities, so ordering can affect long-run shares.",
+      "case_id": "p3src-013",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "path_dependence_reinforcement",
+      "invariant_preserved": true,
+      "qoi": "Can the urn reinforcement object explain sensitivity of target adoption shares to early events?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "state-dependent sampling",
+        "positive reinforcement"
+      ],
+      "source_domain": "Polya urn reinforcement",
+      "source_evidence": [
+        "DOI:10.1016/j.orl.2014.06.012 | Weighing the heaviest Polya urn | https://doi.org/10.1016/j.orl.2014.06.012"
+      ],
+      "source_skill_tags": [
+        "reinforcement process",
+        "history dependence"
+      ],
+      "source_surface_terms": [
+        "urn",
+        "balls",
+        "colours",
+        "draws"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "adoption share",
+        "increasing returns",
+        "early events"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ],
+      "transfer_valid": true,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.7554/eLife.20185 | A locally-blazed ant trail achieves efficient collective navigation despite limited information | https://doi.org/10.7554/eLife.20185",
+          "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": true,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-00991f0cb22e614858b9:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.7554/eLife.20185 | A locally-blazed ant trail achieves efficient collective navigation despite limited information | https://doi.org/10.7554/eLife.20185",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Local trail reinforcement maps to installed-base feedback when decay/exploration are disclosed.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-00991f0cb22e614858b9:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.7554/eLife.20185 | A locally-blazed ant trail achieves efficient collective navigation despite limited information | https://doi.org/10.7554/eLife.20185",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": true,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Local trail reinforcement maps to installed-base feedback when decay/exploration are disclosed.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "Reinforcement, decay and exploration terms must be mapped; centralized optimization is not the same mechanism.",
+      "candidate_load_bearing_invariant": "Local use increases future selection probability, creating a feedback path through accumulated traces or installed base.",
+      "case_id": "p3src-014",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "path_dependence_reinforcement",
+      "invariant_preserved": true,
+      "qoi": "Can the trail-reinforcement object support the target lock-in explanation?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "local trace deposition",
+        "follow probability",
+        "evaporation"
+      ],
+      "source_domain": "ant trail reinforcement",
+      "source_evidence": [
+        "DOI:10.7554/eLife.20185 | A locally-blazed ant trail achieves efficient collective navigation despite limited information | https://doi.org/10.7554/eLife.20185"
+      ],
+      "source_skill_tags": [
+        "local reinforcement",
+        "collective navigation"
+      ],
+      "source_surface_terms": [
+        "ants",
+        "pheromone",
+        "trail",
+        "navigation"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "adoption share",
+        "network returns",
+        "switching cost"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ],
+      "transfer_valid": true,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.1016/j.respol.2013.03.009 | QWERTY is dead; long live path dependence | https://doi.org/10.1016/j.respol.2013.03.009",
+          "DOI:10.1016/j.cities.2024.104874 | Evolution of China intercity venture capital network: Preferential attachment vs. path dependence | https://doi.org/10.1016/j.cities.2024.104874"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": true,
+          "directional_mapping_complete": true,
+          "invariant_preserved": true,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": false,
+          "structural_match": true,
+          "transfer_valid": false,
+          "typed_relations_preserved": true
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-c10f73acf709aed8778a:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.1016/j.respol.2013.03.009 | QWERTY is dead; long live path dependence | https://doi.org/10.1016/j.respol.2013.03.009",
+            "DOI:10.1016/j.cities.2024.104874 | Evolution of China intercity venture capital network: Preferential attachment vs. path dependence | https://doi.org/10.1016/j.cities.2024.104874"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": false,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator A: Reinforcement form is shared, but geography/heterogeneity alternatives leave endogenous reinforcement undiscriminated; transfer not licensed (decoupled).",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-c10f73acf709aed8778a:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.1016/j.respol.2013.03.009 | QWERTY is dead; long live path dependence | https://doi.org/10.1016/j.respol.2013.03.009",
+            "DOI:10.1016/j.cities.2024.104874 | Evolution of China intercity venture capital network: Preferential attachment vs. path dependence | https://doi.org/10.1016/j.cities.2024.104874"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": true,
+            "directional_mapping_complete": true,
+            "invariant_preserved": true,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": false,
+            "structural_match": true,
+            "transfer_valid": false,
+            "typed_relations_preserved": true
+          },
+          "rationale": "AI_OPERATOR annotator B: Reinforcement form is shared, but geography/heterogeneity alternatives leave endogenous reinforcement undiscriminated; transfer not licensed (decoupled).",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": true,
+      "candidate_load_bearing_boundary": "The target must exhibit endogenous reinforcement rather than only stable heterogeneity or geography.",
+      "candidate_load_bearing_invariant": "Existing adoption or connectivity changes the probability of future adoption or attachment.",
+      "case_id": "p3src-015",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": true,
+      "family": "path_dependence_reinforcement",
+      "invariant_preserved": true,
+      "qoi": "Does the source lock-in representation identify path dependence in target network formation?",
+      "qoi_matched": true,
+      "quadrant": "Q2",
+      "roles_preserved": true,
+      "semantic_similarity_high": false,
+      "source_dependencies": [
+        "installed base",
+        "coordination returns",
+        "switching cost"
+      ],
+      "source_domain": "keyboard technology standards",
+      "source_evidence": [
+        "DOI:10.1016/j.respol.2013.03.009 | QWERTY is dead; long live path dependence | https://doi.org/10.1016/j.respol.2013.03.009"
+      ],
+      "source_skill_tags": [
+        "technology path dependence",
+        "switching cost"
+      ],
+      "source_surface_terms": [
+        "keyboard",
+        "standard",
+        "switching",
+        "history"
+      ],
+      "structural_match": true,
+      "target_dependencies": [
+        "existing degree or proximity",
+        "new edge probability"
+      ],
+      "target_domain": "intercity venture-capital networks",
+      "target_evidence": [
+        "DOI:10.1016/j.cities.2024.104874 | Evolution of China intercity venture capital network: Preferential attachment vs. path dependence | https://doi.org/10.1016/j.cities.2024.104874"
+      ],
+      "target_skill_tags": [
+        "preferential attachment",
+        "network path dependence"
+      ],
+      "target_surface_terms": [
+        "cities",
+        "venture capital",
+        "network",
+        "attachment"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": true
+    },
+    {
+      "adjudication": {
+        "adjudicator_id": "ai-operator-adjudicator-C",
+        "annotator_kind": "AI_OPERATOR",
+        "completed_at_utc": "2026-08-11T21:40:00Z",
+        "evidence_refs": [
+          "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208",
+          "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+        ],
+        "human_or_expert": false,
+        "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+        "independent_of_benchmark_author": false,
+        "judgements": {
+          "boundary_matched": false,
+          "directional_mapping_complete": false,
+          "invariant_preserved": false,
+          "qoi_matched": true,
+          "roles_preserved": true,
+          "semantic_similarity_high": true,
+          "structural_match": false,
+          "transfer_valid": false,
+          "typed_relations_preserved": false
+        },
+        "resolution_rationale": "Resolved after both AI_OPERATOR submissions were frozen; applied RUBRIC_V2 without mechanical AND of witness coordinates.",
+        "status": "final"
+      },
+      "annotation_records": [
+        {
+          "annotation_id": "p3item-e1f8a00e718a9bf37e8f:ai-operator-annotator-A",
+          "annotator_id": "ai-operator-annotator-A",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:10:00Z",
+          "evidence_refs": [
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator A: Same adoption vocabulary, but exogenous reset/mandate breaks historical lock-in.",
+          "status": "final"
+        },
+        {
+          "annotation_id": "p3item-e1f8a00e718a9bf37e8f:ai-operator-annotator-B",
+          "annotator_id": "ai-operator-annotator-B",
+          "annotator_kind": "AI_OPERATOR",
+          "annotator_type": "ai_operator_non_independent",
+          "completed_at_utc": "2026-08-11T21:20:00Z",
+          "evidence_refs": [
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208",
+            "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+          ],
+          "human_or_expert": false,
+          "independence_class": "NON_INDEPENDENT_SAME_OPERATOR",
+          "independent_of_benchmark_author": false,
+          "judgements": {
+            "boundary_matched": false,
+            "directional_mapping_complete": false,
+            "invariant_preserved": false,
+            "qoi_matched": true,
+            "roles_preserved": true,
+            "semantic_similarity_high": true,
+            "structural_match": false,
+            "transfer_valid": false,
+            "typed_relations_preserved": false
+          },
+          "rationale": "AI_OPERATOR annotator B: Same adoption vocabulary, but exogenous reset/mandate breaks historical lock-in.",
+          "status": "final"
+        }
+      ],
+      "boundary_matched": false,
+      "candidate_load_bearing_boundary": "A target dominated by an external reset, mandate or cost discontinuity may break the inherited reinforcement path.",
+      "candidate_load_bearing_invariant": "Historical lock-in requires endogenous state dependence in later transition probabilities.",
+      "case_id": "p3src-016",
+      "confirmatory_eligible": false,
+      "directional_mapping_complete": false,
+      "family": "path_dependence_reinforcement",
+      "invariant_preserved": false,
+      "qoi": "Does the source historical-lock-in object license the target adoption explanation after intervention?",
+      "qoi_matched": true,
+      "quadrant": "Q3",
+      "roles_preserved": true,
+      "semantic_similarity_high": true,
+      "source_dependencies": [
+        "adoption share",
+        "increasing returns",
+        "early events"
+      ],
+      "source_domain": "technology adoption",
+      "source_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "source_skill_tags": [
+        "increasing returns",
+        "technology lock-in"
+      ],
+      "source_surface_terms": [
+        "technology",
+        "adopters",
+        "returns",
+        "lock-in"
+      ],
+      "structural_match": false,
+      "target_dependencies": [
+        "external intervention",
+        "reset or forced migration"
+      ],
+      "target_domain": "technology adoption",
+      "target_evidence": [
+        "DOI:10.2307/2234208 | Arthur (1989), Competing Technologies, Increasing Returns, and Lock-In by Historical Events | https://doi.org/10.2307/2234208"
+      ],
+      "target_skill_tags": [
+        "policy-driven switching",
+        "exogenous coordination"
+      ],
+      "target_surface_terms": [
+        "technology",
+        "adopters",
+        "subsidy",
+        "migration"
+      ],
+      "transfer_valid": false,
+      "typed_relations_preserved": false
+    }
+  ],
+  "coordinate_conflict_count": {
+    "boundary_matched": 0,
+    "directional_mapping_complete": 0,
+    "invariant_preserved": 0,
+    "qoi_matched": 0,
+    "roles_preserved": 0,
+    "semantic_similarity_high": 1,
+    "structural_match": 1,
+    "transfer_valid": 2,
+    "typed_relations_preserved": 0
+  },
+  "coordinate_exact_agreement": {
+    "boundary_matched": 1.0,
+    "directional_mapping_complete": 1.0,
+    "invariant_preserved": 1.0,
+    "qoi_matched": 1.0,
+    "roles_preserved": 1.0,
+    "semantic_similarity_high": 0.9375,
+    "structural_match": 0.9375,
+    "transfer_valid": 0.875,
+    "typed_relations_preserved": 1.0
+  },
+  "negative_history_benchmark_sha256": [
+    "831fa5804efca457f0c9763ec6efd4913c569068aa5ba3ae0b9b4f1f982e9db4"
+  ],
+  "packet_frozen_at_utc": "2026-08-10T21:36:37Z",
+  "packet_id": "paper3-natural-transfer-external-annotation-v2-1-20260810",
+  "packet_sha256": "b5212517a0bb9cbe308727d7972ded38ce68bf7f52448aeb82f6512e584336eb",
+  "protocol_id": "paper3-confirmatory-gate-v2",
+  "protocol_sha256": "fafd74a5c1bc13a1847b814a7f6ad24b43736b56b36b469512ead944d2a28e82",
+  "provenance_audit_sha256": "d0a8ff90c506706c34d4fef6299982858446160f9632bd74c72b048bc3836606",
+  "rubric_id": "paper3-annotation-rubric-v2-20260810",
+  "rubric_sha256": "50daa3144fd066170678b0c08afda8cd0347274844233c2505a4c07caa261c6e",
+  "schema_version": "paper3-confirmatory-benchmark-v2",
+  "source_set_frozen_at_utc": "2026-08-10T21:08:00Z",
+  "source_set_id": "paper3-natural-cross-domain-source-set-v2-1-20260810",
+  "source_set_sha256": "ba4cdb4acbc695599f6ce5c9148e8e68d6fcf5cb9f6f5b06b8f2f6dd3511b556",
+  "subject_sha": "f4cee8313ec64d02873b87f92c51c35c113cd70d"
+}

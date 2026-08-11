@@ -23,6 +23,25 @@ ANNOTATION_FIELDS = (
 )
 REQUIRED_V1_BENCHMARK_CANONICAL_SHA256 = "831fa5804efca457f0c9763ec6efd4913c569068aa5ba3ae0b9b4f1f982e9db4"
 
+# Authority / annotator classes. AI_OPERATOR is honest and demoted: it unlocks
+# operator-override compute but never mints independent external human review.
+AUTHORITY_INDEPENDENT_V2 = "independently_annotated_and_adjudicated_v2"
+AUTHORITY_AI_OPERATOR_NON_INDEPENDENT_V2 = (
+    "ai_operator_annotated_and_adjudicated_non_independent_v2"
+)
+ANNOTATOR_KIND_HUMAN = "HUMAN_OR_DOMAIN_EXPERT"
+ANNOTATOR_KIND_AI_OPERATOR = "AI_OPERATOR"
+INDEPENDENCE_INDEPENDENT = "INDEPENDENT_EXTERNAL"
+INDEPENDENCE_NON_INDEPENDENT = "NON_INDEPENDENT_SAME_OPERATOR"
+ANNOTATION_AUTHORITY_CONFIRMATORY = "CONFIRMATORY_INDEPENDENT"
+ANNOTATION_AUTHORITY_DEMOTED_AI = "DEMOTED_AI_OPERATOR"
+SCHEMA_SUBMISSION_V2 = "paper3-external-annotation-submission-v2"
+SCHEMA_SUBMISSION_AI_OPERATOR_V2 = "paper3-ai-operator-annotation-submission-v2"
+SCHEMA_ADJUDICATION_V2 = "paper3-external-adjudication-v2"
+SCHEMA_ADJUDICATION_AI_OPERATOR_V2 = "paper3-ai-operator-adjudication-v2"
+SCHEMA_PROVENANCE_V2 = "paper3-external-provenance-audit-v2"
+SCHEMA_PROVENANCE_AI_OPERATOR_V2 = "paper3-ai-operator-provenance-audit-v2"
+
 _PACKET_FIELDS = (
     "family",
     "source_domain",
@@ -160,6 +179,48 @@ _ADJUDICATION_ATTESTATION_FIELDS = {
     "no_result_access_before_resolution",
     "conflicts_disclosed",
     "completed_at_utc",
+}
+_SUBMISSION_AI_OPERATOR_ATTESTATION_FIELDS = {
+    "annotator_class",
+    "independent_external_human",
+    "same_session_critique_not_independent_review",
+    "independent_of_benchmark_author",
+    "no_other_annotator_or_result_access",
+    "conflicts_disclosed",
+    "completed_at_utc",
+}
+_ADJUDICATION_AI_OPERATOR_ATTESTATION_FIELDS = {
+    "annotator_class",
+    "independent_external_human",
+    "same_session_critique_not_independent_review",
+    "independent_of_benchmark_author",
+    "no_result_access_before_resolution",
+    "conflicts_disclosed",
+    "completed_at_utc",
+}
+_PROVENANCE_AI_OPERATOR_FIELDS = {
+    "schema_version",
+    *_BINDING_FIELDS,
+    "coordinator_id",
+    "auditor_id",
+    "verified_source_curator_id",
+    "verified_benchmark_author_ids",
+    "annotator_class",
+    "independent_external_human",
+    "same_session_critique_not_independent_review",
+    "auditor_is_external_human",
+    "auditor_independent_of_benchmark_author",
+    "auditor_verified_input_hashes",
+    "verified_distinct_human_identities",
+    "verified_domain_expertise",
+    "verified_independence_from_benchmark_author",
+    "verified_access_chronology",
+    "verified_person_ids",
+    "submission_sha256",
+    "adjudication_sha256",
+    "audited_at_utc",
+    "authority_class",
+    "claim_boundary",
 }
 _JUDGEMENT_FIELDS = {
     "item_id",
