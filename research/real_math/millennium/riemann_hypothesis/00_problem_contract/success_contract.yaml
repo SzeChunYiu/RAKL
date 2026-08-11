@@ -1,0 +1,28 @@
+problem_id: millennium-riemann-hypothesis
+root_goal: "Every nontrivial zero rho of zeta(s) satisfies Re(rho) = 1/2"
+status: OPEN_NO_SOLUTION_CERTIFICATE
+
+success_requires:
+  exact_statement_binding: true
+  closed_proof_dag: true
+  no_unregistered_axioms: true
+  no_placeholders_or_sorries: true
+  dependency_audit: true
+  isolated_recheck_when_supported: true
+  barrier_and_equivalent-criterion_audit: true
+  bounded_novelty_audit: true
+  independent_review_count: 3
+
+non_success_states:
+  - finite_zero_verification
+  - finite_li_coefficient_positivity
+  - finite_nyman_beurling_approximation
+  - positive_proportion_of_zeros_on_critical_line
+  - zero_density_or_zero_free_region_without_root_closure
+  - equivalent_criterion_without_universal_condition_proved
+  - conditional_on_rh_or_generalized_rh
+  - same_context_review_only
+  - computational_support_only
+  - resource_exhaustion
+
+promotion_policy: fail_closed
