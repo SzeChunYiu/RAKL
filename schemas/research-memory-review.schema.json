@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/research-memory-review.schema.json",
   "title": "RAKL Pre-Candidate Research Memory Review",
+  "description": "Frozen dual-memory pre-candidate review. Local inventory may use NO_RELEVANT_MATCH. Cross-problem completeness/counting 'no match' claims must use NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE and bind cross_problem_coverage_receipt_hash (Refs #119).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,8 +21,20 @@
     "target_context_hash": {"type": "string", "minLength": 1},
     "tool_inventory_snapshot_hash": {"type": "string", "minLength": 1},
     "failure_lattice_snapshot_hash": {"type": "string", "minLength": 1},
-    "tool_query_status": {"enum": ["MATCHES_FOUND", "NO_RELEVANT_MATCH"]},
-    "failure_query_status": {"enum": ["MATCHES_FOUND", "NO_RELEVANT_MATCH"]},
+    "tool_query_status": {
+      "enum": [
+        "MATCHES_FOUND",
+        "NO_RELEVANT_MATCH",
+        "NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE"
+      ]
+    },
+    "failure_query_status": {
+      "enum": [
+        "MATCHES_FOUND",
+        "NO_RELEVANT_MATCH",
+        "NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE"
+      ]
+    },
     "candidate_method_families": {
       "type": "array",
       "minItems": 1,
@@ -62,6 +75,11 @@
       "minItems": 1,
       "items": {"type": "string", "minLength": 1}
     },
-    "artifact_hash": {"type": "string", "minLength": 1}
+    "artifact_hash": {"type": "string", "minLength": 1},
+    "cross_problem_coverage_receipt_hash": {
+      "description": "Required when either query status is NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE. Content hash of a CrossProblemCoverageReceipt; does not import application mathematics.",
+      "type": "string",
+      "default": ""
+    }
   }
 }
