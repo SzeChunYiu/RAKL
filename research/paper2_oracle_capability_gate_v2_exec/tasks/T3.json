@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "paper2-oracle-capability-gate-v2-exec",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Calibrated probe PH-A confirms bath pH was 7.20 throughout the run."
+    },
+    {
+      "id": "E2",
+      "text": "Corrosion specification is mass-loss \u2264 0.10 mm/y by coupon assay; bath pH is not the corrosion QoI."
+    },
+    {
+      "id": "E3",
+      "text": "Coupon mass-loss for this batch is 0.04 mm/y, inside specification."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T23:10:00Z",
+  "phase": "FRESH_TRANSFER",
+  "prompt": "Adjudicate: 'The calibrated pH probe supports the claim that the batch failed the corrosion specification.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "qoi_mismatch",
+      "tempting_calibration_transfer_invalid",
+      "assay_passes"
+    ],
+    "rejected_evidence_ids": [
+      "E1"
+    ],
+    "selected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "verdict": "REFUTE"
+  },
+  "stratum": "HOSTILE_NEAR_MISS",
+  "task_id": "T3",
+  "title": "Hostile near-miss: calibrated label, changed QoI"
+}

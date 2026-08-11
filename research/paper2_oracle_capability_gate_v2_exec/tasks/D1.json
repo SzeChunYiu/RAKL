@@ -1,0 +1,38 @@
+{
+  "benchmark_id": "paper2-oracle-capability-gate-v2-exec",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Flow meter FM-A reads 12.0 kg/min after today's two-point span verification against a certified weigh tank."
+    },
+    {
+      "id": "E2",
+      "text": "Flow meter FM-B reads 14.5 kg/min; its calibration certificate expired 14 months ago."
+    },
+    {
+      "id": "E3",
+      "text": "A handheld anemometer nearby reads 0.8 m/s airspeed; that is not feed mass flow."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T23:10:00Z",
+  "phase": "DEVELOPMENT_SEQUENCE",
+  "prompt": "Given sealed evidence, adjudicate the claim: 'Feed mass flow is 12.0 kg/min.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "calibration_valid",
+      "wrong_instrument_rejected"
+    ],
+    "rejected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "selected_evidence_ids": [
+      "E1"
+    ],
+    "verdict": "SUPPORT"
+  },
+  "stratum": "REPEATED_FAMILY",
+  "task_id": "D1",
+  "title": "Calibration-bound mass-flow claim"
+}

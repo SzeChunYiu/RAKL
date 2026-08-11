@@ -2,9 +2,10 @@
 
 **Protocol version:** `ORACLE_CAPABILITY_GATE_V2_0`  
 **Packet:** `paper2-oracle-capability-gate-v2`  
-**Status:** `PROTOCOL_FROZEN_NOT_YET_EXECUTABLE`  
+**Status:** `PROTOCOL_FROZEN_NOT_YET_EXECUTABLE` (protocol-only; successor executable packet authored)  
 **protocol_subject_hash:** `7b186eae72ca69765c1702bc6280a9f5a1ca5c27527b88664dcfe53f644dae09`  
-**CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED`
+**CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED`  
+**Executable successor:** `research/paper2_oracle_capability_gate_v2_exec/` (`ORACLE_CAPABILITY_GATE_V2_0_EXEC`, `e20eeadc…`)
 
 Successor to the v1.3_* ORACLE ladder terminus (`MODEL_CAPABILITY_FLOOR_7B`, job **3476788**).
 This is a **task/gate revisit**, not a 14B/32B scale escalation.
@@ -18,7 +19,7 @@ This is a **task/gate revisit**, not a 14B/32B scale escalation.
 | `DIFFERENCE_WITNESS_V2_VS_V1_3_3.json` | DifferenceWitness vs floored v1.3_3 |
 | `CAPABILITY_GATE_V2.json` | Gate remains NO_REFUTED |
 | `LEARNING_CLAIMS_LICENSE_STATUS.json` | Why ExperienceBenchmark learning claims stay unlicensed |
-| `NEXT_ACTION.json` | Author sealed v2 tasks; no jobs now |
+| `NEXT_ACTION.json` | Points to executable successor; submit via v2_exec packet |
 | `PROTOCOL_FREEZE_RECEIPT.json` | Freeze chronology / hash |
 | `PAPER_FACING_NOTE_ORACLE_CAPABILITY_GATE_V2.md` | Honest paper-facing note |
 

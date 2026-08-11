@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "paper2-oracle-capability-gate-v2-exec",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Station North reports noon global horizontal irradiance 850 W/m\u00b2 on 2026-06-01 under the shared network pyranometer calibration."
+    },
+    {
+      "id": "E2",
+      "text": "Station South reports noon global horizontal irradiance 420 W/m\u00b2 on 2026-06-01 under the same network, same QoI definition, and same timestamp class."
+    },
+    {
+      "id": "E3",
+      "text": "A travel blog mentions clouds over a distant city that day; it is not a measurement for Station North or Station South."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T23:10:00Z",
+  "phase": "FRESH_TRANSFER",
+  "prompt": "Adjudicate: 'The sealed Station North and Station South noon GHI reports are consistent with each other.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "same_qoi_and_context",
+      "numeric_conflict",
+      "true_contradiction"
+    ],
+    "rejected_evidence_ids": [
+      "E3"
+    ],
+    "selected_evidence_ids": [
+      "E1",
+      "E2"
+    ],
+    "verdict": "REFUTE"
+  },
+  "stratum": "CONTEXT_ALIGNMENT",
+  "task_id": "T4",
+  "title": "Aligned context: true contradiction vs consistency claim"
+}
