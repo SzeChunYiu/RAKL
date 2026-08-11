@@ -36,11 +36,11 @@ An evolving agent will eventually discover regularities in any visible benchmark
 
 A legitimate evaluator evolution is possible only through a separate governed change between evaluation epochs. This matters because recent self-improving-agent research has begun to explore co-evolving evaluators. Our design does not assert that a fixed evaluator should remain optimal indefinitely; it asserts only that the candidate must not rewrite its own ruler within the trial used to claim improvement.
 
-\subsection{Authority forgery and declaration-bound evidence}
+\subsection{Authority forgery and protected subject binding}
 
-Caller-provided booleans or string identifiers are insufficient for high-authority transitions. The current v3 archive's \texttt{governance\_approved} Boolean is therefore classified as an unhardened interface. Similar risks apply whenever a caller can state that a proof, verification or independent review exists without resolving the claim to a protected content-bound artifact.
+The first v3 integration audit identified a concrete defect class: caller-provided booleans and opaque string identifiers could be mistaken for high-authority evidence. The current implementation has since hardened the known lesson/tool, local-section/gluing, evolution/governance and benchmark authority paths with protected content-bound subject hashes, attestation resolution and fail-closed bindings. Thus the historical defect is retained as negative engineering evidence rather than presented as a property of the current code.
 
-The target invariant is:
+The governing invariant is
 \[
 \text{authority transition}
 \Rightarrow
@@ -49,7 +49,7 @@ The target invariant is:
 +\text{protected gate}
 +\text{scope compatibility}.
 \]
-Paper 5 treats violation of this invariant as a blocking framework defect regardless of benchmark score.
+Internal conformance and hostile tests can show that the implemented path enforces this contract for registered attacks. They do not prove that the trust roots themselves are uncompromised, that every future call site is correct, or that an external evaluator would reproduce the assurance claim. Residual risks therefore include stale or misbound registry entries, protected-key compromise, evaluator contamination, operator override and ordinary implementation defects. Paper 5 distinguishes implementation hardening from independent external assurance.
 
 \subsection{Chronology attacks and backfilling}
 
