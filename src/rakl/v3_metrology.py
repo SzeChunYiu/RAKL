@@ -5,6 +5,7 @@ from enum import Enum
 from statistics import mean
 from typing import Iterable, Tuple
 
+from .core import KnowledgeFiber
 from .experience_substrate import SubstrateKind, SubstrateRelation
 from .matched_microtrial import (
     MatchedModelConfig,
@@ -14,19 +15,28 @@ from .matched_microtrial import (
 )
 from .method_specs import METHOD_CONTRACTS
 from .saturation_vector import SaturationAxis
-from .v3_runtime import RAKLV3State, materialize_state_substrate, state_fingerprint
+from .unified_substrate import materialize_unified_substrate
+from .v3_runtime import RAKLV3State, state_fingerprint
 
 
 @dataclass(frozen=True)
 class StateMetricSnapshot:
-    """Read-only quantitative portrait of one frozen RAKL v3 state.
+    """Read-only quantitative portrait of one explicitly measured RAKL state.
 
     Counts are descriptive. They do not imply that larger state is better.
     Retained novelty is reported separately from raw object growth.
+
+    ``state_hash`` covers the v3-owned runtime value state. ``substrate_hash``
+    covers the unified overlay including any legacy knowledge fibres explicitly
+    supplied to :func:`measure_state`. Neither hash is an attestation of external
+    files or repositories not represented in those objects.
     """
 
     state_hash: str
     substrate_hash: str
+    measurement_scope: Tuple[str, ...]
+    legacy_knowledge_fiber_count: int
+    legacy_knowledge_projection_count: int
     node_counts: Tuple[Tuple[str, int], ...]
     edge_counts: Tuple[Tuple[str, int], ...]
     episode_count: int
@@ -43,6 +53,10 @@ class StateMetricSnapshot:
 
     def novelty_for(self, axis: SaturationAxis) -> int:
         return dict(self.cumulative_retained_novelty).get(axis.value, 0)
+
+    @property
+    def legacy_knowledge_included(self) -> bool:
+        return self.legacy_knowledge_fiber_count > 0
 
 
 @dataclass(frozen=True)
@@ -86,10 +100,27 @@ def _delta_pairs(
     return tuple(sorted((key, right.get(key, 0) - left.get(key, 0)) for key in keys))
 
 
-def measure_state(state: RAKLV3State) -> StateMetricSnapshot:
-    """Measure one state without changing it or granting authority."""
+def measure_state(
+    state: RAKLV3State,
+    *,
+    legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
+) -> StateMetricSnapshot:
+    """Measure one state without changing it or granting authority.
 
-    substrate = materialize_state_substrate(state)
+    Legacy ``KnowledgeFiber`` objects are not global singletons. Callers must
+    explicitly supply the fibres they claim are inside the measurement universe.
+    The returned scope makes omission visible rather than silently treating v3
+    runtime state as the entire historical RAKL knowledge world.
+    """
+
+    legacy_fibers = tuple(legacy_knowledge_fibers)
+    substrate = materialize_unified_substrate(
+        experience=state.experience,
+        tools=state.tools,
+        failures=state.failures,
+        legacy_knowledge_fibers=legacy_fibers,
+        evolution=state.evolution,
+    )
     novelty: dict[str, int] = {axis.value: 0 for axis in SaturationAxis}
     for round_ in state.saturation.rounds:
         for axis in SaturationAxis:
@@ -101,9 +132,17 @@ def measure_state(state: RAKLV3State) -> StateMetricSnapshot:
             key = variant.status.value
             evolution_counts[key] = evolution_counts.get(key, 0) + 1
 
+    projection_count = sum(len(fiber.projections) for fiber in legacy_fibers)
+    scope = (
+        "V3_RUNTIME_STATE",
+        "LEGACY_KNOWLEDGE_FIBERS_INCLUDED" if legacy_fibers else "NO_LEGACY_KNOWLEDGE_FIBERS_SUPPLIED",
+    )
     return StateMetricSnapshot(
         state_hash=state_fingerprint(state),
         substrate_hash=substrate.snapshot_hash,
+        measurement_scope=scope,
+        legacy_knowledge_fiber_count=len(legacy_fibers),
+        legacy_knowledge_projection_count=projection_count,
         node_counts=_count(node.kind.value for node in substrate.nodes),
         edge_counts=_count(edge.relation.value for edge in substrate.edges),
         episode_count=len(state.experience.episodes),
@@ -121,6 +160,11 @@ def measure_state(state: RAKLV3State) -> StateMetricSnapshot:
 
 
 def compare_state_metrics(before: StateMetricSnapshot, after: StateMetricSnapshot) -> StateGrowthDelta:
+    if before.measurement_scope != after.measurement_scope:
+        raise ValueError("state metric snapshots have different measurement scopes")
+    if before.legacy_knowledge_fiber_count != after.legacy_knowledge_fiber_count:
+        raise ValueError("state metric snapshots have different legacy knowledge fibre counts")
+
     return StateGrowthDelta(
         before_state_hash=before.state_hash,
         after_state_hash=after.state_hash,
