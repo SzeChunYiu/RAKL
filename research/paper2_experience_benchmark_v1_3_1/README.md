@@ -22,9 +22,11 @@ This is **not** a scale-only escape from the v1.2 learning-loop failure.
 - reopening #138
 - reinterpreting 3476548 or 3476730/3476731 as lift
 
-## Decision (job 3476742)
+## Decision (job 3476756; parent instrument 3476742 preserved)
 
-Landed native job **3476742**: success_rate 0/3, parse-valid 1/3.
-Scientific verdict: **INSTRUMENT_DEFECT**. See `ORACLE_DECISION_RECEIPT_V1_3_1.json` and `PAPER_FACING_NOTE_ORACLE_V1_3_1_ISSUE247.md`.
+Landed native re-run **3476756** after PR #343 instrument repair: success_rate 0/3, parse-valid 3/3, mean_score 0.25.
+Scientific verdict: **MODEL_CAPABILITY_FLOOR_1_5B**.
+Prior job **3476742** remains landed as **INSTRUMENT_DEFECT** negative history (do not delete).
+See `ORACLE_DECISION_RECEIPT_V1_3_1.json` and `PAPER_FACING_NOTE_ORACLE_V1_3_1_ISSUE247.md`.
 Phase-0 / learning staircase remain unauthorized. #138 stays closed.
 
