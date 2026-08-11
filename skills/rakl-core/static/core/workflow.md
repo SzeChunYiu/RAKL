@@ -21,9 +21,9 @@ When a positive scientific outcome is required, freeze the success vector before
 
 ## B. Atomize
 
-Decompose the solution chain until each step has one clear semantic job.
+Decompose the solution chain until each step has one clear semantic job. Include data and mathematical transformations, not only named models.
 
-Include data and mathematical transformations, not only named models.
+Record the atomization result as a first-class artifact. A later researcher must be able to see what the parent problem became, which atom is active, and which dependencies remain outside that atom.
 
 ## C. Freeze the active context fiber
 
@@ -62,51 +62,113 @@ source anchors
 
 A similarity label is not a witnessed transfer. If the enabling assumptions are unknown, candidate generation fails closed.
 
-## E. Open and expand knowledge fibers
+## E. Run cross-domain and everyday analogy discovery
+
+Abstract away domain-specific nouns and compare structural roles. Search mathematics, science, engineering, algorithms, games, organizations and ordinary human situations for the same relational pattern.
+
+Potential shared abstractions include:
+
+```text
+reuse versus recomputation
+queueing and congestion
+shared resources / caching
+matching and assignment
+routing and bottlenecks
+conservation / budgets
+redundancy and error correction
+compression and description length
+local-to-global assembly
+adversarial games
+feedback and control
+symmetry breaking
+```
+
+Retain an analogy only when all of these are explicit:
+
+```text
+source situation
+common abstraction
+source-to-target role mapping
+shared constraints
+material disanalogies
+proposed transferable principle
+falsifiable target-domain validation obligation
+provenance / observation note
+```
+
+An analogy can expand the proposal basis but never supplies truth authority. Surface resemblance is rejected. A completed scan may legitimately conclude `NO_SAFE_BRIDGE_FOUND`.
+
+## F. Open and expand knowledge fibers
 
 For every unresolved atomic step record alternatives across the standard RAKL dimensions. Search broadly enough to expose missing perspectives, terminology and equivalent representations.
 
-## F. Normalize
+## G. Normalize
 
 Build terminology/ontology mappings and representation-equivalence relationships.
 
-## G. Pre-candidate gate
+## H. Record the public decision trace
 
-Do not invent or propose a candidate while the active context/method-transfer packet is missing, incomplete, unfrozen, or chronologically later than the candidate.
+Every material research transition must leave an auditable record containing:
 
-When a runtime gate exists, obey it. For mathematical research, call `plan_math_research(..., context_fiber=...)`; if `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.
+```text
+current public state / context
+atom id and parent relation
+action taken
+alternatives considered
+concise evidence-grounded selection rationale
+evidence / artifact pointers
+output / result
+uncertainties
+residuals
+proposed next action
+content hash and timestamp
+```
 
-Backfilling context after candidate generation does not repair the discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
+For strict mathematical research, the trace must conform to `schemas/math-research-trace.schema.json`. Before candidate generation the active atom must contain, in order, `ATOMIZED`, `CONTEXT_FROZEN`, `ANALOGY_SCAN`, `METHOD_TRANSFER_REVIEW`, and `NEXT_STEP_PROPOSED`.
 
-## H. Build constrained global paths
+This is a reproducible scientific decision ledger, not a raw private chain-of-thought transcript.
+
+## I. Pre-candidate gate
+
+Do not invent or propose a candidate while the active context/method-transfer/analogy packet or public trace is missing, incomplete, unfrozen, or chronologically later than the candidate.
+
+When a runtime gate exists, obey it. For mathematical research, call:
+
+```text
+plan_math_research(..., context_fiber=..., research_trace=...)
+```
+
+If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.
+
+Backfilling context or trace after candidate generation does not repair discovery chronology. Such a candidate may still be checked for truth, but it is not a strict context-first RAKL discovery artifact.
+
+## J. Build constrained global paths
 
 Compose only compatible local choices.
 
-## I. Mechanize
+## K. Mechanize
 
 Where mechanism matters, derive the effective representation from lower-level building blocks or state explicitly that the model is phenomenological/teacher-only.
 
 For a certifying mechanism lane, materialize the candidate as a typed formalism containing symbols, equation ASTs, mechanism graph, observation maps, assumptions, regimes, invariants/limits, falsifiers and provenance.
 
-## J. Construct / invent when required
+## L. Construct / invent when required
 
 Only after the pre-candidate gate passes, if existing representations do not close the registered residual, invoke the mechanism-invention workflow rather than expanding a fixed model menu blindly.
 
 Use residual-guided operators such as composition/recombination, latent-state addition, regime splitting, clock changes, coarse/fine graining, stochasticization, feedback/coupling changes, nonlinearization, symmetry/invariant operations, observation-map changes and witnessed analogical transfer.
 
-Every invention must be an explicit typed delta with parent lineage, targeted residual ids and a pointer to the context-transfer row that motivated it.
+Every invention must be an explicit typed delta with parent lineage, targeted residual ids and a pointer to the method-transfer row, witnessed analogy or residual that motivated it.
 
-## K. Identify
+## M. Identify
 
 Ask whether observations distinguish the proposed mechanisms. If not, keep an identified/model set or bounds and generate discriminators or new observation mappings.
 
-## L. Discriminate
+## N. Discriminate
 
-Choose the lowest-cost experiment with the highest expected separation or identified-set shrinkage.
+Choose the lowest-cost experiment with the highest expected separation or identified-set shrinkage. Freeze predictions and result branches before native execution.
 
-Freeze predictions and result branches before native execution.
-
-## M. Validate the validator and the formalism
+## O. Validate the validator and the formalism
 
 Require clean PASS, planted FAIL, and structural CANNOT_CHECK worlds.
 
@@ -124,17 +186,17 @@ clock/availability/leakage
 falsifier execution
 ```
 
-## N. Run real/native evidence
+## P. Run real/native evidence
 
 Use the same registered population, filtration, target, units, and split across competing candidates.
 
-## O. Read the residual
+## Q. Read the residual
 
 Do not immediately fit another arbitrary model. Classify the residual and reopen only plausible generating fibers.
 
-A failed candidate emits a residual signature that becomes direct input to the constructive invention algebra. If repeated candidates fail for the same structural reason, reopen the context fiber and search for solved sibling contexts that handle that structure before generating another candidate.
+A failed candidate emits a residual signature that becomes direct input to the constructive invention algebra. If repeated candidates fail for the same structural reason, reopen the context fiber, method-transfer matrix and analogy scan before generating another candidate.
 
-## P. Tournament and synthesize
+## R. Tournament and synthesize
 
 Maintain a candidate population and Pareto frontier across:
 
@@ -151,7 +213,7 @@ complexity
 
 Produce a global object portrait containing established/uncertain facets, representation classes, candidate mechanism ancestry, unresolved residuals and any new derived formalism.
 
-## Q. Evaluate the positive-goal contract
+## S. Evaluate the positive-goal contract
 
 If all frozen success gates and required verification checks pass, the exact candidate may advance to independent review and narrow promotion.
 
@@ -162,23 +224,24 @@ candidate rejected
 -> retain negative receipt
 -> residual diagnosis
 -> reopen context/fibers
--> update analogue/method-transfer matrix when needed
+-> update analogue/method-transfer/analogy matrix when needed
+-> record next-step decision
 -> generate/mutate/recombine
 -> freeze candidate
 -> verify
 -> retest
 ```
 
-Negative candidate evidence is never reclassified as positive closure. Persistent search never licenses fabricated evidence, target leakage, selective deletion, or post-result threshold rescue.
+Negative candidate evidence is never reclassified as positive closure. Persistent search never licenses fabricated evidence, target leakage, selective deletion, forced analogies, or post-result threshold rescue.
 
-## R. Review
+## T. Review
 
 Run same-context consistency/reflection, then isolated reviewers when independence is required. Freeze reports before synthesis.
 
-## S. Promote narrowly
+## U. Promote narrowly
 
 Promote only claims/method steps supported by their evidence scope.
 
-## T. Recurse
+## V. Recurse
 
 Any new contradiction, failure, missing facet, unexplained residual, or method weakness becomes a new RAKL child problem. If the incumbent invention-operator basis cannot cross an identified epistemic cut, open a method-basis gap and evolve RAKL itself.
