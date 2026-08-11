@@ -1,0 +1,31 @@
+problem_id: millennium-navier-stokes
+root_goal: "Establish one exact official Clay Navier–Stokes outcome (A), (B), (C), or (D)"
+active_positive_goal: "Clay statement (A): global smooth unforced solutions on R^3 for all smooth rapidly decaying divergence-free initial data"
+active_blowup_atom: NS-B1
+status: OPEN_NO_SOLUTION_CERTIFICATE
+
+success_requires:
+  exact_statement_binding: true
+  closed_proof_dag: true
+  no_unregistered_axioms: true
+  no_placeholders_or_sorries: true
+  dependency_audit: true
+  isolated_recheck_when_supported: true
+  scaling_and_solution_class_audit: true
+  pressure_and_localization_audit: true
+  bounded_novelty_audit: true
+  independent_review_count: 3
+
+non_success_states:
+  - computational_support_only
+  - self_similar_exclusion_only
+  - type_i_exclusion_with_type_ii_open
+  - conditional_regularity_without_deriving_the_condition
+  - weak_solution_existence_only
+  - partial_regularity_only
+  - ancient_liouville_theorem_without_blowup_limit_bridge
+  - neighboring_domain_or_forcing_statement
+  - same_context_review_only
+  - resource_exhaustion
+
+promotion_policy: fail_closed

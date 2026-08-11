@@ -1,0 +1,48 @@
+root:
+  id: NS0
+  statement: "Solve one exact official Clay Navier–Stokes outcome (A), (B), (C), or (D)"
+  status: OPEN_NO_SOLUTION_CERTIFICATE
+  control_issue: 83
+
+active_route:
+  id: NS-A
+  statement: "Clay statement (A): global smooth unforced R^3 solution for every smooth rapidly decaying divergence-free initial datum"
+  status: OPEN
+  children:
+    - NS-B1
+    - NS-B2
+
+atoms:
+  NS-B1:
+    title: "Type-I blow-up to rigidity-ready ancient class"
+    status: STRICT_PRE_CANDIDATE_PACKET
+    objective: "Assuming a Type-I singularity, identify the exact rescaled ancient class and the smallest inherited property needed for a valid Liouville contradiction."
+    source_backed_edges:
+      - "Type-I singularity <-> nontrivial mild bounded ancient solution with registered Type-I decay (Albritton–Barker 2019, in their stated framework)"
+      - "critical L-infinity_t L3_x control -> regularity (Escauriaza–Seregin–Šverák 2003)"
+      - "exact Leray backward self-similar profiles -> classical Liouville exclusions under source hypotheses (Nečas–Růžička–Šverák 1996; Tsai 1998)"
+    open_children:
+      NS-B1a:
+        question: "Which Type-I formulations imply which other critical/local-energy/far-field properties?"
+        status: NEXT_SOURCE_BOUND_DISCRIMINATOR
+      NS-B1b:
+        question: "Does the rescaled orbit fall into fixed, periodic, or genuinely nonperiodic ancient behavior?"
+        status: OPEN
+      NS-B1c:
+        question: "What weakest property P is inherited by every relevant Type-I ancient limit and has a matching rigidity theorem?"
+        status: OPEN
+      NS-B1d:
+        question: "Can compactness, pressure, and persistence-of-singularity hypotheses be formalized without loss or circularity?"
+        status: OPEN
+  NS-B2:
+    title: "Type-II residual"
+    status: OPEN_SIBLING_RESIDUAL
+    objective: "Characterize singular scenarios not controlled by the registered Type-I bounds."
+    note: "Success on NS-B1 does not close NS-B2 or the root."
+
+nonpromotion_rules:
+  - "self-similar exclusion is not Type-I exclusion"
+  - "Type-I exclusion is not root regularity while Type-II remains"
+  - "boundedness of one scale-invariant quantity is not an unproved implication to another"
+  - "computation is not proof"
+  - "same-context review is not independent review"

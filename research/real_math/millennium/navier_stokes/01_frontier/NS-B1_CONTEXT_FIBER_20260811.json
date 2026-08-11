@@ -1,0 +1,187 @@
+{
+  "atom_id": "NS-B1",
+  "object_context": "Conditional blow-up-classification atom for the unforced whole-space 3D incompressible Navier–Stokes Clay statement (A): assume a finite-time Type-I singularity in a suitable weak continuation of smooth rapidly decaying divergence-free data and characterize the parabolically rescaled limit strongly enough to reach a valid Liouville/rigidity contradiction. This atom does not cover Type-II concentration.",
+  "structural_coordinates": [
+    "3D incompressible Navier–Stokes parabolic scaling u_lambda(x,t)=lambda*u(lambda*x,lambda^2*t), p_lambda=lambda^2*p(lambda*x,lambda^2*t)",
+    "local suitable-weak-solution structure and local energy inequality near a candidate singular point",
+    "scale-invariant Type-I control through local velocity/gradient/pressure quantities, bounded rather than necessarily small",
+    "parabolic blow-up extraction with spatial translation, temporal translation, and scaling noncompactness",
+    "ancient time domain (-infinity,0) after rescaling a finite-time singularity",
+    "mild bounded ancient solution target class arising in the Albritton–Barker Type-I equivalence",
+    "renormalized-flow orbit type: exact self-similar=fixed point, discretely self-similar=periodic orbit, general Type-I ancient solution=broader complete trajectory",
+    "nonlocal pressure and far-field behavior must survive localization/rescaling",
+    "compactness topology and persistence-of-singularity requirement must be strong enough to prevent a nontrivial singular core from vanishing in the limit",
+    "critical regularity thresholds such as L-infinity_t L3_x are scaling-compatible but are not implied merely by generic Type-I boundedness",
+    "Type-II blow-up remains an explicit sibling residual outside this atom"
+  ],
+  "equivalent_formulations": [
+    "Albritton–Barker Type-I equivalence: a suitable weak solution has a Type-I singular point if and only if there exists a nontrivial mild bounded ancient solution satisfying their registered Type-I decay condition I<infinity.",
+    "Under logarithmic self-similar coordinates around a putative blow-up time, exact backward self-similarity becomes stationarity of the rescaled trajectory, discrete self-similarity becomes periodicity, and a general Type-I ancient limit remains a complete bounded trajectory rather than automatically a fixed point.",
+    "A rigidity route to exclude Type-I blow-up factors into (i) rescaling/compactness and nontriviality, (ii) inheritance of a property P by the ancient limit, and (iii) a Liouville theorem saying every ancient solution in class P is trivial.",
+    "Critical L3 regularity gives a different sufficient exclusion route: uniform L-infinity_t L3_x control prevents singularity, while a corresponding ancient-solution theorem can force zero from suitable L3 control along times tending to minus infinity."
+  ],
+  "solved_analogues": [
+    "Backward Leray self-similar profiles are excluded under the hypotheses of Nečas–Růžička–Šverák (1996), with Tsai (1998) extending the exclusion under broad local-energy-type assumptions.",
+    "Koch–Nadirashvili–Seregin–Šverák (2009) prove Liouville results for bounded ancient solutions in 2D and in restricted 3D axisymmetric settings, while explicitly leaving the general 3D bounded-ancient classification open."
+  ],
+  "near_solved_analogues": [
+    "Escauriaza–Seregin–Šverák (2003) prove regularity under the scale-critical L-infinity_t L3_x condition using backward uniqueness.",
+    "Albritton–Barker (2019) reduce local Type-I singularities to nontrivial mild bounded ancient solutions with Type-I decay and prove additional rigidity under stronger scale-critical weak-Lp hypotheses."
+  ],
+  "method_transfers": [
+    {
+      "source_context": "Exact backward self-similar Navier–Stokes blow-up profiles",
+      "method": "Convert exact self-similarity into a stationary elliptic profile problem and apply Liouville/integrability arguments.",
+      "shared_structure": [
+        "same Navier–Stokes scaling",
+        "same backward blow-up geometry",
+        "candidate singularity represented in renormalized variables",
+        "triviality of the limiting profile would contradict nontrivial blow-up persistence"
+      ],
+      "required_assumptions": [
+        "exact backward self-similarity or a justified reduction to a stationary rescaled profile",
+        "profile integrability/local-energy hypotheses required by the cited Liouville theorem",
+        "pressure/profile regularity sufficient for all integrations and decay arguments"
+      ],
+      "disanalogies": [
+        "a general Type-I ancient solution need not be stationary in logarithmic rescaled time",
+        "discretely self-similar solutions correspond to periodic rather than fixed rescaled trajectories",
+        "bounded Type-I control alone does not supply every integrability hypothesis used by stationary-profile proofs"
+      ],
+      "repair_question": "What additional source-derived property of an arbitrary Type-I ancient limit would force its rescaled trajectory into a stationary/periodic class already covered by a valid Liouville theorem?",
+      "source_anchors": [
+        "Nečas–Růžička–Šverák, Acta Math. 176 (1996), DOI:10.1007/BF02551584",
+        "Tsai, Arch. Rational Mech. Anal. 143 (1998), DOI:10.1007/s002050050099"
+      ]
+    },
+    {
+      "source_context": "Scale-critical L3 regularity and backward uniqueness",
+      "method": "Use compactness plus backward uniqueness/unique continuation once a scale-critical L3 hypothesis survives into the limiting solution.",
+      "shared_structure": [
+        "scale-critical control at a putative singularity",
+        "backward-in-time limit analysis",
+        "rigidity of a limiting solution can contradict singularity persistence"
+      ],
+      "required_assumptions": [
+        "uniform L-infinity_t L3_x control, or the precise ancient-solution L3 condition of the selected theorem",
+        "suitable weak/mild solution regularity needed for backward uniqueness",
+        "localization and pressure estimates meeting the theorem's hypotheses"
+      ],
+      "disanalogies": [
+        "Albritton–Barker Type-I I<infinity does not by itself give the required L3 condition",
+        "Type-I boundedness of one registered scale-invariant quantity is not known to imply all other critical formulations",
+        "pressure and far-field hypotheses cannot be silently discarded during localization"
+      ],
+      "repair_question": "Can the exact Type-I ancient class be shown to acquire a critical L3-type property strong enough for backward-uniqueness rigidity, without assuming the desired regularity in disguise?",
+      "source_anchors": [
+        "Escauriaza–Seregin–Šverák, Russian Math. Surveys 58 (2003), DOI:10.1070/RM2003v058n02ABEH000609",
+        "Albritton–Barker, J. Math. Fluid Mech. 21:43 (2019), DOI:10.1007/s00021-019-0448-z"
+      ]
+    },
+    {
+      "source_context": "Compactness-rigidity reduction of Type-I singularities to ancient solutions",
+      "method": "Rescale around a singular point, extract an ancient solution with inherited scale-invariant bounds, preserve nontriviality/singularity, then apply a Liouville theorem to the ancient class.",
+      "shared_structure": [
+        "parabolic scaling",
+        "local energy compactness",
+        "ancient limit generated by zooming into a hypothetical singularity",
+        "contradiction follows if the inherited ancient class has a rigidity theorem"
+      ],
+      "required_assumptions": [
+        "uniform local scale-invariant bounds sufficient for compactness",
+        "pressure decomposition/local control",
+        "persistence of singularities or another nontriviality mechanism under convergence",
+        "a Liouville theorem matching exactly the inherited ancient-solution class"
+      ],
+      "disanalogies": [
+        "the general 3D bounded ancient Liouville problem is itself open",
+        "compactness can lose far-field information or concentrate defects unless the topology is audited",
+        "Type-II blow-up may fail the Type-I bounds used to obtain this compact ancient class"
+      ],
+      "repair_question": "Which weakest additional inherited property P can be proved for every Type-I ancient limit and already has, or plausibly supports, a source-valid Liouville theorem?",
+      "source_anchors": [
+        "Koch–Nadirashvili–Seregin–Šverák, Acta Math. 203 (2009), DOI:10.1007/s11511-009-0039-6",
+        "Albritton–Barker, J. Math. Fluid Mech. 21:43 (2019), DOI:10.1007/s00021-019-0448-z"
+      ]
+    },
+    {
+      "source_context": "Caffarelli–Kohn–Nirenberg epsilon-regularity for suitable weak solutions",
+      "method": "Control scale-invariant local energy/pressure quantities and infer regularity when the registered critical quantity becomes sufficiently small.",
+      "shared_structure": [
+        "suitable weak solution near a candidate singular point",
+        "parabolic cylinders",
+        "scale-invariant local velocity/gradient/pressure quantities",
+        "regularity inferred from quantitative local control"
+      ],
+      "required_assumptions": [
+        "suitable weak solution and local energy inequality",
+        "the precise epsilon-smallness hypothesis of the chosen partial-regularity criterion",
+        "consistent pressure normalization/localization"
+      ],
+      "disanalogies": [
+        "Type-I gives boundedness, not the epsilon-smallness needed for direct regularity",
+        "a scale-invariant quantity can remain bounded away from zero on all singular scales",
+        "partial regularity does not classify the full ancient limit"
+      ],
+      "repair_question": "Can a Type-I ancient limit be shown, by an independent decay/rigidity mechanism, to enter an epsilon-regularity regime at some scale without circularly assuming regularity?",
+      "source_anchors": [
+        "Caffarelli–Kohn–Nirenberg, Comm. Pure Appl. Math. 35 (1982), DOI:10.1002/cpa.3160350604"
+      ]
+    }
+  ],
+  "explicit_disanalogies": [
+    "Excluding exact or discrete self-similarity does not exclude a genuinely nonperiodic bounded ancient trajectory.",
+    "Excluding all Type-I singularities would still leave Type-II finite-time singularities as an explicit root-level residual.",
+    "Scale-invariant boundedness is not the same as critical-norm smallness and is not automatically equivalent across velocity, vorticity, gradient, and pressure formulations.",
+    "The 3D Navier–Stokes rescaled flow lacks a known coercive monotonicity formula or critical conserved quantity that would automatically collapse omega-limit sets to equilibria.",
+    "Nonlocal pressure and far-field behavior can invalidate naive localization or weak-limit arguments.",
+    "Forward self-similar or discretely self-similar Navier–Stokes solutions show that scale invariance alone cannot be treated as a contradiction; the backward-time, energy, integrability, and ancient-solution hypotheses are load-bearing."
+  ],
+  "source_anchors": [
+    "Fefferman, 'Existence and smoothness of the Navier-Stokes equation', official Clay Mathematics Institute problem description",
+    "Caffarelli–Kohn–Nirenberg, Comm. Pure Appl. Math. 35 (1982), DOI:10.1002/cpa.3160350604",
+    "Nečas–Růžička–Šverák, Acta Math. 176 (1996), DOI:10.1007/BF02551584",
+    "Tsai, Arch. Rational Mech. Anal. 143 (1998), DOI:10.1007/s002050050099",
+    "Escauriaza–Seregin–Šverák, Russian Math. Surveys 58 (2003), DOI:10.1070/RM2003v058n02ABEH000609",
+    "Koch–Nadirashvili–Seregin–Šverák, Acta Math. 203 (2009), DOI:10.1007/s11511-009-0039-6",
+    "Albritton–Barker, J. Math. Fluid Mech. 21:43 (2019), DOI:10.1007/s00021-019-0448-z",
+    "research/real_math/millennium/navier_stokes/01_frontier/NS-B1_SOURCE_PACKET_20260811.md"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "mathematical physics / dynamical systems",
+      "source_situation": "Renormalization analysis of critical phenomena distinguishes fixed points, limit cycles, and more general bounded recurrent trajectories under repeated changes of scale.",
+      "common_abstraction": [
+        "repeated scale transformation generates an evolution in representation space",
+        "fixed points encode exact scale invariance",
+        "periodic orbits encode discrete scale invariance",
+        "bounded trajectories need not converge to fixed points without compactness plus a Lyapunov/rigidity mechanism"
+      ],
+      "source_to_target_mapping": [
+        "renormalization scale -> logarithmic time before a Navier–Stokes blow-up",
+        "renormalized state -> rescaled velocity/pressure field",
+        "fixed point -> exact backward self-similar profile",
+        "limit cycle -> discretely self-similar profile",
+        "general bounded trajectory -> Type-I ancient rescaled flow"
+      ],
+      "shared_constraints": [
+        "scale transformation preserves the critical structure of the equations/observables",
+        "classification depends on the topology in which the rescaled orbit is compact",
+        "a fixed-point theorem cannot classify arbitrary recurrent orbits without extra structure"
+      ],
+      "disanalogies": [
+        "Navier–Stokes has nonlocal pressure and no known global renormalization-group Lyapunov functional strong enough to classify all Type-I trajectories",
+        "the target needs PDE-regularity and local-energy control, not only abstract dynamical boundedness",
+        "renormalization analogies do not supply backward uniqueness, compactness, or a Liouville theorem"
+      ],
+      "proposed_principle": "Classify the orbit type and inherited compactness/decay properties of the rescaled Type-I flow before applying any rigidity theorem derived only for stationary profiles.",
+      "validation_obligation": "In the target PDE, prove the exact rescaled evolution, topology/precompactness, inherited bounds, and either convergence/periodicity or a Liouville theorem for the full resulting trajectory class; a fixed-point-only theorem fails this obligation.",
+      "provenance_note": "Structural proposal only, motivated by standard renormalization/dynamical-systems distinctions; no theorem authority is imported."
+    }
+  ],
+  "analogy_scan_notes": "One structural bridge retained. Everyday visual 'zoom movie' metaphors were rejected as too weak to add information beyond the rigorous fixed-point/periodic/general-trajectory distinction.",
+  "frozen_at": "2026-08-11T06:01:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:d5666877dec65123c26a2ed2b0e5961a18ab1e284a3980ee13ec1cd8a67d9395"
+}
