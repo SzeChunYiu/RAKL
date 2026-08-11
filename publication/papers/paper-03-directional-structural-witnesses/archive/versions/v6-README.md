@@ -76,16 +76,3 @@ control. Before any external label became visible, v1 froze:
 The model asset is not staged in this clean environment. The builder therefore
 fails closed with zero descriptors. This is governance progress, not an
 empirical result, and compute remains unauthorized.
-
-The native successor now has a frozen two-job LUNARC contract: an allocated CPU
-job must download and locally hash-verify the exact public BGE snapshot before a
-separate allocated CPU job may execute the label-blind descriptor. The second
-submission requires a scheduler-bound stage harvest, exact clean merged checkout
-SHA, an exact shared-runtime tree digest attested by the allocated stage job,
-offline fast-tokenizer probe, and unchanged model/runtime content digests. A
-descriptor harvest additionally requires a payload-free chronology receipt made
-after the descriptor (or a first-label cutoff) that proves the descriptor
-predates external labels. The freeze-time zero-label observation alone cannot
-promote a later descriptor.
-No job has yet been submitted under this contract, so the descriptor remains
-absent and all scientific claims remain unchanged.

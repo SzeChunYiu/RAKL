@@ -2,7 +2,7 @@
 
 **Title:** Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer
 
-**Canonical source:** `publication/papers/paper-03-directional-structural-witnesses/main_v7.tex`
+**Canonical source:** `publication/papers/paper-03-directional-structural-witnesses/main.tex`
 
 **Publication track:** diagnostic formalism / benchmark-design preprint.
 
@@ -16,7 +16,8 @@ The current manuscript supports a reproducible directional-witness formalism and
 - the 44-item internal diagnostic is explicitly labelled constructed and same-session;
 - the fresh 16-item natural-domain packet is frozen;
 - a strong content-semantic comparator protocol and parent-applicability contract are frozen before labels;
-- expensive training/inference correctly fails closed while prerequisite gates remain open.
+- expensive training/inference correctly fails closed while prerequisite gates remain open;
+- superseded manuscript and section versions are archived inside this paper directory; `main.tex` is now the canonical current manuscript.
 
 ## Open coordinates for the stronger empirical paper
 
