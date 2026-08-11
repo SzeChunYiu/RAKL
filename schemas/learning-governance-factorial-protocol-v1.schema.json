@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/learning-governance-factorial-protocol-v1.schema.json",
+  "title": "RAKL learning x governance 2x2 factorial protocol v1",
+  "description": "Protocol freeze for Paper II continual-learning x authority-governance factorial (issue #155). No evaluated model results.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "issue",
+    "reasons",
+    "grants_scientific_authority",
+    "artifact_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "learning-governance-factorial-protocol-v1"},
+    "status": {
+      "enum": ["STUB_FROZEN", "PROTOCOL_FROZEN", "INSUFFICIENT_EVIDENCE", "CANNOT_CHECK"]
+    },
+    "issue": {"type": "integer", "minimum": 1},
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "grants_scientific_authority": {"const": false},
+    "artifact_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

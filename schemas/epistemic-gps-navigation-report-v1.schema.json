@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/epistemic-gps-navigation-report-v1.schema.json",
+  "title": "RAKL epistemic GPS navigation report v1",
+  "description": "Proposal-only epistemic navigation telemetry (issue #130). Never a proof certificate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "issue",
+    "reasons",
+    "grants_scientific_authority",
+    "artifact_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "epistemic-gps-navigation-report-v1"},
+    "status": {
+      "enum": ["STUB_FROZEN", "PROTOCOL_FROZEN", "INSUFFICIENT_EVIDENCE", "CANNOT_CHECK"]
+    },
+    "issue": {"type": "integer", "minimum": 1},
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "grants_scientific_authority": {"const": false},
+    "artifact_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
