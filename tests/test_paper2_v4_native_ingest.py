@@ -9,8 +9,6 @@ import pytest
 from rakl.paper2_pendulum_microtrial import MicrotrialPreflightVerdict, audit_execution_packet
 from rakl.paper2_pendulum_microtrial_v4_1 import normalize_pendulum_output_v4_1
 
-jsonschema = pytest.importorskip("jsonschema")
-
 
 ROOT = Path(__file__).resolve().parents[1]
 V4 = ROOT / "research/paper2_microtrial_v4"
@@ -29,6 +27,7 @@ def _sha(path: Path) -> str:
 
 
 def test_native_ingest_schema_and_every_copied_byte_are_bound() -> None:
+    jsonschema = pytest.importorskip("jsonschema")
     receipt = _load(INGEST)
     schema = _load(ROOT / "schemas/paper2-v4-native-ingest-receipt.schema.json")
     jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker()).validate(receipt)
