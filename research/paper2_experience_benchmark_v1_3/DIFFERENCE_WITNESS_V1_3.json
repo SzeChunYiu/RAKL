@@ -1,0 +1,42 @@
+{
+  "schema_version": "paper2-experience-benchmark-difference-witness-v1",
+  "issue": 247,
+  "parent_packet": "paper2-experience-benchmark-v1_2",
+  "parent_protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
+  "parent_job_id": "3476548",
+  "challenger_packet": "paper2-experience-benchmark-v1_3",
+  "challenger_protocol_subject_hash": "ed116353230dc526fa45657d1a81afab26a460fe3b8411480a0f84bb1f711672",
+  "what_changed": [
+    "learning_loop_mode=root_cause_v1 (RC1: failed episodes mint no reusable Lesson; verified D lessons require freeze+evaluator receipt)",
+    "RC2 selective materialization with retrieval receipts instead of whole-state prompt dump",
+    "Phase 0 causal arm ladder with ORACLE_PROCEDURE_UPPER_BOUND first",
+    "Phase 1 first job is 0.5B ORACLE FRESH_TRANSFER-only (no staircase/1.5B yet)",
+    "resource ceiling max_external_retrieval_calls 0 -> 16 to allow selective/oracle retrieval telemetry",
+    "issue ownership moves from #138 §B to #247; #138 stays closed"
+  ],
+  "what_did_not_change": [
+    "Qwen2.5-0.5B-Instruct model identity/revision/snapshot",
+    "OUTPUT_SCHEMA enum and JSON skeleton prompt contract",
+    "EVALUATOR_PROTOCOL scoring thresholds",
+    "task sealed answers D1–D3/T1–T3 bytes",
+    "initial S0 schema"
+  ],
+  "restored_or_replaced_assumptions": [
+    {
+      "broken_in_parent": "RC1 — all D tasks failed and LEARNING minted generic pseudo-lessons",
+      "repair": "root_cause_v1 refuses auto-Lesson on failure; verified lessons only via explicit feedback path"
+    },
+    {
+      "broken_in_parent": "RC2 — LEARNING whole-state dump with retrieval_calls=0",
+      "repair": "selective materialization + ORACLE checklist injection with retrieval receipts"
+    }
+  ],
+  "explicitly_not_scale_only": true,
+  "scale_only_witness_forbidden_reason": "Close prior failure 3476548 is not isolable to model scale; RC1/RC2 learning-loop coordinates remained broken under any 1.5B v1.2 clone.",
+  "why_old_falsifier_may_no_longer_apply": "v1.2 measured RESET vs dump+pseudo-lessons. After RC1/RC2 repair, a null can be attributed to capability floor (ORACLE), lesson induction, or retrieval rather than the broken loop.",
+  "cheapest_test_that_difference_is_illusory": "Run Phase-1 0.5B ORACLE alone. If parse-valid success_rate < 2/3, MODEL_CAPABILITY_FLOOR and learning-loop repair did not restore executability. If INSTRUMENT_DEFECT (parse-invalid), repair harness before any scale claim.",
+  "v4_1_score_reuse_allowed": false,
+  "paper3_issue_217_path": false,
+  "reopen_issue_138": false,
+  "reinterpret_parent_job_3476548_as_lift": false
+}
