@@ -1,26 +1,18 @@
-# RAKL Publication Workspace
+# RAKL publications
 
-This directory is the canonical publication workspace. Research evidence, experiments, frozen receipts, discovery logs and scientific working state remain under `research/`.
+This is the reader-facing publication directory. It contains only the four canonical paper packages.
 
-## Canonical papers
+**Author:** Sze Chun Yiu  
+**Affiliation:** Stockholm University  
+**Corresponding email:** sze-chun.yiu@fysik.su.se
 
-- `papers/paper-01-epistemic-mechanics/` — **Epistemic Mechanics for Evidence-Governed Scientific Research**
-- `papers/paper-02-rakl-evidence-governed-research/` — **RAKL for Evidence-Governed AI-Assisted Scientific Research**
-- `papers/paper-03-directional-structural-witnesses/` — **Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**
-- `papers/paper-04-verified-discovery/` — **Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research**
+## Papers
 
-Each paper directory contains a `PUBLICATION_STATUS.md` that separates what can be published now from stronger claims that remain evidence-gated.
+1. `papers/paper-01-epistemic-mechanics/` — **Epistemic Mechanics for Evidence-Governed Scientific Research**
+2. `papers/paper-02-rakl-evidence-governed-research/` — **RAKL for Evidence-Governed AI-Assisted Scientific Research**
+3. `papers/paper-03-directional-structural-witnesses/` — **Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer**
+4. `papers/paper-04-verified-discovery/` — **Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research**
 
-## Other publication material
+Each paper package exposes its canonical TeX entry point as `main.tex`. Release PDFs are stored beside it as `main.pdf` once the exact-source publication build has passed.
 
-- `reviews/` — active external-review/annotation solicitation packages.
-- `shared/` — current cross-paper editorial standards, figure guidance, references and terminology material.
-- `archive/` — superseded manuscript drafts, old arXiv/release packages, legacy sources and historical editorial/audit material. Archive contents remain immutable historical evidence; they are not canonical submission sources.
-
-## Compatibility
-
-Historical repository paths are retained as lightweight aliases where current CI, builders or frozen receipts still depend on them. New work must use the canonical `publication/papers/...`, `publication/reviews/...`, `publication/shared/...` and `publication/archive/...` paths.
-
-## Publication policy
-
-A public preprint may be released when its manuscript truthfully states its current evidence boundary and the exact-head build/CI package is clean. Stronger empirical or journal-level claims remain blocked whenever the corresponding result, independent-review or reproduction evidence does not exist. Missing evidence is never filled by prose.
+Editorial/review/reference/figure-production material is kept out of this directory under `publishing/`. Superseded drafts and release history are kept under `archive/publication/`. Research experiments, receipts and scientific provenance remain under `research/`.

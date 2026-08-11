@@ -1,0 +1,213 @@
+\appendix
+
+\section{Notation and transition ledger}
+
+This appendix collects the objects used in the main text so that the formalism can be read without inferring overloaded meanings from prose.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.27\textwidth} >{\raggedright\arraybackslash}p{0.44\textwidth}}
+\toprule
+Symbol & Type & Meaning \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Type & Meaning \\
+\midrule
+\endhead
+\(C_i\) & local scientific chart & Domain, representation, context, evidence, uncertainty and scoped authority. \\
+\(K_t\) & canonical state & Persistent evidence-governed state at research time \(t\). \\
+\(\mathcal P_t\) & proposal set & Candidate claims/actions emitted by generative operators; no canonical write authority. \\
+\(V\) & verifier & Typed map returning supported, refuted, partially identified, blocked or cannot-check outcomes. \\
+\(\alpha(c)\) & authority vector & Grounding, representation, mechanism, identification and decision/QoI certificate coordinates. \\
+\(T_{ij}^{\tau,\sigma}\) & typed transition & Alignment/conversion/approximation relation between local charts, with relation type and scope. \\
+\(\mathfrak C\) & compatibility object & Typed atoms, witnessed pair relations and constructive paths; not automatically an order-theoretic lattice. \\
+\(\cl\) & closure operator & Extensive, monotone and idempotent operator on sets of epistemic atoms. \\
+\(\mathcal L_{\cl}\) & closed-state lattice & Fixed points of \(\cl\), ordered by inclusion. \\
+\(W_t\) & transient workspace & Capacity-bounded active computational state with selection/broadcast/intervention metadata. \\
+\(\Pi^{\mathrm{cog}}\) & cognitive provenance & Influence of active computational objects on proposals. \\
+\(\Pi^{\mathrm{evid}}\) & evidential provenance & Evidence-to-claim lineage through registered verification. \\
+\(\Sigma(f)\) & functional signature & Inputs, outputs, constraints, relations, dynamics and failure/intervention coordinates for an unowned function. \\
+\(\mathcal R\) & discovery route family & Heterogeneous OWMD search routes, including an ontology-independent route. \\
+\(\mathcal B\) & saturation basis & Frozen scope, identity, route, novelty and evidence semantics for a saturation comparison. \\
+\(\Delta_r\) & epistemic growth vector & Marginal substantive knowledge changes observed in research/review round \(r\). \\
+\bottomrule
+\end{longtable}
+
+\subsection{Transition classes}
+
+A complete deployment can refine the transition set, but the formal paper assumes at least the following distinction:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{proposal transitions} create candidate hypotheses, plans, explanations, derivations or search actions;
+\item \textbf{workspace transitions} select, broadcast, evict, substitute or reweight active computational objects;
+\item \textbf{verification transitions} bind proposals to evidence/context and return typed outcomes;
+\item \textbf{alignment transitions} relate representations, regimes or observation coordinates;
+\item \textbf{promotion transitions} modify the current valid canonical view when required certificates are present;
+\item \textbf{archival transitions} append immutable provenance, negative history and supersession records;
+\item \textbf{discovery transitions} create route records, mechanism candidates and owner/fiber updates; and
+\item \textbf{saturation transitions} evaluate marginal knowledge growth and issue or revoke a bounded saturation certificate.
+\end{enumerate}
+
+The separation matters because only a subset of these transitions can change current authority. In particular, workspace and discovery operations may produce proposals about scientific state, but their outputs remain proposals until verification/promotion occurs.
+
+\section{Additional derivations and counterexamples}
+
+\subsection{The parity obstruction as a constraint matrix}
+
+The three parity equations from Section~4 can be written over \(\mathbb F_2\) as
+\[
+\begin{bmatrix}
+1&1&0\\
+0&1&1\\
+1&0&1
+\end{bmatrix}
+\begin{bmatrix}x\\y\\z\end{bmatrix}
+=
+\begin{bmatrix}0\\0\\1\end{bmatrix}.
+\]
+Adding the first two equations yields \(x+z=0\), while the third requires \(x+z=1\). The system therefore has no global solution. Removing any one row leaves a consistent system, which makes the obstruction irreducibly higher-order with respect to the three registered contexts.
+
+This representation also suggests an implementation strategy. Pairwise witnesses can be augmented with a constraint object whose support lists all charts involved. A path is globally admissible only if the union of its active constraints is satisfiable under the registered theory. The current pairwise reference implementation does not yet perform this general constraint solve; the paper therefore records it as a future extension rather than silently attributing higher-order gluing to the existing code.
+
+\subsection{Closure-system join in finite examples}
+
+Let \(A=\{a,b,c\}\) and suppose the closure rules are
+\[
+a,b\in X\Rightarrow c\in\cl(X),
+\qquad c\in X\Rightarrow c\in\cl(X),
+\]
+with all sets otherwise closed under identity. Then \(\{a\}\) and \(\{b\}\) are closed, but their set union \(\{a,b\}\) is not. In the closed-state lattice,
+\[
+\{a\}\vee\{b\}
+=\cl(\{a,b\})
+=\{a,b,c\}.
+\]
+This is why a lattice join should not be implemented as concatenating two state fragments. The closure operator must add whatever consequences are licensed by its own rules, and those rules themselves must be epistemically justified.
+
+\subsection{Product-order incomparability}
+
+For authority coordinates with componentwise set inclusion, take
+\[
+\alpha=(\{g_1,g_2\},\{r_1\},\varnothing,\{i_1\},\varnothing)
+\]
+and
+\[
+\beta=(\{g_1\},\{r_1\},\{m_1,m_2\},\varnothing,\varnothing).
+\]
+The grounding coordinate of \(\alpha\) strictly dominates that of \(\beta\), while the mechanism coordinate of \(\beta\) strictly dominates that of \(\alpha\). Hence the states are incomparable. A weighted sum can order them after weights are chosen, but that order is a decision policy dependent on the weights; it is not the authority partial order itself.
+
+\subsection{Sensitivity of the workspace selection theorem}
+
+The proof in Section~6 relies on unit item cost and additive utility. To see why, suppose two unreserved candidates have utilities \(u_1=6,u_2=5\) but costs \(c_1=3,c_2=1\), and only two units of residual capacity remain. Global priority by \(u\) would attempt to select item 1 even though it is infeasible, while item 2 is feasible. With several heterogeneous costs the residual problem becomes a knapsack instance.
+
+Similarly, let two candidates each have individual utility 5 but a redundancy penalty of 8 when co-selected. Additive greedy selection assigns value 10 to the pair, while the true joint utility is 2. A diversity-aware workspace therefore requires either a different optimization objective or a submodular/structured selection algorithm. The theorem should not be cited outside the assumptions printed in its statement.
+
+\section{Bounded-saturation audit protocol}
+
+The paper-construction loop uses the same semantics as the framework-level saturation object. A review round is not defined by an editing session; it is defined by a frozen expansion question and a ledger of substantive changes.
+
+\subsection{Round procedure}
+
+Each saturation round performs, at minimum:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{formal pass}: search for missing assumptions, invalid implications, stronger counterexamples, alternative definitions and hidden type coercions;
+\item \textbf{prior-art pass}: search exact terminology, functional paraphrases, historical precursors, mathematical equivalents, implementation analogues and citation neighborhoods;
+\item \textbf{evidence pass}: look for independent primary sources that change support, refutation or scope rather than merely increasing citation count;
+\item \textbf{adversarial pass}: actively search for cases that reverse, break or subsume a claimed mechanism;
+\item \textbf{freshness pass}: search literature through the registered cutoff;
+\item \textbf{editorial pass}: apply the Nature-skills writing/polishing logic to argument order, section function, claim support and overstatement; and
+\item \textbf{growth accounting}: record \(\Delta_r\) and reopen every affected manuscript/framework object before judging saturation.
+\end{enumerate}
+
+A round is flat only when the formal, evidential and novelty state is unchanged. Stylistic edits can still occur in a flat round, but they are recorded as representation-only changes and cannot be used to claim additional epistemic progress.
+
+\subsection{Why two or more flat rounds}
+
+One flat pass can be an artifact of a bad query or a reviewer sharing the same blind spot as the previous pass. Requiring a suffix of flat rounds does not solve this problem probabilistically, but it forces the process to survive different perturbations. The intended practice is to vary route families and reviewer lenses while keeping the saturation basis fixed. If the perturbation reveals new substantive knowledge, the flat-round count resets.
+
+The criterion should be strengthened when stakes increase. A public methods release can use same-context internal adversarial passes as an engineering gate if that limitation is disclosed. A claim of independent peer review requires genuinely independent reviewers. A high-stakes empirical conclusion may require external replication or domain-specific evidence standards. The saturation software records the basis; it does not erase these distinctions.
+
+\subsection{Saturation record for a manuscript}
+
+For a manuscript artifact \(P\), one can define a projection
+\[
+\pi_P(K)=
+(\text{claims},\text{proofs},\text{sources},\text{figures},\text{scope boundaries})
+\]
+of the broader canonical research state. A literature discovery may change \(K\) without changing \(P\) if it is genuinely irrelevant to the manuscript question. Conversely, a change in the novelty boundary must change \(P\) even if the equations remain identical. The manuscript is saturated only when all knowledge changes relevant under \(\pi_P\) are flat for the required rounds.
+
+This projection prevents a perverse interpretation of ``accumulate until nothing grows.'' A paper need not contain every object in the project archive. It must contain every object required to make its own claims, derivations, boundaries and nearest-work relationships defensible under the registered scope.
+
+\section{Reproducibility and implementation correspondence}
+
+This appendix carries implementation metadata so the main scientific argument does not contain a numbered chapter devoted to repository bookkeeping.
+
+\subsection{Source layout}
+
+The manuscript is maintained as a modular TeX project:
+
+\begin{itemize}[leftmargin=*]
+\item \path{paper/epistemic_mechanics_round050/main.tex}: document driver, packages, notation and section inputs;
+\item \path{paper/epistemic_mechanics_round050/sections/01_introduction_foundations_state.tex}: introduction, related foundations and canonical-state mechanics;
+\item \path{paper/epistemic_mechanics_round050/sections/02_compatibility_authority.tex}: compatibility, gluing, closure-system lattice and scalar inadequacy;
+\item \path{paper/epistemic_mechanics_round050/sections/03_workspace.tex}: workspace lineage, constrained selection and provenance;
+\item \path{paper/epistemic_mechanics_round050/sections/04_owmd.tex}: OWMD and bounded epistemic saturation;
+\item \path{paper/epistemic_mechanics_round050/sections/05_pendulum_discussion.tex}: worked mechanics derivation, discussion and conclusion;
+\item \path{paper/epistemic_mechanics_round050/sections/06_appendices.tex}: notation, additional derivations, saturation protocol and reproducibility; and
+\item \path{paper/epistemic_mechanics_round050/sections/07_bibliography.tex}: complete manuscript bibliography.
+\end{itemize}
+
+The release builder recursively inlines the local \verb|\input| files and then binds the resulting single TeX artifact to the exact evaluated Git subject and observed software-test count. Thus the repository is convenient to edit by scientific section while the CI artifact is self-contained for archival/submission purposes.
+
+\subsection{Reference implementation}
+
+The principal code correspondences are:
+
+\begin{itemize}[leftmargin=*]
+\item \path{src/rakl/typed_lattice.py} and \path{src/rakl/compatibility_complex.py}: atoms, pairwise compatibility witnesses, constructive paths and the conservative compatibility-complex name;
+\item \path{src/rakl/lattice_metrology.py}: basis-bound geometric metrics and target-conditioned epistemic gain;
+\item \path{src/rakl/workspace.py}: capacity gate, reservation policy, broadcast, interventions and cognitive/evidential provenance types;
+\item \path{src/rakl/open_world_discovery.py}: functional signatures, capability owners, route records, audit provenance, bounded discovery closure, discovery workspace and hidden-name benchmark;
+\item \path{src/rakl/epistemic_saturation.py}: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry; and
+\item the corresponding test modules: executable regression contracts for these invariants.
+\end{itemize}
+
+The exact public build of this manuscript is bound to:
+
+\begin{center}
+\ImplementationSHA
+\end{center}
+
+The same checkout reports \SoftwareTests{} passing software tests. Those tests establish reference-mechanics behavior and release reproducibility. They are not an empirical validation of scientific superiority.
+
+\subsection{Release preflight}
+
+The continuous-integration workflow reconstructs deterministic receipts and publication figures, stages the framework manuscripts and this paper, compiles all PDFs, fails on overfull boxes or unresolved citations/references, renders every PDF page to raster images and uploads the complete publication-review artifact. For this long-form paper the workflow additionally requires at least 20 PDF pages and requires the number of rendered page images to match the PDF page count.
+
+The source-level test also guards substantive depth rather than page count alone. It checks for the main formal results and worked mechanics section, requires a large body-word count, requires at least forty distinct bibliography entries and demands that every bibliography item is actually cited in the expanded manuscript. These guards do not substitute for scientific review, but they prevent accidental regression to the earlier short note.
+
+\section{Claim-to-evidence and claim-to-code map}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}p{0.31\textwidth}}
+\toprule
+Paper claim & Formal/evidential support & Executable correspondence \\
+\midrule
+\endfirsthead
+\toprule
+Paper claim & Formal/evidential support & Executable correspondence \\
+\midrule
+\endhead
+Workspace selection changes access, not authority & Proposition in Section 6; type/codomain argument & \path{workspace.py}; workspace tests \\
+Coactivation does not imply compatibility & Explicit contradictory-selection countermodel & \path{coactivation_pairs}; workspace tests \\
+Current atom/witness/path object is not itself a lattice & Lattice-definition audit; absent order/meet/join obligations & \path{compatibility_complex.py}; terminology tests \\
+Closed states of a valid closure operator form a complete lattice & Closure-system theorem in Section 4 & Formal result; universal closure operator not yet implemented \\
+Pairwise compatibility need not glue globally & Three-context parity obstruction & Formal result; higher-order solver remains an open implementation fiber \\
+Authority cannot be faithfully represented by one scalar when incomparability exists & Total-order contradiction theorem in Section 5 & Authority remains coordinate-typed in framework design \\
+OWMD can issue only bounded closure & Finite-transcript non-certifiability theorem & \path{open_world_discovery.py}; closure tests \\
+Hidden-name retrieval must be ontology-independent & GWT-OMISSION-01 definition & hidden-name benchmark tests \\
+Saturation requires repeated zero substantive gain under stable basis & finite-basis fixed-point theorem plus operational certificate & \path{epistemic_saturation.py}; saturation tests \\
+New substantive knowledge reopens saturation & suffix-flatness proposition & saturation regression test \\
+Pendulum amplitude independence is only approximate & exact elliptic-integral derivation and series & deterministic known-answer research trace \\
+Ideal pendulum mass invariance is structural & cancellation of \(m\) in Euler--Lagrange equation & deterministic known-answer research trace \\
+\bottomrule
+\end{longtable}
