@@ -18,6 +18,18 @@ from .evolution_archive import (
     record_evolution_trial,
     register_challenger,
 )
+from .experience_benchmark import (
+    ArmPhaseMetrics,
+    ExperienceBenchmarkArm,
+    ExperienceBenchmarkPacket,
+    ExperienceBenchmarkPhase,
+    ExperienceBenchmarkReport,
+    ExperienceBenchmarkRun,
+    ExperienceBenchmarkValidation,
+    ExperienceBenchmarkVerdict,
+    assess_experience_benchmark,
+    validate_experience_benchmark,
+)
 from .experience_learning import (
     ConsolidationVerdict,
     LessonConsolidationEvidence,
@@ -106,6 +118,7 @@ from .v3_runtime import (
 )
 
 __all__ = [
+    "ArmPhaseMetrics",
     "ConsolidationOutcome",
     "ConsolidationVerdict",
     "DriverRequest",
@@ -114,6 +127,13 @@ __all__ = [
     "EpisodeOutcome",
     "EvolutionArchive",
     "EvolutionEdge",
+    "ExperienceBenchmarkArm",
+    "ExperienceBenchmarkPacket",
+    "ExperienceBenchmarkPhase",
+    "ExperienceBenchmarkReport",
+    "ExperienceBenchmarkRun",
+    "ExperienceBenchmarkValidation",
+    "ExperienceBenchmarkVerdict",
     "ExperienceConditionedPath",
     "ExperienceLedger",
     "FailureProjectionSpec",
@@ -159,6 +179,7 @@ __all__ = [
     "add_novelty_round",
     "add_substrate_edge",
     "add_substrate_node",
+    "assess_experience_benchmark",
     "assess_invention_readiness",
     "assess_lesson_consolidation",
     "assess_rakl_triviality",
@@ -191,5 +212,6 @@ __all__ = [
     "register_challenger",
     "run_learning_turn",
     "validate_episode",
+    "validate_experience_benchmark",
     "validate_lesson",
 ]
