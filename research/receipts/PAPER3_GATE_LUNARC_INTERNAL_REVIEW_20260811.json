@@ -1,0 +1,117 @@
+{
+  "schema_version": "paper3-gate-lunarc-internal-review-v1",
+  "review_id": "paper3-gate-lunarc-internal-review-20260811",
+  "created_at_utc": "2026-08-11T03:40:39Z",
+  "parent_subject_sha": "af2d0be61522d1f8f657a48daaf6369ff3e44a3e",
+  "object": "Paper 3 cheap-gate audit and separate LUNARC training/inference submission path",
+  "quantity_of_interest": "whether the implementation preserves the closed evidence gate and is internally ready for a later exact gate-authorized submission",
+  "review_class": "same_context_recursive_nature_skills_style_review_not_independent_review_or_peer_review",
+  "claim_boundary": "Engineering readiness and negative gate state only. No external annotation, confirmed structural signal, training result, inference result, efficiency result, break-even result, independent review, peer review, acceptance or publication is claimed.",
+  "verdict": "INTERNALLY_READY_FAIL_CLOSED_NO_COMPUTE_AUTHORIZATION",
+  "lenses": [
+    {
+      "lens": "scientific_authority_and_chronology",
+      "findings": [
+        {
+          "concern_id": "P3-LUNARC-R1-MISSING-EXTERNAL-EVIDENCE",
+          "status": "open_external_gate",
+          "finding": "The v2.1 solicitation has zero registered external annotations, no adjudication and no provenance audit. The wrapper therefore returns a machine-readable refusal and never invokes sbatch."
+        },
+        {
+          "concern_id": "P3-LUNARC-R1-CONTROL-STRENGTH",
+          "status": "open_before_confirmatory_promotion",
+          "finding": "Dependency-aware Jaccard/tag overlap is the strongest implemented parent control. A modern frozen semantic control and faithful applicable skill/workflow parents must be frozen before result access for a publication-level incremental mechanism claim."
+        }
+      ]
+    },
+    {
+      "lens": "hostile_execution_safety",
+      "findings": [
+        {
+          "concern_id": "P3-LUNARC-R1-PYTHON-ASSERT",
+          "status": "resolved",
+          "finding": "All allocated-node scientific and execution gates use explicit exceptions rather than assert, so python -O cannot remove them."
+        },
+        {
+          "concern_id": "P3-LUNARC-R1-WORKLOAD-CONFUSION",
+          "status": "resolved",
+          "finding": "Training and frozen inference have distinct scripts, model modes, resource profiles and exact SHA-256 allowlists; hostile substitution never reaches sbatch."
+        },
+        {
+          "concern_id": "P3-LUNARC-R1-EXPORT-INJECTION",
+          "status": "resolved",
+          "finding": "Comma and newline characters are forbidden in sbatch-exported paths, shell execution is disabled, and tests preserve the refusal path."
+        }
+      ]
+    },
+    {
+      "lens": "reproducibility_and_provenance",
+      "findings": [
+        {
+          "concern_id": "P3-LUNARC-R1-NODE-RECHECK",
+          "status": "resolved",
+          "finding": "The allocated node rechecks manifest/gate paths and hashes, clean subject, account/partition, workload/model mode, batch allowlist, protocol/benchmark/import lineage, bound artifacts, runner, result schema and input weights before creating the FS9 output directory."
+        },
+        {
+          "concern_id": "P3-LUNARC-R1-FROZEN-MODEL",
+          "status": "resolved",
+          "finding": "Both workloads hash the input weights before and after execution; inference additionally requires model_mode=frozen, while training requires trainable_copy and may not mutate the bound base weights."
+        }
+      ]
+    },
+    {
+      "lens": "scheduler_and_cost_governance",
+      "findings": [
+        {
+          "concern_id": "P3-LUNARC-R1-REMOTE-BINDING",
+          "status": "resolved_for_design",
+          "finding": "The observed route is billy-old to its active LUNARC socket; FS9 root, account and four registered GPU partitions were inspected without allocating compute."
+        },
+        {
+          "concern_id": "P3-LUNARC-R1-EXPENSIVE-JOB",
+          "status": "not_run_gate_closed",
+          "finding": "Zero SLURM jobs were submitted. Allocated preflight, training, inference and break-even experiments remain unauthorized."
+        }
+      ]
+    },
+    {
+      "lens": "figure_and_manuscript_integrity",
+      "findings": [
+        {
+          "concern_id": "P3-LUNARC-R1-QUANTITATIVE-FIGURE",
+          "status": "not_applicable",
+          "finding": "This iteration adds no performance result and no quantitative figure. The existing manuscript builds with only its recorded nonblocking underfull warning."
+        }
+      ]
+    }
+  ],
+  "artifact_sha256": {
+    "experiments/paper3/lunarc/training_after_gate.sbatch": "0853f749719b86e61301b70757c13637b7fd1e352b321fe8934c777d2201ac6c",
+    "experiments/paper3/lunarc/frozen_inference_after_gate.sbatch": "c5356f1abefa3a063c9ceafb5d38cdd1fe666d238f6d87aea8f27211ff9e591a",
+    "experiments/paper3/lunarc/gated_workload_runtime.py": "2c7dd3bf95a6ade80a64ef91733f62df708f5d04e5cc08a4c635a08412afd26d",
+    "src/rakl/paper3_lunarc_workload.py": "06afc9a5928d63852cadf1d3af8ed85ed70420aa07931482946cf450e6fed5b1",
+    "schemas/paper3-lunarc-workload-manifest.schema.json": "6a02556bda8326d6a69a2915afec268b8c1680e70729407b3f8730cc8ae33131",
+    "schemas/paper3-lunarc-workload-receipt.schema.json": "5b1755dbb225c7bda623503b1dcf5bd37bfe37f8f4d07d9e806b1c5af9c9532d",
+    "schemas/paper3-lunarc-workload-submission-receipt.schema.json": "29b2a182dcc7fc8120ba56c64bdac733c9988186608f3c951e29b3a4e0ab9375",
+    "research/PAPER3_GATE_LUNARC_EXECUTION_ORDER_20260811.md": "2ad3a3a56aae9820075efde17f348306dabc8e968086e96b05759f4a913f3ded",
+    "research/receipts/PAPER3_GATE_LUNARC_AUDIT_20260811.json": "f0f9b5e8295f3e192b837a85ac688d83a3630832a96959291e30960ab29c6ef6",
+    "tests/test_paper3_lunarc_workloads.py": "e86364e799c4ab5a4ced1a0195255eec056785c52d0b6578629ad5fcb87e2b41"
+  },
+  "verification": {
+    "focused_workload_and_legacy_preflight_tests": 35,
+    "focused_workload_and_legacy_preflight_exit_code": 0,
+    "paper3_and_manuscript_tests": 109,
+    "paper3_and_manuscript_exit_code": 0,
+    "full_tests_collected": 1187,
+    "full_tests_exit_code": 0,
+    "ruff_exit_code": 0,
+    "git_diff_check_exit_code": 0,
+    "manuscript_engine": "tectonic 0.15.0",
+    "manuscript_build_exit_code": 0,
+    "blocking_overfull_or_undefined_warnings": 0,
+    "nonblocking_underfull_warning_present": true
+  },
+  "blocking_code_or_artifact_findings_remaining": [],
+  "external_evidence_gate_passed": false,
+  "required_next": "External annotations, distinct adjudication and provenance audit; then stronger-control freeze and the unchanged-threshold cheap confirmatory gate."
+}
