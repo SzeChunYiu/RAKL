@@ -30,13 +30,21 @@ Resolve these in order:
 
 ## Diagnostic arms
 
-### RESET
+Arms are listed in **execution order**. ORACLE_PROCEDURE_UPPER_BOUND runs first; see
+"Arm execution order" below for why, and "ORACLE pass criterion" for the frozen gate.
+
+### 1. ORACLE_PROCEDURE_UPPER_BOUND — runs first
+A frozen, family-general checklist is supplied directly. It contains no T-task outcome or evidence identifier. This measures whether the base model can execute the relevant method at all.
+
+This arm is the **capability floor probe**. It is run before any architecture-comparison arm because it is the only arm whose failure invalidates the interpretation of every other arm.
+
+### 2. RESET
 Registered S0; no prior experience.
 
-### FAILURE_MEMORY_ONLY
+### 3. FAILURE_MEMORY_ONLY
 Persist failed TaskEpisodes and failure-lattice entries. A failed episode creates **no reusable Lesson**.
 
-### VERIFIED_DEVELOPMENT_LESSONS
+### 4. VERIFIED_DEVELOPMENT_LESSONS
 After each D-task output is frozen, a protected evaluator may emit a general method lesson. The lesson must:
 
 - bind the source D-task and output hash;
@@ -46,11 +54,65 @@ After each D-task output is frozen, a protected evaluator may emit a general met
 - have method authority only;
 - grant no scientific authority.
 
-### ORACLE_PROCEDURE_UPPER_BOUND
-A frozen, family-general checklist is supplied directly. It contains no T-task outcome or evidence identifier. This measures whether the 0.5B model can execute the relevant method at all.
+### 5. FULL_RAKL_SELECTIVE
+Authorized only after ORACLE passes and the intermediate arms localize the bottleneck. It must use a bounded target-conditioned experience view / problem-fibre route rather than whole-state prompt dumping, with explicit retrieval selection telemetry.
 
-### FULL_RAKL_SELECTIVE
-Authorized only after the first four arms localize the bottleneck. It must use a bounded target-conditioned experience view / problem-fibre route rather than whole-state prompt dumping, with explicit retrieval selection telemetry.
+## Arm execution order
+
+Execution order is `ORACLE_PROCEDURE_UPPER_BOUND → RESET → FAILURE_MEMORY_ONLY → VERIFIED_DEVELOPMENT_LESSONS → FULL_RAKL_SELECTIVE`.
+
+This resolves root-cause question 4 (execution capacity) **before** questions 2, 3 and 5. The
+questions above are not renumbered: their numbering and `Parent answer:` annotations are the frozen
+v1.2 record and stay verbatim. Only the arm execution order changes.
+
+Rationale:
+
+- The registered model for the parent observation is Qwen2.5-0.5B-Instruct. Whether it can execute
+  the correct generic procedure **when that procedure is handed to it directly** is unknown.
+- If it cannot, then FAILURE_MEMORY_ONLY and VERIFIED_DEVELOPMENT_LESSONS are uninterpretable: a null
+  in either arm is consistent with both "RAKL failed to induce the lesson" and "the model could not
+  have used the lesson even if perfectly induced." The two cannot be separated after the fact.
+- ORACLE is therefore the cheapest observation that discriminates. Every 0.5B run spent on arms 3–5
+  before ORACLE resolves produces unreadable output regardless of outcome.
+- The escalation target already exists: `research/paper2_microtrial_v4_3/EXECUTION_PACKET_V4_3_20260811.json`
+  stages the Qwen2.5-1.5B overlay (`paper2-model-qwen25-1_5b-v4-3`) for exactly this branch. Note that
+  packet sets `model_execution_permitted_by_this_packet = false`; execution authority is a separate
+  step and is not granted here.
+
+## ORACLE pass criterion
+
+Frozen before execution. The measurement operator is the one already used by the parent observation
+(per-arm/phase `success_rate` over `task_count` fresh-transfer tasks); no new scoring is introduced.
+
+**ORACLE passes iff `success_rate >= 2/3` on the FRESH_TRANSFER phase** (at least 2 of the 3 transfer
+tasks registered as successes) with the frozen three-instruction checklist supplied directly in context.
+
+This is an **absolute** criterion, not a comparison against RESET. ORACLE is an upper-bound capability
+probe, so it may run alone. Consequently:
+
+- The v1.2 RESET row must **not** be used as a concurrent contrast for ORACLE. It was measured before
+  the failure-memory / verified-lesson separation landed, so the contexts are not aligned.
+- If a relative ORACLE-vs-RESET claim is ever wanted, RESET must be re-run **in the same job** under
+  the same contract. Inheriting the frozen v1.2 RESET for that purpose is prohibited.
+
+Threshold rationale (recorded so it is not re-tuned after seeing the result):
+
+- `3/3` is brittle to a single formatting slip and would over-trigger `MODEL_CAPABILITY_FLOOR`.
+- `1/3` is not separable from the partial-credit floor already observed (v1.2 reported `mean_score`
+  0.25–0.33 at `success_rate` 0.0).
+- `2/3` is two-sided: the model can plausibly clear it or miss it.
+
+`mean_score` and `repeated_failure_rate` are reported alongside as secondary diagnostics to separate
+total failure from near-miss. They are **descriptive only** and do not move the verdict.
+
+### Parse-validity guard
+
+An ORACLE failure classifies as `MODEL_CAPABILITY_FLOOR` **only if the outputs are schema/parse valid**.
+
+If the outputs are parse-invalid or the harness failed to register otherwise-correct answers, the
+verdict is `INSTRUMENT_DEFECT`: repair the harness and re-run at the same model size. Do not escalate
+the model and do not record a capability floor. V4.2 showed a format/gate failure mode that survived
+parser repair and is easily mistaken for a capability limit; this guard exists to keep the two apart.
 
 ## Frozen generic development lessons
 
@@ -64,14 +126,38 @@ These are method instructions, not evidence about T1–T3.
 
 ## Decision table
 
+The table is evaluated in arm execution order. The first rows are a **stop rule**: if ORACLE fails
+with parse-valid output, no further 0.5B arm is run and the remaining rows are not evaluated.
+
 | Observation | Root-cause classification | Action |
 |---|---|---|
-| ORACLE fails at floor | `MODEL_CAPABILITY_FLOOR` | stop 0.5B architecture comparisons; freeze stronger-model packet |
-| ORACLE succeeds, VERIFIED fails | `VERIFIED_LESSON_INDUCTION_OR_MATERIALIZATION_FAILURE` | repair lesson extraction/admission/selection |
-| VERIFIED succeeds, FAILURE_MEMORY_ONLY fails | `VERIFIED_EXPERIENCE_ADDS_VALUE` | proceed to selective/full RAKL test |
+| ORACLE fails (`success_rate < 2/3`), outputs parse-invalid | `INSTRUMENT_DEFECT` | repair harness; re-run at same model size; do **not** escalate the model |
+| ORACLE fails (`success_rate < 2/3`), outputs parse-valid | `MODEL_CAPABILITY_FLOOR` | **stop spending 0.5B runs**; halt arms 2-5 at this size; escalate to the frozen 1.5B/3B packet |
+| ORACLE succeeds, VERIFIED fails | `VERIFIED_LESSON_INDUCTION_OR_MATERIALIZATION_FAILURE` | repair lesson extraction/admission/selection in RAKL |
+| VERIFIED succeeds, FAILURE_MEMORY_ONLY fails | `VERIFIED_EXPERIENCE_ADDS_VALUE` | verified experience-to-method conversion is what matters; proceed to selective/full RAKL test |
 | FAILURE_MEMORY_ONLY and VERIFIED both succeed | `SIMPLER_MEMORY_MAY_SUFFICE` | narrow architecture claim; test cost |
-| FULL_RAKL_SELECTIVE improves over verified whole-state prompt | `SELECTIVE_RETRIEVAL_ADDS_VALUE` | retain routing/fibre contribution |
+| FULL_RAKL_SELECTIVE improves over verified whole-state prompt **at fewer tokens** | `SELECTIVE_RETRIEVAL_ADDS_VALUE` | retain routing/fibre contribution |
 | full RAKL adds no benefit at higher cost | `COST_DOMINATES_BENEFIT` | narrow/disable layer |
+
+`VERIFIED_LESSON_INDUCTION_OR_MATERIALIZATION_FAILURE` keeps both branches in its name. Induction
+(no lesson was produced) and materialization (a lesson existed but was never selected into context)
+are different defects with different repairs, and the parent observation implicates the second.
+
+### What the parent observation does not establish
+
+Recorded so these rows are not mistakenly treated as already satisfied:
+
+- The v1.2 LEARNING arm improved fresh transfer by `transfer_score_delta = +0.0833` while consuming
+  4376 vs 1502 fresh-transfer input tokens - roughly **2.9x the tokens**. That is an improvement at
+  *higher* cost and **must not be reported as a `SELECTIVE_RETRIEVAL_ADDS_VALUE` demonstration**. The
+  row above requires *fewer* tokens.
+- `total_retrieval_calls = 0.0` on all four arm/phase rows of job 3476548. Selective fibre retrieval
+  never ran; the LEARNING arm was whole-state prompt stuffing via `_render_state_for_prompt`.
+  **v1.2 therefore never tested the routing/fibre layer at all** and must never be cited as having
+  done so, in either direction.
+- `transfer_success_delta = 0.0`, and both development deltas are `0.0`. The only moved quantities are
+  the partial score above and `transfer_repeat_failure_delta = -0.3333`.
+
 
 ## Chronology invariants
 
@@ -80,6 +166,20 @@ These are method instructions, not evidence about T1–T3.
 - Every transfer task starts independently from one frozen post-development state for its arm.
 - No transfer output teaches a later transfer task.
 - Any change to task/evaluator/model/resource contract after outcome inspection creates a new protocol version.
+
+## Amendment record
+
+This version reorders the arm execution ladder to put ORACLE_PROCEDURE_UPPER_BOUND first and freezes
+the ORACLE pass criterion.
+
+The reorder is made **before any run has executed against this protocol**. At the time of the change
+the only artifacts referencing it are the protocol document itself, `src/rakl/paper2_experience_root_cause.py`
+and `tests/test_paper2_experience_root_cause.py`; there is no receipt, run directory or harvest bound
+to it. The chronology invariant "any change to task/evaluator/model/resource contract after outcome
+inspection creates a new protocol version" is therefore not triggered: no outcome has been inspected.
+
+The frozen parent observation (job 3476548) is unchanged and is not reinterpreted by this amendment.
+
 
 ## Historical preservation
 

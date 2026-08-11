@@ -33,6 +33,28 @@ class RootCauseDiagnosticArm(str, Enum):
     FULL_RAKL_SELECTIVE = "FULL_RAKL_SELECTIVE"
 
 
+#: Frozen arm execution order for the root-cause ladder.
+#:
+#: ORACLE_PROCEDURE_UPPER_BOUND runs first: if the base model cannot execute the
+#: correct generic procedure when it is handed to it directly, a null in any later
+#: arm cannot be attributed to RAKL rather than to the model, so those runs are
+#: uninterpretable.  See research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md.
+#:
+#: This is a contract lock over execution order only.  It asserts no result and
+#: grants no scientific authority.
+CONDITION_LADDER: Tuple[RootCauseDiagnosticArm, ...] = (
+    RootCauseDiagnosticArm.ORACLE_PROCEDURE_UPPER_BOUND,
+    RootCauseDiagnosticArm.RESET,
+    RootCauseDiagnosticArm.FAILURE_MEMORY_ONLY,
+    RootCauseDiagnosticArm.VERIFIED_DEVELOPMENT_LESSONS,
+    RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE,
+)
+
+#: Frozen ORACLE gate: >= 2 of 3 fresh-transfer tasks registered as successes.
+#: Frozen before execution so it cannot be re-tuned after seeing the result.
+ORACLE_PASS_MIN_SUCCESS_RATE: float = 2.0 / 3.0
+
+
 @dataclass(frozen=True)
 class VerifiedDevelopmentFeedback:
     source_task_id: str

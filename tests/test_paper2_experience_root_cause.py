@@ -3,6 +3,9 @@ from __future__ import annotations
 import pytest
 
 from rakl.paper2_experience_root_cause import (
+    CONDITION_LADDER,
+    ORACLE_PASS_MIN_SUCCESS_RATE,
+    RootCauseDiagnosticArm,
     VerifiedDevelopmentFeedback,
     admit_verified_development_lesson,
     append_failed_episode_without_lesson,
@@ -130,3 +133,26 @@ def test_oracle_upper_bound_contains_no_task_specific_ids() -> None:
     assert "E1" not in joined
     assert "T1" not in joined
     assert len(procedure) == 3
+
+
+def test_condition_ladder_runs_oracle_first() -> None:
+    """ORACLE must be arm 1: a later-arm null is uninterpretable without it."""
+    assert CONDITION_LADDER[0] is RootCauseDiagnosticArm.ORACLE_PROCEDURE_UPPER_BOUND
+
+
+def test_condition_ladder_covers_every_arm_exactly_once() -> None:
+    assert len(CONDITION_LADDER) == len(set(CONDITION_LADDER))
+    assert set(CONDITION_LADDER) == set(RootCauseDiagnosticArm)
+
+
+def test_condition_ladder_orders_full_rakl_last() -> None:
+    """FULL_RAKL_SELECTIVE is authorized only after the bottleneck is localized."""
+    assert CONDITION_LADDER[-1] is RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE
+
+
+def test_oracle_pass_gate_is_two_of_three_and_frozen() -> None:
+    """Gate is frozen before execution so it cannot be re-tuned after the result."""
+    assert ORACLE_PASS_MIN_SUCCESS_RATE == pytest.approx(2.0 / 3.0)
+    # two-sided: 1/3 must fail the gate and 2/3 must clear it
+    assert (1.0 / 3.0) < ORACLE_PASS_MIN_SUCCESS_RATE
+    assert (2.0 / 3.0) >= ORACLE_PASS_MIN_SUCCESS_RATE
