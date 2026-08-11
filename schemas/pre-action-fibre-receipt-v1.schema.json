@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/pre-action-fibre-receipt-v1.schema.json",
+  "title": "RAKL pre-action fibre receipt v1",
+  "description": "Proposal-only, framework-process telemetry binding the problem fibre, retrieval authorities, chosen operator and predeclared discriminator BEFORE a consequential action executes. Mints no proof, lesson, tool, gluing, theorem or review-independence authority. Carries no claim that the fibre search universe was complete: retrieval-universe coverage is a separate object (RAKL issue #119). The companion runtime is rakl.pre_action_receipt; chronology status is derived by comparing this receipt with the resulting TaskEpisode and is never declared inside the receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "framework_repository",
+    "framework_commit",
+    "application_repository",
+    "application_commit",
+    "task_id",
+    "atom_id",
+    "context_hash",
+    "fibre_snapshot_hash",
+    "operator_ids",
+    "selected_retrievals",
+    "rejected_retrievals",
+    "predeclared_discriminator",
+    "allowed_outcome_branches",
+    "frozen_at_utc",
+    "sequence_index",
+    "receipt_canonical_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "pre-action-fibre-receipt-v1"},
+    "receipt_id": {"type": "string", "minLength": 1},
+    "framework_repository": {"type": "string", "minLength": 1},
+    "framework_commit": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "application_repository": {"type": "string", "minLength": 1},
+    "application_commit": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "task_id": {"type": "string", "minLength": 1},
+    "atom_id": {"type": "string", "minLength": 1},
+    "context_hash": {"type": "string", "minLength": 1},
+    "fibre_snapshot_hash": {"type": "string", "minLength": 1},
+    "operator_ids": {
+      "description": "Chosen action identity, frozen before execution.",
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "selected_retrievals": {
+      "description": "Artifacts retrieved into the fibre. Authority is recorded per artifact; only CANONICAL may bear authority into the action. PENDING, NONCANONICAL and UNSPECIFIED artifacts may inform it and nothing more.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["retrieval_id", "authority", "payload_hash"],
+        "properties": {
+          "retrieval_id": {"type": "string", "minLength": 1},
+          "authority": {"enum": ["CANONICAL", "PENDING", "NONCANONICAL", "UNSPECIFIED"]},
+          "payload_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "rejected_retrievals": {
+      "description": "Artifacts judged relevant and deliberately not used, with the reason. Recording rejections distinguishes 'considered and set aside' from 'never seen'; it does not make the search universe complete.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["retrieval_id", "rejection_reason"],
+        "properties": {
+          "retrieval_id": {"type": "string", "minLength": 1},
+          "rejection_reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "predeclared_discriminator": {
+      "description": "The falsifier/discriminator declared before execution. Inside the hashed content so that post-hoc substitution changes receipt_canonical_sha256.",
+      "type": "string",
+      "minLength": 1
+    },
+    "allowed_outcome_branches": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"enum": ["SUCCESS", "PARTIAL_SUCCESS", "FAILURE", "BLOCKED", "UNKNOWN"]}
+    },
+    "frozen_at_utc": {"type": "string", "format": "date-time"},
+    "sequence_index": {"type": "integer", "minimum": 0},
+    "receipt_canonical_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
