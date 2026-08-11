@@ -1,0 +1,42 @@
+{
+  "schema_version": "paper2-oracle-capability-gate-v2",
+  "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
+  "packet_id": "paper2-oracle-capability-gate-v2",
+  "issue": 379,
+  "updated_at_utc": "2026-08-11T22:58:00Z",
+  "tip_main_at_freeze": "b8f96b8c90745c6a7a6ed57bc55d90319db505f7",
+  "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+  "capable_model_available": false,
+  "capable_model_score": "NO_REFUTED",
+  "gate_status": "CAPABLE_MODEL_UNAVAILABLE__NO_REFUTED__LADDER_TERMINUS__V2_PROTOCOL_FROZEN_NOT_EXECUTABLE",
+  "capable_model_rule": {
+    "required_oracle_success_rate_min": "2/3",
+    "required_oracle_success_rate_float": 0.6666666666666666,
+    "max_scale": "Qwen2.5-7B-Instruct",
+    "requires_v2_sealed_transfer_set": true,
+    "note": "CAPABLE_MODEL_AVAILABLE flips true only when an authorized ORACLE receipt under a later executable v2 packet records success_rate >= 2/3 with parse-valid outputs. v1.3_3 job 3476788 (1/3) does not clear. Parse-valid-only / mean_score / stratum profile alone do not clear."
+  },
+  "current_oracle_lineage_terminal": {
+    "scale": "7B",
+    "job": "3476788",
+    "success": "1/3",
+    "parse_valid": "3/3",
+    "mean_score": 0.625,
+    "verdict": "MODEL_CAPABILITY_FLOOR_7B",
+    "receipt": "research/paper2_experience_benchmark_v1_3_3/ORACLE_DECISION_RECEIPT_V1_3_3.json"
+  },
+  "escalation_next": {
+    "scale": null,
+    "status": "LADDER_TERMINUS",
+    "next_authorized_action": "Author sealed v2 transfer tasks under PROTOCOL_FREEZE_PACKET task_strata rules; then freeze executable ORACLE packet before any job"
+  },
+  "blocked_while_no_refuted": [
+    "Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL",
+    "Confirmatory ALR model jobs",
+    "Confirmatory A3↔A4 matched ablation",
+    "Paper-V four-arm causal attribution",
+    "ExperienceBenchmark architecture staircase learning claims"
+  ],
+  "grants_scientific_authority": false,
+  "claim_boundary": "Capability gate freeze for #379 successor protocol. Not manuscript authority."
+}

@@ -1,0 +1,141 @@
+{
+  "schema_version": "paper2-oracle-capability-gate-stratum-diagnosis-v1",
+  "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
+  "packet_id": "paper2-oracle-capability-gate-v2",
+  "section": "FLOOR7B_RECEIPT_STRATUM_DIAGNOSIS",
+  "issue": 379,
+  "created_at_utc": "2026-08-11T22:58:00Z",
+  "tip_main_at_freeze": "b8f96b8c90745c6a7a6ed57bc55d90319db505f7",
+  "frozen_before_any_new_oracle_outcome": true,
+  "source_job_id": "3476788",
+  "source_packet": "paper2-experience-benchmark-v1_3_3",
+  "source_protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+  "source_validation_receipt": "research/paper2_experience_benchmark_v1_3_3/native_job_3476788/VALIDATION_RECEIPT.json",
+  "source_oracle_decision": "research/paper2_experience_benchmark_v1_3_3/ORACLE_DECISION_RECEIPT_V1_3_3.json",
+  "aggregate": {
+    "success_rate": "1/3",
+    "success_rate_float": 0.3333333333333333,
+    "parse_valid": "3/3",
+    "mean_score": 0.625,
+    "oracle_pass_min_success_rate": 0.6666666666666666,
+    "oracle_gate_passed": false,
+    "scientific_verdict_preserved": "MODEL_CAPABILITY_FLOOR_7B"
+  },
+  "task_stratum_table": [
+    {
+      "task_id": "T1",
+      "stratum": "REPEATED_FAMILY",
+      "success": true,
+      "score": 1.0,
+      "parse_valid": true,
+      "gold_verdict": "SUPPORT",
+      "pred_verdict": "SUPPORT",
+      "verdict_match": true,
+      "gold_selected_evidence_ids": [
+        "E1"
+      ],
+      "pred_selected_evidence_ids": [
+        "E1"
+      ],
+      "gold_rejected_evidence_ids": [
+        "E2",
+        "E3"
+      ],
+      "pred_rejected_evidence_ids": [
+        "E2",
+        "E3"
+      ],
+      "failure_signature": [],
+      "mode": "exact_structured_match"
+    },
+    {
+      "task_id": "T2",
+      "stratum": "CROSS_DOMAIN_TRANSFER",
+      "success": false,
+      "score": 0.5,
+      "parse_valid": true,
+      "gold_verdict": "CONTEXT_MISALIGNED",
+      "pred_verdict": "CONTEXT_MISALIGNED",
+      "verdict_match": true,
+      "gold_selected_evidence_ids": [
+        "E3"
+      ],
+      "pred_selected_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "gold_rejected_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "pred_rejected_evidence_ids": [
+        "E3"
+      ],
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "mode": "verdict_ok_evidence_binding_fail"
+    },
+    {
+      "task_id": "T3",
+      "stratum": "HOSTILE_NEAR_MISS",
+      "success": false,
+      "score": 0.375,
+      "parse_valid": true,
+      "gold_verdict": "REFUTE",
+      "pred_verdict": "CONTEXT_MISALIGNED",
+      "verdict_match": false,
+      "gold_selected_evidence_ids": [
+        "E2",
+        "E3"
+      ],
+      "pred_selected_evidence_ids": [
+        "E2"
+      ],
+      "gold_rejected_evidence_ids": [
+        "E1"
+      ],
+      "pred_rejected_evidence_ids": [
+        "E1",
+        "E3"
+      ],
+      "failure_signature": [
+        "verdict_mismatch",
+        "support_recall_incomplete"
+      ],
+      "mode": "qoi_hostile_confused_with_context_misalignment"
+    }
+  ],
+  "measurement_vs_capability_diagnosis": {
+    "instrument_defect": false,
+    "rationale_not_instrument_defect": "All three FRESH_TRANSFER outputs parse-valid under OUTPUT_SCHEMA; harness registered answers; decision-table parse-validity guard therefore routes to MODEL_CAPABILITY_FLOOR, not INSTRUMENT_DEFECT.",
+    "capability_floor_stands": true,
+    "mean_score_cannot_clear_gate": true,
+    "mean_score_note": "mean_score=0.625 is descriptive only under root-cause protocol; CAPABLE_MODEL requires exact success_rate >= 2/3. Fail-closed: do not reinterpret partial credit as gate pass.",
+    "stratum_profile": {
+      "REPEATED_FAMILY": "CLEARED_AT_7B (progress vs 3B T1 verdict_mismatch)",
+      "CROSS_DOMAIN_TRANSFER": "VERDICT_OK_BUT_EVIDENCE_BINDING_FAIL",
+      "HOSTILE_NEAR_MISS": "VERDICT_MISMATCH_PLUS_SUPPORT_RECALL_FAIL"
+    },
+    "primary_residual_modes": [
+      "evidence_id_binding_under_correct_high_level_verdict (T2)",
+      "hostile_near_miss_qoi_discrimination vs context_misalignment confusion (T3)"
+    ],
+    "fail_closed_statements": [
+      "Do not treat 1/3 + mean_score 0.625 as near-capable clearance.",
+      "Do not convert failed episodes into Lessons.",
+      "Do not escalate to 14B/32B because 7B floored.",
+      "Do not start Phase-0 / confirmatory ALR / four-arm while CAPABLE_MODEL_AVAILABLE=NO_REFUTED.",
+      "AI_OPERATOR same-session critique is not independent human review."
+    ],
+    "comparison_to_3B_floor": {
+      "job_3B": "3476778",
+      "success_3B": "0/3",
+      "success_7B": "1/3",
+      "note": "Scale within the preregistered ladder improved REPEATED_FAMILY exact match only; composite gate still fails. Discrimination exists by stratum, not as CAPABLE_MODEL clearance."
+    }
+  },
+  "claim_boundary": "Receipt-bound stratum diagnosis of frozen job 3476788 only. Not a new ORACLE outcome. Not experience-learning efficacy. Not CAPABLE_MODEL clearance.",
+  "grants_scientific_authority": false
+}

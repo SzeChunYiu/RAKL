@@ -1,0 +1,129 @@
+{
+  "schema_version": "paper2-oracle-capability-gate-protocol-freeze-v2",
+  "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
+  "packet_id": "paper2-oracle-capability-gate-v2",
+  "issue": 379,
+  "created_at_utc": "2026-08-11T22:58:00Z",
+  "tip_main_at_freeze": "b8f96b8c90745c6a7a6ed57bc55d90319db505f7",
+  "status": "PROTOCOL_FROZEN_NOT_YET_EXECUTABLE",
+  "frozen_before_any_new_oracle_outcome": true,
+  "scientific_claim_status": "NO_EMPIRICAL_RESULT",
+  "authority_boundary": "Freeze-only successor capability-gate protocol after TERMINAL_STOP on the v1.3_* ORACLE ladder. Does not overwrite v1–v1.3_3 packets. Does not authorize Phase-0, confirmatory ALR, A3↔A4, or four-arm. Does not authorize 14B/32B. Does not soften EXPERIENCE_V1_EXACT_STRUCTURED_MATCH thresholds. New sealed transfer tasks are required before any v2 ORACLE job; until then CAPABLE_MODEL stays NO_REFUTED.",
+  "parent_lineage": {
+    "terminus_decision": "research/paper2_experience_benchmark_v1_3_3/LADDER_TERMINUS_DECISION_RECEIPT_FLOOR7B.json",
+    "parent_packet": "paper2-experience-benchmark-v1_3_3",
+    "parent_protocol_subject_hash": "dc7bff2e6fae3b54d0af87d116234081d4fd516645d735552fdc0d1b4f2141d6",
+    "parent_oracle_job": "3476788",
+    "parent_scientific_verdict": "MODEL_CAPABILITY_FLOOR_7B",
+    "root_cause_protocol": "research/PAPER2_EXPERIENCE_ROOT_CAUSE_PROTOCOL_V1.md",
+    "scoreboard": "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json",
+    "preserved_floor_jobs": [
+      "3476730",
+      "3476731",
+      "3476742",
+      "3476756",
+      "3476778",
+      "3476788"
+    ]
+  },
+  "unit_of_analysis": {
+    "primary_gate_unit": "Per ORACLE_PROCEDURE_UPPER_BOUND job: FRESH_TRANSFER exact-success rate over the sealed transfer task set, where exact success requires score==1.0 under EXPERIENCE_V1_EXACT_STRUCTURED_MATCH (verdict match + required support/reject recall).",
+    "secondary_diagnostic_unit": "Stratum-conditional exact-success and failure_signature profile over {REPEATED_FAMILY, CROSS_DOMAIN_TRANSFER, HOSTILE_NEAR_MISS}. Descriptive only; cannot alone flip CAPABLE_MODEL_AVAILABLE.",
+    "not_units_of_analysis_for_capable_model": [
+      "mean_score",
+      "parse_valid rate alone",
+      "model parameter count / scale shopping",
+      "RESET vs LEARNING deltas",
+      "AI_OPERATOR narrative review",
+      "failed TaskEpisodes treated as Lessons"
+    ]
+  },
+  "gate_thresholds": {
+    "evaluator_protocol_id": "EXPERIENCE_V1_EXACT_STRUCTURED_MATCH",
+    "evaluator_thresholds_unchanged_from_v1_3_3": true,
+    "scoring_frozen": {
+      "exact_verdict_match": 0.5,
+      "required_support_recall": 0.25,
+      "required_reject_recall": 0.25,
+      "success_threshold": 1.0,
+      "partial_credit": true
+    },
+    "oracle_pass_min_success_rate": 0.6666666666666666,
+    "oracle_pass_min_success_rate_fraction": "2/3",
+    "parse_validity_guard": "MODEL_CAPABILITY_FLOOR only if outputs parse-valid; else INSTRUMENT_DEFECT at same authorized scale",
+    "capable_model_available_rule": "CAPABLE_MODEL_AVAILABLE flips true only when an authorized v2-or-later ORACLE receipt at an authorized scale (<=7B under this packet) records success_rate >= 2/3 with parse-valid outputs on the frozen v2 sealed transfer set. Stratum profiles and mean_score never clear the gate alone.",
+    "forbidden_threshold_moves": [
+      "Lowering success_threshold below 1.0 to obtain a pass",
+      "Counting partial-credit T2/T3 as successes",
+      "Dropping HOSTILE_NEAR_MISS or CROSS_DOMAIN_TRANSFER from the gate set because 7B failed them",
+      "Choosing a larger model because RAKL look bad under 7B"
+    ]
+  },
+  "task_strata": {
+    "required_transfer_strata": [
+      {
+        "stratum": "REPEATED_FAMILY",
+        "role": "Within-family calibration/procedure execution; 7B already cleared exact match on T1 under v1.3_3",
+        "must_remain_in_capable_model_gate_set": true
+      },
+      {
+        "stratum": "CROSS_DOMAIN_TRANSFER",
+        "role": "Evidence-id binding under correct high-level misalignment verdict; residual mode at 7B",
+        "must_remain_in_capable_model_gate_set": true,
+        "hardness_axis_preserved": "support/reject evidence binding, not verdict token alone"
+      },
+      {
+        "stratum": "HOSTILE_NEAR_MISS",
+        "role": "QoI/hostile near-miss discrimination vs context-misalignment confusion; residual mode at 7B",
+        "must_remain_in_capable_model_gate_set": true,
+        "hardness_axis_preserved": "REFUTE vs CONTEXT_MISALIGNED under changed QoI with tempting labels"
+      }
+    ],
+    "optional_instrument_sanity_stratum": {
+      "stratum": "INSTRUMENT_SANITY",
+      "status": "OPTIONAL_FUTURE",
+      "may_count_toward_capable_model": false,
+      "purpose": "Non-confirmatory harness/format known-answer check only; never licenses learning claims"
+    },
+    "sealed_task_bytes_status": "NOT_YET_AUTHORED",
+    "sealed_task_rule": "Successor executable ORACLE packet must freeze new or explicitly re-bound sealed D/T task bytes and protocol_subject_hash BEFORE any evaluated v2 ORACLE outcome. Reusing v1.3_3 T1–T3 without a DifferenceWitness that states why re-running the identical sealed set is informative is forbidden as confirmatory shopping."
+  },
+  "authorized_model_ceiling": {
+    "max_authorized_scale": "Qwen2.5-7B-Instruct",
+    "authorized_scales": [
+      "Qwen2.5-0.5B-Instruct",
+      "Qwen2.5-1.5B-Instruct",
+      "Qwen2.5-3B-Instruct",
+      "Qwen2.5-7B-Instruct"
+    ],
+    "unauthorized_without_new_amendment": [
+      "Qwen2.5-14B-Instruct",
+      "Qwen2.5-32B-Instruct",
+      "any_larger_model_chosen_because_RAKL_lost"
+    ],
+    "model_selection_rule": "Never choose model because RAKL looks good; never scale-shop past this ceiling"
+  },
+  "predicted_discriminator": {
+    "question": "Under unchanged EXPERIENCE_V1_EXACT_STRUCTURED_MATCH thresholds and a sealed transfer set that still includes CROSS_DOMAIN evidence-binding and HOSTILE_NEAR_MISS QoI discrimination, can any authorized-scale (<=7B) ORACLE_PROCEDURE_UPPER_BOUND job achieve exact success_rate >= 2/3?",
+    "if_yes": "CAPABLE_MODEL_AVAILABLE may flip true from that receipt only; Phase-0 still requires separate authorization under root-cause order.",
+    "if_no": "CAPABLE_MODEL_AVAILABLE remains NO_REFUTED; ExperienceBenchmark architecture/learning staircase claims stay unlicensed under the authorized ladder; residual is further task redesign under a new version id or explicit permanent unlicensed status — not 14B/32B escalation.",
+    "cheapest_illusory_difference_test": "If a future v2 sealed set appears easier solely by removing HOSTILE/CROSS_DOMAIN hardness axes present in v1.3_3, reject the packet as threshold/task shopping."
+  },
+  "execution_authority": {
+    "oracle_job_authorized_by_this_packet": false,
+    "phase0_architecture_authorized": false,
+    "confirmatory_alr_authorized": false,
+    "confirmatory_a3a4_authorized": false,
+    "four_arm_authorized": false,
+    "pilot_diagnostic_job_authorized": false,
+    "pilot_diagnostic_note": "No non-confirmatory instrument-check job is authorized by this freeze. Floor-7B stratum diagnosis is receipt reanalysis only (already frozen in FLOOR7B_STRATUM_DIAGNOSIS_RECEIPT.json).",
+    "reason_not_executable": "Successor sealed transfer task set and executable ORACLE freeze packet (tasks+model+evaluator binding) are not yet authored."
+  },
+  "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+  "capable_model_available": false,
+  "learning_staircase_authorized": false,
+  "promotional_lift_claim_allowed": false,
+  "reopen_issue_138": false,
+  "grants_scientific_authority": false,
+  "protocol_subject_hash": "7b186eae72ca69765c1702bc6280a9f5a1ca5c27527b88664dcfe53f644dae09"
+}
