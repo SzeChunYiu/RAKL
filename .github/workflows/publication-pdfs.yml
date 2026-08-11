@@ -53,15 +53,13 @@ jobs:
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
 
-      - name: Stage four release manuscripts
+      - name: Stage five release manuscripts
         shell: bash
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
           rm -rf build/publication
-          mkdir -p \
-            build/publication/paper-01 \
-            build/publication/paper-04
+          mkdir -p build/publication/paper-01 build/publication/paper-04
 
           python paper/build_epistemic_mechanics.py \
             --output build/publication/paper-01/main.tex \
@@ -78,6 +76,10 @@ jobs:
 
           cp publication/papers/paper-04-verified-discovery/main.tex \
             build/publication/paper-04/main.tex
+
+          cp -a publication/papers/paper-05-experience-governed-evolution \
+            build/publication/paper-05
+          rm -f build/publication/paper-05/main.pdf
 
       - name: Bind author metadata to generated release sources
         shell: bash
@@ -105,22 +107,18 @@ jobs:
               )
               path.write_text(text, encoding="utf-8")
 
-          for paper in ("paper-01", "paper-02", "paper-03", "paper-04"):
+          for paper in ("paper-01", "paper-02", "paper-03", "paper-04", "paper-05"):
               text = Path(f"build/publication/{paper}/main.tex").read_text(encoding="utf-8")
-              for required in (
-                  "Sze Chun Yiu",
-                  "Stockholm University",
-                  "sze-chun.yiu@fysik.su.se",
-              ):
+              for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
                   if required not in text:
                       raise SystemExit(f"{paper} author metadata missing: {required}")
           PY
 
-      - name: Compile and preflight all four PDFs
+      - name: Compile and preflight all five PDFs
         shell: bash
         run: |
           set -euo pipefail
-          for paper in paper-01 paper-02 paper-03 paper-04; do
+          for paper in paper-01 paper-02 paper-03 paper-04 paper-05; do
             dir="build/publication/$paper"
             echo "=== $paper ==="
             (
@@ -179,4 +177,11 @@ jobs:
             build/publication/paper-04/pdffonts.txt
             build/publication/paper-04/main.txt
             build/publication/paper-04/renders/*.png
+            build/publication/paper-05/main.tex
+            build/publication/paper-05/main.pdf
+            build/publication/paper-05/main.log
+            build/publication/paper-05/pdfinfo.txt
+            build/publication/paper-05/pdffonts.txt
+            build/publication/paper-05/main.txt
+            build/publication/paper-05/renders/*.png
           if-no-files-found: error
