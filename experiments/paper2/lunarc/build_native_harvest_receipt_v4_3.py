@@ -13,7 +13,7 @@ import jsonschema
 
 
 POLICY_ID = "PENDULUM_EXACT_JSON_OR_SINGLE_LOWERCASE_JSON_FENCE_V4_1"
-PROTOCOL_ID = "PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V4_3_PROMPT_INTERFACE"
+PROTOCOL_ID = "PAPER2_PENDULUM_SEALED_KNOWN_ANSWER_V4_3"
 
 
 def _sha256(path: Path) -> str:
@@ -105,14 +105,14 @@ def build(args: argparse.Namespace) -> int:
 
     if packet.get("protocol_id") != PROTOCOL_ID or packet.get("output_normalization_policy_id") != POLICY_ID:
         failures.append("packet_v4_3_policy_or_protocol_mismatch")
-    if packet.get("chronology_class") != "ADAPTIVE_PROMPT_INTERFACE_REPLAY_FRESH_ONLY_TO_V4_3_OUTPUTS":
+    if packet.get("chronology_class") != "MODEL_SCALE_STAGING_REPLAY_FRESH_ONLY_TO_V4_3_OUTPUTS":
         failures.append("packet_adaptive_chronology_class_mismatch")
-    if packet.get("parent_v4_1_results_opened_before_v4_3_freeze") is not True:
+    if packet.get("v4_2_capability_limit_known_before_freeze") is not True:
         failures.append("packet_parent_result_access_disclosure_missing")
-    if packet.get("evaluated_results_opened_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_1_KNOWN":
+    if packet.get("evaluated_results_opened_before_freeze_scope") != "V4_3_OUTPUTS_ONLY_PARENT_V4_2_KNOWN":
         failures.append("packet_result_access_scope_mismatch")
-    if packet.get("v4_1_negative_history", {}).get("reinterpretation_permitted") is not False:
-        failures.append("v4_reinterpretation_prohibition_missing")
+    if packet.get("threshold_or_score_change_permitted") is not False:
+        failures.append("exact_gate_change_permitted")
     if isinstance(preflight, dict):
         if preflight.get("verdict") != "PASS" or preflight.get("evaluated_result_record_count") != 0:
             failures.append("allocated_preflight_not_pass")
