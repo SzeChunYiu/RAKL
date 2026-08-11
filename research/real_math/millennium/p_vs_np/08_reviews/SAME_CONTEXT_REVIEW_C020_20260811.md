@@ -36,7 +36,7 @@ The proof uses free unions of row/column stars for input-bit predicates, a dual-
 
 ## Formal-methods lens
 
-**Vote: REVISE.** The finite Python checker validates the Euler-predicate specification for small primes and the schedule accounting only. It is not a proof-producing circuit compiler.
+**Vote: REVISE.** The finite Python checker now exhaustively validates the specified double-and-add multiplication and square-and-multiply recurrence on small primes, checks the Euler predicate against direct quadratic-residue membership, and checks the schedule accounting. It is still not a proof-producing Boolean-circuit compiler.
 
 **Concern FM-M1, blocking:** no formal statement binding, theorem-prover artifact, proof receipt, dependency/axiom audit, or isolated recheck exists.
 
