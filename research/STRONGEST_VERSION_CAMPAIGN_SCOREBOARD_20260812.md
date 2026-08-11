@@ -38,4 +38,4 @@ Closed GitHub issues are historical terminals, **not** proof the scientific ques
 1. Capable-model gate closed for good under this ladder (`NO_REFUTED` at 0.5B/1.5B/3B/7B).
 2. No Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL; no confirmatory ALR / A3↔A4 / four-arm model execution.
 3. Real humans still absent for Paper III/V independent tracks.
-4. Successor residual is **task/gate revisit or new preregistered protocol** — not scale shopping.
+4. Successor **ORACLE_CAPABILITY_GATE_V2_0** frozen under #379 (`paper2-oracle-capability-gate-v2`, `PROTOCOL_FROZEN_NOT_YET_EXECUTABLE`). Next: author sealed v2 transfer tasks → executable ORACLE freeze. **No jobs authorized by the freeze.** Not scale shopping.

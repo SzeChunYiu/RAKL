@@ -4,7 +4,7 @@
 
 **Lane:** Wave-1 Lane B
 
-**CAPABLE_MODEL_AVAILABLE:** `false` / `NO_REFUTED` (ladder terminal after FLOOR_7B job 3476788; no further authorized scale)
+**CAPABLE_MODEL_AVAILABLE:** `false` / `NO_REFUTED` (ladder terminal after FLOOR_7B job 3476788; no further authorized scale). Successor task/gate revisit: `research/paper2_oracle_capability_gate_v2/` (`ORACLE_CAPABILITY_GATE_V2_0`, not yet executable).
 
 Versioned successor prep packet. Does **not** overwrite
 `research/paper2_alr_confirmatory_v1/` or
