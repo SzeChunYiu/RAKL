@@ -1,0 +1,63 @@
+name: commit-v3-pdfs-once
+
+on:
+  push:
+    branches:
+      - publication/v3-finalize-20260811
+    paths:
+      - .github/workflows/commit-v3-pdfs-once.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  commit-pdfs:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: publication/v3-finalize-20260811
+      - name: Download exact verified artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rakl-v3-artifact
+          curl --fail --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/SzeChunYiu/RAKL/actions/artifacts/9099397859/zip \
+            -o /tmp/rakl-v3-artifact.zip
+          unzip -q /tmp/rakl-v3-artifact.zip -d /tmp/rakl-v3-artifact
+      - name: Verify exact PDF digests
+        shell: bash
+        working-directory: /tmp/rakl-v3-artifact
+        run: |
+          set -euo pipefail
+          cat > /tmp/rakl-v3-sha256.txt <<'EOF'
+          b59cde6870b11e87be4f8ad8c4b25c29dcd46cc0ef5a2602c8f55cafebc9c6ba  paper-01-epistemic-mechanics/main.pdf
+          d84c7341957bc567740ba665b4fee7c085ba28eb3251108d050df121da26af99  paper-02-rakl-evidence-governed-research/main.pdf
+          68fd674c187fca7e7d89324acfa26ec416289668222b3d23e0e41f52c94a8f3b  paper-03-directional-structural-witnesses/main.pdf
+          5644a2f3936b5500b6c24ffa410578fd4f2d97627bb52b608f4667ec54a48a64  paper-04-verified-discovery/main.pdf
+          EOF
+          sha256sum -c /tmp/rakl-v3-sha256.txt
+      - name: Copy verified PDFs into publication tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/rakl-v3-artifact/paper-01-epistemic-mechanics/main.pdf publication/papers/paper-01-epistemic-mechanics/main.pdf
+          cp /tmp/rakl-v3-artifact/paper-02-rakl-evidence-governed-research/main.pdf publication/papers/paper-02-rakl-evidence-governed-research/main.pdf
+          cp /tmp/rakl-v3-artifact/paper-03-directional-structural-witnesses/main.pdf publication/papers/paper-03-directional-structural-witnesses/main.pdf
+          cp /tmp/rakl-v3-artifact/paper-04-verified-discovery/main.pdf publication/papers/paper-04-verified-discovery/main.pdf
+      - name: Commit exact verified PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add publication/papers/*/main.pdf
+          git commit -m "build(publication): add verified v3 PDFs from CI 31486387217"
+          git push origin HEAD:publication/v3-finalize-20260811
