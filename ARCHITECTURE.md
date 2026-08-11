@@ -457,3 +457,5 @@ schemas/lesson.schema.json
 ```
 
 See `docs/RAKL_V3_EXPERIENCE_SUBSTRATE.md` for the full implementation contract and `tests/test_rakl_v3_experience_substrate.py` for executable invariants.
+
+Optional evidence-backed extensions (associative retrieval, backward/multi-seed search, route health, typed telemetry, memory coverage, and related research) are coordinated in `docs/RAKL_EXTENSION_PROGRAMME.md` (#143). That document preserves this core; it does not activate new runtime policy or mint authority.
