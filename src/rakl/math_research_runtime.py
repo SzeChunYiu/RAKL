@@ -29,6 +29,13 @@ from .problem_solving_algebra import (
     ResearchOperator,
     search_operator_paths,
 )
+from .research_memory import (
+    REQUIRED_MEMORY_ACTIONS,
+    ResearchMemoryReport,
+    ResearchMemoryReview,
+    ResearchMemoryVerdict,
+    audit_research_memory_review,
+)
 from .research_trace import (
     REQUIRED_TRACE_ACTIONS,
     MathResearchTrace,
@@ -45,6 +52,7 @@ class MathResearchPlan:
     candidate_paths: Tuple[PathCandidate, ...]
     next_blockers: Tuple[ObstructionKind, ...]
     context_gate: ContextGateReport
+    memory_gate: ResearchMemoryReport
     trace_gate: ResearchTraceReport
     pre_candidate_actions: Tuple[str, ...]
     candidate_generation_allowed: bool
@@ -53,18 +61,26 @@ class MathResearchPlan:
 def _facts_from_record(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> frozenset[str]:
     facts: set[str] = set()
     context_report = audit_math_context_fiber(context_fiber)
-    if context_report.verdict is ContextGateVerdict.PASS:
+    if context_report.verdict is ContextGateVerdict.PASS and context_fiber is not None:
         facts.add("context_fiber_frozen")
         facts.add("analogue_method_transfer_mapped")
         facts.add("cross_domain_analogy_scan_complete")
+        memory_report = audit_research_memory_review(
+            memory_review,
+            atom_id=context_fiber.atom_id,
+            context_hash=context_fiber.packet_hash,
+        )
+        if memory_report.verdict is ResearchMemoryVerdict.PASS:
+            facts.add("success_and_failure_experience_reviewed")
         trace_report = audit_pre_candidate_trace(
             research_trace,
-            atom_id=context_fiber.atom_id if context_fiber else record.claim_id,
-            context_packet_hash=context_fiber.packet_hash if context_fiber else "",
+            atom_id=context_fiber.atom_id,
+            context_packet_hash=context_fiber.packet_hash,
         )
         if trace_report.verdict is TraceGateVerdict.PASS:
             facts.add("auditable_research_trace_complete")
@@ -118,12 +134,13 @@ def derive_planning_state(
     signature: ProblemSignature,
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> ProblemState:
     return ProblemState(
         state_id=record.claim_id,
         signature=signature,
-        facts=_facts_from_record(record, context_fiber, research_trace),
+        facts=_facts_from_record(record, context_fiber, memory_review, research_trace),
         obstructions=_obstructions_from_record(record),
     )
 
@@ -133,6 +150,7 @@ def plan_math_research(
     signature: ProblemSignature,
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    memory_review: ResearchMemoryReview | None = None,
     research_trace: MathResearchTrace | None = None,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
@@ -140,25 +158,43 @@ def plan_math_research(
 ) -> MathResearchPlan:
     """Compile assurance status into obstruction-guided research paths.
 
-    Candidate generation is fail-closed behind two process gates.
+    Candidate generation is fail-closed behind three discovery-process gates:
 
-    1. The context gate requires the atomic object, structural coordinates,
+    1. **Context gate** — understand the active atom across structural coordinates,
        equivalent formulations, solved/near-solved analogues, method-transfer
-       assumptions/disanalogies, a witnessed cross-domain analogy scan, source
-       anchors and pre-candidate chronology.
-    2. The research-trace gate requires an append-only public decision ledger for
-       atomization, context freeze, analogy scan, method transfer and proposed next
-       step before any candidate is generated.
+       assumptions/disanalogies and witnessed cross-domain analogy search.
+    2. **Experience-memory gate** — query both the scoped success-derived tool
+       inventory and global failure-experience lattice, recording applicable tools,
+       prior failure warnings, reuse scope/difference witnesses, and empty searches.
+    3. **Trace gate** — preserve the chronological public decision ledger including
+       atomization, context, analogy, expert review, experience-memory review and
+       the proposed next step before any candidate is generated.
 
-    These are discovery-process gates, not theorem-truth gates. Once they pass,
-    returned paths are still planning objects only; theorem and novelty authority
-    remain controlled by the mathematical assurance layer.
+    These gates govern reproducible discovery, not theorem truth. Returned paths
+    remain planning objects only; theorem and novelty authority stay controlled by
+    the mathematical assurance layer.
     """
 
     assurance = classify_math_record(record)
     context_gate = audit_math_context_fiber(context_fiber)
 
     if context_gate.verdict is ContextGateVerdict.PASS and context_fiber is not None:
+        memory_gate = audit_research_memory_review(
+            memory_review,
+            atom_id=context_fiber.atom_id,
+            context_hash=context_fiber.packet_hash,
+        )
+    else:
+        memory_gate = ResearchMemoryReport(
+            ResearchMemoryVerdict.CANNOT_CHECK,
+            ("context_gate_must_pass_before_memory_gate",),
+        )
+
+    if (
+        context_gate.verdict is ContextGateVerdict.PASS
+        and memory_gate.verdict is ResearchMemoryVerdict.PASS
+        and context_fiber is not None
+    ):
         trace_gate = audit_pre_candidate_trace(
             research_trace,
             atom_id=context_fiber.atom_id,
@@ -167,19 +203,24 @@ def plan_math_research(
     else:
         trace_gate = ResearchTraceReport(
             TraceGateVerdict.CANNOT_CHECK,
-            ("context_gate_must_pass_before_trace_gate",),
+            ("context_and_memory_gates_must_pass_before_trace_gate",),
         )
 
     state = derive_planning_state(
         signature=signature,
         record=record,
         context_fiber=context_fiber,
+        memory_review=memory_review,
         research_trace=research_trace,
     )
 
     if context_gate.verdict is not ContextGateVerdict.PASS:
         paths: Tuple[PathCandidate, ...] = ()
         pre_candidate_actions = REQUIRED_PRE_CANDIDATE_ACTIONS
+        candidate_generation_allowed = False
+    elif memory_gate.verdict is not ResearchMemoryVerdict.PASS:
+        paths = ()
+        pre_candidate_actions = REQUIRED_MEMORY_ACTIONS
         candidate_generation_allowed = False
     elif trace_gate.verdict is not TraceGateVerdict.PASS:
         paths = ()
@@ -201,6 +242,7 @@ def plan_math_research(
         candidate_paths=paths,
         next_blockers=tuple(sorted(state.obstructions, key=lambda item: item.value)),
         context_gate=context_gate,
+        memory_gate=memory_gate,
         trace_gate=trace_gate,
         pre_candidate_actions=pre_candidate_actions,
         candidate_generation_allowed=candidate_generation_allowed,
