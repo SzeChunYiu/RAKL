@@ -103,6 +103,17 @@ mechanism→identification escalations, plus a legal upgrade control and a share
 provenance reject. **No model ablation has been run.** Arms are still not named
 after external systems.
 
+## Matched empirical packet (frozen; model empirics unrun)
+
+Evaluation contract for A3 vs A4:
+
+* packet: `research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_PACKET_V1.json`
+* runner: `src/rakl/ablation_a3_a4_matched_empirical.py`
+* status (default): `EMPIRICS_UNRUN` — inventing ALR/recall/cost is forbidden
+* evaluator binding: ALR V2 freeze receipt (`FREEZE_RECEIPT_V2.json`)
+* LUNARC CPU cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirical_156.sh`
+  validates the freeze and re-emits `EMPIRICS_UNRUN`; it does **not** mint A4>A3
+
 ## Before any arm is run
 
 1. Resolve the six `CANNOT_CHECK` rows, or run without them and report them as
