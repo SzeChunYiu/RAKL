@@ -91,6 +91,39 @@ class FreshnessVerdict(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
+class CompletenessFreshnessBindingVerdict(str, Enum):
+    """Whether a freshness receipt licenses proceeding to a completeness claim.
+
+    Completeness / counting claims (and case-study attribution of what was
+    searched under which framework subject) require the pin/current-main relation
+    to be *bound* first.  Binding means: current framework ``main`` SHA was
+    observed, and the pin relation — equality *or* mismatch — was derived from
+    that observation.  An unbound current main or an unobserved pin relation is
+    never treated as ``EQUAL`` / current.
+    """
+
+    BOUND_PROPOSAL_ONLY = "BOUND_PROPOSAL_ONLY"
+    REJECTED_UNBOUND_CURRENT_MAIN = "REJECTED_UNBOUND_CURRENT_MAIN"
+    REJECTED_UNBOUND_PIN_RELATION = "REJECTED_UNBOUND_PIN_RELATION"
+    REJECTED_FRESHNESS_RECEIPT_UNVERIFIABLE = (
+        "REJECTED_FRESHNESS_RECEIPT_UNVERIFIABLE"
+    )
+    REJECTED_FRESHNESS_REFUTED = "REJECTED_FRESHNESS_REFUTED"
+
+
+class HistoricalReplayCondition(str, Enum):
+    """The three planted historical-replay worlds named by the motivating issue.
+
+    ``UNCLASSIFIED`` is fail-closed: a receipt that cannot be checked, or that
+    does not match one of the three worlds, is never forced into a planted label.
+    """
+
+    CURRENT_PIN = "CURRENT_PIN"
+    STALE_PIN_SHADOW_ADOPTION = "STALE_PIN_SHADOW_ADOPTION"
+    STALE_PIN_TREATED_AS_AUTHORITATIVE = "STALE_PIN_TREATED_AS_AUTHORITATIVE"
+    UNCLASSIFIED = "UNCLASSIFIED"
+
+
 #: Ordinal rank of the dependency claim each status licenses.  The ladder is
 #: rank 0 = no adoption claim (fail-closed or defective), rank 1 = current main
 #: was consulted in shadow mode only, rank 2 = the pinned subject itself is the
@@ -302,12 +335,85 @@ class FrameworkFreshnessReport:
         )
 
     @property
+    def current_main_sha_bound(self) -> bool:
+        """True once current framework main was observed enough to decide currency."""
+
+        return self.derived_pin_relation is not PinRelation.UNOBSERVED
+
+    @property
+    def pin_mismatch_bound(self) -> bool:
+        """True when a non-equal pin/main relation was derived from observations.
+
+        Equality is also a bound relation (see :meth:`pin_relation_bound`); this
+        property isolates the mismatch case the motivating issue requires to be
+        explicit before completeness claims over a stale-pin episode.
+        """
+
+        return self.derived_pin_relation in (
+            PinRelation.PIN_BEHIND_CURRENT_MAIN,
+            PinRelation.PIN_AHEAD_OF_CURRENT_MAIN,
+            PinRelation.DIVERGED,
+        )
+
+    @property
+    def pin_relation_bound(self) -> bool:
+        """True when the pin/current-main relation was derived, equal or not."""
+
+        return self.derived_pin_relation is not PinRelation.UNOBSERVED
+
+    @property
+    def permits_completeness_claim(self) -> bool:
+        """Completeness claims require a bound current-main SHA and pin relation.
+
+        The adoption status may still record a defective process; the gate is
+        about whether the pin/main observation was bound, not about whether the
+        adoption was clean.  A refuted or unverifiable receipt never licenses a
+        completeness claim.
+        """
+
+        return (
+            self.verdict is FreshnessVerdict.RECORDED_PROPOSAL_ONLY
+            and self.current_main_sha_bound
+            and self.pin_relation_bound
+        )
+
+    @property
     def grants_method_authority(self) -> bool:
         return False
 
     @property
     def performs_submodule_update(self) -> bool:
         return False
+
+
+@dataclass(frozen=True)
+class CompletenessFreshnessBindingReport:
+    """Result of the freshness prerequisite check for a completeness claim."""
+
+    verdict: CompletenessFreshnessBindingVerdict
+    effective_status: FreshnessExecutionStatus
+    derived_pin_relation: PinRelation
+    observed_current_main_sha: str | None
+    reasons: Tuple[str, ...]
+
+    @property
+    def permits_completeness_claim(self) -> bool:
+        return self.verdict is CompletenessFreshnessBindingVerdict.BOUND_PROPOSAL_ONLY
+
+    @property
+    def grants_method_authority(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class HistoricalReplayReport:
+    condition: HistoricalReplayCondition
+    freshness: FrameworkFreshnessReport
+    reasons: Tuple[str, ...]
+
+    @property
+    def classified(self) -> bool:
+        return self.condition is not HistoricalReplayCondition.UNCLASSIFIED
 
 
 def derive_pin_relation(receipt: FrameworkFreshnessReceipt) -> PinRelation:
@@ -576,4 +682,166 @@ def revalidation_required(
         return RevalidationReport(True, tuple(changed), tuple(reasons))
     return RevalidationReport(
         False, (), ("all watched subjects re-observed unchanged",)
+    )
+
+
+def audit_completeness_claim_freshness_binding(
+    receipt: FrameworkFreshnessReceipt | None,
+) -> CompletenessFreshnessBindingReport:
+    """Gate completeness claims on a bound current-main SHA and pin relation.
+
+    This is the fail-closed prerequisite the freshness receipt exists to enforce:
+    a completeness or counting claim (and any later case-study attribution of
+    which framework subject was actually consulted) is not licensed until the
+    episode has bound observed current framework ``main`` and derived the
+    pin/main relation — including an explicit mismatch when the pin is stale.
+
+    The gate does not require a clean adoption status.  An honestly recorded
+    ``STALE_PIN_TREATED_AS_AUTHORITATIVE`` still binds the mismatch; a missing or
+    unobserved current main never does.  Naming a current-main SHA without the
+    ancestry facts needed to derive equality-or-mismatch is
+    ``REJECTED_UNBOUND_PIN_RELATION``, not a silent default to current.
+    """
+
+    freshness = audit_framework_freshness(receipt)
+    observed_sha = None if receipt is None else receipt.observed_current_main_sha
+
+    if receipt is None:
+        return CompletenessFreshnessBindingReport(
+            CompletenessFreshnessBindingVerdict.REJECTED_FRESHNESS_RECEIPT_UNVERIFIABLE,
+            freshness.effective_status,
+            freshness.derived_pin_relation,
+            None,
+            freshness.reasons
+            + (
+                "completeness claim rejected: freshness receipt could not be verified",
+            ),
+        )
+
+    if not receipt.observed_current_main_sha or not receipt.current_main_observed_at_utc:
+        return CompletenessFreshnessBindingReport(
+            CompletenessFreshnessBindingVerdict.REJECTED_UNBOUND_CURRENT_MAIN,
+            freshness.effective_status,
+            freshness.derived_pin_relation,
+            observed_sha,
+            freshness.reasons
+            + (
+                "completeness claim rejected: current framework main SHA was not bound",
+            ),
+        )
+
+    relation = derive_pin_relation(receipt)
+    if relation is PinRelation.UNOBSERVED:
+        return CompletenessFreshnessBindingReport(
+            CompletenessFreshnessBindingVerdict.REJECTED_UNBOUND_PIN_RELATION,
+            freshness.effective_status,
+            relation,
+            observed_sha,
+            freshness.reasons
+            + (
+                "completeness claim rejected: pin/current-main relation was not bound",
+            ),
+        )
+
+    if freshness.verdict is FreshnessVerdict.REFUTED_CLAIM:
+        return CompletenessFreshnessBindingReport(
+            CompletenessFreshnessBindingVerdict.REJECTED_FRESHNESS_REFUTED,
+            freshness.effective_status,
+            relation,
+            observed_sha,
+            freshness.reasons
+            + (
+                "completeness claim rejected: freshness receipt contradicts its observations",
+            ),
+        )
+
+    if freshness.verdict is FreshnessVerdict.CANNOT_CHECK:
+        return CompletenessFreshnessBindingReport(
+            CompletenessFreshnessBindingVerdict.REJECTED_FRESHNESS_RECEIPT_UNVERIFIABLE,
+            freshness.effective_status,
+            relation,
+            observed_sha,
+            freshness.reasons
+            + (
+                "completeness claim rejected: freshness receipt could not be verified",
+            ),
+        )
+
+    mismatch_note = (
+        "pin/current-main mismatch is bound on the freshness receipt"
+        if relation
+        in (
+            PinRelation.PIN_BEHIND_CURRENT_MAIN,
+            PinRelation.PIN_AHEAD_OF_CURRENT_MAIN,
+            PinRelation.DIVERGED,
+        )
+        else "pin equals observed current main; relation is bound with no mismatch"
+    )
+    return CompletenessFreshnessBindingReport(
+        CompletenessFreshnessBindingVerdict.BOUND_PROPOSAL_ONLY,
+        freshness.effective_status,
+        relation,
+        observed_sha,
+        freshness.reasons
+        + (
+            mismatch_note,
+            "completeness claim may proceed against this bound freshness receipt only",
+            "binding mints no method or application authority",
+        ),
+    )
+
+
+def classify_historical_replay(
+    receipt: FrameworkFreshnessReceipt | None,
+) -> HistoricalReplayReport:
+    """Classify a receipt into one of the three planted historical-replay worlds.
+
+    Fails closed to ``UNCLASSIFIED`` when current-main observation or
+    application-test binding is missing in a way that prevents deciding among
+    the planted conditions, or when the receipt is otherwise unverifiable.
+    """
+
+    freshness = audit_framework_freshness(receipt)
+    status = freshness.effective_status
+
+    if status is FreshnessExecutionStatus.PIN_CURRENT and (
+        freshness.verdict is FreshnessVerdict.RECORDED_PROPOSAL_ONLY
+    ):
+        return HistoricalReplayReport(
+            HistoricalReplayCondition.CURRENT_PIN,
+            freshness,
+            ("planted world: application pin equals observed current main",),
+        )
+
+    if status is FreshnessExecutionStatus.CURRENT_MAIN_READ_DIRECTLY_SHADOW and (
+        freshness.verdict is FreshnessVerdict.RECORDED_PROPOSAL_ONLY
+    ):
+        return HistoricalReplayReport(
+            HistoricalReplayCondition.STALE_PIN_SHADOW_ADOPTION,
+            freshness,
+            (
+                "planted world: stale pin with direct current-main shadow adoption",
+                "not a tested dependency synchronization",
+            ),
+        )
+
+    if status is FreshnessExecutionStatus.STALE_PIN_TREATED_AS_AUTHORITATIVE:
+        # Both the honestly recorded defect and the refuted false declaration map
+        # onto the same planted world; the freshness verdict carries the rest.
+        return HistoricalReplayReport(
+            HistoricalReplayCondition.STALE_PIN_TREATED_AS_AUTHORITATIVE,
+            freshness,
+            (
+                "planted world: stale pin treated as authoritative",
+                "no framework surface was read at observed current main",
+            ),
+        )
+
+    return HistoricalReplayReport(
+        HistoricalReplayCondition.UNCLASSIFIED,
+        freshness,
+        freshness.reasons
+        + (
+            "receipt does not match a planted historical-replay condition",
+        ),
     )

@@ -18,12 +18,16 @@ from jsonschema import Draft202012Validator, FormatChecker  # type: ignore[impor
 
 from rakl.framework_freshness import (
     ApplicationTestBinding,
+    CompletenessFreshnessBindingVerdict,
     FrameworkFreshnessReceipt,
     FreshnessExecutionStatus,
     FreshnessVerdict,
+    HistoricalReplayCondition,
     InspectedSurface,
     PinRelation,
+    audit_completeness_claim_freshness_binding,
     audit_framework_freshness,
+    classify_historical_replay,
     receipt_canonical_sha256,
     revalidation_required,
 )
@@ -499,3 +503,139 @@ def test_content_hash_excludes_only_itself() -> None:
     assert receipt.receipt_canonical_sha256 == receipt_canonical_sha256(document)
     document["task_episode_id"] = "episode::other"
     assert receipt_canonical_sha256(document) != receipt.receipt_canonical_sha256
+
+
+# --- completeness-claim prerequisite: bind current-main + pin relation -------
+
+
+def test_bound_pin_mismatch_licenses_completeness_claim_prerequisite() -> None:
+    report = audit_completeness_claim_freshness_binding(_receipt())
+    assert report.verdict is CompletenessFreshnessBindingVerdict.BOUND_PROPOSAL_ONLY
+    assert report.permits_completeness_claim is True
+    assert report.derived_pin_relation is PinRelation.PIN_BEHIND_CURRENT_MAIN
+    assert report.observed_current_main_sha == MAIN_SHA
+    assert any("mismatch is bound" in reason for reason in report.reasons)
+    freshness = audit_framework_freshness(_receipt())
+    assert freshness.permits_completeness_claim is True
+    assert freshness.pin_mismatch_bound is True
+    assert freshness.current_main_sha_bound is True
+
+
+def test_current_pin_also_licenses_completeness_claim_prerequisite() -> None:
+    report = audit_completeness_claim_freshness_binding(_current_pin_receipt())
+    assert report.verdict is CompletenessFreshnessBindingVerdict.BOUND_PROPOSAL_ONLY
+    assert report.permits_completeness_claim is True
+    assert report.derived_pin_relation is PinRelation.EQUAL
+    freshness = audit_framework_freshness(_current_pin_receipt())
+    assert freshness.pin_mismatch_bound is False
+    assert freshness.pin_relation_bound is True
+
+
+def test_honest_stale_pin_defect_still_binds_mismatch_for_completeness() -> None:
+    """Defect rides in adoption status; the mismatch itself remains bound."""
+
+    receipt = _receipt(
+        declared_execution_status=FreshnessExecutionStatus.STALE_PIN_TREATED_AS_AUTHORITATIVE,
+        inspected_surfaces=(),
+    )
+    report = audit_completeness_claim_freshness_binding(receipt)
+    assert report.verdict is CompletenessFreshnessBindingVerdict.BOUND_PROPOSAL_ONLY
+    assert (
+        report.effective_status
+        is FreshnessExecutionStatus.STALE_PIN_TREATED_AS_AUTHORITATIVE
+    )
+    assert report.derived_pin_relation is PinRelation.PIN_BEHIND_CURRENT_MAIN
+
+
+def test_missing_current_main_sha_blocks_completeness_claim() -> None:
+    report = audit_completeness_claim_freshness_binding(
+        _receipt(observed_current_main_sha=None)
+    )
+    assert (
+        report.verdict
+        is CompletenessFreshnessBindingVerdict.REJECTED_UNBOUND_CURRENT_MAIN
+    )
+    assert report.permits_completeness_claim is False
+    assert audit_framework_freshness(
+        _receipt(observed_current_main_sha=None)
+    ).permits_completeness_claim is False
+
+
+def test_named_main_without_ancestry_blocks_as_unbound_pin_relation() -> None:
+    """Main SHA alone is not a pin relation; mismatch must be derived."""
+
+    report = audit_completeness_claim_freshness_binding(
+        _receipt(
+            pin_is_ancestor_of_current_main=None,
+            current_main_is_ancestor_of_pin=None,
+        )
+    )
+    assert (
+        report.verdict
+        is CompletenessFreshnessBindingVerdict.REJECTED_UNBOUND_PIN_RELATION
+    )
+    assert report.permits_completeness_claim is False
+    assert report.observed_current_main_sha == MAIN_SHA
+
+
+def test_refuted_freshness_receipt_blocks_completeness_claim() -> None:
+    report = audit_completeness_claim_freshness_binding(
+        _receipt(
+            declared_execution_status=FreshnessExecutionStatus.PIN_SYNCHRONIZED_AND_TESTED
+        )
+    )
+    assert (
+        report.verdict is CompletenessFreshnessBindingVerdict.REJECTED_FRESHNESS_REFUTED
+    )
+    assert report.permits_completeness_claim is False
+
+
+def test_missing_freshness_receipt_blocks_completeness_claim() -> None:
+    report = audit_completeness_claim_freshness_binding(None)
+    assert (
+        report.verdict
+        is CompletenessFreshnessBindingVerdict.REJECTED_FRESHNESS_RECEIPT_UNVERIFIABLE
+    )
+    assert report.permits_completeness_claim is False
+
+
+# --- historical replay of the three planted worlds ---------------------------
+
+
+def test_historical_replay_classifies_the_three_planted_worlds() -> None:
+    current = classify_historical_replay(_current_pin_receipt())
+    shadow = classify_historical_replay(_receipt())
+    stale = classify_historical_replay(
+        _receipt(
+            declared_execution_status=FreshnessExecutionStatus.STALE_PIN_TREATED_AS_AUTHORITATIVE,
+            inspected_surfaces=(),
+        )
+    )
+    assert current.condition is HistoricalReplayCondition.CURRENT_PIN
+    assert shadow.condition is HistoricalReplayCondition.STALE_PIN_SHADOW_ADOPTION
+    assert (
+        stale.condition
+        is HistoricalReplayCondition.STALE_PIN_TREATED_AS_AUTHORITATIVE
+    )
+    assert current.classified and shadow.classified and stale.classified
+
+
+def test_historical_replay_fails_closed_when_current_main_unobserved() -> None:
+    report = classify_historical_replay(_receipt(observed_current_main_sha=None))
+    assert report.condition is HistoricalReplayCondition.UNCLASSIFIED
+    assert report.classified is False
+    assert (
+        report.freshness.effective_status
+        is FreshnessExecutionStatus.CURRENT_MAIN_UNOBSERVED
+    )
+
+
+def test_historical_replay_fails_closed_when_sync_test_binding_missing() -> None:
+    report = classify_historical_replay(
+        _synchronized_receipt(application_test_binding=None)
+    )
+    assert report.condition is HistoricalReplayCondition.UNCLASSIFIED
+    assert (
+        report.freshness.effective_status
+        is FreshnessExecutionStatus.APPLICATION_TEST_BINDING_MISSING
+    )
