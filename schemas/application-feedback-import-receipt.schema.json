@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/application-feedback-import-receipt.schema.json",
+  "title": "RAKL application feedback import receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "bundle_id",
+    "bundle_canonical_sha256",
+    "producer",
+    "verdict",
+    "reasons",
+    "requested_authority",
+    "effective_authority",
+    "quarantined_item_ids",
+    "item_records",
+    "preserved_item_ids",
+    "supersession_edges",
+    "authority_downgrades",
+    "mutation",
+    "grants_scientific_authority",
+    "grants_method_promotion"
+  ],
+  "properties": {
+    "schema_version": {"const": "application-feedback-import-receipt-v1"},
+    "receipt_id": {"type": "string", "pattern": "^rakl::application-feedback-import::[0-9a-f]{64}$"},
+    "bundle_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "bundle_canonical_sha256": {"$ref": "#/$defs/sha256"},
+    "producer": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/repositoryPin"}]},
+    "verdict": {"enum": ["QUARANTINED_PROPOSAL", "REJECT", "CANNOT_CHECK"]},
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "requested_authority": {
+      "oneOf": [
+        {"type": "null"},
+        {"enum": ["HEURISTIC", "VERIFIED_LOCAL", "CONDITIONALLY_REUSABLE", "PROOF_BACKED", "SUPERSEDED"]}
+      ]
+    },
+    "effective_authority": {"const": "HEURISTIC"},
+    "quarantined_item_ids": {"$ref": "#/$defs/idArray"},
+    "item_records": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "kind", "payload_canonical_sha256"],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"},
+          "kind": {"enum": ["FAILURE_EXPERIENCE", "TOOL_CANDIDATE", "META_OBSERVATION"]},
+          "payload_canonical_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "preserved_item_ids": {"$ref": "#/$defs/idArray"},
+    "supersession_edges": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_item_id", "superseded_item_id"],
+        "properties": {
+          "source_item_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"},
+          "superseded_item_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"}
+        }
+      }
+    },
+    "authority_downgrades": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 256}
+    },
+    "mutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventory_mutation_performed", "failure_lattice_mutation_performed"],
+      "properties": {
+        "inventory_mutation_performed": {"const": false},
+        "failure_lattice_mutation_performed": {"const": false}
+      }
+    },
+    "grants_scientific_authority": {"const": false},
+    "grants_method_promotion": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitOid": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "idArray": {
+      "type": "array",
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"}
+    },
+    "repositoryPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_namespace", "repository_url", "commit_sha", "tree_sha"],
+      "properties": {
+        "repository_namespace": {"type": "string", "minLength": 1, "maxLength": 255},
+        "repository_url": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "commit_sha": {"$ref": "#/$defs/gitOid"},
+        "tree_sha": {"$ref": "#/$defs/gitOid"}
+      }
+    }
+  }
+}
