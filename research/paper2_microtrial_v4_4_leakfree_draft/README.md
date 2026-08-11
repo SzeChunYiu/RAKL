@@ -39,4 +39,4 @@ under the same probe (locked by tests).
 
 ## Authority
 
-This directory grants **no** model execution, harvest, or claim authority.
+**NOT EXECUTABLE.** This directory grants **no** model execution, harvest, or claim authority.

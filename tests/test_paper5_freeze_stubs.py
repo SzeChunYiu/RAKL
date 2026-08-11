@@ -26,7 +26,8 @@ def test_confirmatory_packet_stub_refuses_handoff() -> None:
     assert stub["grants_scientific_authority"] is False
     assert stub["evaluated_results_accessed"] is False
     assert any(b["id"] == "lunarc-four-arm-resources" for b in stub["blockers"])
-    assert any(b["id"] == "issue-238-learning-loop" for b in stub["blockers"])
+    assert any(b["id"] == "issue-247-capability-floor-terminal" for b in stub["blockers"])
+    assert any(b["id"] == "issue-250-terminal-freeze-refusal" for b in stub["blockers"])
 
 
 def test_novelty_audit_stub_has_no_fabricated_humans() -> None:
