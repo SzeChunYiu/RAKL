@@ -6,6 +6,10 @@ on:
       - publication/v3-manuscripts-20260811
     paths:
       - publication/**
+      - paper/generate_demo_figures.py
+      - research/MINI_RESEARCH_DEMO_043_RECEIPT.json
+      - research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json
+      - research/MINI_ARCHIVE_STORAGE_044_RECEIPT.json
       - scripts/audit_publication_citations.py
       - .github/workflows/publication-v3-build.yml
   workflow_dispatch:
@@ -25,12 +29,26 @@ jobs:
           python-version: "3.11"
       - name: Audit citation keys before TeX
         run: python scripts/audit_publication_citations.py
-      - name: Install LaTeX and PDF tools
+      - name: Install figure, LaTeX and PDF tools
         run: |
+          python -m pip install --upgrade pip
+          python -m pip install matplotlib
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
             latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
             lmodern poppler-utils
+      - name: Regenerate receipt-bound Paper II figures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python paper/generate_demo_figures.py
+          for name in fig5_demo_growth fig6_demo_context; do
+            src="paper/figures/generated/${name}.pdf"
+            dst="publication/papers/paper-02-rakl-evidence-governed-research/source/${name}.pdf"
+            test -s "$src"
+            pdfinfo "$src" >/dev/null
+            cp "$src" "$dst"
+          done
       - name: Compile Paper I
         working-directory: publication/papers/paper-01-epistemic-mechanics
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
@@ -82,6 +100,8 @@ jobs:
             publication/papers/paper-01-epistemic-mechanics/main.txt
             publication/papers/paper-01-epistemic-mechanics/pdfinfo.txt
             publication/papers/paper-01-epistemic-mechanics/renders/*.png
+            publication/papers/paper-02-rakl-evidence-governed-research/source/fig5_demo_growth.pdf
+            publication/papers/paper-02-rakl-evidence-governed-research/source/fig6_demo_context.pdf
             publication/papers/paper-02-rakl-evidence-governed-research/source/main.pdf
             publication/papers/paper-02-rakl-evidence-governed-research/source/main.log
             publication/papers/paper-02-rakl-evidence-governed-research/source/main.txt
