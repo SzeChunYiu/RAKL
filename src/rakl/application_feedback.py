@@ -20,12 +20,23 @@ from pathlib import Path, PurePosixPath
 from typing import Mapping, Sequence, Tuple
 from urllib.parse import urlparse
 
-from .failure_lattice import FailureDiagnosisStatus, FailureExperience
-from .research_tool_inventory import ResearchTool, ResearchToolAuthority
+from jsonschema import Draft202012Validator, FormatChecker  # type: ignore[import-untyped]
+
+from .failure_lattice import (
+    FailureDiagnosisStatus,
+    FailureExperience,
+    validate_failure_experience,
+)
+from .research_tool_inventory import (
+    ResearchTool,
+    ResearchToolAuthority,
+    validate_research_tool,
+)
 
 
 BUNDLE_SCHEMA_VERSION = "application-feedback-bundle-v1"
 RECEIPT_SCHEMA_VERSION = "application-feedback-import-receipt-v1"
+FRAMEWORK_REPOSITORY_URL = "https://github.com/SzeChunYiu/RAKL.git"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _GIT_OID_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 
@@ -64,6 +75,25 @@ def _bundle_hash(document: Mapping[str, object]) -> str:
     return canonical_json_sha256(subject)
 
 
+def _schema_validation_reasons(document: Mapping[str, object]) -> Tuple[str, ...] | None:
+    schema_path = (
+        Path(__file__).resolve().parents[2]
+        / "schemas"
+        / "application-feedback-bundle.schema.json"
+    )
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        Draft202012Validator.check_schema(schema)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    reasons: list[str] = []
+    for error in validator.iter_errors(document):
+        path = ".".join(str(part) for part in error.absolute_path) or "$"
+        reasons.append(f"bundle_schema_invalid:{path}:{error.validator}")
+    return tuple(sorted(set(reasons)))
+
+
 @dataclass(frozen=True)
 class RepositoryPin:
     repository_namespace: str
@@ -89,9 +119,15 @@ class FeedbackItem:
     payload_json: str
     payload_canonical_sha256: str
     result_id: str
+    result_path: str
+    result_blob_sha: str
     result_sha256: str
     trace_event_id: str
+    trace_path: str
+    trace_blob_sha: str
     trace_sha256: str
+    context_path: str
+    context_blob_sha: str
     context_sha256: str
     observed_at_utc: str
     supersedes: Tuple[str, ...] = ()
@@ -113,9 +149,15 @@ class FeedbackItem:
             "payload_canonical_sha256": self.payload_canonical_sha256,
             "application_bindings": {
                 "result_id": self.result_id,
+                "result_path": self.result_path,
+                "result_git_blob_sha": self.result_blob_sha,
                 "result_sha256": self.result_sha256,
                 "trace_event_id": self.trace_event_id,
+                "trace_path": self.trace_path,
+                "trace_git_blob_sha": self.trace_blob_sha,
                 "trace_sha256": self.trace_sha256,
+                "context_path": self.context_path,
+                "context_git_blob_sha": self.context_blob_sha,
                 "context_sha256": self.context_sha256,
                 "observed_at_utc": self.observed_at_utc,
             },
@@ -250,6 +292,59 @@ def _payload_strings(
     return tuple(value)
 
 
+def _failure_from_payload(payload: Mapping[str, object]) -> FailureExperience:
+    return FailureExperience(
+        failure_id=str(payload["failure_id"]),
+        atom_id=str(payload["atom_id"]),
+        candidate_id=str(payload["candidate_id"]),
+        context_packet_hash=str(payload["context_packet_hash"]),
+        research_trace_event_id=str(payload["research_trace_event_id"]),
+        method_family=str(payload["method_family"]),
+        failure_mode=str(payload["failure_mode"]),
+        residual_signature=_payload_strings(payload, "residual_signature"),
+        broken_assumptions=_payload_strings(payload, "broken_assumptions", default=()),
+        scope_conditions=_payload_strings(payload, "scope_conditions"),
+        competing_diagnoses=_payload_strings(payload, "competing_diagnoses"),
+        selected_diagnosis=str(payload.get("selected_diagnosis", "")),
+        diagnosis_status=FailureDiagnosisStatus(str(payload["diagnosis_status"])),
+        evidence_pointers=_payload_strings(payload, "evidence_pointers"),
+        falsifier_or_attempt=str(payload["falsifier_or_attempt"]),
+        observed_result=str(payload["observed_result"]),
+        artifact_hash=str(payload["artifact_hash"]),
+        timestamp=str(payload["timestamp"]),
+        local_repair_attempts=_payload_strings(payload, "local_repair_attempts", default=()),
+    )
+
+
+def _tool_from_payload(payload: Mapping[str, object]) -> ResearchTool:
+    obligations = list(_payload_strings(payload, "validation_obligations"))
+    for required in ("DifferenceWitness", "ToolApplicabilityWitness"):
+        if required not in obligations:
+            obligations.append(required)
+    return ResearchTool(
+        tool_id=str(payload["tool_id"]),
+        name=str(payload["name"]),
+        kind=str(payload["kind"]),
+        abstraction=str(payload["abstraction"]),
+        source_atom_id=str(payload["source_atom_id"]),
+        source_candidate_id=str(payload["source_candidate_id"]),
+        source_result_ids=_payload_strings(payload, "source_result_ids"),
+        source_context_hash=str(payload["source_context_hash"]),
+        authority=ResearchToolAuthority.HEURISTIC,
+        preconditions=_payload_strings(payload, "preconditions"),
+        structural_signature=_payload_strings(payload, "structural_signature"),
+        operation=str(payload["operation"]),
+        guaranteed_effects=_payload_strings(payload, "guaranteed_effects"),
+        non_guarantees=_payload_strings(payload, "non_guarantees"),
+        validation_obligations=tuple(obligations),
+        evidence_pointers=_payload_strings(payload, "evidence_pointers"),
+        known_failure_ids=_payload_strings(payload, "known_failure_ids", default=()),
+        successful_reuse_ids=_payload_strings(payload, "successful_reuse_ids", default=()),
+        proof_backing=_payload_strings(payload, "proof_backing", default=()),
+        artifact_hash=str(payload["artifact_hash"]),
+    )
+
+
 def parse_application_feedback_bundle(
     document: Mapping[str, object],
 ) -> ApplicationFeedbackBundle:
@@ -295,9 +390,15 @@ def parse_application_feedback_bundle(
                 payload_json=canonical_json_bytes(payload).decode("utf-8"),
                 payload_canonical_sha256=_required_text(item, "payload_canonical_sha256"),
                 result_id=_required_text(bindings, "result_id"),
+                result_path=_required_text(bindings, "result_path"),
+                result_blob_sha=_required_text(bindings, "result_git_blob_sha"),
                 result_sha256=_required_text(bindings, "result_sha256"),
                 trace_event_id=_required_text(bindings, "trace_event_id"),
+                trace_path=_required_text(bindings, "trace_path"),
+                trace_blob_sha=_required_text(bindings, "trace_git_blob_sha"),
                 trace_sha256=_required_text(bindings, "trace_sha256"),
+                context_path=_required_text(bindings, "context_path"),
+                context_blob_sha=_required_text(bindings, "context_git_blob_sha"),
                 context_sha256=_required_text(bindings, "context_sha256"),
                 observed_at_utc=_required_text(bindings, "observed_at_utc"),
                 supersedes=tuple(value.strip() for value in raw_supersedes),
@@ -401,34 +502,60 @@ def _receipt(
 ) -> FeedbackImportReceipt:
     bundle_id_raw = raw_document.get("bundle_id")
     bundle_hash_raw = raw_document.get("bundle_canonical_sha256")
-    bundle_id = bundle.bundle_id if bundle else (bundle_id_raw if isinstance(bundle_id_raw, str) else "UNBOUND")
-    bundle_hash = (
-        bundle.bundle_canonical_sha256
+    bundle_id = (
+        bundle.bundle_id
         if bundle
-        else (bundle_hash_raw if isinstance(bundle_hash_raw, str) else _bundle_hash(raw_document))
+        else (
+            bundle_id_raw.strip()
+            if isinstance(bundle_id_raw, str) and bundle_id_raw.strip()
+            else "UNBOUND"
+        )
     )
+    if bundle:
+        bundle_hash = bundle.bundle_canonical_sha256
+    elif isinstance(bundle_hash_raw, str) and _SHA256_RE.fullmatch(bundle_hash_raw):
+        bundle_hash = bundle_hash_raw
+    else:
+        try:
+            bundle_hash = _bundle_hash(raw_document)
+        except (TypeError, ValueError):
+            bundle_hash = hashlib.sha256(repr(raw_document).encode("utf-8")).hexdigest()
     current_records = (
         tuple((item.item_id, item.kind.value, item.payload_canonical_sha256) for item in bundle.items)
         if bundle and verdict is FeedbackImportVerdict.QUARANTINED_PROPOSAL
         else ()
     )
-    prior_records = tuple(record for prior in prior_receipts for record in prior.item_records)
+    lineage_prior = next(
+        (
+            prior
+            for prior in prior_receipts
+            if bundle
+            and bundle.previous_bundle_id == prior.bundle_id
+            and bundle.previous_bundle_canonical_sha256 == prior.bundle_canonical_sha256
+            and prior.verdict is FeedbackImportVerdict.QUARANTINED_PROPOSAL
+        ),
+        None,
+    )
+    prior_records = lineage_prior.item_records if lineage_prior else ()
     preserved = set(item_id for item_id, _, _ in prior_records)
     if bundle and verdict is FeedbackImportVerdict.QUARANTINED_PROPOSAL:
         preserved.update(
             item.item_id for item in bundle.items if item.kind is FeedbackKind.FAILURE_EXPERIENCE
         )
-    supersession_edges = (
-        tuple(
-            sorted(
-                (item.item_id, target)
-                for item in bundle.items
-                for target in item.supersedes
-            )
-        )
+    new_edges = (
+        tuple((item.item_id, target) for item in bundle.items for target in item.supersedes)
         if bundle and verdict is FeedbackImportVerdict.QUARANTINED_PROPOSAL
         else ()
     )
+    supersession_edges = tuple(
+        sorted(set((lineage_prior.supersession_edges if lineage_prior else ()) + new_edges))
+    )
+    all_records: list[Tuple[str, str, str]] = []
+    seen_records: set[str] = set()
+    for record in prior_records + current_records:
+        if record[0] not in seen_records:
+            all_records.append(record)
+            seen_records.add(record[0])
     requested = bundle.requested_authority if bundle else None
     downgrades: tuple[str, ...] = ()
     if requested and requested != ResearchToolAuthority.HEURISTIC.value:
@@ -444,7 +571,7 @@ def _receipt(
         "requested_authority": requested,
         "effective_authority": ResearchToolAuthority.HEURISTIC.value,
         "quarantined_item_ids": [row[0] for row in current_records],
-        "item_records": current_records,
+        "item_records": all_records,
         "preserved_item_ids": sorted(preserved),
         "supersession_edges": supersession_edges,
         "authority_downgrades": downgrades,
@@ -461,7 +588,7 @@ def _receipt(
         requested_authority=requested,
         effective_authority=ResearchToolAuthority.HEURISTIC.value,
         quarantined_item_ids=tuple(row[0] for row in current_records),
-        item_records=current_records,
+        item_records=tuple(all_records),
         preserved_item_ids=tuple(sorted(preserved)),
         supersession_edges=supersession_edges,
         authority_downgrades=downgrades,
@@ -518,14 +645,37 @@ def import_application_feedback(
             reasons=missing_refs,
             prior_receipts=prior_receipts,
         )
-    try:
-        bundle = parse_application_feedback_bundle(document)
-    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+    schema_reasons = _schema_validation_reasons(document)
+    if schema_reasons is None:
         return _receipt(
             bundle=None,
             raw_document=document,
             verdict=FeedbackImportVerdict.CANNOT_CHECK,
-            reasons=(str(exc),),
+            reasons=("bundle_schema_unavailable",),
+            prior_receipts=prior_receipts,
+        )
+    if schema_reasons:
+        return _receipt(
+            bundle=None,
+            raw_document=document,
+            verdict=FeedbackImportVerdict.REJECT,
+            reasons=schema_reasons,
+            prior_receipts=prior_receipts,
+        )
+    try:
+        bundle = parse_application_feedback_bundle(document)
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        detail = str(exc)
+        reason = (
+            "canonical_json_invalid"
+            if "JSON" in detail or "float values" in detail or "Out of range" in detail
+            else detail
+        )
+        return _receipt(
+            bundle=None,
+            raw_document=document,
+            verdict=FeedbackImportVerdict.CANNOT_CHECK,
+            reasons=(reason,),
             prior_receipts=prior_receipts,
         )
 
@@ -545,7 +695,12 @@ def import_application_feedback(
     reject: list[str] = []
     cannot: list[str] = []
     declared_hash = bundle.bundle_canonical_sha256
-    if not _SHA256_RE.fullmatch(declared_hash) or declared_hash != _bundle_hash(document):
+    try:
+        observed_bundle_hash = _bundle_hash(document)
+    except (TypeError, ValueError):
+        observed_bundle_hash = None
+        reject.append("canonical_json_invalid")
+    if not _SHA256_RE.fullmatch(declared_hash) or declared_hash != observed_bundle_hash:
         reject.append("bundle_canonical_sha256_mismatch")
     if not _GIT_OID_RE.fullmatch(bundle.producer.commit_sha):
         reject.append("producer_commit_sha_invalid")
@@ -568,6 +723,15 @@ def import_application_feedback(
             reject.append(prefix + "source_path_invalid")
         if not _GIT_OID_RE.fullmatch(item.source_blob_sha):
             reject.append(prefix + "source_blob_invalid")
+        for role, path, blob in (
+            ("result", item.result_path, item.result_blob_sha),
+            ("trace", item.trace_path, item.trace_blob_sha),
+            ("context", item.context_path, item.context_blob_sha),
+        ):
+            if not _safe_path(path):
+                reject.append(prefix + f"{role}_path_invalid")
+            if not _GIT_OID_RE.fullmatch(blob):
+                reject.append(prefix + f"{role}_blob_invalid")
         if not _SHA256_RE.fullmatch(item.payload_canonical_sha256):
             reject.append(prefix + "payload_canonical_sha256_invalid")
         elif canonical_json_sha256(item.payload) != item.payload_canonical_sha256:
@@ -583,7 +747,7 @@ def import_application_feedback(
             cannot.append(prefix + "result_id_missing")
         if not item.trace_event_id:
             cannot.append(prefix + "trace_event_id_missing")
-        if not _parse_time(item.observed_at_utc):
+        if not item.observed_at_utc.endswith("Z") or not _parse_time(item.observed_at_utc):
             cannot.append(prefix + "observed_at_utc_missing_or_invalid")
         if item.item_id in item.supersedes:
             reject.append(prefix + "cannot_supersede_self")
@@ -617,6 +781,15 @@ def import_application_feedback(
                 reject.append(prefix + "payload_context_identity_mismatch")
             if payload.get("artifact_hash") != item.result_sha256:
                 reject.append(prefix + "payload_result_hash_mismatch")
+            if payload.get("timestamp") != item.observed_at_utc:
+                reject.append(prefix + "payload_timestamp_identity_mismatch")
+            try:
+                staged_failure = _failure_from_payload(payload)
+            except (KeyError, TypeError, ValueError):
+                reject.append(prefix + "failure_payload_invalid")
+            else:
+                for reason in validate_failure_experience(staged_failure):
+                    reject.append(prefix + "failure_payload_invalid:" + reason)
         elif item.kind is FeedbackKind.TOOL_CANDIDATE:
             required = {
                 "tool_id",
@@ -645,6 +818,13 @@ def import_application_feedback(
                 reject.append(prefix + "payload_context_identity_mismatch")
             if payload.get("artifact_hash") != item.result_sha256:
                 reject.append(prefix + "payload_result_hash_mismatch")
+            try:
+                staged_tool = _tool_from_payload(payload)
+            except (KeyError, TypeError, ValueError):
+                reject.append(prefix + "tool_payload_invalid")
+            else:
+                for reason in validate_research_tool(staged_tool):
+                    reject.append(prefix + "tool_payload_invalid:" + reason)
         else:
             required = {
                 "observation_id",
@@ -662,6 +842,8 @@ def import_application_feedback(
                 item.trace_event_id,
             }.issubset(set(str(value) for value in pointers)):
                 reject.append(prefix + "payload_result_trace_identity_mismatch")
+            if payload.get("context_sha256") != item.context_sha256:
+                reject.append(prefix + "payload_context_identity_mismatch")
 
     if (
         not bundle.proposal_only
@@ -670,23 +852,39 @@ def import_application_feedback(
         or bundle.promotion_allowed
     ):
         reject.append("authority_envelope_not_proposal_only")
+    if _normalize_repo_url(bundle.framework_repository_url) != _normalize_repo_url(
+        FRAMEWORK_REPOSITORY_URL
+    ):
+        reject.append("framework_repository_url_mismatch")
     if bundle.framework_commit_sha != current_framework_commit_sha:
         cannot.append("framework_commit_pin_stale")
     if bundle.framework_version != current_framework_version:
         cannot.append("framework_version_pin_stale")
 
-    prior_by_bundle = {prior.bundle_id: prior for prior in prior_receipts}
+    accepted_priors = tuple(
+        prior
+        for prior in prior_receipts
+        if prior.verdict is FeedbackImportVerdict.QUARANTINED_PROPOSAL
+    )
+    prior_by_bundle = {prior.bundle_id: prior for prior in accepted_priors}
     prior_items = {
         item_id: (kind, payload_hash)
-        for prior in prior_receipts
+        for prior in accepted_priors
         for item_id, kind, payload_hash in prior.item_records
     }
+    lineage_items: dict[str, tuple[str, str]] = {}
+    previous_receipt: FeedbackImportReceipt | None = None
     if bundle.previous_bundle_id is not None:
         previous_receipt = prior_by_bundle.get(bundle.previous_bundle_id)
         if previous_receipt is None:
             cannot.append("previous_bundle_receipt_missing")
         elif previous_receipt.bundle_canonical_sha256 != bundle.previous_bundle_canonical_sha256:
             reject.append("previous_bundle_hash_mismatch")
+        else:
+            lineage_items = {
+                item_id: (kind, payload_hash)
+                for item_id, kind, payload_hash in previous_receipt.item_records
+            }
     elif any(item.supersedes for item in bundle.items):
         cannot.append("previous_bundle_binding_missing_for_supersession")
     for item in bundle.items:
@@ -697,9 +895,14 @@ def import_application_feedback(
             else:
                 reject.append(f"item_id_collision:{item.item_id}")
         for target in item.supersedes:
-            if target not in prior_items:
+            if target not in lineage_items:
                 cannot.append(f"supersession_target_missing:{target}")
+            elif lineage_items[target][0] != item.kind.value:
+                reject.append(f"supersession_kind_mismatch:{target}")
     successor_sets: dict[str, set[str]] = {}
+    if previous_receipt is not None:
+        for source, target in previous_receipt.supersession_edges:
+            successor_sets.setdefault(target, set()).add(source)
     for item in bundle.items:
         for target in item.supersedes:
             successor_sets.setdefault(target, set()).add(item.item_id)
@@ -761,6 +964,68 @@ def import_application_feedback(
                 continue
             if canonical_json_sha256(source_payload) != item.payload_canonical_sha256:
                 reject.append(prefix + "source_payload_hash_mismatch")
+            for role, path, expected_blob, expected_sha, identity_key, expected_id in (
+                (
+                    "result",
+                    item.result_path,
+                    item.result_blob_sha,
+                    item.result_sha256,
+                    "result_id",
+                    item.result_id,
+                ),
+                (
+                    "trace",
+                    item.trace_path,
+                    item.trace_blob_sha,
+                    item.trace_sha256,
+                    "event_id",
+                    item.trace_event_id,
+                ),
+                (
+                    "context",
+                    item.context_path,
+                    item.context_blob_sha,
+                    item.context_sha256,
+                    None,
+                    None,
+                ),
+            ):
+                found, observed_blob = _git(
+                    repo, "rev-parse", f"{bundle.producer.commit_sha}:{path}"
+                )
+                if not found:
+                    cannot.append(prefix + f"{role}_path_missing_at_commit")
+                    continue
+                if observed_blob != expected_blob:
+                    reject.append(prefix + f"{role}_blob_mismatch")
+                    continue
+                typed, object_type = _git(repo, "cat-file", "-t", observed_blob)
+                if not typed:
+                    cannot.append(prefix + f"{role}_object_type_unavailable")
+                    continue
+                if object_type != "blob":
+                    reject.append(prefix + f"{role}_object_is_not_blob")
+                    continue
+                loaded, artifact_bytes = _git_bytes(
+                    repo, "show", f"{bundle.producer.commit_sha}:{path}"
+                )
+                if not loaded:
+                    cannot.append(prefix + f"{role}_blob_unreadable")
+                    continue
+                if hashlib.sha256(artifact_bytes).hexdigest() != expected_sha:
+                    reject.append(prefix + f"{role}_sha256_mismatch")
+                    continue
+                if identity_key is not None:
+                    try:
+                        identity_document = json.loads(artifact_bytes)
+                    except (UnicodeDecodeError, json.JSONDecodeError):
+                        reject.append(prefix + f"{role}_identity_document_not_json")
+                        continue
+                    if (
+                        not isinstance(identity_document, Mapping)
+                        or identity_document.get(identity_key) != expected_id
+                    ):
+                        reject.append(prefix + f"{role}_identity_mismatch")
 
     if reject:
         verdict = FeedbackImportVerdict.REJECT
@@ -813,28 +1078,7 @@ def stage_feedback_failure(
     """Materialize a failure proposal without adding it to a lattice."""
 
     item = _stage_item(bundle, receipt, item_id, FeedbackKind.FAILURE_EXPERIENCE)
-    payload = item.payload
-    return FailureExperience(
-        failure_id=str(payload["failure_id"]),
-        atom_id=str(payload["atom_id"]),
-        candidate_id=str(payload["candidate_id"]),
-        context_packet_hash=str(payload["context_packet_hash"]),
-        research_trace_event_id=str(payload["research_trace_event_id"]),
-        method_family=str(payload["method_family"]),
-        failure_mode=str(payload["failure_mode"]),
-        residual_signature=_payload_strings(payload, "residual_signature"),
-        broken_assumptions=_payload_strings(payload, "broken_assumptions"),
-        scope_conditions=_payload_strings(payload, "scope_conditions"),
-        competing_diagnoses=_payload_strings(payload, "competing_diagnoses"),
-        selected_diagnosis=str(payload["selected_diagnosis"]),
-        diagnosis_status=FailureDiagnosisStatus(str(payload["diagnosis_status"])),
-        evidence_pointers=_payload_strings(payload, "evidence_pointers"),
-        falsifier_or_attempt=str(payload["falsifier_or_attempt"]),
-        observed_result=str(payload["observed_result"]),
-        artifact_hash=str(payload["artifact_hash"]),
-        timestamp=str(payload["timestamp"]),
-        local_repair_attempts=_payload_strings(payload, "local_repair_attempts", default=()),
-    )
+    return _failure_from_payload(item.payload)
 
 
 def stage_feedback_tool_candidate(
@@ -845,33 +1089,7 @@ def stage_feedback_tool_candidate(
     """Materialize a HEURISTIC candidate without adding it to an inventory."""
 
     item = _stage_item(bundle, receipt, item_id, FeedbackKind.TOOL_CANDIDATE)
-    payload = item.payload
-    obligations = list(_payload_strings(payload, "validation_obligations"))
-    for required in ("DifferenceWitness", "ToolApplicabilityWitness"):
-        if required not in obligations:
-            obligations.append(required)
-    return ResearchTool(
-        tool_id=str(payload["tool_id"]),
-        name=str(payload["name"]),
-        kind=str(payload["kind"]),
-        abstraction=str(payload["abstraction"]),
-        source_atom_id=str(payload["source_atom_id"]),
-        source_candidate_id=str(payload["source_candidate_id"]),
-        source_result_ids=_payload_strings(payload, "source_result_ids"),
-        source_context_hash=str(payload["source_context_hash"]),
-        authority=ResearchToolAuthority.HEURISTIC,
-        preconditions=_payload_strings(payload, "preconditions"),
-        structural_signature=_payload_strings(payload, "structural_signature"),
-        operation=str(payload["operation"]),
-        guaranteed_effects=_payload_strings(payload, "guaranteed_effects"),
-        non_guarantees=_payload_strings(payload, "non_guarantees"),
-        validation_obligations=tuple(obligations),
-        evidence_pointers=_payload_strings(payload, "evidence_pointers"),
-        known_failure_ids=_payload_strings(payload, "known_failure_ids", default=()),
-        successful_reuse_ids=_payload_strings(payload, "successful_reuse_ids", default=()),
-        proof_backing=_payload_strings(payload, "proof_backing", default=()),
-        artifact_hash=str(payload["artifact_hash"]),
-    )
+    return _tool_from_payload(item.payload)
 
 
 def stage_feedback_meta_observation(

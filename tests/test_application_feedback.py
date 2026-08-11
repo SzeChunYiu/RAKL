@@ -4,7 +4,7 @@ import copy
 import hashlib
 import json
 import subprocess
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 
 import pytest
@@ -40,6 +40,10 @@ def _git(repo: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
     repo = tmp_path / "RAKL_math"
     repo.mkdir()
@@ -53,7 +57,7 @@ def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
             "failure_id": "failure-1",
             "atom_id": "atom-1",
             "candidate_id": "candidate-1",
-            "context_packet_hash": "a" * 64,
+            "context_packet_hash": "PENDING",
             "research_trace_event_id": "trace-failure",
             "method_family": "bounded-transfer",
             "failure_mode": "counterexample",
@@ -66,7 +70,7 @@ def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
             "evidence_pointers": ["result-failure"],
             "falsifier_or_attempt": "falsifier:1",
             "observed_result": "candidate fails the registered discriminator",
-            "artifact_hash": "b" * 64,
+            "artifact_hash": "PENDING",
             "timestamp": "2026-08-11T08:00:00Z",
             "local_repair_attempts": [],
         },
@@ -78,7 +82,7 @@ def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
             "source_atom_id": "atom-1",
             "source_candidate_id": "candidate-2",
             "source_result_ids": ["result-tool"],
-            "source_context_hash": "c" * 64,
+            "source_context_hash": "PENDING",
             "requested_authority": "PROOF_BACKED",
             "preconditions": ["typed theorem statement"],
             "structural_signature": ["implication-chain"],
@@ -90,7 +94,7 @@ def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
             "known_failure_ids": ["failure-1"],
             "successful_reuse_ids": [],
             "proof_backing": ["proof-receipt:2"],
-            "artifact_hash": "d" * 64,
+            "artifact_hash": "PENDING",
         },
         "meta": {
             "observation_id": "meta-1",
@@ -101,6 +105,36 @@ def _source_repo(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
             "validation_status": "UNVALIDATED_PROPOSAL",
         },
     }
+    for directory in ("results", "traces", "contexts"):
+        (repo / directory).mkdir()
+    for name, payload in payloads.items():
+        result_id = f"result-{name}"
+        trace_id = str(payload.get("research_trace_event_id", f"trace-{name}"))
+        result_path = repo / "results" / f"{name}.json"
+        trace_path = repo / "traces" / f"{name}.json"
+        context_path = repo / "contexts" / f"{name}.json"
+        result_path.write_text(
+            json.dumps({"result_id": result_id, "observed": True}, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        trace_path.write_text(
+            json.dumps({"event_id": trace_id, "state": "RESULT_OBSERVED"}, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        context_path.write_text(
+            json.dumps({"context_id": f"context-{name}", "frozen": True}, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        result_sha = _sha256(result_path)
+        context_sha = _sha256(context_path)
+        if name == "failure":
+            payload["artifact_hash"] = result_sha
+            payload["context_packet_hash"] = context_sha
+        elif name == "tool":
+            payload["artifact_hash"] = result_sha
+            payload["source_context_hash"] = context_sha
+        else:
+            payload["context_sha256"] = context_sha
     lessons = repo / "lessons"
     lessons.mkdir()
     for name, payload in payloads.items():
@@ -123,6 +157,9 @@ def _bundle_document(repo: Path, payloads: dict[str, dict[str, object]]) -> dict
         ("meta", "META_OBSERVATION"),
     ):
         path = f"lessons/{name}.json"
+        result_path = f"results/{name}.json"
+        trace_path = f"traces/{name}.json"
+        context_path = f"contexts/{name}.json"
         items.append(
             {
                 "item_id": f"{namespace}::{kind.lower()}::{name}-1",
@@ -135,10 +172,16 @@ def _bundle_document(repo: Path, payloads: dict[str, dict[str, object]]) -> dict
                 "payload_canonical_sha256": canonical_json_sha256(payloads[name]),
                 "application_bindings": {
                     "result_id": f"result-{name}",
-                    "result_sha256": str(payloads[name].get("artifact_hash", hashlib.sha256(f"result-{name}".encode()).hexdigest())),
+                    "result_path": result_path,
+                    "result_git_blob_sha": _git(repo, "rev-parse", f"HEAD:{result_path}"),
+                    "result_sha256": _sha256(repo / result_path),
                     "trace_event_id": str(payloads[name].get("research_trace_event_id", f"trace-{name}")),
-                    "trace_sha256": hashlib.sha256(f"trace-{name}".encode()).hexdigest(),
-                    "context_sha256": str(payloads[name].get("context_packet_hash", payloads[name].get("source_context_hash", hashlib.sha256(f"context-{name}".encode()).hexdigest()))),
+                    "trace_path": trace_path,
+                    "trace_git_blob_sha": _git(repo, "rev-parse", f"HEAD:{trace_path}"),
+                    "trace_sha256": _sha256(repo / trace_path),
+                    "context_path": context_path,
+                    "context_git_blob_sha": _git(repo, "rev-parse", f"HEAD:{context_path}"),
+                    "context_sha256": _sha256(repo / context_path),
                     "observed_at_utc": "2026-08-11T08:00:00Z",
                 },
                 "supersedes": [],
@@ -282,6 +325,28 @@ def test_unknown_schema_and_missing_result_trace_fail_closed(tmp_path: Path) -> 
     assert any("result_id_missing" in reason for reason in receipt.reasons)
 
 
+def test_malformed_typed_payload_and_nonfinite_json_fail_closed(tmp_path: Path) -> None:
+    repo, payloads = _source_repo(tmp_path)
+    malformed = _bundle_document(repo, payloads)
+    malformed["items"][0]["payload"]["residual_signature"] = "not-an-array"
+    malformed["items"][0]["payload_canonical_sha256"] = canonical_json_sha256(
+        malformed["items"][0]["payload"]
+    )
+    # The committed source is intentionally no longer equal to the claimed
+    # typed payload, but the audit must return a receipt rather than crash.
+    _rehash(malformed)
+    receipt = _import(malformed, repo)
+    assert receipt.verdict is FeedbackImportVerdict.REJECT
+    assert any("failure_payload_invalid" in reason for reason in receipt.reasons)
+
+    nonfinite = _bundle_document(repo, payloads)
+    nonfinite["items"][0]["payload"]["score"] = float("nan")
+    nonfinite["bundle_canonical_sha256"] = "0" * 64
+    receipt = _import(nonfinite, repo)
+    assert receipt.verdict is not FeedbackImportVerdict.QUARANTINED_PROPOSAL
+    assert any("canonical_json_invalid" in reason for reason in receipt.reasons)
+
+
 def test_duplicate_and_namespaced_id_violations_reject(tmp_path: Path) -> None:
     repo, payloads = _source_repo(tmp_path)
     duplicate = _bundle_document(repo, payloads)
@@ -296,7 +361,10 @@ def test_duplicate_and_namespaced_id_violations_reject(tmp_path: Path) -> None:
     _rehash(unnamespaced)
     receipt = _import(unnamespaced, repo)
     assert receipt.verdict is FeedbackImportVerdict.REJECT
-    assert any("item_id_not_namespaced" in reason for reason in receipt.reasons)
+    assert any(
+        "item_id_not_namespaced" in reason or "bundle_schema_invalid" in reason
+        for reason in receipt.reasons
+    )
 
     foreign_namespace = _bundle_document(repo, payloads)
     foreign_namespace["producer"]["repository_namespace"] = "github.com/attacker/other"
@@ -353,6 +421,80 @@ def test_typed_application_identity_mismatch_rejects(tmp_path: Path) -> None:
     receipt = _import(document, repo)
     assert receipt.verdict is FeedbackImportVerdict.REJECT
     assert any("payload_trace_identity_mismatch" in reason for reason in receipt.reasons)
+
+
+def test_framework_url_runtime_schema_and_exact_artifact_bindings_fail_closed(
+    tmp_path: Path,
+) -> None:
+    repo, payloads = _source_repo(tmp_path)
+
+    wrong_framework = _bundle_document(repo, payloads)
+    wrong_framework["framework_requirement"]["repository_url"] = "https://attacker.invalid/RAKL"
+    _rehash(wrong_framework)
+    receipt = _import(wrong_framework, repo)
+    assert receipt.verdict is FeedbackImportVerdict.REJECT
+    assert "framework_repository_url_mismatch" in receipt.reasons
+
+    extra = _bundle_document(repo, payloads)
+    extra["unexpected"] = True
+    extra["authority_envelope"]["requested_authority"] = "ROOT"
+    _rehash(extra)
+    receipt = _import(extra, repo)
+    assert receipt.verdict is FeedbackImportVerdict.REJECT
+    assert any("bundle_schema_invalid" in reason for reason in receipt.reasons)
+
+    false_result = _bundle_document(repo, payloads)
+    false_result["items"][1]["application_bindings"]["result_sha256"] = "0" * 64
+    _rehash(false_result)
+    receipt = _import(false_result, repo)
+    assert receipt.verdict is FeedbackImportVerdict.REJECT
+    assert any("result_sha256_mismatch" in reason for reason in receipt.reasons)
+
+    non_utc = _bundle_document(repo, payloads)
+    non_utc["items"][0]["application_bindings"]["observed_at_utc"] = (
+        "2026-08-11T10:00:00+02:00"
+    )
+    _rehash(non_utc)
+    assert _import(non_utc, repo).verdict is FeedbackImportVerdict.REJECT
+
+
+def test_negative_receipts_validate_and_rejected_history_cannot_authorize_lineage(
+    tmp_path: Path,
+) -> None:
+    repo, payloads = _source_repo(tmp_path)
+    root = Path(__file__).resolve().parents[1]
+    receipt_schema = json.loads(
+        (root / "schemas/application-feedback-import-receipt.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    invalid = {
+        "schema_version": "bad",
+        "bundle_id": "",
+        "bundle_canonical_sha256": "x",
+    }
+    cannot = _import(invalid, repo)
+    assert cannot.verdict is FeedbackImportVerdict.CANNOT_CHECK
+    assert list(Draft202012Validator(receipt_schema).iter_errors(cannot.to_dict())) == []
+
+    first_document = _bundle_document(repo, payloads)
+    first = _import(first_document, repo)
+    rejected_history = replace(first, verdict=FeedbackImportVerdict.REJECT)
+    successor = _bundle_document(repo, payloads)
+    successor["bundle_id"] = "github.com/example/RAKL_math::feedback-bundle::rejected-parent"
+    successor["previous_bundle"] = {
+        "bundle_id": rejected_history.bundle_id,
+        "bundle_canonical_sha256": rejected_history.bundle_canonical_sha256,
+    }
+    successor["items"] = [successor["items"][0]]
+    successor["items"][0]["item_id"] = (
+        "github.com/example/RAKL_math::failure_experience::after-reject"
+    )
+    successor["items"][0]["supersedes"] = [first_document["items"][0]["item_id"]]
+    _rehash(successor)
+    receipt = _import(successor, repo, prior=(rejected_history,))
+    assert receipt.verdict is FeedbackImportVerdict.CANNOT_CHECK
+    assert "previous_bundle_receipt_missing" in receipt.reasons
 
 
 def test_import_does_not_mutate_failure_lattice_or_tool_inventory(tmp_path: Path) -> None:

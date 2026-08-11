@@ -115,19 +115,31 @@
           "additionalProperties": false,
           "required": [
             "result_id",
+            "result_path",
+            "result_git_blob_sha",
             "result_sha256",
             "trace_event_id",
+            "trace_path",
+            "trace_git_blob_sha",
             "trace_sha256",
+            "context_path",
+            "context_git_blob_sha",
             "context_sha256",
             "observed_at_utc"
           ],
           "properties": {
             "result_id": {"type": "string", "minLength": 1, "maxLength": 512},
+            "result_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+            "result_git_blob_sha": {"$ref": "#/$defs/gitOid"},
             "result_sha256": {"$ref": "#/$defs/sha256"},
             "trace_event_id": {"type": "string", "minLength": 1, "maxLength": 512},
+            "trace_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+            "trace_git_blob_sha": {"$ref": "#/$defs/gitOid"},
             "trace_sha256": {"$ref": "#/$defs/sha256"},
+            "context_path": {"type": "string", "minLength": 1, "maxLength": 1024},
+            "context_git_blob_sha": {"$ref": "#/$defs/gitOid"},
             "context_sha256": {"$ref": "#/$defs/sha256"},
-            "observed_at_utc": {"type": "string", "format": "date-time", "minLength": 20, "maxLength": 64}
+            "observed_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$", "minLength": 20, "maxLength": 64}
           }
         },
         "supersedes": {
