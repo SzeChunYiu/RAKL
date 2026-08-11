@@ -1,30 +1,25 @@
-# RAKL Verified Discovery — Real Mathematics
+# Mathematical research applications moved
 
-This directory is the persistent workspace for attacking genuine open mathematical problems under the assurance architecture of Paper IV.
+`SzeChunYiu/RAKL` is the **framework repository**. Persistent mathematical application research now lives in **`SzeChunYiu/RAKL_math`**.
 
-## Authority rule
+## What stays here
 
-The research program is deliberately asymmetric:
+This repository owns reusable research infrastructure and framework research, including:
 
-- generation, conjecture formation, analogy, symbolic search, computation, and route invention may be aggressive;
-- theorem authority is conservative and must pass the existing RAKL mathematical-research gates;
-- failed routes, counterexamples, proof gaps, and reviewer objections are retained as negative history;
-- no root problem is marked solved because a narrative proof looks convincing.
+- mathematical-research assurance, runtime and API;
+- generic schemas and proof/evidence machinery;
+- research-tool inventory, failure-experience lattice and research-memory review;
+- auditable research traces;
+- metacognitive and breakthrough-learning controls;
+- generic mathematical-research workflows, tests and framework self-research;
+- `research/real_math/common/`, which is a reusable assurance/review profile rather than a problem workspace.
 
-For a root solution, the exact informal problem, formal statement, proof artifact, proof dependencies, verifier identities, axiom profile, isolated recheck, novelty world, and independent reviews must be bound to the same candidate identity.
+## What moved
 
-## Active portfolio
+Problem-specific workspaces, problem contracts, source packets, context fibers, problem/proof DAGs, routes, candidates, falsifiers, negative history, reviews, traces and cross-problem mathematical application research belong in `SzeChunYiu/RAKL_math`.
 
-| Problem | Role | State |
-|---|---|---|
-| P versus NP | primary flagship | ACTIVE_RESEARCH |
-| Riemann hypothesis | secondary frontier lane | NOT_STARTED |
-| Navier–Stokes existence and smoothness | analytic stress-test lane | NOT_STARTED |
+Historical commits, branches, issues and pull requests in this repository remain provenance for work created before the split. They must not be treated as the live application control surface.
 
-The current compute and research budget is concentrated on P versus NP. Other lanes are placeholders until the primary workflow has accumulated verified checkpoints or a typed obstruction that justifies diversification.
+## Authority direction
 
-## Shared protocol
-
-See `common/ASSURANCE_PROFILE.md` and `common/REVIEW_PROTOCOL.md`.
-
-The working principle is **verified information gain per research cycle**, not number of generated proofs.
+`RAKL_math` consumes the **current `main` of this repository** as the framework source of truth. Mathematical application artifacts may expose framework defects, but they do not override or weaken RAKL assurance gates. Reusable framework changes must be proposed here as isolated framework work.
