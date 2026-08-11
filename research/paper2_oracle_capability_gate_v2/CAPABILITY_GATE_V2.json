@@ -1,51 +1,56 @@
 {
-  "schema_version": "paper2-oracle-capability-gate-v2",
-  "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
-  "packet_id": "paper2-oracle-capability-gate-v2",
-  "issue": 379,
-  "updated_at_utc": "2026-08-11T22:58:00Z",
-  "tip_main_at_freeze": "b8f96b8c90745c6a7a6ed57bc55d90319db505f7",
   "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
-  "capable_model_available": false,
-  "capable_model_score": "NO_REFUTED",
-  "gate_status": "CAPABLE_MODEL_UNAVAILABLE__NO_REFUTED__LADDER_TERMINUS__V2_EXEC_SUCCESSOR_AUTHORED",
-  "updated_at_utc": "2026-08-11T23:10:00Z",
-  "capable_model_rule": {
-    "required_oracle_success_rate_min": "2/3",
-    "required_oracle_success_rate_float": 0.6666666666666666,
-    "max_scale": "Qwen2.5-7B-Instruct",
-    "requires_v2_sealed_transfer_set": true,
-    "note": "CAPABLE_MODEL_AVAILABLE flips true only when an authorized ORACLE receipt under executable packet paper2-oracle-capability-gate-v2-exec (e20eeadc…) records success_rate >= 2/3 with parse-valid outputs on sealed T1–T5. v1.3_3 job 3476788 (1/3) does not clear. Parse-valid-only / mean_score / stratum profile alone do not clear."
-  },
-  "current_oracle_lineage_terminal": {
-    "scale": "7B",
-    "job": "3476788",
-    "success": "1/3",
-    "parse_valid": "3/3",
-    "mean_score": 0.625,
-    "verdict": "MODEL_CAPABILITY_FLOOR_7B",
-    "receipt": "research/paper2_experience_benchmark_v1_3_3/ORACLE_DECISION_RECEIPT_V1_3_3.json"
-  },
-  "executable_successor": {
-    "packet": "paper2-oracle-capability-gate-v2-exec",
-    "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0_EXEC",
-    "protocol_subject_hash": "e20eeadcc7d8b431095db8cfadbd9f9e73841f4fea29ece81302348c2dd542d1",
-    "status": "PROTOCOL_FROZEN_AWAITING_EXECUTION",
-    "authorized_first_oracle_scale": "Qwen2.5-7B-Instruct",
-    "transfer_task_ids": ["T1", "T2", "T3", "T4", "T5"]
-  },
-  "escalation_next": {
-    "scale": "Qwen2.5-7B-Instruct",
-    "status": "EXECUTABLE_ORACLE_AUTHORIZED_ON_SUCCESSOR_PACKET",
-    "next_authorized_action": "SUBMIT_V2_EXEC_ORACLE_7B"
-  },
   "blocked_while_no_refuted": [
     "Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL",
     "Confirmatory ALR model jobs",
-    "Confirmatory A3↔A4 matched ablation",
+    "Confirmatory A3\u2194A4 matched ablation",
     "Paper-V four-arm causal attribution",
     "ExperienceBenchmark architecture staircase learning claims"
   ],
+  "capable_model_available": false,
+  "capable_model_rule": {
+    "max_scale": "Qwen2.5-7B-Instruct",
+    "note": "CAPABLE_MODEL_AVAILABLE flips true only when an authorized ORACLE receipt under executable packet paper2-oracle-capability-gate-v2-exec (e20eeadc\u2026) records success_rate >= 2/3 with parse-valid outputs on sealed T1\u2013T5. v1.3_3 job 3476788 (1/3) does not clear. Parse-valid-only / mean_score / stratum profile alone do not clear.",
+    "required_oracle_success_rate_float": 0.6666666666666666,
+    "required_oracle_success_rate_min": "2/3",
+    "requires_v2_sealed_transfer_set": true
+  },
+  "capable_model_score": "NO_REFUTED",
+  "claim_boundary": "Capability gate freeze for #379 successor protocol. Not manuscript authority.",
+  "current_oracle_lineage_terminal": {
+    "job": "3476813",
+    "mean_score": 0.5,
+    "parse_valid": "5/5",
+    "receipt": "research/paper2_oracle_capability_gate_v2_exec/ORACLE_DECISION_RECEIPT_V2_EXEC.json",
+    "scale": "7B",
+    "success": "2/5",
+    "verdict": "MODEL_CAPABILITY_FLOOR_7B_V2_EXEC"
+  },
+  "escalation_next": {
+    "next_authorized_action": "SUBMIT_V2_EXEC_ORACLE_7B",
+    "scale": "Qwen2.5-7B-Instruct",
+    "status": "EXECUTABLE_ORACLE_AUTHORIZED_ON_SUCCESSOR_PACKET"
+  },
+  "executable_successor": {
+    "authorized_first_oracle_scale": "Qwen2.5-7B-Instruct",
+    "packet": "paper2-oracle-capability-gate-v2-exec",
+    "protocol_subject_hash": "e20eeadcc7d8b431095db8cfadbd9f9e73841f4fea29ece81302348c2dd542d1",
+    "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0_EXEC",
+    "status": "PROTOCOL_FROZEN_AWAITING_EXECUTION",
+    "transfer_task_ids": [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5"
+    ]
+  },
+  "gate_status": "CAPABLE_MODEL_UNAVAILABLE__NO_REFUTED__V2_EXEC_FLOOR_RECORDED",
   "grants_scientific_authority": false,
-  "claim_boundary": "Capability gate freeze for #379 successor protocol. Not manuscript authority."
+  "issue": 379,
+  "packet_id": "paper2-oracle-capability-gate-v2",
+  "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0",
+  "schema_version": "paper2-oracle-capability-gate-v2",
+  "tip_main_at_freeze": "b8f96b8c90745c6a7a6ed57bc55d90319db505f7",
+  "updated_at_utc": "2026-08-11T23:16:00.000Z"
 }
