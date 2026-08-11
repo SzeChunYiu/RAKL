@@ -36,10 +36,14 @@ from rakl.root_coordinate_preservation import (
 )
 from rakl.semantic_shortcut import (
     ObstructionFingerprint,
+    ObstructionTransformationEpisode,
     ObstructionTransformationReview,
     RouteSearchStatus,
     ShortcutMode,
     ShortcutReviewVerdict,
+    StructuralMappingWitness,
+    TransformationEpisodeAuthority,
+    build_transformation_memory,
 )
 
 
@@ -94,29 +98,74 @@ def _memory() -> ResearchMemoryReview:
     )
 
 
+def _obstruction() -> ObstructionFingerprint:
+    return ObstructionFingerprint(
+        obstruction_id="obs-C",
+        domain="mathematics",
+        roles=("proof state", "proof obligation"),
+        relations=("state blocks obligation",),
+        constraints=("registered theorem statement",),
+        failure_mechanisms=("search branching",),
+        invariants_to_preserve=("formal statement meaning preserved",),
+        desired_transition=("reduce search branching",),
+        forbidden_losses=("do not alter theorem statement",),
+    )
+
+
+def _transformation_memory():
+    episode = ObstructionTransformationEpisode(
+        episode_id="episode-direct",
+        source_domain="mathematics",
+        source_context="a verified proof-search episode with the same obstruction morphology",
+        source_obstruction=_obstruction(),
+        transformation_name="compress equivalent proof states",
+        operation="replace repeated local expansion with a reusable aggregate proof state",
+        preconditions=("registered theorem statement",),
+        resulting_relations=("reduce search branching",),
+        preserved_invariants=("formal statement meaning preserved",),
+        relaxed_or_broken_constraints=(),
+        known_breakpoints=("formal statement changes under the representation",),
+        evidence_pointers=("source:episode-direct",),
+        authority=TransformationEpisodeAuthority.PROOF_BACKED,
+        artifact_hash="sha256:episode-direct",
+    )
+    return build_transformation_memory(
+        memory_id="OTM-C",
+        source_universe=("mathematics", "science", "engineering", "ordinary situations"),
+        episodes=(episode,),
+        evidence_pointers=("snapshot:obstruction-transform-memory",),
+    )
+
+
 def _shortcut() -> ObstructionTransformationReview:
+    transformation_memory = _transformation_memory()
+    mapping = StructuralMappingWitness(
+        witness_id="map-direct",
+        episode_id="episode-direct",
+        target_obstruction_id="obs-C",
+        role_mapping=(("proof state", "proof state"), ("proof obligation", "proof obligation")),
+        shared_relations=("state blocks obligation",),
+        shared_constraints=("registered theorem statement",),
+        precondition_mapping=(("registered theorem statement", "registered theorem statement"),),
+        unmatched_source_preconditions=(),
+        disanalogies=("source theorem identity differs from the target theorem",),
+        target_validation_obligations=("prove the compressed proof state preserves the target theorem statement",),
+        evidence_pointers=("mapping:episode-direct",),
+        artifact_hash="sha256:map-direct",
+    )
     return ObstructionTransformationReview(
         review_id="shortcut-C",
         target_atom_id="atom-C",
         target_context_hash="sha256:context",
         research_memory_review_hash="sha256:memory",
-        episode_memory_snapshot_hash="sha256:obstruction-transform-memory",
-        obstruction=ObstructionFingerprint(
-            obstruction_id="obs-C",
-            domain="mathematics",
-            roles=("proof state", "proof obligation"),
-            relations=("state blocks obligation",),
-            constraints=("registered theorem statement",),
-            failure_mechanisms=("search branching",),
-            invariants_to_preserve=("formal statement meaning preserved",),
-            desired_transition=("reduce search branching",),
-            forbidden_losses=("do not alter theorem statement",),
-        ),
+        episode_memory_snapshot_hash=transformation_memory.snapshot_hash,
+        obstruction=_obstruction(),
         direct_search_status=RouteSearchStatus.MATCHES_FOUND,
         jump_search_status=RouteSearchStatus.NOT_RUN,
         glue_search_status=RouteSearchStatus.NOT_RUN,
         selected_mode=ShortcutMode.SEARCH,
         direct_candidate_episode_ids=("episode-direct",),
+        direct_mapping_witnesses=(mapping,),
         selected_episode_ids=("episode-direct",),
         unresolved_warnings=("source success still requires target validation",),
         evidence_pointers=("snapshot:obstruction-transform-memory",),
@@ -206,6 +255,16 @@ def _novelty() -> NoveltyCertificate:
     )
 
 
+def _strict_kwargs() -> dict[str, object]:
+    return {
+        "context_fiber": _context(),
+        "memory_review": _memory(),
+        "transformation_memory": _transformation_memory(),
+        "shortcut_review": _shortcut(),
+        "research_trace": _trace(),
+    }
+
+
 def test_missing_context_blocks_candidate_generation_fail_closed() -> None:
     plan = plan_math_research(signature=_signature(), record=MathResearchRecord(claim_id="C"))
     assert plan.context_gate.verdict is ContextGateVerdict.CANNOT_CHECK
@@ -239,12 +298,27 @@ def test_context_and_memory_without_shortcut_review_blocks_candidate_generation(
     assert "fingerprint_active_relational_obstruction" in plan.pre_candidate_actions
 
 
+def test_shortcut_review_without_bound_transformation_memory_fails_closed() -> None:
+    plan = plan_math_research(
+        signature=_signature(),
+        record=MathResearchRecord(claim_id="C"),
+        context_fiber=_context(),
+        memory_review=_memory(),
+        shortcut_review=_shortcut(),
+    )
+    assert plan.shortcut_gate.verdict is ShortcutReviewVerdict.FAIL
+    assert "transformation_memory_missing" in plan.shortcut_gate.reasons
+    assert not plan.candidate_generation_allowed
+    assert "compile_or_load_content_bound_transformation_memory" in plan.pre_candidate_actions
+
+
 def test_context_memory_and_shortcut_without_trace_still_block_candidate_generation() -> None:
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
         context_fiber=_context(),
         memory_review=_memory(),
+        transformation_memory=_transformation_memory(),
         shortcut_review=_shortcut(),
     )
     assert plan.shortcut_gate.verdict is ShortcutReviewVerdict.PASS
@@ -257,10 +331,7 @@ def test_all_process_gates_expose_normal_research_blockers_and_paths() -> None:
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
+        **_strict_kwargs(),
     )
     blockers = set(plan.next_blockers)
     assert ObstructionKind.FORMALIZATION_GAP in blockers
@@ -281,14 +352,7 @@ def test_all_process_gates_expose_normal_research_blockers_and_paths() -> None:
 
 def test_verified_proof_removes_proof_blocker_but_not_novelty_or_value() -> None:
     record = MathResearchRecord(claim_id="C", formalization=_formalization(), proof=_proof())
-    plan = plan_math_research(
-        signature=_signature(),
-        record=record,
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
-    )
+    plan = plan_math_research(signature=_signature(), record=record, **_strict_kwargs())
     blockers = set(plan.next_blockers)
     assert ObstructionKind.PROOF_GAP not in blockers
     assert ObstructionKind.NOVELTY_GAP in blockers
@@ -305,14 +369,7 @@ def test_only_all_noncompensatory_gates_make_record_publication_ready() -> None:
         interestingness_screened=True,
         external_mathematical_review=True,
     )
-    plan = plan_math_research(
-        signature=_signature(),
-        record=record,
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
-    )
+    plan = plan_math_research(signature=_signature(), record=record, **_strict_kwargs())
     assert plan.next_blockers == ()
     assert publication_ready(record)
 
@@ -377,10 +434,7 @@ def test_required_preservation_gate_missing_receipt_blocks_candidate_search() ->
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
+        **_strict_kwargs(),
         require_preservation_gate=True,
     )
     assert plan.preservation_gate is not None
@@ -395,10 +449,7 @@ def test_stale_preservation_receipt_blocks_candidate_search() -> None:
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
+        **_strict_kwargs(),
         preservation_receipt=receipt,
         expected_preservation_sha256="0" * 64,
     )
@@ -414,10 +465,7 @@ def test_fresh_preservation_receipt_allows_candidate_search_after_other_gates() 
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
+        **_strict_kwargs(),
         preservation_receipt=receipt,
         expected_preservation_sha256=digest,
     )
@@ -432,10 +480,7 @@ def test_absent_preservation_gate_stays_inactive_for_ordinary_planning() -> None
     plan = plan_math_research(
         signature=_signature(),
         record=MathResearchRecord(claim_id="C"),
-        context_fiber=_context(),
-        memory_review=_memory(),
-        shortcut_review=_shortcut(),
-        research_trace=_trace(),
+        **_strict_kwargs(),
     )
     assert plan.preservation_gate is not None
     assert plan.preservation_gate.verdict is PreservationGateVerdict.NOT_REQUIRED
