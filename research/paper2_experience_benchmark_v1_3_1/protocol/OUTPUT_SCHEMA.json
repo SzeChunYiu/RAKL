@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "output_schema_id": "EXPERIENCE_V1_STRUCTURED_ANSWER",
+  "properties": {
+    "rationale_tags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "rejected_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "selected_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "verdict": {
+      "enum": [
+        "SUPPORT",
+        "REFUTE",
+        "CONTEXT_MISALIGNED",
+        "CANNOT_CHECK"
+      ]
+    }
+  },
+  "required": [
+    "verdict",
+    "selected_evidence_ids",
+    "rejected_evidence_ids",
+    "rationale_tags"
+  ],
+  "schema_version": "rakl-experience-benchmark-output-schema-v1",
+  "type": "object"
+}

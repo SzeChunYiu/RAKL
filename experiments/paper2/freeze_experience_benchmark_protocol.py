@@ -40,6 +40,15 @@ FORBIDDEN_NAME_FRAGMENTS = (
     "NATIVE_JOB_",
 )
 PENDING_LEARNED = "PENDING_AFTER_DEVELOPMENT_NOT_YET_EXECUTED"
+PROTOCOL_SUBJECT_HASH_V1_3 = "ed116353230dc526fa45657d1a81afab26a460fe3b8411480a0f84bb1f711672"
+
+
+def _is_v1_3_family(benchmark_id: str) -> bool:
+    return benchmark_id.endswith("v1_3") or benchmark_id.endswith("v1_3_1")
+
+
+def _is_v1_3_1(benchmark_id: str) -> bool:
+    return benchmark_id.endswith("v1_3_1")
 
 
 def _load_json(path: Path) -> dict:
@@ -163,8 +172,12 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
     )
     protocol_subject_hash = benchmark_protocol_subject_hash(packet)
 
-    issue = 247 if benchmark_id.endswith("v1_3") else 138
-    section = "PHASE0_1_ORACLE_FIRST" if benchmark_id.endswith("v1_3") else "B1"
+    issue = 247 if _is_v1_3_family(benchmark_id) else 138
+    section = (
+        "PHASE1_ORACLE_1_5B"
+        if _is_v1_3_1(benchmark_id)
+        else ("PHASE0_1_ORACLE_FIRST" if _is_v1_3_family(benchmark_id) else "B1")
+    )
     arms = (
         [
             "ORACLE_PROCEDURE_UPPER_BOUND",
@@ -173,12 +186,34 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
             "VERIFIED_DEVELOPMENT_LESSONS",
             "FULL_RAKL_SELECTIVE",
         ]
-        if benchmark_id.endswith("v1_3")
+        if _is_v1_3_family(benchmark_id)
         else ["RESET_BASELINE", "LEARNING_ENABLED"]
     )
-    learning_loop_mode = "root_cause_v1" if benchmark_id.endswith("v1_3") else "legacy_v1_2"
-    primary_execution = (
-        {
+    learning_loop_mode = "root_cause_v1" if _is_v1_3_family(benchmark_id) else "legacy_v1_2"
+    if _is_v1_3_1(benchmark_id):
+        primary_execution = {
+            "first_job_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
+            "first_job_scope": "FRESH_TRANSFER_ONLY",
+            "oracle_pass_min_success_rate": 2.0 / 3.0,
+            "model_scale": "Qwen2.5-1.5B-Instruct",
+            "forbid_1_5B_until_oracle_gate": False,
+            "forbid_scale_only_difference_witness_on_v1_2": True,
+            "parent_0_5B_oracle_floor_jobs": ["3476730", "3476731"],
+            "parent_0_5B_oracle_verdict": "MODEL_CAPABILITY_FLOOR_0_5B",
+        }
+        parent_negative_history = {
+            "parent_packet": "paper2-experience-benchmark-v1_3",
+            "parent_job_id": "3476730",
+            "parent_duplicate_job_id": "3476731",
+            "parent_protocol_subject_hash": PROTOCOL_SUBJECT_HASH_V1_3,
+            "parent_scientific_verdict": "MODEL_CAPABILITY_FLOOR_0_5B",
+            "reopen_issue_138": False,
+            "reinterpret_as_lift": False,
+            "not_scale_only_escape_from_v1_2": True,
+            "v1_2_parent_job_id": "3476548",
+        }
+    elif _is_v1_3_family(benchmark_id):
+        primary_execution = {
             "first_job_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
             "first_job_scope": "FRESH_TRANSFER_ONLY",
             "oracle_pass_min_success_rate": 2.0 / 3.0,
@@ -186,9 +221,16 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
             "forbid_1_5B_until_oracle_gate": True,
             "forbid_scale_only_difference_witness_on_v1_2": True,
         }
-        if benchmark_id.endswith("v1_3")
-        else None
-    )
+        parent_negative_history = {
+            "parent_packet": "paper2-experience-benchmark-v1_2",
+            "parent_job_id": "3476548",
+            "parent_protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
+            "reopen_issue_138": False,
+            "reinterpret_as_lift": False,
+        }
+    else:
+        primary_execution = None
+        parent_negative_history = None
 
     freeze_packet = {
         "schema_version": "rakl-experience-benchmark-protocol-freeze-v1",
@@ -200,17 +242,7 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         "arms": arms,
         "phases": ["DEVELOPMENT_SEQUENCE", "FRESH_TRANSFER"],
         "learning_loop_mode": learning_loop_mode,
-        "parent_negative_history": (
-            {
-                "parent_packet": "paper2-experience-benchmark-v1_2",
-                "parent_job_id": "3476548",
-                "parent_protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
-                "reopen_issue_138": False,
-                "reinterpret_as_lift": False,
-            }
-            if benchmark_id.endswith("v1_3")
-            else None
-        ),
+        "parent_negative_history": parent_negative_history,
         "primary_execution": primary_execution,
         "model": {
             "model_id": model.model_id,
@@ -245,7 +277,7 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
             "bind exact Sn only after LEARNING_ENABLED development completes; every "
             "fresh-transfer LEARNING run must start from that frozen Sn. RESET transfer "
             "continues from S0."
-            if benchmark_id.endswith("v1_3")
+            if _is_v1_3_family(benchmark_id)
             else (
                 "Bind exact Sn hash only after LEARNING_ENABLED development completes; "
                 "every fresh-transfer LEARNING run must start from that frozen Sn. "
@@ -278,7 +310,7 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
             "ORACLE Phase-1 success/failure classifies MODEL_CAPABILITY_FLOOR or "
             "INSTRUMENT_DEFECT only after parse-validity guard; it does not mint "
             "experience-learning efficacy."
-            if benchmark_id.endswith("v1_3")
+            if _is_v1_3_family(benchmark_id)
             else (
                 "Protocol freeze only. No RESET vs LEARNING delta, no Paper-II "
                 "empirical claim, and no manuscript result ingest is authorized by this file."
@@ -290,9 +322,49 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         del freeze_packet["parent_negative_history"]
     if freeze_packet["primary_execution"] is None:
         del freeze_packet["primary_execution"]
-    if not benchmark_id.endswith("v1_3"):
+    if not _is_v1_3_family(benchmark_id):
         # Preserve historical freeze field set for v1/v1.1 check-only.
         del freeze_packet["learning_loop_mode"]
+
+    if _is_v1_3_1(benchmark_id):
+        next_compute_step = (
+            "On LUNARC FS9 Paper-II checkout at exact origin/main: submit "
+            "ORACLE_PROCEDURE_UPPER_BOUND @ Qwen2.5-1.5B on FRESH_TRANSFER only "
+            "(learning_loop_mode=root_cause_v1; staged assets paper2-model-qwen25-1_5b-v4-3). "
+            "Parent is floored v1.3 0.5B ORACLE (3476730/3476731), not broken v1.2. "
+            "Do not submit learning/architecture staircase until ORACLE passes. "
+            "Do not reopen #138. No promotional lift claims."
+        )
+        forbidden_extra = [
+            "scale-only DifferenceWitness reusing broken v1.2 learning loop",
+            "claim learning lift from 1.5B ORACLE alone",
+            "submit RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL before 1.5B ORACLE gate",
+            "reopen #138 or reinterpret job 3476548 as lift",
+            "reuse V4.3/V4.3.1/V4.4 pendulum scores as ExperienceBenchmark evidence",
+        ]
+    elif _is_v1_3_family(benchmark_id):
+        next_compute_step = (
+            "On LUNARC FS9 Paper-II checkout at exact origin/main: submit "
+            "ORACLE_PROCEDURE_UPPER_BOUND @ Qwen2.5-0.5B on FRESH_TRANSFER only "
+            "(learning_loop_mode=root_cause_v1). Do not submit staircase/1.5B. "
+            "Do not reopen #138. Apply parse-validity guard before "
+            "MODEL_CAPABILITY_FLOOR. Later Phase-0 arms require separate jobs "
+            "under this same frozen packet."
+        )
+        forbidden_extra = [
+            "scale-only DifferenceWitness reusing broken v1.2 learning loop",
+            "ExperienceBenchmark@1.5B before ORACLE 0.5B gate",
+            "reopen #138 or reinterpret job 3476548 as lift",
+        ]
+    else:
+        next_compute_step = (
+            "On LUNARC FS9 Paper-II checkout at exact origin/main: materialize S0, "
+            "execute RESET_BASELINE and LEARNING_ENABLED development (D1→D3) under the "
+            "frozen ceiling, freeze Sn, then run fresh transfer (T1–T3) with every "
+            "LEARNING transfer starting independently from Sn; harvest runs.jsonl; "
+            "validate via validate_experience_benchmark; only then analyze/plot."
+        )
+        forbidden_extra = []
 
     receipt = {
         "schema_version": "rakl-experience-benchmark-protocol-freeze-receipt-v1",
@@ -311,35 +383,12 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         "learned_state_bound": False,
         "evaluated_model_outputs_opened": False,
         "empirical_section_b_status": "NOT_DONE",
-        "next_compute_step": (
-            "On LUNARC FS9 Paper-II checkout at exact origin/main: submit "
-            "ORACLE_PROCEDURE_UPPER_BOUND @ Qwen2.5-0.5B on FRESH_TRANSFER only "
-            "(learning_loop_mode=root_cause_v1). Do not submit staircase/1.5B. "
-            "Do not reopen #138. Apply parse-validity guard before "
-            "MODEL_CAPABILITY_FLOOR. Later Phase-0 arms require separate jobs "
-            "under this same frozen packet."
-            if benchmark_id.endswith("v1_3")
-            else (
-                "On LUNARC FS9 Paper-II checkout at exact origin/main: materialize S0, "
-                "execute RESET_BASELINE and LEARNING_ENABLED development (D1→D3) under the "
-                "frozen ceiling, freeze Sn, then run fresh transfer (T1–T3) with every "
-                "LEARNING transfer starting independently from Sn; harvest runs.jsonl; "
-                "validate via validate_experience_benchmark; only then analyze/plot."
-            )
-        ),
+        "next_compute_step": next_compute_step,
         "forbidden": [
             "reuse V4.1 pendulum scores/jobs 3476520/3476521/3476524 as §B evidence",
             "claim §B empirical completion from this freeze alone",
             "mutate evaluator/tasks after opening evaluated outputs under this packet id",
-            *(
-                [
-                    "scale-only DifferenceWitness reusing broken v1.2 learning loop",
-                    "ExperienceBenchmark@1.5B before ORACLE 0.5B gate",
-                    "reopen #138 or reinterpret job 3476548 as lift",
-                ]
-                if benchmark_id.endswith("v1_3")
-                else []
-            ),
+            *forbidden_extra,
         ],
         "artifact_sha256": {
             "PROTOCOL_FREEZE_PACKET.json": None,  # filled after write
@@ -385,6 +434,8 @@ def main() -> int:
     _refuse_if_results_present(packet_dir)
     if args.benchmark_id:
         benchmark_id = args.benchmark_id
+    elif packet_dir.name.endswith("v1_3_1"):
+        benchmark_id = "paper2-experience-benchmark-v1_3_1"
     elif packet_dir.name.endswith("v1_3"):
         benchmark_id = "paper2-experience-benchmark-v1_3"
     elif packet_dir.name.endswith("v1_2"):
@@ -395,7 +446,9 @@ def main() -> int:
         benchmark_id = "paper2-experience-benchmark-v1"
     if args.frozen_at:
         frozen_at = args.frozen_at
-    elif benchmark_id.endswith("v1_3"):
+    elif _is_v1_3_1(benchmark_id):
+        frozen_at = "2026-08-11T21:30:00Z"
+    elif _is_v1_3_family(benchmark_id):
         frozen_at = "2026-08-11T21:10:00Z"
     elif benchmark_id.endswith("v1_1"):
         frozen_at = "2026-08-11T19:05:00Z"
@@ -429,8 +482,8 @@ def main() -> int:
     manifest = {
         "schema_version": "rakl-experience-benchmark-artifact-manifest-v1",
         "benchmark_id": freeze_packet["benchmark_id"],
-        "issue": 138,
-        "section": "B1",
+        "issue": freeze_packet["issue"],
+        "section": freeze_packet["section"],
         "arms": freeze_packet["arms"],
         "phases": freeze_packet["phases"],
         "development_task_ids": freeze_packet["development_task_ids"],

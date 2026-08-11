@@ -50,6 +50,8 @@ PROTOCOL_SUBJECT_HASH_V1_1 = "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216
 # Successor #247 packet (root_cause_v1). Hash filled after PROTOCOL_FREEZE_PACKET write.
 PACKET_REL_V1_3 = Path("research/paper2_experience_benchmark_v1_3")
 PROTOCOL_SUBJECT_HASH_V1_3 = "ed116353230dc526fa45657d1a81afab26a460fe3b8411480a0f84bb1f711672"
+PACKET_REL_V1_3_1 = Path("research/paper2_experience_benchmark_v1_3_1")
+PROTOCOL_SUBJECT_HASH_V1_3_1 = "61b9fd42f2a58713f04de1e6a170a0e233beeb057c38f01939e384b7b4cb2bc3"
 # Default execution subject is the JSON-skeleton repair packet (v1.2).
 PACKET_REL = PACKET_REL_V1_2
 PROTOCOL_SUBJECT_HASH = PROTOCOL_SUBJECT_HASH_V1_2
