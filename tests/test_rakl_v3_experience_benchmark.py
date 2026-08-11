@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from dataclasses import replace
 
 from rakl.experience_benchmark import (
@@ -99,7 +101,7 @@ def test_matched_experience_benchmark_measures_learning_and_transfer() -> None:
     assert report.validation.matched
     assert report.development_success_delta == 0.5
     assert report.transfer_success_delta == 1.0
-    assert report.transfer_score_delta == 0.6
+    assert report.transfer_score_delta == pytest.approx(0.6)
     assert report.transfer_repeat_failure_delta == -0.5
     assert report.transfer_gain_observed
     assert not report.grants_global_capability_claim
