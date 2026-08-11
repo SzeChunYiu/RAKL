@@ -126,11 +126,12 @@ class GluingReport:
     global_assignments: Tuple[Tuple[str, str], ...]
     obstructions: Tuple[GluingObstruction, ...]
     all_sections_verified: bool
+    complete_coverage: bool
     covered_atom_ids: Tuple[str, ...]
 
     @property
     def grants_solution_authority(self) -> bool:
-        return self.compatible and self.all_sections_verified
+        return self.compatible and self.all_sections_verified and self.complete_coverage
 
 
 def _score_knowledge(item: FibreKnowledgeItem, atom: ProblemAtom) -> int:
@@ -327,5 +328,6 @@ def glue_local_sections(
         global_assignments=assignments,
         obstructions=tuple(obstructions),
         all_sections_verified=bool(section_tuple) and all(section.verified for section in section_tuple),
+        complete_coverage=set(by_atom) == known_atoms,
         covered_atom_ids=tuple(sorted(by_atom)),
     )
