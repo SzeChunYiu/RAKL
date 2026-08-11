@@ -364,3 +364,149 @@ def test_v2_gate_uses_only_canonical_adjudicated_fields_and_frozen_thresholds() 
     )
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+
+
+# --- issue #161: uncertainty quantification on the confirmatory gate ----------
+#
+# The frozen item set has 16 items.  A bare point-estimate threshold near 0.05
+# sits inside one third of a standard error of pure sampling noise (Hanley-McNeil
+# paired-AUC SE 0.067-0.176), so it returns the wrong verdict ~1 time in 3 in
+# both directions.  The fix layers a paired bootstrap CI (via src/rakl/inference.py)
+# on top of the thresholds and requires the per-item Brier-reduction CI to
+# exclude zero.  These tests use synthetic paired-score arrays only; no real
+# annotation item is inspected.
+
+
+def test_paired_brier_reduction_diffs_pairs_items_by_case_id() -> None:
+    """Per-item diff = brier_control - brier_structural; positive = structural better."""
+    rows = [
+        {"case_id": "i-0", "arm": "witnessed_structure", "transfer_valid": True, "probability": 0.9},
+        {"case_id": "i-0", "arm": "dependency_aware", "transfer_valid": True, "probability": 0.5},
+        {"case_id": "i-1", "arm": "witnessed_structure", "transfer_valid": False, "probability": 0.1},
+        {"case_id": "i-1", "arm": "dependency_aware", "transfer_valid": False, "probability": 0.6},
+        # unpaired rows for a third case are dropped (only one arm present)
+        {"case_id": "i-2", "arm": "witnessed_structure", "transfer_valid": True, "probability": 0.8},
+    ]
+    diffs = gate_module._paired_brier_reduction_diffs(
+        rows, structural_arm="witnessed_structure", control_arm="dependency_aware"
+    )
+    # i-0: (0.5-1)^2 - (0.9-1)^2 = 0.25 - 0.01 = 0.24
+    # i-1: (0.6-0)^2 - (0.1-0)^2 = 0.36 - 0.01 = 0.35
+    assert diffs == [0.24, 0.35]
+
+
+def test_v2_gate_reports_uncertainty_quantification_on_passing_synthetic_world() -> None:
+    """The clean synthetic world still passes and now carries an inference block."""
+    benchmark = _benchmark()
+    receipt = build_confirmatory_gate_receipt(
+        benchmark=deepcopy(benchmark),
+        protocol=_protocol(),
+        import_receipt=_import_receipt(benchmark),
+        subject_sha=SHA,
+        created_at_utc="2026-08-10T22:00:00Z",
+    )
+    inference = receipt["diagnostic_signal_gate"]["statistical_inference"]
+    assert inference["design"] == "paired_item_brier_reduction"
+    assert inference["paired_n"] == len(benchmark["cases"])
+    assert inference["status"] == "MEASURED_AND_DISTINGUISHABLE"
+    assert inference["excludes_null"] is True
+    assert inference["ci_lo"] > 0.0
+    assert inference["p_value"] is not None
+    assert receipt["diagnostic_signal_gate"]["checks"]["paired_brier_lift_distinguishable"] is True
+
+
+def test_inference_gate_confirms_true_large_effect(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A consistently large positive paired lift is CONFIRMED by the inference gate."""
+    large_effect = [
+        0.20, 0.24, 0.18, 0.22, 0.25, 0.19, 0.21, 0.23,
+        0.17, 0.26, 0.20, 0.22, 0.24, 0.18, 0.21, 0.23,
+    ]
+    monkeypatch.setattr(
+        gate_module,
+        "_paired_brier_reduction_diffs",
+        lambda *args, **kwargs: list(large_effect),
+    )
+    check_passed, details = gate_module._diagnostic_inference(
+        prediction_rows=[],
+        structural_arm="witnessed_structure",
+        control_arm="dependency_aware",
+        protocol=_protocol(),
+    )
+    assert check_passed is True
+    assert details["status"] == "MEASURED_AND_DISTINGUISHABLE"
+    assert details["point_estimate"] > 0.0
+    assert details["ci_lo"] > 0.0
+    assert details["excludes_null"] is True
+
+
+def test_inference_gate_rejects_null_effect(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A null paired lift (mean ~0, straddling zero) is NOT confirmed."""
+    null_effect = [
+        0.05, -0.04, 0.03, -0.06, 0.02, -0.05, 0.04, -0.03,
+        0.06, -0.02, 0.05, -0.04, 0.03, -0.05, 0.04, -0.03,
+    ]
+    monkeypatch.setattr(
+        gate_module,
+        "_paired_brier_reduction_diffs",
+        lambda *args, **kwargs: list(null_effect),
+    )
+    check_passed, details = gate_module._diagnostic_inference(
+        prediction_rows=[],
+        structural_arm="witnessed_structure",
+        control_arm="dependency_aware",
+        protocol=_protocol(),
+    )
+    assert check_passed is False
+    assert details["excludes_null"] is False
+    assert details["ci_lo"] <= 0.0 <= details["ci_hi"]
+
+
+def test_inference_gate_rejects_small_effect_where_point_estimate_would_false_pass(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Core fix (#161): mean lift > 0 (bare point threshold passes) but the CI
+    includes zero, so the confirmatory gate does NOT confirm.  Under the legacy
+    rule this distribution false-passes ~1 time in 3."""
+    small_effect = [
+        0.06, -0.05, 0.07, -0.06, 0.08, -0.07, 0.05, 0.07,
+        -0.08, 0.06, -0.07, 0.05, -0.04, 0.07, -0.06, 0.04,
+    ]
+    assert sum(small_effect) / len(small_effect) > 0.0  # point estimate clears zero
+    monkeypatch.setattr(
+        gate_module,
+        "_paired_brier_reduction_diffs",
+        lambda *args, **kwargs: list(small_effect),
+    )
+    check_passed, details = gate_module._diagnostic_inference(
+        prediction_rows=[],
+        structural_arm="witnessed_structure",
+        control_arm="dependency_aware",
+        protocol=_protocol(),
+    )
+    assert check_passed is False
+    assert details["point_estimate"] > 0.0  # the bare point estimate would pass
+    assert details["excludes_null"] is False  # but the CI includes zero
+    assert details["ci_lo"] <= 0.0
+
+
+def test_inference_gate_backward_compat_fallback_when_paired_n_below_floor(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """With fewer than three paired items the bootstrap is unstable; the gate
+    falls back to the legacy point-estimate path and does not block."""
+    monkeypatch.setattr(
+        gate_module,
+        "_paired_brier_reduction_diffs",
+        lambda *args, **kwargs: [0.1, 0.2],
+    )
+    check_passed, details = gate_module._diagnostic_inference(
+        prediction_rows=[],
+        structural_arm="witnessed_structure",
+        control_arm="dependency_aware",
+        protocol=_protocol(),
+    )
+    assert check_passed is True  # legacy path remains authoritative
+    assert details["status"] == "INSUFFICIENT_N"
+    assert details["ci_lo"] is None
+    assert details["excludes_null"] is False
+    assert "legacy point-estimate" in details["fallback_reason"]

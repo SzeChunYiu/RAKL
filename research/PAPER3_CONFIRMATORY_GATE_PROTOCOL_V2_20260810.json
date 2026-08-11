@@ -56,10 +56,23 @@
     "minimum_roc_auc_gain": 0.05,
     "require_brier_improvement": true
   },
+  "statistical_inference": {
+    "alpha": 0.05,
+    "bootstrap_resamples": 10000,
+    "decision_rule": "The confirmatory diagnostic gate passes only when interval_excludes_zero is true for the paired Brier-reduction distribution AND every frozen point-estimate diagnostic threshold holds. A bare point estimate clearing 0.05 is not sufficient.",
+    "design": "paired_item_brier_reduction",
+    "design_description": "For each confirmatory item the per-item Brier score is computed for the witnessed-structure arm and the strongest control arm using the shared adjudicated label; the paired difference (control_brier minus structural_brier) is the resampling unit. A positive difference means the structural witness reduced Brier error on that item.",
+    "helper": "src/rakl/inference.py:paired_lift_verdict",
+    "minimum_paired_n": 3,
+    "noise_rationale": "At n=16 items the Hanley-McNeil paired-AUC standard error ranges 0.067-0.176 across plausible inter-arm correlation and label-balance assumptions, so a frozen point threshold near 0.05 sits within one third of a standard error of pure sampling noise and returns the wrong verdict roughly one time in three in both directions (23-40% error, issue #161). The interval-based rule suppresses both the false-pass and false-fail modes. Q2/Q3 are proportions over roughly eight items each: one item moves either by 0.125 and the 95% CI half-width at p=0.5 is +/-0.35 against thresholds of 0.8/0.2.",
+    "permutation_resamples": 10000,
+    "seed": 20260810,
+    "seed_rationale": "fixed at protocol freeze before any label or outcome; deterministic and reproducible"
+  },
   "evaluator": "src/rakl/paper3_confirmatory_gate.py:build_confirmatory_gate_receipt",
   "evaluator_binding": {
     "evaluator_path": "src/rakl/paper3_confirmatory_gate.py",
-    "evaluator_source_sha256": "b3c91216ff5be9f1927c70affdba0665356fcf3e92e9286c6264e33d51ec1aa8",
+    "evaluator_source_sha256": "4e8439bc92eb76d11e2e49cc8d5aef9f53d2734fca389e6c668eb9090abcae37",
     "fit_hyperparameters": {
       "initialization": "all_zero",
       "intercept_regularized": false,
