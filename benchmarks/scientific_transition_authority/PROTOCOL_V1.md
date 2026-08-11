@@ -14,10 +14,14 @@ Executable objects:
 | Object | Path |
 |---|---|
 | Case (visible) schema | `schemas/scientific-transition-case-v1.schema.json` |
+| Response schema | `schemas/scientific-transition-response-v1.schema.json` |
 | Result schema | `schemas/scientific-transition-result-v1.schema.json` |
-| Scorer / panel | `src/rakl/authority_leakage_benchmark.py` |
+| Offline fixture schema | `schemas/scientific-transition-fixture-v1.schema.json` |
+| Scorer / panel / fail-closed evaluator | `src/rakl/authority_leakage_benchmark.py` |
+| Known-answer fixture slice (3 cases) | `benchmarks/scientific_transition_authority/fixtures/` |
 | Score-validation suite | `tests/test_authority_leakage_benchmark.py` |
 | Protocol / result contract suite | `tests/test_authority_leakage_protocol_v1.py` |
+| Fixture + fail-closed evaluator suite | `tests/test_authority_leakage_fixtures_evaluator.py` |
 
 ## 1. Unit of evaluation
 
@@ -141,7 +145,21 @@ annotation is claimed. Subjective / source-bound cases are out of scope for V1
 and must be marked `development-only` if added later without independent labels.
 
 Cannot-assess policy: missing response for a case fails closed
-(`ValueError`); partial panels are not scored.
+(`ValueError` from `score_panel`, or `EvaluationStatus.BLOCKED` from
+`evaluate_authority_leakage`); partial panels are not scored.
+
+### Fail-closed evaluator
+
+`evaluate_authority_leakage(cases, response_payloads)` is the pipeline gate:
+
+1. require a response for every case id;
+2. run `check_response_shape` on every payload (no hidden-label access);
+3. only if every shape check passes, parse and score offline;
+4. package a result with `grants_authority: false`.
+
+Shape failures, label smuggling, unknown case ids and parse errors return
+`status=BLOCKED` with `score=None` rather than a partial score. The evaluator
+never mints scientific authority.
 
 ## 7. Chronology / exposure
 
@@ -167,6 +185,13 @@ The V1 panel is `frozen_case_panel()` in
 - ≥1 experience trap (stratum D);
 - ≥1 provenance trap (stratum C);
 - ≥6 distinct leakage subtypes represented.
+
+A smaller on-disk known-answer slice is also frozen under
+`benchmarks/scientific_transition_authority/fixtures/` (manifest
+`MANIFEST_V1.json`, loaded by `frozen_fixture_panel()`): three cases covering
+prediction≠mechanism leakage, a missing-evidence integrity trap, and a
+legitimate mechanism-upgrade control. Fixture files hold offline labels;
+proposal contexts still expose only the `visible` half.
 
 Degenerate responders used only for score validation:
 
