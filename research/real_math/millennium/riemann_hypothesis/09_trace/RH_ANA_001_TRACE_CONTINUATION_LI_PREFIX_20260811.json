@@ -1,0 +1,134 @@
+{
+  "trace_id": "TRACE-RH-ANA-001-STRICT-20260811",
+  "parent_trace_path": "research/real_math/millennium/riemann_hypothesis/09_trace/RH_ANA_001_PRE_CANDIDATE_TRACE_20260811.json",
+  "parent_tail_event_id": "RH-ANA-001-E07",
+  "parent_tail_hash": "sha256:6086391dd50595734cc66d353de86b5d73a2533767e5cb1427cf5ba2c4b9e5ef",
+  "entries": [
+    {
+      "event_id": "RH-ANA-001-E08",
+      "atom_id": "RH-ANA-001",
+      "event_type": "FALSIFIER_RUN",
+      "timestamp": "2026-08-11T06:58:00+00:00",
+      "state_summary": "The strict RH-ANA-001 pre-candidate packet passed its dedicated executable gate. After synchronizing current main into the analytic branch, the selected criterion-localization action is permitted; no new RH inequality or root candidate is being proposed.",
+      "action_summary": "Run an exact Li-criterion known-answer calibration on the off-critical symmetric quartet Q={rho,conj(rho),1-rho,1-conj(rho)} with rho=1/4+100i, evaluating Lambda_n(Q)=4-2 Re(z^n+z^(-n)) through n=627 using rational arithmetic.",
+      "evidence_pointers": [
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/li_prefix_quartet_calibration.py",
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/RH_ANA_001_LI_PREFIX_CALIBRATION_20260811.json",
+        "Xian-Jin Li, Journal of Number Theory 65 (1997), 325-333, DOI 10.1006/jnth.1997.2137",
+        "Enrico Bombieri and Jeffrey C. Lagarias, Journal of Number Theory 77 (1999), 274-287, DOI 10.1006/jnth.1999.2392"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "falsifier:CAL-RH-LI-PREFIX-001",
+        "synthetic_quartet:rho=1/4+100i"
+      ],
+      "uncertainties": [
+        "the quartet preserves zero-set symmetries but not the full zeta-specific prime-side arithmetic structure"
+      ],
+      "residuals": [
+        "finite-prefix sufficiency has not yet been tested on the exact calibration"
+      ],
+      "next_steps": [
+        "compute exact signs and locate the first negative coefficient in the checked range"
+      ],
+      "artifact_hash": "sha256:8f5a5a046f28ee1d494dd3a5c14b8be587e54ab3d4ca0f0e81d0c5c861210575",
+      "previous_event_hash": "sha256:6086391dd50595734cc66d353de86b5d73a2533767e5cb1427cf5ba2c4b9e5ef"
+    },
+    {
+      "event_id": "RH-ANA-001-E09",
+      "atom_id": "RH-ANA-001",
+      "event_type": "RESULT_RECORDED",
+      "timestamp": "2026-08-11T06:59:00+00:00",
+      "state_summary": "The planted quartet is off the critical line but is closed under conjugation and the functional-equation symmetry rho->1-rho. Exact rational recurrence has been evaluated through coefficient index 627.",
+      "action_summary": "Record the exact delayed-detection pattern and reject any extrapolation from this synthetic multiset to the actual zeta zero set.",
+      "evidence_pointers": [
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/RH_ANA_001_LI_PREFIX_CALIBRATION_20260811.json",
+        "research/real_math/millennium/riemann_hypothesis/04_candidates/negative_history/RH_ANA_001_FINITE_LI_PREFIX_NO_GO_20260811.md"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "exact_result:Lambda_n>0 for 1<=n<=626",
+        "exact_result:Lambda_627<0",
+        "failure:F-RH-ANA-001-FINITE-LI-PREFIX"
+      ],
+      "uncertainties": [
+        "the detection delay for actual zeta-specific hypothetical off-critical data is not quantified by this calibration"
+      ],
+      "residuals": [
+        "finite-prefix Li positivity lacks the all-index uniformity needed for the exact criterion unless an additional zeta-specific theorem closes the tail"
+      ],
+      "next_steps": [
+        "register the scoped failure and reusable calibration tool",
+        "open the uniform-in-n child obstruction"
+      ],
+      "artifact_hash": "sha256:86c9d55be53c94ad351110dffe23322b9e890f59108be9b793bd356a51093c3f",
+      "previous_event_hash": "sha256:8f5a5a046f28ee1d494dd3a5c14b8be587e54ab3d4ca0f0e81d0c5c861210575"
+    },
+    {
+      "event_id": "RH-ANA-001-E10",
+      "atom_id": "RH-ANA-001",
+      "event_type": "RESIDUAL_OPENED",
+      "timestamp": "2026-08-11T07:00:00+00:00",
+      "state_summary": "The criterion-localization benchmark has separated finite-prefix verification from the root-relevant all-index obligation. A prefix-only search can now be deprioritized unless it also supplies a rigorous uniform bridge.",
+      "action_summary": "Open RH-ANA-002: identify and falsify the weakest zeta-specific mechanism that proves or propagates Li positivity uniformly for all coefficient indices, preferably via a prime-side/explicit-formula representation with an auditable tail bound and no RH-equivalent hidden assumption.",
+      "evidence_pointers": [
+        "research/real_math/millennium/riemann_hypothesis/07_memory/RH_ANA_001_POSTCAL_FAILURE_EXPERIENCE_LATTICE_20260811.json",
+        "research/real_math/millennium/riemann_hypothesis/07_memory/RH_ANA_001_POSTCAL_RESEARCH_TOOL_INVENTORY_20260811.json",
+        "research/real_math/millennium/riemann_hypothesis/04_candidates/negative_history/RH_ANA_001_FINITE_LI_PREFIX_NO_GO_20260811.md"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "child_atom:RH-ANA-002",
+        "tool:T-RH-LI-PREFIX-QUARTET-CALIBRATION"
+      ],
+      "uncertainties": [
+        "it remains unknown which zeta-specific representation exposes a tractable uniform-in-n mechanism"
+      ],
+      "residuals": [
+        "uniform all-index/tail control is open",
+        "no evidence about actual off-critical zeta zeros has been produced"
+      ],
+      "next_steps": [
+        "freeze a fresh RH-ANA-002 context fiber",
+        "query the newly earned RH tool and failure memory before any inequality candidate",
+        "compare Li, Weil, and prime-side representations for the cheapest non-circular uniformity obligation"
+      ],
+      "artifact_hash": "sha256:927ae29659d469e29f99a0803f2a2ed64cb9cb9e9e6d031482221b37977dd4b2",
+      "previous_event_hash": "sha256:86c9d55be53c94ad351110dffe23322b9e890f59108be9b793bd356a51093c3f"
+    },
+    {
+      "event_id": "RH-ANA-001-E11",
+      "atom_id": "RH-ANA-001",
+      "event_type": "REVIEWED",
+      "timestamp": "2026-08-11T07:01:00+00:00",
+      "state_summary": "Six role-separated same-context lenses reviewed the exact quartet calculation, criterion scope, finite-to-infinite logic, arithmetic disanalogy, reproducibility, and novelty boundary.",
+      "action_summary": "Accept the calibration only as a scoped search-control result: retain the failure/tool, keep RH open, and require fresh context/memory/trace for RH-ANA-002 before any mathematical candidate.",
+      "evidence_pointers": [
+        "research/real_math/millennium/riemann_hypothesis/08_reviews/SAME_CONTEXT_REVIEW_RH_ANA_001_LI_PREFIX_20260811.md",
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/RH_ANA_001_LI_PREFIX_CALIBRATION_20260811.json"
+      ],
+      "alternatives_considered": [],
+      "decision_rationale": "",
+      "outputs": [
+        "review:ACCEPT_SCOPED_CALIBRATION",
+        "root_status:OPEN_NO_SOLUTION_CERTIFICATE"
+      ],
+      "uncertainties": [
+        "same-context review is not independent review",
+        "the child atom still has no mathematical candidate"
+      ],
+      "residuals": [
+        "RH-ANA-002 requires a fresh strict pre-candidate packet"
+      ],
+      "next_steps": [
+        "run exact-head regression and CI",
+        "if CI is fully successful and no blocking review remains, merge the scoped calibration packet without changing root authority"
+      ],
+      "artifact_hash": "sha256:a2c364aa03875ac2b0ec762e473ac6c7fb53cc69b5bb5ea31ac10599f6d4d0b6",
+      "previous_event_hash": "sha256:927ae29659d469e29f99a0803f2a2ed64cb9cb9e9e6d031482221b37977dd4b2"
+    }
+  ]
+}
