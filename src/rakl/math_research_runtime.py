@@ -49,6 +49,15 @@ from .root_coordinate_preservation import (
     RootCoordinatePreservationReceipt,
     gate_expensive_candidate_search,
 )
+from .semantic_shortcut import (
+    REQUIRED_SHORTCUT_ACTIONS,
+    ObstructionTransformationMemory,
+    ObstructionTransformationReview,
+    ShortcutMode,
+    ShortcutReviewReport,
+    ShortcutReviewVerdict,
+    audit_obstruction_transformation_review,
+)
 
 
 @dataclass(frozen=True)
@@ -59,6 +68,7 @@ class MathResearchPlan:
     next_blockers: Tuple[ObstructionKind, ...]
     context_gate: ContextGateReport
     memory_gate: ResearchMemoryReport
+    shortcut_gate: ShortcutReviewReport
     trace_gate: ResearchTraceReport
     pre_candidate_actions: Tuple[str, ...]
     candidate_generation_allowed: bool
@@ -69,6 +79,8 @@ def _facts_from_record(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
+    shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> frozenset[str]:
     facts: set[str] = set()
@@ -82,15 +94,29 @@ def _facts_from_record(
             atom_id=context_fiber.atom_id,
             context_hash=context_fiber.packet_hash,
         )
-        if memory_report.verdict is ResearchMemoryVerdict.PASS:
+        if memory_report.verdict is ResearchMemoryVerdict.PASS and memory_review is not None:
             facts.add("success_and_failure_experience_reviewed")
-        trace_report = audit_pre_candidate_trace(
-            research_trace,
-            atom_id=context_fiber.atom_id,
-            context_packet_hash=context_fiber.packet_hash,
-        )
-        if trace_report.verdict is TraceGateVerdict.PASS:
-            facts.add("auditable_research_trace_complete")
+            shortcut_report = audit_obstruction_transformation_review(
+                shortcut_review,
+                atom_id=context_fiber.atom_id,
+                context_hash=context_fiber.packet_hash,
+                research_memory_review_hash=memory_review.artifact_hash,
+                transformation_memory=transformation_memory,
+            )
+            if (
+                shortcut_report.verdict is ShortcutReviewVerdict.PASS
+                and shortcut_review is not None
+            ):
+                facts.add("obstruction_transformation_review_complete")
+                facts.add(f"semantic_shortcut_mode:{shortcut_report.selected_mode.value}")
+                trace_report = audit_pre_candidate_trace(
+                    research_trace,
+                    atom_id=context_fiber.atom_id,
+                    context_packet_hash=context_fiber.packet_hash,
+                    obstruction_transformation_review_hash=shortcut_review.artifact_hash,
+                )
+                if trace_report.verdict is TraceGateVerdict.PASS:
+                    facts.add("auditable_research_trace_complete")
     if record.computational_support:
         facts.add("counterexample_screen_complete")
     if record.formalization is not None:
@@ -142,12 +168,21 @@ def derive_planning_state(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
+    shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
 ) -> ProblemState:
     return ProblemState(
         state_id=record.claim_id,
         signature=signature,
-        facts=_facts_from_record(record, context_fiber, memory_review, research_trace),
+        facts=_facts_from_record(
+            record,
+            context_fiber,
+            memory_review,
+            transformation_memory,
+            shortcut_review,
+            research_trace,
+        ),
         obstructions=_obstructions_from_record(record),
     )
 
@@ -158,6 +193,8 @@ def plan_math_research(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
     memory_review: ResearchMemoryReview | None = None,
+    transformation_memory: ObstructionTransformationMemory | None = None,
+    shortcut_review: ObstructionTransformationReview | None = None,
     research_trace: MathResearchTrace | None = None,
     preservation_receipt: RootCoordinatePreservationReceipt | None = None,
     require_preservation_gate: bool = False,
@@ -176,10 +213,17 @@ def plan_math_research(
     2. **Experience-memory gate** — query both the scoped success-derived tool
        inventory and global failure-experience lattice, recording applicable tools,
        prior failure warnings, reuse scope/difference witnesses, and empty searches.
-    3. **Trace gate** — preserve the chronological public decision ledger including
-       atomization, context, analogy, expert review, experience-memory review and
-       the proposed next step before any candidate is generated.
-    4. **Preservation gate** (issue #124) — when required, or when a surrogate→root
+    3. **Semantic-shortcut gate** — bind an actual content-addressed
+       obstruction-transformation memory, fingerprint the relational obstruction,
+       and select an invention-last SEARCH/JUMP/GLUE/LIFT route. SEARCH and JUMP
+       need explicit source-to-target applicability mappings, GLUE additionally
+       needs an interface witness, and LIFT requires bounded cross-problem
+       coverage plus repeated residual structure.
+    4. **Trace gate** — preserve the chronological public decision ledger including
+       atomization, context, analogy, expert review, experience-memory review,
+       obstruction-transformation review and the proposed next step before any
+       candidate is generated.
+    5. **Preservation gate** (issue #124) — when required, or when a surrogate→root
        preservation receipt is supplied, missing/stale/refuted receipts fail closed
        before expensive candidate search. Free-form brainstorming that neither
        requires nor supplies a receipt leaves this gate inactive.
@@ -208,16 +252,40 @@ def plan_math_research(
         context_gate.verdict is ContextGateVerdict.PASS
         and memory_gate.verdict is ResearchMemoryVerdict.PASS
         and context_fiber is not None
+        and memory_review is not None
+    ):
+        shortcut_gate = audit_obstruction_transformation_review(
+            shortcut_review,
+            atom_id=context_fiber.atom_id,
+            context_hash=context_fiber.packet_hash,
+            research_memory_review_hash=memory_review.artifact_hash,
+            transformation_memory=transformation_memory,
+        )
+    else:
+        shortcut_gate = ShortcutReviewReport(
+            ShortcutReviewVerdict.CANNOT_CHECK,
+            ("context_and_memory_gates_must_pass_before_shortcut_gate",),
+            False,
+            ShortcutMode.CANNOT_CHECK,
+        )
+
+    if (
+        context_gate.verdict is ContextGateVerdict.PASS
+        and memory_gate.verdict is ResearchMemoryVerdict.PASS
+        and shortcut_gate.verdict is ShortcutReviewVerdict.PASS
+        and context_fiber is not None
+        and shortcut_review is not None
     ):
         trace_gate = audit_pre_candidate_trace(
             research_trace,
             atom_id=context_fiber.atom_id,
             context_packet_hash=context_fiber.packet_hash,
+            obstruction_transformation_review_hash=shortcut_review.artifact_hash,
         )
     else:
         trace_gate = ResearchTraceReport(
             TraceGateVerdict.CANNOT_CHECK,
-            ("context_and_memory_gates_must_pass_before_trace_gate",),
+            ("context_memory_and_shortcut_gates_must_pass_before_trace_gate",),
         )
 
     preservation_required = require_preservation_gate or preservation_receipt is not None
@@ -233,6 +301,8 @@ def plan_math_research(
         record=record,
         context_fiber=context_fiber,
         memory_review=memory_review,
+        transformation_memory=transformation_memory,
+        shortcut_review=shortcut_review,
         research_trace=research_trace,
     )
 
@@ -243,6 +313,10 @@ def plan_math_research(
     elif memory_gate.verdict is not ResearchMemoryVerdict.PASS:
         paths = ()
         pre_candidate_actions = REQUIRED_MEMORY_ACTIONS
+        candidate_generation_allowed = False
+    elif shortcut_gate.verdict is not ShortcutReviewVerdict.PASS:
+        paths = ()
+        pre_candidate_actions = REQUIRED_SHORTCUT_ACTIONS
         candidate_generation_allowed = False
     elif trace_gate.verdict is not TraceGateVerdict.PASS:
         paths = ()
@@ -269,6 +343,7 @@ def plan_math_research(
         next_blockers=tuple(sorted(state.obstructions, key=lambda item: item.value)),
         context_gate=context_gate,
         memory_gate=memory_gate,
+        shortcut_gate=shortcut_gate,
         trace_gate=trace_gate,
         pre_candidate_actions=pre_candidate_actions,
         candidate_generation_allowed=candidate_generation_allowed,

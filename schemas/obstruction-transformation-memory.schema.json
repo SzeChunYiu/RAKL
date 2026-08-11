@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/obstruction-transformation-memory.schema.json",
+  "title": "RAKL Obstruction–Transformation Episode Memory",
+  "description": "Content-bound proposal memory of O -> T -> O' episodes extracted from recorded knowledge. Source authority never grants target authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "memory_id",
+    "source_universe",
+    "episodes",
+    "evidence_pointers",
+    "snapshot_hash"
+  ],
+  "properties": {
+    "memory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_universe": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "episodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "episode_id",
+          "source_domain",
+          "source_context",
+          "source_obstruction",
+          "transformation_name",
+          "operation",
+          "preconditions",
+          "resulting_relations",
+          "preserved_invariants",
+          "known_breakpoints",
+          "evidence_pointers",
+          "authority",
+          "artifact_hash"
+        ],
+        "properties": {
+          "episode_id": {"type": "string", "minLength": 1},
+          "source_domain": {"type": "string", "minLength": 1},
+          "source_context": {"type": "string", "minLength": 1},
+          "source_obstruction": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "obstruction_id",
+              "domain",
+              "roles",
+              "relations",
+              "constraints",
+              "failure_mechanisms",
+              "invariants_to_preserve",
+              "desired_transition"
+            ],
+            "properties": {
+              "obstruction_id": {"type": "string", "minLength": 1},
+              "domain": {"type": "string", "minLength": 1},
+              "roles": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "relations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "failure_mechanisms": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "invariants_to_preserve": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "desired_transition": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "forbidden_losses": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []}
+            }
+          },
+          "transformation_name": {"type": "string", "minLength": 1},
+          "operation": {"type": "string", "minLength": 1},
+          "preconditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "resulting_relations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "preserved_invariants": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "relaxed_or_broken_constraints": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+          "known_breakpoints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "authority": {"enum": ["PROPOSAL_ONLY", "SOURCE_EVENT_VERIFIED", "VERIFIED_LOCAL", "PROOF_BACKED", "SUPERSEDED"]},
+          "artifact_hash": {"type": "string", "minLength": 1},
+          "lineage_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []}
+        }
+      }
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "snapshot_hash": {"type": "string", "minLength": 1}
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/obstruction-transformation-review.schema.json",
+  "title": "RAKL Obstruction–Transformation Semantic Shortcut Review",
+  "description": "Frozen invention-last review over SEARCH -> JUMP -> GLUE -> LIFT. IDs must bind a content-addressed transformation memory; LIFT additionally binds a cross-problem coverage receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review_id",
+    "target_atom_id",
+    "target_context_hash",
+    "research_memory_review_hash",
+    "episode_memory_snapshot_hash",
+    "obstruction",
+    "direct_search_status",
+    "jump_search_status",
+    "glue_search_status",
+    "selected_mode",
+    "evidence_pointers",
+    "artifact_hash"
+  ],
+  "properties": {
+    "review_id": {"type": "string", "minLength": 1},
+    "target_atom_id": {"type": "string", "minLength": 1},
+    "target_context_hash": {"type": "string", "minLength": 1},
+    "research_memory_review_hash": {"type": "string", "minLength": 1},
+    "episode_memory_snapshot_hash": {"type": "string", "minLength": 1},
+    "obstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obstruction_id",
+        "domain",
+        "roles",
+        "relations",
+        "constraints",
+        "failure_mechanisms",
+        "invariants_to_preserve",
+        "desired_transition"
+      ],
+      "properties": {
+        "obstruction_id": {"type": "string", "minLength": 1},
+        "domain": {"type": "string", "minLength": 1},
+        "roles": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "relations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "failure_mechanisms": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "invariants_to_preserve": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "desired_transition": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "forbidden_losses": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []}
+      }
+    },
+    "direct_search_status": {"enum": ["MATCHES_FOUND", "NO_VIABLE_MATCH", "NOT_RUN"]},
+    "jump_search_status": {"enum": ["MATCHES_FOUND", "NO_VIABLE_MATCH", "NOT_RUN"]},
+    "glue_search_status": {"enum": ["MATCHES_FOUND", "NO_VIABLE_MATCH", "NOT_RUN"]},
+    "selected_mode": {"enum": ["SEARCH", "JUMP", "GLUE", "LIFT", "CANNOT_CHECK"]},
+    "direct_candidate_episode_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+    "direct_mapping_witnesses": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "witness_id", "episode_id", "target_obstruction_id", "role_mapping",
+          "shared_relations", "shared_constraints", "precondition_mapping",
+          "unmatched_source_preconditions", "disanalogies",
+          "target_validation_obligations", "evidence_pointers", "artifact_hash"
+        ],
+        "properties": {
+          "witness_id": {"type": "string", "minLength": 1},
+          "episode_id": {"type": "string", "minLength": 1},
+          "target_obstruction_id": {"type": "string", "minLength": 1},
+          "role_mapping": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}}},
+          "shared_relations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "shared_constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "precondition_mapping": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}}},
+          "unmatched_source_preconditions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "disanalogies": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "target_validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "artifact_hash": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "jump_mapping_witnesses": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "witness_id", "episode_id", "target_obstruction_id", "role_mapping",
+          "shared_relations", "shared_constraints", "precondition_mapping",
+          "unmatched_source_preconditions", "disanalogies",
+          "target_validation_obligations", "evidence_pointers", "artifact_hash"
+        ],
+        "properties": {
+          "witness_id": {"type": "string", "minLength": 1},
+          "episode_id": {"type": "string", "minLength": 1},
+          "target_obstruction_id": {"type": "string", "minLength": 1},
+          "role_mapping": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}}},
+          "shared_relations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "shared_constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "precondition_mapping": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}}},
+          "unmatched_source_preconditions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "disanalogies": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "target_validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "artifact_hash": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "glue_witness": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["composition_id", "target_obstruction_id", "episode_ids", "operation_order", "interface_obligations", "incompatibilities_checked", "target_validation_obligations", "evidence_pointers", "artifact_hash"],
+          "properties": {
+            "composition_id": {"type": "string", "minLength": 1},
+            "target_obstruction_id": {"type": "string", "minLength": 1},
+            "episode_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "operation_order": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+            "interface_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "incompatibilities_checked": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "target_validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "artifact_hash": {"type": "string", "minLength": 1}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "selected_episode_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+    "exhaustion_witness": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["target_obstruction_id", "search_boundary", "searched_domains", "searched_method_families", "rejected_direct_episode_ids", "rejected_jump_episode_ids", "rejected_glue_composition_ids", "rejection_reasons", "residual_failure_ids", "repeated_residual_features", "evidence_pointers", "artifact_hash", "coverage_receipt_hash"],
+          "properties": {
+            "target_obstruction_id": {"type": "string", "minLength": 1},
+            "search_boundary": {"type": "string", "minLength": 1},
+            "searched_domains": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "searched_method_families": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "rejected_direct_episode_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "rejected_jump_episode_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "rejected_glue_composition_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "rejection_reasons": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "residual_failure_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "repeated_residual_features": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "artifact_hash": {"type": "string", "minLength": 1},
+            "coverage_receipt_hash": {"type": "string", "minLength": 1}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "missing_transformation_specification": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["spec_id", "target_obstruction_id", "residual_failure_ids", "must_preserve", "must_break", "must_expose", "must_reduce", "allowed_representation_changes", "forbidden_shortcuts", "validation_obligations", "falsifiers", "evidence_pointers", "artifact_hash"],
+          "properties": {
+            "spec_id": {"type": "string", "minLength": 1},
+            "target_obstruction_id": {"type": "string", "minLength": 1},
+            "residual_failure_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "must_preserve": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "must_break": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "must_expose": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "must_reduce": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "allowed_representation_changes": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "forbidden_shortcuts": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "validation_obligations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "falsifiers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "artifact_hash": {"type": "string", "minLength": 1}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "unresolved_warnings": {"type": "array", "items": {"type": "string", "minLength": 1}, "default": []},
+    "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "artifact_hash": {"type": "string", "minLength": 1}
+  }
+}
