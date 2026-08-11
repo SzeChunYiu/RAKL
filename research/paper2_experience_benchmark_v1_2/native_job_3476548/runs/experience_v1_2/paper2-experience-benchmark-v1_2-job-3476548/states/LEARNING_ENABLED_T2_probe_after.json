@@ -1,0 +1,156 @@
+{
+  "episodes": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "e2d7b4cf1e10ffe305e2eb591102042ec0ed90fcbab935e0b688101d00e337b7",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.25,
+      "sealed_answer_included": false,
+      "stratum": "REPEATED_FAMILY",
+      "success": false,
+      "task_id": "D1",
+      "title": "Calibration-bound temperature claim"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1"
+      ],
+      "model_verdict": "REFUTE",
+      "output_hash": "6f368b72342f1a77d1f7c5115b636fd1f5e735b815d004c31db60606ee19e865",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.25,
+      "sealed_answer_included": false,
+      "stratum": "REPEATED_FAMILY",
+      "success": false,
+      "task_id": "D2",
+      "title": "Same family, unit-surface change"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "7d08b0fab13c2304faed44b2163dff1bb6228a9f921029d4b6a9e3fddc91927d",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.5,
+      "sealed_answer_included": false,
+      "stratum": "CROSS_DOMAIN_TRANSFER",
+      "success": false,
+      "task_id": "D3",
+      "title": "Context mismatch before contradiction"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "8816fa508e728c4f65d615dbf8b63ace6f169b5fa02a1e79ed73909d616e1830",
+      "phase": "FRESH_TRANSFER",
+      "score": 0.5,
+      "sealed_answer_included": false,
+      "stratum": "CROSS_DOMAIN_TRANSFER",
+      "success": false,
+      "task_id": "T2",
+      "title": "Useful transfer of misalignment rule"
+    }
+  ],
+  "failure_lattice_entries": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D1"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D2"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D3"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "T2"
+    }
+  ],
+  "lessons": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D1",
+      "stratum": "REPEATED_FAMILY"
+    },
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D2",
+      "stratum": "REPEATED_FAMILY"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D3",
+      "stratum": "CROSS_DOMAIN_TRANSFER"
+    },
+    {
+      "failure_signature": [
+        "support_recall_incomplete",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "T2",
+      "stratum": "CROSS_DOMAIN_TRANSFER"
+    }
+  ],
+  "notes": "S0 is the registered reset baseline. LEARNING_ENABLED may accumulate after development; RESET_BASELINE must remain S0 after every task.",
+  "schema_version": "rakl-experience-benchmark-initial-state-v1",
+  "state_kind": "LEARNING_EXTERNAL_RAKL_STATE",
+  "tools": []
+}

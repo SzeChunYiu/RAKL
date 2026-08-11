@@ -1,0 +1,48 @@
+{
+  "episodes": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "model_rationale_tags": [],
+      "model_rejected_evidence_ids": [],
+      "model_selected_evidence_ids": [
+        "E1"
+      ],
+      "model_verdict": "CONTEXT_MISALIGNED",
+      "output_hash": "e2d7b4cf1e10ffe305e2eb591102042ec0ed90fcbab935e0b688101d00e337b7",
+      "phase": "DEVELOPMENT_SEQUENCE",
+      "score": 0.25,
+      "sealed_answer_included": false,
+      "stratum": "REPEATED_FAMILY",
+      "success": false,
+      "task_id": "D1",
+      "title": "Calibration-bound temperature claim"
+    }
+  ],
+  "failure_lattice_entries": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "task_id": "D1"
+    }
+  ],
+  "lessons": [
+    {
+      "failure_signature": [
+        "verdict_mismatch",
+        "reject_recall_incomplete"
+      ],
+      "principle": "Do not repeat the same failure signature on a structurally related claim.",
+      "source_task_id": "D1",
+      "stratum": "REPEATED_FAMILY"
+    }
+  ],
+  "notes": "S0 is the registered reset baseline. LEARNING_ENABLED may accumulate after development; RESET_BASELINE must remain S0 after every task.",
+  "schema_version": "rakl-experience-benchmark-initial-state-v1",
+  "state_kind": "LEARNING_EXTERNAL_RAKL_STATE",
+  "tools": []
+}
