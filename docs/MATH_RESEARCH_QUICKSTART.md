@@ -26,15 +26,67 @@ signature = ProblemSignature(
 record = MathResearchRecord(claim_id="candidate-theorem-001")
 plan = plan_math_research(signature=signature, record=record)
 
-print(plan.assurance.stage.value)
-print([blocker.value for blocker in plan.next_blockers])
+print(plan.context_gate.verdict.value)
+print(plan.candidate_generation_allowed)
+print(plan.pre_candidate_actions)
+```
+
+A missing context fiber deliberately produces **no mathematical candidate paths**. Strict RAKL discovery does not jump from atomization directly to proof generation.
+
+## 2. Freeze the atomic context and method-transfer matrix
+
+Before asking an LLM for a proof idea, lemma, invariant or construction, create a context packet.
+
+```python
+from rakl.math_context import MathContextFiber, MethodTransfer
+
+context = MathContextFiber(
+    atom_id="atom-001",
+    object_context="the smallest active obstruction in the proof DAG",
+    structural_coordinates=(
+        "symmetry class",
+        "composition/reuse law",
+        "relevant rank or spectrum",
+    ),
+    equivalent_formulations=(
+        "equivalent extremal formulation",
+        "equivalent algebraic formulation",
+    ),
+    solved_analogues=("a solved sibling context",),
+    near_solved_analogues=("a near-solved sibling context",),
+    method_transfers=(
+        MethodTransfer(
+            source_context="solved sibling context",
+            method="method that succeeds there",
+            shared_structure=("shared structural coordinate",),
+            required_assumptions=("assumption that makes the source proof work",),
+            disanalogies=("that assumption fails or changes in the target",),
+            repair_question="what is the weakest replacement assumption under which the method survives?",
+            source_anchors=("doi-or-exact-source-id",),
+        ),
+    ),
+    explicit_disanalogies=("global source/target mismatch",),
+    source_anchors=("doi-or-exact-source-id",),
+    frozen_at="2026-08-11T04:00:00+00:00",
+    first_candidate_at="2026-08-11T04:01:00+00:00",
+    packet_hash="sha256-of-canonical-context-packet",
+)
+
+plan = plan_math_research(
+    signature=signature,
+    record=record,
+    context_fiber=context,
+)
+assert plan.candidate_generation_allowed
 for path in plan.candidate_paths[:3]:
     print(path.operators, path.score)
 ```
 
-The planner returns candidate research routes. It does not prove the theorem.
+The packet is not a literature summary. It must explain **why a method works in an analogous context, which assumptions enable it, what structure is shared, what breaks in the target, and the smallest repair question**. The machine-readable contract is `schemas/math-context-fiber.schema.json`.
 
-## 2. Add computational support without promoting it to proof
+If a candidate already existed before the context packet was frozen, the chronology gate fails. The candidate may still be checked for mathematical truth, but it cannot be represented as a strict context-first RAKL discovery artifact.
+
+## 3. Add computational support without promoting it to proof
 
 ```python
 record = MathResearchRecord(
@@ -45,7 +97,7 @@ record = MathResearchRecord(
 
 This can help rank the conjecture, but the assurance state remains below theorem authority.
 
-## 3. Bind the intended claim to a formal statement
+## 4. Bind the intended claim to a formal statement
 
 ```python
 from rakl.math_research_assurance import FormalizationWitness
@@ -62,7 +114,7 @@ formalization = FormalizationWitness(
 
 The witness is deliberately separate from the proof. A proof assistant can prove the wrong formal statement perfectly.
 
-## 4. Attach a proof receipt
+## 5. Attach a proof receipt
 
 ```python
 from rakl.math_research_assurance import ProofReceipt
@@ -102,7 +154,7 @@ dag = verify_checkpoint(dag, node_id="lemma-001", receipt=proof)
 
 A failed or refuted node should remain in the DAG as negative history. Dependency cycles in proof-bearing relations fail closed.
 
-## 5. Attach a bounded novelty certificate
+## 6. Attach a bounded novelty certificate
 
 ```python
 from rakl.math_research_assurance import NoveltyCertificate
@@ -119,7 +171,7 @@ novelty = NoveltyCertificate(
 
 This means only that no equivalent was found inside the declared novelty world at the declared cutoff. It is not a proof of global novelty.
 
-## 6. Evaluate the full record
+## 7. Evaluate the full record
 
 ```python
 from rakl.math_research_assurance import MathResearchRecord, classify_math_record
@@ -141,9 +193,9 @@ print(report.reasons)
 print(publication_ready(record))
 ```
 
-The strongest current state is `NEW_MATHEMATICS_CANDIDATE`. The wording remains intentionally bounded: publication and global-first claims still depend on the registered novelty world and external mathematical review.
+The strongest current state is `NEW_MATHEMATICS_CANDIDATE`. The wording remains intentionally bounded: publication and global-first claims still depend on the registered novelty world and external mathematical review. Discovery-process compliance is tracked separately from theorem truth.
 
-## 7. Run the hostile conformance packet
+## 8. Run the hostile conformance packet
 
 ```bash
 python - <<'PY'
@@ -162,4 +214,4 @@ pytest
 
 ## Operational rule
 
-Use LLMs aggressively for proposal generation, representation search, conjectures, proof ideas and path planning. Use the assurance layer conservatively for canonical promotion. A fluent route through the planner is never itself evidence that a theorem is true or new.
+Use LLMs aggressively **after** the active atom's context and method-transfer packet passes. Before that, use the LLM for context expansion, equivalent-formulation discovery, analogue search, method extraction and disanalogy analysis only. A fluent route through the planner is never itself evidence that a theorem is true or new.
