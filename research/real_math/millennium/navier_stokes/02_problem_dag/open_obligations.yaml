@@ -15,22 +15,36 @@ active_route:
 atoms:
   NS-B1:
     title: "Type-I blow-up to rigidity-ready ancient class"
-    status: STRICT_PRE_CANDIDATE_PACKET
+    status: SOURCE_MATRIX_COMPLETE_CHILD_ATOM_OPENED
     objective: "Assuming a Type-I singularity, identify the exact rescaled ancient class and the smallest inherited property needed for a valid Liouville contradiction."
     source_backed_edges:
-      - "Type-I singularity <-> nontrivial mild bounded ancient solution with registered Type-I decay (Albritton–Barker 2019, in their stated framework)"
-      - "critical L-infinity_t L3_x control -> regularity (Escauriaza–Seregin–Šverák 2003)"
+      - "Type-I singularity <-> nontrivial mild bounded ancient solution with registered Type-I decay (Albritton–Barker, Theorem 1.1, arXiv:1811.00502)"
+      - "mild ancient solution with a backward sequence uniformly bounded in global L3 -> zero (Albritton–Barker, Theorem 1.2, arXiv:1811.00502)"
+      - "critical L-infinity_t L3_x control -> regularity / backward-uniqueness route (Escauriaza–Seregin–Šverák 2003)"
       - "exact Leray backward self-similar profiles -> classical Liouville exclusions under source hypotheses (Nečas–Růžička–Šverák 1996; Tsai 1998)"
+    route_pruning:
+      - id: NS-B1-FUNC-001
+        status: CALIBRATION_NEGATIVE_RESULT
+        statement: "Finite Albritton–Barker I does not, as a pure functional inequality on arbitrary smooth bounded divergence-free fields, force any globally L3-bounded time slice."
+        scope: "Not a Navier–Stokes counterexample; it only blocks norm-definition/interpolation-only proofs of the dynamic bridge."
+        evidence: "01_frontier/NS-B1_TYPE_I_IMPLICATION_MATRIX_20260811.md"
     open_children:
       NS-B1a:
-        question: "Which Type-I formulations imply which other critical/local-energy/far-field properties?"
-        status: NEXT_SOURCE_BOUND_DISCRIMINATOR
+        title: "Dynamics-specific Type-I trace/tail bridge"
+        question: "For a mild bounded ancient 3D Navier–Stokes solution with I<infinity, what weakest equation-specific inherited property yields either a backward sequence uniformly bounded in global L3 or another source-valid Liouville trigger?"
+        status: CHILD_CONTEXT_REQUIRED_BEFORE_CANDIDATE
+        exact_gap: "Local parabolic Type-I control does not by itself provide global spatial tail tightness; the missing step must use Navier–Stokes dynamics or an equally strong inherited structure."
+        next_pre_candidate_actions:
+          - "freeze child MathContextFiber separating local cylinder control, global tails, pressure relation, mild ancient representation and orbit class"
+          - "query success-tool and failure lattices, including NS-B1-FUNC-001 only as a scoped method warning"
+          - "run six-role child expert cell with a dedicated pressure/far-field lens"
+          - "freeze child hash-chained trace before any theorem candidate"
       NS-B1b:
         question: "Does the rescaled orbit fall into fixed, periodic, or genuinely nonperiodic ancient behavior?"
         status: OPEN
       NS-B1c:
         question: "What weakest property P is inherited by every relevant Type-I ancient limit and has a matching rigidity theorem?"
-        status: OPEN
+        status: REFINED_BY_NS-B1a
       NS-B1d:
         question: "Can compactness, pressure, and persistence-of-singularity hypotheses be formalized without loss or circularity?"
         status: OPEN
@@ -44,5 +58,6 @@ nonpromotion_rules:
   - "self-similar exclusion is not Type-I exclusion"
   - "Type-I exclusion is not root regularity while Type-II remains"
   - "boundedness of one scale-invariant quantity is not an unproved implication to another"
+  - "a norm-only functional counterexample is not a counterexample to a dynamics-specific Navier–Stokes theorem"
   - "computation is not proof"
   - "same-context review is not independent review"
