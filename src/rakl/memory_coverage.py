@@ -339,6 +339,7 @@ def audit_memory_coverage(
     receipt: CrossProblemCoverageReceipt | None,
     *,
     registered_lane_universe: Tuple[RegisteredLane, ...],
+    compare_lane_state: bool = True,
 ) -> CoverageReport:
     """Bind a cross-problem search universe, failing closed on every gap.
 
@@ -347,6 +348,10 @@ def audit_memory_coverage(
     bound universe, and a lane that is in the bound universe but has no record at
     all, are both reported as uninspected — that second case is the exact failure
     this object exists to catch.
+
+    ``compare_lane_state=False`` suppresses only the head/index staleness check,
+    for callers evaluating a receipt as of its own binding.  Universe
+    completeness is *not* a freshness question and is always checked.
     """
 
     empty: Tuple[str, ...] = ()
@@ -393,6 +398,7 @@ def audit_memory_coverage(
     stale: list[str] = []
     reasons: list[str] = []
     unverifiable: list[str] = []
+    refuting: list[str] = []
 
     for lane_id in sorted(registered):
         if lane_id not in bound_set:
@@ -401,7 +407,7 @@ def audit_memory_coverage(
 
     for record in receipt.lane_records:
         if record.lane_id not in bound_set:
-            reasons.append(f"lane_record_outside_bound_universe:{record.lane_id}")
+            refuting.append(f"lane_record_outside_bound_universe:{record.lane_id}")
 
     for lane_id in bound:
         record = receipt.record_for(lane_id)
@@ -423,9 +429,13 @@ def audit_memory_coverage(
         ):
             unverifiable.append(f"index_manifest_hash_missing:{lane_id}")
         current = registered.get(lane_id)
-        if current is not None and (
-            current.lane_head_revision != record.lane_head_revision
-            or current.index_manifest_hash != record.index_manifest_hash
+        if (
+            compare_lane_state
+            and current is not None
+            and (
+                current.lane_head_revision != record.lane_head_revision
+                or current.index_manifest_hash != record.index_manifest_hash
+            )
         ):
             stale.append(lane_id)
 
@@ -433,17 +443,16 @@ def audit_memory_coverage(
         result for record in receipt.lane_records for result in record.result_ids
     }
     orphan_results = tuple(sorted(set(receipt.result_ids) - covered_results))
-    if orphan_results:
-        reasons.extend(
-            f"result_outside_bound_universe:{result}" for result in orphan_results
-        )
+    refuting.extend(
+        f"result_outside_bound_universe:{result}" for result in orphan_results
+    )
     if receipt.query_status is CoverageQueryStatus.MATCHES_FOUND and not receipt.result_ids:
-        reasons.append("matches_found_status_without_result_ids")
+        refuting.append("matches_found_status_without_result_ids")
     if (
         receipt.query_status is CoverageQueryStatus.NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE
         and receipt.result_ids
     ):
-        reasons.append("no_match_status_with_result_ids")
+        refuting.append("no_match_status_with_result_ids")
 
     weakest = CoverageSemantics.FULL_ARTIFACT_ENUMERATION
     for lane_id in inspected:
@@ -459,7 +468,13 @@ def audit_memory_coverage(
     deferred_t = tuple(deferred)
     uninspected_t = tuple(sorted(set(uninspected)))
     stale_t = tuple(stale)
+    stale_reasons = tuple(
+        f"covered_lane_state_changed_since_receipt:{lane}" for lane in stale_t
+    )
 
+    # Each verdict class is decided by its own reason list, never by matching
+    # text in a shared one: renaming a reason string must not silently move a
+    # receipt between verdict classes.
     if unverifiable:
         return CoverageReport(
             CoverageVerdict.CANNOT_CHECK,
@@ -468,12 +483,9 @@ def audit_memory_coverage(
             uninspected_t,
             stale_t,
             weakest,
-            tuple(unverifiable) + tuple(reasons),
+            tuple(unverifiable) + tuple(reasons) + stale_reasons,
         )
-    if orphan_results or any(
-        reason.startswith(("lane_record_outside_bound_universe", "matches_found_status", "no_match_status"))
-        for reason in reasons
-    ):
+    if refuting:
         return CoverageReport(
             CoverageVerdict.REFUTED_CLAIM,
             inspected_t,
@@ -481,7 +493,7 @@ def audit_memory_coverage(
             uninspected_t,
             stale_t,
             weakest,
-            tuple(reasons),
+            tuple(refuting) + tuple(reasons) + stale_reasons,
         )
     if uninspected_t:
         return CoverageReport(
@@ -491,7 +503,7 @@ def audit_memory_coverage(
             uninspected_t,
             stale_t,
             weakest,
-            tuple(reasons),
+            tuple(reasons) + stale_reasons,
         )
     if stale_t:
         return CoverageReport(
@@ -501,8 +513,7 @@ def audit_memory_coverage(
             uninspected_t,
             stale_t,
             weakest,
-            tuple(reasons)
-            + tuple(f"covered_lane_state_changed_since_receipt:{lane}" for lane in stale_t),
+            tuple(reasons) + stale_reasons,
         )
     return CoverageReport(
         CoverageVerdict.COVERAGE_BOUND_PROPOSAL_ONLY,
@@ -554,14 +565,21 @@ def audit_completeness_claim(
 ) -> CompletenessClaimReport:
     """Decide whether a bound receipt licenses a completeness/counting claim.
 
-    ``recheck_freshness=False`` evaluates the claim against the receipt exactly
-    as of its own binding.  That is a legitimate offline mode, and the report says
-    so via ``freshness_rechecked`` rather than implying the world was re-observed.
+    An uninspected lane is fatal to *every* claim regardless of the claim's own
+    scope.  Narrowing ``subject_lane_ids`` around the gap does not repair it: the
+    receipt itself failed to cover its bound universe, so no count or negative
+    statement drawn from it is trustworthy.  A *declared deferral* is different —
+    it is recorded, so scoping around it is honest and stays licensed.
+
+    ``recheck_freshness=False`` suppresses only the head/index staleness check and
+    is reported via ``freshness_rechecked``.  Universe completeness is always
+    checked.
     """
 
     coverage = audit_memory_coverage(
         receipt,
-        registered_lane_universe=registered_lane_universe if recheck_freshness else (),
+        registered_lane_universe=registered_lane_universe,
+        compare_lane_state=recheck_freshness,
     )
     if receipt is None or coverage.verdict is CoverageVerdict.CANNOT_CHECK:
         verdict = (
@@ -590,10 +608,11 @@ def audit_completeness_claim(
     if outside:
         reasons.extend(f"claim_ranges_outside_bound_universe:{lane}" for lane in outside)
     if coverage.verdict is CoverageVerdict.COVERAGE_INCOMPLETE:
+        # Deliberately not filtered by ``scope``: an uninspected lane makes the
+        # receipt incomplete, and a narrower claim scope cannot repair it.
         reasons.extend(
-            f"claim_ranges_over_uninspected_lane:{lane}"
+            f"claim_rests_on_receipt_with_uninspected_lane:{lane}"
             for lane in coverage.uninspected_lane_ids
-            if lane in scope or not claim.subject_lane_ids
         )
     if coverage.verdict is CoverageVerdict.REVALIDATION_REQUIRED:
         reasons.extend(

@@ -200,7 +200,71 @@ def test_locally_consistent_snapshot_cannot_carry_a_completeness_claim() -> None
     )
     assert report.verdict is CompletenessClaimVerdict.CLAIM_REJECTED_INCOMPLETE_COVERAGE
     assert report.licensed is False
-    assert "claim_ranges_over_uninspected_lane:lane-gamma" in report.reasons
+    assert "claim_rests_on_receipt_with_uninspected_lane:lane-gamma" in report.reasons
+
+
+@pytest.mark.parametrize(
+    "claim_overrides",
+    [
+        {"asserted_count": 2, "statement": "this is the second reuse"},
+        {
+            "kind": CompletenessClaimKind.NO_OTHER_LANE_REUSED_ARTIFACT,
+            "asserted_count": None,
+            "statement": "no other lane has reused this tool",
+        },
+        {
+            "kind": CompletenessClaimKind.NO_RELEVANT_CROSS_PROBLEM_MEMORY,
+            "asserted_count": None,
+            "statement": "no relevant cross-problem memory exists",
+        },
+    ],
+)
+def test_narrowing_the_claim_scope_cannot_repair_an_uninspected_lane(
+    claim_overrides: dict[str, Any],
+) -> None:
+    """Scoping around the gap is the bypass; an incomplete receipt is fatal.
+
+    The claim ranges only over lanes that *were* inspected, and every number in
+    it agrees with what was searched.  It must still fail closed, because the
+    receipt it rests on never covered its own bound universe.
+    """
+
+    receipt = _receipt_missing_gamma(
+        query_status=(
+            CoverageQueryStatus.NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE
+            if claim_overrides.get("asserted_count") is None
+            else CoverageQueryStatus.MATCHES_FOUND
+        ),
+        **(
+            {
+                "lane_records": (_inspected("lane-alpha"), _inspected("lane-beta")),
+                "result_ids": (),
+            }
+            if claim_overrides.get("asserted_count") is None
+            else {}
+        ),
+    )
+    report = audit_completeness_claim(
+        receipt,
+        _claim(subject_lane_ids=("lane-alpha", "lane-beta"), **claim_overrides),
+        registered_lane_universe=_registry(),
+    )
+    assert report.verdict is CompletenessClaimVerdict.CLAIM_REJECTED_INCOMPLETE_COVERAGE
+    assert report.licensed is False
+    assert "claim_rests_on_receipt_with_uninspected_lane:lane-gamma" in report.reasons
+
+
+def test_offline_mode_still_rejects_a_scoped_claim_over_an_uninspected_lane() -> None:
+    """Universe completeness is not a freshness question and is always checked."""
+
+    report = audit_completeness_claim(
+        _receipt_missing_gamma(),
+        _claim(asserted_count=2, subject_lane_ids=("lane-alpha", "lane-beta")),
+        registered_lane_universe=_registry(),
+        recheck_freshness=False,
+    )
+    assert report.verdict is CompletenessClaimVerdict.CLAIM_REJECTED_INCOMPLETE_COVERAGE
+    assert report.freshness_rechecked is False
 
 
 def test_an_undercounted_claim_over_a_covered_universe_is_refuted_not_merely_rejected() -> None:
