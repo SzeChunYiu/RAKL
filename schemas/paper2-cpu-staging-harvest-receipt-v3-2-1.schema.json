@@ -1,0 +1,290 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-cpu-staging-harvest-receipt-v3-2-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "HARVEST_STAGING_PASS"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "bootstrap_receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "failure_receipt_sha256": {
+            "type": "null"
+          },
+          "failures": {
+            "maxItems": 0
+          },
+          "job_ids": {
+            "const": [
+              "3475123",
+              "3475124"
+            ]
+          },
+          "prior_harvest_receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "probe_receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "repair_repository_sha": {
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "scheduler_rows": {
+            "const": [
+              {
+                "elapsed": "00:00:04",
+                "exit_code": "0:0",
+                "job_id": "3475123",
+                "max_rss": "",
+                "node_list": "cn004",
+                "state": "COMPLETED"
+              },
+              {
+                "elapsed": "00:02:05",
+                "exit_code": "0:0",
+                "job_id": "3475124",
+                "max_rss": "",
+                "node_list": "cn004",
+                "state": "COMPLETED"
+              }
+            ]
+          },
+          "source_contract_canonical_sha256": {
+            "const": "a9d3097bc7fa42b8e9d1431e84d4ab8189190706d281efc3474b692925df6c75"
+          },
+          "source_repository_sha": {
+            "const": "c10ba7a261af02cc42690022226555a3197351ae"
+          },
+          "staging_receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "submission_receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "HARVEST_CANNOT_CHECK"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failures": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "bootstrap_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evaluated_result_record_count": {
+      "const": 0
+    },
+    "failure_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "failures": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "job_ids": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 0,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "jobs_submitted_by_repair": {
+      "const": 0
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "negative_history_preserved": {
+      "const": false
+    },
+    "prior_harvest_receipt_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "prior_harvest_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prior_negative_history_preserved": {
+      "const": true
+    },
+    "probe_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "repair_contract_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "repair_id": {
+      "const": "PAPER2_CPU_STAGING_V3_2_1_HARVEST_REPAIR"
+    },
+    "repair_repository_sha": {
+      "type": "string"
+    },
+    "reproduced_v3_2_harvest_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "scheduler_rows": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "elapsed": {
+            "type": "string"
+          },
+          "exit_code": {
+            "type": "string"
+          },
+          "job_id": {
+            "type": "string"
+          },
+          "max_rss": {
+            "type": "string"
+          },
+          "node_list": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "elapsed",
+          "exit_code",
+          "job_id",
+          "max_rss",
+          "node_list",
+          "state"
+        ],
+        "type": "object"
+      },
+      "maxItems": 2,
+      "minItems": 0,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "paper2-cpu-staging-harvest-receipt-v3.2.1"
+    },
+    "source_contract_canonical_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_repository_sha": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_repository_tree": {
+      "const": "4f8053958d9ed4ea6e506ffa6dc8e60ee36715a5"
+    },
+    "staging_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "submission_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "HARVEST_STAGING_PASS",
+        "HARVEST_CANNOT_CHECK"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "created_at_utc",
+    "repair_id",
+    "repair_contract_canonical_sha256",
+    "repair_repository_sha",
+    "source_repository_sha",
+    "source_repository_tree",
+    "source_contract_canonical_sha256",
+    "prior_harvest_receipt_path",
+    "prior_harvest_receipt_sha256",
+    "reproduced_v3_2_harvest_canonical_sha256",
+    "submission_receipt_sha256",
+    "bootstrap_receipt_sha256",
+    "probe_receipt_sha256",
+    "staging_receipt_sha256",
+    "failure_receipt_sha256",
+    "job_ids",
+    "scheduler_rows",
+    "failures",
+    "negative_history_preserved",
+    "prior_negative_history_preserved",
+    "jobs_submitted_by_repair",
+    "model_execution_performed",
+    "evaluated_result_record_count",
+    "verdict"
+  ],
+  "title": "Paper 2 CPU staging V3.2.1 additive harvest-repair receipt",
+  "type": "object"
+}

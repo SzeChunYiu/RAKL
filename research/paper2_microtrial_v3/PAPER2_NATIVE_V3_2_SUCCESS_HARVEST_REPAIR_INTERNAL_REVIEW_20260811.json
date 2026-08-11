@@ -1,0 +1,196 @@
+{
+  "blocking_concerns": [],
+  "checks": {
+    "cumulative_counts_source_derived": true,
+    "evaluated_result_record_count": 0,
+    "focused_tests": {
+      "failed": 0,
+      "passed": 14
+    },
+    "job_submission_performed_by_repair": false,
+    "model_execution_performed": false,
+    "native_bundle_members_byte_equal": true,
+    "native_sacct_semantics_derived": true,
+    "quantitative_figure_generated": false,
+    "schema_valid_cannot_check_world": true
+  },
+  "claim_boundary": "Internal recursive hostile review only. This is not independent review, peer review, native V3.2.1 re-harvest, model execution, performance evidence, acceptance or publication.",
+  "concern_ledger": [
+    {
+      "concern_id": "P2-V321-HR-B01",
+      "finding": "In-place V3.2 mutation would break negative lineage.",
+      "resolution": "V3.2 contract/runtime/receipt remain byte-immutable; V3.2.1 is a separate harvest-only successor.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B02",
+      "finding": "Generic PEP 508 acceptance could weaken the distribution lock.",
+      "resolution": "Only the two exact native bundled direct references are accepted; all other freeze lines remain exact equality pairs and the full map must match.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B03",
+      "finding": "The prior governed CANNOT_CHECK could be replaced by semantic lookalikes.",
+      "resolution": "Operational submission and prior-harvest bytes must match the exact repair-contract binding hashes; the old receipt is never overwritten.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B04",
+      "finding": "Local known-answer success could be mislabeled native re-harvest.",
+      "resolution": "Authority remains HARVEST_REPAIR_READY_NOT_REHARVESTED and all documents explicitly deny a native V3.2.1 receipt.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B05",
+      "finding": "Frozen subject and job identities were not connected to operational inputs.",
+      "resolution": "Runtime now requires exact source SHA/tree/contract identity and jobs 3475123/3475124.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B06",
+      "finding": "Arbitrary output paths could overwrite protected evidence.",
+      "resolution": "Distinct checkouts and exclusive output creation outside every protected checkout/evidence root are enforced.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B07",
+      "finding": "Raw scheduler, bundle bytes and cumulative counts were prose-only.",
+      "resolution": "Runtime derives raw sacct semantics and compares every tar member; synthesis derives 6/0/0 from exact submission receipts.",
+      "severity": "blocking",
+      "state": "closed"
+    },
+    {
+      "concern_id": "P2-V321-HR-B08",
+      "finding": "Fail-open schemas could reject legitimate CANNOT_CHECK while admitting weak contracts.",
+      "resolution": "Contract schema is closed; pass semantics are tight; missing evidence produces schema-valid CANNOT_CHECK; reproduced semantics hash is stable.",
+      "severity": "blocking",
+      "state": "closed"
+    }
+  ],
+  "created_at_utc": "2026-08-11T02:55:00Z",
+  "nonblocking_concerns": [],
+  "object": "Paper 2 V3.2 native staging evidence and V3.2.1 additive harvest repair assurance",
+  "passes": [
+    {
+      "concerns": [
+        "P2-V321-HR-B01",
+        "P2-V321-HR-B02",
+        "P2-V321-HR-B03",
+        "P2-V321-HR-B04"
+      ],
+      "pass_id": "initial_same_context_review",
+      "verdict": "BLOCKED"
+    },
+    {
+      "concerns": [
+        "P2-V321-HR-B05",
+        "P2-V321-HR-B06",
+        "P2-V321-HR-B07",
+        "P2-V321-HR-B08"
+      ],
+      "pass_id": "two_isolated_agent_hostile_audits",
+      "verdict": "BLOCKED"
+    },
+    {
+      "concerns": [],
+      "pass_id": "post_repair_recursive_review",
+      "verdict": "PASS"
+    }
+  ],
+  "review_class": "internal_recursive_hostile_review_not_independent_not_peer_review",
+  "review_id": "paper2-native-v3-2-success-harvest-repair-internal-review-20260811",
+  "reviewed_artifacts": [
+    {
+      "path": "research/paper2_microtrial_v3/CPU_STAGING_HARVEST_REPAIR_CONTRACT_V3_2_1.json",
+      "role": "repair_contract",
+      "sha256": "9c58fc3dbf7538ac4390376e3da7caafcf2c1d21c1333a948e5820674049d9c3"
+    },
+    {
+      "path": "src/rakl/paper2_cpu_staging_v3_2_1.py",
+      "role": "repair_runtime",
+      "sha256": "eba95fea6fd3bd2f982ece0a8d2a37742c8e496c50070bb0e3d84ee80478e985"
+    },
+    {
+      "path": "experiments/paper2/lunarc/harvest_cpu_staging_v3_2_1.sh",
+      "role": "repair_wrapper",
+      "sha256": "39c21da2e45d21bd526c020eed0dbb0a1a973786ff6b8c4eb40595d98262b107"
+    },
+    {
+      "path": "schemas/paper2-cpu-staging-harvest-repair-contract-v3-2-1.schema.json",
+      "role": "repair_contract_schema",
+      "sha256": "07911fee6b866a8dd1d28ed62f79a662c2570100432ae1a9242f7469a3a2aea1"
+    },
+    {
+      "path": "schemas/paper2-cpu-staging-harvest-receipt-v3-2-1.schema.json",
+      "role": "repair_receipt_schema",
+      "sha256": "e2816127e0dbd15161169d416f93eaf1ae986cd2136827f430a56551c189ed40"
+    },
+    {
+      "path": "tests/test_paper2_cpu_staging_v3_2_1.py",
+      "role": "hostile_tests",
+      "sha256": "7a003cd021fb401ab51df4cb979afc484e85f765653d30b65f030a562dd78930"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/PAPER2_NATIVE_V3_2_SUCCESS_HARVEST_REPAIR_READINESS_RECEIPT_20260811.json",
+      "role": "pre_reharvest_synthesis",
+      "sha256": "bf8f20c9468a21abcd4bd2718c2e97211c9649c41e8f377a2e8cf9ad0097f1be"
+    },
+    {
+      "path": "schemas/paper2-native-v3-2-success-harvest-repair-readiness-receipt.schema.json",
+      "role": "synthesis_schema",
+      "sha256": "7b90da79a7ff69328de13a6cc9fd3a33cd0f87f6066aa2e40731e3f7e9ed3d95"
+    },
+    {
+      "path": "research/PAPER2_CPU_STAGING_V3_2_1_HOSTILE_REVIEW_20260811.md",
+      "role": "human_hostile_review",
+      "sha256": "ae0d28db1894d947cf1e178257e9166d1df762e88a45b85f36bad6a5bb191d55"
+    },
+    {
+      "path": "research/PAPER2_CPU_STAGING_V3_2_1_STATUS_20260811.md",
+      "role": "status",
+      "sha256": "71d80305c4230b7a5a271b077492d7981358b698a6d406ccc0cec1c1d2508477"
+    },
+    {
+      "path": "research/PAPER2_MICROTRIAL_MANUSCRIPT_STATUS_V3_2_1_20260811.md",
+      "role": "manuscript_status",
+      "sha256": "88420cf815e00d2b3ab042e0eb82c58e1ab4dea60beecc2b410fdda06285ac7c"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/native_receipts/SUBMISSION_NATIVE_V3_2_C10BA7A.json",
+      "role": "native_submission",
+      "sha256": "2813079769ed8d0530eacc7199cf5dad067561897568a056a8dd095dba21c5d4"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/native_receipts/STAGING_PASS_NATIVE_V3_2_JOB_3475124.json",
+      "role": "native_stage",
+      "sha256": "f269788a78d216932879d2ea98eee3c1b84322b2345330406d8a7c6d81802c26"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/native_receipts/HARVEST_CANNOT_CHECK_NATIVE_V3_2_JOBS_3475123_3475124.json",
+      "role": "native_harvest",
+      "sha256": "2e2ecd6f5cb2ad84f17352fea598b30210de225f745e1d9c13154b8872a03e96"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/native_receipts/SACCT_NATIVE_V3_2_JOBS_3475123_3475124.json",
+      "role": "native_sacct",
+      "sha256": "1f5b1dcc8d5cb587120f3e6ad55a70fe2c6cf37b9032e38c530b35480b1fdb19"
+    },
+    {
+      "path": "research/paper2_microtrial_v3/native_bundles/PAPER2_STAGE_V3_2_SUCCESS_HARVEST_CC_JOBS_3475123_3475124.tar.gz",
+      "role": "native_bundle",
+      "sha256": "efd321acea1018d69bfeee74ec8640e75f501c6e5958d0eb693b9932a9f3ee58"
+    }
+  ],
+  "schema_binding": {
+    "path": "schemas/paper2-native-v3-2-success-harvest-repair-internal-review.schema.json",
+    "sha256": "305cb0a3602b6a0439b71098f2de8e2be2491ea84b5f1c65ffacfe507fb5fa66"
+  },
+  "schema_version": "paper2-native-v3-2-success-harvest-repair-internal-review-v1",
+  "verdict": "PASS__HARVEST_REPAIR_READY_NOT_REHARVESTED"
+}
