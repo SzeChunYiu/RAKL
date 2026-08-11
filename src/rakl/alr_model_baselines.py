@@ -277,13 +277,21 @@ def parse_model_json_response(case_id: str, text: str) -> TransitionResponse:
 class HfCausalLmBackend:
     """Minimal HuggingFace causal-LM backend for direct-prompt ALR baselines."""
 
-    def __init__(self, model_dir: Path, *, max_new_tokens: int = 256, device: str = "cpu") -> None:
+    def __init__(
+        self,
+        model_dir: Path,
+        *,
+        max_new_tokens: int = 256,
+        device: str = "cpu",
+        prompt_builder: Callable[[VisibleCaseContext], str] | None = None,
+    ) -> None:
         from transformers import AutoModelForCausalLM, AutoTokenizer
         import torch
 
         self.model_dir = Path(model_dir)
         self.max_new_tokens = max_new_tokens
         self.device = device
+        self.prompt_builder = prompt_builder or build_direct_prompt
         self.tokenizer = AutoTokenizer.from_pretrained(str(self.model_dir), local_files_only=True)
         self.model = AutoModelForCausalLM.from_pretrained(
             str(self.model_dir),
@@ -294,8 +302,23 @@ class HfCausalLmBackend:
         self.model.eval()
         self._torch = torch
 
+    def with_prompt_builder(
+        self, prompt_builder: Callable[[VisibleCaseContext], str]
+    ) -> "HfCausalLmBackend":
+        """Return a lightweight view that reuses the loaded weights with a new prompt."""
+
+        clone = object.__new__(HfCausalLmBackend)
+        clone.model_dir = self.model_dir
+        clone.max_new_tokens = self.max_new_tokens
+        clone.device = self.device
+        clone.prompt_builder = prompt_builder
+        clone.tokenizer = self.tokenizer
+        clone.model = self.model
+        clone._torch = self._torch
+        return clone
+
     def __call__(self, visible: VisibleCaseContext) -> TransitionResponse:
-        prompt = build_direct_prompt(visible)
+        prompt = self.prompt_builder(visible)
         inputs = self.tokenizer(prompt, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with self._torch.no_grad():

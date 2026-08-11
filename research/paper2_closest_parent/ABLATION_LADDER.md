@@ -103,16 +103,18 @@ mechanism→identification escalations, plus a legal upgrade control and a share
 provenance reject. **No model ablation has been run.** Arms are still not named
 after external systems.
 
-## Matched empirical packet (frozen; model empirics unrun)
+## Matched empirical packet (frozen; model empirics authorized)
 
 Evaluation contract for A3 vs A4:
 
-* packet: `research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_PACKET_V1.json`
-* runner: `src/rakl/ablation_a3_a4_matched_empirical.py`
-* status (default): `EMPIRICS_UNRUN` — inventing ALR/recall/cost is forbidden
+* packet: `research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_PACKET_V1.json` (`PACKET_FROZEN_EMPIRICS_UNRUN`)
+* authorize: `research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICS_AUTHORIZE_RECEIPT.json`
+* runner: `src/rakl/ablation_a3_a4_matched_empirical.py` (`run_matched_model_arms`)
+* status (default): `EMPIRICS_UNRUN` until scored — inventing ALR/recall/cost is forbidden
 * evaluator binding: ALR V2 freeze receipt (`FREEZE_RECEIPT_V2.json`)
-* LUNARC CPU cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirical_156.sh`
-  validates the freeze and re-emits `EMPIRICS_UNRUN`; it does **not** mint A4>A3
+* LUNARC freeze cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirical_156.sh` (job `3476733` → `FREEZE_VALIDATED_EMPIRICS_UNRUN`)
+* LUNARC score cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirics_score_156.sh`
+* claim boundary: non-confirmatory matched A3↔A4 model scores; not MemTX/PPMF/AutoSci; no A4>A3 novelty from scores alone
 
 ## Before any arm is run
 
