@@ -47,10 +47,20 @@ PACKET_REL_V1_2 = Path("research/paper2_experience_benchmark_v1_2")
 PROTOCOL_SUBJECT_HASH_V1_2 = "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352"
 # Bound after v1.1 protocol freeze; submit scripts require exact match.
 PROTOCOL_SUBJECT_HASH_V1_1 = "c7b1a04007e237f54acd2d0efd1c90870ad20718dec9392216ce49b169f7bedb"
+# Successor #247 packet (root_cause_v1). Hash filled after PROTOCOL_FREEZE_PACKET write.
+PACKET_REL_V1_3 = Path("research/paper2_experience_benchmark_v1_3")
+PROTOCOL_SUBJECT_HASH_V1_3 = "ed116353230dc526fa45657d1a81afab26a460fe3b8411480a0f84bb1f711672"
 # Default execution subject is the JSON-skeleton repair packet (v1.2).
 PACKET_REL = PACKET_REL_V1_2
 PROTOCOL_SUBJECT_HASH = PROTOCOL_SUBJECT_HASH_V1_2
 FORBIDDEN_JOBS = frozenset({3476520, 3476521, 3476524})
+FROZEN_LEGACY_PROTOCOL_SUBJECT_HASHES = frozenset(
+    {
+        PROTOCOL_SUBJECT_HASH_V1,
+        PROTOCOL_SUBJECT_HASH_V1_1,
+        PROTOCOL_SUBJECT_HASH_V1_2,
+    }
+)
 ALLOWED_VERDICTS = ("SUPPORT", "REFUTE", "CONTEXT_MISALIGNED", "CANNOT_CHECK")
 VERDICT_ENUM_MARKER = "SUPPORT | REFUTE | CONTEXT_MISALIGNED | CANNOT_CHECK"
 FORBIDDEN_VERDICT_SYNONYM_MARKER = "Do not emit REJECT, FAIL"
@@ -475,17 +485,18 @@ def execute_experience_benchmark(
     if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1 and diagnostic_arm is None:
         diagnostic_arm = RootCauseDiagnosticArm.FULL_RAKL_SELECTIVE
     bound_subject = protocol_subject_hash or PROTOCOL_SUBJECT_HASH
-    if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1 and bound_subject in {
-        PROTOCOL_SUBJECT_HASH_V1,
-        PROTOCOL_SUBJECT_HASH_V1_1,
-        PROTOCOL_SUBJECT_HASH_V1_2,
-    }:
+    if learning_loop_mode == LEARNING_LOOP_ROOT_CAUSE_V1 and bound_subject in FROZEN_LEGACY_PROTOCOL_SUBJECT_HASHES:
         raise RuntimeError(
             "root_cause_v1 learning loop cannot bind frozen v1/v1.1/v1.2 "
             "protocol_subject_hash; freeze a successor packet first"
         )
+    if bound_subject.startswith("PENDING_"):
+        raise RuntimeError("protocol_subject_hash is not frozen yet")
     if output_dir.exists():
         raise RuntimeError(f"output directory already exists: {output_dir}")
+    oracle_transfer_only = diagnostic_arm is RootCauseDiagnosticArm.ORACLE_PROCEDURE_UPPER_BOUND
+    if oracle_transfer_only and learning_loop_mode != LEARNING_LOOP_ROOT_CAUSE_V1:
+        raise RuntimeError("ORACLE_PROCEDURE_UPPER_BOUND requires learning_loop_mode=root_cause_v1")
 
     def _git(*args: str) -> str:
         return subprocess.run(
@@ -673,43 +684,68 @@ def execute_experience_benchmark(
         }
         return run_record, state_after, state_after_hash
 
-    # RESET development + transfer: every task from S0, remain S0.
-    for task_id in list(freeze["development_task_ids"]) + list(freeze["transfer_task_ids"]):
-        run_record, _, _ = run_one(
-            arm=ExperienceBenchmarkArm.RESET_BASELINE,
-            task_id=task_id,
-            state=copy.deepcopy(s0),
-            state_before_hash=initial_state_hash,
-            mutate_learning=False,
-        )
-        runs.append(run_record)
+    if oracle_transfer_only:
+        # Phase 1 capability-floor probe (#247): ORACLE may run alone on
+        # FRESH_TRANSFER. Do not mutate learning state; do not inherit v1.2 RESET.
+        sn_hash = initial_state_hash
+        sn_state = copy.deepcopy(s0)
+        _write_json(states_dir / "Sn.json", sn_state)
+        (states_dir / "Sn.hash").write_text(sn_hash + "\n", encoding="utf-8")
+        for task_id in freeze["transfer_task_ids"]:
+            run_record, _, _ = run_one(
+                arm=ExperienceBenchmarkArm.LEARNING_ENABLED,
+                task_id=task_id,
+                state=copy.deepcopy(s0),
+                state_before_hash=initial_state_hash,
+                mutate_learning=False,
+            )
+            runs.append(run_record)
+        executed_arms = ["ORACLE_PROCEDURE_UPPER_BOUND"]
+        executed_phases = ["FRESH_TRANSFER"]
+        issue_id = int(freeze.get("issue", 247))
+        section = str(freeze.get("section", "PHASE1_ORACLE_0_5B"))
+    else:
+        # RESET development + transfer: every task from S0, remain S0.
+        for task_id in list(freeze["development_task_ids"]) + list(freeze["transfer_task_ids"]):
+            run_record, _, _ = run_one(
+                arm=ExperienceBenchmarkArm.RESET_BASELINE,
+                task_id=task_id,
+                state=copy.deepcopy(s0),
+                state_before_hash=initial_state_hash,
+                mutate_learning=False,
+            )
+            runs.append(run_record)
 
-    # LEARNING development: S0 -> S1 -> ... -> Sn
-    for task_id in freeze["development_task_ids"]:
-        run_record, learned_state, learned_hash = run_one(
-            arm=ExperienceBenchmarkArm.LEARNING_ENABLED,
-            task_id=task_id,
-            state=learned_state,
-            state_before_hash=learned_hash,
-            mutate_learning=True,
-        )
-        runs.append(run_record)
+        # LEARNING development: S0 -> S1 -> ... -> Sn
+        for task_id in freeze["development_task_ids"]:
+            run_record, learned_state, learned_hash = run_one(
+                arm=ExperienceBenchmarkArm.LEARNING_ENABLED,
+                task_id=task_id,
+                state=learned_state,
+                state_before_hash=learned_hash,
+                mutate_learning=True,
+            )
+            runs.append(run_record)
 
-    sn_hash = learned_hash
-    sn_state = copy.deepcopy(learned_state)
-    _write_json(states_dir / "Sn.json", sn_state)
-    (states_dir / "Sn.hash").write_text(sn_hash + "\n", encoding="utf-8")
+        sn_hash = learned_hash
+        sn_state = copy.deepcopy(learned_state)
+        _write_json(states_dir / "Sn.json", sn_state)
+        (states_dir / "Sn.hash").write_text(sn_hash + "\n", encoding="utf-8")
 
-    # LEARNING fresh transfer: each Ti independently from frozen Sn.
-    for task_id in freeze["transfer_task_ids"]:
-        run_record, _, _ = run_one(
-            arm=ExperienceBenchmarkArm.LEARNING_ENABLED,
-            task_id=task_id,
-            state=copy.deepcopy(sn_state),
-            state_before_hash=sn_hash,
-            mutate_learning=False,
-        )
-        runs.append(run_record)
+        # LEARNING fresh transfer: each Ti independently from frozen Sn.
+        for task_id in freeze["transfer_task_ids"]:
+            run_record, _, _ = run_one(
+                arm=ExperienceBenchmarkArm.LEARNING_ENABLED,
+                task_id=task_id,
+                state=copy.deepcopy(sn_state),
+                state_before_hash=sn_hash,
+                mutate_learning=False,
+            )
+            runs.append(run_record)
+        executed_arms = ["RESET_BASELINE", "LEARNING_ENABLED"]
+        executed_phases = ["DEVELOPMENT_SEQUENCE", "FRESH_TRANSFER"]
+        issue_id = int(freeze.get("issue", 138))
+        section = str(freeze.get("section", "B2"))
 
     runs_path = output_dir / "runs.jsonl"
     with runs_path.open("w", encoding="utf-8") as handle:
@@ -719,8 +755,8 @@ def execute_experience_benchmark(
     manifest = {
         "schema_version": "paper2-experience-benchmark-run-manifest-v1",
         "created_at_utc": created,
-        "issue": 138,
-        "section": "B2",
+        "issue": issue_id,
+        "section": section,
         "benchmark_id": freeze["benchmark_id"],
         "protocol_subject_hash": bound_hash,
         "freeze_packet_sha256": _sha256_file(bundle["packet_dir"] / "PROTOCOL_FREEZE_PACKET.json"),
@@ -729,7 +765,7 @@ def execute_experience_benchmark(
         "execution_host": host,
         "initial_state_hash": initial_state_hash,
         "learned_state_after_development_hash": sn_hash,
-        "arms": ["RESET_BASELINE", "LEARNING_ENABLED"],
+        "arms": executed_arms,
         "development_task_ids": freeze["development_task_ids"],
         "transfer_task_ids": freeze["transfer_task_ids"],
         "run_count": len(runs),
@@ -738,6 +774,7 @@ def execute_experience_benchmark(
         "paper3_issue_217_path": False,
         "learning_loop_mode": learning_loop_mode,
         "diagnostic_arm": None if diagnostic_arm is None else diagnostic_arm.value,
+        "oracle_transfer_only": oracle_transfer_only,
         "claim_boundary": (
             "Native ExperienceBenchmark execution artifacts only. "
             "Not manuscript authority until validate_experience_benchmark + analysis."

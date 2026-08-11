@@ -163,15 +163,55 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
     )
     protocol_subject_hash = benchmark_protocol_subject_hash(packet)
 
+    issue = 247 if benchmark_id.endswith("v1_3") else 138
+    section = "PHASE0_1_ORACLE_FIRST" if benchmark_id.endswith("v1_3") else "B1"
+    arms = (
+        [
+            "ORACLE_PROCEDURE_UPPER_BOUND",
+            "RESET",
+            "FAILURE_MEMORY_ONLY",
+            "VERIFIED_DEVELOPMENT_LESSONS",
+            "FULL_RAKL_SELECTIVE",
+        ]
+        if benchmark_id.endswith("v1_3")
+        else ["RESET_BASELINE", "LEARNING_ENABLED"]
+    )
+    learning_loop_mode = "root_cause_v1" if benchmark_id.endswith("v1_3") else "legacy_v1_2"
+    primary_execution = (
+        {
+            "first_job_arm": "ORACLE_PROCEDURE_UPPER_BOUND",
+            "first_job_scope": "FRESH_TRANSFER_ONLY",
+            "oracle_pass_min_success_rate": 2.0 / 3.0,
+            "model_scale": "Qwen2.5-0.5B-Instruct",
+            "forbid_1_5B_until_oracle_gate": True,
+            "forbid_scale_only_difference_witness_on_v1_2": True,
+        }
+        if benchmark_id.endswith("v1_3")
+        else None
+    )
+
     freeze_packet = {
         "schema_version": "rakl-experience-benchmark-protocol-freeze-v1",
         "benchmark_id": packet.benchmark_id,
-        "issue": 138,
-        "section": "B1",
+        "issue": issue,
+        "section": section,
         "status": "PROTOCOL_FROZEN_AWAITING_EXECUTION",
         "scientific_claim_status": "NO_EMPIRICAL_RESULT",
-        "arms": ["RESET_BASELINE", "LEARNING_ENABLED"],
+        "arms": arms,
         "phases": ["DEVELOPMENT_SEQUENCE", "FRESH_TRANSFER"],
+        "learning_loop_mode": learning_loop_mode,
+        "parent_negative_history": (
+            {
+                "parent_packet": "paper2-experience-benchmark-v1_2",
+                "parent_job_id": "3476548",
+                "parent_protocol_subject_hash": "c4ae092b70859d145b7a4b8a7d6485b3d2a552867756fec6783c1e35f7d5f352",
+                "reopen_issue_138": False,
+                "reinterpret_as_lift": False,
+            }
+            if benchmark_id.endswith("v1_3")
+            else None
+        ),
+        "primary_execution": primary_execution,
         "model": {
             "model_id": model.model_id,
             "model_revision": model.model_revision,
@@ -200,9 +240,17 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         "transfer_task_ids": list(packet.transfer_task_ids),
         "learned_state_after_development_hash": PENDING_LEARNED,
         "learned_state_binding_rule": (
-            "Bind exact Sn hash only after LEARNING_ENABLED development completes; "
-            "every fresh-transfer LEARNING run must start from that frozen Sn. "
-            "RESET_BASELINE transfer continues from S0."
+            "ORACLE_PROCEDURE_UPPER_BOUND Phase-1 jobs do not bind Sn from development; "
+            "they inject the frozen family-general checklist only. Later learning arms "
+            "bind exact Sn only after LEARNING_ENABLED development completes; every "
+            "fresh-transfer LEARNING run must start from that frozen Sn. RESET transfer "
+            "continues from S0."
+            if benchmark_id.endswith("v1_3")
+            else (
+                "Bind exact Sn hash only after LEARNING_ENABLED development completes; "
+                "every fresh-transfer LEARNING run must start from that frozen Sn. "
+                "RESET_BASELINE transfer continues from S0."
+            )
         ),
         "runs": [],
         "frozen_before_runs": True,
@@ -226,14 +274,31 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         },
         "authority_boundary": (
             "Protocol freeze only. No RESET vs LEARNING delta, no Paper-II "
-            "empirical claim, and no manuscript result ingest is authorized by this file."
+            "empirical claim, and no manuscript result ingest is authorized by this file. "
+            "ORACLE Phase-1 success/failure classifies MODEL_CAPABILITY_FLOOR or "
+            "INSTRUMENT_DEFECT only after parse-validity guard; it does not mint "
+            "experience-learning efficacy."
+            if benchmark_id.endswith("v1_3")
+            else (
+                "Protocol freeze only. No RESET vs LEARNING delta, no Paper-II "
+                "empirical claim, and no manuscript result ingest is authorized by this file."
+            )
         ),
     }
+    # Drop null parent block for legacy packets to preserve exact freeze shape.
+    if freeze_packet["parent_negative_history"] is None:
+        del freeze_packet["parent_negative_history"]
+    if freeze_packet["primary_execution"] is None:
+        del freeze_packet["primary_execution"]
+    if not benchmark_id.endswith("v1_3"):
+        # Preserve historical freeze field set for v1/v1.1 check-only.
+        del freeze_packet["learning_loop_mode"]
+
     receipt = {
         "schema_version": "rakl-experience-benchmark-protocol-freeze-receipt-v1",
         "benchmark_id": packet.benchmark_id,
-        "issue": 138,
-        "section": "B1",
+        "issue": issue,
+        "section": section,
         "verdict": "PROTOCOL_FREEZE_PASS",
         "packet_frozen_at": frozen_at,
         "protocol_subject_hash": protocol_subject_hash,
@@ -247,16 +312,34 @@ def build_protocol_packet(packet_dir: Path, frozen_at: str, *, benchmark_id: str
         "evaluated_model_outputs_opened": False,
         "empirical_section_b_status": "NOT_DONE",
         "next_compute_step": (
-            "On LUNARC FS9 Paper-II checkout at exact origin/main: materialize S0, "
-            "execute RESET_BASELINE and LEARNING_ENABLED development (D1→D3) under the "
-            "frozen ceiling, freeze Sn, then run fresh transfer (T1–T3) with every "
-            "LEARNING transfer starting independently from Sn; harvest runs.jsonl; "
-            "validate via validate_experience_benchmark; only then analyze/plot."
+            "On LUNARC FS9 Paper-II checkout at exact origin/main: submit "
+            "ORACLE_PROCEDURE_UPPER_BOUND @ Qwen2.5-0.5B on FRESH_TRANSFER only "
+            "(learning_loop_mode=root_cause_v1). Do not submit staircase/1.5B. "
+            "Do not reopen #138. Apply parse-validity guard before "
+            "MODEL_CAPABILITY_FLOOR. Later Phase-0 arms require separate jobs "
+            "under this same frozen packet."
+            if benchmark_id.endswith("v1_3")
+            else (
+                "On LUNARC FS9 Paper-II checkout at exact origin/main: materialize S0, "
+                "execute RESET_BASELINE and LEARNING_ENABLED development (D1→D3) under the "
+                "frozen ceiling, freeze Sn, then run fresh transfer (T1–T3) with every "
+                "LEARNING transfer starting independently from Sn; harvest runs.jsonl; "
+                "validate via validate_experience_benchmark; only then analyze/plot."
+            )
         ),
         "forbidden": [
             "reuse V4.1 pendulum scores/jobs 3476520/3476521/3476524 as §B evidence",
             "claim §B empirical completion from this freeze alone",
             "mutate evaluator/tasks after opening evaluated outputs under this packet id",
+            *(
+                [
+                    "scale-only DifferenceWitness reusing broken v1.2 learning loop",
+                    "ExperienceBenchmark@1.5B before ORACLE 0.5B gate",
+                    "reopen #138 or reinterpret job 3476548 as lift",
+                ]
+                if benchmark_id.endswith("v1_3")
+                else []
+            ),
         ],
         "artifact_sha256": {
             "PROTOCOL_FREEZE_PACKET.json": None,  # filled after write
@@ -302,13 +385,22 @@ def main() -> int:
     _refuse_if_results_present(packet_dir)
     if args.benchmark_id:
         benchmark_id = args.benchmark_id
+    elif packet_dir.name.endswith("v1_3"):
+        benchmark_id = "paper2-experience-benchmark-v1_3"
+    elif packet_dir.name.endswith("v1_2"):
+        benchmark_id = "paper2-experience-benchmark-v1_2"
     elif packet_dir.name.endswith("v1_1"):
         benchmark_id = "paper2-experience-benchmark-v1_1"
     else:
         benchmark_id = "paper2-experience-benchmark-v1"
-    frozen_at = args.frozen_at or (
-        "2026-08-11T19:05:00Z" if benchmark_id.endswith("v1_1") else "2026-08-11T18:21:15Z"
-    )
+    if args.frozen_at:
+        frozen_at = args.frozen_at
+    elif benchmark_id.endswith("v1_3"):
+        frozen_at = "2026-08-11T21:10:00Z"
+    elif benchmark_id.endswith("v1_1"):
+        frozen_at = "2026-08-11T19:05:00Z"
+    else:
+        frozen_at = "2026-08-11T18:21:15Z"
     freeze_packet, _packet, receipt = build_protocol_packet(
         packet_dir, frozen_at, benchmark_id=benchmark_id
     )
