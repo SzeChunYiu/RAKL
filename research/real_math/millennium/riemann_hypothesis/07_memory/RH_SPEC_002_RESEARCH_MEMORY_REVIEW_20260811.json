@@ -1,0 +1,45 @@
+{
+  "target_atom_id": "RH-SPEC-002",
+  "target_context_hash": "sha256:99eb4c30af5c745c5d1f6b546fa8df0e775494c07f51fe9548c50ce81bfba224",
+  "tool_inventory_snapshot_hash": "sha256:b536b2e586cc6fcb11f54453e8324ffc09873bf2a269d5c1b23e4a77651f053d",
+  "failure_lattice_snapshot_hash": "sha256:5de800278bb35c9cd1562a29dba1b8ee8cd07bee11fa762e6a16db6f28c4a487",
+  "tool_query_status": "MATCHES_FOUND",
+  "failure_query_status": "MATCHES_FOUND",
+  "candidate_method_families": [
+    "local-uniform convergence of normalized real-rooted entire determinants to Xi",
+    "norm-resolvent plus compactness/spectral-exactness convergence",
+    "strong-resolvent or Mosco form convergence with additional no-pollution hypotheses",
+    "compact-by-compact zero-multiset convergence with multiplicity",
+    "hostile Galerkin spectral-pollution and eigenvalue-escape calibration"
+  ],
+  "relevant_tool_ids": [
+    "T-PNP-EXTREMAL-CALIBRATION"
+  ],
+  "relevant_failure_ids": [
+    "F-C023-SCALAR-COLLAPSE"
+  ],
+  "selected_tool_ids": [],
+  "tool_applicability_notes": [
+    "T-PNP-EXTREMAL-CALIBRATION is relevant only as a planning pattern: before trusting a convergence topology, calibrate it on an explicit self-adjoint approximation that looks spectrally plausible but provably exhibits pollution, escape, or incomplete spectral transport. DifferenceWitness: the P-vs-NP theorem concerns scalar cover-complexity proxies; RH-SPEC-002 concerns operator/entire-function convergence. No P-vs-NP mathematical guarantee transfers, so the tool is not selected for theorem reuse."
+  ],
+  "failure_reuse_notes": [
+    "F-C023-SCALAR-COLLAPSE is imported only as a warning that a compressed observable can discard the operation-specific coordinate required at the root. RH DifferenceWitness: zero-counting, finitely many eigenvalues, spectral measures, or weak operator convergence may discard complete zero correspondence/multiplicity even when finite-stage data look excellent.",
+    "Cheapest regression: a proposed RH convergence package must fail closed on an explicit self-adjoint spectral-pollution/escape example before it can be treated as sufficient for complete Xi spectral transport."
+  ],
+  "unresolved_warnings": [
+    "the current bound memory snapshots predate any mature RH-specific failure experience; the new child must learn its own limit-pathology taxonomy",
+    "a locally uniform determinant route is only useful if the normalization and exact Xi limit are derived independently of known zeta zeros",
+    "strong-resolvent or Mosco convergence alone may not certify complete discrete spectral convergence",
+    "the finite-parameter simple/even ground-state hypotheses may fail along the cofinal family",
+    "changing Hilbert spaces or joint N/lambda/a limits can hide noncommuting-limit assumptions",
+    "the current Yang-Mills continuum-spectral bridge is a structural analogy, not a promoted reusable theorem tool"
+  ],
+  "evidence_pointers": [
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_RESEARCH_TOOL_INVENTORY_20260811.json",
+    "research/real_math/millennium/p_vs_np/07_memory/O9d12a2a1_FAILURE_EXPERIENCE_LATTICE_20260811.json",
+    "research/real_math/millennium/riemann_hypothesis/01_frontier/RH_SPEC_002_CONTEXT_FIBER_20260811.json",
+    "research/real_math/millennium/yang_mills/01_frontier/YM-S1_GAP_TRANSPORT_OBLIGATION_MATRIX_20260811.md",
+    "GitHub issue #84"
+  ],
+  "artifact_hash": "sha256:298a822066b1ef9ff1a6b928f9fa7e66ded0f5585d739265c70d4ccc8e915e19"
+}
