@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Tuple
+from typing import Any, Mapping, Sequence, Tuple
 
 
 class FailureDiagnosisStatus(str, Enum):
@@ -171,6 +171,122 @@ def add_failure_link(
         experiences=lattice.experiences,
         links=lattice.links + (link,),
     )
+
+
+def _required(document: Mapping[str, Any], key: str, *, where: str) -> Any:
+    if key not in document:
+        raise ValueError(f"{where}: missing required field {key!r}")
+    return document[key]
+
+
+def _string_tuple(value: Any, *, where: str, key: str) -> Tuple[str, ...]:
+    if isinstance(value, str) or not isinstance(value, Sequence):
+        raise ValueError(f"{where}: field {key!r} must be an array of strings")
+    return tuple(str(item) for item in value)
+
+
+def reconstruct_failure_lattice(document: Mapping[str, Any]) -> FailureExperienceLattice:
+    """Rebuild an in-memory lattice from a schema-shaped document.
+
+    This is the executable counterpart to JSON-schema validation: every record
+    passes through the same constructors the runtime uses
+    (`add_failure_experience`, `add_failure_link`), so a document that
+    reconstructs here is exactly a document the runtime accepts. No endpoint or
+    field check is relaxed for reconstruction.
+
+    Fails closed with `ValueError` on any rejection, including malformed shape,
+    so callers can treat "raised" as a single REJECT verdict rather than having
+    to distinguish a contract failure from a crash.
+    """
+
+    if not isinstance(document, Mapping):
+        raise ValueError("failure lattice document must be an object")
+
+    lattice = FailureExperienceLattice()
+
+    experiences = document.get("experiences", ())
+    if isinstance(experiences, str) or not isinstance(experiences, Sequence):
+        raise ValueError("failure lattice document: 'experiences' must be an array")
+
+    for index, item in enumerate(experiences):
+        where = f"experiences[{index}]"
+        if not isinstance(item, Mapping):
+            raise ValueError(f"{where}: must be an object")
+        try:
+            experience = FailureExperience(
+                failure_id=str(_required(item, "failure_id", where=where)),
+                atom_id=str(_required(item, "atom_id", where=where)),
+                candidate_id=str(_required(item, "candidate_id", where=where)),
+                context_packet_hash=str(_required(item, "context_packet_hash", where=where)),
+                research_trace_event_id=str(
+                    _required(item, "research_trace_event_id", where=where)
+                ),
+                method_family=str(_required(item, "method_family", where=where)),
+                failure_mode=str(_required(item, "failure_mode", where=where)),
+                residual_signature=_string_tuple(
+                    _required(item, "residual_signature", where=where),
+                    where=where,
+                    key="residual_signature",
+                ),
+                broken_assumptions=_string_tuple(
+                    item.get("broken_assumptions", ()), where=where, key="broken_assumptions"
+                ),
+                scope_conditions=_string_tuple(
+                    _required(item, "scope_conditions", where=where),
+                    where=where,
+                    key="scope_conditions",
+                ),
+                competing_diagnoses=_string_tuple(
+                    _required(item, "competing_diagnoses", where=where),
+                    where=where,
+                    key="competing_diagnoses",
+                ),
+                selected_diagnosis=str(_required(item, "selected_diagnosis", where=where)),
+                diagnosis_status=FailureDiagnosisStatus(
+                    _required(item, "diagnosis_status", where=where)
+                ),
+                evidence_pointers=_string_tuple(
+                    _required(item, "evidence_pointers", where=where),
+                    where=where,
+                    key="evidence_pointers",
+                ),
+                falsifier_or_attempt=str(_required(item, "falsifier_or_attempt", where=where)),
+                observed_result=str(_required(item, "observed_result", where=where)),
+                artifact_hash=str(_required(item, "artifact_hash", where=where)),
+                timestamp=str(_required(item, "timestamp", where=where)),
+                local_repair_attempts=_string_tuple(
+                    item.get("local_repair_attempts", ()),
+                    where=where,
+                    key="local_repair_attempts",
+                ),
+            )
+        except (KeyError, TypeError) as error:
+            raise ValueError(f"{where}: malformed failure experience: {error}") from error
+        lattice = add_failure_experience(lattice, experience)
+
+    links = document.get("links", ())
+    if isinstance(links, str) or not isinstance(links, Sequence):
+        raise ValueError("failure lattice document: 'links' must be an array")
+
+    for index, item in enumerate(links):
+        where = f"links[{index}]"
+        if not isinstance(item, Mapping):
+            raise ValueError(f"{where}: must be an object")
+        try:
+            link = FailureLink(
+                source_id=str(_required(item, "source_id", where=where)),
+                target_id=str(_required(item, "target_id", where=where)),
+                relation=FailureRelation(_required(item, "relation", where=where)),
+                rationale=str(_required(item, "rationale", where=where)),
+                evidence_pointers=_string_tuple(
+                    item.get("evidence_pointers", ()), where=where, key="evidence_pointers"
+                ),
+            )
+        except (KeyError, TypeError) as error:
+            raise ValueError(f"{where}: malformed failure link: {error}") from error
+        lattice = add_failure_link(lattice, link)
+
+    return lattice
 
 
 def query_related_failures(
