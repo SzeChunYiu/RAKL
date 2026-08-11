@@ -19,7 +19,12 @@ from rakl.evolution_archive import (
     variant_promotion_subject_hash,
 )
 from rakl.experience_learning import ConsolidationVerdict, LessonConsolidationEvidence, assess_lesson_consolidation
-from rakl.experience_learning import promoted_lesson_version
+from rakl.experience_learning import (
+    lesson_to_research_tool,
+    promoted_lesson_version,
+    research_tool_content_bytes,
+    research_tool_projection_preview,
+)
 from rakl.experience_substrate import (
     EpisodeOutcome,
     ExperienceLedger,
@@ -146,7 +151,7 @@ def test_episode_and_lesson_hashes_bind_exact_content_and_bare_authority_fails_c
     add_lesson(ledger, candidate)
     forged_draft = replace(candidate, authority=LessonAuthority.PROOF_BACKED, artifact_hash="")
     forged = replace(forged_draft, artifact_hash=sha256(lesson_content_bytes(forged_draft)).hexdigest())
-    with pytest.raises(ValueError, match="resolved protected authority attestation"):
+    with pytest.raises(ValueError, match="exact parent lesson"):
         add_lesson(ledger, forged)
 
 
@@ -228,16 +233,17 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
     )
     assert caller_proof_ids.verdict is ConsolidationVerdict.CANNOT_CHECK
 
+    evidence_packet = LessonConsolidationEvidence(
+        supporting_episode_ids=("E1",),
+        fresh_transfer_episode_ids=("E2",),
+        verification_attestation_id="verify",
+        transfer_attestation_id="transfer",
+        authority_context=context,
+    )
     resolved = assess_lesson_consolidation(
         ledger,
         candidate,
-        LessonConsolidationEvidence(
-            supporting_episode_ids=("E1",),
-            fresh_transfer_episode_ids=("E2",),
-            verification_attestation_id="verify",
-            transfer_attestation_id="transfer",
-            authority_context=context,
-        ),
+        evidence_packet,
     )
     assert resolved.verdict is ConsolidationVerdict.CONDITIONALLY_REUSABLE
     malicious_draft = replace(candidate, action="malicious different action", artifact_hash="")
@@ -250,24 +256,89 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
             report=resolved,
             evidence=LessonConsolidationEvidence(supporting_episode_ids=("E1",)),
         )
+    with pytest.raises(ValueError, match="exact evidence packet"):
+        promoted_lesson_version(
+            candidate,
+            new_lesson_id="L-reduced",
+            artifact_hash="ignored",
+            report=resolved,
+            evidence=replace(evidence_packet, fresh_transfer_episode_ids=()),
+        )
+    preview = promoted_lesson_version(
+        candidate,
+        new_lesson_id="L2",
+        artifact_hash="ignored",
+        report=resolved,
+        evidence=evidence_packet,
+    )
+    tool_preview = research_tool_projection_preview(
+        preview, ledger, tool_id="T1", name="protected tool", kind="operator"
+    )
+    candidate_artifact = _artifact("lesson:L1", lesson_content_bytes(candidate), at="2026-08-11T08:10:00+00:00")
+    promoted_artifact = _artifact("lesson:L2", lesson_content_bytes(preview), at="2026-08-11T08:14:00+00:00")
+    tool_artifact = _artifact("tool:T1", research_tool_content_bytes(tool_preview), at="2026-08-11T08:15:00+00:00")
+    tool_attestation = _attestation(
+        AttestationPurpose.TOOL_PROJECTION,
+        tool_preview.artifact_hash,
+        (tool_artifact, promoted_artifact, candidate_artifact, source_artifact, transfer_artifact),
+        attestation_id="tool-projection",
+    )
+    tool_context = _context(
+        (tool_artifact, promoted_artifact, candidate_artifact, source_artifact, transfer_artifact),
+        (verification, transfer_attestation, tool_attestation),
+    )
     state = record_task_episode(record_task_episode(RAKLV3State(), source), transfer)
     consolidated = consolidate_lesson(
         state,
         candidate,
-        LessonConsolidationEvidence(
-            supporting_episode_ids=("E1",),
-            fresh_transfer_episode_ids=("E2",),
-            verification_attestation_id="verify",
-            transfer_attestation_id="transfer",
-            authority_context=context,
-        ),
+        evidence_packet,
         promoted_lesson_id="L2",
         promoted_artifact_hash="caller-string-is-not-authority",
-        tool_spec=ToolProjectionSpec("T1", "protected tool", "operator"),
+        tool_spec=ToolProjectionSpec(
+            "T1", "protected tool", "operator", (), "tool-projection", tool_context, "tool:T1"
+        ),
     )
     assert consolidated.promoted_lesson_id == "L2"
     assert consolidated.projected_tool_id == "T1"
     assert consolidated.state.tools.tools[0].authority.value == "CONDITIONALLY_REUSABLE"
+    assert consolidated.state.tools.tools[0].artifact_hash == tool_preview.artifact_hash
+    assert f"source_lesson_sha256:{preview.artifact_hash}" in consolidated.state.tools.tools[0].evidence_pointers
+    with pytest.raises(ValueError, match="exact content attestation"):
+        consolidate_lesson(
+            state,
+            candidate,
+            evidence_packet,
+            promoted_lesson_id="L2",
+            promoted_artifact_hash="ignored",
+            tool_spec=ToolProjectionSpec(
+                "T-evil", "arbitrary unreviewed tool", "different", (),
+                "tool-projection", tool_context, "tool:T1"
+            ),
+        )
+    reduced_draft = replace(
+        preview,
+        supporting_episode_ids=("E1",),
+        artifact_hash="",
+    )
+    reduced = replace(
+        reduced_draft,
+        artifact_hash=sha256(lesson_content_bytes(reduced_draft)).hexdigest(),
+    )
+    with pytest.raises(ValueError, match="exact recorded lesson version"):
+        lesson_to_research_tool(
+            reduced,
+            consolidated.state.experience,
+            tool_id="T1",
+            name="protected tool",
+            kind="operator",
+            authority_context=tool_context,
+            projection_attestation_id="tool-projection",
+            projection_artifact_id="tool:T1",
+        )
+    forged_final_draft = replace(preview, action="unreviewed operation", artifact_hash="")
+    forged_final = replace(forged_final_draft, artifact_hash=sha256(lesson_content_bytes(forged_final_draft)).hexdigest())
+    with pytest.raises(ValueError, match="changes unreviewed parent content"):
+        add_lesson(add_lesson(ledger, candidate), forged_final, authority_context=context)
 
     forged_attestation = replace(transfer_attestation, signature="0" * 64)
     forged_context = _context((source_artifact, transfer_artifact), (verification, forged_attestation))

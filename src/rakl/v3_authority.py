@@ -22,6 +22,7 @@ class AttestationPurpose(str, Enum):
     LESSON_VERIFICATION = "LESSON_VERIFICATION"
     LESSON_TRANSFER = "LESSON_TRANSFER"
     LESSON_PROOF = "LESSON_PROOF"
+    TOOL_PROJECTION = "TOOL_PROJECTION"
     LOCAL_SECTION_VERIFICATION = "LOCAL_SECTION_VERIFICATION"
     EVOLUTION_ASSURANCE = "EVOLUTION_ASSURANCE"
     GOVERNANCE_PROMOTION = "GOVERNANCE_PROMOTION"
@@ -171,8 +172,9 @@ class AttestationResolution:
 # assurance fixtures only; deployment roots require a separately reviewed
 # manifest update and external evaluator custody.
 PROTECTED_ATTESTATION_MANIFEST: dict[str, str] = {
-    "verify": "a4982487ea09675c1a092e74f3b4bb88f2355a4e3629b30f20702b0ad8dc8d74",
-    "transfer": "d651f8d539c1d89004bf3db4228cda8a2c8e0a52da295aa2a0cea314c1c1888e",
+    "verify": "e0642f3afbc68a579aa643c33a7116eba274acc257e5ea3943b8d6887010c6c7",
+    "transfer": "b1c18bc4964d761c8c915368ca70e7b32875dc022d6806c1dbfea5f308dd0c3b",
+    "tool-projection": "57faa504b675341e2dc5b3b2061a2b38c2fcab820021492c0bf2dcc582db1c9c",
     "section-check": "0a5f192c219636ec22e0dfa362c9a4d30d2c9ba412bcc51970d7966a5d6c6d43",
     "assurance": "3cd740c0ff99026b0a0c4d78e79b0ada6e096e6fc39bfea69fae546c0431df30",
     "governance": "0ecfa661bf7702920fcf977ff741e4f4b9263a284a989dc619ac9311be9cf161",

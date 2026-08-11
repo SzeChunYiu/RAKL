@@ -20,6 +20,7 @@ from .v3_authority import (
     AttestationPurpose,
     ProtectedAuthorityContext,
     resolve_protected_attestation,
+    canonical_json_bytes,
 )
 
 
@@ -60,6 +61,7 @@ class LessonConsolidationReport:
     contradicting_episode_ids: Tuple[str, ...]
     authority_attestation_id: str | None = None
     authority_subject_hash: str | None = None
+    evidence_packet_hash: str | None = None
 
     @property
     def reusable(self) -> bool:
@@ -84,6 +86,32 @@ def _positive_evidence_ids(evidence: LessonConsolidationEvidence) -> Tuple[str, 
     )
 
 
+def consolidation_evidence_packet_hash(
+    candidate: Lesson,
+    evidence: LessonConsolidationEvidence,
+) -> str:
+    context = evidence.authority_context
+    artifact_bindings = () if context is None else tuple(
+        sorted((item.artifact_id, item.payload_sha256, item.frozen_at, item.producer_id) for item in context.artifacts)
+    )
+    attestation_bindings = () if context is None else tuple(
+        sorted((item.attestation_id, item.signature, item.subject_hash, item.issued_at) for item in context.attestations)
+    )
+    return sha256(canonical_json_bytes({
+        "candidate_hash": candidate.artifact_hash,
+        "supporting_episode_ids": list(evidence.supporting_episode_ids),
+        "contradicting_episode_ids": list(evidence.contradicting_episode_ids),
+        "diagnostic_episode_ids": list(evidence.diagnostic_episode_ids),
+        "replay_episode_ids": list(evidence.replay_episode_ids),
+        "fresh_transfer_episode_ids": list(evidence.fresh_transfer_episode_ids),
+        "verification_attestation_id": evidence.verification_attestation_id,
+        "transfer_attestation_id": evidence.transfer_attestation_id,
+        "proof_attestation_id": evidence.proof_attestation_id,
+        "artifact_bindings": artifact_bindings,
+        "attestation_bindings": attestation_bindings,
+    })).hexdigest()
+
+
 def assess_lesson_consolidation(
     ledger: ExperienceLedger,
     candidate: Lesson,
@@ -97,6 +125,7 @@ def assess_lesson_consolidation(
     """
 
     episodes = _episode_map(ledger)
+    packet_hash = consolidation_evidence_packet_hash(candidate, evidence)
     referenced = set(evidence.supporting_episode_ids)
     referenced |= set(evidence.contradicting_episode_ids)
     referenced |= set(evidence.diagnostic_episode_ids)
@@ -184,6 +213,7 @@ def assess_lesson_consolidation(
             evidence.contradicting_episode_ids,
             evidence.proof_attestation_id,
             candidate.artifact_hash,
+            packet_hash,
         )
 
     if not evidence.verification_attestation_id:
@@ -220,6 +250,7 @@ def assess_lesson_consolidation(
             evidence.contradicting_episode_ids,
             evidence.verification_attestation_id,
             candidate.artifact_hash,
+            packet_hash,
         )
 
     transfer_successes = tuple(
@@ -258,6 +289,7 @@ def assess_lesson_consolidation(
         evidence.contradicting_episode_ids,
         evidence.transfer_attestation_id,
         candidate.artifact_hash,
+        packet_hash,
     )
 
 
@@ -275,6 +307,10 @@ def promoted_lesson_version(
         raise ValueError("cannot promote lesson from CANNOT_CHECK evidence")
     if report.authority_subject_hash != candidate.artifact_hash:
         raise ValueError("consolidation report subject does not match exact candidate content")
+    if report.evidence_packet_hash != consolidation_evidence_packet_hash(candidate, evidence):
+        raise ValueError("consolidation report does not bind the exact evidence packet")
+    if report.supporting_episode_ids != _positive_evidence_ids(evidence):
+        raise ValueError("consolidation report support does not match exact evidence set")
     if report.target_authority is not LessonAuthority.CANDIDATE and not report.authority_attestation_id:
         raise ValueError("promoted lesson requires resolved protected authority attestation")
     draft = replace(
@@ -293,6 +329,7 @@ def promoted_lesson_version(
         parent_lesson_id=candidate.lesson_id,
         authority_attestation_id=report.authority_attestation_id,
         authority_subject_hash=report.authority_subject_hash,
+        authority_evidence_packet_hash=report.evidence_packet_hash,
     )
     # The caller-provided artifact_hash is retained only as a backwards API
     # parameter; authority identity is always recomputed from exact content.
@@ -339,7 +376,7 @@ def episode_to_failure_experience(
     )
 
 
-def lesson_to_research_tool(
+def research_tool_projection_preview(
     lesson: Lesson,
     ledger: ExperienceLedger,
     *,
@@ -347,7 +384,6 @@ def lesson_to_research_tool(
     name: str,
     kind: str,
     known_failure_ids: Tuple[str, ...] = (),
-    authority_context: ProtectedAuthorityContext | None = None,
 ) -> ResearchTool:
     if lesson.kind not in {LessonKind.OPERATOR, LessonKind.STRATEGY, LessonKind.REPRESENTATION}:
         raise ValueError("only operational lessons can project into research tools")
@@ -365,6 +401,74 @@ def lesson_to_research_tool(
         LessonAuthority.SUPERSEDED: ResearchToolAuthority.SUPERSEDED,
     }[lesson.authority]
     if authority is not ResearchToolAuthority.HEURISTIC:
+        if not lesson.authority_attestation_id or not lesson.authority_subject_hash:
+            raise ValueError("research tool preview requires lesson authority lineage")
+    draft = ResearchTool(
+        tool_id=tool_id,
+        name=name,
+        kind=kind,
+        abstraction=lesson.kind.value,
+        source_atom_id=source.atom_id,
+        source_candidate_id=lesson.lesson_id,
+        source_result_ids=source.verification_ids or source.observation_ids or (source.episode_id,),
+        source_context_hash=source.context_hash,
+        authority=authority,
+        preconditions=lesson.context_scope,
+        structural_signature=lesson.trigger_signature,
+        operation=lesson.action,
+        guaranteed_effects=lesson.expected_effects,
+        non_guarantees=lesson.boundaries,
+        validation_obligations=lesson.validation_obligations,
+        # The projected tool content carries the exact promoted lesson identity,
+        # rather than only its human-readable id and operation.  This prevents a
+        # projection attestation from being replayed across a same-id lesson
+        # whose support or other reviewed content has changed.
+        evidence_pointers=tuple(
+            dict.fromkeys(
+                lesson.evidence_pointers
+                + (f"source_lesson_sha256:{lesson.artifact_hash}",)
+            )
+        ),
+        known_failure_ids=known_failure_ids,
+        proof_backing=lesson.evidence_pointers if authority is ResearchToolAuthority.PROOF_BACKED else (),
+        artifact_hash="",
+    )
+    return replace(draft, artifact_hash=sha256(research_tool_content_bytes(draft)).hexdigest())
+
+
+def lesson_to_research_tool(
+    lesson: Lesson,
+    ledger: ExperienceLedger,
+    *,
+    tool_id: str,
+    name: str,
+    kind: str,
+    known_failure_ids: Tuple[str, ...] = (),
+    authority_context: ProtectedAuthorityContext | None = None,
+    projection_attestation_id: str | None = None,
+    projection_artifact_id: str | None = None,
+) -> ResearchTool:
+    recorded_lessons = tuple(
+        item for item in ledger.lessons if item.lesson_id == lesson.lesson_id
+    )
+    if (
+        len(recorded_lessons) != 1
+        or recorded_lessons[0] != lesson
+        or sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash
+    ):
+        raise ValueError(
+            "research tool projection requires the exact recorded lesson version"
+        )
+    episodes = _episode_map(ledger)
+    tool = research_tool_projection_preview(
+        lesson,
+        ledger,
+        tool_id=tool_id,
+        name=name,
+        kind=kind,
+        known_failure_ids=known_failure_ids,
+    )
+    if tool.authority is not ResearchToolAuthority.HEURISTIC:
         purpose = {
             LessonAuthority.VERIFIED_LOCAL: AttestationPurpose.LESSON_VERIFICATION,
             LessonAuthority.CONDITIONALLY_REUSABLE: AttestationPurpose.LESSON_TRANSFER,
@@ -387,24 +491,64 @@ def lesson_to_research_tool(
                 "research tool authority requires resolved protected lesson attestation: "
                 + ", ".join(resolution.reasons)
             )
-    return ResearchTool(
-        tool_id=tool_id,
-        name=name,
-        kind=kind,
-        abstraction=lesson.kind.value,
-        source_atom_id=source.atom_id,
-        source_candidate_id=lesson.lesson_id,
-        source_result_ids=source.verification_ids or source.observation_ids or (source.episode_id,),
-        source_context_hash=source.context_hash,
-        authority=authority,
-        preconditions=lesson.context_scope,
-        structural_signature=lesson.trigger_signature,
-        operation=lesson.action,
-        guaranteed_effects=lesson.expected_effects,
-        non_guarantees=lesson.boundaries,
-        validation_obligations=lesson.validation_obligations,
-        evidence_pointers=lesson.evidence_pointers,
-        known_failure_ids=known_failure_ids,
-        proof_backing=lesson.evidence_pointers if authority is ResearchToolAuthority.PROOF_BACKED else (),
-        artifact_hash=lesson.artifact_hash,
+        attestation = next(
+            item
+            for item in authority_context.attestations
+            if item.attestation_id == lesson.authority_attestation_id
+        )
+        episode_id_by_hash = {
+            item.artifact_hash: item.episode_id for item in ledger.episodes
+        }
+        attested_episode_ids = {
+            episode_id_by_hash[digest]
+            for _, digest in attestation.evidence_bindings
+            if digest in episode_id_by_hash
+        }
+        if attested_episode_ids != set(lesson.supporting_episode_ids):
+            raise ValueError(
+                "research tool lesson support does not equal attested episode lineage"
+            )
+    projection = resolve_protected_attestation(
+        authority_context,
+        projection_attestation_id,
+        purpose=AttestationPurpose.TOOL_PROJECTION,
+        subject_hash=tool.artifact_hash,
+        required_artifact_ids=(projection_artifact_id,) if projection_artifact_id else (),
+        required_artifact_hashes=(
+            tool.artifact_hash,
+            lesson.artifact_hash,
+            lesson.authority_subject_hash or "",
+        ) + tuple(
+            episodes[item].artifact_hash for item in lesson.supporting_episode_ids
+        ),
     )
+    if not projection.valid:
+        raise ValueError(
+            "research tool projection requires exact content attestation: "
+            + ", ".join(projection.reasons)
+        )
+    return tool
+
+
+def research_tool_content_bytes(tool: ResearchTool) -> bytes:
+    return canonical_json_bytes({
+        "tool_id": tool.tool_id,
+        "name": tool.name,
+        "kind": tool.kind,
+        "abstraction": tool.abstraction,
+        "source_atom_id": tool.source_atom_id,
+        "source_candidate_id": tool.source_candidate_id,
+        "source_result_ids": list(tool.source_result_ids),
+        "source_context_hash": tool.source_context_hash,
+        "authority": tool.authority.value,
+        "preconditions": list(tool.preconditions),
+        "structural_signature": list(tool.structural_signature),
+        "operation": tool.operation,
+        "guaranteed_effects": list(tool.guaranteed_effects),
+        "non_guarantees": list(tool.non_guarantees),
+        "validation_obligations": list(tool.validation_obligations),
+        "evidence_pointers": list(tool.evidence_pointers),
+        "known_failure_ids": list(tool.known_failure_ids),
+        "successful_reuse_ids": list(tool.successful_reuse_ids),
+        "proof_backing": list(tool.proof_backing),
+    })

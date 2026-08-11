@@ -65,7 +65,7 @@
   },
   "object": "RAKL_V3_AUTHORITY_TRANSITIONS",
   "paper_files_touched": [],
-  "payload_sha256": "fd8308fa0fe837d0a80de9bdcb7ead6b8b80c26ccc18546447ed06e1adddf96e",
+  "payload_sha256": "55bcb25a136077c084d02e4c1e8a0397e54b477756d6f75355fe37ee42415e04",
   "pre_existing_failures": [],
   "qoi": "whether caller-controlled labels, enums, IDs, or booleans can mint reusable lesson/tool, local-solution, benchmark, or Self-RAKL authority",
   "receipt_id": "RAKL_V3_AUTHORITY_HARDENING_20260811",
@@ -83,18 +83,34 @@
     "status": "PASS_WITH_CHRONOLOGY_REPAIR"
   },
   "schema_version": "rakl-v3-authority-hardening-receipt-v1",
+  "second_blocking_review_round": {
+    "findings": [
+      "fresh-transfer lineage could be reduced after report",
+      "promoted lesson semantic content could mutate under retained parent attestation",
+      "tool id/name/kind/content were not independently content-addressed or attested",
+      "tool projection could replay across an unrecorded or support-reduced promoted lesson version"
+    ],
+    "merge_allowed": false,
+    "repairs": [
+      "report binds exact evidence/context packet and exact support set; promoted support equals attested episode lineage",
+      "add_lesson requires exact parent and unchanged reviewed semantic fields plus evidence-packet binding",
+      "tool has independent canonical content hash, resolved payload bytes, TOOL_PROJECTION attestation, and planted arbitrary tool replay rejection",
+      "tool projection requires the byte-identical recorded promoted lesson, binds its exact hash in tool content and projection evidence, and rejects support-subset lineage replay"
+    ],
+    "status": "REPAIRED_PENDING_FRESH_EXACT_HEAD_REVIEW"
+  },
   "source_sha256": {
     "src/rakl/driver_learning.py": "08fea1cda7a6775a22de896c5da57ffe3ebc75bff1b7bfe1c3b546bfbd9f8eb5",
     "src/rakl/evolution_archive.py": "8e034cc43671490cb286112f2d0eea5ca5df0896ee3b27dbed6d59815440702a",
     "src/rakl/experience_benchmark.py": "85f14051d4ffa6f7177e969dd81cc97c8002f2f90a54a871305224da01f26af5",
-    "src/rakl/experience_learning.py": "3185cd99d633edf40f2daed1e40d462a9ab06ebcd18176ca2dd824ece937523f",
-    "src/rakl/experience_substrate.py": "6e62fd5f37e7ab45ca9df43024b5196cb534fd6c98100af96700d0d8a9967ba3",
+    "src/rakl/experience_learning.py": "099c9ea4a7e72887f4e051dca918cbae9d1de5565aad8a010d1f7e5dfb6e7654",
+    "src/rakl/experience_substrate.py": "a5814b7220d11698545fc663d23cc6bf97922a4383586ee97fc1fc11b67b87fb",
     "src/rakl/method_specs.py": "0e1a352c5ad197c54c2a438441179bf5a5963f72778bc7e6aa077df2208a97ee",
     "src/rakl/problem_fibre.py": "9b02ab47a70f05a1b5880b81acdf451027021c68ba171bf6a7ef4c09eef9505b",
     "src/rakl/v3.py": "8625e460d74a478c60f1a82a061f0747997b73d6b28fc0c5098186e8ab144658",
-    "src/rakl/v3_authority.py": "e17d0a577345f75d26fbcb611fbe93cd6956cce374b80a564988b8748ab0bd39",
-    "src/rakl/v3_runtime.py": "61ff29440a4beb32e8906c3fffd23ee62b7b3562cd19211abd6a8bbe31524dd0",
-    "tests/test_rakl_v3_authority_hardening.py": "016c10e231fa641c5aeb78969b0f079ea3c984c8f11ba7d3f20271e302278cf2",
+    "src/rakl/v3_authority.py": "c882116971df1936ac5a1e5a5e2f44de430d71debb3621e143c521c139f0fad2",
+    "src/rakl/v3_runtime.py": "272395c121fe28bbbbce44571c36d20d767bf70af1ad3f288994e0276ba2341a",
+    "tests/test_rakl_v3_authority_hardening.py": "b184d83f21fe92314bef29446ef7dc8c39c99d0a0a3645c85716aac5ae1c5baa",
     "tests/test_rakl_v3_experience_benchmark.py": "6e54a1aad3f1738f661d5e7819739f52a2891832ae177d6ec1ae8569afa84a81"
   },
   "verdict": "INTERNAL_CONFORMANCE_PASS_BLOCK_MERGE_PENDING_FRESH_REVIEW",
@@ -102,12 +118,12 @@
     {
       "command": "pytest -q tests/test_rakl_v3*.py",
       "result": "PASS",
-      "tests_collected": 39
+      "tests_collected": 41
     },
     {
       "command": "pytest -q",
       "result": "PASS",
-      "tests_collected": 1312
+      "tests_collected": 1315
     },
     {
       "command": "git diff --check",

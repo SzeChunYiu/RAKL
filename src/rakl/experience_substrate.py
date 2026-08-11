@@ -149,6 +149,7 @@ class Lesson:
     parent_lesson_id: str | None = None
     authority_attestation_id: str | None = None
     authority_subject_hash: str | None = None
+    authority_evidence_packet_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -217,6 +218,7 @@ def lesson_content_bytes(lesson: Lesson) -> bytes:
             "parent_lesson_id": lesson.parent_lesson_id,
             "authority_attestation_id": lesson.authority_attestation_id,
             "authority_subject_hash": lesson.authority_subject_hash,
+            "authority_evidence_packet_hash": lesson.authority_evidence_packet_hash,
         }
     )
 
@@ -323,6 +325,8 @@ def add_lesson(
     if lesson.parent_lesson_id is not None and lesson.parent_lesson_id not in {item.lesson_id for item in ledger.lessons}:
         raise ValueError("lesson parent_lesson_id does not exist")
     if lesson.authority is not LessonAuthority.CANDIDATE:
+        if lesson.parent_lesson_id is None:
+            raise ValueError("non-candidate lesson requires an exact parent lesson")
         purpose = {
             LessonAuthority.VERIFIED_LOCAL: AttestationPurpose.LESSON_VERIFICATION,
             LessonAuthority.CONDITIONALLY_REUSABLE: AttestationPurpose.LESSON_TRANSFER,
@@ -348,6 +352,29 @@ def add_lesson(
                 "non-candidate lesson requires resolved protected authority attestation: "
                 + ", ".join(resolution.reasons)
             )
+        parent = next(item for item in ledger.lessons if item.lesson_id == lesson.parent_lesson_id)
+        immutable_fields = (
+            "kind", "trigger_signature", "context_scope", "action",
+            "expected_effects", "boundaries", "falsifier", "validation_obligations",
+        )
+        if any(getattr(lesson, name) != getattr(parent, name) for name in immutable_fields):
+            raise ValueError("promoted lesson changes unreviewed parent content")
+        if lesson.authority_subject_hash != parent.artifact_hash:
+            raise ValueError("promoted lesson authority subject is not its exact parent")
+        if not lesson.authority_evidence_packet_hash:
+            raise ValueError("promoted lesson exact evidence packet binding is missing")
+        attestation = next(
+            item for item in authority_context.attestations
+            if item.attestation_id == lesson.authority_attestation_id
+        )
+        episode_id_by_hash = {item.artifact_hash: item.episode_id for item in ledger.episodes}
+        attested_episode_ids = {
+            episode_id_by_hash[digest]
+            for _, digest in attestation.evidence_bindings
+            if digest in episode_id_by_hash
+        }
+        if attested_episode_ids != set(lesson.supporting_episode_ids):
+            raise ValueError("promoted lesson support does not equal attested episode lineage")
 
     node = SubstrateNode(
         node_id=lesson.lesson_id,
