@@ -1,0 +1,39 @@
+{
+  "benchmark_id": "paper2-experience-benchmark-v1",
+  "evidence": [
+    {
+      "id": "E1",
+      "text": "Calibrated sensor TC-A confirms reactor temperature was 85 C throughout the run."
+    },
+    {
+      "id": "E2",
+      "text": "Purity specification is assay ≥ 99.5% by HPLC; temperature is not the purity QoI."
+    },
+    {
+      "id": "E3",
+      "text": "HPLC assay for this batch is 99.7%, above specification."
+    }
+  ],
+  "frozen_at_utc": "2026-08-11T18:21:15Z",
+  "phase": "FRESH_TRANSFER",
+  "prompt": "Adjudicate: 'The calibrated sensor supports the claim that the batch failed purity specification.'",
+  "schema_version": "rakl-experience-benchmark-task-v1",
+  "sealed_answer": {
+    "rationale_tags": [
+      "qoi_mismatch",
+      "tempting_calibration_transfer_invalid",
+      "assay_passes"
+    ],
+    "rejected_evidence_ids": [
+      "E1"
+    ],
+    "selected_evidence_ids": [
+      "E2",
+      "E3"
+    ],
+    "verdict": "REFUTE"
+  },
+  "stratum": "HOSTILE_NEAR_MISS",
+  "task_id": "T3",
+  "title": "Hostile near-miss: same labels, changed QoI"
+}
