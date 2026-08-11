@@ -13,5 +13,9 @@ Upstream ORACLE evidence (jobs **3476730** primary / **3476731** race duplicate)
 | #156 | `CANNOT_IDENTIFY` (matched empirics blocked) | `research/paper2_closest_parent/ISSUE_156_TERMINAL_RECEIPT.json` |
 | #157 | `CANNOT_IDENTIFY` (promotion experiment blocked) | `research/paper2_experience_to_method_v1/ISSUE_157_TERMINAL_RECEIPT.json` |
 | #158 | `NEGATIVE_NARROWING_PATH_COMPLETE` | `research/paper2_novelty_campaign/ISSUE_158_TERMINAL_RECEIPT.json` |
+| #257 | `PUBLICATION_INGEST_COMPLETE` | `research/ISSUE_257_TERMINAL_RECEIPT.json` |
+| #258 | `CAMPAIGN_TERMINAL_WITH_HONEST_NEGATIVES` | `research/ISSUE_258_TERMINAL_RECEIPT.json` |
 
-**Stay open:** #216, #217, #255 (human), #249 (depends #217), #257 (publication ingest), #258 (campaign umbrella — Paper III human blockers remain).
+**Stay open (human / human-dependent only):** #216, #217, #255 (human), #249 (depends #217).
+
+Publication ingest: `research/PAPERS_II_III_V_STRONGEST_VERSION_STATUS.json` · scoreboard: `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260811.md`
