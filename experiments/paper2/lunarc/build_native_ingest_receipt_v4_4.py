@@ -31,7 +31,7 @@ PACKET_HEAD_SHA = "0ab47a182537dc3842d7ea4ea24e45b92cc5dc8f"
 OUTCOME_REASON = (
     "V4.4 registered-envelope unwrap repairs the V4.3 DIRECT schema-envelope "
     "serialization residual: both arms are parse_valid/scorable (DIRECT 1/5, "
-    "RAKL_CONTEXT 3/5). Both still fail the unchanged exact conceptual gate, so "
+    "RAKL_CONTEXT 2/5). Both still fail the unchanged exact conceptual gate, so "
     "exact_conceptual_pass_arm_count=0. This is serialization-only repair evidence, "
     "not a 1.5B improvement claim. Parent 3476566 remains the DIRECT parse-null "
     "residual. Zero valid scientific successes remain; arm comparison is not "
@@ -480,6 +480,21 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
         "V4.3.1 Type B disposition status changed",
     )
 
+    v43_ingest = V43 / "PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_RECEIPT_20260811.json"
+    v4_negative = _load(v43_ingest)
+    _require(
+        v4_negative["task_seed_outcome"]["exact_conceptual_pass_arm_count"] == 0,
+        "V4.3 exact-pass history changed",
+    )
+    _require(
+        v4_negative["task_seed_outcome"]["parse_valid_arm_count"] == 1,
+        "V4.3 parse-null residual changed",
+    )
+    _require(
+        v4_negative["task_seed_outcome"]["score_comparison_permitted"] is False,
+        "V4.3 comparison enabled",
+    )
+
     source_files = []
     cardinality: dict[str, int] = {}
     member_map: dict[str, tuple[int, str]] = {}
@@ -517,9 +532,9 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
     _require(_bundle_members(bundle) == member_map, "transport bundle differs from copied source files")
 
     claim_boundary = (
-        "Adaptive non-confirmatory engineering evidence only. V4.4 job 3476576 "
-        "repairs DIRECT schema-envelope serialization so both arms are parse_valid/"
-        "scorable (DIRECT 1/5, RAKL_CONTEXT 3/5) with exact_conceptual_pass_arm_count=0 "
+        "Adaptive non-confirmatory engineering evidence only. V4.4 job 3476746 "
+        "is a leak-free sealed replay: both arms are parse_valid/"
+        "scorable (DIRECT 1/5, RAKL_CONTEXT 2/5) with exact_conceptual_pass_arm_count=0 "
         "under the unchanged exact gate on Qwen2.5-1.5B-Instruct. This is not a 1.5B "
         "improvement claim. Parent job 3476566 remains the DIRECT schema-envelope "
         "parse-null residual. No invented passes, no gate softening, no arm win/loss, "
@@ -601,15 +616,15 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
             "residual_id": "PAPER2_V4_4_BOTH_ARMS_PARSE_NO_EXACT_PASS_SERIALIZATION_ONLY",
             "root_cause_ladder": ["R1_SCHEMA_PARSER_TRANSFORM", "R7_PROJECTION_FUNCTIONAL_FORM"],
             "observed_signature": (
-                "V4.4 registered-envelope unwrap repairs DIRECT_CORPUS parse_valid; both arms "
-                "are scorable (DIRECT conceptual 1/5, RAKL_CONTEXT 3/5) with "
+                "V4.4 leak-free sealed replay: both arms "
+                "are scorable (DIRECT conceptual 1/5, RAKL_CONTEXT 2/5) with "
                 "exact_conceptual_pass=false under the unchanged exact gate on "
                 "Qwen2.5-1.5B-Instruct. Parent 3476566 remains the DIRECT schema-envelope "
                 "parse-null residual."
             ),
             "null_or_competing_explanations": [
                 "Serialization repair can restore parse_valid without changing scientific content quality.",
-                "Both arms still fail the exact conceptual gate (DIRECT 1/5, RAKL 3/5); 1.5B size alone did not mint exact passes.",
+                "Both arms still fail the exact conceptual gate (DIRECT 1/5, RAKL 2/5); 1.5B size alone did not mint exact passes.",
                 "One known-answer task and deterministic seed cannot distinguish a systematic architecture effect from task-specific output variance.",
             ],
             "next_discriminator": (
