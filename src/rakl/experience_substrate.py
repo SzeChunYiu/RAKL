@@ -182,7 +182,7 @@ def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
         reasons.append("episode:action_trace_missing")
     if not episode.evidence_pointers:
         reasons.append("episode:evidence_pointers_missing")
-    if episode.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS} and not episode.residual_signature:
+    if episode.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS, EpisodeOutcome.BLOCKED} and not episode.residual_signature:
         reasons.append("episode:residual_signature_required_for_non_success")
     return tuple(reasons)
 
