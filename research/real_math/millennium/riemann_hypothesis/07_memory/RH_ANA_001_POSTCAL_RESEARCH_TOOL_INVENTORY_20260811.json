@@ -1,0 +1,57 @@
+{
+  "tools": [
+    {
+      "tool_id": "T-RH-LI-PREFIX-QUARTET-CALIBRATION",
+      "name": "Exact Li finite-prefix false-positive calibration",
+      "kind": "criterion_falsifier",
+      "abstraction": "Plant a functional-equation/conjugation-symmetric off-critical quartet and evaluate its Li transform exactly to test whether a proposed RH argument mistakes finite-prefix positivity for the all-index criterion.",
+      "source_atom_id": "RH-ANA-001",
+      "source_candidate_id": "CAL-RH-LI-PREFIX-001",
+      "source_result_ids": [
+        "LI-Q-1-626-POSITIVE-627-NEGATIVE"
+      ],
+      "source_context_hash": "sha256:e353da364bb2b40c42dac648187e2159cbb223b528a9a849365cbd85e9321cfe",
+      "authority": "VERIFIED_LOCAL",
+      "preconditions": [
+        "the target argument uses Li-type coefficient positivity or a finite-index surrogate",
+        "a synthetic symmetric zero multiset is a legitimate known-answer calibration for the claimed logical implication"
+      ],
+      "structural_signature": [
+        "all-index positivity criterion",
+        "finite-prefix projection",
+        "functional-equation symmetry",
+        "conjugation symmetry",
+        "off-critical planted defect",
+        "exact rational sign computation"
+      ],
+      "operation": "construct Q={rho,conj(rho),1-rho,1-conj(rho)}, map z=1-1/rho, and compute Lambda_n(Q)=4-2 Re(z^n+z^-n) exactly over a requested finite range",
+      "guaranteed_effects": [
+        "detects whether a finite-prefix Li claim survives an explicit off-critical symmetric known-answer case",
+        "provides exact sign decisions without numerical-roundoff authority"
+      ],
+      "non_guarantees": [
+        "does not model the full arithmetic structure of the actual zeta zero set",
+        "does not prove any actual zeta zero is off the critical line",
+        "does not refute Li's all-n criterion",
+        "does not establish that every finite-prefix RH argument is invalid when extra zeta-specific uniform structure is proved"
+      ],
+      "validation_obligations": [
+        "verify the quartet is off-critical and closed under conjugation and rho->1-rho",
+        "verify the exact z transform and reciprocal symmetry",
+        "use exact rational arithmetic for sign decisions",
+        "state the finite checked range and forbid extrapolation to the actual zeta zero set"
+      ],
+      "evidence_pointers": [
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/RH_ANA_001_LI_PREFIX_CALIBRATION_20260811.json",
+        "research/real_math/millennium/riemann_hypothesis/05_oracles/li_prefix_quartet_calibration.py",
+        "research/real_math/millennium/riemann_hypothesis/04_candidates/negative_history/RH_ANA_001_FINITE_LI_PREFIX_NO_GO_20260811.md"
+      ],
+      "known_failure_ids": [
+        "F-RH-ANA-001-FINITE-LI-PREFIX"
+      ],
+      "successful_reuse_ids": [],
+      "proof_backing": [],
+      "artifact_hash": "sha256:db8afe713b728459c62b5bf279280891e79c407a895c8a41312bb6d0466ebfc9"
+    }
+  ]
+}
