@@ -12,6 +12,11 @@ class ContextGateVerdict(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
+class AnalogyScanStatus(str, Enum):
+    BRIDGES_RETAINED = "BRIDGES_RETAINED"
+    NO_SAFE_BRIDGE_FOUND = "NO_SAFE_BRIDGE_FOUND"
+
+
 @dataclass(frozen=True)
 class MethodTransfer:
     """A witnessed attempt to transfer a method from an analogous solved context.
@@ -31,6 +36,27 @@ class MethodTransfer:
 
 
 @dataclass(frozen=True)
+class CrossDomainAnalogy:
+    """A witnessed analogy used for proposal generation, never truth authority.
+
+    The source may be another mathematical field, engineering, biology, a game,
+    or an everyday human situation. The analogy is admissible only after the
+    common abstract structure, source-to-target mapping, disanalogies and a
+    falsifiable transfer obligation are explicit.
+    """
+
+    source_kind: str
+    source_situation: str
+    common_abstraction: Tuple[str, ...]
+    source_to_target_mapping: Tuple[str, ...]
+    shared_constraints: Tuple[str, ...]
+    disanalogies: Tuple[str, ...]
+    proposed_principle: str
+    validation_obligation: str
+    provenance_note: str
+
+
+@dataclass(frozen=True)
 class MathContextFiber:
     """Frozen pre-candidate context for one atomic mathematical obstruction."""
 
@@ -43,6 +69,9 @@ class MathContextFiber:
     method_transfers: Tuple[MethodTransfer, ...] = ()
     explicit_disanalogies: Tuple[str, ...] = ()
     source_anchors: Tuple[str, ...] = ()
+    analogy_scan_status: str = ""
+    cross_domain_analogies: Tuple[CrossDomainAnalogy, ...] = ()
+    analogy_scan_notes: str = ""
     frozen_at: str = ""
     first_candidate_at: str | None = None
     packet_hash: str = ""
@@ -60,6 +89,8 @@ REQUIRED_PRE_CANDIDATE_ACTIONS: Tuple[str, ...] = (
     "search_solved_and_near_solved_analogous_contexts",
     "extract_methods_and_required_assumptions",
     "record_shared_structure_and_disanalogies",
+    "run_cross_domain_and_everyday_analogy_scan",
+    "witness_any_retained_analogy_by_abstract_mapping_and_disanalogy",
     "formulate_minimal_repair_questions",
     "bind_primary_or_authoritative_source_anchors",
     "freeze_and_hash_context_packet_before_candidate_generation",
@@ -82,7 +113,7 @@ def _parse_time(value: str) -> datetime | None:
 def audit_math_context_fiber(fiber: MathContextFiber | None) -> ContextGateReport:
     """Fail closed unless context/analogue transfer is frozen before invention.
 
-    This gate governs the *research process*, not theorem truth. A mathematically
+    This gate governs the research process, not theorem truth. A mathematically
     valid proof discovered elsewhere may still be checked by the assurance layer,
     but it cannot be represented as a strict RAKL context-first discovery path
     unless this gate passed before candidate generation.
@@ -114,6 +145,15 @@ def audit_math_context_fiber(fiber: MathContextFiber | None) -> ContextGateRepor
     if not fiber.packet_hash:
         reasons.append("context_packet_hash_missing")
 
+    if fiber.analogy_scan_status not in {item.value for item in AnalogyScanStatus}:
+        reasons.append("cross_domain_analogy_scan_missing_or_invalid")
+    elif fiber.analogy_scan_status == AnalogyScanStatus.BRIDGES_RETAINED.value:
+        if not fiber.cross_domain_analogies:
+            reasons.append("analogy_scan_claims_bridges_without_bridge_records")
+    elif fiber.analogy_scan_status == AnalogyScanStatus.NO_SAFE_BRIDGE_FOUND.value:
+        if not fiber.analogy_scan_notes:
+            reasons.append("no_safe_analogy_bridge_requires_notes")
+
     frozen_at = _parse_time(fiber.frozen_at)
     if frozen_at is None:
         reasons.append("context_freeze_time_missing_or_invalid")
@@ -141,9 +181,32 @@ def audit_math_context_fiber(fiber: MathContextFiber | None) -> ContextGateRepor
         if not transfer.source_anchors:
             reasons.append(f"{prefix}:source_anchors_missing")
 
+    for index, analogy in enumerate(fiber.cross_domain_analogies):
+        prefix = f"cross_domain_analogy_{index}"
+        if not analogy.source_kind:
+            reasons.append(f"{prefix}:source_kind_missing")
+        if not analogy.source_situation:
+            reasons.append(f"{prefix}:source_situation_missing")
+        if not analogy.common_abstraction:
+            reasons.append(f"{prefix}:common_abstraction_missing")
+        if not analogy.source_to_target_mapping:
+            reasons.append(f"{prefix}:source_to_target_mapping_missing")
+        if not analogy.shared_constraints:
+            reasons.append(f"{prefix}:shared_constraints_missing")
+        if not analogy.disanalogies:
+            reasons.append(f"{prefix}:disanalogies_missing")
+        if not analogy.proposed_principle:
+            reasons.append(f"{prefix}:proposed_principle_missing")
+        if not analogy.validation_obligation:
+            reasons.append(f"{prefix}:validation_obligation_missing")
+        if not analogy.provenance_note:
+            reasons.append(f"{prefix}:provenance_note_missing")
+
     if reasons:
         return ContextGateReport(ContextGateVerdict.FAIL, tuple(reasons))
     return ContextGateReport(
         ContextGateVerdict.PASS,
-        ("context_and_analogue_method_transfer_frozen_before_candidate_generation",),
+        (
+            "context_method_transfer_and_cross_domain_analogy_scan_frozen_before_candidate_generation",
+        ),
     )
