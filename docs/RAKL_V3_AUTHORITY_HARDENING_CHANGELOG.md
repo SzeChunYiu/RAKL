@@ -51,3 +51,7 @@ At implementation commit `35da974c57dece0c451cbb88cd7712478e211c95`:
 ## Residual trust boundary
 
 The reference implementation uses HMAC-SHA256 with key material supplied by the protected evaluator environment. Candidate code must not possess that key. A production deployment still needs external key custody, runner isolation, rotation, audit logging, and independent review of the exact PR head.
+
+## Latest-main integration
+
+The branch was merged with then-current `origin/main` `decd1a4eae2b10cfdbb98e76b5023e2a756fa7a8` at merge commit `c1a2a98183feb9da1731f70fd4979078ac176e5a`. The only overlapping edit was the independently introduced robust float assertion in the v3 benchmark test; the merged file retains `pytest.approx` without duplication. Post-integration verification is 40 focused v3 tests passed, 1314 full tests passed, and `git diff --check` passed.
