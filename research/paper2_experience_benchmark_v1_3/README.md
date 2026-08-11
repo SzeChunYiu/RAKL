@@ -1,6 +1,6 @@
 # Paper II — ExperienceBenchmark v1.3 (root_cause_v1 / #247)
 
-Status: `MODEL_CAPABILITY_FLOOR_0_5B` (jobs 3476730 primary / 3476731 race-duplicate; parse-valid; success_rate 0/3)
+Status: `TERMINAL_WITH_CAPABILITY_FLOOR_KILL` / `MODEL_CAPABILITY_FLOOR_0_5B` (jobs 3476730 primary / 3476731 race-duplicate; parse-valid; success_rate 0/3). Issue #247 terminal receipt: `ISSUE_247_TERMINAL_RECEIPT.json`.
 
 ## Why v1.3 exists
 
