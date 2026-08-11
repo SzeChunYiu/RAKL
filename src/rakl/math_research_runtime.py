@@ -29,6 +29,13 @@ from .problem_solving_algebra import (
     ResearchOperator,
     search_operator_paths,
 )
+from .research_trace import (
+    REQUIRED_TRACE_ACTIONS,
+    MathResearchTrace,
+    ResearchTraceReport,
+    TraceGateVerdict,
+    audit_pre_candidate_trace,
+)
 
 
 @dataclass(frozen=True)
@@ -38,6 +45,7 @@ class MathResearchPlan:
     candidate_paths: Tuple[PathCandidate, ...]
     next_blockers: Tuple[ObstructionKind, ...]
     context_gate: ContextGateReport
+    trace_gate: ResearchTraceReport
     pre_candidate_actions: Tuple[str, ...]
     candidate_generation_allowed: bool
 
@@ -45,11 +53,21 @@ class MathResearchPlan:
 def _facts_from_record(
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    research_trace: MathResearchTrace | None = None,
 ) -> frozenset[str]:
     facts: set[str] = set()
-    if audit_math_context_fiber(context_fiber).verdict is ContextGateVerdict.PASS:
+    context_report = audit_math_context_fiber(context_fiber)
+    if context_report.verdict is ContextGateVerdict.PASS:
         facts.add("context_fiber_frozen")
         facts.add("analogue_method_transfer_mapped")
+        facts.add("cross_domain_analogy_scan_complete")
+        trace_report = audit_pre_candidate_trace(
+            research_trace,
+            atom_id=context_fiber.atom_id if context_fiber else record.claim_id,
+            context_packet_hash=context_fiber.packet_hash if context_fiber else "",
+        )
+        if trace_report.verdict is TraceGateVerdict.PASS:
+            facts.add("auditable_research_trace_complete")
     if record.computational_support:
         facts.add("counterexample_screen_complete")
     if record.formalization is not None:
@@ -87,9 +105,6 @@ def _obstructions_from_record(record: MathResearchRecord) -> frozenset[Obstructi
     if proof.verdict is not AssuranceVerdict.PASS:
         blockers.add(ObstructionKind.PROOF_GAP)
 
-    # Novelty and value are deliberately downstream of proof authority. They
-    # remain visible as future blockers so the path planner can expose the full
-    # publication route, but cannot compensate for the proof blocker.
     novelty = audit_novelty(record.novelty)
     if novelty.stage is not MathClaimStage.VERIFIED_REDISCOVERY and novelty.verdict is not AssuranceVerdict.PASS:
         blockers.add(ObstructionKind.NOVELTY_GAP)
@@ -103,11 +118,12 @@ def derive_planning_state(
     signature: ProblemSignature,
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    research_trace: MathResearchTrace | None = None,
 ) -> ProblemState:
     return ProblemState(
         state_id=record.claim_id,
         signature=signature,
-        facts=_facts_from_record(record, context_fiber),
+        facts=_facts_from_record(record, context_fiber, research_trace),
         obstructions=_obstructions_from_record(record),
     )
 
@@ -117,34 +133,57 @@ def plan_math_research(
     signature: ProblemSignature,
     record: MathResearchRecord,
     context_fiber: MathContextFiber | None = None,
+    research_trace: MathResearchTrace | None = None,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
     top_k: int = 8,
 ) -> MathResearchPlan:
     """Compile assurance status into obstruction-guided research paths.
 
-    Candidate generation is fail-closed behind the mathematical context gate.
-    Until a context fiber records the active atom, structural coordinates,
-    equivalent formulations, solved/near-solved analogues, method-transfer
-    assumptions, disanalogies, repair questions, source anchors and pre-candidate
-    chronology, this function returns no mathematical candidate paths. It returns
-    only the required context-building actions.
+    Candidate generation is fail-closed behind two process gates.
 
-    Once the context gate passes, returned paths are still planning objects only.
-    Canonical theorem/novelty authority remains determined by the assurance layer.
+    1. The context gate requires the atomic object, structural coordinates,
+       equivalent formulations, solved/near-solved analogues, method-transfer
+       assumptions/disanalogies, a witnessed cross-domain analogy scan, source
+       anchors and pre-candidate chronology.
+    2. The research-trace gate requires an append-only public decision ledger for
+       atomization, context freeze, analogy scan, method transfer and proposed next
+       step before any candidate is generated.
+
+    These are discovery-process gates, not theorem-truth gates. Once they pass,
+    returned paths are still planning objects only; theorem and novelty authority
+    remain controlled by the mathematical assurance layer.
     """
 
     assurance = classify_math_record(record)
     context_gate = audit_math_context_fiber(context_fiber)
+
+    if context_gate.verdict is ContextGateVerdict.PASS and context_fiber is not None:
+        trace_gate = audit_pre_candidate_trace(
+            research_trace,
+            atom_id=context_fiber.atom_id,
+            context_packet_hash=context_fiber.packet_hash,
+        )
+    else:
+        trace_gate = ResearchTraceReport(
+            TraceGateVerdict.CANNOT_CHECK,
+            ("context_gate_must_pass_before_trace_gate",),
+        )
+
     state = derive_planning_state(
         signature=signature,
         record=record,
         context_fiber=context_fiber,
+        research_trace=research_trace,
     )
 
     if context_gate.verdict is not ContextGateVerdict.PASS:
         paths: Tuple[PathCandidate, ...] = ()
         pre_candidate_actions = REQUIRED_PRE_CANDIDATE_ACTIONS
+        candidate_generation_allowed = False
+    elif trace_gate.verdict is not TraceGateVerdict.PASS:
+        paths = ()
+        pre_candidate_actions = REQUIRED_TRACE_ACTIONS
         candidate_generation_allowed = False
     else:
         paths = search_operator_paths(
@@ -162,6 +201,7 @@ def plan_math_research(
         candidate_paths=paths,
         next_blockers=tuple(sorted(state.obstructions, key=lambda item: item.value)),
         context_gate=context_gate,
+        trace_gate=trace_gate,
         pre_candidate_actions=pre_candidate_actions,
         candidate_generation_allowed=candidate_generation_allowed,
     )
