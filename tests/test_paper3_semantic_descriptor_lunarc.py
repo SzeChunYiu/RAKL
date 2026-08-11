@@ -325,6 +325,12 @@ def test_freeze_window_chain_harvests_stage_without_relaxing_origin_main() -> No
     chain = (
         ROOT / "experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh"
     ).read_text(encoding="utf-8")
+    desc_chain = (
+        ROOT / "experiments/paper3/lunarc/submit_and_harvest_semantic_descriptor.sh"
+    ).read_text(encoding="utf-8")
+    helpers = (
+        ROOT / "experiments/paper3/lunarc/subject_freeze_window.sh"
+    ).read_text(encoding="utf-8")
     common = (
         ROOT / "experiments/paper3/lunarc/semantic_descriptor_common.py"
     ).read_text(encoding="utf-8")
@@ -332,21 +338,32 @@ def test_freeze_window_chain_harvests_stage_without_relaxing_origin_main() -> No
         ROOT
         / "research/paper3_semantic_descriptor_lunarc/SUBJECT_BINDING_FREEZE_WINDOW_144.md"
     ).read_text(encoding="utf-8")
+    for script in (
+        ROOT / "experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh",
+        ROOT / "experiments/paper3/lunarc/submit_and_harvest_semantic_descriptor.sh",
+        ROOT / "experiments/paper3/lunarc/subject_freeze_window.sh",
+    ):
+        subprocess.run(["bash", "-n", str(script)], check=True)
     assert "FREEZE_WINDOW_RULE no_git_fetch_until_harvest_exits" in chain
-    assert "assert_subject_frozen" in chain
+    assert "rakl_assert_subject_frozen" in chain
+    assert "rakl_write_subject_freeze_pin" in chain
     assert '"$HARVEST" model-stage "$JOB_ID"' in chain
-    assert "origin_main_sha_mismatch" in chain
-    assert "merge-base" not in chain  # must not switch to ancestry predicate
+    assert "origin_main_sha_mismatch" in helpers
+    assert "merge-base" not in chain and "merge-base" not in helpers
+    assert "rakl_wait_slurm_completed" in desc_chain
+    assert '"$HARVEST" descriptor "$JOB_ID"' in desc_chain
     assert "refs/remotes/origin/main" in common
     assert "if origin_main != expected_repo_sha:" in common
     assert 'failures.append("origin_main_sha_mismatch")' in common
     assert "NO_PREDICATE_RELAXATION" in doc
     assert "A1_ALREADY_COMPLETE" in doc
     assert "3476291" in doc and "3476296" in doc
+    assert "3476519" in doc and "3476529" in doc
     assert "submit_and_harvest_semantic_model_stage.sh" in doc
+    assert "submit_and_harvest_semantic_descriptor.sh" in doc
     # Bound CONTRACT scripts must remain byte-identical (no re-freeze).
     contract = _load(CONTRACT)
-    for role in ("common_runtime", "stage_submitter", "harvest_wrapper"):
+    for role in ("common_runtime", "stage_submitter", "harvest_wrapper", "descriptor_submitter"):
         binding = next(b for b in contract["bindings"] if b["role"] == role)
         assert _sha(ROOT / binding["path"]) == binding["sha256"]
 

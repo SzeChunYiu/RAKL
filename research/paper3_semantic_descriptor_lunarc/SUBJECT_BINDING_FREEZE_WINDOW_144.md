@@ -40,7 +40,9 @@ Canonical A1 evidence remains jobs `3476291` / `3476296` at subject
 ## Freeze-window rule
 
 A stage receipt is harvestable only while the local FS9 checkout still satisfies
-the equality predicate above for that stage's `expected_repo_sha`.
+the equality predicate above for that stage's `expected_repo_sha`. The same
+window covers descriptor submit through descriptor harvest when chaining both
+phases.
 
 Covered interval: **stage submit through stage-harvest exit** (and, when chaining
 descriptor, through descriptor harvest exit as well).
@@ -51,12 +53,24 @@ During the window:
    `refs/remotes/origin/main`.
 2. Keep `HEAD` pinned to the bound subject; do not check out another commit.
 3. Keep the tree clean.
-4. Prefer
-   `experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh`, which
-   submits, polls, re-asserts the freeze predicate, and harvests before returning.
+4. Prefer the chain wrappers, which write a `subject-freeze-pin-<sha>.json`
+   receipt, poll SLURM while re-asserting equality, and harvest before returning:
+   - `experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh`
+   - `experiments/paper3/lunarc/submit_and_harvest_semantic_descriptor.sh`
+   - shared helpers in `experiments/paper3/lunarc/subject_freeze_window.sh`
 
 The equality predicate itself is unchanged and remains re-checked inside the
-allocation.
+allocation. Bound `CONTRACT_V1.json` scripts are not modified.
+
+## Current executed subjects (process evidence only)
+
+| Subject | Stage | Descriptor | Notes |
+|---|---|---|---|
+| `0c5384e8…` | `3476291` | `3476296` | Canonical A1 / PR #159 |
+| `787c7e00…` | `3476519` | `3476529` | Later subject rebind; not A1 redo |
+
+Do not restage again unless intentionally validating a new subject or this
+freeze-window wrapper after merge.
 
 ## When a restage is required
 
@@ -94,13 +108,24 @@ bash experiments/paper3/lunarc/submit_and_harvest_semantic_model_stage.sh "$EXPE
 ### Then descriptor (still inside an unbroken freeze window)
 
 ```bash
-# Create a fresh payload-free ZERO_LABELS_OBSERVED chronology after contract
-# zero_label_observed_at_utc, then:
-STAGE_JOB=<id printed by the chain>
-OBS=/path/to/fresh-zero-label-observation.json
-bash experiments/paper3/lunarc/submit_semantic_descriptor.sh "$EXPECTED" "$STAGE_JOB" "$OBS"
-# wait for COMPLETED, then post-descriptor chronology + harvest:
-bash experiments/paper3/lunarc/harvest_semantic_descriptor.sh descriptor <DESC_JOB> /path/to/post-descriptor-chronology.json
+STAGE_JOB=<id printed by the stage chain>
+PRE_OBS=/path/to/fresh-zero-label-observation.json
+POST_CHRONO=/path/to/post-descriptor-chronology.json
+# Create PRE_OBS before submit; create POST_CHRONO after descriptor completes
+# if using the split submitter. The descriptor chain below expects both paths
+# up front only when POST_CHRONO already exists; otherwise submit, wait, write
+# POST_CHRONO, then harvest manually still inside the freeze window.
+bash experiments/paper3/lunarc/submit_and_harvest_semantic_descriptor.sh \
+  "$EXPECTED" "$STAGE_JOB" "$PRE_OBS" "$POST_CHRONO"
+```
+
+When `POST_CHRONO` cannot exist before the descriptor finishes, keep the freeze
+window open manually:
+
+```bash
+DESC_JOB=$(bash experiments/paper3/lunarc/submit_semantic_descriptor.sh "$EXPECTED" "$STAGE_JOB" "$PRE_OBS")
+# wait for COMPLETED without git fetch; write POST_CHRONO; then:
+bash experiments/paper3/lunarc/harvest_semantic_descriptor.sh descriptor "$DESC_JOB" "$POST_CHRONO"
 ```
 
 ### Anti-pattern (the #144 failure mode)
