@@ -11,6 +11,7 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 from . import paper3_cheap_gate as cheap_gate_module
+from .inference import InferenceStatus, paired_lift_verdict
 from .paper3_annotation import canonical_sha256, evaluate_annotation_gate_v2
 from .paper3_cheap_gate import (
     ARM_FEATURES,
@@ -38,6 +39,15 @@ EXPECTED_SUPPORT_REQUIREMENTS = {
     "minimum_negative_training_cases_per_fold": 2,
 }
 
+# Defaults used when the frozen protocol does not carry a statistical_inference
+# block.  The confirmatory protocol on disk binds these values explicitly.
+_DEFAULT_INFERENCE_CONFIG = {
+    "alpha": 0.05,
+    "bootstrap_resamples": 10000,
+    "permutation_resamples": 10000,
+    "seed": 20260810,
+}
+
 
 def _frozen_evaluator_binding_matches(protocol: dict[str, Any]) -> bool:
     binding = protocol.get("evaluator_binding", {})
@@ -53,6 +63,122 @@ def _frozen_evaluator_binding_matches(protocol: dict[str, Any]) -> bool:
         and binding.get("fit_hyperparameters") == EXPECTED_FIT_HYPERPARAMETERS
         and protocol.get("support_requirements") == EXPECTED_SUPPORT_REQUIREMENTS
     )
+
+
+def _inference_config(protocol: dict[str, Any]) -> dict[str, Any]:
+    """Read the frozen statistical-inference block, falling back to defaults."""
+    configured = protocol.get("statistical_inference") or {}
+    return {
+        "alpha": configured.get("alpha", _DEFAULT_INFERENCE_CONFIG["alpha"]),
+        "bootstrap_resamples": configured.get(
+            "bootstrap_resamples", _DEFAULT_INFERENCE_CONFIG["bootstrap_resamples"]
+        ),
+        "permutation_resamples": configured.get(
+            "permutation_resamples", _DEFAULT_INFERENCE_CONFIG["permutation_resamples"]
+        ),
+        "seed": configured.get("seed", _DEFAULT_INFERENCE_CONFIG["seed"]),
+    }
+
+
+def _paired_brier_reduction_diffs(
+    prediction_rows: list[dict[str, Any]],
+    *,
+    structural_arm: str,
+    control_arm: str,
+) -> list[float]:
+    """Per-item paired Brier reduction (control minus structural).
+
+    Each item contributes ``brier_control_i - brier_structural_i`` where
+    ``brier = (probability - label) ** 2``.  A positive difference means the
+    structural witness reduced Brier error on that item relative to the control.
+    Items are paired by ``case_id``; items present in only one arm are dropped.
+    """
+    structural_by_case: dict[str, dict[str, Any]] = {}
+    control_by_case: dict[str, dict[str, Any]] = {}
+    for row in prediction_rows:
+        arm = row["arm"]
+        if arm == structural_arm:
+            structural_by_case[row["case_id"]] = row
+        elif arm == control_arm:
+            control_by_case[row["case_id"]] = row
+    diffs: list[float] = []
+    for case_id in sorted(structural_by_case.keys() & control_by_case.keys()):
+        structural = structural_by_case[case_id]
+        control = control_by_case[case_id]
+        label = int(structural["transfer_valid"])
+        brier_structural = (float(structural["probability"]) - label) ** 2
+        brier_control = (float(control["probability"]) - label) ** 2
+        diffs.append(brier_control - brier_structural)
+    return diffs
+
+
+def _diagnostic_inference(
+    prediction_rows: list[dict[str, Any]],
+    *,
+    structural_arm: str,
+    control_arm: str,
+    protocol: dict[str, Any],
+) -> tuple[bool, dict[str, Any]]:
+    """Run the paired uncertainty gate on item-level Brier reductions.
+
+    Returns ``(check_passed, details)``.  When fewer than three paired items are
+    available the bootstrap is unstable, so the check falls back to the legacy
+    point-estimate path (does not block) and records the fallback status — this
+    is the backward-compatibility escape hatch.  Otherwise the confirmatory
+    verdict requires the bootstrap CI to exclude zero.
+    """
+    config = _inference_config(protocol)
+    diffs = _paired_brier_reduction_diffs(
+        prediction_rows,
+        structural_arm=structural_arm,
+        control_arm=control_arm,
+    )
+    paired_n = len(diffs)
+    base = {
+        "design": "paired_item_brier_reduction",
+        "structural_arm": structural_arm,
+        "control_arm": control_arm,
+        "paired_n": paired_n,
+        "alpha": config["alpha"],
+        "bootstrap_resamples": config["bootstrap_resamples"],
+        "permutation_resamples": config["permutation_resamples"],
+        "seed": config["seed"],
+    }
+    if paired_n < 3:
+        # Backward-compat fallback: cannot run reliable inference at this n.
+        return True, {
+            **base,
+            "status": InferenceStatus.INSUFFICIENT_N.value,
+            "point_estimate": (
+                sum(diffs) / paired_n if paired_n else 0.0
+            ),
+            "ci_lo": None,
+            "ci_hi": None,
+            "p_value": None,
+            "excludes_null": False,
+            "check_passed": True,
+            "fallback_reason": (
+                "paired item count below the n>=3 floor; legacy point-estimate "
+                "thresholds remain authoritative"
+            ),
+        }
+    verdict = paired_lift_verdict(
+        diffs,
+        alpha=config["alpha"],
+        n_boot=config["bootstrap_resamples"],
+        n_perm=config["permutation_resamples"],
+        seed=config["seed"],
+    )
+    return verdict.excludes_null, {
+        **base,
+        "status": verdict.status.value,
+        "point_estimate": verdict.point_estimate,
+        "ci_lo": verdict.ci_lo,
+        "ci_hi": verdict.ci_hi,
+        "p_value": verdict.p_value,
+        "excludes_null": verdict.excludes_null,
+        "check_passed": verdict.excludes_null,
+    }
 
 
 def _features(case: dict[str, Any]) -> dict[str, float]:
@@ -354,6 +480,18 @@ def build_confirmatory_gate_receipt(
         "q2_true_accept": structural["q2_true_accept"] >= thresholds["minimum_q2_true_accept"],
         "q3_false_accept": structural["q3_false_accept"] <= thresholds["maximum_q3_false_accept"],
     }
+    # Uncertainty quantification (issue #161): layer a paired bootstrap CI on
+    # top of the bare point-estimate thresholds.  When item-level paired
+    # predictions exist, the confirmatory verdict additionally requires the CI
+    # of the per-item Brier reduction to exclude zero.  The legacy point path
+    # remains as a fallback when paired data is absent / below the n>=3 floor.
+    inference_check, inference_details = _diagnostic_inference(
+        prediction_rows,
+        structural_arm="witnessed_structure",
+        control_arm=strongest_control,
+        protocol=protocol,
+    )
+    checks["paired_brier_lift_distinguishable"] = inference_check
     diagnostic_gate = {
         "status": "RUN",
         "passed": all(checks.values()),
@@ -365,6 +503,7 @@ def build_confirmatory_gate_receipt(
             "average_precision_gain": structural["average_precision"] - control["average_precision"],
             "brier_reduction": control["brier"] - structural["brier"],
         },
+        "statistical_inference": inference_details,
     }
     passed = diagnostic_gate["passed"]
     elapsed_ms = int(round((time.perf_counter() - start) * 1000))
