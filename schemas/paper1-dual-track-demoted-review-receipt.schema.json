@@ -1,0 +1,68 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper1-dual-track-demoted-review-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at_utc": {
+      "type": "string"
+    },
+    "grants_scientific_authority": {
+      "const": false
+    },
+    "independence_claim": {
+      "const": false
+    },
+    "issue": {
+      "const": 216
+    },
+    "journal_decision": {
+      "const": false
+    },
+    "open_parent_concern_ids_still_non_independent": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "operator_override": {
+      "const": true
+    },
+    "packet_id": {
+      "type": "string"
+    },
+    "packet_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "peer_review_acceptance": {
+      "const": false
+    },
+    "promotional_empirical_wins_invented": {
+      "const": false
+    },
+    "schema_version": {
+      "const": "paper1-dual-track-demoted-review-receipt-v1"
+    },
+    "tracks": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "issue",
+    "created_at_utc",
+    "tracks",
+    "operator_override",
+    "independence_claim",
+    "peer_review_acceptance",
+    "journal_decision",
+    "claim_boundary",
+    "grants_scientific_authority"
+  ],
+  "title": "Paper 1 dual-track demoted AI_OPERATOR review receipt",
+  "type": "object"
+}
