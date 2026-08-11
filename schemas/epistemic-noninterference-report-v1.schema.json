@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/epistemic-noninterference-report-v1.schema.json",
+  "title": "RAKL epistemic noninterference report v1",
+  "description": "Proposal-only diagnostic for Paper II authority noninterference (issue #152). PASS means pi_auth was unchanged under non-promotion transitions; NO_INTEGRATION_SURFACE means the experience and authority families are not composed (unreachability is not enforcement). Never mints scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "findings",
+    "reasons",
+    "checked_transitions",
+    "legal_promotions",
+    "families_exercised",
+    "holds",
+    "grants_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "epistemic-noninterference-report-v1"},
+    "status": {
+      "enum": [
+        "PASS",
+        "LEAK_DETECTED",
+        "NO_INTEGRATION_SURFACE",
+        "CANNOT_CHECK"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["transition_id", "kind", "family", "reason", "added_grants"],
+        "properties": {
+          "transition_id": {"type": "string", "minLength": 1},
+          "kind": {
+            "enum": [
+              "RECORD_EPISODE",
+              "RECORD_FAILURE",
+              "CONSOLIDATE_LESSON",
+              "PROJECT_TOOL",
+              "REUSE_LESSON",
+              "RETRIEVE",
+              "UPDATE_ROUTING_POLICY",
+              "WORKSPACE_LOAD",
+              "WORKSPACE_EVICT",
+              "REFLECT",
+              "SELF_EVOLUTION_WIN",
+              "EVIDENCE_BEARING_PROMOTION"
+            ]
+          },
+          "family": {
+            "enum": [
+              "EXPERIENCE_TO_EVIDENCE",
+              "REPETITION_TO_AUTHORITY",
+              "ROUTING_TO_AUTHORITY",
+              "REFLECTION_TO_AUTHORITY",
+              "FAILURE_TO_IMPOSSIBILITY",
+              "PROVENANCE_TO_INDEPENDENCE",
+              "PREDICTION_TO_MECHANISM",
+              "MECHANISM_TO_IDENTIFICATION",
+              "WORKSPACE_TO_AUTHORITY",
+              "SELF_EVOLUTION_TO_AUTHORITY"
+            ]
+          },
+          "reason": {"type": "string", "minLength": 1},
+          "added_grants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["claim_id", "axis", "scope_id", "partial"],
+              "properties": {
+                "claim_id": {"type": "string", "minLength": 1},
+                "axis": {
+                  "enum": ["G", "R", "M", "I", "D"]
+                },
+                "scope_id": {"type": "string", "minLength": 1},
+                "partial": {"type": "boolean"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "checked_transitions": {"type": "integer", "minimum": 0},
+    "legal_promotions": {"type": "integer", "minimum": 0},
+    "families_exercised": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "holds": {"type": "boolean"},
+    "grants_authority": {"const": false}
+  }
+}

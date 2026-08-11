@@ -335,6 +335,9 @@ class NoninterferenceStatus(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
+REPORT_SCHEMA_VERSION = "epistemic-noninterference-report-v1"
+
+
 @dataclass(frozen=True)
 class NoninterferenceReport:
     status: NoninterferenceStatus
@@ -356,6 +359,38 @@ class NoninterferenceReport:
 
     def families_detected(self) -> frozenset[LeakFamily]:
         return frozenset(finding.family for finding in self.findings)
+
+    def to_dict(self) -> dict[str, object]:
+        """Serialize the diagnostic for schema validation. Never mints authority."""
+
+        return {
+            "schema_version": REPORT_SCHEMA_VERSION,
+            "status": self.status.value,
+            "findings": [
+                {
+                    "transition_id": finding.transition_id,
+                    "kind": finding.kind.value,
+                    "family": finding.family.value,
+                    "reason": finding.reason,
+                    "added_grants": [
+                        {
+                            "claim_id": grant.claim_id,
+                            "axis": grant.axis.value,
+                            "scope_id": grant.scope_id,
+                            "partial": grant.partial,
+                        }
+                        for grant in finding.added_grants
+                    ],
+                }
+                for finding in self.findings
+            ],
+            "reasons": list(self.reasons),
+            "checked_transitions": self.checked_transitions,
+            "legal_promotions": self.legal_promotions,
+            "families_exercised": sorted(family.value for family in self.families_exercised),
+            "holds": self.holds,
+            "grants_authority": False,
+        }
 
 
 # --------------------------------------------------------------------------
