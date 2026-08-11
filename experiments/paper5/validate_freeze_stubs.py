@@ -30,6 +30,16 @@ STUBS = (
         None,
     ),
     (
+        ROOT / "research/paper5_novelty_audit_v1/AUDIT_UNIVERSE_MANIFEST.json",
+        ROOT / "schemas/paper5-audit-universe-manifest-v1.schema.json",
+        None,
+    ),
+    (
+        ROOT / "research/paper5_novelty_audit_v1/ZERO_EXTERNAL_NOVELTY_LABELS.json",
+        ROOT / "schemas/paper5-zero-external-novelty-labels-v1.schema.json",
+        None,
+    ),
+    (
         ROOT / "research/paper5_longitudinal_v1/COVERAGE_OBSERVATION_20260811.json",
         ROOT / "schemas/paper5-longitudinal-coverage-observation-v1.schema.json",
         None,
