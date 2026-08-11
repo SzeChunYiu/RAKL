@@ -1,6 +1,6 @@
 # Mathematical Research Quickstart
 
-This is the shortest supported path for using the RAKL mathematical-research assurance layer.
+This is the shortest supported path for using the strict RAKL mathematical-research profile.
 
 ## Install
 
@@ -22,82 +22,106 @@ signature = ProblemSignature(
     domain="number theory",
     goal_type="prove theorem",
 )
-
 record = MathResearchRecord(claim_id="candidate-theorem-001")
 plan = plan_math_research(signature=signature, record=record)
-
-print(plan.context_gate.verdict.value)
-print(plan.candidate_generation_allowed)
 print(plan.pre_candidate_actions)
 ```
 
-A missing context fiber deliberately produces **no mathematical candidate paths**. Strict RAKL discovery does not jump from atomization directly to proof generation.
+With no frozen context, the planner returns **zero candidate paths**.
 
-## 2. Freeze the atomic context and method-transfer matrix
-
-Before asking an LLM for a proof idea, lemma, invariant or construction, create a context packet.
+## 2. Freeze the atomic context, analogue transfers and cross-domain scan
 
 ```python
-from rakl.math_context import MathContextFiber, MethodTransfer
+from rakl.math_context import AnalogyScanStatus, MathContextFiber, MethodTransfer
 
 context = MathContextFiber(
     atom_id="atom-001",
-    object_context="the smallest active obstruction in the proof DAG",
-    structural_coordinates=(
-        "symmetry class",
-        "composition/reuse law",
-        "relevant rank or spectrum",
-    ),
-    equivalent_formulations=(
-        "equivalent extremal formulation",
-        "equivalent algebraic formulation",
-    ),
-    solved_analogues=("a solved sibling context",),
-    near_solved_analogues=("a near-solved sibling context",),
+    object_context="smallest active obstruction in the proof DAG",
+    structural_coordinates=("symmetry", "reuse law", "rank/spectrum"),
+    equivalent_formulations=("extremal formulation", "algebraic formulation"),
+    solved_analogues=("solved sibling context",),
     method_transfers=(
         MethodTransfer(
             source_context="solved sibling context",
             method="method that succeeds there",
             shared_structure=("shared structural coordinate",),
-            required_assumptions=("assumption that makes the source proof work",),
-            disanalogies=("that assumption fails or changes in the target",),
-            repair_question="what is the weakest replacement assumption under which the method survives?",
+            required_assumptions=("assumption enabling the source proof",),
+            disanalogies=("target violates that assumption",),
+            repair_question="what weakest replacement assumption preserves the method?",
             source_anchors=("doi-or-exact-source-id",),
         ),
     ),
-    explicit_disanalogies=("global source/target mismatch",),
+    explicit_disanalogies=("source/target mismatch",),
     source_anchors=("doi-or-exact-source-id",),
+    analogy_scan_status=AnalogyScanStatus.NO_SAFE_BRIDGE_FOUND.value,
+    analogy_scan_notes="cross-domain/everyday scan completed; no bridge survived abstract mapping and disanalogy checks",
     frozen_at="2026-08-11T04:00:00+00:00",
-    first_candidate_at="2026-08-11T04:01:00+00:00",
-    packet_hash="sha256-of-canonical-context-packet",
+    first_candidate_at="2026-08-11T04:10:00+00:00",
+    packet_hash="sha256:context-packet",
 )
+```
+
+If a useful everyday analogy exists, store it as `CrossDomainAnalogy`. It must map source roles to target roles, state the common abstraction and shared constraints, list disanalogies, propose a transferable principle, and define a mathematical validation/falsification obligation. An analogy is a proposal source, not evidence.
+
+## 3. Record the public research trace
+
+The context packet alone is not enough. Record what the atomization produced and why the next action is being attempted.
+
+```python
+from rakl.research_trace import (
+    MathResearchTrace,
+    ResearchTraceEntry,
+    ResearchTraceEventType,
+)
+
+kinds = (
+    ResearchTraceEventType.ATOMIZED,
+    ResearchTraceEventType.CONTEXT_FROZEN,
+    ResearchTraceEventType.ANALOGY_SCAN,
+    ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
+    ResearchTraceEventType.NEXT_STEP_PROPOSED,
+)
+entries = []
+for i, kind in enumerate(kinds, start=1):
+    entries.append(
+        ResearchTraceEntry(
+            event_id=f"event-{i}",
+            atom_id="atom-001",
+            event_type=kind,
+            timestamp=f"2026-08-11T04:0{i}:00+00:00",
+            state_summary="current public research state",
+            action_summary="bounded action taken at this step",
+            evidence_pointers=("sha256:context-packet",) if kind is ResearchTraceEventType.CONTEXT_FROZEN else (f"artifact:{i}",),
+            alternatives_considered=("alternative A", "alternative B"),
+            decision_rationale="concise evidence-grounded reason for selecting this next action",
+            uncertainties=("remaining uncertainty",),
+            next_steps=("next atomic action",),
+            artifact_hash=f"sha256:event-{i}",
+        )
+    )
+trace = MathResearchTrace(trace_id="trace-001", entries=tuple(entries))
 
 plan = plan_math_research(
     signature=signature,
     record=record,
     context_fiber=context,
+    research_trace=trace,
 )
 assert plan.candidate_generation_allowed
-for path in plan.candidate_paths[:3]:
-    print(path.operators, path.score)
 ```
 
-The packet is not a literature summary. It must explain **why a method works in an analogous context, which assumptions enable it, what structure is shared, what breaks in the target, and the smallest repair question**. The machine-readable contract is `schemas/math-context-fiber.schema.json`.
+The trace is an auditable scientific decision ledger, **not raw hidden chain-of-thought**. It should let another researcher reconstruct what was known, what alternatives were considered, what was selected, what evidence supported the choice, what remained uncertain and what came next.
 
-If a candidate already existed before the context packet was frozen, the chronology gate fails. The candidate may still be checked for mathematical truth, but it cannot be represented as a strict context-first RAKL discovery artifact.
+Machine-readable contracts:
 
-## 3. Add computational support without promoting it to proof
+- `schemas/math-context-fiber.schema.json`
+- `schemas/math-research-trace.schema.json`
 
-```python
-record = MathResearchRecord(
-    claim_id="candidate-theorem-001",
-    computational_support=True,
-)
-```
+## 4. Generate, falsify and record candidates
 
-This can help rank the conjecture, but the assurance state remains below theorem authority.
+Only now may the LLM propose proof ideas, invariants or constructions. Append `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED` and `RESIDUAL_OPENED` events as applicable. Failed candidates remain permanent negative history.
 
-## 4. Bind the intended claim to a formal statement
+## 5. Bind the intended claim to a formal statement
 
 ```python
 from rakl.math_research_assurance import FormalizationWitness
@@ -112,9 +136,9 @@ formalization = FormalizationWitness(
 )
 ```
 
-The witness is deliberately separate from the proof. A proof assistant can prove the wrong formal statement perfectly.
+A proof assistant can prove the wrong statement perfectly, so specification alignment remains separate from proof.
 
-## 5. Attach a proof receipt
+## 6. Attach a proof receipt
 
 ```python
 from rakl.math_research_assurance import ProofReceipt
@@ -134,33 +158,15 @@ proof = ProofReceipt(
 )
 ```
 
-The strict profile blocks `sorryAx`, unregistered custom axioms, missing proof/checker identities, mismatched theorem hashes and missing isolated rechecks.
+Strict assurance blocks `sorryAx`, unregistered custom axioms, statement-hash mismatch and missing isolated recheck.
 
-### Optional: persist the theorem/lemma as a verified proof-DAG checkpoint
-
-```python
-from rakl.proof_dag import ProofDAG, ProofNode, ProofNodeKind, add_node, verify_checkpoint
-
-dag = add_node(
-    ProofDAG(),
-    ProofNode(
-        node_id="lemma-001",
-        kind=ProofNodeKind.LEMMA,
-        statement_hash=formalization.formal_statement_hash,
-    ),
-)
-dag = verify_checkpoint(dag, node_id="lemma-001", receipt=proof)
-```
-
-A failed or refuted node should remain in the DAG as negative history. Dependency cycles in proof-bearing relations fail closed.
-
-## 6. Attach a bounded novelty certificate
+## 7. Attach bounded novelty evidence
 
 ```python
 from rakl.math_research_assurance import NoveltyCertificate
 
 novelty = NoveltyCertificate(
-    corpus_cutoff="2026-08-10",
+    corpus_cutoff="2026-08-11",
     corpora=("registered-literature-corpus",),
     search_routes=("exact", "notation-normalized", "structural", "stronger-parent"),
     canonical_fingerprint="canonical-theorem-fingerprint",
@@ -169,44 +175,9 @@ novelty = NoveltyCertificate(
 )
 ```
 
-This means only that no equivalent was found inside the declared novelty world at the declared cutoff. It is not a proof of global novelty.
+No equivalent found inside the declared corpus is only bounded novelty evidence, never proof of a global first.
 
-## 7. Evaluate the full record
-
-```python
-from rakl.math_research_assurance import MathResearchRecord, classify_math_record
-from rakl.math_research_runtime import publication_ready
-
-record = MathResearchRecord(
-    claim_id="candidate-theorem-001",
-    computational_support=True,
-    formalization=formalization,
-    proof=proof,
-    novelty=novelty,
-    interestingness_screened=True,
-    external_mathematical_review=True,
-)
-
-report = classify_math_record(record)
-print(report.stage.value)
-print(report.reasons)
-print(publication_ready(record))
-```
-
-The strongest current state is `NEW_MATHEMATICS_CANDIDATE`. The wording remains intentionally bounded: publication and global-first claims still depend on the registered novelty world and external mathematical review. Discovery-process compliance is tracked separately from theorem truth.
-
-## 8. Run the hostile conformance packet
-
-```bash
-python - <<'PY'
-from rakl.math_research_benchmark import run_benchmark
-r = run_benchmark("benchmarks/math_research_assurance/tasks_v0.json")
-print(r["passed"], "/", r["task_count"])
-assert r["all_passed"]
-PY
-```
-
-Run the full repository suite before using a changed implementation for high-authority research:
+## 8. Run assurance and tests
 
 ```bash
 pytest
@@ -214,4 +185,4 @@ pytest
 
 ## Operational rule
 
-Use LLMs aggressively **after** the active atom's context and method-transfer packet passes. Before that, use the LLM for context expansion, equivalent-formulation discovery, analogue search, method extraction and disanalogy analysis only. A fluent route through the planner is never itself evidence that a theorem is true or new.
+Use LLMs aggressively for context expansion, abstraction, analogue search and proposal generation **after** the gates permit the relevant action. Use evidence and proof checkers conservatively for authority. A fluent research narrative, an attractive analogy and a completed planner route are never themselves proof.
