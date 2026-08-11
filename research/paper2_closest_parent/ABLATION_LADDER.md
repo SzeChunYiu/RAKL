@@ -25,8 +25,8 @@ what the real system does that the arm does not. This is enforced by
 | `A3_TRANSACTIONAL_GOVERNANCE_FUNCTION_MATCHED` | + staged proposal/commit, validated writes, provenance, source/use permission | the MemTX/PPMF transactional-governance and provenance-authority function | not MemTX and not PPMF — see below |
 | `A4_SCIENTIFIC_AUTHORITY_TYPING` | + G/R/M/I/D authority coordinates, non-escalating transitions | **none located** | — |
 | `A5_SCIENTIFIC_HISTORY_AND_CONTEXT` | + context alignment, contradiction preservation, negative history | partially the MemTX conflict/rollback function, at different granularity | not MemTX — alignment before adjudication has no counterpart; MemTX's conflict slot is entity+attribute |
-| `A6_SATURATION_AND_OPEN_WORLD` | + registered discovery routes, bounded freshness-expiring saturation | unresolved — see the `CANNOT_CHECK` rows | — |
-| `A7_FULL_RAKL` | + protected method evolution gated on fresh assurance | the AutoSci SciEvolve function | not AutoSci — whether SciEvolve gates on a post-hoc check is unread, so the contrast is not yet established |
+| `A6_SATURATION_AND_OPEN_WORLD` | + registered discovery routes, bounded freshness-expiring saturation | partially AutoSci SciFlow literature discovery + MemClaw/MemTX temporal expiry | not AutoSci/MemClaw — AutoSci registers literature skills without a freshness-expiring coverage certificate; MemClaw expires rows, not hypothesis-space saturation |
+| `A7_FULL_RAKL` | + protected method evolution gated on fresh assurance | the AutoSci SciEvolve function | not AutoSci — SciEvolve admits updates when recurring feedback is judged stable enough; it does not require held-out fresh assurance generated after the challenger exists |
 
 ### What A3 is not
 
@@ -87,10 +87,12 @@ attributable to typing if valid-upgrade recall holds.
 
 ### Contracts not yet written
 
-`A0→A1`, `A1→A2`, `A5→A6` and `A6→A7` are deliberately absent. A5→A6 and A6→A7
-depend on `CANNOT_CHECK` matrix rows — writing an intervention contract against
-a parent function nobody has read would fix the wrong variable. Read AutoSci's
-SciFlow and SciEvolve sections first.
+`A0→A1`, `A1→A2`, `A5→A6` and `A6→A7` remain deliberately absent as *execution*
+contracts. V2 full-text reads closed the AutoSci/MemClaw `CANNOT_CHECK` rows for
+novelty adjudication, but confirmatory matched empirics stay blocked under
+`CAPABLE_MODEL_AVAILABLE=NO_REFUTED`. Writing further intervention contracts is
+allowed for design clarity; inventing A4>A3 wins from job 3476749 is not
+(upgrade-recall=0 on both arms; A4 false-conservative refusal=0.625).
 
 ## Cheap conformance (landed; not empirical)
 
@@ -115,6 +117,7 @@ Evaluation contract for A3 vs A4:
 * LUNARC freeze cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirical_156.sh` (job `3476733` → `FREEZE_VALIDATED_EMPIRICS_UNRUN`)
 * LUNARC score cell: `experiments/paper2/lunarc/submit_a3_a4_matched_empirics_score_156.sh`
 * claim boundary: non-confirmatory matched A3↔A4 model scores; not MemTX/PPMF/AutoSci; no A4>A3 novelty from scores alone
+* harvested non-confirmatory scores (job **3476749**): A3 ALR≈0.154 / upgrade-recall=0; A4 ALR=0 / upgrade-recall=0 / false-conservative refusal=0.625 — conservatism, not typed-authority superiority
 
 ## Before any arm is run
 

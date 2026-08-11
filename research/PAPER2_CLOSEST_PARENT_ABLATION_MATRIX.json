@@ -1,9 +1,9 @@
 {
   "schema_version": "closest-parent-ablation-matrix-v1",
   "issue": 156,
-  "date": "2026-08-11",
-  "status": "PRIMARY_SOURCE_AUDIT / PROPOSAL_ONLY / NO_ABLATION_RUN / NO_NOVELTY_CLAIM",
-  "claim_boundary": "Records which Paper-II functions survive nearest-parent comparison and which do not. No ablation has been executed and no result is reported. A row may claim a residual only when the parent cell rests on primary full text and carries a falsifier; otherwise it reports CANNOT_CHECK.",
+  "date": "2026-08-12",
+  "status": "PRIMARY_SOURCE_AUDIT_V2 / FULL_TEXT_PARENTS_ADDED / NO_CONFIRMATORY_ABLATION / NO_NOVELTY_FROM_NONCONFIRMATORY_EMPIRICS",
+  "claim_boundary": "Records which Paper-II functions survive nearest-parent comparison and which do not. V2 upgrades AutoSci/MemClaw/AI-scientists reads to primary full text (or named partial). Non-confirmatory A3↔A4 scores from job 3476749 are instrument/history only and mint no A4>A3 novelty. No confirmatory ablation has been executed under CAPABLE_MODEL_AVAILABLE=NO_REFUTED.",
   "evidence_levels": {
     "FULL_TEXT": "full paper read",
     "FULL_TEXT_PARTIAL": "every section bearing on the claims read, but not the whole paper; the unread pages are named in sources_read",
@@ -23,16 +23,17 @@
       "name": "AutoSci",
       "arxiv": "2605.31468",
       "version_date": "2026-05-29 (v1)",
-      "evidence_level": "ABSTRACT_AND_REPO",
+      "evidence_level": "FULL_TEXT",
       "sources_read": [
         "https://arxiv.org/abs/2605.31468",
-        "https://github.com/skyllwt/AutoSci (public, MIT; full four-module system on the `paper` branch at tag arxiv-v1)"
+        "arXiv PDF 2605.31468v1 full text (SciMem §§3.1–3.3, SciFlow §4, SciDAG §5, SciEvolve §6, case studies §7)",
+        "https://github.com/skyllwt/AutoSci (public, MIT; paper branch / tag arxiv-v1 noted; runtime not re-executed this lane)"
       ],
-      "objects": "SciMem (Long-Term Knowledge Memory + Active Research Memory), SciFlow (5-stage lifecycle harness), SciDAG (DAG multi-agent operators + templates), SciEvolve (versioned updates to memory organisation, skills, templates)",
-      "update_rule": "SciEvolve turns user/experiment/review/environment feedback into versioned updates",
-      "authority_semantics": "CANNOT_CHECK - the abstract page describes no access control, role or authority boundary",
-      "failure_repair": "CANNOT_CHECK - not described on the abstract page",
-      "stated_limitations": "CANNOT_CHECK - the abstract page states none for AutoSci itself",
+      "objects": "SciMem (Long-Term Knowledge Memory typed entities Topic/Paper/Foundation/Concept/Method/People + Active Research Memory Idea/Experiment/Manuscript/Review with lifecycle states); SciFlow five-stage harness (Literature/Ideation/Experiment/Writing/Rebuttal) with >30 skills; SciDAG optional DAG multi-agent templates; SciEvolve /dream /forge /morph evolution skills",
+      "update_rule": "SciMem grows by long-term aggregation, Active↔Long-Term activation/consolidation, and cross-cycle methodological notes; all writes pass Trust Guard (PASS/WARN/BLOCK on form+content). SciEvolve turns user/task/open-environment signals into versioned updates to SciMem organization (/dream), SciFlow skills (/forge), and SciDAG templates (/morph) when recurring patterns are judged stable enough.",
+      "authority_semantics": "Trust Guard is a form/content admission gate (schema, links, evidence support, consistency), not a multi-axis scientific-authority ledger. No prediction/mechanism/identification coordinates; no non-escalation rule typed by claim kind. SciEvolve updates organization/skills/templates; Active→Long-Term consolidation can rewrite long-term entity pages from project findings.",
+      "failure_repair": "Blocked Trust Guard artifacts are quarantined until resolved. SciEvolve can archive/down-weight stale entries and strengthen claim-evidence checks in skills. No MemTX-style transitive cascade repair over a derivation DAG is described.",
+      "stated_limitations": "Case studies are simulated research submissions; rebuttal stage not evaluated. SciEvolve admission criterion is recurring-pattern / 'evidence is stable enough' judgment, not a held-out fresh-assurance packet generated after the challenger exists.",
       "feasibility": "BLACK_BOX_PUBLIC_SYSTEM_FEASIBLE",
       "feasibility_note": "Code is public and MIT-licensed, but running it requires an authenticated agent runtime (Claude Code or Codex login) and the paper system sits on a separate frozen branch. A black-box run is possible under Paper-II budget; exact reproduction of paper results is not established."
     },
@@ -79,15 +80,16 @@
       "name": "Governed Shared Memory / MemClaw",
       "arxiv": "2606.24535",
       "version_date": "2026-06-23 (v1)",
-      "evidence_level": "ABSTRACT_ONLY",
+      "evidence_level": "FULL_TEXT",
       "sources_read": [
-        "https://arxiv.org/abs/2606.24535"
+        "https://arxiv.org/abs/2606.24535",
+        "arXiv PDF 2606.24535v1 full text (fleet-memory problem, architecture §§3–5, MemClaw/ArgusFleet §§6–9, live results)"
       ],
-      "objects": "Production multi-tenant memory service with scoped retrieval, temporal supersession, provenance tracking and policy-governed propagation; ArgusFleet harness over four governance dimensions",
-      "update_rule": "Writes admitted through a pipeline; conflicting entries handled by temporal supersession with asynchronous contradiction detection",
-      "authority_semantics": "Tenant and sub-tenant scoping plus policy-driven propagation; high intra-fleet visibility with zero cross-fleet leakage",
-      "failure_repair": "Motivated by unauthorized leakage, stale propagation, contradiction persistence and provenance collapse; two production defects reported (sub-tenant scope bypassed on direct GET-by-id; a synchronous near-duplicate filter rejecting contradictory writes before the asynchronous contradiction detector sees them)",
-      "stated_limitations": "Explicitly not a comparative study; measurement of one live service",
+      "objects": "Fleet-memory system F=(A,M,G,P,T): agents, shared memory, governance, provenance, temporal supersession. MemClaw production multi-tenant service; ArgusFleet live REST harness over scope/time/provenance/propagation.",
+      "update_rule": "Writes admitted through a pipeline with temporal supersession references, contradiction markers, provenance metadata and confidence state; contradictory writes resolved by temporal ordering and policy-aware rules when both writes are admitted.",
+      "authority_semantics": "Scope-sound retrieval Inv-Scope: no agent receives a memory its identity is not entitled to under nested agent⊑fleet⊑tenant scope. Governance is tenant/fleet/agent authorization and policy-governed propagation — not scientific claim-kind authority.",
+      "failure_repair": "Preserved production defects: sub-tenant scope initially bypassed on GET-by-id (remediated); synchronous near-duplicate filter can reject contradictory writes before asynchronous contradiction detection. Authors explicitly frame the evaluation as measurement of one live service, not a baseline comparison.",
+      "stated_limitations": "Not a comparative study. Temporal supersession expires/supersedes individual memory rows; no hypothesis-space coverage / discovery-saturation object is defined.",
       "feasibility": "CONCEPTUAL_COMPARISON_ONLY",
       "feasibility_note": "A proprietary production service. Not reproducible and not fairly comparable as an experimental arm under Paper-II budget."
     },
@@ -96,13 +98,14 @@
       "name": "AI scientists produce results without reasoning scientifically",
       "arxiv": "2604.18805",
       "version_date": "2026-04-20 (v1)",
-      "evidence_level": "ABSTRACT_ONLY",
+      "evidence_level": "FULL_TEXT_PARTIAL",
       "sources_read": [
-        "https://arxiv.org/abs/2604.18805"
+        "https://arxiv.org/abs/2604.18805",
+        "arXiv PDF 2604.18805v1 sections 4.5–4.9 (manual trace annotation taxonomy; epistemological graphs with hypothesis/test/evidence/judgment/update/commitment nodes; productive/anti-pattern templates) plus abstract/results framing. Full appendix coding tables not exhaustively retyped."
       ],
-      "objects": "Not a system. An empirical audit of agent runs and reasoning traces across eight domains, more than 25,000 runs.",
-      "findings": "Base model accounts for 41.4% of explained variance versus 1.5% for the scaffold. Evidence disregarded in 68% of traces. Belief updated on refuting evidence in only 26% of traces. Deficits persist when agents are given near-complete successful trajectories.",
-      "role": "Motivation and an external prior on baseline behaviour, not a mechanism parent.",
+      "objects": "Measurement study (>25k runs). Manual marker taxonomy over behavior-relevant nodes; LLM+expert epistemological graphs with epistemic-operation nodes and testing/observing/using/contradicting/competing/updating edges.",
+      "findings": "Base model explains far more variance than scaffold; evidence disregarded in 68% of traces; belief updated on refuting evidence in 26%. Annotation distinguishes epistemic operations and failure modes, not RAKL-style multi-axis scientific-authority transitions.",
+      "role": "Closest parent for scientific-transition-audit measurement. Supplies process-level priors and an epistemic-operation coding scheme; does not implement a governed authority ledger.",
       "feasibility": "CONCEPTUAL_COMPARISON_ONLY",
       "feasibility_note": "A measurement study, not a system to ablate against."
     }
@@ -119,7 +122,7 @@
       "required_discriminator": "none - the function is conceded",
       "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "cross-project long-term knowledge",
@@ -132,7 +135,7 @@
       "required_discriminator": "none - the function is conceded",
       "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "TaskEpisode / raw trajectory preservation",
@@ -158,7 +161,7 @@
       "required_discriminator": "none - the function is conceded",
       "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "skill / DAG / workflow reuse",
@@ -171,20 +174,20 @@
       "required_discriminator": "none - the function is conceded",
       "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "experience-conditioned routing",
       "rakl_implementation": "src/rakl/experience_policy.py, src/rakl/associative_experience.py",
       "closest_parent": "autosci",
-      "same_function": "partial",
-      "stronger_parent_feature": "SciEvolve updates skills and templates from feedback; whether retrieval or operator selection is conditioned on episode history is not stated on the abstract page",
-      "rakl_residual": "unknown until AutoSci SciEvolve and SciMem retrieval are read in full text",
-      "residual_kind": "unknown",
-      "required_discriminator": "Read AutoSci sections on SciEvolve and SciMem retrieval and determine whether operator selection is conditioned on stored episode outcomes.",
-      "claim_allowed_today": "CANNOT_CHECK",
+      "same_function": "yes",
+      "stronger_parent_feature": "SciFlow equips each skill with a tailored SciMem view before execution; SciDAG retrieves stage templates together with past execution experience; SciEvolve revises skills/templates from recurring episode outcomes",
+      "rakl_residual": "none",
+      "residual_kind": "none",
+      "required_discriminator": "none - the function is conceded",
+      "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "transactional commit",
@@ -347,65 +350,65 @@
       "rakl_implementation": "src/rakl/epistemic_noninterference.py",
       "closest_parent": "autosci",
       "same_function": "partial",
-      "stronger_parent_feature": "SciEvolve is the direct counterexample candidate: it turns experiment and review feedback into versioned updates. Whether those updates can reach scientific knowledge records or only skills, templates and memory organisation is not stated on the abstract page.",
-      "rakl_residual": "unknown. Against MemTX and PPMF the residual is clear - neither represents experience at all - but neither is the closest parent for this function. AutoSci is, and it was not read in full text.",
-      "residual_kind": "unknown",
-      "required_discriminator": "Read AutoSci's SciMem and SciEvolve sections and determine whether feedback-driven versioned updates can alter Long-Term Knowledge Memory records, or only SciFlow skills, SciDAG templates and memory organisation. If the former, this residual weakens sharply.",
-      "claim_allowed_today": "CANNOT_CHECK",
-      "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "stronger_parent_feature": "SciEvolve (/dream,/forge,/morph) turns feedback into auditable versioned updates; Active→Long-Term consolidation can rewrite Long-Term Knowledge Memory entity pages from project findings; Trust Guard blocks malformed/unsupported writes",
+      "rakl_residual": "AutoSci can let experience rewrite knowledge organization and long-term entity content, and can evolve skills/templates, but it has no multi-axis scientific-authority ledger. Trust Guard PASS/WARN/BLOCK is form/content admission, not typed non-escalation across prediction/mechanism/identification. The residual is experience↛authority-coordinate licensing, not 'experience never updates knowledge'.",
+      "residual_kind": "formal",
+      "required_discriminator": "A case where experiment/review feedback updates skills or long-term entity text while a prediction-supported record still cannot mint mechanism or identification authority. AutoSci must be shown to represent and refuse that escalation as a distinct transition.",
+      "claim_allowed_today": "NARROW_RESIDUAL",
+      "falsifier": "A parent with an explicit experience→scientific-authority noninterference invariant over claim-kind axes (not only Trust Guard content checks or skill versioning).",
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "scientific transition audit",
       "rakl_implementation": "src/rakl/authority_leakage_benchmark.py, benchmarks/scientific_transition_authority/",
       "closest_parent": "aiscientists",
       "same_function": "partial",
-      "stronger_parent_feature": "arXiv:2604.18805 audits reasoning traces at far greater scale (>25,000 runs, eight domains) and reports process-level rates: evidence disregarded in 68% of traces, belief updated on refutation in 26%",
-      "rakl_residual": "unknown. The parent measures whether evidence was used and whether belief moved; it does not label which authority coordinate was licensed to move. But this row cannot be adjudicated from an abstract, and the RAKL side has not been run against any model.",
-      "residual_kind": "unknown",
-      "required_discriminator": "Read arXiv:2604.18805's coding scheme in full text and determine whether its trace annotations distinguish types of belief update. Also required: an executed evaluation on the RAKL side, which does not yet exist.",
-      "claim_allowed_today": "CANNOT_CHECK",
-      "falsifier": "",
-      "evidence_level": "ABSTRACT_ONLY"
+      "stronger_parent_feature": "arXiv:2604.18805 audits reasoning traces at far greater scale and supplies a manual marker taxonomy plus epistemological graphs over hypothesis/test/evidence/judgment/update/commitment operations",
+      "rakl_residual": "The parent's coding scheme measures whether epistemic operations occurred (and common failure modes), not which scientific-authority coordinate was licensed to move. Prediction→mechanism and mechanism→identification escalations are not first-class annotation labels. RAKL's ALR/transition panel remains a different measurement object; confirmatory model comparison is separately blocked.",
+      "residual_kind": "formal",
+      "required_discriminator": "A coding scheme or evaluator that labels authority-axis transitions (G/R/M/I/D) rather than only epistemic-operation presence. Empirically comparing rates still requires a capable-model RAKL-side run, which is out of scope for this literature lane.",
+      "claim_allowed_today": "NARROW_RESIDUAL",
+      "falsifier": "A parent annotation taxonomy that already distinguishes claim-kind authority escalations (e.g., prediction vs mechanism vs identification) as first-class labels.",
+      "evidence_level": "FULL_TEXT_PARTIAL"
     },
     {
       "function": "open-world discovery routes",
       "rakl_implementation": "src/rakl/open_world_discovery.py, src/rakl/discovery_coverage.py",
       "closest_parent": "autosci",
-      "same_function": "partial",
-      "stronger_parent_feature": "SciFlow's five-stage lifecycle begins at literature understanding, which is a registered discovery route in all but name",
-      "rakl_residual": "unknown until AutoSci's SciFlow literature stage is read in full text",
-      "residual_kind": "unknown",
-      "required_discriminator": "Read AutoSci's SciFlow section and determine whether discovery routes are registered and their coverage tracked, or whether literature search is an unbounded free-form stage.",
-      "claim_allowed_today": "CANNOT_CHECK",
+      "same_function": "yes",
+      "stronger_parent_feature": "SciFlow Literature stage is a harness-based skill contract with /discover ingestion and /novelty checking inside the /research lifecycle — registered discovery routes in all but name",
+      "rakl_residual": "none",
+      "residual_kind": "none",
+      "required_discriminator": "none - the function is conceded",
+      "claim_allowed_today": "INHERITED_NO_CLAIM",
       "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "bounded / freshness-expiring saturation",
       "rakl_implementation": "src/rakl/epistemic_saturation.py, src/rakl/framework_freshness.py",
       "closest_parent": "memclaw",
       "same_function": "partial",
-      "stronger_parent_feature": "MemClaw reports temporal supersession and asynchronous contradiction detection in a live production service, and surfaces a pipeline-ordering defect where a near-duplicate filter rejects contradictory writes before the contradiction detector sees them",
-      "rakl_residual": "unknown. MemTX validity intervals and MemClaw temporal supersession both expire individual records; RAKL saturation is a statement about coverage of a hypothesis space, which is a different object. But MemClaw is the closest parent for the governance half and was read at abstract level only.",
-      "residual_kind": "unknown",
-      "required_discriminator": "Determine whether any parent expires a COVERAGE claim - 'we have searched enough' - as opposed to expiring individual records. MemClaw full text or service documentation is required.",
-      "claim_allowed_today": "CANNOT_CHECK",
-      "falsifier": "",
-      "evidence_level": "ABSTRACT_ONLY"
+      "stronger_parent_feature": "MemClaw temporal supersession and contradiction resolution expire or mark non-active individual memory rows under live production measurement",
+      "rakl_residual": "MemClaw (and MemTX validity intervals) expire or supersede individual records. RAKL saturation is a coverage claim over a registered discovery/hypothesis space with freshness expiry — a different object. No parent examined here defines and expires a 'we have searched enough under route set R' certificate.",
+      "residual_kind": "formal",
+      "required_discriminator": "A parent that expires a coverage/saturation certificate (route-indexed search completeness) rather than only individual memory rows.",
+      "claim_allowed_today": "NARROW_RESIDUAL",
+      "falsifier": "Any parent whose temporal/freshness mechanism applies to hypothesis-space coverage claims, not only per-record supersession.",
+      "evidence_level": "FULL_TEXT"
     },
     {
       "function": "fresh-assurance self-evolution",
       "rakl_implementation": "src/rakl/evolution.py, src/rakl/promotion_attestation.py, src/rakl/evolution_archive.py",
       "closest_parent": "autosci",
       "same_function": "partial",
-      "stronger_parent_feature": "SciEvolve is a full feedback-to-versioned-update loop across memory organisation, skills and templates - a direct parent for self-improvement",
-      "rakl_residual": "unknown. The candidate residual is that promotion requires assurance freshly generated after the challenger exists, rather than development metrics. Whether SciEvolve gates its versioned updates on any held-out check is not stated on the abstract page.",
-      "residual_kind": "unknown",
-      "required_discriminator": "Read AutoSci's SciEvolve section and determine whether a versioned update is admitted on feedback alone or requires a check generated after the candidate was proposed.",
-      "claim_allowed_today": "CANNOT_CHECK",
-      "falsifier": "",
-      "evidence_level": "ABSTRACT_AND_REPO"
+      "stronger_parent_feature": "SciEvolve is a full feedback→versioned-update loop across SciMem organization, SciFlow skills and SciDAG templates with auditable /dream /forge /morph paths",
+      "rakl_residual": "SciEvolve admits patches when recurring patterns make 'evidence stable enough'; it does not require a held-out assurance packet freshly generated after the challenger exists and outside the challenger's write authority. Generic self-improvement is inherited; fresh-assurance gating is the residual.",
+      "residual_kind": "formal",
+      "required_discriminator": "Show SciEvolve (or peer) refuses a skill/template promotion that improves development metrics until a post-challenger held-out assurance receipt exists.",
+      "claim_allowed_today": "NARROW_RESIDUAL",
+      "falsifier": "A parent that gates method/skill promotion on fresh held-out assurance generated after the candidate exists.",
+      "evidence_level": "FULL_TEXT"
     }
   ],
   "ladder": [
@@ -448,14 +451,14 @@
     {
       "arm": "A6_SATURATION_AND_OPEN_WORLD",
       "adds": "A5 plus registered discovery routes and bounded, freshness-expiring saturation",
-      "approximates_parent_function": "unresolved - see the two CANNOT_CHECK rows for these functions",
-      "not_the_system": ""
+      "approximates_parent_function": "partially AutoSci SciFlow literature discovery (routes) + MemClaw/MemTX temporal expiry (records only)",
+      "not_the_system": "Not AutoSci and not MemClaw. AutoSci registers literature/discovery skills but does not define a freshness-expiring coverage certificate; MemClaw expires individual rows, not hypothesis-space saturation."
     },
     {
       "arm": "A7_FULL_RAKL",
       "adds": "A6 plus protected method evolution gated on fresh assurance",
       "approximates_parent_function": "the AutoSci SciEvolve function",
-      "not_the_system": "Not AutoSci. Whether SciEvolve gates on a post-hoc check is unread, so the contrast is not yet established."
+      "not_the_system": "Not AutoSci. SciEvolve updates organization/skills/templates from recurring feedback when judged stable enough; it does not gate promotion on held-out fresh assurance generated after the challenger exists."
     }
   ],
   "intervention_contracts": [
@@ -490,5 +493,22 @@
       "falsifier": "alignment preconditions produce no change in premature-refutation rate, or block genuine refutations at the same rate they block premature ones"
     }
   ],
-  "grants_scientific_authority": false
+  "grants_scientific_authority": false,
+  "a3_a4_empirical_note": {
+    "slurm_job_id": "3476749",
+    "harvest_verdict": "SCORED_ARM_RESPONSES_NON_CONFIRMATORY",
+    "status_path": "research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_STATUS.json",
+    "a3": {
+      "alr": 0.15384615384615385,
+      "valid_upgrade_recall": 0.0,
+      "false_conservative_refusal_rate": 0.0625
+    },
+    "a4": {
+      "alr": 0.0,
+      "valid_upgrade_recall": 0.0,
+      "false_conservative_refusal_rate": 0.625
+    },
+    "interpretation": "A4 ALR=0 with valid-upgrade recall=0 and high false-conservative refusal is conservatism, not typed-authority superiority. A3 also has valid-upgrade recall=0. No A4>A3 novelty claim is licensed. Confirmatory identification remains CANNOT_IDENTIFY while CAPABLE_MODEL_AVAILABLE=NO_REFUTED after V2_EXEC 3476813 (2/5).",
+    "grants_scientific_authority": false
+  }
 }

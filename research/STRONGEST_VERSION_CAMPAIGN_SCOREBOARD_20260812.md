@@ -50,7 +50,7 @@ These may proceed **without** a capable model. They do **not** clear `CAPABLE_MO
 
 | Lane | Status | Notes |
 |------|--------|-------|
-| Closest-parent / function-matched literature audit | actionable | `research/paper2_closest_parent/` — primary-source audit + ablation matrix; claim stays `CANNOT_IDENTIFY` for confirmatory novelty until capable model + registered empirics |
+| Closest-parent / function-matched literature audit | V2 landed | `PRIMARY_SOURCE_AUDIT_V2_RECEIPT.json` — AutoSci/MemClaw/AI-scientists full text; 12 inherited / 10 residual / 1 adopt; confirmatory A3↔A4 still `CANNOT_IDENTIFY`; 3476749 non-confirmatory (upgrade-recall=0) |
 | Paper-III human recruitment packet | frozen / open recruitment | `research/paper3_powered_noncircular_human_packet_v1/` (#359/#358) — `BLOCKED_HUMAN`; do not invent annotators; AI_OPERATOR demoted floors already closed |
 | Paper-V independent novelty human residual | frozen / open recruitment | `research/paper5_independent_novelty_human_residual_v1/` (#353) — `BLOCKED_HUMAN` |
 | Sham matcher unit tests | actionable | `tests/test_paper5_active_sham.py` + `research/paper5_sham_policy_v1/` — instrument-only; confirmatory four-arm still unauthorized (#367) |
