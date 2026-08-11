@@ -4,8 +4,8 @@ The modules behind this facade deliberately separate planning from authority. Pa
 search and strategy motifs generate candidate research routes; theorem, novelty and
 publication stages are still controlled by explicit assurance receipts. Strict RAKL
 mathematical discovery additionally requires a frozen context/analogue-transfer
-packet, a review of accumulated success/failure experience, an obstruction-
-transformation semantic-shortcut review, and an auditable public research trace
+packet, a review of accumulated success/failure experience, a content-bound
+obstruction-transformation memory/review, and an auditable public research trace
 before candidate generation.
 """
 
@@ -124,8 +124,10 @@ from .semantic_shortcut import (
     MissingTransformationSpecification,
     ObstructionFingerprint,
     ObstructionTransformationEpisode,
+    ObstructionTransformationMemory,
     ObstructionTransformationReview,
     RouteSearchStatus,
+    ShortcutCandidateSet,
     ShortcutMode,
     ShortcutReviewReport,
     ShortcutReviewVerdict,
@@ -133,12 +135,18 @@ from .semantic_shortcut import (
     StructuralMatch,
     TransformationCompositionWitness,
     TransformationEpisodeAuthority,
+    add_transformation_episode,
     audit_obstruction_transformation_review,
+    build_transformation_memory,
+    discover_shortcut_candidates,
+    find_transformation_episode,
     rank_obstruction_transformations,
     repeated_residual_features,
+    replace_transformation_episode,
     synthesize_missing_transformation_specification,
     validate_obstruction_fingerprint,
     validate_transformation_episode,
+    validate_transformation_memory,
 )
 from .strategy_motifs import (
     DEFAULT_STRATEGY_MOTIFS,
@@ -180,6 +188,7 @@ __all__ = [
     "ObstructionFingerprint",
     "ObstructionKind",
     "ObstructionTransformationEpisode",
+    "ObstructionTransformationMemory",
     "ObstructionTransformationReview",
     "OperatorFamily",
     "PathCandidate",
@@ -210,6 +219,7 @@ __all__ = [
     "ResearchTraceReport",
     "ReuseVerdict",
     "RouteSearchStatus",
+    "ShortcutCandidateSet",
     "ShortcutMode",
     "ShortcutReviewReport",
     "ShortcutReviewVerdict",
@@ -229,6 +239,7 @@ __all__ = [
     "add_failure_link",
     "add_node",
     "add_research_tool",
+    "add_transformation_episode",
     "all_dependencies_verified",
     "apply_operator_symbolic",
     "assess_method_reuse",
@@ -241,10 +252,13 @@ __all__ = [
     "audit_proof_receipt",
     "audit_research_memory_review",
     "audit_research_trace",
+    "build_transformation_memory",
     "classify_math_record",
     "close_with_certificate",
     "dependency_closure",
     "derive_planning_state",
+    "discover_shortcut_candidates",
+    "find_transformation_episode",
     "global_failure_portrait",
     "instantiate_strategy_motif",
     "operator_applicable",
@@ -256,6 +270,7 @@ __all__ = [
     "rank_strategy_motifs",
     "refute_node",
     "repeated_residual_features",
+    "replace_transformation_episode",
     "search_operator_paths",
     "synthesize_missing_transformation_specification",
     "tool_inventory_portrait",
@@ -266,5 +281,6 @@ __all__ = [
     "validate_research_tool",
     "validate_strategy_motif",
     "validate_transformation_episode",
+    "validate_transformation_memory",
     "verify_checkpoint",
 ]
