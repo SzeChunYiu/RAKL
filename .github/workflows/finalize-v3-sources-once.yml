@@ -18,81 +18,7 @@ jobs:
         with:
           ref: publication/v3-finalize-20260811
       - name: Apply publication source fixes
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_exact(path: str, old: str, new: str) -> None:
-              p = Path(path)
-              text = p.read_text()
-              if old not in text:
-                  raise SystemExit(f"expected text not found in {path}: {old[:80]!r}")
-              p.write_text(text.replace(old, new, 1))
-
-          p4_paths = [
-              "paper/papers/paper-04-verified-discovery/main.tex",
-              "publication/papers/paper-04-verified-discovery/main.tex",
-          ]
-          for path in p4_paths:
-              replace_exact(
-                  path,
-                  r"\newcommand{\ImplementationSHA}{\texttt{0000000000000000000000000000000000000000}}" + "\n" + r"\newcommand{\SoftwareTests}{1}" + "\n",
-                  "",
-              )
-              replace_exact(
-                  path,
-                  r"\author{Sze Chun Yiu}" + "\n" + r"\date{10 August 2026}",
-                  r"\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}" + "\n" + r"\date{11 August 2026}",
-              )
-              replace_exact(
-                  path,
-                  r"The staged release source and machine receipt record the exact 40-character Git subject identifier used for evaluation; the manuscript also records \SoftwareTests{} passing repository tests before PDF construction.",
-                  r"Machine-readable receipts bind evaluated artifacts to exact release identities and their recorded test evidence; this stable manuscript source does not hard-code a Git subject or an aggregate repository test count.",
-              )
-
-          intro_paths = [
-              "paper/papers/paper-01-epistemic-mechanics/sections/01_introduction_foundations_state.tex",
-              "publication/papers/paper-01-epistemic-mechanics/sections/01_introduction_foundations_state.tex",
-          ]
-          old_verifier = r'''\[
-V(p,e,\gamma)\in
-\{\mathrm{SUPPORTED},\mathrm{REFUTED},\mathrm{PARTIALLY\ IDENTIFIED},
-\mathrm{BLOCKED},\mathrm{CANNOT\ CHECK}\}.
-\]'''
-          new_verifier = r'''\[
-V(p,e,\gamma)\in
-\left\{
-\begin{aligned}
-&\mathrm{SUPPORTED},\ \mathrm{REFUTED},\ \mathrm{PARTIALLY\ IDENTIFIED},\\
-&\mathrm{BLOCKED},\ \mathrm{CANNOT\ CHECK}
-\end{aligned}
-\right\}.
-\]'''
-          for path in intro_paths:
-              replace_exact(path, old_verifier, new_verifier)
-
-          workspace_paths = [
-              "paper/papers/paper-01-epistemic-mechanics/sections/03_workspace.tex",
-              "publication/papers/paper-01-epistemic-mechanics/sections/03_workspace.tex",
-          ]
-          old_access = r'''\[
-A_t(a)=\text{computational accessibility},\qquad
-C_t(a)=\text{atlas coherence},\qquad
-\alpha_t(a)=\text{epistemic authority}.
-\]'''
-          new_access = r'''\[
-\begin{aligned}
-A_t(a)&=\text{computational accessibility},\\
-C_t(a)&=\text{atlas coherence},\\
-\alpha_t(a)&=\text{epistemic authority}.
-\end{aligned}
-\]'''
-          for path in workspace_paths:
-              replace_exact(path, r"\subsection{Selection as a constrained top-$k$ problem}", r"\subsection{Selection as a constrained top-k problem}")
-              replace_exact(path, old_access, new_access)
-          PY
+        run: python scripts/finalize_v3_sources.py
       - name: Commit finalized sources
         shell: bash
         run: |
@@ -100,5 +26,6 @@ C_t(a)&=\text{atlas coherence},\\
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add paper/papers publication/papers
+          git diff --cached --quiet && { echo "No source changes to commit"; exit 0; }
           git commit -m "fix(publication): finalize v3 metadata and layout"
           git push origin HEAD:publication/v3-finalize-20260811
