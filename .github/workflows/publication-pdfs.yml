@@ -128,6 +128,10 @@ jobs:
               ),
               encoding="utf-8",
           )
+          Path("build/publication/paper-02/latexmkrc").write_text(
+              '@default_files = ("main.tex");\n',
+              encoding="utf-8",
+          )
           PY
 
       - name: Require author metadata and AI-use disclosures
