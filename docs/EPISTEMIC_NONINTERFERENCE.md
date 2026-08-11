@@ -187,8 +187,21 @@ A registered promotion that moves `pi_auth` must satisfy all of:
 4. **no axis escalation** — `MECHANISM` needs mechanism-supporting evidence, not
    representation-supporting evidence; `IDENTIFICATION` likewise over mechanism.
 
-`supports_axes` is a frozen property of the registered evidence. The checker
+`supports_axes` is a frozen property of the registered evidence, normalised to a
+canonical axis order so that the same axis set is the same value. The checker
 consults no semantic oracle and reads no model chain-of-thought.
+
+**The runtime gate is strictly stronger than the checker on rule 2.** The checker
+(`_check_promotion`) flags an experience-backed grant only when *no* scientific
+root is also present, so it tolerates a mixed claim. The runtime
+(`v3_scientific_authority._check_evidence_contract`) refuses **any** claimed
+experience root, mixed or not: an episode, lesson or routing statistic is never
+evidence about nature, so listing one alongside a real observation buys nothing
+and only inflates the apparent support. The divergence is deliberate — the
+runtime may be stricter than the invariant, never laxer. Both directions are
+covered: `test_planted_shortcut_cannot_mint_scientific_authority` for the
+runtime, `test_experience_backed_promotion_is_authority_laundering` for the
+checker.
 
 ## 6. Threat families and planted worlds
 

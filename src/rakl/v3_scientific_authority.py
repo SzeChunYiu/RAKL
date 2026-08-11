@@ -159,6 +159,14 @@ class ScientificEvidenceBinding:
             raise ValueError("evidence binding cannot be its own upstream root")
         if len(set(self.supports_axes)) != len(self.supports_axes):
             raise ValueError("supports_axes must not repeat an axis")
+        # Normalise axis order. ``supports_axes`` is a set of axes semantically,
+        # but a tuple structurally, so (R, M) and (M, R) would otherwise be
+        # unequal values meaning the same thing — enough to make an idempotent
+        # re-registration raise "already registered with different content"
+        # while producing an identical subject hash.
+        ordered = tuple(sorted(self.supports_axes, key=lambda axis: axis.value))
+        if ordered != self.supports_axes:
+            object.__setattr__(self, "supports_axes", ordered)
 
 
 @dataclass(frozen=True)

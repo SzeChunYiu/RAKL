@@ -730,6 +730,52 @@ def test_attestation_absent_from_the_release_manifest_is_refused() -> None:
     assert "protected_attestation_not_in_release_manifest" in outcome.reasons
 
 
+def test_supports_axes_order_is_not_part_of_evidence_identity() -> None:
+    """The same axis set is the same value, whatever order it was written in.
+
+    Without normalisation, re-registering identical evidence with the axes
+    transposed raises "already registered with different content" while
+    producing an identical subject hash — two components disagreeing about what
+    identity means.
+    """
+
+    forward = ScientificEvidenceBinding(
+        "obs-order",
+        EvidenceRootKind.EXTERNAL_OBSERVATION,
+        sha256_text("order probe"),
+        (AuthorityAxis.REPRESENTATION, AuthorityAxis.MECHANISM),
+    )
+    reversed_ = ScientificEvidenceBinding(
+        "obs-order",
+        EvidenceRootKind.EXTERNAL_OBSERVATION,
+        sha256_text("order probe"),
+        (AuthorityAxis.MECHANISM, AuthorityAxis.REPRESENTATION),
+    )
+    assert forward == reversed_
+    state = register_scientific_evidence(seeded_state(), forward)
+    # Idempotent re-registration must not raise.
+    assert register_scientific_evidence(state, reversed_) is state
+
+
+def test_runtime_refuses_experience_evidence_even_when_mixed_with_real_evidence() -> None:
+    """The runtime gate is strictly stronger than the checker's rule 2.
+
+    ``_check_promotion`` tolerates an experience root when a scientific root is
+    also present; the runtime refuses any experience root at all. Listing an
+    episode next to a real observation buys nothing and inflates apparent
+    support. Documented in ``docs/EPISTEMIC_NONINTERFERENCE.md`` §5.
+    """
+
+    outcome = _attempt(
+        replace(PROMOTION_PROPOSAL, evidence_ids=("obs-mechanism", "lesson-1"))
+    )
+    assert outcome.committed is False
+    assert any(
+        reason.startswith("experience_objects_claimed_as_scientific_evidence")
+        for reason in outcome.reasons
+    )
+
+
 def test_unregistered_evidence_cannot_back_a_promotion() -> None:
     outcome = _attempt(replace(PROMOTION_PROPOSAL, evidence_ids=("obs-invented",)))
     assert outcome.committed is False
