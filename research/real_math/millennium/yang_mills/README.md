@@ -27,17 +27,19 @@ with a frozen `MathContextFiber`, dual success/failure `ResearchMemoryReview`, s
 
 Breakthrough-learning modes and cross-domain analogies are proposal-only. Same-context expert roles are not independent review. Computation is not proof.
 
-## Current constructive-continuum atom
+## Constructive-continuum state
 
-`YM-E1a` asks for observable-level cutoff removal for pure 4D Yang–Mills: obtain cutoff-uniform control of renormalized gauge-invariant observable expectations strong enough to extract an OS-compatible, non-trivial compact continuum limit.
+Parent atom `YM-E1a` asks for observable-level cutoff removal for pure 4D Yang–Mills: obtain cutoff-uniform control of renormalized gauge-invariant observable expectations strong enough to extract an OS-compatible, non-trivial compact continuum limit.
 
-The first strict constructive packet deliberately stops before a mathematical candidate. Its next discriminator is a finite-cutoff observable-interface calibration comparing:
+Its non-candidate observable-interface calibration is now complete. The expert cell did **not** find one observable family that safely carries gauge invariance, renormalization, reflection positivity, locality, continuum convergence and non-triviality by itself. The retained architecture is:
 
-1. Wilson loops;
-2. renormalized or smeared local curvature composites;
-3. source-inserted generating functionals.
+- a **source-marked generating-functional wrapper** whose derivatives expose observable insertions and mixing to the RG;
+- **Wilson-loop / loop-cylinder observables** as the fixed-cutoff reflection-positive gauge-invariant core probe, with continuum loop renormalization still explicit;
+- **positive-flow-time gauge-invariant composites** only as UV-regular diagnostic/non-triviality probes until separate reflection-support and `t -> 0` locality bridges are proved.
 
-For each representation the calibration must fix the finite-cutoff definition, refinement/common-algebra map, gauge property, renormalization and operator-mixing closure, reflection action, convergence topology and uniform bounds, non-triviality witness, and cheapest failure test before a continuum-transfer lemma is generated.
+This opens child atom `YM-E1a1` — **marked one-step RG closure**: before any multiscale theorem candidate, test whether one exact Balaban-style RG step can carry a finite positive-half-space gauge-invariant source family with controlled source/operator mixing, bounded support enlargement, and derivative estimates whose constants do not already diverge with UV depth.
+
+A fresh strict context/memory/trace packet is required for `YM-E1a1` before any mathematical candidate is generated.
 
 ## Current spectral atom
 
