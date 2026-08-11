@@ -1,61 +1,54 @@
 # Schema `$id` consistency — issue #148
 
-Status: `IMPLEMENTATION_CONSISTENCY_DEFECT / NO_SCHEMA_CHANGE_MADE / OWNER_DECISION_REQUIRED`
+Status: `OWNER_DECISION_LANDED (#184) / CLI_REGRESSION_CHECKER_ADDED`
 
-## Measured state (origin/main = `787c7e0`)
+## Measured state (origin/main after #184 = `5816452`)
 
 Reproduced by `python scripts/audit_schema_id_consistency.py`:
 
 ```
 schema_count: 96
-namespace_count: 4
+namespace_count: 1
 namespaces:
-   59  https://github.com/SzeChunYiu/RAKL/schemas
-   32  https://example.invalid/rakl
-    4  https://rakl.dev/schemas
-    1  https://rakl.example/schemas
+   96  https://github.com/SzeChunYiu/RAKL/schemas
+findings: none
 ```
 
-All 96 schemas carry a `$id` and every `$id` filename component matches its file
-basename, so the only live defect is the 4-way namespace split. Counts have drifted
-from the issue's snapshot at `bd1a2768f0` (52/32/2/1): the GitHub base grew to 59 and
-the `rakl.dev` base grew from 2 to 4. The split itself is unchanged.
+#184 unified the previous 4-way split onto the frozen GitHub schemas base. This PR
+adds a standalone CLI regression checker plus planted-world tests so the same
+defect class cannot reopen without a failing operator-facing tool.
 
 ## What this change does
 
 - Adds `scripts/audit_schema_id_consistency.py` — a stdlib-only regression checker
   that asserts `$id` exists, extracts the base, checks the filename component, and
-  reports the namespace split. Exits nonzero on missing `$id`, foreign base vs a
+  reports any namespace split. Exits nonzero on missing `$id`, foreign base vs a
   frozen expected base (`--expected-base`), filename mismatch, or a split
   (`namespace_count != 1` without `--expected-base`).
 - Adds `tests/test_schema_id_consistency.py` — frozen-world tests under `tmp_path`
   (missing `$id`, foreign base / split, foreign base vs `--expected-base`, filename
-  mismatch, clean control that must NOT fire) plus one `xfail(strict=True)` test that
-  runs the checker against the real `schemas/`.
+  mismatch, clean control that must NOT fire) plus a real-`schemas/` regression
+  that pins `--expected-base https://github.com/SzeChunYiu/RAKL/schemas`.
 
 ## What this change deliberately does NOT do
 
-No `$id` value is changed. Choosing the canonical base is an owner decision: existing
-artifacts/receipts may quote current `$id` values, and rewriting identities in
-frozen/immutable artifacts is forbidden. The checker selects no winner and grants no
-authority. See the issue's "Deliberately not done" section.
+No `$id` value is rewritten here (that landed in #184). The checker still grants no
+theorem/mechanism authority; it is measurement/regression only.
 
-## xfail rationale
+## Relation to `tests/test_schema_id_uniformity.py`
 
-The real-`schemas/` test asserts the checker passes (`returncode == 0`). Today the
-family is split, the checker exits 1, the assertion fails → **XFAIL** (green for CI).
-When an owner unifies the bases to one, the checker exits 0, the assertion passes →
-**XPASS**, and `strict=True` turns that red, forcing removal of the marker at the same
-time the defect is closed. This documents the defect in the suite without going red.
+The in-suite uniformity guard from #184/#0772e74 remains the pytest-facing
+sentinel. This checker is the operator-facing CLI twin: same defect class, same
+canonical base, usable outside pytest and emit-able as JSON for receipts.
 
-## Owner-decision options (from the issue)
+## Frozen canonical base
 
-1. Adopt the GitHub base (`https://github.com/SzeChunYiu/RAKL/schemas`) — points at a
-   real location but not a served schema document, and is unstable under a repo/org
-   rename (the hard prerequisite for the Class-3 analysis in #137).
-2. Adopt a controlled domain (e.g. `https://rakl.dev/schemas`) — stable under rename
-   but requires the project to actually control the domain.
-3. Adopt a non-resolvable stable URN — stable and rename-proof, at the cost of never
-   resolving to a served document.
+`https://github.com/SzeChunYiu/RAKL/schemas` (no trailing slash in the checker’s
+base extraction; `$id` values keep the trailing `/` before the filename).
 
-The checker supports all three via `--expected-base URL` once one is chosen.
+Enforce with:
+
+```bash
+python scripts/audit_schema_id_consistency.py \
+  --expected-base https://github.com/SzeChunYiu/RAKL/schemas
+```

@@ -2,9 +2,8 @@
 
 These tests build synthetic schema families under `tmp_path` so the checker's
 discriminating power is validated against planted worlds, independent of the real
-`schemas/` directory (which carries a live, owner-decision-pending split and must not
-be edited by this change). A final test runs the checker against the real `schemas/`
-and is marked `xfail(strict=True)` to surface the live defect without making CI red.
+`schemas/` directory. A final test runs the checker against the real `schemas/`
+and asserts the post-#184 unified family still passes.
 
 The checker is invoked as a subprocess (its production entry point), so these tests
 exercise exactly the code path CI and operators run.
@@ -138,26 +137,18 @@ def test_filename_mismatch_world_is_detected(tmp_path: Path) -> None:
     assert "alpha.schema.json" in result.stdout
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "issue #148: $id namespaces not yet unified — owner decision pending. "
-        "The real schemas/ family is split across multiple bases; the checker "
-        "correctly exits nonzero, so this 'assert pass' fails (XFAIL) until an "
-        "owner picks one canonical base. When that happens the checker passes, "
-        "this turns XPASS and the strict marker forces removing it."
-    ),
-)
 def test_real_schemas_directory_is_unified() -> None:
-    """The real schemas/ directory must ultimately pass the consistency checker.
+    """The real schemas/ directory must pass the consistency checker.
 
-    Until issue #148's owner decision lands, the family is split across bases, so
-    the checker exits nonzero and this assertion fails — which is the expected
-    XFAIL state. It documents the defect in the test suite without going red.
+    #184 unified every ``schemas/*.schema.json`` ``$id`` onto the frozen GitHub
+    base. This test keeps that decision from regressing via the CLI checker
+    (complement to ``tests/test_schema_id_uniformity.py``).
     """
-    result = run_checker(REPO_ROOT)
+    result = run_checker(REPO_ROOT, "--expected-base", CLEAN_BASE)
     assert result.returncode == 0, (
         "schema $id consistency checker failed on real schemas/:\n"
         + result.stdout
         + result.stderr
     )
+    assert "namespace_count: 1" in result.stdout
+    assert "findings: none" in result.stdout

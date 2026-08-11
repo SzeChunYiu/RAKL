@@ -1,26 +1,13 @@
 #!/usr/bin/env python3
 """Schema `$id` consistency regression checker for issue #148.
 
-The 87+ JSON schemas in `schemas/` declare their `$id` (schema identity — the key
-that `$ref`, registry lookup, cached resolution and cross-schema composition key on)
-under several different namespace bases. As of `main = 787c7e0` the split is measured
-at four bases:
+After #184, every ``schemas/*.schema.json`` ``$id`` shares the frozen canonical
+base ``https://github.com/SzeChunYiu/RAKL/schemas``. This CLI keeps that decision
+from regressing and remains usable outside pytest (operator-facing twin of
+``tests/test_schema_id_uniformity.py``).
 
-    59  https://github.com/SzeChunYiu/RAKL/schemas
-    32  https://example.invalid/rakl
-     4  https://rakl.dev/schemas
-     1  https://rakl.example/schemas
-
-Four identities for one coherent schema family means identity is unstable under a
-repository rename and two of the bases are deliberately non-resolvable placeholders.
-The defect is currently latent because the repo's own validators load schemas by path,
-not by `$id`, which is why it has survived the existing tests.
-
-This checker makes the defect visible and keeps it from regressing further. It is a
-**measurement / regression tool only**. It selects no canonical base, rewrites no
-`$id`, and grants no authority: choosing the frozen base is an owner decision with
-real consequences (existing artifacts and receipts may quote current `$id` values,
-and rewriting identities in frozen/immutable artifacts is forbidden).
+It is a **measurement / regression tool only**. It rewrites no ``$id`` and grants
+no authority. Pass ``--expected-base`` to pin the frozen winner.
 
 Checks performed for every `schemas/*.json`:
   (a) a `$id` key exists and is a string                       -> MISSING_ID
@@ -31,8 +18,7 @@ Checks performed for every `schemas/*.json`:
 Exit nonzero if any schema is missing `$id`, has a foreign base vs a frozen expected
 base, or has a filename mismatch. Without `--expected-base` the checker treats "one
 coherent family = one base" as the implicit frozen expectation, so any split
-(namespace_count != 1) is itself the foreign-base defect. Once an owner pins the
-canonical base, pass `--expected-base URL` to enforce that exact base.
+(namespace_count != 1) is itself the foreign-base defect.
 
 Usage:
     python scripts/audit_schema_id_consistency.py                       # human report
