@@ -1,0 +1,155 @@
+{
+  "atom_id": "BSD-A1-RANK2-BRIDGE",
+  "object_context": "Initial analytic-lane obstruction for BSD over Q: for an elliptic curve E/Q with ord_{s=1} L(E,s)=2, identify an unconditional, source-bound arithmetic bridge that can certify two independent Mordell-Weil directions and support the rank-two regulator/Sha part of the refined BSD formula, without assuming BSD itself, an equivalent main conjecture, or a rank-one theorem outside its hypotheses.",
+  "structural_coordinates": [
+    "the official Clay/Wiles rank statement is ord_{s=1} L(E,s)=rank E(Q) for elliptic curves over Q",
+    "the refined leading coefficient contains the Tate-Shafarevich order, a rank-by-rank Neron-Tate regulator determinant, real period, bad-prime local/Tamagawa factors, and torsion denominator",
+    "analytic rank two forces even functional-equation sign and L(E,1)=L'(E,1)=0 with L''(E,1) nonzero after normalization",
+    "Gross-Zagier is intrinsically a first-derivative/height-of-Heegner-point bridge in its classical rank-one setting",
+    "Kolyvagin-style Euler-system arguments turn suitable nontrivial classes into strong Selmer bounds but their classical Heegner-point success is rank-one scoped",
+    "rank two requires independence, not merely existence: a single non-torsion point proves only rank at least one",
+    "a rank-two arithmetic certificate naturally has determinantal/exterior-power structure and must survive the passage from Selmer information to actual Mordell-Weil rank",
+    "finiteness and exact size of Sha are logically separate from rank equality and are needed for the full leading-term formula",
+    "p-adic or anticyclotomic control does not automatically identify the complex second derivative or the global leading coefficient",
+    "current accepted status remains unsolved; unreviewed 2026 claims cannot be imported as theorem authority"
+  ],
+  "equivalent_formulations": [
+    "for analytic-rank-two E/Q, produce two Z-independent rational points and prove there are no further independent points",
+    "prove Selmer corank two together with enough control of Sha to identify Mordell-Weil rank two",
+    "construct a nonzero rank-two exterior/determinantal arithmetic class and prove that its nonvanishing is forced by the analytic second-order zero",
+    "establish a rank-two height/regulator identity that connects L''(E,1) to the determinant of a Neron-Tate pairing on two independent global points",
+    "close the rank-two piece of the refined BSD leading-term formula with exact local factors, torsion, period, regulator, and Sha normalization"
+  ],
+  "solved_analogues": [
+    "analytic-rank-zero and analytic-rank-one BSD rank equality for elliptic curves over Q, via modularity together with Gross-Zagier/Kolyvagin-type results as summarized in the official Clay/Wiles problem description"
+  ],
+  "near_solved_analogues": [
+    "higher-rank Euler/Kolyvagin/Stark-system formalism of Burns-Sano, which supplies exterior-power algebraic machinery under explicit representation and Selmer hypotheses",
+    "Chan-Ho Kim's higher Gross-Zagier/Selmer-structure preprint, which treats arbitrary-rank Selmer structures but explicitly separates nontriviality/main-conjecture inputs from a number-field higher-rank analytic formula"
+  ],
+  "method_transfers": [
+    {
+      "source_context": "Gross-Zagier plus Kolyvagin in the analytic-rank-one regime",
+      "method": "first obtain a source-bound arithmetic witness from central L-function behavior, then use an Euler/Kolyvagin system to turn witness nontriviality into an upper bound on the relevant Selmer group",
+      "shared_structure": [
+        "central L-function vanishing order is to be related to global arithmetic rank",
+        "height pairings encode non-torsion arithmetic information",
+        "Selmer groups mediate between cohomological classes and Mordell-Weil/Sha information"
+      ],
+      "required_assumptions": [
+        "the exact modular/Heegner and local hypotheses of the invoked rank-one results",
+        "nontriviality of the relevant Heegner/Kolyvagin classes",
+        "correct passage from Selmer bounds to Mordell-Weil rank and Sha finiteness"
+      ],
+      "disanalogies": [
+        "analytic rank two has even sign and the classical first derivative vanishes, so the classical one-point Gross-Zagier witness is not a two-dimensional certificate",
+        "one non-torsion point or one rank-one Kolyvagin class cannot certify two independent Mordell-Weil directions",
+        "the refined rank-two formula requires a 2x2 regulator determinant and additional Sha/local-factor control"
+      ],
+      "repair_question": "What rank-two exterior or determinant-level arithmetic object can replace the single Heegner-point witness, and what unconditional analytic statement forces its nonvanishing when ord_{s=1}L(E,s)=2?",
+      "source_anchors": [
+        "Gross-Zagier, Heegner points and derivatives of L-series, Invent. Math. 84 (1986), DOI 10.1007/BF01388809",
+        "Kolyvagin, Finiteness of E(Q) and Sha(E,Q) for a subclass of Weil curves, Math. USSR-Izv. 32 (1989), DOI 10.1070/IM1989v032n03ABEH000779",
+        "Andrew Wiles, Clay official BSD problem description, https://www.claymath.org/wp-content/uploads/2022/05/birchswin.pdf"
+      ]
+    },
+    {
+      "source_context": "Burns-Sano higher-rank Euler, Kolyvagin and Stark systems",
+      "method": "represent rank-r arithmetic information by exterior-power system classes and use a higher-rank Kolyvagin-derivative formalism to constrain Selmer modules",
+      "shared_structure": [
+        "the target obstruction is genuinely rank two rather than scalar",
+        "Selmer information is naturally encoded in cohomological modules",
+        "determinantal/exterior algebra is the correct language for simultaneous independent directions"
+      ],
+      "required_assumptions": [
+        "the p-adic representation and coefficient ring satisfy the system-theoretic hypotheses",
+        "the relevant higher-rank Euler/Stark/Kolyvagin system is nonzero in the target specialization",
+        "local conditions match the classical Selmer problem required for BSD"
+      ],
+      "disanalogies": [
+        "the formalism constructs and relates modules of systems but does not by itself derive target nontriviality from the complex condition L''(E,1) != 0",
+        "p-adic Selmer control alone does not supply the exact complex BSD leading coefficient",
+        "an exterior cohomology class need not automatically descend to two explicit independent rational points"
+      ],
+      "repair_question": "Can analytic rank two force target nontriviality of a rank-two Euler/Kolyvagin/Stark-system specialization without assuming a main conjecture equivalent in strength to the desired BSD conclusion?",
+      "source_anchors": [
+        "Burns-Sano, On the Theory of Higher Rank Euler, Kolyvagin and Stark Systems, IMRN 2021(13), DOI 10.1093/imrn/rnz103"
+      ]
+    },
+    {
+      "source_context": "Chan-Ho Kim higher Gross-Zagier / Selmer-structure framework",
+      "method": "separate Selmer-structure theorems from nontriviality questions and compare Heegner/Kato/bipartite system data through explicit reciprocity and main-conjecture localizations",
+      "shared_structure": [
+        "the obstruction is not merely defining a rank-two formalism but proving the relevant system is nontrivial",
+        "root-number parity changes which geometric or quaternionic objects are available",
+        "arbitrary-rank Selmer structure can be studied before full analytic identification"
+      ],
+      "required_assumptions": [
+        "the working Galois-representation, reduction, and level hypotheses of the preprint",
+        "the stated nontriviality or localized main-conjecture inputs when invoked",
+        "careful separation of proved structure statements from conjectural or conditional analytic bridges"
+      ],
+      "disanalogies": [
+        "the preprint explicitly notes the number-field higher-rank analytic Gross-Zagier situation is substantially more difficult than rank at most one",
+        "its arbitrary-rank structural results do not constitute a generic proof that analytic rank two equals algebraic rank two",
+        "preprint status is not independent theorem authority for RAKL root promotion"
+      ],
+      "repair_question": "Which exact nontriviality statement in the rank-two even-sign setting has the strongest unconditional support, and what minimal additional theorem would connect it to L''(E,1) rather than to an assumed main conjecture?",
+      "source_anchors": [
+        "Chan-Ho Kim, A higher Gross-Zagier formula and the structure of Selmer groups, arXiv:2203.12161, version dated 2026-03-22"
+      ]
+    }
+  ],
+  "explicit_disanalogies": [
+    "the successful rank-one Heegner-point route cannot be copied by replacing 'one' with 'two' without proving independence and a determinant identity",
+    "nonzero Selmer classes do not automatically give rational points because Sha can absorb Selmer information",
+    "a p-adic main-conjecture or Iwasawa-theoretic equality is not the same object as the complex leading derivative in the Clay statement",
+    "a nonzero 2x2 regulator presupposes two independent global points and therefore cannot be used circularly to manufacture those points",
+    "special CM, twist-family, or local-prime results do not establish the generic elliptic-curve-over-Q rank-two bridge",
+    "unreviewed claims of a complete analytic-rank-two or full BSD proof are novelty-risk inputs only until independently validated"
+  ],
+  "source_anchors": [
+    "Clay Mathematics Institute BSD page, current status UNSOLVED as checked 2026-08-11: https://www.claymath.org/millennium/birch-and-swinnerton-dyer-conjecture/",
+    "Andrew Wiles, official BSD problem description: https://www.claymath.org/wp-content/uploads/2022/05/birchswin.pdf",
+    "Gross-Zagier 1986, DOI 10.1007/BF01388809",
+    "Kolyvagin 1989, DOI 10.1070/IM1989v032n03ABEH000779",
+    "Burns-Sano 2021, DOI 10.1093/imrn/rnz103",
+    "Chan-Ho Kim, arXiv:2203.12161, 2026-03-22 version",
+    "Burungale-Tian, Annals of Mathematics 203 (2026), DOI 10.4007/annals.2026.203.1.1"
+  ],
+  "analogy_scan_status": "BRIDGES_RETAINED",
+  "cross_domain_analogies": [
+    {
+      "source_kind": "systems/observability-and-experimental-design",
+      "source_situation": "A latent state with two independent degrees of freedom cannot be certified by a single scalar measurement direction; one seeks multiple independent probes whose information/Gram matrix has nonzero determinant.",
+      "common_abstraction": [
+        "dimension-two hidden structure must be witnessed by two independent directions",
+        "a determinant tests whether nominally multiple witnesses collapse onto the same direction",
+        "existence of observations and identifiability of independent degrees of freedom are separate obligations"
+      ],
+      "source_to_target_mapping": [
+        "latent state directions -> independent Mordell-Weil generators",
+        "measurement/probe directions -> arithmetic cohomology or global point classes",
+        "information/Gram determinant -> exterior class or Neron-Tate regulator determinant",
+        "single observable -> classical rank-one Heegner-point witness"
+      ],
+      "shared_constraints": [
+        "duplicated or collinear witnesses do not certify dimension two",
+        "the determinant must be nonzero for structural reasons rather than numerical accident",
+        "the observation mechanism must actually couple to every target direction"
+      ],
+      "disanalogies": [
+        "BSD has no given linear measurement operator whose observability theory can be imported",
+        "analytic derivatives, Selmer classes, and rational points live in different categories and require theorems to relate them",
+        "a positive-definite information matrix in engineering does not imply a Neron-Tate height formula"
+      ],
+      "proposed_principle": "Before searching for a rank-two formula, demand a determinant-level certificate with separately proved existence, independence, and analytic coupling; reject any route that only duplicates a rank-one witness.",
+      "validation_obligation": "For any proposed rank-two bridge, prove that two arithmetic directions are genuinely independent, identify the exact determinant/exterior object, show why analytic rank two forces its nonvanishing, and exhibit a counterexample or failure mode when the two witnesses become dependent.",
+      "provenance_note": "Structural analogy only; it motivates an independence test and cannot supply arithmetic or analytic theorem authority."
+    }
+  ],
+  "analogy_scan_notes": "Scanned rank-one arithmetic bridges, higher-rank cohomological system formalisms, determinant/height structures, and cross-domain observability. Retained only the observability/determinant analogy because it exposes the exact independence failure that a naive two-copy rank-one strategy would miss.",
+  "frozen_at": "2026-08-11T06:08:00+00:00",
+  "first_candidate_at": null,
+  "packet_hash": "sha256:5378097f234fd087ba4aa189612c0f735829c9f0f9ab8d2184b3ef696eee9912"
+}
