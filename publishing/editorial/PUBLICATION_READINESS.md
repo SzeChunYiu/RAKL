@@ -8,7 +8,7 @@ This is the editorial control panel, not part of the reader-facing `publication/
 |---|---|---|
 | 01 — Epistemic Mechanics | formal-methods preprint | independent formal, novelty and editorial review (#41) for stronger journal claims |
 | 02 — RAKL Evidence-Governed Research | methods/reference-architecture + preregistered-evaluation preprint; V4/V4.1 native microtrial documented as non-confirmatory (0 exact conceptual passes; tip jobs 3476520/1/4 harvest-pass only) | matched architecture × evidence-access study, OWMD prospective test, fresh-assurance comparison, reproduction/review |
-| 03 — Directional Structural Witnesses | diagnostic-formalism / benchmark-design preprint; descriptor harvests READY with `training_authorized=false` (#43 empty) | external annotations/adjudication/provenance, held-out signal gate, then any authorized efficiency experiment |
+| 03 — Directional Structural Witnesses | diagnostic-formalism / benchmark-design preprint; descriptor harvests READY with `training_authorized=false` (#217 empty; successor of deleted #43) | external annotations/adjudication/provenance, held-out signal gate, then any authorized efficiency experiment |
 | 04 — Verified Discovery | mathematical-research assurance architecture preprint | external empirical superiority evidence only if such a stronger claim is later made |
 | 05 — Experience-Governed Evolution | methodology / instrumentation / preregistered-evolution preprint | executed causal-attribution and Class-B fresh-assurance evolution evidence |
 

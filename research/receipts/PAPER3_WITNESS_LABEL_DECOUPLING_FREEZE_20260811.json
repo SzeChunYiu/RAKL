@@ -1,0 +1,39 @@
+{
+  "schema_version": "paper3-witness-label-decoupling-freeze-v1",
+  "receipt_id": "paper3-witness-label-decoupling-freeze-20260811",
+  "created_at_utc": "2026-08-11T21:10:00Z",
+  "issue_refs": [
+    "https://github.com/SzeChunYiu/RAKL/issues/217",
+    "https://github.com/SzeChunYiu/RAKL/issues/248"
+  ],
+  "claim_boundary": "Pre-label diagnostic freeze only. No annotation payload was created or imported. Does not authorize training, confirmatory PASS, or witnessed_structure claims.",
+  "frozen_before_annotation": true,
+  "implementation": {
+    "module": "src/rakl/paper3_witness_decoupling.py",
+    "tests": "tests/test_paper3_witness_decoupling.py"
+  },
+  "diagnostic": {
+    "id": "witness_label_decoupling_rate",
+    "formula": "mean(transfer_valid != AND(invariant_preserved, boundary_matched, qoi_matched, directional_mapping_complete))",
+    "required_before_arm_metrics": true,
+    "if_rate_zero": {
+      "witnessed_structure_authority": "NOT_INFORMATIVE",
+      "do_not_report_as_incremental_discrimination": true,
+      "do_not_authorize_training_on_witnessed_structure_lift_alone": true
+    },
+    "if_rate_positive": {
+      "witnessed_structure_authority": "INFORMATIVE_CANDIDATE",
+      "apply_existing_diagnostic_signal_gate": true,
+      "prefer_metrics_on_decoupled_subset_when_reporting_incremental_value": true
+    }
+  },
+  "negative_history": {
+    "v1_witnessed_structure_auc_1_000": {
+      "path": "research/PAPER3_CHEAP_GATE_BENCHMARK_PROPOSAL_20260810.json",
+      "note": "v1 constructed labels made transfer_valid == AND(witness coordinates) on all 44 cases; AUC 1.000 recovered the definition, not discrimination."
+    }
+  },
+  "minimum_decoupled_item_count_for_confirmatory_read": 4,
+  "minimum_decoupled_note": "Below four decoupled adjudicated items, treat incremental witnessed_structure claims as CANNOT_CHECK even if decoupling_rate > 0.",
+  "training_authorized": false
+}

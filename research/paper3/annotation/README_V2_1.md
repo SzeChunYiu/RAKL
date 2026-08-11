@@ -22,9 +22,9 @@ Frozen bindings for this decision:
 
 ## Volunteer contact
 
-To volunteer for one of the required external roles, comment only with the role and a brief public expertise summary on [GitHub issue #217](https://github.com/SzeChunYiu/RAKL/issues/217), using the frozen v2.1 packet hashes recorded in `research/paper3/power_design/DECISION_RECEIPT.json`. Do not post response files, identity evidence, affiliations, or private conflict material publicly. The coordinator must supply a secure return channel and separately audit identity, expertise, conflicts, role separation, exact bindings, and access chronology.
+To volunteer for one of the required external roles, comment only with the role and a brief public expertise summary on [GitHub issue #217](https://github.com/SzeChunYiu/RAKL/issues/217) (successor of deleted `#43`), using the frozen v2.1 packet hashes recorded in `research/paper3/power_design/DECISION_RECEIPT.json` and the [immutable v2.1 packet at commit `c6f2639b0927566c473817b4ebaafaee3a35ad36`](https://github.com/SzeChunYiu/RAKL/tree/c6f2639b0927566c473817b4ebaafaee3a35ad36/research/paper3/annotation). Do not post response files, identity evidence, affiliations, or private conflict material publicly. The coordinator must supply a secure return channel and separately audit identity, expertise, conflicts, role separation, exact bindings, and access chronology.
 
-As observed at the #248 power-design cutoff, issue #217 has zero public annotation responses; private response status is `CANNOT_CHECK` from the public repository. A solicitation or public comment is not an annotation submission, review, adjudication, provenance-audit evidence, a gate pass, peer review, or publication.
+As observed at the #248 power-design cutoff, issue `#217` has zero public annotator/adjudicator/provenance responses; private response status is `CANNOT_CHECK` from the public repository. A solicitation or public comment is not an annotation submission, review, adjudication, provenance-audit evidence, a gate pass, peer review, or publication. Autopilot must not invent annotations.
 
 ## Frozen public inputs
 

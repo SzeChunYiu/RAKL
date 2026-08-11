@@ -6,8 +6,8 @@ Date: 2026-08-11
 
 Descriptor harvest / staging-chain evidence only. Does **not** authorize
 training, annotation, or confirmatory gate promotion. Parent stage job
-`3476519` is recorded. Issue #43 / `training_authorized` remains the human
-gate for Paper 3 train.
+`3476519` is recorded. Issue `#217` (successor of deleted `#43`) /
+`training_authorized` remains the human gate for Paper 3 train.
 
 ## Results
 
