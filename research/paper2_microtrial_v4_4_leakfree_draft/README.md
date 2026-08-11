@@ -1,6 +1,6 @@
 # V4.4 leak-free prompt draft (NOT an execution packet)
 
-Status: **DRAFT / NOT EXECUTABLE**. No batch contract, no LUNARC job authority.
+Status: **DRAFT staging**. Executable successor after positive-control PASS: `research/paper2_microtrial_v4_4/`.
 
 ## Why this exists
 

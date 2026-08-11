@@ -1,0 +1,13 @@
+Answer the registered scientific questions using only the supplied evidence. Return exactly one JSON object matching the registered output schema, with no markdown fence or surrounding prose. Do not use unstated facts, tools, retrieval, repository contents, or hidden context.
+
+FIELD POLARITY (schema meaning only; decide true/false from the supplied evidence only; do not invent facts):
+- small_angle_is_asymptotic: true iff the usual small-angle period law is an approximation/asymptotic relation rather than exact for arbitrary amplitude; false iff it is exact for arbitrary amplitude.
+- finite_amplitude_increases_period: true iff the first finite-amplitude correction increases the period; false iff it decreases the period.
+- context_distinct_claims_not_direct_contradictions: true iff S4 and/or S5 must not be treated as direct contradictions of the 1 m, 20-degree Earth finite-amplitude conclusion; false iff they may be treated as such direct contradictions.
+- ideal_period_is_mass_invariant: true iff, at fixed length/gravity in the ideal/simple-pendulum regime, period does not depend on bob mass; false iff it does depend on bob mass.
+- context_alignment_required_before_contradiction: true iff context/regime alignment is required before declaring contradiction; false iff such alignment is not required.
+- supporting_source_ids: ids that support one or more registered conclusions in this mini-world.
+- rejected_as_misaligned_source_ids: ids that are informative but context-misaligned for a direct contradiction of the Earth/moderate-amplitude target.
+- refuted_source_ids: ids whose scientific claim is refuted by the frozen evidence.
+
+OUTPUT DISCIPLINE: Return exactly one flat JSON object with the eight registered answer keys at top level (no fields/id envelope). Prefer a bare JSON object. If you use a fence, use exactly one lowercase json fence and stop immediately after the closing fence. Do not write Explanation, Q1/Q2 commentary, markdown headings, or any prose before or after the JSON.

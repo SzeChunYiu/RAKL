@@ -1,0 +1,38 @@
+{
+  "accepted_serializations": [
+    "bare JSON object after removal of leading/trailing whitespace",
+    "exactly one lowercase ```json fence with newline-delimited JSON-object body and whitespace only outside the fence",
+    "after the above, optionally once unwrap {\"fields\": <object>, \"id\": \"PENDULUM_STRUCTURED_ANSWER_V2\"} when fields contains exactly the registered answer keys"
+  ],
+  "chronology_class": "ADAPTIVE_TYPE_B_LEAK_REPAIR_FRESH_ONLY_TO_V4_4_OUTPUTS",
+  "claim_boundary": "Inherited V4.3.1 serialization policy unchanged under Type B leak repair. No re-claim from sealed leaked parents.",
+  "contract_id": "PENDULUM_EXACT_JSON_OR_FENCE_PLUS_REGISTERED_ENVELOPE_UNWRAP_V4_3_1",
+  "created_at_utc": "2026-08-11T21:15:00Z",
+  "frozen_branches": {
+    "all_other_nonexact_serialization": "PARSE_INVALID",
+    "bare_json_object": "PARSE_BODY",
+    "fence_plus_trailing_prose": "PARSE_INVALID",
+    "registered_fields_id_envelope": "UNWRAP_FIELDS_ONCE_THEN_PARSE_BODY",
+    "single_exact_lowercase_json_fence": "REMOVE_FENCE_ONCE_THEN_PARSE_BODY"
+  },
+  "parent_negative_evidence": {
+    "disposition_path": "research/paper2_microtrial_v4_3_1/TYPE_B_LEAK_DISPOSITION_283.json",
+    "issue": 283,
+    "signature": "Type B answer-key leak; sealed NOT_INFORMATIVE"
+  },
+  "rejected_serializations": [
+    "any prose before or after a fence",
+    "uppercase or missing fence language",
+    "multiple fences",
+    "JSON substring extraction from prose",
+    "non-object JSON",
+    "invalid JSON",
+    "any envelope other than the exact registered id/fields pair"
+  ],
+  "schema_version": "paper2-output-normalization-contract-v4.4",
+  "status": "FROZEN_AFTER_POSITIVE_CONTROL_BEFORE_V4_4_OUTPUT_ACCESS",
+  "threshold_or_score_change_permitted": false,
+  "transformation": "Apply V4.1 fence removal; then at most once unwrap the exact registered fields/id envelope without altering field values.",
+  "v4_3_1_reinterpretation_permitted": false,
+  "v4_3_reinterpretation_permitted": false
+}
