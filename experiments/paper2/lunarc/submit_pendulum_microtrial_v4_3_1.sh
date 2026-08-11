@@ -9,13 +9,13 @@ fi
 EXPECTED_REPO_SHA="$1"
 ROOT=/projects/hep/fs9/users/scyiu/RAKL-paper2
 REPO="$ROOT/repo"
-CONTRACT_REL=research/paper2_microtrial_v4_3_1_1/BATCH_CONTRACT_V4_3_1.json
+CONTRACT_REL=research/paper2_microtrial_v4_3_1/BATCH_CONTRACT_V4_3_1.json
 CONTRACT="$REPO/$CONTRACT_REL"
-PACKET="$REPO/research/paper2_microtrial_v4_3_1_1/EXECUTION_PACKET_V4_3_1_20260811.json"
-POLICY="$REPO/research/paper2_microtrial_v4_1/OUTPUT_NORMALIZATION_CONTRACT_V4_1.json"
-RECEIPT_ROOT="$ROOT/receipts/v4_3_1_1"
-LOG_ROOT="$ROOT/logs/v4_3_1_1"
-RUN_ROOT="$ROOT/runs/v4_3_1_1"
+PACKET="$REPO/research/paper2_microtrial_v4_3_1/EXECUTION_PACKET_V4_3_1_20260811.json"
+POLICY="$REPO/research/paper2_microtrial_v4_3_1/OUTPUT_NORMALIZATION_CONTRACT_V4_3_1.json"
+RECEIPT_ROOT="$ROOT/receipts/v4_3_1"
+LOG_ROOT="$ROOT/logs/v4_3_1"
+RUN_ROOT="$ROOT/runs/v4_3_1"
 PYTHON="$ROOT/assets/paper2-cpu-v3-2/runtime/python/bin/python3.11"
 SUBMISSION_SCHEMA="$REPO/schemas/paper2-pendulum-submission-receipt-v4-3-1.schema.json"
 
