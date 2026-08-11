@@ -1,6 +1,6 @@
 # Paper 2 sealed pendulum microtrial status
 
-Date: 2026-08-10  
+Date: 2026-08-10; native update: 2026-08-11
 Protocol: `PENDULUM_MATCHED_SAME_MODEL_MICROTRIAL_001_EXECUTION_V2`
 
 ## Evidence boundary
@@ -114,3 +114,30 @@ This staging iteration does not mutate or supersede the V2 execution packet and
 does not authorize inference. A chronology-fresh V3 packet and semantic preflight
 may be frozen only after successful native staging and harvest receipts exist.
 See `research/PAPER2_CPU_STAGING_V3_STATUS_20260810.md`.
+
+## Native staging-gate result and repair boundary
+
+The first native LUNARC pass at exact merged subject
+`2fc6457bce764baef01bca6b19c5a9e053f702f4` produced an atomic bootstrap PASS,
+then a fail-closed submission dry-run refusal with failure
+`checkout_not_clean`. No SLURM job was submitted. The intervening mutation was
+not a scientific result: the wrapper's repository-module Python invocation
+created `src/rakl/__pycache__/*.pyc` after the shell cleanliness check but before
+the Python-side Git observation. The latter check correctly refused rather than
+allowing the changed checkout to reach `sbatch`.
+
+The repair applies `PYTHONDONTWRITEBYTECODE=1` to the repository-module
+invocations in the submission, network-probe, staging and harvest paths. The
+native refusal remains preserved negative evidence; it is not relabelled as
+staging success. Exact CI and a new post-merge native bootstrap/dry-run against
+the exact merged repair SHA are still required.
+
+The dirty remote checkout of `2fc6457b...` must be preserved and retired before
+that later atomic bootstrap. It must not be silently cleaned or mutated in place,
+and its bootstrap receipt cannot authorize a different repository subject.
+
+The manuscript evidence state is unchanged: **zero jobs submitted, zero model
+executions, and zero evaluated result records**. There is no V3 execution packet,
+no inference result, no quantitative Paper 2 figure to update and no empirical
+performance or efficiency claim. This status and its hostile review are internal
+same-context work, not independent review or independent peer review.

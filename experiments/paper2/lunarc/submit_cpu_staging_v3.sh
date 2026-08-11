@@ -67,4 +67,4 @@ mapfile -t associations < <(sacctmgr -nP show assoc user="$USER" format=Account,
 argv=(python3 -m rakl.paper2_cpu_staging submit --contract "$contract" --repo "$repo" --expected-repo-sha "$expected" --bootstrap-receipt "$bootstrap_receipt" --account "$account" --partition "$partition" --receipt-output "$receipt")
 for association in "${associations[@]}"; do argv+=(--association "$association"); done
 ((submit)) && argv+=(--submit)
-PYTHONPATH="$repo/src" "${argv[@]}"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$repo/src" "${argv[@]}"

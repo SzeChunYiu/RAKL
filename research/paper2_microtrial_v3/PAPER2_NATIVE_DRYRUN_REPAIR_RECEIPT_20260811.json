@@ -1,0 +1,120 @@
+{
+  "claim_boundary": "Native bootstrap and fail-closed dry-run evidence plus a locally testable repair only. This is not native staging success, an execution packet, job submission, model execution, empirical evidence, independent review, peer review, or authorization to run the matched study.",
+  "created_at_utc": "2026-08-10T23:35:19Z",
+  "execution_counts": {
+    "evaluated_result_records": 0,
+    "jobs_submitted": 0,
+    "model_executions": 0
+  },
+  "finalized_at_utc": "2026-08-10T23:43:53Z",
+  "native_observation": {
+    "bootstrap_passed": true,
+    "failure": "checkout_not_clean",
+    "negative_history_preserved": true,
+    "residual_signature": "checkout cleanliness changed during preflight before any scheduler submission",
+    "root_cause": "Bounded failure diagnosis: the clean bootstrap was followed by a repository-module Python invocation and then a checkout-not-clean refusal. A later read-only native observation found exactly 24 untracked CPython bytecode files and no tracked changes. This supports bytecode generation as a sufficient observed mechanism but does not claim it was the sole possible mutation at the earlier refusal time.",
+    "root_cause_basis": {
+      "observed_tracked_change_count": 0,
+      "observed_untracked_pyc_count": 24,
+      "only_observed_checkout_changes_are_untracked_pyc": true,
+      "read_only_remote_observation_path": "research/paper2_microtrial_v3/native_receipts/REMOTE_DIRTY_CHECKOUT_OBSERVATION_NATIVE_2FC6457B.json",
+      "read_only_remote_observation_sha256": "f58bdc2646b055c4e048f5ffe75d17195c047a9efb3541356ba639dc11aa4921",
+      "read_only_remote_observed_at_utc": "2026-08-10T23:41:29Z",
+      "sole_cause_claimed": false,
+      "temporal_receipt_sequence": [
+        "BOOTSTRAP_PASS_ATOMICALLY_PROMOTED",
+        "REFUSE_PREFLIGHT_VALIDATION:checkout_not_clean",
+        "BOOTSTRAP_FAILURE:repository_checkout_not_clean"
+      ]
+    },
+    "root_cause_class": "R9_numerical_software_execution_environment",
+    "submission_dry_run_passed": false,
+    "submission_dry_run_verdict": "REFUSE_PREFLIGHT_VALIDATION"
+  },
+  "native_receipts": [
+    {
+      "failure": null,
+      "failures": [],
+      "path": "research/paper2_microtrial_v3/native_receipts/BOOTSTRAP_NATIVE_2FC6457B.json",
+      "sha256": "6c76c22ecc36f36c7b42ed998b819d5c91d8306de1095597069d234092453fdf",
+      "verdict": "BOOTSTRAP_PASS_ATOMICALLY_PROMOTED"
+    },
+    {
+      "failure": null,
+      "failures": [
+        "checkout_not_clean"
+      ],
+      "path": "research/paper2_microtrial_v3/native_receipts/SUBMISSION_DRYRUN_NATIVE_2FC6457B.json",
+      "sha256": "5e102ec6e1d0f6145e4c19d5e45f989c30fd236a4d7975d0de05c2aa84b1f445",
+      "verdict": "REFUSE_PREFLIGHT_VALIDATION"
+    },
+    {
+      "failure": "repository_checkout_not_clean",
+      "failures": [],
+      "path": "research/paper2_microtrial_v3/native_receipts/BOOTSTRAP_REPEAT_REFUSAL_NATIVE_2FC6457B.json",
+      "sha256": "1d0db23b1426fbcb32e6ec9b3b9638ad21825cb95596a7c7fda8f2b117e4a2dc",
+      "verdict": "BOOTSTRAP_FAILURE"
+    }
+  ],
+  "object": "Paper 2 LUNARC CPU staging V3 native bootstrap and submission dry-run preflight",
+  "observed_remote_repo_sha": "2fc6457bce764baef01bca6b19c5a9e053f702f4",
+  "old_contract_canonical_sha256": "3ba31a201a5574cf4a8f2ec96424e19d31656ebd68705bb8d27bc589a72c0057",
+  "qoi": "whether the exact merged checkout can complete a pre-sbatch native submission preflight without self-mutating its Git worktree",
+  "receipt_id": "paper2-native-dryrun-repair-20260811",
+  "refreshed_contract": {
+    "canonical_sha256": "22cee21eacefacae2af44c735ce37e73efabc41af1bd2952089e8fcb7ca0f2a1",
+    "construction_parent_sha": "2fc6457bce764baef01bca6b19c5a9e053f702f4",
+    "construction_receipt_path": "research/paper2_microtrial_v3/CPU_STAGING_CONSTRUCTION_RECEIPT_V3.json",
+    "construction_receipt_sha256": "eec7edb544326b59ce8958ff21de23c685efa7e1aec05e312fe0c368e2bad605",
+    "file_sha256": "feb58629a45aca008cb148e815ba6cf1e6fc3f96822358248729ea8f7274edc3",
+    "path": "research/paper2_microtrial_v3/CPU_STAGING_CONTRACT_V3.json"
+  },
+  "remote_state_boundary": {
+    "dirty_checkout_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/repo",
+    "known_dirty_artifacts": "24 untracked src/rakl/__pycache__/*.pyc files observed read-only at 2026-08-10T23:41:29Z; exact paths and hashes are in the bound observation receipt",
+    "must_preserve_or_retire_before_next_bootstrap": true,
+    "next_native_action": "After the repair merges, preserve or retire the dirty 2fc6457b checkout, then atomically bootstrap the exact new merged SHA before any later dry-run or submission.",
+    "observation_receipt_path": "research/paper2_microtrial_v3/native_receipts/REMOTE_DIRTY_CHECKOUT_OBSERVATION_NATIVE_2FC6457B.json",
+    "observation_receipt_sha256": "f58bdc2646b055c4e048f5ffe75d17195c047a9efb3541356ba639dc11aa4921",
+    "observed_at_utc": "2026-08-10T23:41:29Z",
+    "silent_cleanup_or_mutation_permitted": false
+  },
+  "repair": {
+    "fixed_artifacts": [
+      {
+        "path": "experiments/paper2/lunarc/submit_cpu_staging_v3.sh",
+        "repair": "repository module invocation sets PYTHONDONTWRITEBYTECODE=1",
+        "role": "submission_wrapper",
+        "sha256": "072e9daa58629e0fb55a0ef56e1f87a63766d381d75294aa45614d48760c5a53"
+      },
+      {
+        "path": "experiments/paper2/lunarc/network_probe.sbatch",
+        "repair": "repository module invocation sets PYTHONDONTWRITEBYTECODE=1",
+        "role": "network_probe_batch",
+        "sha256": "19fbd51dea3e4f5d6ca02451268b4b1c273337db23c1dd921d4924b033cb09af"
+      },
+      {
+        "path": "experiments/paper2/lunarc/stage_cpu_assets.sbatch",
+        "repair": "repository module invocation sets PYTHONDONTWRITEBYTECODE=1",
+        "role": "staging_batch",
+        "sha256": "d317d610bad2e6bdb5994ce9550dcf88e9f11ead348a34bdf6d7f636b0f56c3b"
+      },
+      {
+        "path": "experiments/paper2/lunarc/harvest_cpu_staging_v3.sh",
+        "repair": "repository module invocation sets PYTHONDONTWRITEBYTECODE=1",
+        "role": "harvest_wrapper",
+        "sha256": "b5d06947b1b071d99b037a226f953e7cb5595f1fe35e115cbf88e1547c9d39ec"
+      }
+    ],
+    "protected_invariants": [
+      "clean checkout required",
+      "missing or inconsistent evidence fails closed",
+      "failed native receipt remains immutable negative history"
+    ],
+    "strategy": "Disable bytecode writes for every repository-module operator invocation while retaining clean-checkout refusal."
+  },
+  "review_class": "same_context_internal_failure_diagnosis_not_independent_peer_review",
+  "schema_version": "paper2-native-dryrun-repair-receipt-v1",
+  "subject_base_sha": "2fc6457bce764baef01bca6b19c5a9e053f702f4",
+  "verdict": "NATIVE_DRYRUN_FALSIFIER_PRESERVED__REPAIR_READY_NOT_SUBMITTED"
+}
