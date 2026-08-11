@@ -1,5 +1,267 @@
 \section{Formal method}
 
-\input{sections/03_formal/part01.tex}
-\input{sections/03_formal/part02.tex}
-\input{sections/03_formal/part03.tex}
+\subsection{Task, researcher state and epistemic state}
+A scoped inquiry is
+\begin{equation}\mathcal P=(O,\mathcal Q,\Gamma_0,\mathcal E_0,\mathcal B,\Lambda),\end{equation}
+where $O$ is the target object, $\mathcal Q$ the registered scientific questions or quantities of interest, $\Gamma_0$ the context/observation boundary, $\mathcal E_0$ the evidence available at the declared cutoff, $\mathcal B$ the resource budget and $\Lambda$ the blocking epistemic invariants.
+
+The functional researcher state is
+\begin{equation}\mathfrak R_t=(K_t,\mathcal Z_t,\Omega_t,\Pi_t,\mathcal G_t,\mathcal M_t,\mathcal X_t,\mathcal R_t),\end{equation}
+separating canonical scientific state, explanatory models, method skills, executive policy, research agenda, metacognition, experience/transfer history and resources. The epistemic state is
+\begin{equation}K_t=(\mathcal A_t,\mathcal T_t,\mathcal V_t,\mathcal E_t,\mathcal U_t,\mathcal O_t,\mathcal F_t,\mathcal H_t^{-},\mathcal S_t,\mathcal G_t^K),\end{equation}
+with Knowledge Atlas charts, typed transitions, survivors, evidence/provenance, uncertainty and identified sets, obstructions/residuals, recursive fibers, immutable negative history, saturation state and protected governance identity.
+
+\subsection{What a local scientific chart must contain}
+
+A local chart is not simply a paper abstract placed in a database. It is the smallest context-scoped scientific object that can participate in comparison. At minimum it identifies the scientific object or system, the proposition, the quantity or relation asserted, the population/regime, the observation or measurement operator, units and transforms where relevant, uncertainty/error semantics, source evidence, assumptions, falsifiers, and the authority coordinates currently licensed. Missing fields remain missing rather than being supplied from neighboring papers.
+
+This requirement is intentionally stricter than ordinary information extraction. A sentence such as ``X increases Y'' cannot be compared safely until ``X,'' ``Y,'' intervention status, time scale and population are resolved. In one source the statement may describe an observational association; in another it may describe an intervention; in a third it may be a fitted model derivative. The surface predicate is shared while the scientific transition type is not. Projection is the step that makes this difference explicit.
+
+Charts can be multi-resolution. A coarse chart can be useful for search while a fine chart preserves the measurement details required for analysis. The coarse object does not replace the fine one; it carries a reconstruction pointer and a declaration of erased coordinates. This provides a formal place for summaries without making them canonical truth.
+
+Overlap is also typed. Two charts overlap only on the coordinates relevant to the comparison. A population overlap does not imply a measurement overlap, and a shared variable name does not imply a shared operationalization. Restriction maps therefore state which coordinates are being aligned or forgotten. When such maps are approximate, their error enters the transition certificate.
+
+The chart idea is especially useful for cross-disciplinary synthesis. Different fields often carve the same phenomenon at different scales, with different measurement conventions and different explanatory targets. A forced global ontology can erase those distinctions. Local charts allow each field's valid objects to remain native while explicit maps represent the conditions under which information can move between them. The target is controlled interoperability, not a universal vocabulary.
+
+Finally, chart quality and source prestige are distinct. A highly cited source can project to an underspecified chart if the required context is absent. A modest source can provide a strong local measurement under a narrow regime. The authority system evaluates the projected object and evidence, not a venue label alone.
+
+\subsection{Contextual charts, transitions and gluing}
+A local scientific chart is
+\begin{equation}C_i=(U_i,\phi_i,\gamma_i,e_i,\alpha_i),\end{equation}
+where $\gamma_i$ can include population, scale, regime, units, observation model, assumptions, intervention, time/cutoff and QoI. Source observations are contextual projections $y_i=\pi_i(O\mid\gamma_i)$ rather than globally competing whole-object answers.
+
+For overlapping charts,
+\begin{equation}T_{ij}^{\tau,\sigma}:\phi_i(U_i\cap U_j)\rightarrow\phi_j(U_i\cap U_j)\end{equation}
+is a typed, scoped transition carrying evidence, assumptions and uncertainty semantics. Composition is licensed only when interfaces, relation types, scopes, invariants, lineage and error-composition rules are compatible. Graph connectivity alone does not create endpoint scientific authority.
+
+At comparison layer $\ell$, a contradiction requires overlap, alignment and incompatibility:
+\begin{equation}\operatorname{Contradict}_{\ell}(C_i,C_j)=\operatorname{Overlap}(C_i,C_j)\land\operatorname{Align}_{\ell}(C_i,C_j)\land\neg\operatorname{Compatible}_{\ell}(C_i,C_j).\end{equation}
+The gluing operator may return a global formalism, a plural atlas, or an obstructed/identified set. Pairwise compatibility is therefore not silently promoted to unique global identification.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex,every node/.style={font=\sffamily\footnotesize,align=center},chart/.style={draw,rounded corners=1.5pt,minimum width=29mm,minimum height=17mm,fill=black!3},target/.style={draw,double,rounded corners=1.5pt,minimum width=28mm,minimum height=14mm,fill=black!7},cut/.style={draw,dashed,rounded corners=1.5pt,minimum width=30mm,minimum height=13mm},trans/.style={->,line width=0.6pt},strongpath/.style={->,line width=0.95pt},weak/.style={->,dashed,line width=0.55pt}]
+\node[chart] (c1) at (0,1.55) {$C_1$\\population A\\representation $\phi_1$};
+\node[chart] (c2) at (4.05,1.55) {$C_2$\\population A\\representation $\phi_2$};
+\node[chart] (c3) at (0,-1.45) {$C_3$\\population B\\measurement $h_3$};
+\node[chart] (c4) at (4.05,-1.45) {$C_4$\\population A\\mechanistic view};
+\node[target] (tau) at (8.45,0.9) {target $\tau$\\$(q,\alpha^*,\gamma)$};
+\node[cut] (cut) at (8.45,-1.65) {missing prerequisite\\epistemic cut $B^*_{\tau}$};
+\draw[trans] (c1) -- node[above]{typed $T_{12}^{\tau,\sigma}$} (c2);
+\draw[weak] (c1) -- node[left,xshift=-1mm]{context\\translation} (c3);
+\draw[trans] (c2) -- node[right,xshift=1.5mm,text width=23mm]{ancestry /\\derivation} (c4);
+\draw[dashed,line width=0.55pt] (c3.east) -- (c4.west); \node[fill=white,inner sep=2pt,font=\sffamily\scriptsize] at (2.03,-1.45) {obstruction};
+\draw[strongpath] (c2.east) to[bend left=7] (tau.north west); \draw[strongpath] (c4.east) to[bend right=9] (tau.south west); \draw[weak] (cut.north) -- (tau.south);
+\node[font=\sffamily\scriptsize,text width=45mm,anchor=north west] at (-1.35,-2.95) {Local papers, datasets and derived models are contextual charts rather than globally competing whole objects. Pairwise compatibility is not enough for a unique global theory.};
+\node[font=\sffamily\scriptsize,text width=49mm,anchor=north west] at (4.55,-2.95) {The active LLM context follows the smallest authority-valid support corridor to the target. If every admissible route crosses an unresolved prerequisite, that prerequisite becomes an epistemic cut and a new fiber.};
+\end{tikzpicture}}
+\caption{\textbf{Contextual Knowledge Atlas and target-conditioned inquiry.} Papers, datasets and models become local scientific charts. Typed transitions establish which comparisons and derivations are licensed; unresolved incompatibility remains an obstruction. The active research problem is to find an authority-valid support structure to target $\tau$.}
+\label{fig:atlas}
+\end{figure}
+
+\subsection{Four local-to-global questions that must not be collapsed}
+
+The atlas vocabulary is meant to separate four questions that are often compressed into the word ``consistency.'' The first is \emph{local compatibility}: after aligning the relevant population, scale, measurement operator and regime, do two charts make claims that can jointly hold on their overlap? The second is \emph{path coherence}: if several typed transitions are composed, do their scopes, assumptions and error semantics remain compatible along the path? The third is \emph{global existence}: is there at least one global object whose restrictions agree with the retained local charts? The fourth is \emph{global identifiability}: if such global objects exist, does the evidence distinguish one of them?
+
+These predicates can fail independently. Pairwise-compatible charts can participate in a cycle whose composed transition is inconsistent. A global model can exist but remain non-unique. A unique mathematical gluing can exist while the evidence supporting one chart is too weak for the scientific authority requested by the target. Conversely, two high-authority local results can be genuinely incompatible because a hidden context coordinate prevents common gluing. Treating all four cases as ``contradiction'' loses the information needed to choose the next experiment.
+
+The transition registry therefore records relation type, direction, domain, codomain, scope and approximation. A coordinate transform, coarse-graining map, causal intervention relation and analogy are not interchangeable arrows. If a path mixes them, the composed path must state what kind of endpoint claim it licenses. For example, an exact unit conversion followed by an approximate model reduction does not yield an exact end-to-end identity. The remainder term from the reduction remains part of the path certificate.
+
+Obstructions are useful because they localize failure. An obstruction may indicate a missing overlap witness, an incompatible context, a failed limiting relation, an observation model that cannot transport, or a model family that lacks a required degree of freedom. Recent sheaf-theoretic work on scientific theory shift similarly uses transport failure and obstruction as signals that a representational language may need extension \cite{olivieri2026sheaf}. \RAKL{} incorporates that logic while also asking what evidence authority the proposed extension would require.
+
+A practical consequence is that ``merge'' is never the default response to agreement. Two charts can remain separate even when compatible if their contexts matter for downstream transport or if collapsing them would destroy provenance. Gluing is a scientific operation with an information-loss profile. When a global summary is constructed, the atlas should preserve the local charts and the gluing witness so later evidence can reopen only the affected region instead of invalidating an undifferentiated global narrative.
+
+\subsection{Multi-axis scientific authority}
+For claim $c$, scientific authority is represented as
+\begin{equation}\alpha(c)=(G_c,R_c,M_c,I_c,D_c),\end{equation}
+where the coordinates are scoped certificate sets for grounding/provenance, representation/relation, mechanism ancestry, identification/bounding and decision/QoI usability. Under compatible scope, the induced order is coordinatewise. It is a partial order, not automatically a mathematical lattice: incompatible assumptions, populations or observation operators can obstruct a join.
+
+Cross-axis non-escalation is explicit:
+\begin{equation}R\not\Rightarrow M,\qquad D\not\Rightarrow M,\qquad M\not\Rightarrow I.\end{equation}
+Thus predictive or observational success does not by itself identify a mechanism; mechanism plausibility does not establish point identification; provenance and citation multiplicity do not create truth or independent evidence.
+
+\subsection{Authority as a partial order rather than a confidence meter}
+
+Scientific authority is represented as a partial order because many improvements are incomparable. A new calibration study can strengthen grounding without changing mechanism evidence. A discriminating intervention can strengthen identification while leaving the raw measurement quality unchanged. A robust decision analysis can increase decision usability without establishing a more detailed mechanism. These are scientifically different movements through state.
+
+Let
+\[
+\alpha(c)=(G,R,M,I,D)
+\]
+denote grounding, representation/relation, mechanism, identification and decision certificates for claim \(c\). The order \(\alpha_1\preceq\alpha_2\) is defined only under compatible claim scope and means that every relevant certificate carried by \(\alpha_1\) is retained or strengthened in \(\alpha_2\). The order need not be total. One claim can have stronger measurement provenance while another has stronger identification evidence. A single scalar would force a tradeoff rate between these coordinates that has no general scientific justification.
+
+This is why the architecture uses blocking conditions. Suppose a model has exceptional predictive performance but relies on temporally leaked features. No amount of predictive score compensates for the causal availability violation if the target is a prospective prediction. Similarly, a large literature count cannot compensate for shared dataset ancestry when independent replication is required. The authority representation is intentionally non-compensatory on such coordinates.
+
+Partial order language also prevents the word ``confidence'' from doing too much work. Statistical confidence, posterior probability, model-selection weight, source quality and epistemic authority are different objects. A 95\% interval is not ``95\% authority,'' and an LLM's verbal confidence is not a measurement certificate. Probabilities may appear inside authority coordinates when their assumptions are valid, but authority itself records the type and scope of what those probabilities license.
+
+The authority firewall is therefore a collection of forbidden coercions. Retrieval rank cannot raise authority. Citation count cannot raise authority. Workspace occupancy cannot raise authority. Model agreement cannot raise mechanism authority without evidence of independence and identification. Human approval cannot by itself transform a missing measurement into a measured value. These restrictions make the framework conservative, but they also make claims auditable: a reviewer can ask which certificate authorized a transition rather than interpreting an opaque aggregate score.
+
+This structure is also compatible with scientific disagreement. Two research groups can possess different authority certificates because they have access to different evidence or accept different explicit assumptions. The atlas can represent both states and the exact assumptions separating them. Resolving the disagreement then becomes an experiment or evidence-acquisition problem rather than a contest between scalar confidences.
+
+\subsection{Decision authority is downstream of scientific authority but not reducible to it}
+
+Scientific research often terminates in a decision rather than a theory. A decision claim has its own prerequisites: action set, loss or utility, target population, time horizon, feasible information, and the scientific uncertainty over outcomes. This is why decision authority is a separate coordinate rather than the top rung of a single truth ladder.
+
+A partially identified mechanism can still support a robust action. If every model in the survivor set recommends the same intervention under the registered loss, the decision can have strong robustness even though mechanism identification remains weak. Conversely, a sharply estimated predictive model can have low decision authority if the action cost is asymmetric, the deployment population differs, or the features needed at decision time are causally unavailable.
+
+The decision certificate therefore records the set of scientific states over which the action was evaluated. If later evidence expands the uncertainty set or changes the target population, the action can be re-evaluated without pretending the earlier decision was irrational. It was conditionally justified under a prior state. This versioned interpretation is especially important in fast-changing domains where policies must be made before all scientific uncertainty is resolved.
+
+Decision authority also prevents a common benchmark mistake. A system that predicts well is not automatically useful for action if the benchmark loss differs from the real decision loss. Accuracy, log loss and calibration can each be relevant while still failing to encode the cost of false positives, intervention harm or abstention. \RAKL{} therefore requires the decision target to be stated before a model-selection score can be interpreted as action value.
+
+When no decision is required, the coordinate can remain absent. The framework does not force every scientific result into optimization. Descriptive knowledge, mechanism understanding, negative results and identification bounds are legitimate endpoints in their own right.
+
+\subsection{Authority is not confidence, probability or calibration}
+
+The authority tuple should not be confused with a probability that a sentence is true. Probabilistic belief and predictive calibration are useful scientific objects, but they answer different questions. A model can assign a well-calibrated probability to an event without identifying the event's mechanism. A source can provide strong mechanistic evidence about a pathway while leaving a downstream forecast poorly calibrated. A decision can be robust across a wide identified set even when no member has high posterior probability. These cases motivate keeping epistemic authority and probabilistic uncertainty as separate coordinates that can constrain one another without being identified.
+
+Suppose a predictive model emits \(P(Y\mid X)\). Calibration evidence can increase confidence that its probability statements have the registered frequency or scoring-rule interpretation on a target population. That evidence belongs primarily to representation/prediction authority and transport. It does not create provenance for an external source, mechanism ancestry or point identification. Conversely, an experimentally supported mechanism can constrain the plausible model family without guaranteeing that a particular finite-sample probabilistic forecast is calibrated. The framework therefore permits both a probability object and an authority certificate to attach to the same claim while recording distinct verification routes.
+
+This separation prevents two common scalarization errors. The first is \emph{confidence laundering}: a fluent model reports high internal confidence, which is then interpreted as scientific support. The second is \emph{evidence laundering}: a claim has impeccable provenance, which is then interpreted as a high probability of truth regardless of study design, selection or context. Provenance answers ``where did this come from?''; calibration answers ``how do these probabilities behave?''; authority answers ``what type of scientific transition has been licensed?'' None subsumes the others.
+
+The distinction also matters for abstention. A fail-closed system should return \CannotCheck{} when the evidence required for a particular authority upgrade is unavailable even if its proposer assigns high probability to the candidate. But it need not abstain from every downstream decision. If a policy is robust across the surviving identified set, decision authority may be strong while mechanism authority remains weak. Separating the axes allows the system to be conservative about explanation without becoming useless for action.
+
+\subsection{Proposal, verification and update}
+The proposal channel
+\begin{equation}G_\theta(K_t,a_t)\rightarrow\mathcal P_t\end{equation}
+may be implemented by an LLM, symbolic program, human or hybrid. Verification is separate:
+\begin{equation}
+\begin{aligned}
+V(p,e,\gamma)\rightarrow\{&\mathrm{SUPPORTED},\mathrm{REFUTED},\mathrm{PARTIALLY\_IDENTIFIED},\\
+&\mathrm{BLOCKED},\CannotCheck\}.
+\end{aligned}
+\end{equation}
+Canonical update is
+\begin{equation}K_{t+1}=\mathcal U(K_t,a_t,e_{t+1},V,\mathcal G_t^K).\end{equation}
+Negative history is monotone,
+\begin{equation}\mathcal H_t^{-}\subseteq\mathcal H_{t+1}^{-},\end{equation}
+meaning later evidence can supersede interpretation or scope but cannot erase the historical null/refutation event.
+
+\subsection{Verification is claim-type specific}
+
+A generic ``critic'' cannot verify every scientific proposal with one rubric. Verification depends on the proposed authority effect. A bibliographic claim can be verified against source metadata. A numerical transformation can be verified by recomputation and unit checks. A statistical claim requires a data and analysis identity. A mechanism claim requires ancestry and identification assumptions. A decision claim requires a loss function, action set, target population and transport scope.
+
+For proposal \(p\), the verifier therefore evaluates a contract
+\[
+V_p=(\tau_p,\gamma_p,E_p,A_p,F_p),
+\]
+where \(\tau_p\) is claim type, \(\gamma_p\) context, \(E_p\) required evidence classes, \(A_p\) assumptions and \(F_p\) falsifiers. The verifier is not necessarily one model or one program. It can be a composition of deterministic checks, statistical analyses, source inspection, domain review and protected evaluators. What matters is that the required evidence cannot be substituted by the proposal generator's self-assessment.
+
+The outcome vocabulary is richer than accept/reject. `SUPPORTED' means the registered evidence licenses the proposed scoped update. `REFUTED' preserves decisive counterevidence. `PARTIALLY\_IDENTIFIED' means evidence narrows the target without selecting a unique point or mechanism. `BLOCKED' means a stated prerequisite has not been met. \CannotCheck{} means the required evidence or verification capability is unavailable. These outcomes have different downstream consequences: a refutation can close or redirect a fiber, a block opens a prerequisite, and partial identification may already be sufficient for a robust decision.
+
+Verification identity is itself versioned. If a software library, rubric, model judge or domain criterion changes, the certificate names the new evaluator. Otherwise a later replay can silently produce a different answer under the same apparent claim. For strong self-evolution claims, protected evaluator state is additionally outside the challenger's write authority. This is the method-level analogue of keeping the measuring instrument separate from the object being optimized.
+
+A verifier can still be wrong. \RAKL{} does not claim infallible certification. The purpose of explicit verification identity is to make such failure localizable and revisable. If a verifier is later found defective, the system can trace which authority upgrades depended on it, invalidate or downgrade those certificates, and preserve the historical event. Without that dependency graph, correction becomes a global narrative rewrite.
+
+\subsection{Mechanism, measurement and uncertainty}
+Mechanistic authority requires an evidence-bearing ancestry such as
+\begin{equation}
+\begin{aligned}
+\text{building blocks}&\to\text{interactions}\to\text{mechanism}\\
+&\to\text{mesoscopic state}\to\text{effective law}\to\text{observation/QoI}.
+\end{aligned}
+\end{equation}
+Missing ancestry leads to partial identification or a mechanism set rather than a forced mechanism label.
+
+Measurement is explicit. We write
+\begin{equation}y=h(O,\eta,\gamma)+\epsilon,\end{equation}
+with $\eta$ representing instrument/calibration state. For affine $Y=AX+b$,
+\begin{equation}\mu_Y=A\mu_X+b,\qquad \Sigma_Y=A\Sigma_XA^\top.\end{equation}
+For differentiable nonlinear $g$, the first-order approximation
+\begin{equation}\Sigma_{g(X)}\approx J_g\Sigma_XJ_g^\top\end{equation}
+is explicitly local and assumption-dependent. Root-sum-square uncertainty is accepted only with an independence or uncorrelatedness witness.
+
+\subsection{Metrology boundary: measured values are not context-free numbers}
+
+The measurement layer is grounded in established metrology rather than invented uncertainty vocabulary. The JCGM Guide to the Expression of Uncertainty in Measurement treats measurement uncertainty as part of the reported result and supplies general rules for evaluating and expressing it \cite{jcgm2008}. \RAKL{} uses this lineage to enforce a simple point: a number without its measurand definition, calibration state, units, transformation history and uncertainty model is not yet a comparable scientific object.
+
+This becomes critical when LLMs normalize literature. Converting units is easy; proving that two quantities are the same measurand is not. One paper may report a direct observable, another a model-derived latent quantity, and a third a proxy calibrated under a different regime. A numeric conversion can be correct while the scientific merge is false. The projection step therefore records the observation operator before normalization decides whether values can be transported.
+
+Uncertainty propagation likewise has scope. The affine covariance law is exact for the stated second-moment transformation. First-order Jacobian propagation is a local approximation whose adequacy depends on nonlinearity and operating region. Independence-based root-sum-square formulas require an independence or uncorrelatedness witness. When these conditions fail, \RAKL{} must either use a more appropriate propagation method, retain a conservative bound, or return \CannotCheck{}. The model cannot fill in a missing covariance by assuming independence because the resulting narrower interval would itself be a scientific claim.
+
+\subsection{Recursive fibers, target paths and epistemic cuts}
+An unresolved transformation is
+\begin{equation}f=(o_f,q_f,\gamma_f,r_f,\operatorname{parent}(f)).\end{equation}
+Residual routing opens only dimensions capable of changing the target conclusion. For target $\tau=(q,\alpha^*,\gamma)$, \RAKL{} searches for an authority-valid support subgraph or hypergraph. A conceptual low-cost cut objective is
+\begin{equation}B^*_{\tau}=\arg\min_B\operatorname{Cost}(B)\end{equation}
+subject to every admissible support route intersecting $B$. This equation defines a research-control target rather than a guarantee that a globally optimal cut always exists or is computationally tractable. A cut may correspond to missing evidence, measurement, context, transition, mechanism, formal lemma or reasoning operator.
+
+\subsection{Epistemic cuts turn ``what is missing?'' into a constructive object}
+
+A research system often knows that it cannot support a target but not why. The epistemic-cut formulation makes the missing support explicit. Consider the hypergraph of admissible support routes from current evidence and assumptions to a target authority certificate. A cut is a set of missing or blocking obligations whose resolution would intersect every currently viable route. Depending on the problem, a cut can contain a measurement, a calibration, a context coordinate, a causal assumption, a formal lemma, a replication, a transformation witness or a method operator.
+
+This is not claimed as a new graph-theoretic min-cut theorem. The scientific content lies in the typed elements and their cost. A cheap new measurement and an expensive randomized intervention may both separate the same mechanisms but carry different feasibility, ethical and informational profiles. The cut representation provides a common interface for experiment design and method diagnosis while preserving those types.
+
+Cuts also prevent premature invention. If the target is blocked because a raw measurement is absent, inventing a new theory does not close the gap. If every route depends on an unidentified nuisance transformation, collecting more of the same outcome may not help. If the missing object is a method operator, ordinary evidence acquisition cannot solve it. The cut therefore routes the next action to the correct layer.
+
+When multiple cuts exist, the system can optimize over cost, expected target change and risk, but the optimization criterion must be registered. A lowest monetary-cost cut may be scientifically weak; a high-information experiment may be infeasible; a method invention may be cheap to propose but expensive to validate. The action-selection layer is deliberately downstream of cut typing so it cannot compare incomparable actions without an explicit utility model.
+
+The concept also clarifies saturation. A fiber with a material unresolved cut is not saturated merely because search rounds are flat. Flat search plus an explicit unavailable measurement can be a terminal block; flat search plus an unattempted feasible discriminator is not. Saturation is therefore a statement about the status of remaining cuts as much as about novelty counts.
+
+\subsection{Action selection, model criticism and assumption sensitivity}
+When calibrated probabilities are justified, one admissible policy family is
+\begin{equation}u(a\mid K_t)=\frac{\lambda_Q I(Q;Y_a\mid K_t)+\lambda_M\operatorname{Sep}(a,\mathcal V_t)+\lambda_N E[\Delta N_a]}{\operatorname{Cost}(a)}.\end{equation}
+Without calibrated probabilities, \RAKL{} uses set-valued alternatives such as worst-case mechanism separation or identified-set shrinkage.
+
+For frozen model criticism, scientific discrepancy probes are $s_k=T_k(y_{\mathrm{obs}})$ and are compared with predictive/generative samples $s_k^{(b)}=T_k(y_{\mathrm{pred}}^{(b)})$. A two-sided finite-sample predictive tail plus a predeclared materiality tolerance can identify a structured residual. Passing the probes establishes adequacy only relative to the frozen probe family, population and resolution; it does not prove truth or mechanism identity.
+
+A complementary assumption-sensitivity operator evaluates a frozen envelope $(a_j,\theta_j)$ under the same context and QoI. For material threshold $\delta$,
+\begin{equation}
+C(\theta;\delta)=
+\begin{cases}
+\mathrm{POSITIVE}, & \theta>\delta,\\
+\mathrm{NEGATIVE}, & \theta<-\delta,\\
+\mathrm{INDETERMINATE}, & |\theta|\le\delta.
+\end{cases}
+\end{equation}
+A baseline conclusion is robust only within the registered envelope when all available preregistered scenarios preserve its material conclusion class. Robustness does not prove the assumptions true; a changed population or QoI is a new contextual chart rather than an assumption perturbation of the same claim.
+
+\subsection{Epistemic state as an event-sourced scientific object}
+
+The tuple notation above is compact, but its operational interpretation is closer to an event-sourced state machine than to a mutable notebook. Canonical state is reconstructed from addressable evidence objects and licensed transition events. Each event records the object identities it reads, the evidence and context it relies on, the certificates it creates or withdraws, and the governance identity that authorized the operation. The purpose is not software fashion. Event history is what permits a later reviewer to answer questions that ordinary prose obscures: Which observation first changed the mechanism survivor set? Which assumption made two claims comparable? Which refutation closed a route? Which method version generated a result?
+
+This produces four invariants. \textbf{Identity invariance} requires a frozen object identifier to continue denoting the same object definition; changed scope produces a successor, not retroactive mutation. \textbf{Lineage invariance} requires a derived claim to retain a path to its evidence roots. \textbf{Authority invariance under pure representation operations} requires that normalization, indexing, compression or visualization cannot raise authority. \textbf{Negative-history persistence} requires refutations and failed candidates to remain addressable. Scientific conclusions can still change. What is prohibited is changing the historical record in order to make the current conclusion appear inevitable.
+
+The resulting state transition can be decomposed as
+\[
+(K_t,p,e,\gamma,g)
+\overset{\mathrm{validate}}{\longrightarrow}
+v
+\overset{\mathrm{authorize}}{\longrightarrow}
+u
+\overset{\mathrm{commit}}{\longrightarrow}
+K_{t+1},
+\]
+where \(p\) is a proposal, \(e\) evidence, \(\gamma\) context and \(g\) governance state. Validation establishes a typed outcome; authorization checks whether that outcome licenses the proposed authority effect; commit creates the new versioned state. A failure at any stage is retained with a reason. This decomposition prevents an implementation success such as ``the parser produced a result'' from being mistaken for a scientific success such as ``the evidence supports a mechanism.''
+
+A useful consequence is that \CannotCheck{} is a first-class terminal state for an operation. In ordinary chat interfaces, unanswered questions invite guessing; in scientific software, missing calibration metadata, unavailable raw observations, unresolved source identity or insufficient evaluator independence are meaningful states. Returning \CannotCheck{} protects the difference between ``false'' and ``not currently verifiable.'' The same logic motivates \CannotCompile{} when mandatory epistemic context exceeds a model budget: the system must narrow the operation, retrieve a better representation or use a larger resource envelope rather than silently omit a falsifier.
+
+\subsection{Proof obligations travel with transitions}
+
+Every typed transition has positive and negative obligations. Positive obligations state what must be true for the transition to be used: aligned target, compatible units, valid observation map, required evidence, admissible regime and an error law. Negative obligations state what the transition may not create: mechanism authority from association alone, independence from duplicated provenance, identification from one arbitrary representative, or decision authority outside the evaluated loss and population. Writing the negative side is essential because scientific-agent failure often occurs through an implicit coercion rather than an explicitly false equation.
+
+For a transition \(T\), let
+\[
+\mathcal O(T)=
+(\mathcal O_T^+,\mathcal O_T^-,\mathcal F_T,\mathcal R_T)
+\]
+contain positive obligations, forbidden authority effects, falsifiers and remainder/error semantics. Composition \(T_2\circ T_1\) is licensed only if the output role and context of \(T_1\) meet the input requirements of \(T_2\), the forbidden effects are not crossed, and the combined approximation error is explicitly controlled. A chain of individually reasonable transformations can therefore be blocked globally. This is intentional: most scientific pipelines are reliable only if the semantics of intermediate transformations survive composition.
+
+\subsection{Action selection must distinguish information gain from confirmation pressure}
+
+The action utility
+\[
+u(a\mid K_t)=
+\frac{\lambda_Q I(Q;Y_a\mid K_t)+
+\lambda_M\operatorname{Sep}(a,\mathcal V_t)+
+\lambda_N E[\Delta N_a]}{\operatorname{Cost}(a)}
+\]
+is a template, not a universal law. Its terms are meaningful only when their models are meaningful. Expected information gain depends on a probabilistic model for outcomes. Mechanism separation depends on a declared survivor set and observation map. Expected semantic novelty is a planning signal rather than scientific evidence. The weights express governance preferences and should not be tuned after seeing which action makes the favored theory win.
+
+A robust alternative is set based. If calibrated probabilities are unavailable, an action can be valued by worst-case reduction in an identified set, by the minimum pairwise separation it induces among viable mechanisms, or by whether it crosses a blocking proof obligation. This often produces a different choice from selecting the action with the highest expected predictive improvement. The difference is scientifically important when the target is explanation rather than forecast.
+
+Model criticism is a companion to action selection. After a model wins a relative comparison, posterior predictive checks, residual structure, invariance tests, assumption sensitivity and out-of-support diagnostics ask whether the model is adequate for the target. A model can be best in class and still fail adequacy. Conversely, a model can be scientifically adequate for a decision even if a more complex model fits slightly better. The stopping criterion should therefore reference target adequacy and remaining discriminators, not leaderboard rank alone.
+
+Assumption sensitivity turns hidden philosophical disagreement into an empirical or decision object. If a conclusion flips under small plausible changes to an unverified assumption, the authority certificate should expose that sensitivity. If the conclusion is robust across a large admissible assumption set, the system can grant stronger decision authority without pretending that the assumption was observed. This is especially useful for causal and partially identified problems, where the strongest honest result may be a region of conclusions stable across assumption worlds.
+
+Finally, portfolio control prevents local information gain from consuming the entire research budget. Some capacity is reserved for replication, adversarial search, ontology escape, high-risk discriminators and method reflection. This is analogous to the workspace reservation rule: relevance-ranked exploitation is useful but can entrench the current ontology if it monopolizes attention.

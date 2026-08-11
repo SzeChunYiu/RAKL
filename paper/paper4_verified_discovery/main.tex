@@ -3,6 +3,9 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{booktabs,tabularx,array}
 \usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{microtype}
@@ -16,6 +19,7 @@
 \newcommand{\PASS}{\texttt{PASS}}
 \newcommand{\FAIL}{\texttt{FAIL}}
 \newcommand{\CC}{\texttt{CANNOT\_CHECK}}
+\IfFileExists{build_identity.tex}{\input{build_identity.tex}}{\newcommand{\SoftwareTests}{UNBOUND}\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}}
 
 \title{Verified Discovery: An Assurance Architecture for LLM-Mediated Mathematical Research}
 \author{Sze Chun Yiu}
@@ -28,209 +32,21 @@
 Large language models can solve difficult mathematical exercises and increasingly operate inside formal proof systems, yet exercise solving is not the same task as mathematical research. Research requires not only a plausible continuation but a correct theorem, a faithful formalization of the intended claim, evidence that the result is not a rediscovery, and a reason the result is worth attention. We introduce a mathematical-research assurance layer for \RAKL{}, an evidence-governed framework for LLM-mediated inquiry. The central design separates five authority coordinates: specification alignment, theorem truth, novelty, research value, and verifier trust. LLMs remain proposal generators; computational testing can refute or prioritize but never promote a conjecture to a theorem; formal proofs are bound to exact statement hashes and audited for axioms and verifier identity; novelty is represented by a bounded, cutoff-scoped and defeasible certificate rather than a claim of global completeness. We prove three architectural results. First, under a sound proof checker and a fail-closed update rule, generator hallucinations cannot by themselves promote a false theorem. Second, verified lemma checkpointing changes long-horizon model error from hidden logical debt into rejected branches and search cost, subject to the remaining specification and verifier trust assumptions. Third, theorem truth and novelty have different order-theoretic behaviour: truth of a fixed proved statement can remain stable while novelty is non-monotone as the literature world expands. We implement these distinctions as a typed state machine and preregister an evaluation suite spanning false conjectures, autoformalization traps, long proof DAGs, rediscovery detection, novelty screening and proof-assistant trust attacks. The result is not an autonomous-mathematician claim; it is an architecture intended to make machine-assisted mathematical discovery auditable enough that creative search can scale without silently scaling mathematical authority.
 \end{abstract}
 
-\section{The gap between solving and research}
-
-A useful caricature of an LLM mathematical solver is a conditional generator
-\[
-G_\theta(s_t)\rightarrow a_t,
-\]
-where the current state $s_t$ contains a problem, partial derivation or proof state and $a_t$ is a plausible next move. This capability can be extremely strong. AlphaProof demonstrates that model-guided search inside Lean can solve formalized olympiad and Putnam-level problems at a level far beyond earlier systems \cite{hubert2025}. Other systems use LLM generation together with executable evaluation or evolutionary search to discover new constructions and algorithms \cite{romera2024,novikov2025,georgiev2025}.
-
-Mathematical research adds obligations absent from a benchmark with a known target answer. A research agent must decide what is worth proving, survive long branches of failed ideas, distinguish experimental support from proof, ensure that a formal statement matches the intended theorem, identify rediscoveries under different notation, and make a novelty claim whose evidence is necessarily incomplete. A single scalar such as ``mathematical confidence'' is therefore the wrong abstraction.
-
-The frequently invoked long-horizon calculation
-\[
-0.99^{100}\approx 0.366,
-\qquad
-0.99^{1000}\approx 4.3\times 10^{-5}
-\]
-is an appropriate warning for an unchecked chain if local errors can survive into the final answer. It is not the right end-to-end model once every admitted lemma is independently machine checked. In a proof-producing architecture, bad generations can increase search cost without becoming accepted logical premises. This distinction motivates the present work.
-
-\section{Five independent authority coordinates}
-
-\begin{definition}[Mathematical authority state]
-For a mathematical claim $c$, define
-\[
-\alpha_{\mathrm{math}}(c)=
-(A_{\mathrm{spec}},A_{\mathrm{truth}},A_{\mathrm{novel}},A_{\mathrm{value}},A_{\mathrm{trust}}),
-\]
-where the coordinates represent, respectively, informal--formal specification alignment, logical proof authority, novelty evidence, research-value assessment, and trust in the proof-checking path.
-\end{definition}
-
-These coordinates form a product of scoped partial orders, not a total score. In particular,
-\[
-A_{\mathrm{truth}}\not\Rightarrow A_{\mathrm{novel}},
-\quad
-A_{\mathrm{novel}}\not\Rightarrow A_{\mathrm{truth}},
-\quad
-A_{\mathrm{value}}\not\Rightarrow A_{\mathrm{truth}}.
-\]
-A fully verified proof of a classical theorem is high on truth and low on novelty. An original-looking conjecture can be high on prospective value but have no truth authority. Collapsing the coordinates makes these cases indistinguishable.
-
-\section{Typed research state and persistent proof DAG}
-
-A scoped mathematical research program is represented by
-\[
-\mathfrak M_t=(I_t,F_t,D_t,X_t,P_t,V_t,N_t,Q_t,H^-_t),
-\]
-with frozen informal targets $I_t$, formal statements and alignment witnesses $F_t$, a dependency DAG $D_t$, counterexamples and refutations $X_t$, candidate proof artifacts $P_t$, verification receipts $V_t$, novelty dossiers $N_t$, research-value assessments $Q_t$, and immutable negative history $H^-_t$.
-
-The dependency object $D_t$ replaces the monolithic research transcript. Nodes can be definitions, conjectures, lemmas, representations, counterexamples, proof obligations, imported theorems or computational experiments. Edges record typed relations such as \emph{implies}, \emph{reduces to}, \emph{refutes}, \emph{specializes}, \emph{generalizes} and \emph{requires}. A verified lemma becomes a persistent checkpoint. A failed branch remains addressable negative history rather than being overwritten by the next fluent derivation.
-
-\section{Counterexample-first search}
-
-Before expensive proof search, the system attempts cheap falsification: exact finite enumeration where available, randomized or property-based testing, boundary cases, computer algebra, SAT/SMT/model finding, adversarial parameter search and retrieval of stronger known parent results. These tools are especially useful because a single counterexample can close a large proof branch.
-
-The authority rule is deliberately asymmetric. A counterexample may refute a universal conjecture; absence of a counterexample does not prove it. If $E_n$ denotes successful testing on $n$ cases, then
-\[
-E_n\not\Rightarrow \forall x\,P(x)
-\]
-for every finite $n$ unless an independent theorem reduces the universal domain to those cases.
-
-\section{Formalization is a separate proof obligation}
-
-A proof assistant checks a formal proposition, not the researcher's informal intention. Consequently an accepted proof can coexist with a specification error. AlphaProof itself depends on formal problem statements and reports substantial formalization infrastructure \cite{hubert2025}; this is not an incidental preprocessing detail but part of the epistemic chain.
-
-We therefore bind an informal claim hash $h_I$ to a formal statement hash $h_F$ with a \emph{formalization witness}. The strict witness records quantifier order, domains and codomains, assumptions, round-trip paraphrase, positive and negative examples, boundary cases and independent review. A proof receipt is accepted for promotion only when its theorem-statement hash equals $h_F$.
-
-\section{Proof assurance and verifier trust}
-
-Formal verification sharply reduces one class of error but introduces a trust boundary. Lean uses a small kernel to check proof terms; tactic bugs do not normally threaten kernel soundness because tactics must produce terms accepted by the kernel \cite{leanref}. Finished developments must nevertheless audit their transitive axioms. Lean's documentation states that \texttt{sorryAx}, used by \texttt{sorry}, can prove arbitrary propositions and is not intended in finished proofs \cite{leanaxioms}.
-
-The strict profile records a proof receipt containing theorem and source hashes, checker identity and version, transitive axioms, and an independent recheck where supported. It rejects \texttt{sorryAx}, unregistered custom axioms and, when independent kernel-level assurance is required, proof paths that depend on compiler/native trust. This last condition is motivated by the fact that formal verification itself has an implementation trust surface: Lean 4.32.1, released in July 2026, fixed a kernel soundness bug and noted that the recommended separate \texttt{comparator} path for potentially dishonest proofs was not affected \cite{lean4321}.
-
-\begin{proposition}[Generator-error containment]
-Let $G$ be any proposal generator, $K$ a sound proof checker for logic $L$, and $U$ the canonical update rule. Suppose
-\[
-U(T,p)=\mathrm{promote}\Longrightarrow K(p,T)=\mathrm{accept}.
-\]
-Then, relative to the soundness of $K$ and the registered axioms, an invalid theorem cannot enter canonical truth state solely because $G$ generated a plausible but invalid proof step.
-\end{proposition}
-
-\begin{proof}
-The generator has no canonical write authority. Every promoted theorem must have an accepted proof artifact. By soundness of $K$, acceptance implies derivability of $T$ from the registered assumptions. Therefore an invalid proposal generated by $G$ is either rejected or would require failure of a trust assumption outside the generator itself. \qed
-\end{proof}
-
-\begin{proposition}[Verified checkpointing converts local generator error into search cost]
-Assume a final theorem depends only on lemmas admitted to a persistent DAG after independent proof checking. Then the per-proposal probability that an LLM suggests an invalid local step does not multiply directly into the logical validity of the accepted theorem. Invalid proposals instead increase rejected branches, latency or compute, unless a specification or verifier-trust assumption fails.
-\end{proposition}
-
-\begin{proof}
-An invalid proposal that fails checking is not added to the trusted dependency DAG, hence cannot serve as a premise of the accepted theorem. The final theorem's logical status depends on the accepted proof terms and checker assumptions, not on the number of invalid discarded proposals. \qed
-\end{proof}
-
-This proposition does not make research easy. It changes the failure geometry. Long-horizon model error remains costly, and the hard unsolved problems become search, formalization, representation, novelty and trust rather than hidden survival of one invalid implication.
-
-\section{Novelty is bounded and defeasible}
-
-A verified theorem is not automatically new. Newness requires a literature world, an equivalence notion and a cutoff. Define a bounded novelty certificate
-\[
-N_t(T)=(C_{\le t},S,\nu,f(T),R),
-\]
-where $C_{\le t}$ is a named corpus snapshot, $S$ the search routes, $\nu$ a normalization/equivalence procedure, $f(T)$ a theorem fingerprint and $R$ the review record. Search routes should include exact wording, terminology variants, notation normalization, structural similarity, stronger-parent theorem retrieval, citation neighborhoods and multilingual/domain-synonym searches.
-
-\begin{proposition}[Novelty non-monotonicity]
-Let $C_t\subseteq C_{t+1}$ be literature corpora and define $\mathrm{Novel}_{C}(T)=1$ when no equivalent prior result is found in $C$. Then
-\[
-\mathrm{Novel}_{C_t}(T)=1
-\]
-does not imply
-\[
-\mathrm{Novel}_{C_{t+1}}(T)=1.
-\]
-\end{proposition}
-
-\begin{proof}
-Choose a theorem $T'$ equivalent to $T$ such that $T'\notin C_t$ and $T'\in C_{t+1}$. The novelty predicate is true at $t$ and false at $t+1$. \qed
-\end{proof}
-
-Thus novelty authority is defeasible even when proof validity of the fixed statement is unchanged. The licensed statement is ``no equivalent result was found in the registered novelty world at cutoff $t$,'' not ``global novelty has been proved.'' This distinction also explains why rediscovery can be scientifically informative without being mislabelled as new mathematics.
-
-\section{The research-value gate}
-
-Truth and bounded novelty still do not imply importance. The system therefore separately records research-value judgments: generality, nontriviality, compression of many cases, a new invariant or representation, connection to an open problem, a stronger bound, a new proof technique, explanatory value, algorithmic utility, downstream theorem yield and expert interest. These signals rank what to pursue; they never compensate for missing proof authority.
-
-\section{Search policy: from plausible continuation to obstruction removal}
-
-At each point the system identifies a minimal or approximate set of unresolved blockers intersecting viable proof routes: a proof-theoretic analogue of an epistemic cut set. Candidate actions are selected for their expected ability to remove blockers or split ambiguity. High-value actions include proving a reusable bottleneck lemma, finding a counterexample that kills a family of conjectures, changing coordinates, importing a structurally analogous invariant, weakening an overstrong conjecture, or locating a known parent theorem.
-
-This architecture aligns with recent successful discovery systems. FunSearch couples a pretrained model to systematic evaluation and evolutionary selection, producing new constructions and algorithms \cite{romera2024}. AlphaEvolve expands this evaluator-guided search pattern to scientific and algorithmic discovery \cite{novikov2025}. AlphaProof treats formal proof search as sequential decision making inside Lean \cite{hubert2025}. Large-scale AlphaEvolve experiments report both rediscovery of known best solutions and improvements on several mathematical problems, highlighting why discovery and novelty classification must be separated \cite{georgiev2025}. The common lesson is that generation becomes more reliable when downstream state transitions are controlled by evaluators.
-
-\section{RAKL integration}
-
-The mathematical assurance layer is a specialization of existing \RAKL{} principles rather than a competing architecture. The proposal/authority firewall becomes the theorem-promotion gate. Epistemic cut sets become unresolved proof or novelty blockers. Constructive invention proposes conjectures, lemmas, definitions and representations. Structural witnesses support notation-independent analogy and prior-art search. Negative history stores refuted conjectures and failed proof attempts. The authority poset is extended by specification, truth, novelty, value and trust coordinates.
-
-The current reference implementation introduces:
-\begin{itemize}[leftmargin=*]
-\item \texttt{src/rakl/math\_research\_assurance.py}: typed records, proof and novelty audits, and promotion states;
-\item \texttt{skills/rakl-core/workflows/mathematical-research.md}: the operational research workflow;
-\item \texttt{tests/test\_math\_research\_assurance.py}: invariants including no promotion from computation, no \texttt{sorryAx}, no proof-to-novelty escalation, and novelty revocation without truth revocation.
-\end{itemize}
-
-The promotion sequence is intentionally conservative:
-\[
-\texttt{CONJECTURE}
-\rightarrow
-\texttt{FORMALIZED\_UNPROVEN}
-\rightarrow
-\texttt{MACHINE\_PROVEN}
-\rightarrow
-\texttt{BOUNDED\_NOVEL\_RESULT}
-\rightarrow
-\texttt{NEW\_MATHEMATICS\_CANDIDATE}.
-\]
-No step is automatic.
-
-\section{Preregistered evaluation}
-
-Exercise benchmarks remain useful but insufficient. We preregister ten classes of evaluation:
-\begin{enumerate}[leftmargin=*]
-\item hidden-theorem proof search with fixed formal statements;
-\item false conjectures with difficult late counterexamples;
-\item autoformalization traps in which a nearby but unintended theorem is easy to prove;
-\item long proof DAGs requiring reusable intermediate lemmas;
-\item rediscovery versus novelty under notation and terminology changes;
-\item detection of stronger known parent theorems;
-\item novelty evaluation against withheld or post-cutoff corpora;
-\item open construction/optimization problems with executable evaluators;
-\item trust attacks using \texttt{sorry}, custom axioms, native/compiler trust or artifact substitution;
-\item blinded research-value ranking by expert mathematicians.
-\end{enumerate}
-
-Primary metrics are false theorem promotion, formalization mismatch, counterexample discovery, proof-search cost, verified lemma reuse, axiom/trust violation, novelty false positives, rediscovery recognition, bounded-novelty recall and end-to-end cost per externally accepted result. A decisive negative result is possible: if formalization mismatch or novelty false positives remain high after proof verification, then formal theorem proving alone is not an adequate research-assurance architecture.
-
-\section{Limitations}
-
-The framework cannot prove that a finite novelty search is globally complete. It cannot remove the need for mathematical judgement about interestingness. It cannot guarantee that formalization faithfully captures intention without some semantic review. It inherits trust from the proof assistant, imported libraries and checker deployment. Search may remain computationally prohibitive on genuinely hard open problems. Finally, a system can be perfectly reliable at rejecting bad claims while discovering nothing useful; reliability and creative productivity must therefore be evaluated separately.
-
-\section{Conclusion}
-
-The practical target for AI mathematics should not be an unconstrained model that writes longer proofs. It should be a system in which creative generation can be extremely aggressive because authority is extremely conservative. Formal verification changes the long-horizon error problem by turning many hallucinated steps into failed search rather than accepted mathematics. But proof correctness solves only one axis. Research-grade mathematical discovery also requires statement alignment, novelty evidence, research-value judgement and a hardened verifier trust chain. The design principle is therefore
-\[
-\boxed{\text{scale creativity freely; scale mathematical authority only through explicit assurance.}}
-\]
-
-\begin{thebibliography}{9}
-\bibitem{romera2024}
-B. Romera-Paredes et al., ``Mathematical discoveries from program search with large language models,'' \emph{Nature} 625, 468--475 (2024). doi:10.1038/s41586-023-06924-6.
-
-\bibitem{hubert2025}
-T. Hubert et al., ``Olympiad-level formal mathematical reasoning with reinforcement learning,'' \emph{Nature} (2025). doi:10.1038/s41586-025-09833-y.
-
-\bibitem{novikov2025}
-A. Novikov et al., ``AlphaEvolve: A coding agent for scientific and algorithmic discovery,'' arXiv:2506.13131 (2025).
-
-\bibitem{georgiev2025}
-B. Georgiev, J. G\'omez-Serrano, T. Tao and A. Z. Wagner, ``Mathematical exploration and discovery at scale,'' arXiv:2511.02864 (2025).
-
-\bibitem{leanref}
-Lean Project, \emph{The Lean Language Reference}, current 2026 documentation, section on the kernel and proof validation.
-
-\bibitem{leanaxioms}
-Lean Project, \emph{The Lean Language Reference: Axioms}, current 2026 documentation.
-
-\bibitem{lean4321}
-Lean Project, ``Lean 4.32.1 (2026-07-22),'' release notes, 2026.
-\end{thebibliography}
-
+\input{sections/01_the_gap_between_solving_and_research}
+\input{sections/02_five_independent_authority_coordinates}
+\input{sections/03_typed_research_state_and_persistent_proof_dag}
+\input{sections/04_counterexample_first_search}
+\input{sections/05_formalization_is_a_separate_proof_obligation}
+\input{sections/06_proof_assurance_and_verifier_trust}
+\input{sections/06b_assurance_bound}
+\input{sections/07_novelty_is_bounded_and_defeasible}
+\input{sections/08_the_research_value_gate}
+\input{sections/09_search_policy_from_plausible_continuation_to_obstruction_removal}
+\input{sections/10_rakl_integration}
+\input{sections/11b_reference_implementation}
+\input{figures/figure_appendix}
+\input{sections/11_preregistered_evaluation}
+\input{sections/12_limitations}
+\input{sections/13_conclusion}
+\input{sections/99_references}
 \end{document}

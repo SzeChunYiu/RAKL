@@ -1,0 +1,22 @@
+\section{RAKL integration}
+
+The mathematical assurance layer is a specialization of existing \RAKL{} principles rather than a competing architecture. The proposal/authority firewall becomes the theorem-promotion gate. Epistemic cut sets become unresolved proof or novelty blockers. Constructive invention proposes conjectures, lemmas, definitions and representations. Structural witnesses support notation-independent analogy and prior-art search. Negative history stores refuted conjectures and failed proof attempts. The authority poset is extended by specification, truth, novelty, value and trust coordinates.
+
+The current reference implementation introduces:
+\begin{itemize}[leftmargin=*]
+\item \texttt{src/rakl/math\_research\_assurance.py}: typed records, proof and novelty audits, and promotion states;
+\item \texttt{skills/rakl-core/workflows/mathematical-research.md}: the operational research workflow;
+\item \texttt{tests/test\_math\_research\_assurance.py}: invariants including no promotion from computation, no \texttt{sorryAx}, no proof-to-novelty escalation, and novelty revocation without truth revocation.
+\end{itemize}
+
+The promotion sequence is intentionally conservative:
+\[
+\begin{aligned}
+\texttt{CONJECTURE}
+&\rightarrow \texttt{FORMALIZED\_UNPROVEN}
+\rightarrow \texttt{MACHINE\_PROVEN}\\
+&\rightarrow \texttt{BOUNDED\_NOVEL\_RESULT}
+\rightarrow \texttt{NEW\_MATHEMATICS\_CANDIDATE}.
+\end{aligned}
+\]
+No step is automatic.
