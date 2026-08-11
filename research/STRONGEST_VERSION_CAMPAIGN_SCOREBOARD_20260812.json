@@ -102,7 +102,7 @@
           "3476813"
         ],
         "mean_score": 0.5,
-        "next": "HOLD_WAVE2_BLOCKED_DOCUMENT_V2_EXEC_FLOOR",
+        "next": "CLOSE_ISSUE_379_TERMINAL_WAVE2_BLOCKED",
         "oracle_job_authorized_by_this_packet": true,
         "packet": "paper2-oracle-capability-gate-v2-exec",
         "parent_floor_packet": "paper2-experience-benchmark-v1_3_3",
@@ -115,7 +115,7 @@
         "protocol_subject_hash": "e20eeadcc7d8b431095db8cfadbd9f9e73841f4fea29ece81302348c2dd542d1",
         "protocol_version_id": "ORACLE_CAPABILITY_GATE_V2_0_EXEC",
         "recorded_floor": "MODEL_CAPABILITY_FLOOR_7B_V2_EXEC",
-        "status": "V2_EXEC_ORACLE_COMPLETED_GATE_FAIL",
+        "status": "V2_EXEC_ORACLE_COMPLETED_GATE_FAIL__WAVE2_TERMINAL",
         "success": "2/5",
         "transfer_task_ids": [
           "T1",
@@ -138,6 +138,7 @@
       ],
       "not_licensed": [
         "experience-learning efficacy",
+        "CONTENT efficacy claims",
         "confirmatory ALR model win",
         "A4>A3 novelty",
         "method-promotion empirical win",
@@ -147,6 +148,7 @@
       "status": "CAPABILITY_LADDER_TERMINAL_NO_REFUTED__V2_EXEC_FLOOR",
       "unlicensed_until_capable_model": [
         "ExperienceBenchmark learning staircase claims",
+        "CONTENT / memory-content-specific lift claims",
         "Phase-0 architecture arms",
         "Confirmatory ALR / A3\u2194A4 / four-arm model empirics"
       ],
@@ -172,6 +174,7 @@
     "paper_v": {
       "not_licensed": [
         "four-arm causal attribution",
+        "CONTENT-specific memory lift",
         "independent retained-novelty validation"
       ],
       "status": "METHODS_METROLOGY__CAUSAL_AND_HUMAN_BLOCKED",
@@ -189,11 +192,49 @@
     }
   },
   "promotional_lift_claim_allowed": false,
-  "receipt_id": "campaign-scoreboard-20260812-v2-exec-floor-3476813",
+  "receipt_id": "campaign-scoreboard-20260812-v2-exec-floor-3476813-close379",
+  "remaining_actionable_non_model_lanes": [
+    {
+      "id": "closest_parent_literature_audit",
+      "packet": "research/paper2_closest_parent/",
+      "status": "ACTIONABLE",
+      "note": "Primary-source audit / ablation matrix may continue; confirmatory novelty empirics remain CANNOT_IDENTIFY without capable model"
+    },
+    {
+      "id": "paper3_human_recruitment_packet",
+      "issues": [358, 359],
+      "packet": "research/paper3_powered_noncircular_human_packet_v1/",
+      "status": "FROZEN_OPEN_RECRUITMENT__BLOCKED_HUMAN",
+      "note": "Do not invent annotators; AI_OPERATOR demoted floors already closed"
+    },
+    {
+      "id": "paper5_novelty_human_residual",
+      "issues": [353],
+      "packet": "research/paper5_independent_novelty_human_residual_v1/",
+      "status": "FROZEN_OPEN_RECRUITMENT__BLOCKED_HUMAN"
+    },
+    {
+      "id": "sham_matcher_unit_tests",
+      "packet": "research/paper5_sham_policy_v1/",
+      "tests": "tests/test_paper5_active_sham.py",
+      "status": "ACTIONABLE_INSTRUMENT_ONLY",
+      "note": "Confirmatory four-arm still unauthorized (#367)"
+    },
+    {
+      "id": "honest_tex_scoreboard_narrowing",
+      "status": "ACTIONABLE",
+      "note": "Preserve negatives; no promotional lift"
+    },
+    {
+      "id": "pre_outcome_protocol_redesign_optional",
+      "status": "PROPOSAL_ONLY_SUCCESSOR",
+      "note": "New versioned packet identity required; freeze before evaluated outcomes; must not soften >=2/3 after 3476813"
+    }
+  ],
   "schema_version": "papers-ii-iii-v-campaign-scoreboard-v2",
-  "supersedes_content_of": "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json (post-FLOOR_3B / 7B-NOT_YET revision)",
-  "tip_main_at_reconstruction": "10646fd9d7b451f3cc013600a098530295dc87d1",
-  "updated_at_utc": "2026-08-11T23:16:00.000Z",
+  "supersedes_content_of": "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json (post-#386 harvest tip)",
+  "tip_main_at_reconstruction": "f1efc79db836f7de92ef5fa800a71c224b97f6b7",
+  "updated_at_utc": "2026-08-11T23:25:00.000Z",
   "wave1": {
     "lane_a": {
       "jobs": {
@@ -209,7 +250,9 @@
         357,
         371,
         374,
-        378
+        378,
+        383,
+        386
       ],
       "status": "FLOOR_7B_RECORDED_PLUS_V2_EXEC_FLOOR"
     },
@@ -249,6 +292,7 @@
     }
   },
   "wave2_blocker_issue": 379,
+  "wave2_blocker_issue_disposition": "CLOSE_AS_TERMINAL_UNDER_CURRENT_PROTOCOLS",
   "wave2_blockers": [
     "CAPABLE_MODEL_AVAILABLE remains NO_REFUTED across authorized scales 0.5B/1.5B/3B/7B and V2_0_EXEC sealed revisit (3476813: 2/5)",
     "No Phase-0 RESET/FAILURE_MEMORY/VERIFIED/FULL_RAKL \u2014 ORACLE never passed",
@@ -256,5 +300,6 @@
     "Paper-III/V independent humans BLOCKED_HUMAN \u2014 never invent annotators",
     "Paper-V four-arm confirmatory unauthorized until CAPABLE_MODEL + full packet freeze",
     "Further scale escalation (14B/32B) is NOT protocol-legal"
-  ]
+  ],
+  "wave2_status": "TERMINAL_BLOCKED_V2_EXEC_GATE_FAIL"
 }
