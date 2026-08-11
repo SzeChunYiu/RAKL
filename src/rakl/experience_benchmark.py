@@ -13,6 +13,7 @@ from .v3_authority import (
     resolve_protected_attestation,
 )
 
+from .inference import InferenceStatus, paired_lift_verdict
 from .matched_microtrial import (
     MatchedModelConfig,
     TrialResourceCeiling,
@@ -149,6 +150,11 @@ class ExperienceBenchmarkReport:
     transfer_success_delta: float | None
     transfer_score_delta: float | None
     transfer_repeat_failure_delta: float | None
+    # Inference fields for statistical verdicts
+    transfer_success_inference_status: InferenceStatus | None = None
+    transfer_success_excludes_null: bool | None = None
+    transfer_score_inference_status: InferenceStatus | None = None
+    transfer_score_excludes_null: bool | None = None
 
     @property
     def grants_global_capability_claim(self) -> bool:
@@ -156,12 +162,23 @@ class ExperienceBenchmarkReport:
 
     @property
     def transfer_gain_observed(self) -> bool:
+        """True if either transfer metric has a statistically significant lift.
+
+        Uses interval-excludes-null inference rather than point-estimate sign.
+        Returns False for INSUFFICIENT_N or other indeterminate states.
+        """
         if self.verdict is not ExperienceBenchmarkVerdict.VALID_MEASUREMENT:
             return False
-        return bool(
-            (self.transfer_success_delta is not None and self.transfer_success_delta > 0)
-            or (self.transfer_score_delta is not None and self.transfer_score_delta > 0)
+        # Use interval-excludes-null verdict, not delta > 0
+        success_ok = (
+            self.transfer_success_excludes_null is True
+            and self.transfer_success_inference_status == InferenceStatus.MEASURED_AND_DISTINGUISHABLE
         )
+        score_ok = (
+            self.transfer_score_excludes_null is True
+            and self.transfer_score_inference_status == InferenceStatus.MEASURED_AND_DISTINGUISHABLE
+        )
+        return bool(success_ok or score_ok)
 
 
 def _runs_by_task(packet: ExperienceBenchmarkPacket) -> dict[str, list[ExperienceBenchmarkRun]]:
@@ -448,6 +465,32 @@ def assess_experience_benchmark(
     dev_learn = lookup[(ExperienceBenchmarkArm.LEARNING_ENABLED, ExperienceBenchmarkPhase.DEVELOPMENT_SEQUENCE)]
     transfer_base = lookup[(ExperienceBenchmarkArm.RESET_BASELINE, ExperienceBenchmarkPhase.FRESH_TRANSFER)]
     transfer_learn = lookup[(ExperienceBenchmarkArm.LEARNING_ENABLED, ExperienceBenchmarkPhase.FRESH_TRANSFER)]
+
+    # Build paired differences for transfer tasks (per-task paired comparison)
+    transfer_task_order = packet.transfer_task_ids
+    success_diffs: list[float] = []
+    score_diffs: list[float] = []
+    for task_id in transfer_task_order:
+        base_run = next(
+            (run for run in packet.runs
+             if run.task_id == task_id and run.arm == ExperienceBenchmarkArm.RESET_BASELINE
+             and run.phase == ExperienceBenchmarkPhase.FRESH_TRANSFER),
+            None,
+        )
+        learn_run = next(
+            (run for run in packet.runs
+             if run.task_id == task_id and run.arm == ExperienceBenchmarkArm.LEARNING_ENABLED
+             and run.phase == ExperienceBenchmarkPhase.FRESH_TRANSFER),
+            None,
+        )
+        if base_run is not None and learn_run is not None:
+            success_diffs.append(1.0 if learn_run.success else 0.0 - (1.0 if base_run.success else 0.0))
+            score_diffs.append(learn_run.score - base_run.score)
+
+    # Compute statistical inference for transfer metrics
+    success_verdict = paired_lift_verdict(success_diffs, alpha=0.05, n_boot=5000, n_perm=5000, seed=42) if success_diffs else None
+    score_verdict = paired_lift_verdict(score_diffs, alpha=0.05, n_boot=5000, n_perm=5000, seed=43) if score_diffs else None
+
     return ExperienceBenchmarkReport(
         verdict=ExperienceBenchmarkVerdict.VALID_MEASUREMENT,
         validation=validation,
@@ -457,4 +500,8 @@ def assess_experience_benchmark(
         transfer_success_delta=transfer_learn.success_rate - transfer_base.success_rate,
         transfer_score_delta=transfer_learn.mean_score - transfer_base.mean_score,
         transfer_repeat_failure_delta=transfer_learn.repeated_failure_rate - transfer_base.repeated_failure_rate,
+        transfer_success_inference_status=success_verdict.status if success_verdict else None,
+        transfer_success_excludes_null=success_verdict.excludes_null if success_verdict else None,
+        transfer_score_inference_status=score_verdict.status if score_verdict else None,
+        transfer_score_excludes_null=score_verdict.excludes_null if score_verdict else None,
     )

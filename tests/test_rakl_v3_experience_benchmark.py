@@ -96,7 +96,7 @@ def _packet() -> tuple[ExperienceBenchmarkPacket, ProtectedAuthorityContext]:
     schema = _artifact("output-schema", b"output-v1", "2026-08-11T08:00:00+00:00")
     tasks = tuple(
         _artifact(f"task:{task_id}", f"task-bytes:{task_id}".encode(), "2026-08-11T08:00:00+00:00")
-        for task_id in ("D1", "D2", "T1", "T2")
+        for task_id in ("D1", "D2", "T1", "T2", "T3")
     )
     runs = (
         _run("b-d1", "D1", ExperienceBenchmarkArm.RESET_BASELINE, ExperienceBenchmarkPhase.DEVELOPMENT_SEQUENCE, "S0", "S0", success=False, score=0.2, failure=("repeat",)),
@@ -107,6 +107,8 @@ def _packet() -> tuple[ExperienceBenchmarkPacket, ProtectedAuthorityContext]:
         _run("l-t1", "T1", ExperienceBenchmarkArm.LEARNING_ENABLED, ExperienceBenchmarkPhase.FRESH_TRANSFER, "S2", "T1-result", success=True, score=0.9),
         _run("b-t2", "T2", ExperienceBenchmarkArm.RESET_BASELINE, ExperienceBenchmarkPhase.FRESH_TRANSFER, "S0", "S0", success=False, score=0.3, failure=("transfer-a",)),
         _run("l-t2", "T2", ExperienceBenchmarkArm.LEARNING_ENABLED, ExperienceBenchmarkPhase.FRESH_TRANSFER, "S2", "T2-result", success=True, score=0.8),
+        _run("b-t3", "T3", ExperienceBenchmarkArm.RESET_BASELINE, ExperienceBenchmarkPhase.FRESH_TRANSFER, "S0", "S0", success=False, score=0.25, failure=("transfer-a",)),
+        _run("l-t3", "T3", ExperienceBenchmarkArm.LEARNING_ENABLED, ExperienceBenchmarkPhase.FRESH_TRANSFER, "S2", "T3-result", success=True, score=0.85),
     )
     outputs = tuple(
         _artifact(run.output_artifact_id, f"output:{run.run_id}".encode(), run.executed_at)
@@ -121,14 +123,14 @@ def _packet() -> tuple[ExperienceBenchmarkPacket, ProtectedAuthorityContext]:
         evaluator_protocol_hash=evaluator.payload_sha256,
         initial_state_hash="S0",
         development_task_ids=("D1", "D2"),
-        transfer_task_ids=("T1", "T2"),
+        transfer_task_ids=("T1", "T2", "T3"),
         learned_state_after_development_hash="S2",
         frozen_before_runs=True,
         runs=runs,
         evaluator_artifact_id=evaluator.artifact_id,
         tool_policy_artifact_id=tool.artifact_id,
         output_schema_artifact_id=schema.artifact_id,
-        task_artifact_ids=tuple((task_id, f"task:{task_id}") for task_id in ("D1", "D2", "T1", "T2")),
+        task_artifact_ids=tuple((task_id, f"task:{task_id}") for task_id in ("D1", "D2", "T1", "T2", "T3")),
         packet_frozen_at="2026-08-11T08:10:00+00:00",
         freeze_attestation_id="freeze",
         match_attestation_id="match",
@@ -178,7 +180,12 @@ def test_matched_experience_benchmark_measures_learning_and_transfer() -> None:
     assert report.transfer_success_delta == 1.0
     assert report.transfer_score_delta == pytest.approx(0.6)
     assert report.transfer_repeat_failure_delta == pytest.approx(-0.5)
+    # With strong positive signal on 3+ transfer tasks, inference should distinguish
     assert report.transfer_gain_observed
+    assert report.transfer_success_excludes_null is True
+    assert report.transfer_score_excludes_null is True
+    assert report.transfer_success_inference_status.value == "MEASURED_AND_DISTINGUISHABLE"
+    assert report.transfer_score_inference_status.value == "MEASURED_AND_DISTINGUISHABLE"
     assert not report.grants_global_capability_claim
 
 
