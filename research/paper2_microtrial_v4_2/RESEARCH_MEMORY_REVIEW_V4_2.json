@@ -1,0 +1,39 @@
+{
+  "artifact_hash": "sha256:30029bafe70f5e93b764720671249e96948ad41669d2e1cba8ad2c888bf9ebb2",
+  "candidate_method_families": [
+    "same-model prompt-materialization bridge with strict structured-output evaluation",
+    "prompt-interface field-polarity clarification",
+    "stop-after-json serialization hygiene"
+  ],
+  "evidence_pointers": [
+    "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3476520_INGEST_RECEIPT_20260811.json",
+    "research/paper2_microtrial_v4_1/PAPER2_V4_V4_1_FAILURE_EXPERIENCE_LATTICE_20260811.json",
+    "research/COORDINATOR_RESULTS_VALIDATION_PASS_20260811.md"
+  ],
+  "failure_lattice_snapshot_hash": "841254e2a376d39bc9a789692d7b2fb933b126610b6db26be9e701e42d52249f",
+  "failure_query_status": "MATCHES_FOUND",
+  "failure_reuse_notes": [
+    "Prior V4/V4.1 failures warn that 0.5B may still fail the exact conceptual gate even after serialization repair.",
+    "DifferenceWitness: V4.2 changes prompt field-polarity completeness and stop-after-json clipping; evaluator/normalizer/model/seed unchanged.",
+    "Cheapest repeat-failure test: one fresh native V4.2 task/seed run under the same model and seed 17."
+  ],
+  "relevant_failure_ids": [
+    "F-P2-V4-BOTH-ARMS-PARSE-NULL",
+    "F-P2-V41-ZERO-VALID-SUCCESS"
+  ],
+  "relevant_tool_ids": [],
+  "schema_version": "paper2-research-memory-review-v1",
+  "selected_tool_ids": [],
+  "target_atom_id": "P2-EMPIRICAL-BRIDGE-PENDULUM-001",
+  "target_context_hash": "9dbfdc97994d7443d09389e0a13e08e3e5dade5c571af70bcc50ffc31a34727b",
+  "tool_applicability_notes": [
+    "No scoped success-derived ResearchTool matched this sealed pendulum bridge; proceed without success-tool transfer."
+  ],
+  "tool_inventory_snapshot_hash": "7145a1e782043fa21d560f7fb6a56b45b14352bc622004baeedd355e172d1941",
+  "tool_query_status": "NO_RELEVANT_MATCH",
+  "unresolved_warnings": [
+    "Model-capacity residual may persist after prompt-interface repair; preserve nulls if exact conceptual pass remains zero.",
+    "Do not treat V4.2 as #138 experience \u00a7B or as independent review (#41/#43)."
+  ],
+  "verdict": "PASS"
+}
