@@ -17,11 +17,11 @@ For a root solution, the exact informal problem, formal statement, proof artifac
 
 | Problem | Role | State |
 |---|---|---|
-| P versus NP | primary flagship | ACTIVE_RESEARCH |
+| P versus NP | complexity flagship | ACTIVE_RESEARCH |
+| Navier–Stokes existence and smoothness | regularity / criticality lane | ACTIVE_RESEARCH |
 | Riemann hypothesis | secondary frontier lane | NOT_STARTED |
-| Navier–Stokes existence and smoothness | analytic stress-test lane | NOT_STARTED |
 
-The current compute and research budget is concentrated on P versus NP. Other lanes are placeholders until the primary workflow has accumulated verified checkpoints or a typed obstruction that justifies diversification.
+The portfolio is now allowed to diversify across Millennium problems, but each materially new lane must begin with the same strict context-first, dual-memory, and public-trace chronology. Cross-problem lessons are transferable only through explicit structural mappings and applicability/difference witnesses.
 
 ## Shared protocol
 
