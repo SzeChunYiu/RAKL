@@ -49,3 +49,12 @@ After #333 closeout stubs, stratified sample/labels/analysis live in `ai_operato
 
 Authority: `DEMOTED_AI_OPERATOR_NON_INDEPENDENT` only. Independent construct-validity remains fail-closed.
 Root `SAMPLE_PLAN.json` / `PUBLIC_AUDIT_PACKET.json` / `AUDIT_ANALYSIS.json` are **absent** (not silently FROZEN).
+
+## Independent-human residual (#353)
+
+After #255 demoted closeout, the independent-human scientific residual is frozen at:
+
+`research/paper5_independent_novelty_human_residual_v1/`
+
+Status: `BLOCKED_HUMAN` / `CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS`.
+Demoted AI_OPERATOR labels must not be promoted to independent review.
