@@ -1,0 +1,125 @@
+{
+  "receipt_id": "paper2-issue138-section-b-experience-benchmark-packet-design-freeze-20260811",
+  "schema_version": "paper2-issue138-section-b-experience-benchmark-packet-design-freeze-v1",
+  "created_at_utc": "2026-08-11T18:25:00Z",
+  "issue": 138,
+  "section": "B",
+  "object": "ExperienceBenchmarkPacket design requirements for RESET_BASELINE vs LEARNING_ENABLED",
+  "qoi": "whether a future frozen packet can lawfully measure persistent-experience transfer under matched model/resource conditions",
+  "parent_subject_sha": "d1f6337c49905729b27314528a02136f7cbc7aa4",
+  "authority_contracts": [
+    "docs/RAKL_V3_EVALUATION.md",
+    "src/rakl/experience_benchmark.py"
+  ],
+  "human_readable_twin": "research/PAPER2_ISSUE138_SECTION_B_EXPERIENCE_BENCHMARK_PACKET_DESIGN_FREEZE_20260811.md",
+  "claim_boundary": "Design-requirements freeze only. Does not freeze a concrete task/model/resource/state packet, does not authorize experience compute, does not invent ExperienceBenchmarkPacket scores or deltas, does not reinterpret V4.1 pendulum jobs as §B evidence, and does not mark issue #138 §B complete.",
+  "status": {
+    "design_requirements_frozen": true,
+    "concrete_packet_frozen": false,
+    "experience_compute_authorized": false,
+    "experience_compute_submitted": false,
+    "experience_benchmark_scores_present": false,
+    "section_b_complete": false,
+    "issue_138_closable": false
+  },
+  "required_arms": [
+    "RESET_BASELINE",
+    "LEARNING_ENABLED"
+  ],
+  "required_phases": [
+    "DEVELOPMENT_SEQUENCE",
+    "FRESH_TRANSFER"
+  ],
+  "required_packet_fields_before_result_access": {
+    "protocol_identity": [
+      "benchmark_id",
+      "model.model_id",
+      "model.model_revision",
+      "model.temperature",
+      "model.seed",
+      "model.system_prompt / system_prompt_hash",
+      "model.max_output_tokens",
+      "resource_ceiling (full TrialResourceCeiling; max_model_output_tokens matches model)",
+      "tool_policy_id",
+      "tool_policy_artifact_id",
+      "output_schema_id",
+      "output_schema_artifact_id",
+      "evaluator_protocol_hash",
+      "evaluator_artifact_id",
+      "initial_state_hash",
+      "development_task_ids (ordered, non-empty)",
+      "transfer_task_ids (non-empty, disjoint from development)",
+      "task_artifact_ids covering registered tasks"
+    ],
+    "chronology_freeze_before_result_access": [
+      "packet_frozen_at (timezone-aware)",
+      "freeze_attestation_id (AttestationPurpose.BENCHMARK_FREEZE over benchmark_protocol_subject_hash)",
+      "protocol artifacts frozen at or before packet_frozen_at",
+      "frozen_before_runs backed by protected freeze chronology (not a caller Boolean alone)",
+      "no evaluated run outputs opened until freeze attestation issued"
+    ],
+    "post_execution_fields_not_invented_here": [
+      "learned_state_after_development_hash",
+      "runs (paired RESET_BASELINE + LEARNING_ENABLED per task with state/output/resource chronology)",
+      "match_attestation_id (AttestationPurpose.BENCHMARK_MATCH after all runs)"
+    ],
+    "canonical_validation_path": "src/rakl/experience_benchmark.py::validate_experience_benchmark / assess_experience_benchmark",
+    "intended_strata_when_packet_permits": [
+      "repeated-family",
+      "cross-domain-transfer",
+      "hostile-near-miss"
+    ]
+  },
+  "non_evidence": {
+    "label": "NOT_SECTION_B_EXPERIENCE_BENCHMARK_EVIDENCE",
+    "must_not_reuse_as_experience_benchmark": true,
+    "compatibility_gate": "experiments/paper2/refuse_v4_1_as_experience_benchmark.py",
+    "items": [
+      {
+        "kind": "v4_1_pendulum_native_job",
+        "job_ids": [3476520, 3476521, 3476524],
+        "reason": "Wrong arms (RAKL_CONTEXT/DIRECT); no frozen ExperienceBenchmarkPacket; no RESET/LEARNING development→transfer state chronology",
+        "native_mirrors": [
+          "research/paper2_microtrial_v4_1/native_job_3476520/",
+          "research/paper2_microtrial_v4_1/native_job_3476521/",
+          "research/paper2_microtrial_v4_1/native_job_3476524/"
+        ],
+        "ingest_receipts": [
+          "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3476520_INGEST_RECEIPT_20260811.json",
+          "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3476521_INGEST_RECEIPT_20260811.json",
+          "research/paper2_microtrial_v4_1/PAPER2_V4_1_NATIVE_JOB_3476524_INGEST_RECEIPT_20260811.json"
+        ],
+        "ingest_status": "research/PAPER2_V4_1_NATIVE_JOBS_3476520_3476521_3476524_INGEST_STATUS_20260811.md"
+      },
+      {
+        "kind": "v4_1_staging_refused_sibling",
+        "job_ids": [3476523, 3476526],
+        "reason": "STAGING_REFUSED; not experience-benchmark substitutes; do not resubmit as §B"
+      }
+    ]
+  },
+  "merged_helpers_pr_191": {
+    "pr": 191,
+    "url": "https://github.com/SzeChunYiu/RAKL/pull/191",
+    "squash_commit": "eca9697",
+    "paths": [
+      "experiments/paper2/analyze_v3_experience_benchmark.py",
+      "experiments/paper2/plot_v3_experience_benchmark.py",
+      "experiments/paper2/refuse_v4_1_as_experience_benchmark.py",
+      "tests/test_paper2_experience_benchmark_helpers.py"
+    ],
+    "claim_boundary": "Helpers enable analyze/plot after a real frozen packet+runs exist; they do not mint packet contents, scores, or §B closure."
+  },
+  "next_operator_decision": {
+    "required_before_experience_compute": true,
+    "decision": "Approve and freeze a concrete ExperienceBenchmarkPacket protocol subject (benchmark_id, model identity/revision/temperature/seed/system-prompt bytes, full TrialResourceCeiling, tool/output/evaluator artifact bindings, S0, disjoint ordered development+transfer task sets with intended strata) and issue BENCHMARK_FREEZE attestation before any evaluated RESET/LEARNING outputs are opened or any experience job is submitted.",
+    "blocked_until_decision": "experience_compute",
+    "forbidden_substitutes": [
+      "V4.1 pendulum jobs 3476520/3476521/3476524",
+      "synthetic ExperienceBenchmarkPacket scores",
+      "helper round-trips without a frozen packet"
+    ]
+  },
+  "grants_experience_benchmark_authority": false,
+  "grants_global_capability_claim": false
+}
