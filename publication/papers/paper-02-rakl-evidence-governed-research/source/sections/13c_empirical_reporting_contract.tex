@@ -145,19 +145,23 @@ Instruct model is out of scope for the V4.2 packet, which binds only the staged
 0.5B snapshot; softening \texttt{exact\_conceptual\_pass} is forbidden.
 
 A later adaptive V4.3 staging successor runs the same sealed exact gate on
-Qwen2.5-1.5B-Instruct.  As of native job 3476566
+Qwen2.5-1.5B-Instruct.  Parent job 3476566 remains the DIRECT schema-envelope
+parse-null residual
 (\texttt{HARVEST\_V4\_3\_TASK\_SEED\_PASS\_NONCONFIRMATORY}; ingest
-\texttt{NATIVE\_EXECUTION\_CHAIN\_PASS\_\_ONE\_ARM\_SCORABLE\_NO\_EXACT\_PASS\_\_1\_5B\_NO\_EXACT\_PASS}),
-\texttt{DIRECT\_CORPUS} remains \texttt{parse\_valid=false} (answer-schema
-field mismatch; sibling may still repair and resubmit), while
-\texttt{RAKL\_CONTEXT} is one-arm scorable at 2/5 conceptual fields with
-\texttt{exact\_conceptual\_pass=false}.  Thus
-\texttt{exact\_conceptual\_pass\_arm\_count=0}, matching V4.2 job 3476540; this
-is not a 1.5B improvement claim under the unchanged gate.  Prior V4.3 job
-3476564 is preserved only as \texttt{HARVEST\_V4\_3\_CANNOT\_CHECK} (stale
-batch parent) and is not an admitted ingest pass.  Promotional /
-paired-effect metrics remain blocked.  The exact admitted lineage is
+\texttt{NATIVE\_EXECUTION\_CHAIN\_PASS\_\_ONE\_ARM\_SCORABLE\_NO\_EXACT\_PASS\_\_1\_5B\_NO\_EXACT\_PASS};
+\texttt{DIRECT\_CORPUS} \texttt{parse\_valid=false}; \texttt{RAKL\_CONTEXT}
+one-arm scorable at 2/5 with \texttt{exact\_conceptual\_pass=false}).  As of
+V4.3.1 native job 3476576
+(\texttt{HARVEST\_V4\_3\_1\_TASK\_SEED\_PASS\_NONCONFIRMATORY}; ingest
+\texttt{NATIVE\_EXECUTION\_CHAIN\_PASS\_\_BOTH\_ARMS\_SCORABLE\_NO\_EXACT\_PASS\_\_SERIALIZATION\_REPAIR\_STILL\_ZERO\_EXACT}),
+both arms are \texttt{parse\_valid}/scorable (DIRECT 1/5, RAKL\_CONTEXT 3/5)
+under the unchanged exact gate, but
+\texttt{exact\_conceptual\_pass\_arm\_count} remains 0.  The repair is
+serialization-only; it is not a 1.5B improvement claim.  Promotional /
+paired-effect metrics remain blocked.  Exact admitted lineages are
 \path{research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_RECEIPT_20260811.json}
+(prior DIRECT parse-null residual) and
+\path{research/paper2_microtrial_v4_3_1/PAPER2_V4_3_1_NATIVE_JOB_3476576_INGEST_RECEIPT_20260811.json}
 (status note
-\path{research/paper2_microtrial_v4_3/PAPER2_V4_3_NATIVE_JOB_3476566_INGEST_STATUS_20260811.md}).
+\path{research/paper2_microtrial_v4_3_1/PAPER2_V4_3_1_NATIVE_JOB_3476576_INGEST_STATUS_20260811.md}).
 The full matched empirical claim remains open.
