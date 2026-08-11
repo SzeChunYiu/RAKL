@@ -48,6 +48,7 @@ def _valid_episode() -> TaskEpisode:
 def _json_episode(episode: TaskEpisode) -> dict:
     payload = asdict(episode)
     payload["outcome"] = episode.outcome.value
+    payload["storage_admission"] = episode.storage_admission.value
     for name in (
         "problem_signature", "operator_ids", "action_trace", "observation_ids",
         "verification_ids", "residual_signature", "evidence_pointers",

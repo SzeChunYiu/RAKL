@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/SzeChunYiu/RAKL/schemas/task-episode.schema.json",
   "title": "RAKL Task Episode",
-  "description": "Immutable outcome-linked evidence root for one RAKL task/atom attempt.",
+  "description": "Immutable outcome-linked evidence root for one RAKL task/atom attempt. storage_admission is content-bound and separates proposal/shadow retention from canonical inventory admission; CANONICAL_INVENTORY_ADMITTED still requires a matching EpisodeAdmissionReceipt.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -21,7 +21,8 @@
     "evidence_pointers",
     "artifact_hash",
     "timestamp",
-    "cost"
+    "cost",
+    "storage_admission"
   ],
   "properties": {
     "episode_id": {"type": "string", "minLength": 1},
@@ -39,7 +40,11 @@
     "evidence_pointers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
     "artifact_hash": {"type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"},
     "timestamp": {"type": "string", "format": "date-time"},
-    "cost": {"type": "number", "minimum": 0}
+    "cost": {"type": "number", "minimum": 0},
+    "storage_admission": {
+      "enum": ["PROPOSAL_SHADOW_STORED", "CANONICAL_INVENTORY_ADMITTED"],
+      "description": "Content-bound storage/admission status. PROPOSAL_SHADOW_STORED may be retained for search/failure learning but must not satisfy canonical inventory or protected consumer gates. CANONICAL_INVENTORY_ADMITTED requires a matching episode-admission receipt."
+    }
   },
   "allOf": [
     {

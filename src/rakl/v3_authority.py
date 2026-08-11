@@ -178,10 +178,10 @@ class AttestationResolution:
 # assurance fixtures only; deployment roots require a separately reviewed
 # manifest update and external evaluator custody.
 PROTECTED_ATTESTATION_MANIFEST: dict[str, str] = {
-    "verify": "e0642f3afbc68a579aa643c33a7116eba274acc257e5ea3943b8d6887010c6c7",
-    "transfer": "b1c18bc4964d761c8c915368ca70e7b32875dc022d6806c1dbfea5f308dd0c3b",
-    "lesson-promotion": "8ef2274b7f4cb9aa42e927190116cc61a61b6d3d71602929073a8cead7bb73b5",
-    "tool-projection": "9e732fbd98809241f00695c0662f41959fdbfe2bd86468c89ed881ada68a2d83",
+    "verify": "1aedf32d90515ba38bfae9d9edc635c37e563b1d58e792725b037f6476d8e3a1",
+    "transfer": "3b6feca0156370fdc475bc194a276865445ef6e9842e13a2d01eb07cbd8847c1",
+    "lesson-promotion": "16be4480892ceab8eeb771c77e62e96701baad20cba86e5a799a52555e1d4911",
+    "tool-projection": "0be603688795735d32f0f70ec26680b269d4445df269d61362b5cf3d368fdff7",
     "section-check": "0a5f192c219636ec22e0dfa362c9a4d30d2c9ba412bcc51970d7966a5d6c6d43",
     "assurance": "3cd740c0ff99026b0a0c4d78e79b0ada6e096e6fc39bfea69fae546c0431df30",
     "governance": "0ecfa661bf7702920fcf977ff741e4f4b9263a284a989dc619ac9311be9cf161",

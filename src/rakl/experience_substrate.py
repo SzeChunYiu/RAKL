@@ -47,6 +47,28 @@ class EpisodeOutcome(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
+class EpisodeStorageAdmission(str, Enum):
+    """Content-bound storage/admission status for a TaskEpisode.
+
+    Separates immediate proposal/shadow retention from canonical inventory
+    admission. Path names, file extensions and omitted identifiers are not
+    authority mechanisms.
+    """
+
+    PROPOSAL_SHADOW_STORED = "PROPOSAL_SHADOW_STORED"
+    CANONICAL_INVENTORY_ADMITTED = "CANONICAL_INVENTORY_ADMITTED"
+
+
+class InventoryAdmissionVerdict(str, Enum):
+    """Resolved inventory-admission outcome for one episode (+ optional receipt)."""
+
+    CANONICAL_INVENTORY_ADMITTED = "CANONICAL_INVENTORY_ADMITTED"
+    PROPOSAL_SHADOW_STORED = "PROPOSAL_SHADOW_STORED"
+    SHADOW_REFERENCED_AS_CANONICAL = "SHADOW_REFERENCED_AS_CANONICAL"
+    ADMISSION_RECEIPT_INVALID = "ADMISSION_RECEIPT_INVALID"
+    EPISODE_INVALID = "EPISODE_INVALID"
+
+
 class LessonKind(str, Enum):
     OPERATOR = "OPERATOR"
     BOUNDARY = "BOUNDARY"
@@ -100,6 +122,11 @@ class TaskEpisode:
 
     Episodes are evidence roots.  They are never replaced by summaries or lessons.
     Derived abstractions must retain explicit episode lineage.
+
+    ``storage_admission`` is content-bound.  ``PROPOSAL_SHADOW_STORED`` may be
+    retained for search/failure learning but never satisfies canonical inventory,
+    promotion, lesson/tool, proof or root gates.  ``CANONICAL_INVENTORY_ADMITTED``
+    additionally requires a matching :class:`EpisodeAdmissionReceipt`.
     """
 
     episode_id: str
@@ -118,10 +145,46 @@ class TaskEpisode:
     artifact_hash: str
     timestamp: str
     cost: float = 0.0
+    storage_admission: EpisodeStorageAdmission = EpisodeStorageAdmission.PROPOSAL_SHADOW_STORED
 
     def __post_init__(self) -> None:
         if self.cost < 0:
             raise ValueError("episode cost cannot be negative")
+
+
+@dataclass(frozen=True)
+class EpisodeAdmissionReceipt:
+    """Protected registration/admission receipt for canonical inventory membership.
+
+    Binds an exact episode identity (``episode_id`` + ``episode_artifact_hash``).
+    Merely declaring :attr:`EpisodeStorageAdmission.CANONICAL_INVENTORY_ADMITTED`
+    on the episode, renaming a file or omitting an id does not mint admission.
+    """
+
+    receipt_id: str
+    episode_id: str
+    episode_artifact_hash: str
+    storage_admission: EpisodeStorageAdmission
+    evidence_pointers: Tuple[str, ...]
+    artifact_hash: str
+    timestamp: str
+
+    def __post_init__(self) -> None:
+        if not self.receipt_id or not self.episode_id:
+            raise ValueError("admission receipt requires receipt_id and episode_id")
+        if not self.evidence_pointers:
+            raise ValueError("admission receipt requires evidence_pointers")
+
+
+@dataclass(frozen=True)
+class InventoryAdmissionReport:
+    """Machine-checkable admission resolution for one episode."""
+
+    episode_id: str
+    verdict: InventoryAdmissionVerdict
+    reasons: Tuple[str, ...]
+    retained_for_search: bool
+    counts_toward_canonical_inventory: bool
 
 
 @dataclass(frozen=True)
@@ -160,6 +223,7 @@ class ExperienceLedger:
     lessons: Tuple[Lesson, ...] = ()
     nodes: Tuple[SubstrateNode, ...] = ()
     edges: Tuple[SubstrateEdge, ...] = ()
+    admission_receipts: Tuple[EpisodeAdmissionReceipt, ...] = ()
 
 
 def _parse_time(value: str) -> datetime | None:
@@ -199,6 +263,22 @@ def episode_content_bytes(episode: TaskEpisode) -> bytes:
             "evidence_pointers": list(episode.evidence_pointers),
             "timestamp": episode.timestamp,
             "cost": episode.cost,
+            "storage_admission": episode.storage_admission.value,
+        }
+    )
+
+
+def admission_receipt_content_bytes(receipt: EpisodeAdmissionReceipt) -> bytes:
+    """Canonical exact bytes whose digest is the admission-receipt identity."""
+
+    return canonical_json_bytes(
+        {
+            "receipt_id": receipt.receipt_id,
+            "episode_id": receipt.episode_id,
+            "episode_artifact_hash": receipt.episode_artifact_hash,
+            "storage_admission": receipt.storage_admission.value,
+            "evidence_pointers": list(receipt.evidence_pointers),
+            "timestamp": receipt.timestamp,
         }
     )
 
@@ -255,11 +335,163 @@ def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
         reasons.append("episode:evidence_pointers_missing")
     if episode.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS, EpisodeOutcome.BLOCKED} and not episode.residual_signature:
         reasons.append("episode:residual_signature_required_for_non_success")
+    if not isinstance(episode.storage_admission, EpisodeStorageAdmission):
+        reasons.append("episode:storage_admission_invalid")
     if episode.artifact_hash and not _is_sha256_hexdigest(episode.artifact_hash):
         reasons.append("episode:artifact_hash_invalid")
     elif episode.artifact_hash and sha256(episode_content_bytes(episode)).hexdigest() != episode.artifact_hash:
         reasons.append("episode:artifact_hash_mismatch")
     return tuple(reasons)
+
+
+def validate_admission_receipt(receipt: EpisodeAdmissionReceipt) -> Tuple[str, ...]:
+    reasons: list[str] = []
+    for name in ("receipt_id", "episode_id", "episode_artifact_hash", "artifact_hash"):
+        if not getattr(receipt, name):
+            reasons.append(f"admission_receipt:{name}_missing")
+    if _parse_time(receipt.timestamp) is None:
+        reasons.append("admission_receipt:timestamp_missing_or_invalid")
+    if not receipt.evidence_pointers:
+        reasons.append("admission_receipt:evidence_pointers_missing")
+    if not isinstance(receipt.storage_admission, EpisodeStorageAdmission):
+        reasons.append("admission_receipt:storage_admission_invalid")
+    elif receipt.storage_admission is not EpisodeStorageAdmission.CANONICAL_INVENTORY_ADMITTED:
+        reasons.append("admission_receipt:storage_admission_must_be_canonical")
+    if receipt.episode_artifact_hash and not _is_sha256_hexdigest(receipt.episode_artifact_hash):
+        reasons.append("admission_receipt:episode_artifact_hash_invalid")
+    if receipt.artifact_hash and not _is_sha256_hexdigest(receipt.artifact_hash):
+        reasons.append("admission_receipt:artifact_hash_invalid")
+    elif receipt.artifact_hash and sha256(admission_receipt_content_bytes(receipt)).hexdigest() != receipt.artifact_hash:
+        reasons.append("admission_receipt:artifact_hash_mismatch")
+    return tuple(reasons)
+
+
+def resolve_inventory_admission(
+    episode: TaskEpisode,
+    receipt: EpisodeAdmissionReceipt | None = None,
+    *,
+    treat_as_canonical: bool = False,
+) -> InventoryAdmissionReport:
+    """Resolve proposal/shadow storage versus canonical inventory admission.
+
+    Protected consumers that treat an episode as canonical must pass
+    ``treat_as_canonical=True``. Shadow-only episodes then fail closed instead of
+    being silently counted as inventory members.
+    """
+
+    episode_reasons = validate_episode(episode)
+    if episode_reasons:
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.EPISODE_INVALID,
+            reasons=episode_reasons,
+            retained_for_search=False,
+            counts_toward_canonical_inventory=False,
+        )
+
+    if episode.storage_admission is EpisodeStorageAdmission.PROPOSAL_SHADOW_STORED:
+        if treat_as_canonical:
+            return InventoryAdmissionReport(
+                episode_id=episode.episode_id,
+                verdict=InventoryAdmissionVerdict.SHADOW_REFERENCED_AS_CANONICAL,
+                reasons=("admission:shadow_episode_referenced_as_canonical",),
+                retained_for_search=True,
+                counts_toward_canonical_inventory=False,
+            )
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.PROPOSAL_SHADOW_STORED,
+            reasons=(),
+            retained_for_search=True,
+            counts_toward_canonical_inventory=False,
+        )
+
+    if receipt is None:
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.ADMISSION_RECEIPT_INVALID,
+            reasons=("admission:canonical_requires_admission_receipt",),
+            retained_for_search=True,
+            counts_toward_canonical_inventory=False,
+        )
+
+    receipt_reasons = validate_admission_receipt(receipt)
+    if receipt_reasons:
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.ADMISSION_RECEIPT_INVALID,
+            reasons=receipt_reasons,
+            retained_for_search=True,
+            counts_toward_canonical_inventory=False,
+        )
+    if receipt.episode_id != episode.episode_id:
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.ADMISSION_RECEIPT_INVALID,
+            reasons=("admission:receipt_episode_id_mismatch",),
+            retained_for_search=True,
+            counts_toward_canonical_inventory=False,
+        )
+    if receipt.episode_artifact_hash != episode.artifact_hash:
+        return InventoryAdmissionReport(
+            episode_id=episode.episode_id,
+            verdict=InventoryAdmissionVerdict.ADMISSION_RECEIPT_INVALID,
+            reasons=("admission:receipt_episode_artifact_hash_mismatch",),
+            retained_for_search=True,
+            counts_toward_canonical_inventory=False,
+        )
+
+    return InventoryAdmissionReport(
+        episode_id=episode.episode_id,
+        verdict=InventoryAdmissionVerdict.CANONICAL_INVENTORY_ADMITTED,
+        reasons=(),
+        retained_for_search=True,
+        counts_toward_canonical_inventory=True,
+    )
+
+
+def require_canonical_inventory_admission(
+    episode: TaskEpisode,
+    receipt: EpisodeAdmissionReceipt | None,
+) -> InventoryAdmissionReport:
+    """Fail closed unless the episode is an admitted canonical inventory member."""
+
+    report = resolve_inventory_admission(episode, receipt, treat_as_canonical=True)
+    if report.verdict is not InventoryAdmissionVerdict.CANONICAL_INVENTORY_ADMITTED:
+        raise ValueError(
+            "canonical consumer rejected episode: "
+            + ", ".join(report.reasons or (report.verdict.value,))
+        )
+    return report
+
+
+def canonical_inventory_episodes(
+    ledger: ExperienceLedger,
+) -> Tuple[TaskEpisode, ...]:
+    """Episodes that satisfy exhaustive canonical inventory admission checks."""
+
+    receipts_by_episode = {item.episode_id: item for item in ledger.admission_receipts}
+    admitted: list[TaskEpisode] = []
+    for episode in ledger.episodes:
+        report = resolve_inventory_admission(
+            episode,
+            receipts_by_episode.get(episode.episode_id),
+            treat_as_canonical=True,
+        )
+        if report.counts_toward_canonical_inventory:
+            admitted.append(episode)
+    return tuple(admitted)
+
+
+def proposal_shadow_episodes(ledger: ExperienceLedger) -> Tuple[TaskEpisode, ...]:
+    """Valid proposal/shadow episodes retained outside canonical authority counts."""
+
+    retained: list[TaskEpisode] = []
+    for episode in ledger.episodes:
+        report = resolve_inventory_admission(episode, treat_as_canonical=False)
+        if report.verdict is InventoryAdmissionVerdict.PROPOSAL_SHADOW_STORED:
+            retained.append(episode)
+    return tuple(retained)
 
 
 def validate_lesson(lesson: Lesson) -> Tuple[str, ...]:
@@ -311,13 +543,49 @@ def add_episode(ledger: ExperienceLedger, episode: TaskEpisode) -> ExperienceLed
         kind=SubstrateKind.EPISODE,
         label=f"episode:{episode.task_id}:{episode.atom_id}",
         payload_hash=episode.artifact_hash,
-        metadata=(("outcome", episode.outcome.value), ("context_hash", episode.context_hash)),
+        metadata=(
+            ("outcome", episode.outcome.value),
+            ("context_hash", episode.context_hash),
+            ("storage_admission", episode.storage_admission.value),
+        ),
     )
     return ExperienceLedger(
         episodes=ledger.episodes + (episode,),
         lessons=ledger.lessons,
         nodes=ledger.nodes + (node,),
         edges=ledger.edges,
+        admission_receipts=ledger.admission_receipts,
+    )
+
+
+def add_admission_receipt(
+    ledger: ExperienceLedger,
+    receipt: EpisodeAdmissionReceipt,
+) -> ExperienceLedger:
+    """Register a canonical inventory admission receipt against a stored episode."""
+
+    reasons = validate_admission_receipt(receipt)
+    if reasons:
+        raise ValueError("invalid admission receipt: " + ", ".join(reasons))
+    if any(item.receipt_id == receipt.receipt_id for item in ledger.admission_receipts):
+        raise ValueError(f"duplicate admission receipt id: {receipt.receipt_id}")
+    if any(item.episode_id == receipt.episode_id for item in ledger.admission_receipts):
+        raise ValueError(f"duplicate admission receipt for episode: {receipt.episode_id}")
+    episode = next((item for item in ledger.episodes if item.episode_id == receipt.episode_id), None)
+    if episode is None:
+        raise ValueError(f"admission receipt references unknown episode: {receipt.episode_id}")
+    report = resolve_inventory_admission(episode, receipt, treat_as_canonical=True)
+    if report.verdict is not InventoryAdmissionVerdict.CANONICAL_INVENTORY_ADMITTED:
+        raise ValueError(
+            "admission receipt does not admit episode: "
+            + ", ".join(report.reasons or (report.verdict.value,))
+        )
+    return ExperienceLedger(
+        episodes=ledger.episodes,
+        lessons=ledger.lessons,
+        nodes=ledger.nodes,
+        edges=ledger.edges,
+        admission_receipts=ledger.admission_receipts + (receipt,),
     )
 
 
@@ -443,13 +711,20 @@ def add_lesson(
         lessons=ledger.lessons + (lesson,),
         nodes=ledger.nodes + (node,),
         edges=tuple(edges),
+        admission_receipts=ledger.admission_receipts,
     )
 
 
 def add_substrate_node(ledger: ExperienceLedger, node: SubstrateNode) -> ExperienceLedger:
     if any(item.node_id == node.node_id for item in ledger.nodes):
         raise ValueError(f"duplicate substrate node id: {node.node_id}")
-    return ExperienceLedger(ledger.episodes, ledger.lessons, ledger.nodes + (node,), ledger.edges)
+    return ExperienceLedger(
+        ledger.episodes,
+        ledger.lessons,
+        ledger.nodes + (node,),
+        ledger.edges,
+        ledger.admission_receipts,
+    )
 
 
 def add_substrate_edge(ledger: ExperienceLedger, edge: SubstrateEdge) -> ExperienceLedger:
@@ -458,7 +733,13 @@ def add_substrate_edge(ledger: ExperienceLedger, edge: SubstrateEdge) -> Experie
         raise ValueError("substrate edge endpoints must already exist")
     if edge in ledger.edges:
         return ledger
-    return ExperienceLedger(ledger.episodes, ledger.lessons, ledger.nodes, ledger.edges + (edge,))
+    return ExperienceLedger(
+        ledger.episodes,
+        ledger.lessons,
+        ledger.nodes,
+        ledger.edges + (edge,),
+        ledger.admission_receipts,
+    )
 
 
 def query_nodes(ledger: ExperienceLedger, *kinds: SubstrateKind) -> Tuple[SubstrateNode, ...]:
@@ -475,8 +756,13 @@ def episode_portrait(ledger: ExperienceLedger) -> dict[str, object]:
         outcomes[episode.outcome.value] = outcomes.get(episode.outcome.value, 0) + 1
     for lesson in ledger.lessons:
         lesson_authority[lesson.authority.value] = lesson_authority.get(lesson.authority.value, 0) + 1
+    canonical = canonical_inventory_episodes(ledger)
+    shadow = proposal_shadow_episodes(ledger)
     return {
         "episode_count": len(ledger.episodes),
+        "canonical_inventory_episode_count": len(canonical),
+        "proposal_shadow_episode_count": len(shadow),
+        "admission_receipt_count": len(ledger.admission_receipts),
         "lesson_count": len(ledger.lessons),
         "node_count": len(ledger.nodes),
         "edge_count": len(ledger.edges),
