@@ -9,9 +9,14 @@ from jsonschema import Draft202012Validator
 
 from rakl.experience_substrate import (
     EpisodeOutcome,
+    Lesson,
+    LessonAuthority,
+    LessonKind,
     TaskEpisode,
     episode_content_bytes,
+    lesson_content_bytes,
     validate_episode,
+    validate_lesson,
 )
 
 
@@ -48,6 +53,45 @@ def _json_episode(episode: TaskEpisode) -> dict:
         "verification_ids", "residual_signature", "evidence_pointers",
     ):
         payload[name] = list(payload[name])
+    return payload
+
+
+def _valid_lesson() -> Lesson:
+    draft = Lesson(
+        lesson_id="LESSON-HASH-CONTRACT",
+        kind=LessonKind.BOUNDARY,
+        trigger_signature=("malformed identity",),
+        context_scope=("experience substrate",),
+        action="reject noncanonical digests before authority use",
+        expected_effects=("fail_closed",),
+        boundaries=("hash integrity is not truth authority",),
+        supporting_episode_ids=("EP-HASH-CONTRACT",),
+        contradicting_episode_ids=(),
+        falsifier="a malformed digest reaches the lesson ledger",
+        authority=LessonAuthority.CANDIDATE,
+        validation_obligations=("run planted malformed-hash worlds",),
+        evidence_pointers=("test:lesson-hash-contract",),
+        artifact_hash="",
+    )
+    return replace(draft, artifact_hash=sha256(lesson_content_bytes(draft)).hexdigest())
+
+
+def _json_lesson(lesson: Lesson) -> dict:
+    payload = asdict(lesson)
+    payload["kind"] = lesson.kind.value
+    payload["authority"] = lesson.authority.value
+    for name in (
+        "trigger_signature", "context_scope", "expected_effects", "boundaries",
+        "supporting_episode_ids", "contradicting_episode_ids",
+        "validation_obligations", "evidence_pointers",
+    ):
+        payload[name] = list(payload[name])
+    for name in (
+        "authority_attestation_id", "authority_subject_hash",
+        "authority_evidence_packet_hash", "promotion_attestation_id",
+        "authority_evidence_packet_artifact_id",
+    ):
+        payload.pop(name)
     return payload
 
 
@@ -89,3 +133,35 @@ def test_task_episode_schema_matches_runtime_raw_sha256_contract() -> None:
         hostile = dict(payload, artifact_hash=malformed)
         assert list(validator.iter_errors(hostile))
 
+
+def test_lesson_runtime_rejects_hash_shapes_that_bypass_digest_check() -> None:
+    lesson = _valid_lesson()
+    assert validate_lesson(lesson) == ()
+    for malformed in (
+        "sha256:" + lesson.artifact_hash,
+        lesson.artifact_hash[:-1],
+        lesson.artifact_hash + "0",
+        "G" * 64,
+        "not-a-digest",
+    ):
+        assert "lesson:artifact_hash_invalid" in validate_lesson(
+            replace(lesson, artifact_hash=malformed)
+        )
+    assert validate_lesson(replace(lesson, artifact_hash="0" * 64)) == (
+        "lesson:artifact_hash_mismatch",
+    )
+
+
+def test_lesson_schema_matches_runtime_raw_sha256_contract() -> None:
+    schema = json.loads((ROOT / "schemas/lesson.schema.json").read_text())
+    validator = Draft202012Validator(schema)
+    payload = _json_lesson(_valid_lesson())
+    assert list(validator.iter_errors(payload)) == []
+    for malformed in (
+        "sha256:" + payload["artifact_hash"],
+        payload["artifact_hash"][:-1],
+        payload["artifact_hash"] + "0",
+        "G" * 64,
+        "not-a-digest",
+    ):
+        assert list(validator.iter_errors(dict(payload, artifact_hash=malformed)))

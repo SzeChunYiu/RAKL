@@ -29,6 +29,7 @@ from rakl.experience_substrate import (
     TaskEpisode,
     add_episode,
     episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.failure_lattice import FailureDiagnosisStatus
 from rakl.problem_fibre import (
@@ -84,7 +85,7 @@ def _episode(
 
 
 def _lesson() -> Lesson:
-    return Lesson(
+    draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("bridge", "graph"),
@@ -98,8 +99,9 @@ def _lesson() -> Lesson:
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate bridge mapping", "replay prior counterexample"),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
     )
+    return replace(draft, artifact_hash=sha256(lesson_content_bytes(draft)).hexdigest())
 
 
 def test_episode_is_preserved_as_immutable_evidence_root() -> None:

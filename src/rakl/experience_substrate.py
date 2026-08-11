@@ -281,7 +281,9 @@ def validate_lesson(lesson: Lesson) -> Tuple[str, ...]:
         reasons.append("lesson:validation_obligations_missing")
     if not lesson.evidence_pointers:
         reasons.append("lesson:evidence_pointers_missing")
-    if len(lesson.artifact_hash) == 64 and sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash:
+    if lesson.artifact_hash and not _is_sha256_hexdigest(lesson.artifact_hash):
+        reasons.append("lesson:artifact_hash_invalid")
+    elif lesson.artifact_hash and sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash:
         reasons.append("lesson:artifact_hash_mismatch")
     return tuple(reasons)
 

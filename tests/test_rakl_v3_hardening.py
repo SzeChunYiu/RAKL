@@ -13,6 +13,7 @@ from rakl.experience_substrate import (
     LessonKind,
     TaskEpisode,
     episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.saturation_vector import NoveltyRound, SaturationAxis, assess_saturation_vector
 from rakl.v3_runtime import RAKLV3State, consolidate_lesson, record_task_episode
@@ -40,7 +41,7 @@ def _episode() -> TaskEpisode:
 
 
 def _lesson() -> Lesson:
-    return Lesson(
+    draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("structure",),
@@ -54,8 +55,9 @@ def _lesson() -> Lesson:
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("verify",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
     )
+    return replace(draft, artifact_hash=sha256(lesson_content_bytes(draft)).hexdigest())
 
 
 def test_recent_retained_novelty_prevents_axis_flatness() -> None:

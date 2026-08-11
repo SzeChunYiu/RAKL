@@ -15,6 +15,7 @@ from rakl.experience_substrate import (
     add_episode,
     add_lesson,
     episode_content_bytes,
+    lesson_content_bytes,
 )
 from rakl.multires_memory import MemoryViewKind, MemoryViewVerdict, validate_memory_view
 from rakl.problem_fibre import ProblemAtom, compile_problem_fibre
@@ -94,7 +95,7 @@ def test_legacy_projection_ids_are_namespaced_by_owning_fibre() -> None:
 
 def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
     ledger = add_episode(ExperienceLedger(), _episode())
-    lesson = Lesson(
+    lesson_draft = Lesson(
         lesson_id="L1",
         kind=LessonKind.OPERATOR,
         trigger_signature=("graph",),
@@ -108,7 +109,11 @@ def test_lessons_are_lossy_memory_views_over_canonical_episode_roots() -> None:
         authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate target",),
         evidence_pointers=("artifact:E1",),
-        artifact_hash="sha256:L1",
+        artifact_hash="",
+    )
+    lesson = replace(
+        lesson_draft,
+        artifact_hash=sha256(lesson_content_bytes(lesson_draft)).hexdigest(),
     )
     ledger = add_lesson(ledger, lesson)
     views = experience_memory_views(ledger)

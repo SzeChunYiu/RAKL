@@ -156,9 +156,10 @@ The canonical invariant is:
 
 > **Never replace evidence with abstraction.**
 
-`artifact_hash` is the raw lowercase 64-hex SHA-256 digest of
-`episode_content_bytes(episode)`. Prefixed, truncated, non-hex, or stale
-digests fail closed; the JSON schema and runtime enforce the same contract.
+Episode and lesson `artifact_hash` values are raw lowercase 64-hex SHA-256
+digests of `episode_content_bytes(episode)` and `lesson_content_bytes(lesson)`,
+respectively. Prefixed, truncated, non-hex, or stale digests fail closed; the
+JSON schemas and runtime enforce the same contract.
 
 Summaries, lessons, expertise chunks, operator statistics, motifs, and routing priors are derived views.  They never delete or rewrite the source episodes from which they were produced.
 
