@@ -83,6 +83,45 @@ def test_empty_queries_are_allowed_only_when_explicit() -> None:
     assert report.verdict is ResearchMemoryVerdict.PASS
 
 
+def test_bound_universe_no_match_requires_coverage_receipt_hash() -> None:
+    """Cross-problem 'no match' without a coverage receipt fails closed (#119)."""
+
+    report = audit_research_memory_review(
+        _review(
+            tool_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE,
+            failure_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH,
+            relevant_tool_ids=(),
+            relevant_failure_ids=(),
+            selected_tool_ids=(),
+            tool_applicability_notes=(),
+            failure_reuse_notes=(),
+            cross_problem_coverage_receipt_hash="",
+        ),
+        atom_id="atom-C",
+        context_hash="sha256:context",
+    )
+    assert report.verdict is ResearchMemoryVerdict.FAIL
+    assert "cross_problem_no_match_without_coverage_receipt_hash" in report.reasons
+
+
+def test_bound_universe_no_match_passes_with_coverage_receipt_hash() -> None:
+    report = audit_research_memory_review(
+        _review(
+            tool_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE,
+            failure_query_status=MemoryQueryStatus.NO_RELEVANT_MATCH_IN_BOUND_UNIVERSE,
+            relevant_tool_ids=(),
+            relevant_failure_ids=(),
+            selected_tool_ids=(),
+            tool_applicability_notes=(),
+            failure_reuse_notes=(),
+            cross_problem_coverage_receipt_hash="a" * 64,
+        ),
+        atom_id="atom-C",
+        context_hash="sha256:context",
+    )
+    assert report.verdict is ResearchMemoryVerdict.PASS
+
+
 def test_selected_tool_must_come_from_relevant_query() -> None:
     report = audit_research_memory_review(
         _review(selected_tool_ids=("tool-unseen",)),
