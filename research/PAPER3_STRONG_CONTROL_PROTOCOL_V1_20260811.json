@@ -1,0 +1,140 @@
+{
+  "chronology": {
+    "descriptor_must_precede_first_external_annotation_completion": true,
+    "evaluated_results_visible_before_protocol_freeze": false,
+    "external_labels_visible_before_protocol_freeze": false,
+    "model_and_content_projection_frozen_before_scoring": true
+  },
+  "claim_boundary": "Protocol and implementation freeze only. It creates no semantic descriptor, structural-signal result, training result, inference result, break-even result, independent review or peer review.",
+  "content_binding": {
+    "excluded_fields": [
+      "adjudication",
+      "annotation_records",
+      "boundary_matched",
+      "candidate_load_bearing_boundary",
+      "candidate_load_bearing_invariant",
+      "confirmatory_eligible",
+      "directional_mapping_complete",
+      "invariant_preserved",
+      "quadrant",
+      "roles_preserved",
+      "semantic_similarity_high",
+      "structural_match",
+      "transfer_valid",
+      "typed_relations_preserved"
+    ],
+    "rendering": "UTF-8 lines in frozen field order as '<field>: <value>'; arrays joined by ' | '; no normalization beyond per-value trim",
+    "shared_fields": [
+      "qoi"
+    ],
+    "side_fields": [
+      "domain",
+      "surface_terms",
+      "skill_tags",
+      "dependencies",
+      "evidence"
+    ],
+    "source_set_id": "paper3-natural-cross-domain-source-set-v2-1-20260810",
+    "source_set_path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json",
+    "source_set_sha256": "c1995bb0aef2a18c2bf48690cc346d551648aa8cb46b9eeb06220ce88911f623"
+  },
+  "control_role": {
+    "arms": {
+      "content_cross_encoder": [
+        "content_semantic"
+      ],
+      "dependency_aware_content": [
+        "content_semantic",
+        "skill",
+        "dependency"
+      ],
+      "skill_aware_content": [
+        "content_semantic",
+        "skill"
+      ],
+      "witnessed_structure_content": [
+        "content_semantic",
+        "skill",
+        "dependency",
+        "invariant",
+        "boundary",
+        "qoi",
+        "directional"
+      ]
+    },
+    "comparison": "The witnessed-structure arm must beat the strongest held-out non-structural arm, including this content-bound cross-encoder and its skill/dependency augmentation; selecting a weaker semantic arm is forbidden.",
+    "feature": "sigmoid of the frozen cross-encoder raw relevance logit",
+    "strongest_control_selection": "maximum held-out ROC-AUC; ties by average precision then frozen arm order",
+    "structural_authority": false
+  },
+  "frozen_at_utc": "2026-08-11T04:05:38Z",
+  "frozen_before_external_labels_visible": true,
+  "frozen_parent_subject_sha": "3bf46b505af249802faa277d3ec865f4d9664853",
+  "implementation_binding": {
+    "entrypoint": "rakl.paper3_strong_control:build_semantic_descriptor_receipt",
+    "path": "src/rakl/paper3_strong_control.py",
+    "sha256": "0f23f49b5cc385d156c42a7835ed76df6613bb5110762590dab93cdef95ce24b"
+  },
+  "inference": {
+    "batch_size": 2,
+    "device": "cpu",
+    "dtype": "float32",
+    "local_files_only": true,
+    "max_length_tokens": 1024,
+    "seed": 0,
+    "torch_deterministic_algorithms": true
+  },
+  "label_policy": {
+    "adjudication_may_be_read": false,
+    "evaluated_results_may_be_read": false,
+    "external_annotations_may_be_read": false,
+    "source_items_may_be_read": true
+  },
+  "missing_evidence_policy": "Any missing, size-mismatched or hash-mismatched model file, content mismatch, post-label descriptor timestamp, runtime failure or missing case score returns CANNOT_CHECK and cannot authorize training or inference.",
+  "object": "Content-semantic relatedness of each frozen Paper-3 source/target description pair, excluding proposed structural witnesses and outcome labels.",
+  "protocol_id": "paper3-content-bound-strong-semantic-control-v1",
+  "qoi": "Does witnessed structure add held-out transfer discrimination beyond a modern content-bound cross-encoder rather than surface-token overlap?",
+  "schema_version": "paper3-strong-control-protocol-v1",
+  "semantic_model": {
+    "architecture": "XLMRobertaForSequenceClassification cross-encoder",
+    "license": "apache-2.0",
+    "model_id": "BAAI/bge-reranker-v2-m3",
+    "provenance_path": "research/PAPER3_BGE_MODEL_PROVENANCE_20260811.json",
+    "provenance_sha256": "f131c9b1b3dfd10dd72914e1e03eceb5fdbcda076ef3955978657f4fbd75041d",
+    "repository": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+    "required_files": [
+      {
+        "bytes": 795,
+        "path": "config.json",
+        "sha256": "13dcd6c31d9fec9d1d8e158702072f62d7fa7d312a64b9fe057bec9a08cfe41a"
+      },
+      {
+        "bytes": 2271071852,
+        "path": "model.safetensors",
+        "sha256": "d9e3e081faff1eefb84019509b2f5558fd74c1a05a2c7db22f74174fcedb5286"
+      },
+      {
+        "bytes": 5069051,
+        "path": "sentencepiece.bpe.model",
+        "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+      },
+      {
+        "bytes": 964,
+        "path": "special_tokens_map.json",
+        "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+      },
+      {
+        "bytes": 17098273,
+        "path": "tokenizer.json",
+        "sha256": "69564b696052886ed0ac63fa393e928384e0f8caada38c1f4864a9bfbf379c15"
+      },
+      {
+        "bytes": 1173,
+        "path": "tokenizer_config.json",
+        "sha256": "7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4"
+      }
+    ],
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "score_transform": "sigmoid(raw single-label logit)"
+  }
+}

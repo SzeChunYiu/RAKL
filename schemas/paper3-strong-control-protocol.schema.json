@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-strong-control-protocol.schema.json",
+  "title": "Paper 3 content-bound strong semantic-control protocol",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_id", "frozen_at_utc", "frozen_parent_subject_sha", "frozen_before_external_labels_visible", "object", "qoi", "claim_boundary", "chronology", "label_policy", "content_binding", "semantic_model", "inference", "implementation_binding", "control_role", "missing_evidence_policy"],
+  "properties": {
+    "schema_version": {"const": "paper3-strong-control-protocol-v1"},
+    "protocol_id": {"const": "paper3-content-bound-strong-semantic-control-v1"},
+    "frozen_at_utc": {"$ref": "#/$defs/utc"},
+    "frozen_parent_subject_sha": {"$ref": "#/$defs/gitSha"},
+    "frozen_before_external_labels_visible": {"const": true},
+    "object": {"type": "string", "minLength": 1},
+    "qoi": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "chronology": {
+      "type": "object", "additionalProperties": false,
+      "required": ["descriptor_must_precede_first_external_annotation_completion", "evaluated_results_visible_before_protocol_freeze", "external_labels_visible_before_protocol_freeze", "model_and_content_projection_frozen_before_scoring"],
+      "properties": {
+        "descriptor_must_precede_first_external_annotation_completion": {"const": true},
+        "evaluated_results_visible_before_protocol_freeze": {"const": false},
+        "external_labels_visible_before_protocol_freeze": {"const": false},
+        "model_and_content_projection_frozen_before_scoring": {"const": true}
+      }
+    },
+    "label_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adjudication_may_be_read", "evaluated_results_may_be_read", "external_annotations_may_be_read", "source_items_may_be_read"],
+      "properties": {
+        "adjudication_may_be_read": {"const": false},
+        "evaluated_results_may_be_read": {"const": false},
+        "external_annotations_may_be_read": {"const": false},
+        "source_items_may_be_read": {"const": true}
+      }
+    },
+    "content_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["excluded_fields", "rendering", "shared_fields", "side_fields", "source_set_id", "source_set_path", "source_set_sha256"],
+      "properties": {
+        "excluded_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "rendering": {"type": "string", "minLength": 1},
+        "shared_fields": {"const": ["qoi"]},
+        "side_fields": {"const": ["domain", "surface_terms", "skill_tags", "dependencies", "evidence"]},
+        "source_set_id": {"type": "string", "minLength": 1},
+        "source_set_path": {"type": "string", "minLength": 1},
+        "source_set_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "semantic_model": {"$ref": "#/$defs/model"},
+    "inference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["batch_size", "device", "dtype", "local_files_only", "max_length_tokens", "seed", "torch_deterministic_algorithms"],
+      "properties": {
+        "batch_size": {"type": "integer", "minimum": 1},
+        "device": {"const": "cpu"},
+        "dtype": {"const": "float32"},
+        "local_files_only": {"const": true},
+        "max_length_tokens": {"type": "integer", "minimum": 1},
+        "seed": {"type": "integer"},
+        "torch_deterministic_algorithms": {"const": true}
+      }
+    },
+    "implementation_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entrypoint", "path", "sha256"],
+      "properties": {
+        "entrypoint": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "control_role": {
+      "type": "object", "additionalProperties": false,
+      "required": ["arms", "comparison", "feature", "strongest_control_selection", "structural_authority"],
+      "properties": {
+        "arms": {
+          "const": {
+            "content_cross_encoder": ["content_semantic"],
+            "dependency_aware_content": ["content_semantic", "skill", "dependency"],
+            "skill_aware_content": ["content_semantic", "skill"],
+            "witnessed_structure_content": ["content_semantic", "skill", "dependency", "invariant", "boundary", "qoi", "directional"]
+          }
+        },
+        "comparison": {"type": "string", "minLength": 1},
+        "feature": {"type": "string", "minLength": 1},
+        "strongest_control_selection": {"type": "string", "minLength": 1},
+        "structural_authority": {"const": false}
+      }
+    },
+    "missing_evidence_policy": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "gitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "file": {
+      "type": "object", "additionalProperties": false,
+      "required": ["bytes", "path", "sha256"],
+      "properties": {
+        "bytes": {"type": "integer", "minimum": 1},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["architecture", "license", "model_id", "provenance_path", "provenance_sha256", "repository", "required_files", "revision", "score_transform"],
+      "properties": {
+        "architecture": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1},
+        "model_id": {"type": "string", "minLength": 1},
+        "provenance_path": {"type": "string", "minLength": 1},
+        "provenance_sha256": {"$ref": "#/$defs/sha256"},
+        "repository": {"type": "string", "format": "uri"},
+        "required_files": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/file"}},
+        "revision": {"$ref": "#/$defs/gitSha"},
+        "score_transform": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-content-bound-semantic-descriptor.schema.json",
+  "title": "Paper 3 content-bound semantic descriptor receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "descriptor_id", "status", "created_at_utc", "label_access", "protocol_id", "protocol_sha256", "source_set_id", "source_set_sha256", "model", "observed_model_files", "runtime", "descriptors", "failures", "claim_boundary", "training_authorized"],
+  "properties": {
+    "schema_version": {"const": "paper3-content-bound-semantic-descriptor-v1"},
+    "descriptor_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["READY", "CANNOT_CHECK_CONTENT_BINDING_INVALID", "CANNOT_CHECK_MODEL_ASSET_MISSING", "CANNOT_CHECK_MODEL_LOAD_OR_INFERENCE_FAILED"]},
+    "created_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "label_access": {
+      "type": "object", "additionalProperties": false,
+      "required": ["external_annotation_accessed", "adjudication_accessed", "evaluated_result_accessed"],
+      "properties": {
+        "external_annotation_accessed": {"const": false},
+        "adjudication_accessed": {"const": false},
+        "evaluated_result_accessed": {"const": false}
+      }
+    },
+    "protocol_id": {"const": "paper3-content-bound-strong-semantic-control-v1"},
+    "protocol_sha256": {"$ref": "#/$defs/sha256"},
+    "source_set_id": {"type": "string", "minLength": 1},
+    "source_set_sha256": {"$ref": "#/$defs/sha256"},
+    "model": {"type": "object"},
+    "observed_model_files": {"type": "array", "items": {"type": "object"}},
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["device", "dtype", "local_files_only", "batch_size"],
+      "properties": {
+        "device": {"const": "cpu"},
+        "dtype": {"const": "float32"},
+        "local_files_only": {"const": true},
+        "batch_size": {"type": "integer", "minimum": 1}
+      }
+    },
+    "descriptors": {"type": "array", "items": {"$ref": "#/$defs/descriptor"}},
+    "failures": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "training_authorized": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "READY"}}},
+      "then": {"properties": {"descriptors": {"minItems": 1}, "failures": {"maxItems": 0}}},
+      "else": {"properties": {"descriptors": {"maxItems": 0}, "failures": {"minItems": 1}}}
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "descriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["case_id", "source_text_sha256", "target_text_sha256", "pair_sha256", "raw_logit", "semantic_score"],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "source_text_sha256": {"$ref": "#/$defs/sha256"},
+        "target_text_sha256": {"$ref": "#/$defs/sha256"},
+        "pair_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_logit": {"type": "number"},
+        "semantic_score": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}
