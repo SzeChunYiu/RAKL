@@ -1,6 +1,6 @@
 """Stable public facade for the RAKL v3 recursive experience substrate.
 
-Legacy RAKL imports remain untouched.  New callers can depend on ``rakl.v3``
+Legacy RAKL imports remain untouched. New callers can depend on ``rakl.v3``
 without knowing how the v3 implementation is split across internal modules.
 """
 
@@ -12,14 +12,14 @@ from .evolution_archive import (
     RAKLVariant,
     VariantSelection,
     VariantStatus,
+    evolution_assurance_subject_hash,
     evolution_portrait,
+    evolution_trial_subject_hash,
     initialize_evolution_archive,
     promote_incumbent,
     rank_variants_for_task,
     record_evolution_trial,
     register_challenger,
-    evolution_trial_subject_hash,
-    evolution_assurance_subject_hash,
     variant_promotion_subject_hash,
 )
 from .experience_benchmark import (
@@ -32,9 +32,9 @@ from .experience_benchmark import (
     ExperienceBenchmarkValidation,
     ExperienceBenchmarkVerdict,
     assess_experience_benchmark,
-    validate_experience_benchmark,
     benchmark_protocol_subject_hash,
     benchmark_result_subject_hash,
+    validate_experience_benchmark,
 )
 from .experience_learning import (
     ConsolidationVerdict,
@@ -45,12 +45,7 @@ from .experience_learning import (
     lesson_to_research_tool,
     promoted_lesson_version,
 )
-from .experience_memory import (
-    LESSON_ERASURE_TAGS,
-    episode_memory_view,
-    experience_memory_views,
-    lesson_memory_view,
-)
+from .experience_memory import LESSON_ERASURE_TAGS, episode_memory_view, experience_memory_views, lesson_memory_view
 from .experience_policy import (
     ExperienceConditionedPath,
     InventionReadinessReport,
@@ -83,12 +78,7 @@ from .experience_substrate import (
     validate_episode,
     validate_lesson,
 )
-from .failure_learning import (
-    BoundaryLessonSpec,
-    FailureDiagnosisRevisionSpec,
-    boundary_lesson_from_supported_failure,
-    revise_failure_diagnosis,
-)
+from .failure_learning import BoundaryLessonSpec, FailureDiagnosisRevisionSpec, boundary_lesson_from_supported_failure, revise_failure_diagnosis
 from .gluing_learning import gluing_episode_outcome, gluing_residual_signature
 from .problem_fibre import (
     FibreKnowledgeItem,
@@ -102,17 +92,6 @@ from .problem_fibre import (
     glue_local_sections,
     knowledge_items_from_legacy_fiber,
     local_section_subject_hash,
-)
-from .v3_authority import (
-    AttestationPurpose,
-    AttestationResolution,
-    AuthorityTrustPolicy,
-    EvidenceArtifact,
-    ProtectedAttestation,
-    ProtectedAuthorityContext,
-    canonical_sha256,
-    issue_protected_attestation,
-    resolve_protected_attestation,
 )
 from .problem_novelty import (
     ProblemNoveltyClass,
@@ -132,6 +111,36 @@ from .saturation_vector import (
     assess_saturation_vector,
 )
 from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
+from .v3_authority import (
+    AttestationPurpose,
+    AttestationResolution,
+    AuthorityTrustPolicy,
+    EvidenceArtifact,
+    ProtectedAttestation,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    issue_protected_attestation,
+    resolve_protected_attestation,
+)
+from .v3_metrology import (
+    AttributionArm,
+    AttributionArmMetrics,
+    AttributionPacket,
+    AttributionReport,
+    AttributionRun,
+    AttributionValidation,
+    PairedOutcomeCounts,
+    ProcessAggregate,
+    ProcessOutcome,
+    ProcessTelemetry,
+    StateGrowthDelta,
+    StateMetricSnapshot,
+    aggregate_process_telemetry,
+    assess_attribution,
+    compare_state_metrics,
+    measure_state,
+    validate_attribution_packet,
+)
 from .v3_runtime import (
     ConsolidationOutcome,
     FailureProjectionSpec,
@@ -149,6 +158,12 @@ __all__ = [
     "ArmPhaseMetrics",
     "AttestationPurpose",
     "AttestationResolution",
+    "AttributionArm",
+    "AttributionArmMetrics",
+    "AttributionPacket",
+    "AttributionReport",
+    "AttributionRun",
+    "AttributionValidation",
     "AuthorityTrustPolicy",
     "BoundaryLessonSpec",
     "ConsolidationOutcome",
@@ -188,12 +203,16 @@ __all__ = [
     "NoveltyRound",
     "OperatorExperienceStatistic",
     "OperatorPolicyScore",
+    "PairedOutcomeCounts",
     "ProblemAtom",
     "ProblemDecomposition",
     "ProblemFibre",
     "ProblemNoveltyClass",
     "ProblemNoveltyEvidence",
     "ProblemNoveltyReport",
+    "ProcessAggregate",
+    "ProcessOutcome",
+    "ProcessTelemetry",
     "ProtectedAttestation",
     "ProtectedAuthorityContext",
     "RAKLTrivialityReport",
@@ -203,6 +222,8 @@ __all__ = [
     "SaturationAxisReport",
     "SaturationVectorReport",
     "SaturationVectorState",
+    "StateGrowthDelta",
+    "StateMetricSnapshot",
     "SubstrateEdge",
     "SubstrateKind",
     "SubstrateNode",
@@ -217,6 +238,8 @@ __all__ = [
     "add_novelty_round",
     "add_substrate_edge",
     "add_substrate_node",
+    "aggregate_process_telemetry",
+    "assess_attribution",
     "assess_experience_benchmark",
     "assess_invention_readiness",
     "assess_lesson_consolidation",
@@ -225,29 +248,32 @@ __all__ = [
     "benchmark_protocol_subject_hash",
     "benchmark_result_subject_hash",
     "boundary_lesson_from_supported_failure",
-    "classify_problem_novelty",
     "canonical_sha256",
+    "classify_problem_novelty",
+    "compare_state_metrics",
     "compile_problem_fibre",
     "compile_state_fibre",
     "consolidate_lesson",
     "episode_memory_view",
     "episode_portrait",
     "episode_to_failure_experience",
+    "evolution_assurance_subject_hash",
     "evolution_portrait",
     "evolution_trial_subject_hash",
-    "evolution_assurance_subject_hash",
     "experience_memory_views",
     "glue_local_sections",
     "gluing_episode_outcome",
     "gluing_residual_signature",
     "induce_strategy_motifs",
     "initialize_evolution_archive",
+    "issue_protected_attestation",
     "knowledge_items_from_legacy_fiber",
-    "local_section_subject_hash",
     "lesson_memory_view",
     "lesson_to_research_tool",
+    "local_section_subject_hash",
     "materialize_state_substrate",
     "materialize_unified_substrate",
+    "measure_state",
     "operator_experience_statistic",
     "promote_incumbent",
     "promoted_lesson_version",
@@ -258,12 +284,12 @@ __all__ = [
     "record_evolution_trial",
     "record_saturation_round",
     "record_task_episode",
-    "resolve_protected_attestation",
     "register_challenger",
+    "resolve_protected_attestation",
     "revise_failure_diagnosis",
     "run_learning_turn",
-    "issue_protected_attestation",
     "state_fingerprint",
+    "validate_attribution_packet",
     "validate_episode",
     "validate_experience_benchmark",
     "validate_lesson",
