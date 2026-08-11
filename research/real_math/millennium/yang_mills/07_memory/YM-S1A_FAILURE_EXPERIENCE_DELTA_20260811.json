@@ -1,0 +1,47 @@
+{
+  "experience": {
+    "failure_id": "F-YM-S1A-RESTRICTED-SOURCE-HIDDEN-STATE",
+    "atom_id": "YM-S1a",
+    "candidate_id": "YM-S1A-CAL-RESTRICTED-SOURCE",
+    "context_packet_hash": "sha256:561518a9b62025454014828057a4ad657707f673f9e98b5fb27aceaf8d00f03e",
+    "research_trace_event_id": "YM-S1-E009",
+    "method_family": "infer the full transfer-matrix spectral gap from exponential decay of a restricted source family",
+    "failure_mode": "the source-generated sector can be spectrally blind to a lower-energy excitation",
+    "residual_signature": [
+      "T=diag(1,1/2,1/4) is positive self-adjoint with true first excited ratio 1/2",
+      "the tested source satisfies A Omega=e2 and has exact correlator C_A(n)=(1/4)^n",
+      "the source-visible decay rate log 4 is strictly larger than the true full gap log 2"
+    ],
+    "broken_assumptions": [
+      "fast decay of the tested correlators certifies that no lower-energy state exists outside their generated cyclic subspace"
+    ],
+    "scope_conditions": [
+      "positive self-adjoint transfer matrices",
+      "source families whose vacuum-generated span has not been proved dense/cyclic in the physical excited-state space"
+    ],
+    "competing_diagnoses": [
+      "the decay-to-gap inference is valid only within the tested source-generated spectral subspace",
+      "a kinematically complete source basis repairs visibility but still requires a common uniform decay rate over that complete family",
+      "Yang-Mills-specific gauge constraints could alter which source family is physically natural but do not repair the abstract logical gap by themselves"
+    ],
+    "selected_diagnosis": "loss of spectral visibility: a non-dense source-generated sector can omit the true first excitation, so restricted-source clustering does not determine the full transfer gap",
+    "diagnosis_status": "SUPPORTED",
+    "evidence_pointers": [
+      "research/real_math/millennium/yang_mills/01_frontier/YM-S1A_SOURCE_VISIBILITY_CALIBRATION_20260811.md",
+      "tests/test_yang_mills_yms1a_source_visibility.py",
+      "Osterwalder-Seiler 1978 DOI 10.1016/0003-4916(78)90039-8",
+      "Baez 1996 DOI 10.1006/aima.1996.0012",
+      "Burgio et al. 2000 DOI 10.1016/S0550-3213(99)00533-7"
+    ],
+    "falsifier_or_attempt": "use an exact three-state positive transfer matrix and a vacuum source orthogonal to the lower excited state",
+    "observed_result": "the tested correlator decays exactly as 4^{-n} even though an orthogonal state with transfer eigenvalue 1/2 gives the smaller full spectral gap log 2",
+    "local_repair_attempts": [
+      "split G4 into G4a kinematic source completeness and G4b a common decay-rate theorem over a complete/dense source family",
+      "bind later lattice Yang-Mills arguments to an explicit fixed-lattice gauge-invariant basis before inferring a full gap",
+      "do not import continuum local-algebra cyclicity before continuum Yang-Mills existence is established"
+    ],
+    "timestamp": "2026-08-11T06:57:20+00:00",
+    "artifact_hash": "sha256:b3c97940ca4361ec3bee2738b1a41bcd6637f7fed657de1f4f18d7c6a61f3b6a"
+  },
+  "links": []
+}
