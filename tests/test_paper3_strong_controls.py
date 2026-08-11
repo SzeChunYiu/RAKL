@@ -7,10 +7,6 @@ from pathlib import Path
 
 import pytest
 
-jsonschema = pytest.importorskip("jsonschema")
-Draft202012Validator = jsonschema.Draft202012Validator
-FormatChecker = jsonschema.FormatChecker
-
 from rakl.paper3_annotation import canonical_sha256
 from rakl.paper3_strong_control import (
     STRONG_CONTROL_ARM_FEATURES,
@@ -19,6 +15,10 @@ from rakl.paper3_strong_control import (
     validated_semantic_scores,
     validate_semantic_descriptor_receipt,
 )
+
+jsonschema = pytest.importorskip("jsonschema")
+Draft202012Validator = jsonschema.Draft202012Validator
+FormatChecker = jsonschema.FormatChecker
 
 
 ROOT = Path(__file__).resolve().parents[1]
