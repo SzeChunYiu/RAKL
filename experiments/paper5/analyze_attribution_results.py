@@ -186,6 +186,39 @@ def validate_input(tasks: list[dict[str, Any]], schedule: dict[str, Any], runs: 
             raise SystemExit(f"{row['run_id']}: missing state/output identity")
 
 
+def self_test_provenance(runs: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Detect harness self-test records and refuse to mix them with real runs.
+
+    Records produced by a non-model self-test adapter carry a ``harness_self_test``
+    block. Such results validate the instrument; they are not evidence about RAKL.
+    Silently pooling them with model runs, or presenting them under the ordinary
+    claim boundary, would let synthetic numbers enter the Paper 5 record. Mixing
+    is a hard error rather than a warning.
+    """
+    tagged = [row for row in runs if row.get("harness_self_test")]
+    if not tagged:
+        return None
+    if len(tagged) != len(runs):
+        raise SystemExit(
+            f"results mix {len(tagged)} harness self-test records with {len(runs) - len(tagged)} "
+            "non-self-test records; refusing to analyze a mixed set"
+        )
+    identities = {(row["harness_self_test"].get("adapter_id"), row["harness_self_test"].get("mode")) for row in tagged}
+    if len(identities) != 1:
+        raise SystemExit(f"results mix multiple self-test adapter/mode identities: {sorted(identities)}")
+    adapter_id, mode = identities.pop()
+    return {
+        "adapter_id": adapter_id,
+        "mode": mode,
+        "model_invoked": False,
+        "grants_scientific_authority": False,
+        "interpretation": (
+            "Instrument validation only. These numbers were produced by a synthetic adapter with no model "
+            "in the loop and must never be reported as a Paper 5 attribution result."
+        ),
+    }
+
+
 def aggregate_task_arm(
     tasks: list[dict[str, Any]], runs: list[dict[str, Any]], repetitions: int
 ) -> list[dict[str, Any]]:
@@ -375,6 +408,7 @@ def main() -> None:
         args.permutation_iterations,
     )
     strata = stratum_metrics(task_rows)
+    self_test = self_test_provenance(runs)
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     write_csv(args.out_dir / "task_level.csv", task_rows)
@@ -398,8 +432,13 @@ def main() -> None:
         "contrasts": contrasts,
         "paired_outcomes": paired,
         "stratum_metrics": strata,
+        "harness_self_test": self_test,
+        "grants_scientific_authority": False,
         "claim_boundary": (
-            "Descriptive/paired benchmark analysis only. Strong claims additionally require the frozen evaluator, "
+            "HARNESS SELF-TEST ONLY. Synthetic adapter, no model invoked. These numbers validate the measuring "
+            "instrument and are not evidence about RAKL; they must not be reported as a Paper 5 attribution result."
+            if self_test
+            else "Descriptive/paired benchmark analysis only. Strong claims additionally require the frozen evaluator, "
             "state/resource/sham bindings, integrity gates, and any required protected assurance."
         ),
     }
