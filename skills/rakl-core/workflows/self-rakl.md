@@ -182,6 +182,21 @@ If \(\Delta_D>0\) but \(\Delta_A<0\), record `META_OVERFIT`.
 
 Repeated disclosure of assurance scores consumes the assurance reserve. Rotate or refresh assurance rather than adapt indefinitely against one held-out set.
 
+## Application-to-framework feedback boundary
+
+Lessons produced by an application repository cross into RAKL only through the
+versioned application-feedback bundle and import-receipt contracts. The importer
+audits the exact producer repository, commit, tree, source path/blob, payload,
+result, trace, context, chronology, namespace and supersession lineage. An
+acceptable import verdict is still only `QUARANTINED_PROPOSAL`.
+
+The importer never mutates the failure lattice, research-tool inventory or
+method registry, and it never promotes a framework change. Staged tool proposals
+are forced to `HEURISTIC` and require fresh target-specific
+`DifferenceWitness` and `ToolApplicabilityWitness` checks. A proposed framework
+delta must still pass the normal frozen evaluator, planted-failure,
+structural-`CANNOT_CHECK`, fresh-assurance and protected promotion gates.
+
 ## Output minimum
 
 Every Self-RAKL run should produce:

@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/application-feedback-bundle.schema.json",
+  "title": "RAKL application feedback bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "bundle_canonical_sha256",
+    "producer",
+    "framework_requirement",
+    "authority_envelope",
+    "previous_bundle",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {"const": "application-feedback-bundle-v1"},
+    "bundle_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"},
+    "bundle_canonical_sha256": {"$ref": "#/$defs/sha256"},
+    "producer": {"$ref": "#/$defs/repositoryPin"},
+    "framework_requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_url", "commit_sha", "version"],
+      "properties": {
+        "repository_url": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "commit_sha": {"$ref": "#/$defs/gitOid"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "authority_envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_authority",
+        "proposal_only",
+        "inventory_mutation_allowed",
+        "failure_lattice_mutation_allowed",
+        "promotion_allowed"
+      ],
+      "properties": {
+        "requested_authority": {
+          "enum": ["HEURISTIC", "VERIFIED_LOCAL", "CONDITIONALLY_REUSABLE", "PROOF_BACKED", "SUPERSEDED"]
+        },
+        "proposal_only": {"const": true},
+        "inventory_mutation_allowed": {"const": false},
+        "failure_lattice_mutation_allowed": {"const": false},
+        "promotion_allowed": {"const": false}
+      }
+    },
+    "previous_bundle": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bundle_id", "bundle_canonical_sha256"],
+          "properties": {
+            "bundle_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"},
+            "bundle_canonical_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {"$ref": "#/$defs/feedbackItem"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitOid": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+    "repositoryPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_namespace", "repository_url", "commit_sha", "tree_sha"],
+      "properties": {
+        "repository_namespace": {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^[^:]+$"},
+        "repository_url": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "commit_sha": {"$ref": "#/$defs/gitOid"},
+        "tree_sha": {"$ref": "#/$defs/gitOid"}
+      }
+    },
+    "feedbackItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "kind",
+        "source",
+        "payload",
+        "payload_canonical_sha256",
+        "application_bindings",
+        "supersedes"
+      ],
+      "properties": {
+        "item_id": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"},
+        "kind": {"enum": ["FAILURE_EXPERIENCE", "TOOL_CANDIDATE", "META_OBSERVATION"]},
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "git_blob_sha"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+            "git_blob_sha": {"$ref": "#/$defs/gitOid"}
+          }
+        },
+        "payload": {"type": "object", "minProperties": 1, "maxProperties": 100},
+        "payload_canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "application_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "result_id",
+            "result_sha256",
+            "trace_event_id",
+            "trace_sha256",
+            "context_sha256",
+            "observed_at_utc"
+          ],
+          "properties": {
+            "result_id": {"type": "string", "minLength": 1, "maxLength": 512},
+            "result_sha256": {"$ref": "#/$defs/sha256"},
+            "trace_event_id": {"type": "string", "minLength": 1, "maxLength": 512},
+            "trace_sha256": {"$ref": "#/$defs/sha256"},
+            "context_sha256": {"$ref": "#/$defs/sha256"},
+            "observed_at_utc": {"type": "string", "format": "date-time", "minLength": 20, "maxLength": 64}
+          }
+        },
+        "supersedes": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 4, "maxLength": 512, "pattern": "::"}
+        }
+      }
+    }
+  }
+}
