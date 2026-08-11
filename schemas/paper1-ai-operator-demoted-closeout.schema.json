@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper1-ai-operator-demoted-closeout.schema.json",
+  "title": "Paper 1 AI_OPERATOR demoted closeout receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "issue", "authority_class", "annotator_kind", "independence_class", "independent_review_claimed", "peer_review_acceptance", "confirmatory_authority", "human_reviewers_present", "responses", "claim_boundary", "close_recommendation"],
+  "properties": {
+    "schema_version": {"const": "paper1-ai-operator-demoted-closeout-v1"},
+    "issue": {"const": 216},
+    "authority_class": {"const": "DEMOTED_AI_OPERATOR_NON_INDEPENDENT"},
+    "annotator_kind": {"const": "AI_OPERATOR"},
+    "independence_class": {"const": "NON_INDEPENDENT"},
+    "independent_review_claimed": {"const": false},
+    "peer_review_acceptance": {"const": false},
+    "confirmatory_authority": {"const": false},
+    "human_reviewers_present": {"const": false},
+    "responses": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "close_recommendation": {"const": "CLOSE_UNDER_DEMOTED_AUTHORITY"}
+  }
+}
