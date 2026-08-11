@@ -13,6 +13,7 @@ from rakl.evolution_archive import (
     promote_incumbent,
     record_evolution_trial,
     register_challenger,
+    evolution_trial_subject_hash,
 )
 from rakl.experience_learning import ConsolidationVerdict, LessonConsolidationEvidence, assess_lesson_consolidation
 from rakl.experience_substrate import (
@@ -28,6 +29,8 @@ from rakl.experience_substrate import (
     lesson_content_bytes,
 )
 from rakl.problem_fibre import LocalSection, ProblemAtom, ProblemDecomposition, glue_local_sections, local_section_subject_hash
+from rakl.method_specs import V3_IMPLEMENTATION_OWNER_MAP, V3_PUBLIC_AUTHORITY_SURFACE_OWNERS, validate_v3_method_ownership
+from rakl.v3_runtime import RAKLV3State, ToolProjectionSpec, consolidate_lesson, record_task_episode
 from rakl.v3_authority import (
     AttestationPurpose,
     AuthorityTrustPolicy,
@@ -136,7 +139,8 @@ def test_episode_and_lesson_hashes_bind_exact_content_and_bare_authority_fails_c
     candidate = _lesson()
     ledger = add_episode(ExperienceLedger(), episode)
     add_lesson(ledger, candidate)
-    forged = replace(candidate, authority=LessonAuthority.PROOF_BACKED)
+    forged_draft = replace(candidate, authority=LessonAuthority.PROOF_BACKED, artifact_hash="")
+    forged = replace(forged_draft, artifact_hash=sha256(lesson_content_bytes(forged_draft)).hexdigest())
     with pytest.raises(ValueError, match="resolved protected authority attestation"):
         add_lesson(ledger, forged)
 
@@ -157,7 +161,7 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
     transfer_attestation = _attestation(
         AttestationPurpose.LESSON_TRANSFER,
         candidate.artifact_hash,
-        (transfer_artifact,),
+        (source_artifact, transfer_artifact),
         attestation_id="transfer",
     )
     context = _context((source_artifact, transfer_artifact), (verification, transfer_attestation))
@@ -174,6 +178,16 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         ),
     )
     assert caller_bools.verdict is ConsolidationVerdict.CANNOT_CHECK
+    caller_proof_ids = assess_lesson_consolidation(
+        ledger,
+        candidate,
+        LessonConsolidationEvidence(
+            supporting_episode_ids=("E1",),
+            verification_artifact_ids=("verification-label",),
+            proof_certificate_ids=("proof-label",),
+        ),
+    )
+    assert caller_proof_ids.verdict is ConsolidationVerdict.CANNOT_CHECK
 
     resolved = assess_lesson_consolidation(
         ledger,
@@ -187,6 +201,24 @@ def test_consolidation_resolves_exact_evidence_evaluator_and_independence_not_bo
         ),
     )
     assert resolved.verdict is ConsolidationVerdict.CONDITIONALLY_REUSABLE
+    state = record_task_episode(record_task_episode(RAKLV3State(), source), transfer)
+    consolidated = consolidate_lesson(
+        state,
+        candidate,
+        LessonConsolidationEvidence(
+            supporting_episode_ids=("E1",),
+            fresh_transfer_episode_ids=("E2",),
+            verification_attestation_id="verify",
+            transfer_attestation_id="transfer",
+            authority_context=context,
+        ),
+        promoted_lesson_id="L2",
+        promoted_artifact_hash="caller-string-is-not-authority",
+        tool_spec=ToolProjectionSpec("T1", "protected tool", "operator"),
+    )
+    assert consolidated.promoted_lesson_id == "L2"
+    assert consolidated.projected_tool_id == "T1"
+    assert consolidated.state.tools.tools[0].authority.value == "CONDITIONALLY_REUSABLE"
 
     forged_attestation = replace(transfer_attestation, signature="0" * 64)
     forged_context = _context((source_artifact, transfer_artifact), (verification, forged_attestation))
@@ -212,12 +244,12 @@ def test_local_section_boolean_and_empty_evidence_never_grant_solution_authority
     assert not glue_local_sections(decomposition, (bare,)).grants_solution_authority
 
     evidence = _artifact("section-evidence", b"formal checker receipt", at="2026-08-11T08:09:00+00:00")
-    section = replace(
+    section_draft = replace(
         bare,
         evidence_ids=("section-evidence",),
-        subject_hash=local_section_subject_hash(bare),
         verification_attestation_id="section-check",
     )
+    section = replace(section_draft, subject_hash=local_section_subject_hash(section_draft))
     attestation = _attestation(
         AttestationPurpose.LOCAL_SECTION_VERIFICATION,
         local_section_subject_hash(section),
@@ -251,3 +283,41 @@ def test_self_rakl_assurance_and_promotion_require_protected_attestations() -> N
     assert next(v for v in archive2.variants if v.variant_id == "v2").status is VariantStatus.CHALLENGER
     with pytest.raises(ValueError, match="protected governance attestation"):
         promote_incumbent(replace(archive2, variants=tuple(replace(v, status=VariantStatus.ASSURED) if v.variant_id == "v2" else v for v in archive2.variants)), "v2", governance_approved=True)
+
+    receipt = _artifact("assurance-receipt", b"fresh matched assurance bytes", at="2026-08-11T08:10:00+00:00")
+    assured = _attestation(
+        AttestationPurpose.EVOLUTION_ASSURANCE,
+        evolution_trial_subject_hash(trial),
+        (receipt,),
+        attestation_id="assurance",
+    )
+    governance = _attestation(
+        AttestationPurpose.GOVERNANCE_PROMOTION,
+        child.method_hash,
+        (receipt,),
+        attestation_id="governance",
+    )
+    context = _context((receipt,), (assured, governance))
+    archive3, assessment3 = record_evolution_trial(
+        archive,
+        trial_id="T-protected",
+        child_variant_id="v2",
+        trial=trial,
+        authority_context=context,
+        assurance_attestation_id="assurance",
+    )
+    assert assessment3.supports_scoped_evolution
+    assert next(v for v in archive3.variants if v.variant_id == "v2").status is VariantStatus.ASSURED
+    promoted = promote_incumbent(
+        archive3,
+        "v2",
+        authority_context=context,
+        governance_attestation_id="governance",
+    )
+    assert promoted.incumbent_id == "v2"
+
+
+def test_every_v3_module_and_authority_surface_has_a_canonical_method_owner() -> None:
+    assert validate_v3_method_ownership() == ()
+    assert "src/rakl/v3_authority.py" in V3_IMPLEMENTATION_OWNER_MAP
+    assert V3_PUBLIC_AUTHORITY_SURFACE_OWNERS["promote_incumbent"] == "authority_promotion"

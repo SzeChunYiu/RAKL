@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from enum import Enum
+from hashlib import sha256
 from typing import Tuple
 
 from .experience_substrate import (
@@ -11,9 +12,15 @@ from .experience_substrate import (
     LessonAuthority,
     LessonKind,
     TaskEpisode,
+    lesson_content_bytes,
 )
 from .failure_lattice import FailureDiagnosisStatus, FailureExperience
 from .research_tool_inventory import ResearchTool, ResearchToolAuthority
+from .v3_authority import (
+    AttestationPurpose,
+    ProtectedAuthorityContext,
+    resolve_protected_attestation,
+)
 
 
 class ConsolidationVerdict(str, Enum):
@@ -38,6 +45,10 @@ class LessonConsolidationEvidence:
     proof_certificate_ids: Tuple[str, ...] = ()
     evaluator_separated: bool | None = None
     evidence_lineage_independent: bool | None = None
+    verification_attestation_id: str | None = None
+    transfer_attestation_id: str | None = None
+    proof_attestation_id: str | None = None
+    authority_context: ProtectedAuthorityContext | None = None
 
 
 @dataclass(frozen=True)
@@ -47,6 +58,8 @@ class LessonConsolidationReport:
     reasons: Tuple[str, ...]
     supporting_episode_ids: Tuple[str, ...]
     contradicting_episode_ids: Tuple[str, ...]
+    authority_attestation_id: str | None = None
+    authority_subject_hash: str | None = None
 
     @property
     def reusable(self) -> bool:
@@ -124,34 +137,76 @@ def assess_lesson_consolidation(
     if failed_transfer:
         return LessonConsolidationReport(
             ConsolidationVerdict.CONTRADICTED,
-            LessonAuthority.VERIFIED_LOCAL if evidence.verification_artifact_ids else LessonAuthority.CANDIDATE,
+            LessonAuthority.CANDIDATE,
             tuple(f"fresh_transfer_failed:{item}" for item in failed_transfer),
             positive_ids,
             tuple(dict.fromkeys(evidence.contradicting_episode_ids + failed_transfer)),
         )
 
-    if evidence.proof_certificate_ids:
-        if not evidence.verification_artifact_ids:
+    support_hashes = tuple(episodes[item].artifact_hash for item in evidence.supporting_episode_ids + evidence.replay_episode_ids)
+    verification = resolve_protected_attestation(
+        evidence.authority_context,
+        evidence.verification_attestation_id,
+        purpose=AttestationPurpose.LESSON_VERIFICATION,
+        subject_hash=candidate.artifact_hash,
+        required_artifact_hashes=support_hashes,
+    )
+
+    if evidence.proof_attestation_id:
+        if not verification.valid:
             return LessonConsolidationReport(
                 ConsolidationVerdict.CANNOT_CHECK,
                 LessonAuthority.CANDIDATE,
-                ("proof_backing_without_registered_verification_artifact",),
+                ("proof_backing_without_resolved_verification",) + verification.reasons,
+                positive_ids,
+                evidence.contradicting_episode_ids,
+            )
+        proof = resolve_protected_attestation(
+            evidence.authority_context,
+            evidence.proof_attestation_id,
+            purpose=AttestationPurpose.LESSON_PROOF,
+            subject_hash=candidate.artifact_hash,
+            required_artifact_hashes=support_hashes,
+        )
+        if not proof.valid:
+            return LessonConsolidationReport(
+                ConsolidationVerdict.CANNOT_CHECK,
+                LessonAuthority.CANDIDATE,
+                proof.reasons,
                 positive_ids,
                 evidence.contradicting_episode_ids,
             )
         return LessonConsolidationReport(
             ConsolidationVerdict.PROOF_BACKED,
             LessonAuthority.PROOF_BACKED,
-            ("registered proof backing and verification support the scoped lesson",),
+            ("protected proof and verification attestations resolve exact scoped content",),
             positive_ids,
             evidence.contradicting_episode_ids,
+            evidence.proof_attestation_id,
+            candidate.artifact_hash,
         )
 
-    if not evidence.verification_artifact_ids:
+    if not evidence.verification_attestation_id:
+        if evidence.verification_artifact_ids or evidence.proof_certificate_ids or evidence.evaluator_separated is not None or evidence.evidence_lineage_independent is not None:
+            return LessonConsolidationReport(
+                ConsolidationVerdict.CANNOT_CHECK,
+                LessonAuthority.CANDIDATE,
+                ("caller_ids_or_boole_cannot_substitute_for_protected_attestation",),
+                positive_ids,
+                evidence.contradicting_episode_ids,
+            )
         return LessonConsolidationReport(
             ConsolidationVerdict.CANDIDATE_ONLY,
             LessonAuthority.CANDIDATE,
             ("reflection_or_outcome_pattern_observed_without_external_verification",),
+            positive_ids,
+            evidence.contradicting_episode_ids,
+        )
+    if not verification.valid:
+        return LessonConsolidationReport(
+            ConsolidationVerdict.CANNOT_CHECK,
+            LessonAuthority.CANDIDATE,
+            verification.reasons,
             positive_ids,
             evidence.contradicting_episode_ids,
         )
@@ -163,6 +218,8 @@ def assess_lesson_consolidation(
             ("lesson verified in source/replay scope but fresh transfer is absent",),
             positive_ids,
             evidence.contradicting_episode_ids,
+            evidence.verification_attestation_id,
+            candidate.artifact_hash,
         )
 
     transfer_successes = tuple(
@@ -178,19 +235,18 @@ def assess_lesson_consolidation(
             positive_ids,
             evidence.contradicting_episode_ids,
         )
-    if evidence.evaluator_separated is not True:
+    transfer = resolve_protected_attestation(
+        evidence.authority_context,
+        evidence.transfer_attestation_id,
+        purpose=AttestationPurpose.LESSON_TRANSFER,
+        subject_hash=candidate.artifact_hash,
+        required_artifact_hashes=tuple(episodes[item].artifact_hash for item in evidence.fresh_transfer_episode_ids),
+    )
+    if not transfer.valid:
         return LessonConsolidationReport(
             ConsolidationVerdict.CANNOT_CHECK,
             LessonAuthority.VERIFIED_LOCAL,
-            ("fresh_transfer_evaluator_not_separated",),
-            positive_ids,
-            evidence.contradicting_episode_ids,
-        )
-    if evidence.evidence_lineage_independent is not True:
-        return LessonConsolidationReport(
-            ConsolidationVerdict.CANNOT_CHECK,
-            LessonAuthority.VERIFIED_LOCAL,
-            ("fresh_transfer_evidence_lineage_not_independent",),
+            transfer.reasons,
             positive_ids,
             evidence.contradicting_episode_ids,
         )
@@ -200,6 +256,8 @@ def assess_lesson_consolidation(
         ("verified source lesson transferred successfully to fresh independent evidence",),
         positive_ids,
         evidence.contradicting_episode_ids,
+        evidence.transfer_attestation_id,
+        candidate.artifact_hash,
     )
 
 
@@ -211,20 +269,32 @@ def promoted_lesson_version(
     report: LessonConsolidationReport,
     evidence: LessonConsolidationEvidence,
 ) -> Lesson:
-    if not new_lesson_id or not artifact_hash:
-        raise ValueError("promoted lesson version requires new id and artifact hash")
+    if not new_lesson_id:
+        raise ValueError("promoted lesson version requires new id")
     if report.verdict is ConsolidationVerdict.CANNOT_CHECK:
         raise ValueError("cannot promote lesson from CANNOT_CHECK evidence")
-    return replace(
+    if report.target_authority is not LessonAuthority.CANDIDATE and not report.authority_attestation_id:
+        raise ValueError("promoted lesson requires resolved protected authority attestation")
+    draft = replace(
         candidate,
         lesson_id=new_lesson_id,
         authority=report.target_authority,
         supporting_episode_ids=report.supporting_episode_ids,
         contradicting_episode_ids=tuple(dict.fromkeys(report.contradicting_episode_ids)),
-        evidence_pointers=tuple(dict.fromkeys(candidate.evidence_pointers + evidence.verification_artifact_ids + evidence.proof_certificate_ids)),
-        artifact_hash=artifact_hash,
+        evidence_pointers=tuple(
+            dict.fromkeys(
+                candidate.evidence_pointers
+                + tuple(item for item in (evidence.verification_attestation_id, evidence.transfer_attestation_id, evidence.proof_attestation_id) if item)
+            )
+        ),
+        artifact_hash="",
         parent_lesson_id=candidate.lesson_id,
+        authority_attestation_id=report.authority_attestation_id,
+        authority_subject_hash=report.authority_subject_hash,
     )
+    # The caller-provided artifact_hash is retained only as a backwards API
+    # parameter; authority identity is always recomputed from exact content.
+    return replace(draft, artifact_hash=sha256(lesson_content_bytes(draft)).hexdigest())
 
 
 def episode_to_failure_experience(
@@ -275,6 +345,7 @@ def lesson_to_research_tool(
     name: str,
     kind: str,
     known_failure_ids: Tuple[str, ...] = (),
+    authority_context: ProtectedAuthorityContext | None = None,
 ) -> ResearchTool:
     if lesson.kind not in {LessonKind.OPERATOR, LessonKind.STRATEGY, LessonKind.REPRESENTATION}:
         raise ValueError("only operational lessons can project into research tools")
@@ -291,6 +362,29 @@ def lesson_to_research_tool(
         LessonAuthority.PROOF_BACKED: ResearchToolAuthority.PROOF_BACKED,
         LessonAuthority.SUPERSEDED: ResearchToolAuthority.SUPERSEDED,
     }[lesson.authority]
+    if authority is not ResearchToolAuthority.HEURISTIC:
+        purpose = {
+            LessonAuthority.VERIFIED_LOCAL: AttestationPurpose.LESSON_VERIFICATION,
+            LessonAuthority.CONDITIONALLY_REUSABLE: AttestationPurpose.LESSON_TRANSFER,
+            LessonAuthority.PROOF_BACKED: AttestationPurpose.LESSON_PROOF,
+            LessonAuthority.SUPERSEDED: AttestationPurpose.LESSON_VERIFICATION,
+        }[lesson.authority]
+        resolution = resolve_protected_attestation(
+            authority_context,
+            lesson.authority_attestation_id,
+            purpose=purpose,
+            subject_hash=lesson.authority_subject_hash or "",
+            required_artifact_hashes=tuple(
+                episodes[item].artifact_hash
+                for item in lesson.supporting_episode_ids
+                if item in episodes
+            ),
+        )
+        if not resolution.valid:
+            raise ValueError(
+                "research tool authority requires resolved protected lesson attestation: "
+                + ", ".join(resolution.reasons)
+            )
     return ResearchTool(
         tool_id=tool_id,
         name=name,

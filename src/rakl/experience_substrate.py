@@ -3,7 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from hashlib import sha256
 from typing import Tuple
+
+from .v3_authority import (
+    AttestationPurpose,
+    ProtectedAuthorityContext,
+    canonical_json_bytes,
+    resolve_protected_attestation,
+)
 
 
 class SubstrateKind(str, Enum):
@@ -139,6 +147,8 @@ class Lesson:
     evidence_pointers: Tuple[str, ...]
     artifact_hash: str
     parent_lesson_id: str | None = None
+    authority_attestation_id: str | None = None
+    authority_subject_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -160,6 +170,55 @@ def _parse_time(value: str) -> datetime | None:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         return None
     return parsed
+
+
+def episode_content_bytes(episode: TaskEpisode) -> bytes:
+    """Canonical exact bytes whose digest is the episode identity."""
+
+    return canonical_json_bytes(
+        {
+            "episode_id": episode.episode_id,
+            "task_id": episode.task_id,
+            "atom_id": episode.atom_id,
+            "context_hash": episode.context_hash,
+            "problem_signature": list(episode.problem_signature),
+            "fibre_snapshot_hash": episode.fibre_snapshot_hash,
+            "operator_ids": list(episode.operator_ids),
+            "action_trace": list(episode.action_trace),
+            "observation_ids": list(episode.observation_ids),
+            "verification_ids": list(episode.verification_ids),
+            "outcome": episode.outcome.value,
+            "residual_signature": list(episode.residual_signature),
+            "evidence_pointers": list(episode.evidence_pointers),
+            "timestamp": episode.timestamp,
+            "cost": episode.cost,
+        }
+    )
+
+
+def lesson_content_bytes(lesson: Lesson) -> bytes:
+    """Canonical exact bytes whose digest is the lesson-version identity."""
+
+    return canonical_json_bytes(
+        {
+            "lesson_id": lesson.lesson_id,
+            "kind": lesson.kind.value,
+            "trigger_signature": list(lesson.trigger_signature),
+            "context_scope": list(lesson.context_scope),
+            "action": lesson.action,
+            "expected_effects": list(lesson.expected_effects),
+            "boundaries": list(lesson.boundaries),
+            "supporting_episode_ids": list(lesson.supporting_episode_ids),
+            "contradicting_episode_ids": list(lesson.contradicting_episode_ids),
+            "falsifier": lesson.falsifier,
+            "authority": lesson.authority.value,
+            "validation_obligations": list(lesson.validation_obligations),
+            "evidence_pointers": list(lesson.evidence_pointers),
+            "parent_lesson_id": lesson.parent_lesson_id,
+            "authority_attestation_id": lesson.authority_attestation_id,
+            "authority_subject_hash": lesson.authority_subject_hash,
+        }
+    )
 
 
 def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
@@ -184,6 +243,8 @@ def validate_episode(episode: TaskEpisode) -> Tuple[str, ...]:
         reasons.append("episode:evidence_pointers_missing")
     if episode.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS, EpisodeOutcome.BLOCKED} and not episode.residual_signature:
         reasons.append("episode:residual_signature_required_for_non_success")
+    if len(episode.artifact_hash) == 64 and sha256(episode_content_bytes(episode)).hexdigest() != episode.artifact_hash:
+        reasons.append("episode:artifact_hash_mismatch")
     return tuple(reasons)
 
 
@@ -206,6 +267,8 @@ def validate_lesson(lesson: Lesson) -> Tuple[str, ...]:
         reasons.append("lesson:validation_obligations_missing")
     if not lesson.evidence_pointers:
         reasons.append("lesson:evidence_pointers_missing")
+    if len(lesson.artifact_hash) == 64 and sha256(lesson_content_bytes(lesson)).hexdigest() != lesson.artifact_hash:
+        reasons.append("lesson:artifact_hash_mismatch")
     return tuple(reasons)
 
 
@@ -242,7 +305,12 @@ def add_episode(ledger: ExperienceLedger, episode: TaskEpisode) -> ExperienceLed
     )
 
 
-def add_lesson(ledger: ExperienceLedger, lesson: Lesson) -> ExperienceLedger:
+def add_lesson(
+    ledger: ExperienceLedger,
+    lesson: Lesson,
+    *,
+    authority_context: ProtectedAuthorityContext | None = None,
+) -> ExperienceLedger:
     reasons = validate_lesson(lesson)
     if reasons:
         raise ValueError("invalid lesson: " + ", ".join(reasons))
@@ -254,6 +322,32 @@ def add_lesson(ledger: ExperienceLedger, lesson: Lesson) -> ExperienceLedger:
         raise ValueError("lesson references unknown episodes: " + ", ".join(sorted(missing)))
     if lesson.parent_lesson_id is not None and lesson.parent_lesson_id not in {item.lesson_id for item in ledger.lessons}:
         raise ValueError("lesson parent_lesson_id does not exist")
+    if lesson.authority is not LessonAuthority.CANDIDATE:
+        purpose = {
+            LessonAuthority.VERIFIED_LOCAL: AttestationPurpose.LESSON_VERIFICATION,
+            LessonAuthority.CONDITIONALLY_REUSABLE: AttestationPurpose.LESSON_TRANSFER,
+            LessonAuthority.PROOF_BACKED: AttestationPurpose.LESSON_PROOF,
+            LessonAuthority.SUPERSEDED: AttestationPurpose.LESSON_VERIFICATION,
+        }[lesson.authority]
+        if not lesson.authority_subject_hash:
+            raise ValueError("non-candidate lesson requires resolved protected authority attestation")
+        required_hashes = tuple(
+            item.artifact_hash
+            for item in ledger.episodes
+            if item.episode_id in set(lesson.supporting_episode_ids)
+        )
+        resolution = resolve_protected_attestation(
+            authority_context,
+            lesson.authority_attestation_id,
+            purpose=purpose,
+            subject_hash=lesson.authority_subject_hash,
+            required_artifact_hashes=required_hashes,
+        )
+        if not resolution.valid:
+            raise ValueError(
+                "non-candidate lesson requires resolved protected authority attestation: "
+                + ", ".join(resolution.reasons)
+            )
 
     node = SubstrateNode(
         node_id=lesson.lesson_id,

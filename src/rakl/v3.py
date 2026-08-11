@@ -17,6 +17,7 @@ from .evolution_archive import (
     rank_variants_for_task,
     record_evolution_trial,
     register_challenger,
+    evolution_trial_subject_hash,
 )
 from .experience_benchmark import (
     ArmPhaseMetrics,
@@ -29,6 +30,8 @@ from .experience_benchmark import (
     ExperienceBenchmarkVerdict,
     assess_experience_benchmark,
     validate_experience_benchmark,
+    benchmark_protocol_subject_hash,
+    benchmark_result_subject_hash,
 )
 from .experience_learning import (
     ConsolidationVerdict,
@@ -95,6 +98,18 @@ from .problem_fibre import (
     compile_problem_fibre,
     glue_local_sections,
     knowledge_items_from_legacy_fiber,
+    local_section_subject_hash,
+)
+from .v3_authority import (
+    AttestationPurpose,
+    AttestationResolution,
+    AuthorityTrustPolicy,
+    EvidenceArtifact,
+    ProtectedAttestation,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    issue_protected_attestation,
+    resolve_protected_attestation,
 )
 from .problem_novelty import (
     ProblemNoveltyClass,
@@ -129,6 +144,9 @@ from .v3_runtime import (
 
 __all__ = [
     "ArmPhaseMetrics",
+    "AttestationPurpose",
+    "AttestationResolution",
+    "AuthorityTrustPolicy",
     "BoundaryLessonSpec",
     "ConsolidationOutcome",
     "ConsolidationVerdict",
@@ -147,6 +165,7 @@ __all__ = [
     "ExperienceBenchmarkVerdict",
     "ExperienceConditionedPath",
     "ExperienceLedger",
+    "EvidenceArtifact",
     "FailureDiagnosisRevisionSpec",
     "FailureProjectionSpec",
     "FibreKnowledgeItem",
@@ -171,6 +190,8 @@ __all__ = [
     "ProblemNoveltyClass",
     "ProblemNoveltyEvidence",
     "ProblemNoveltyReport",
+    "ProtectedAttestation",
+    "ProtectedAuthorityContext",
     "RAKLTrivialityReport",
     "RAKLVariant",
     "RAKLV3State",
@@ -197,8 +218,11 @@ __all__ = [
     "assess_lesson_consolidation",
     "assess_rakl_triviality",
     "assess_saturation_vector",
+    "benchmark_protocol_subject_hash",
+    "benchmark_result_subject_hash",
     "boundary_lesson_from_supported_failure",
     "classify_problem_novelty",
+    "canonical_sha256",
     "compile_problem_fibre",
     "compile_state_fibre",
     "consolidate_lesson",
@@ -206,6 +230,7 @@ __all__ = [
     "episode_portrait",
     "episode_to_failure_experience",
     "evolution_portrait",
+    "evolution_trial_subject_hash",
     "experience_memory_views",
     "glue_local_sections",
     "gluing_episode_outcome",
@@ -213,6 +238,7 @@ __all__ = [
     "induce_strategy_motifs",
     "initialize_evolution_archive",
     "knowledge_items_from_legacy_fiber",
+    "local_section_subject_hash",
     "lesson_memory_view",
     "lesson_to_research_tool",
     "materialize_state_substrate",
@@ -227,9 +253,11 @@ __all__ = [
     "record_evolution_trial",
     "record_saturation_round",
     "record_task_episode",
+    "resolve_protected_attestation",
     "register_challenger",
     "revise_failure_diagnosis",
     "run_learning_turn",
+    "issue_protected_attestation",
     "state_fingerprint",
     "validate_episode",
     "validate_experience_benchmark",

@@ -146,7 +146,7 @@ def consolidate_lesson(
         report=report,
         evidence=evidence,
     )
-    experience = add_lesson(experience, promoted)
+    experience = add_lesson(experience, promoted, authority_context=evidence.authority_context)
     tools = state.tools
     projected_tool_id: str | None = None
     if tool_spec is not None:
@@ -159,6 +159,7 @@ def consolidate_lesson(
             name=tool_spec.name,
             kind=tool_spec.kind,
             known_failure_ids=tool_spec.known_failure_ids,
+            authority_context=evidence.authority_context,
         )
         tools = add_research_tool(tools, tool)
         projected_tool_id = tool.tool_id

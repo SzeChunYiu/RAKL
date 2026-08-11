@@ -58,7 +58,7 @@ def test_unified_substrate_links_episode_failure_lesson_tool_and_knowledge() -> 
         supporting_episode_ids=("E1",),
         contradicting_episode_ids=(),
         falsifier="boundary counterexample",
-        authority=LessonAuthority.VERIFIED_LOCAL,
+        authority=LessonAuthority.CANDIDATE,
         validation_obligations=("validate boundary",),
         evidence_pointers=("artifact:E1",),
         artifact_hash="sha256:L1",

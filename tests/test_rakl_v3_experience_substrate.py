@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from rakl.evolution import EvolutionTrial
+from rakl.evolution import EvolutionTrial, EvolutionVerdict
 from rakl.evolution_archive import (
     RAKLVariant,
     VariantStatus,
@@ -106,7 +106,7 @@ def test_episode_is_preserved_as_immutable_evidence_root() -> None:
         add_episode(ledger, episode)
 
 
-def test_reusable_lesson_requires_fresh_independent_transfer() -> None:
+def test_legacy_ids_and_independence_boole_fail_closed() -> None:
     state = RAKLV3State()
     state = record_task_episode(state, _episode("E1", EpisodeOutcome.SUCCESS))
     state = record_task_episode(state, _episode("E2", EpisodeOutcome.SUCCESS, context_hash="ctx-transfer"))
@@ -121,8 +121,8 @@ def test_reusable_lesson_requires_fresh_independent_transfer() -> None:
         promoted_lesson_id="L1-local",
         promoted_artifact_hash="sha256:L1-local",
     )
-    assert local.report.verdict is ConsolidationVerdict.VERIFIED_LOCAL
-    assert local.promoted_lesson_id == "L1-local"
+    assert local.report.verdict is ConsolidationVerdict.CANNOT_CHECK
+    assert local.promoted_lesson_id is None
 
     reusable = consolidate_lesson(
         state,
@@ -138,9 +138,9 @@ def test_reusable_lesson_requires_fresh_independent_transfer() -> None:
         promoted_artifact_hash="sha256:L1-reusable",
         tool_spec=ToolProjectionSpec("T1", "typed bridge construction", "bridge-method"),
     )
-    assert reusable.report.verdict is ConsolidationVerdict.CONDITIONALLY_REUSABLE
-    assert reusable.projected_tool_id == "T1"
-    assert tuple(tool.tool_id for tool in reusable.state.tools.tools) == ("T1",)
+    assert reusable.report.verdict is ConsolidationVerdict.CANNOT_CHECK
+    assert reusable.projected_tool_id is None
+    assert tuple(tool.tool_id for tool in reusable.state.tools.tools) == ()
     assert tuple(episode.episode_id for episode in reusable.state.experience.episodes) == ("E1", "E2")
 
 
@@ -216,7 +216,7 @@ def test_problem_fibre_unifies_knowledge_tools_episodes_and_failures() -> None:
         candidate_method_families=("bridge-method",),
     )
     assert tuple(item.item_id for item in fibre.knowledge_items) == ("K1",)
-    assert tuple(tool.tool_id for tool in fibre.tools) == ("T1",)
+    assert tuple(tool.tool_id for tool in fibre.tools) == ()
     assert "F1" in {failure.failure_id for failure in fibre.failures}
     assert {episode.episode_id for episode in fibre.episodes} >= {"E1", "E3"}
 
@@ -251,8 +251,8 @@ def test_gluing_requires_compatibility_verification_and_complete_coverage() -> N
             LocalSection("S2", "A2", (("x", "1"),), (), ("op",), ("ev2",), True),
         ),
     )
-    assert glued.compatible and glued.complete_coverage and glued.all_sections_verified
-    assert glued.grants_solution_authority
+    assert glued.compatible and glued.complete_coverage and not glued.all_sections_verified
+    assert not glued.grants_solution_authority
 
 
 def test_operator_routing_learns_from_success_and_failure_without_minting_authority() -> None:
@@ -402,10 +402,6 @@ def test_self_evolution_preserves_branching_and_never_auto_promotes() -> None:
         assurance_exposures_before_trial=0,
     )
     archive, assessment = record_evolution_trial(archive, trial_id="T1", child_variant_id="v2", trial=trial)
-    assert assessment.supports_scoped_evolution
+    assert assessment.verdict is EvolutionVerdict.CANNOT_CHECK
     assert archive.incumbent_id == "v1"
-    assert next(v for v in archive.variants if v.variant_id == "v2").status is VariantStatus.ASSURED
-
-    promoted = promote_incumbent(archive, "v2", governance_approved=True)
-    assert promoted.incumbent_id == "v2"
-    assert next(v for v in promoted.variants if v.variant_id == "v1").status is VariantStatus.ASSURED
+    assert next(v for v in archive.variants if v.variant_id == "v2").status is VariantStatus.CHALLENGER

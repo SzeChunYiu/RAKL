@@ -11,6 +11,12 @@ from .failure_lattice import FailureExperience, FailureExperienceLattice, query_
 from .problem_solving_algebra import ProblemState, ResearchOperator
 from .research_tool_inventory import ResearchTool, ResearchToolInventory, query_research_tools
 from .strategy_motifs import MotifInstantiation, StrategyMotif, rank_strategy_motifs
+from .v3_authority import (
+    AttestationPurpose,
+    ProtectedAuthorityContext,
+    canonical_sha256,
+    resolve_protected_attestation,
+)
 
 
 @dataclass(frozen=True)
@@ -104,6 +110,8 @@ class LocalSection:
     operator_ids: Tuple[str, ...]
     evidence_ids: Tuple[str, ...]
     verified: bool = False
+    subject_hash: str | None = None
+    verification_attestation_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.section_id or not self.atom_id:
@@ -135,6 +143,21 @@ class GluingReport:
     @property
     def grants_solution_authority(self) -> bool:
         return self.compatible and self.all_sections_verified and self.complete_coverage
+
+
+def local_section_subject_hash(section: LocalSection) -> str:
+    """Bind a local mathematical section to its exact substantive content."""
+
+    return canonical_sha256(
+        {
+            "section_id": section.section_id,
+            "atom_id": section.atom_id,
+            "assignments": [list(item) for item in section.assignments],
+            "assumptions": list(section.assumptions),
+            "operator_ids": list(section.operator_ids),
+            "evidence_ids": list(section.evidence_ids),
+        }
+    )
 
 
 def knowledge_items_from_legacy_fiber(fiber: KnowledgeFiber) -> Tuple[FibreKnowledgeItem, ...]:
@@ -345,6 +368,8 @@ def compile_problem_fibre(
 def glue_local_sections(
     decomposition: ProblemDecomposition,
     sections: Iterable[LocalSection],
+    *,
+    authority_context: ProtectedAuthorityContext | None = None,
 ) -> GluingReport:
     """Check whether local atom solutions form one compatible global section.
 
@@ -420,11 +445,28 @@ def glue_local_sections(
                 )
 
     assignments = tuple(sorted((key, value) for key, (_, value) in global_values.items()))
+    verified_sections: list[bool] = []
+    for section in section_tuple:
+        exact_subject = local_section_subject_hash(section)
+        if section.subject_hash != exact_subject or not section.evidence_ids:
+            verified_sections.append(False)
+            continue
+        resolution = resolve_protected_attestation(
+            authority_context,
+            section.verification_attestation_id,
+            purpose=AttestationPurpose.LOCAL_SECTION_VERIFICATION,
+            subject_hash=exact_subject,
+            required_artifact_ids=section.evidence_ids,
+        )
+        verified_sections.append(resolution.valid)
+
     return GluingReport(
         compatible=not obstructions,
         global_assignments=assignments,
         obstructions=tuple(obstructions),
-        all_sections_verified=bool(section_tuple) and all(section.verified for section in section_tuple),
+        # ``verified`` is a deprecated display hint only.  It cannot mint
+        # authority; exact certificate resolution decides this coordinate.
+        all_sections_verified=bool(section_tuple) and all(verified_sections),
         complete_coverage=set(by_atom) == known_atoms,
         covered_atom_ids=tuple(sorted(by_atom)),
     )

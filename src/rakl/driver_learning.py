@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from hashlib import sha256
 from typing import Callable, Iterable, Protocol, Tuple
 
 from .breakthrough_learning import ExpertiseChunk
 from .core import KnowledgeFiber
-from .experience_substrate import EpisodeOutcome, TaskEpisode
+from .experience_substrate import EpisodeOutcome, TaskEpisode, episode_content_bytes
 from .problem_fibre import FibreKnowledgeItem, ProblemAtom, ProblemFibre
 from .problem_solving_algebra import ProblemState, ResearchOperator
 from .strategy_motifs import StrategyMotif
@@ -104,7 +105,7 @@ def run_learning_turn(
         top_k_each=top_k_each,
     )
     result = driver(DriverRequest(task=task, fibre=fibre))
-    episode = TaskEpisode(
+    episode_draft = TaskEpisode(
         episode_id=episode_id,
         task_id=task.task_id,
         atom_id=task.atom.atom_id,
@@ -118,9 +119,15 @@ def run_learning_turn(
         outcome=result.outcome,
         residual_signature=result.residual_signature,
         evidence_pointers=result.evidence_pointers,
-        artifact_hash=result.artifact_hash,
+        artifact_hash="",
         timestamp=task.timestamp,
         cost=result.cost,
+    )
+    # Driver-provided strings are observations only.  Episode identity is always
+    # recomputed from the exact frozen episode bytes.
+    episode = replace(
+        episode_draft,
+        artifact_hash=sha256(episode_content_bytes(episode_draft)).hexdigest(),
     )
     failure_spec = failure_spec_factory(result) if failure_spec_factory is not None else None
     if failure_spec is not None and result.outcome is EpisodeOutcome.SUCCESS:

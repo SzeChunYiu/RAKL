@@ -202,3 +202,51 @@ METHOD_CONTRACTS = (
        ("src/rakl/generator_transport.py", "src/rakl/similarity.py", "src/rakl/bridge_composition.py"),
        ("tests/test_generator_transport.py", "tests/test_similarity.py", "tests/test_bridge_composition.py"), ("real comparative target transfer and multi-hop bridge benchmark",)),
 )
+
+
+# RAKL v3 is an implementation overlay, not a parallel method constitution.
+# Every new public module/function remains owned by one of the canonical method
+# surfaces above.  Reviewers can therefore detect an ungoverned v3 surface
+# instead of accepting a manifest label as authority.
+V3_IMPLEMENTATION_OWNER_MAP = {
+    "src/rakl/v3_authority.py": "authority_promotion",
+    "src/rakl/experience_substrate.py": "memory",
+    "src/rakl/experience_learning.py": "authority_promotion",
+    "src/rakl/experience_memory.py": "memory",
+    "src/rakl/failure_learning.py": "contradiction_diagnosis",
+    "src/rakl/problem_fibre.py": "decomposition",
+    "src/rakl/gluing_learning.py": "contextual_theory_gluing",
+    "src/rakl/experience_policy.py": "routing",
+    "src/rakl/experience_benchmark.py": "benchmarking",
+    "src/rakl/saturation_vector.py": "saturation_stopping",
+    "src/rakl/problem_novelty.py": "gap_discovery",
+    "src/rakl/unified_substrate.py": "memory",
+    "src/rakl/evolution_archive.py": "objective_evolution",
+    "src/rakl/v3_runtime.py": "software_architecture_execution",
+    "src/rakl/driver_learning.py": "software_architecture_execution",
+    "src/rakl/v3.py": "software_architecture_execution",
+}
+
+V3_PUBLIC_AUTHORITY_SURFACE_OWNERS = {
+    "resolve_protected_attestation": "authority_promotion",
+    "assess_lesson_consolidation": "authority_promotion",
+    "promoted_lesson_version": "authority_promotion",
+    "lesson_to_research_tool": "authority_promotion",
+    "glue_local_sections": "contextual_theory_gluing",
+    "validate_experience_benchmark": "benchmarking",
+    "assess_experience_benchmark": "benchmarking",
+    "record_evolution_trial": "objective_evolution",
+    "promote_incumbent": "authority_promotion",
+}
+
+
+def validate_v3_method_ownership() -> tuple[str, ...]:
+    canonical = {contract.surface for contract in METHOD_CONTRACTS}
+    problems = [
+        f"v3_owner_not_canonical:{surface}:{owner}"
+        for surface, owner in sorted(
+            {**V3_IMPLEMENTATION_OWNER_MAP, **V3_PUBLIC_AUTHORITY_SURFACE_OWNERS}.items()
+        )
+        if owner not in canonical
+    ]
+    return tuple(problems)
