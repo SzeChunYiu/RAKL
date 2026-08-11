@@ -1,6 +1,15 @@
 from __future__ import annotations
 
 from fractions import Fraction
+import json
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+TRACE = (
+    ROOT
+    / "research/real_math/millennium/navier_stokes/09_trace/NS_R001_PRE_CANDIDATE_TRACE_20260811.json"
+)
 
 
 def _mixed_norm_exponent(
@@ -95,3 +104,13 @@ def test_atlas_statement_is_not_a_navier_stokes_solution_claim() -> None:
     claim_scope = "smooth_divergence_free_spacetime_test_fields"
     excluded_scope = "actual_navier_stokes_solution_family"
     assert claim_scope != excluded_scope
+
+
+def test_atlas_is_append_only_bound_to_trace_without_candidate_event() -> None:
+    trace = json.loads(TRACE.read_text(encoding="utf-8"))
+    event_types = [entry["event_type"] for entry in trace["entries"]]
+    assert event_types[-3:] == ["FALSIFIER_RUN", "RESULT_RECORDED", "RESIDUAL_OPENED"]
+    assert "CANDIDATE_PROPOSED" not in event_types
+    assert trace["entries"][-1]["residuals"] == [
+        "NS-R001a:true-evolution coordinate preventing arbitrary energy-class critical concentration"
+    ]
