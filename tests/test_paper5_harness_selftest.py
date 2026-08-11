@@ -55,36 +55,55 @@ def _analyzer() -> Any:
     return _load_module("experiments/paper5/analyze_attribution_results.py", "analyze_attribution_results")
 
 
+def _execute(root: Path, mode: str, repetitions: int) -> dict[str, Any]:
+    proc = subprocess.run(
+        [
+            sys.executable, str(DRIVER),
+            "--mode", mode,
+            "--out-root", str(root),
+            "--tasks-per-stratum", str(TASKS_PER_STRATUM),
+            "--repetitions", str(repetitions),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, f"{mode} r{repetitions} driver failed:\n{proc.stdout}\n{proc.stderr}"
+    mode_dir = root / f"{mode}-r{repetitions}"
+    return {
+        "dir": mode_dir,
+        "summary": json.loads((mode_dir / "analysis" / "summary.json").read_text(encoding="utf-8")),
+        "receipt": json.loads((mode_dir / "selftest_receipt.json").read_text(encoding="utf-8")),
+        "records": [
+            json.loads(line)
+            for line in (mode_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ],
+    }
+
+
 @pytest.fixture(scope="module")
 def selftest_runs(tmp_path_factory: pytest.TempPathFactory) -> dict[str, dict[str, Any]]:
     """Execute all three modes once; the modes are deterministic."""
     root = tmp_path_factory.mktemp("paper5-selftest")
     out: dict[str, dict[str, Any]] = {}
     for mode in ("NULL_CONSTANT", "NULL_NOISE", "PLANTED_LIFT"):
-        proc = subprocess.run(
-            [
-                sys.executable, str(DRIVER),
-                "--mode", mode,
-                "--out-root", str(root),
-                "--tasks-per-stratum", str(TASKS_PER_STRATUM),
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-        )
-        assert proc.returncode == 0, f"{mode} driver failed:\n{proc.stdout}\n{proc.stderr}"
-        mode_dir = root / mode
-        out[mode] = {
-            "dir": mode_dir,
-            "summary": json.loads((mode_dir / "analysis" / "summary.json").read_text(encoding="utf-8")),
-            "receipt": json.loads((mode_dir / "selftest_receipt.json").read_text(encoding="utf-8")),
-            "records": [
-                json.loads(line)
-                for line in (mode_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()
-                if line.strip()
-            ],
-        }
+        out[mode] = _execute(root, mode, 1)
     return out
+
+
+@pytest.fixture(scope="module")
+def planted_lift_three_reps(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
+    """PLANTED_LIFT at the preregistered 3 repetitions.
+
+    At one repetition the analyzer's ``success = successes > repetitions/2.0``
+    collapses to ``successes > 0.5``, so the majority-vote aggregation the
+    confirmatory packet actually depends on is never exercised, and neither is
+    the within-task mean over generations. Validating the instrument only in a
+    configuration the real study will not use would leave that rule untested.
+    """
+    root = tmp_path_factory.mktemp("paper5-selftest-r3")
+    return _execute(root, "PLANTED_LIFT", 3)
 
 
 def _contrasts(summary: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -165,6 +184,33 @@ def test_summaries_are_stamped_as_instrument_validation(
         assert "HARNESS SELF-TEST" in summary["claim_boundary"]
         assert data["receipt"]["grants_scientific_authority"] is False
         assert data["receipt"]["model_invoked"] is False
+
+
+def test_majority_vote_aggregation_recovers_the_planted_lift_at_three_repetitions(
+    planted_lift_three_reps: dict[str, Any]
+) -> None:
+    """Exercises the aggregation rule the confirmatory packet depends on."""
+    data = planted_lift_three_reps
+    assert len(data["records"]) == TASKS_PER_STRATUM * 3 * 4 * 3, "12 tasks x 4 arms x 3 repetitions"
+    assert data["summary"]["repetitions"] == 3
+    contrasts = _contrasts(data["summary"])
+    for name in LEARNING_CONTRASTS:
+        row = contrasts[name]
+        assert row["mean_score_delta"] >= 0.10, f"{name} lost the planted lift under 3-rep aggregation: {row}"
+        # success_rate_delta comes from majority vote, not the mean score path.
+        assert row["success_rate_delta"] > 0.0, f"{name} majority-vote success did not move: {row}"
+    assert abs(contrasts["ARCHITECTURE"]["mean_score_delta"]) < 0.10
+
+
+def test_analysis_parameters_are_pinned_not_inherited_from_defaults(
+    selftest_runs: dict[str, dict[str, Any]]
+) -> None:
+    """The receipt quotes intervals and p-values, so their inputs must be recorded."""
+    for mode, data in selftest_runs.items():
+        params = data["receipt"]["analysis_parameters"]
+        assert params["bootstrap_seed"] == 20260811, mode
+        assert params["bootstrap_iterations"] == 20000, mode
+        assert params["permutation_iterations"] == 100000, mode
 
 
 def test_analyzer_refuses_to_mix_self_test_and_model_records() -> None:

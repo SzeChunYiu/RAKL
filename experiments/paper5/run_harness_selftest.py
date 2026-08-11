@@ -89,10 +89,13 @@ def main() -> None:
     parser.add_argument("--tasks-per-stratum", type=int, default=4)
     parser.add_argument("--repetitions", type=int, default=1)
     parser.add_argument("--seed", type=int, default=20260811)
+    parser.add_argument("--bootstrap-seed", type=int, default=20260811)
+    parser.add_argument("--bootstrap-iterations", type=int, default=20000)
+    parser.add_argument("--permutation-iterations", type=int, default=100000)
     args = parser.parse_args()
 
     packet_id = f"paper5-harness-selftest-{args.mode}"
-    out = args.out_root / args.mode
+    out = args.out_root / f"{args.mode}-r{args.repetitions}"
     if out.exists():
         raise SystemExit(f"refusing to overwrite an existing self-test run directory: {out}")
     out.mkdir(parents=True)
@@ -145,12 +148,19 @@ def main() -> None:
         "--results-jsonl", str(results_path),
     ])
 
+    # Pinned explicitly rather than inherited from analyzer CLI defaults: the
+    # receipt quotes interval bounds and permutation p-values, so those numbers
+    # must be reproducible from this driver alone. Otherwise retuning an
+    # analyzer default silently changes a published self-test result.
     run([
         sys.executable, str(HERE / "analyze_attribution_results.py"),
         "--tasks", str(tasks_path),
         "--schedule", str(schedule_path),
         "--results", str(results_path),
         "--out-dir", str(analysis_dir),
+        "--bootstrap-seed", str(args.bootstrap_seed),
+        "--bootstrap-iterations", str(args.bootstrap_iterations),
+        "--permutation-iterations", str(args.permutation_iterations),
     ])
 
     summary = json.loads((analysis_dir / "summary.json").read_text(encoding="utf-8"))
@@ -164,6 +174,12 @@ def main() -> None:
         "task_count": summary["task_count"],
         "repetitions": summary["repetitions"],
         "run_count": summary["task_count"] * summary["repetitions"] * len(ARMS),
+        "analysis_parameters": {
+            "schedule_seed": args.seed,
+            "bootstrap_seed": args.bootstrap_seed,
+            "bootstrap_iterations": args.bootstrap_iterations,
+            "permutation_iterations": args.permutation_iterations,
+        },
         "mean_score_delta": deltas,
         "analysis_core_sha256": summary["analysis_core_sha256"],
         "grants_scientific_authority": False,
