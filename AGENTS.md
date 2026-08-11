@@ -119,7 +119,7 @@ Trace entries are hash-chained: except for the first event, `previous_event_hash
 
 This trace is an **auditable scientific decision record**, not a raw private chain-of-thought transcript. Record reproducible state, alternatives, concise decision rationale, evidence, outputs, uncertainties, residuals and next actions. Do not claim that hidden model reasoning has been exposed.
 
-Call `plan_math_research(..., context_fiber=..., memory_review=..., research_trace=..., preservation_receipt=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/memory/trace later.
+Call `plan_math_research(..., context_fiber=..., memory_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)`. If `candidate_generation_allowed` is false, do **not** propose a proof, lemma, invariant, auxiliary construction, or mathematical candidate. Execute `pre_candidate_actions` instead. Do not bypass this by directly invoking lower-level search operators or by writing a candidate first and backfilling context/memory/trace later.
 
 A proof that arrives from outside this process may still be checked for truth by the assurance layer, but it must not be described as a strict RAKL context-first discovery unless the pre-candidate context, experience-memory and trace gates passed.
 
