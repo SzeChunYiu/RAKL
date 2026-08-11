@@ -58,6 +58,12 @@ def test_candidate_before_context_freeze_is_rejected() -> None:
     assert "context_not_frozen_before_candidate_generation" in report.reasons
 
 
+def test_naive_timestamp_is_rejected_as_ambiguous() -> None:
+    report = audit_math_context_fiber(_fiber(frozen_at="2026-08-11T04:00:00"))
+    assert report.verdict is ContextGateVerdict.FAIL
+    assert "context_freeze_time_missing_or_invalid" in report.reasons
+
+
 def test_method_transfer_must_record_disanalogy_and_repair_question() -> None:
     bad_transfer = MethodTransfer(
         source_context="formula lower bounds",
