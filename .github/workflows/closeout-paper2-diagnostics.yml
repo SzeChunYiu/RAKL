@@ -56,11 +56,12 @@ jobs:
           python -m rakl.mini_research_metrology
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
-      - name: Install manuscript build tools (cached apt)
-        uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # v1.6.3
-        with:
-          packages: latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
-          version: 1.1
+      - name: Install manuscript build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
+            lmodern
       - name: Build chaptered Paper 2 and expose LaTeX failure
         shell: bash
         run: |

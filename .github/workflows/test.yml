@@ -106,11 +106,12 @@ jobs:
           grep -F "\\newcommand{\\ImplementationSHA}{\\texttt{$RAKL_SUBJECT_SHA}}" paper/build/saturated_epistemic_mechanics/build_identity.tex
           grep -F "\\section{Three geometries of scientific memory: Obsidian, J-space and RAKL}" paper/build/saturated_epistemic_mechanics/sections/06_three_geometries.tex
           grep -F "\\section{Manuscript saturation as a framework specialization}" paper/build/saturated_epistemic_mechanics/sections/14_manuscript_saturation.tex
-      - name: Install manuscript build tools (cached apt)
-        uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # v1.6.3
-        with:
-          packages: latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
-          version: 1.1
+      - name: Install manuscript build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
+            lmodern poppler-utils
       - name: Compile and preflight V2.1 PDF
         shell: bash
         run: |
