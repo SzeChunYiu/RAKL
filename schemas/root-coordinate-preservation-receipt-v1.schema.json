@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/root-coordinate-preservation-receipt-v1.schema.json",
+  "title": "RAKL root coordinate preservation receipt v1",
+  "description": "Proposal-only, scoped pre-candidate contract binding a surrogate or local coordinate to a root coordinate before expensive candidate search. Absence of an equal-projection/different-root-outcome collision in the bound probe set is not a faithfulness proof, and a rejection is scoped rather than a blacklist. Mints no theorem, proof, tool, gluing, novelty or framework authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "root_claim_id",
+    "root_coordinate",
+    "surrogate_or_local_coordinate",
+    "scope_id",
+    "bridge_map",
+    "cheapest_hostile_world",
+    "public_trace_event_id",
+    "source_authority",
+    "target_authority",
+    "enabling_assumptions",
+    "non_compensatory_obligations",
+    "known_disanalogies",
+    "unproved_interface_edges",
+    "reverification_triggers",
+    "scope_conditions",
+    "probes",
+    "failure_memory_ids",
+    "coverage_receipt_id",
+    "evidence_pointers",
+    "receipt_canonical_sha256",
+    "proves_surrogate_faithfulness",
+    "claims_probe_universe_complete",
+    "grants_theorem_authority",
+    "grants_proof_authority",
+    "grants_tool_authority",
+    "grants_gluing_authority",
+    "grants_novelty_authority",
+    "grants_framework_authority"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "root-coordinate-preservation-receipt-v1"
+    },
+    "root_claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root_coordinate": {
+      "description": "The quantity the root obligation actually charges.",
+      "type": "string",
+      "minLength": 1
+    },
+    "surrogate_or_local_coordinate": {
+      "description": "The surrogate, representation, local invariant, detector, asymptotic rate, discrete order, local lemma or computational statistic standing in for it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_id": {
+      "description": "The scope this verdict attaches to. A rejection at one scope never blocks a narrower scope, which needs its own receipt and its own probe set.",
+      "type": "string",
+      "minLength": 1
+    },
+    "bridge_map": {
+      "description": "Explicit surrogate-component to root-component edges. An unstated bridge is the failure this object exists to prevent.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "cheapest_hostile_world": {
+      "description": "The cheapest world in which the surrogate is favourable but the root is not. Load-bearing: a contract that cannot state one has not been thought through and fails closed.",
+      "type": "string",
+      "minLength": 1
+    },
+    "public_trace_event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_authority": {
+      "enum": [
+        "ESTABLISHED",
+        "CONDITIONAL",
+        "PROPOSED",
+        "UNVERIFIED"
+      ]
+    },
+    "target_authority": {
+      "enum": [
+        "ESTABLISHED",
+        "CONDITIONAL",
+        "PROPOSED",
+        "UNVERIFIED"
+      ]
+    },
+    "enabling_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "non_compensatory_obligations": {
+      "description": "Obligations no amount of surrogate-side success can discharge.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "known_disanalogies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "unproved_interface_edges": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reverification_triggers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "scope_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "probes": {
+      "description": "The bound probe set. A probe with a null root outcome witnesses neither agreement nor disagreement and is excluded from the congruence check.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "probe_id",
+          "projected_surrogate_state",
+          "registered_root_outcome",
+          "evidence_pointer"
+        ],
+        "properties": {
+          "probe_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "projected_surrogate_state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "registered_root_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence_pointer": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "failure_memory_ids": {
+      "description": "Hostile surrogate worlds preserved in the failure lattice, referenced rather than duplicated.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "coverage_receipt_id": {
+      "description": "Optional pointer to a separate retrieval-universe coverage receipt. Its absence is reported, never silently treated as coverage.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "receipt_canonical_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proves_surrogate_faithfulness": {
+      "description": "Permanently false. Absence of a counterexample in a bound probe set is not a preservation proof.",
+      "const": false
+    },
+    "claims_probe_universe_complete": {
+      "const": false
+    },
+    "grants_theorem_authority": {
+      "const": false
+    },
+    "grants_proof_authority": {
+      "const": false
+    },
+    "grants_tool_authority": {
+      "const": false
+    },
+    "grants_gluing_authority": {
+      "const": false
+    },
+    "grants_novelty_authority": {
+      "const": false
+    },
+    "grants_framework_authority": {
+      "const": false
+    }
+  }
+}
