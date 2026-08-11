@@ -52,6 +52,7 @@ from .root_coordinate_preservation import (
 from .semantic_shortcut import (
     REQUIRED_SHORTCUT_ACTIONS,
     ObstructionTransformationReview,
+    ShortcutMode,
     ShortcutReviewReport,
     ShortcutReviewVerdict,
     audit_obstruction_transformation_review,
