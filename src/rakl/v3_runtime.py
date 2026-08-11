@@ -4,6 +4,7 @@ from dataclasses import dataclass, replace
 from typing import Iterable, Tuple
 
 from .breakthrough_learning import ExpertiseChunk
+from .core import KnowledgeFiber
 from .experience_learning import (
     ConsolidationVerdict,
     LessonConsolidationEvidence,
@@ -161,6 +162,7 @@ def compile_state_fibre(
     atom: ProblemAtom,
     *,
     knowledge_items: Iterable[FibreKnowledgeItem] = (),
+    legacy_knowledge_fibers: Iterable[KnowledgeFiber] = (),
     strategy_motifs: Iterable[StrategyMotif] = (),
     operators: Iterable[ResearchOperator] = (),
     problem_state: ProblemState | None = None,
@@ -171,6 +173,7 @@ def compile_state_fibre(
     return compile_problem_fibre(
         atom,
         knowledge_items=knowledge_items,
+        legacy_knowledge_fibers=legacy_knowledge_fibers,
         tool_inventory=state.tools,
         failure_lattice=state.failures,
         experience_ledger=state.experience,
