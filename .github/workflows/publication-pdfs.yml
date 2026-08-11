@@ -21,34 +21,78 @@ jobs:
           python-version: "3.11"
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test]"
+
+      - name: Run exact-head repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          pytest | tee pytest.log
+          TEST_COUNT="$(python - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path('pytest.log').read_text(encoding='utf-8')
+          matches = re.findall(r'(\d+) passed', text)
+          if len(matches) != 1:
+              raise SystemExit(f'could not identify unique passing-test count: {matches}')
+          print(matches[0])
+          PY
+          )"
+          echo "RAKL_SOFTWARE_TESTS=$TEST_COUNT" >> "$GITHUB_ENV"
+
       - name: Install PDF build tools
         run: |
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
             latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
             lmodern poppler-utils
+
       - name: Generate receipt-bound Paper II figures
         run: |
           python -m rakl.mini_research_metrology
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
+
       - name: Stage four exact-source manuscripts
         shell: bash
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
-          mkdir -p build/publication/paper-01 build/publication/paper-02 build/publication/paper-03 build/publication/paper-04
-          python paper/build_epistemic_mechanics.py \
-            --output build/publication/paper-01/main.tex \
-            --subject-sha "$HEAD_SHA" --software-tests 1
+          rm -rf build/publication
+          mkdir -p build/publication
+
+          # Paper I: stage the canonical modular publication source and bind
+          # only the release identity macros.
+          cp -a publication/papers/paper-01-epistemic-mechanics build/publication/paper-01
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          path = Path('build/publication/paper-01/main.tex')
+          text = path.read_text(encoding='utf-8')
+          sha = os.environ['GITHUB_SHA']
+          # Pull-request checkout is explicitly bound below using git, so use
+          # the actual checked-out subject rather than the workflow merge SHA.
+          import subprocess
+          sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tests = os.environ['RAKL_SOFTWARE_TESTS']
+          old_sha = r'\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}'
+          old_tests = r'\newcommand{\SoftwareTests}{UNBOUND}'
+          if text.count(old_sha) != 1 or text.count(old_tests) != 1:
+              raise SystemExit('Paper I release identity anchors changed')
+          text = text.replace(old_sha, rf'\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}', 1)
+          text = text.replace(old_tests, rf'\newcommand{{\SoftwareTests}}{{{tests}}}', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
           python paper/build_saturated_epistemic_mechanics.py \
             --stage build/publication/paper-02 \
-            --subject-sha "$HEAD_SHA" --software-tests 1
-          rm -rf build/publication/paper-03
+            --subject-sha "$HEAD_SHA" --software-tests "$RAKL_SOFTWARE_TESTS"
+
           cp -a publication/papers/paper-03-directional-structural-witnesses build/publication/paper-03
+
+          mkdir -p build/publication/paper-04
           python paper/build_math_research_assurance.py \
             --output build/publication/paper-04/main.tex \
-            --subject-sha "$HEAD_SHA" --software-tests 1
+            --subject-sha "$HEAD_SHA" --software-tests "$RAKL_SOFTWARE_TESTS"
           cp publication/papers/paper-04-verified-discovery/main.tex build/publication/paper-04/canonical-main.tex
 
       - name: Bind author metadata to staged release sources
@@ -63,7 +107,6 @@ jobs:
           date_old = r"\date{10 August 2026}"
           date_new = r"\date{11 August 2026}"
           paths = [
-              Path("build/publication/paper-01/main.tex"),
               Path("build/publication/paper-02/main.tex"),
               Path("build/publication/paper-04/main.tex"),
               Path("build/publication/paper-04/canonical-main.tex"),
@@ -77,11 +120,11 @@ jobs:
                   text = text.replace(date_old, date_new, 1)
               path.write_text(text, encoding="utf-8")
 
-          p3 = Path("build/publication/paper-03/main.tex")
-          p3_text = p3.read_text(encoding="utf-8")
-          for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
-              if required not in p3_text:
-                  raise SystemExit(f"Paper III author metadata missing: {required}")
+          for paper in ("paper-01", "paper-03"):
+              text = Path(f"build/publication/{paper}/main.tex").read_text(encoding="utf-8")
+              for required in ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se"):
+                  if required not in text:
+                      raise SystemExit(f"{paper} author metadata missing: {required}")
           PY
 
       - name: Compile and preflight all four PDFs
@@ -108,6 +151,7 @@ jobs:
               mkdir -p renders
               pdftoppm -png -r 160 main.pdf renders/page >/dev/null
               pages="$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')"
+              test "$pages" -ge 1
               test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -eq "$pages"
             )
           done
@@ -117,6 +161,7 @@ jobs:
         with:
           name: canonical-publication-pdfs-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
+            pytest.log
             build/publication/paper-01/main.tex
             build/publication/paper-01/main.pdf
             build/publication/paper-01/main.log
