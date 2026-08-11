@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/process-telemetry.schema.json",
+  "title": "RAKL Process Telemetry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invocation_id", "process_surface", "task_id", "input_state_hash",
+    "output_state_hash", "outcome", "cost", "cost_policy_id",
+    "residual_before", "residual_after", "retained_novelty"
+  ],
+  "properties": {
+    "invocation_id": {"type": "string", "minLength": 1},
+    "process_surface": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "episode_id": {"type": "string"},
+    "input_state_hash": {"type": "string", "minLength": 1},
+    "output_state_hash": {"type": "string", "minLength": 1},
+    "input_fibre_hash": {"type": "string"},
+    "output_hash": {"type": "string"},
+    "outcome": {"enum": ["SUCCESS", "PARTIAL_SUCCESS", "FAILURE", "BLOCKED", "CANNOT_CHECK"]},
+    "cost": {"type": "number", "minimum": 0},
+    "cost_policy_id": {"type": "string", "minLength": 1},
+    "residual_before": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "residual_after": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "retained_novelty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["KNOWLEDGE", "OPERATOR", "EXPERIENCE_PATTERN", "OBSTRUCTION", "RELATION", "PATH", "META_METHOD"],
+      "properties": {
+        "KNOWLEDGE": {"type": "integer", "minimum": 0},
+        "OPERATOR": {"type": "integer", "minimum": 0},
+        "EXPERIENCE_PATTERN": {"type": "integer", "minimum": 0},
+        "OBSTRUCTION": {"type": "integer", "minimum": 0},
+        "RELATION": {"type": "integer", "minimum": 0},
+        "PATH": {"type": "integer", "minimum": 0},
+        "META_METHOD": {"type": "integer", "minimum": 0}
+      }
+    },
+    "retrieved_ids": {"type": "array", "items": {"type": "string"}},
+    "selected_ids": {"type": "array", "items": {"type": "string"}},
+    "rejected_ids": {"type": "array", "items": {"type": "string"}},
+    "verification_ids": {"type": "array", "items": {"type": "string"}},
+    "evidence_pointers": {"type": "array", "items": {"type": "string"}},
+    "timestamp": {"type": "string"}
+  }
+}

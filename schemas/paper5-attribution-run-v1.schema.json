@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/paper5-attribution-run-v1.schema.json",
+  "title": "Paper 5 Attribution Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "task_id", "arm", "state_before_hash", "state_after_hash", "success", "score", "failure_signature", "validity_failures", "resource_usage", "output_hash"],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "arm": {"enum": ["MODEL_ONLY", "RAKL_RESET", "RAKL_SHAM_MEMORY", "RAKL_LEARNING"]},
+    "state_before_hash": {"type": "string", "minLength": 1},
+    "state_after_hash": {"type": "string", "minLength": 1},
+    "success": {"type": "boolean"},
+    "score": {"type": "number", "minimum": 0, "maximum": 1},
+    "failure_signature": {"type": "array", "items": {"type": "string"}},
+    "validity_failures": {"type": "array", "items": {"type": "string"}},
+    "resource_usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_input_tokens", "model_output_tokens", "preprocessing_model_tokens", "preprocessing_tool_calls", "external_retrieval_calls", "wall_time_ms"],
+      "properties": {
+        "model_input_tokens": {"type": "integer", "minimum": 0},
+        "model_output_tokens": {"type": "integer", "minimum": 0},
+        "preprocessing_model_tokens": {"type": "integer", "minimum": 0},
+        "preprocessing_tool_calls": {"type": "integer", "minimum": 0},
+        "external_retrieval_calls": {"type": "integer", "minimum": 0},
+        "wall_time_ms": {"type": "integer", "minimum": 0}
+      }
+    },
+    "output_hash": {"type": "string", "minLength": 1}
+  }
+}

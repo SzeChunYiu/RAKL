@@ -1,0 +1,66 @@
+\section{Research systems should learn how to research}
+
+The standard unit of evaluation for an AI agent is a task outcome. A task is given, the agent acts, and the system is scored on success, correctness, reward or cost. This abstraction is appropriate for many deployed agents, but it discards much of the evidence produced by open-ended research. A research run contains a sequence of representation choices, decompositions, literature searches, retrieved analogies, rejected tools, conjectures, falsifiers, source checks, local proofs, failed bridges and residual questions. Even when the root problem remains unsolved, these intermediate events reveal which research methods were useful, which failed, and why.
+
+This distinction matters because long-horizon autonomous research is not well described by repeated independent benchmark queries. A recent behavioural case study of roughly one hundred sequential architecture experiments found a rapid-gain phase, an extended saturation wall and later recovery after the action surface was expanded; it also traced part of the observed greedy search behaviour to the workflow itself rather than to the underlying model alone \cite{safdar2026longhorizon}. The result suggests that the research harness is not merely an implementation detail. It can shape what hypotheses are generated, how risk is taken and when the system escapes a local research regime.
+
+At the same time, a growing family of agent systems learns from externalized experience. Reflexion stores verbal reflections \cite{shinn2023reflexion}; ExpeL extracts reusable insights from collections of trajectories \cite{zhao2023expel}; Voyager accumulates an executable skill library \cite{wang2023voyager}; Agent Workflow Memory induces reusable routines \cite{wang2024awm}; and more recent systems learn hierarchical skills or dual streams of experience and skill knowledge \cite{wang2026autoskills,jiang2026xskill}. These systems establish that persistent non-parametric experience can improve later behaviour. They also expose a new control problem. External memory can create negative transfer, retrieval competition and consolidation failure. In sequential settings, the continual-learning bottleneck may move from model weights to memory representation and access \cite{hu2026memory}; repeated LLM consolidation can even corrupt useful experience, motivating raw episodic preservation as a first-class design requirement \cite{zhang2026faultymemory}.
+
+A separate line of work asks agents to improve the agent architecture itself. Automated Design of Agentic Systems searches over agent programs \cite{hu2024adas}; G\"odel Agent and related systems permit self-referential policy modification \cite{yin2024godelagent}; and Darwin G\"odel Machine maintains an open-ended archive of self-modifying coding agents selected through empirical evaluation \cite{zhang2025dgm}. These approaches make recursive improvement operational. They also sharpen an unanswered engineering question for research systems: \emph{what evidence licenses the claim that a self-modification is an improvement when the same system can propose the modification, influence the evaluator, select the tasks and rewrite the state from which future evidence is interpreted?}
+
+Our previous \RAKL{} work addressed a different layer of this problem. Paper 4 introduced a verified-discovery architecture for LLM-mediated mathematical research in which specification alignment, theorem truth, novelty, research value and verifier trust are separate authority coordinates; proposal generation cannot promote itself to theorem authority; and computation, proof and novelty are kept distinct \cite{yiu2026verified}. The present work asks the next question. Once research trajectories are preserved under such an authority regime, can they be used to improve the \emph{method of research itself} without collapsing observed performance, deployment status and epistemic authority into one scalar notion of ``better''?
+
+\subsection{Central claim and evidence boundary}
+
+Our central claim is architectural and methodological:
+
+\begin{quote}
+A long-running LLM research system can treat its own research trajectories as typed evidence for method improvement if raw episodes are preserved, diagnoses and abstractions remain defeasible, method changes are evaluated as content-identified challengers against frozen matched baselines and fresh transfer tasks, and promotion is separated from both proposal generation and operational deployment.
+\end{quote}
+
+This paper supports that claim at three different evidence levels that must not be conflated.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Implemented architecture.} \RAKL{} v3 contains executable objects for immutable task episodes, versioned lessons, failure revisions, problem fibres, local-to-global gluing, experience-conditioned routing, vector saturation, problem-novelty classification, branching evolution variants and matched experience benchmarks.
+\item \textbf{Retrospective/live case-study evidence.} A multi-agent mathematical research programme in the separate \texttt{RAKL\_math} repository has already produced auditable examples of retrieval misses, representation failures, source-boundary failures, local-to-global interface gaps, chronology repairs and assurance defects. These observations motivate hypotheses about research-process weaknesses. Because much of the programme predates v3 telemetry, we treat these observations as qualitative and partly retrospective.
+\item \textbf{Prospective claims not yet licensed.} We preregister how later \RAKL{} variants such as 3.1 and 3.2 should be evaluated. Until those matched development and fresh-assurance trials are run, we do not claim a measured general improvement in research capability, efficiency or scientific discovery rate.
+\end{enumerate}
+
+The distinction is deliberate. A paper about recursive self-improvement is especially vulnerable to circular evidence. If the architecture is allowed to define success after seeing the outcome, or if a framework version is called improved merely because it was merged, the empirical claim becomes unfalsifiable.
+
+\subsection{Research as four coupled loops}
+
+We model the persistent research system as a state $R_t$ coupled to a proposal generator with parameters $\theta$. For problem input $P_t$,
+\[
+(S_t,\tau_t)=\mathrm{Driver}_{\theta}(P_t,R_t),
+\qquad
+R_{t+1}=\mathrm{Learn}(R_t,\tau_t),
+\]
+where $S_t$ is the task output and $\tau_t$ is the externally recorded public research trajectory. The base model parameters may remain fixed while behaviour changes through the evolving external state.
+
+The system is organized around four coupled loops:
+\[
+\text{information}\rightarrow\text{knowledge},
+\]
+\[
+\text{problem}\rightarrow\text{solution},
+\]
+\[
+\text{experience}\rightarrow\text{method},
+\]
+\[
+\RAKL{}\rightarrow\text{better candidate \RAKL{}}.
+\]
+The first two loops are conventional research operations. The third turns task experience into reusable but bounded method knowledge. The fourth is a meta-loop that proposes changes to the research architecture itself. Paper 5 focuses on the boundary between the third and fourth loops.
+
+\subsection{Why the unit of analysis cannot be ``success'' alone}
+
+Open research has sparse and delayed terminal rewards. A Millennium Prize Problem may remain unsolved for the duration of the study, while a run can still produce valuable information by refuting a method family, identifying an exact missing theorem, recovering a relevant prior result, or proving a scoped local lemma. Conversely, a locally correct lemma may create little root progress if the interface needed to connect it to the target remains exactly the hard part.
+
+We therefore treat research progress as a vector of outcomes rather than a single score. Relevant coordinates include valid residual contraction, repeated-failure avoidance, retrieval coverage, correct rejection of unsafe transfer, proof or falsifier quality, detection of gluing/interface failure, resource use and authority preservation. A framework upgrade is admissible only if soft gains do not purchase violations of hard authority invariants.
+
+This leads to the core methodological separation used throughout the paper:
+\[
+\boxed{\text{DEPLOYMENT} \neq \text{PERFORMANCE EVIDENCE} \neq \text{METHOD AUTHORITY}}.
+\]
+Code may be merged. A benchmark may improve. A method may even receive fresh assurance. These are different facts and are represented separately.
