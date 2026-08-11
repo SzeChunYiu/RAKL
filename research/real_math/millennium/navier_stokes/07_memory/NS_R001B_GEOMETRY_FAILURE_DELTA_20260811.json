@@ -1,0 +1,66 @@
+{
+  "experience": {
+    "failure_id": "F-NS-R001B-LOCAL-GEOMETRY-SCOPE-GAP",
+    "atom_id": "NS-R001b",
+    "candidate_id": "A2A3-LOCAL-GEOMETRY-ROUTE-SCREEN",
+    "context_packet_hash": "sha256:ccac0992d2eedfd070ff1126e27922338e1b3243daaf383d27f9ccb3035601be",
+    "research_trace_event_id": "NS-R001b-E009",
+    "method_family": "local pointwise strain/vorticity alignment or depletion used without jointly enforcing exact trajectory dynamics and finite-energy/global localization",
+    "failure_mode": "the same strong positive-eigenframe alignment is compatible separately with finite-energy divergence-free localization and with exact Navier-Stokes dynamics, so local alignment alone does not isolate the Clay-relevant regime",
+    "residual_signature": [
+      "A2 is smooth compactly supported divergence free and has an open core with constant vorticity direction and omega·S omega>0, but is not an exact trajectory",
+      "A3 is an exact smooth Navier-Stokes linear flow with the same positive alignment and exponential vorticity growth, but has infinite kinetic energy on R^3",
+      "the surviving route must use the intersection of exact dynamics and finite-energy/global localization"
+    ],
+    "broken_assumptions": [
+      "local positive/negative alignment geometry by itself would distinguish dangerous from regular configurations in the Millennium class",
+      "exact PDE compatibility alone would make a local geometry calibration relevant to finite-energy Clay data"
+    ],
+    "scope_conditions": [
+      "pointwise or purely local strain/vorticity geometry without the full nonlocal solution-side hypotheses of established geometric criteria",
+      "route omits either exact trajectory information or global finite-energy/spatial localization"
+    ],
+    "competing_diagnoses": [
+      "nonlocal vorticity-direction coherence, not pointwise alignment, is the missing geometric object",
+      "exact advection/pressure interactions generate a trajectory-level depletion unavailable to static fields",
+      "finite-energy/global localization constrains exact aligned flows strongly enough to prevent persistent concentration",
+      "a different frequency-local or pressure-tail coordinate is load-bearing"
+    ],
+    "selected_diagnosis": "local alignment is a descriptive coordinate, not a sufficient bridge; the next method basis must couple exact trajectory dynamics to global finite-energy/localization and retain nonlocal structure",
+    "diagnosis_status": "SUPPORTED",
+    "evidence_pointers": [
+      "research/real_math/millennium/navier_stokes/01_frontier/NS_R001B_STRAIN_VORTICITY_ATLAS_20260811.md",
+      "tests/test_navier_stokes_r001b_geometry_atlas.py",
+      "research/real_math/millennium/navier_stokes/09_trace/NS_R001B_GEOMETRY_TRACE_20260811.json"
+    ],
+    "falsifier_or_attempt": "paired A2/A3 calibration using the exact linear core S0=diag(-1/2,-1/2,1), omega parallel e3: compact-support curl localization for finite energy and b(t)=b0 e^t linear exact Navier-Stokes flow for exact dynamics",
+    "observed_result": "A2 preserves strong local positive alignment under finite-energy concentration without being a trajectory; A3 preserves the same alignment under exact Navier-Stokes evolution without finite energy; neither missing assumption can be ignored",
+    "local_repair_attempts": [
+      "open NS-R001d around exact advection-depletion plus finite-energy/global-localization",
+      "retain Constantin-Fefferman-type nonlocal coherence as a separate live route rather than equating it with pointwise alignment"
+    ],
+    "timestamp": "2026-08-11T06:59:55+00:00",
+    "artifact_hash": "sha256:77f3874811e1b96e03c7db2e0c3d34441f06ac235cc7ba77a45b14a79fcbba1e"
+  },
+  "links": [
+    {
+      "source_id": "F-NS-R001B-LOCAL-GEOMETRY-SCOPE-GAP",
+      "target_id": "F-NS-R001-A1-ENERGY-CRITICALITY",
+      "relation": "SHARES_BROKEN_ASSUMPTION_WITH",
+      "rationale": "A1 showed energy-only control omits an equation-specific critical coordinate; A2/A3 shows adding local geometry still omits the joint exact-dynamics plus finite-energy/global-localization coordinate.",
+      "evidence_pointers": [
+        "research/real_math/millennium/navier_stokes/01_frontier/NS_R001_ENERGY_CRITICAL_ATLAS_20260811.md",
+        "research/real_math/millennium/navier_stokes/01_frontier/NS_R001B_STRAIN_VORTICITY_ATLAS_20260811.md"
+      ]
+    },
+    {
+      "source_id": "F-NS-R001B-LOCAL-GEOMETRY-SCOPE-GAP",
+      "target_id": "NS-R001d",
+      "relation": "MOTIVATES_META_ATOM",
+      "rationale": "The paired calibration isolates a sharper child obstruction: any useful depletion quantity must bind exact trajectory dynamics to finite-energy/global localization and nonlocal structure.",
+      "evidence_pointers": [
+        "research/real_math/millennium/navier_stokes/09_trace/NS_R001B_GEOMETRY_TRACE_20260811.json"
+      ]
+    }
+  ]
+}
