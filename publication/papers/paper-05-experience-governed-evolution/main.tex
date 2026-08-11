@@ -1,0 +1,61 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{xurl}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{remark}{Remark}
+\newcommand{\RAKL}{\textsc{RAKL}}
+\newcommand{\TaskEpisode}{\texttt{TaskEpisode}}
+\newcommand{\Lesson}{\texttt{Lesson}}
+\newcommand{\CANNOTCHECK}{\texttt{CANNOT\_CHECK}}
+
+\title{From Experience to Method: Evidence-Governed Continual Evolution of LLM Research Systems}
+\author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}
+\date{11 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Long-running large-language-model research agents produce more than candidate answers. They generate longitudinal evidence about how research is conducted: which representations are chosen, which prior experiences are retrieved or missed, which methods are repeated, where local results fail to connect to a root problem, and how verification or provenance defects alter the trajectory. Existing work has shown that agents can learn from episodic memory, induce reusable workflows and skills, and modify their own code, while recent behavioural studies show that workflow design can materially shape autonomous research. We ask a stricter question: \emph{can the research method itself evolve from these trajectories under an evidence regime that prevents the system from certifying its own improvement?}
+
+We introduce \RAKL{} v3 as a persistent external research substrate in which immutable task episodes, versioned lessons, failures, operators, strategy motifs, problem-conditioned fibres, gluing obstructions and meta-method variants are overlapping views of one typed state. Experience may change future search priority, but cannot by itself mint theorem, tool, gluing or framework authority. We use a live multi-agent programme spanning six unsolved Millennium Prize Problems as a longitudinal case study. Early retrospective observations identify recurring process pathologies including missed cross-problem memory, surrogate quantities that do not preserve root-critical coordinates, locally valid lemmas with unresolved interface obligations, source-completeness failures, chronology repairs and evaluator/CI identity drift. These observations are hypothesis-generating case evidence, not proof that the framework has improved.
+
+To make learning and recursive improvement measurable, we define a seven-axis retained-growth vector over knowledge, operators, experience patterns, obstructions, relations, successful paths and meta-methods; per-process telemetry for the full RAKL method surface; experience-to-lesson/tool conversion and repeated-failure metrics; and a four-arm causal-attribution benchmark comparing the same base model under \texttt{MODEL\_ONLY}, static \texttt{RAKL\_RESET}, budget-matched \texttt{RAKL\_SHAM\_MEMORY} and persistent \texttt{RAKL\_LEARNING} conditions. This separates static architecture lift, continual-experience lift and memory-content-specific lift rather than crediting every successful RAKL-assisted run to the framework.
+
+We further specify a governed upgrade protocol for \RAKL{} 3.x. Framework changes are classified as implementation, workflow or constitutional changes; challengers are content-identified and evaluated against frozen parent states, model/tool contracts and resource ceilings; fresh transfer tasks are hidden from the proposer; evaluators and thresholds are protected from candidate modification within an evaluation epoch; previous variants remain rollback targets; operator overrides are recorded without receiving evolution-evidence credit; and post-promotion attestation is separated from pre-promotion authorization. A repository-native Codex harness routes coding agents from a concise instruction map to a machine-readable method-state manifest, the upgrade protocol, metrology contracts and protected gates.
+
+The present paper therefore contributes the deployed v3 experience substrate and longitudinal case-study methodology together with a proposal-only, executable Paper 5 challenger containing metrology, causal-attribution and upgrade-governance instrumentation plus a preregistered evaluation programme. It does not yet claim that \RAKL{} 3.1 or later outperforms 3.0 on fresh research tasks; that claim is reserved for prospective matched and protected assurance evidence.
+\end{abstract}
+
+\input{sections/01_problem_and_claim}
+\input{sections/02_observatory_and_data_model}
+\input{sections/02a_terminology_and_measurement_scope}
+\input{sections/03_pilot_case_study}
+\input{sections/04_experience_to_method_architecture}
+\input{sections/04a_implementation_status}
+\input{sections/05_governed_upgrade_protocol}
+\input{sections/06_codex_and_repository_harness}
+\input{sections/07_evaluation_and_statistics}
+\label{sec:evaluation}
+\input{sections/08_security_governance_and_rollback}
+\input{sections/09_related_work_and_novelty}
+\input{sections/10_threats_to_validity_and_falsifiers}
+\input{sections/11_roadmap_rakl_31_32}
+\input{sections/12_discussion_and_conclusion}
+
+\section*{Code, data, materials and AI-use disclosure}
+The public framework and manuscript sources are maintained at \url{https://github.com/SzeChunYiu/RAKL}; the mathematical application case-study artifacts are maintained separately at \url{https://github.com/SzeChunYiu/RAKL_math}. Research agents, coding agents and language models were used as proposal, implementation, literature-search and drafting tools. They are not represented as independent reviewers, human experts or authors. Public research traces are auditable decision records, not disclosures of hidden model chain-of-thought. The longitudinal mathematical programme studies unsolved problems and carries no claim that any Millennium Prize Problem has been solved unless a separate root certificate satisfies the applicable proof, dependency, novelty and independent-review gates. Prospective evaluation quantities that have not yet been measured are marked as preregistered targets or placeholders rather than reported as results.
+
+\input{sections/99_references}
+\end{document}

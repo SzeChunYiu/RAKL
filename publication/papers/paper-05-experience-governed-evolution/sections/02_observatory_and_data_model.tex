@@ -1,0 +1,119 @@
+\section{A longitudinal observatory for machine research}
+
+\subsection{The live mathematical case study}
+
+The observational substrate is a live research programme in \texttt{SzeChunYiu/RAKL\_math}. The repository is deliberately separated from the reusable \RAKL{} framework repository. The application repository contains problem contracts, context fibres, research DAGs, source packets, candidate artifacts, falsifiers, reviews, traces and problem-specific tests for six unsolved Millennium Prize Problems: P versus NP, the Riemann Hypothesis, Navier--Stokes existence and smoothness, Yang--Mills existence and mass gap, the Hodge Conjecture, and the Birch and Swinnerton--Dyer Conjecture. A cross-problem lane studies transfer and recurring process failures across these domains.
+
+At the initial Paper 5 freeze, the active scheduled programme contains nine hourly research lanes: P versus NP; an analytic Riemann-Hypothesis lane; Navier--Stokes regularity and blow-up lanes; constructive and spectral/RG Yang--Mills lanes; a Hodge deformation lane; an analytic BSD lane; and a cross-Millennium transfer/meta-observer lane. Complementary spectral RH, motive-oriented Hodge and Selmer/Iwasawa BSD lanes are preserved but paused. The schedule is an operational fact, not a claim of nine independent replicates. All lanes share repository state and can influence one another through persistent memory, so statistical analyses must treat them as coupled longitudinal processes.
+
+Every application run is instructed to read current \RAKL{} \texttt{main} as the framework source of truth, while new mathematical application work remains in \texttt{RAKL\_math}. This split serves two purposes. First, problem evidence does not silently become framework authority. Second, a framework defect exposed by one domain can be opened as a separate \RAKL{} issue and evaluated as a method hypothesis rather than patched inside the mathematical result that exposed it.
+
+\subsection{Observation is not hidden reasoning disclosure}
+
+The observatory does not attempt to reconstruct private model chain-of-thought. The recorded object is an auditable scientific decision trace: problem state, retrieved evidence, proposed action, executed tools, observable result, verification, residual and next action. This distinction is methodologically important. A reproducible research record need not contain the inaccessible or potentially unstable private reasoning process that generated a proposal.
+
+\begin{definition}[Task episode]
+A task episode is an immutable externally observable record
+\[
+E=(p,a,c,F,O,\tau,V,y,r,\kappa,t,h),
+\]
+where $p$ is the problem/atom identity, $a$ the active atomic target, $c$ the context identity, $F$ the problem-fibre snapshot, $O$ the operators or methods attempted, $\tau$ the public action/observation trace, $V$ the verification evidence, $y$ the outcome, $r$ the residual signature, $\kappa$ a resource/cost record, $t$ the timestamp and $h$ the content identity.
+\end{definition}
+
+A non-success outcome should carry an explicit residual or blocker. The raw episode is never replaced by a later reflection summary.
+
+\subsection{Episode, diagnosis and lesson are different objects}
+
+A central design decision is
+\[
+\boxed{\text{episode} \neq \text{diagnosis} \neq \text{obstruction} \neq \text{lesson}}.
+\]
+An episode records what happened. A diagnosis proposes why it happened. An obstruction generalizes a supported boundary that may apply elsewhere. A lesson proposes a reusable action under explicit triggers and scope conditions. Conflating these stages causes a familiar failure in autonomous agents: a fluent post-hoc explanation is treated as a verified causal rule.
+
+A versioned lesson therefore records
+\[
+L=(g,c,a,e,b,S^+,S^-,f,\alpha,\nu,h_L),
+\]
+with trigger $g$, scope $c$, proposed action $a$, expected effects $e$, boundaries $b$, supporting and contradicting episodes $S^+,S^-$, a falsifier $f$, authority $\alpha$, validation obligations $\nu$ and content identity $h_L$. Reusable promotion requires evidence beyond reflection. Raw episodes remain evidence roots even when a lesson becomes useful.
+
+\subsection{Problem-conditioned fibres}
+
+A research agent should not retrieve the entire archive for every action. For active problem atom $A$ under context $c$, \RAKL{} compiles a problem-conditioned fibre
+\[
+\mathcal F(A\mid P,c)=
+(K_A,O_A,E_A,B_A,M_A,X_A),
+\]
+where $K_A$ contains epistemic items, $O_A$ applicable tools/operators, $E_A$ analogous episodes, $B_A$ failures and boundary warnings, $M_A$ strategy motifs, and $X_A$ expertise or unresolved warnings. Co-retrieval does not imply compatibility or authority.
+
+The fibre snapshot is important for retrospective method analysis. If a relevant item existed in the bound search universe but was not retrieved, the failure is different from a case in which the item was not present. If the item was retrieved but rejected, the rejection rationale becomes part of the observable decision record.
+
+\subsection{Local results and gluing failures}
+
+Many difficult research episodes do not fail inside a local lemma. They fail because locally valid pieces cannot be assembled into a root result. \RAKL{} represents this explicitly. A decomposition produces problem atoms with dependencies and optional interface keys. Local sections can be verified independently, but a global solution requires complete coverage, dependency closure and compatibility on shared interfaces.
+
+We therefore distinguish
+\[
+\text{local mathematical failure}
+\]
+from
+\[
+\text{gluing/interface failure}.
+\]
+The latter includes missing uniformity across scales, a theorem whose hypotheses are not inherited by the target limit, a representation that does not preserve a root-critical coordinate, or a proof component that is true only in a different category. Failed gluing is itself an experience record and can become a recurring obstruction family.
+
+\subsection{Vector saturation}
+
+Repeated unsuccessful search should not be summarized as ``stuck.'' The v3 saturation state tracks bounded novelty across seven coordinates:
+\[
+\operatorname{Sat}(R,D)=
+(S_K,S_O,S_E,S_B,S_R,S_P,S_M),
+\]
+corresponding to knowledge, operator, experience-pattern, obstruction, relation, path and meta-method novelty. An axis is considered bounded-flat only under a registered search window with sufficient independent route coverage, no retained novelty on that axis and no native residual that reopens it. Saturation never licenses an absolute completeness claim.
+
+The observatory records which axis was reopened after a consequential episode. This permits later questions such as whether an agent wastes cycles by continuing to search the knowledge axis when the stable residual is representational or relational.
+
+\subsection{Structural novelty of a solved subproblem}
+
+A verified local result can be classified by the strongest genuinely new problem-solving structure required:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Class & Interpretation \\
+\midrule
+\texttt{STORED} & exact verified solution already registered \\
+\texttt{RAKL\_TRIVIAL} & composition of existing resources/operators \\
+\texttt{TRANSFER\_NOVEL} & new application of existing structure with mapping witness \\
+\texttt{REPRESENTATION\_NOVEL} & new representation/bridge/invariant required \\
+\texttt{OPERATOR\_NOVEL} & genuinely new transformation/operator required \\
+\texttt{ONTOLOGY\_NOVEL} & schema/ontology extension required \\
+\texttt{UNRESOLVED} & verification or ancestry insufficient \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This classification supports an empirical question that cannot be answered from final problem labels alone: what fraction of useful research progress requires genuinely new problem-solving primitives, and what fraction is retrieval, transfer, recomposition, representation repair or gluing?
+
+\subsection{Method-case telemetry}
+
+For Paper 5, each new consequential research cycle is instructed to emit a bounded \texttt{RAKL\_METHOD\_CASE\_STUDY} record. The record contains:
+
+\begin{itemize}[leftmargin=*]
+\item the research method or operator sequence actually used;
+\item which prior successes and failures affected routing;
+\item relevant items retrieved but rejected, and relevant items later discovered to have been missed;
+\item the chosen falsifier or verification action;
+\item outcome and residual;
+\item whether the failure is primarily mathematical, retrieval, decomposition, representation, gluing, source/provenance, verification, tooling/CI or meta-policy;
+\item the saturation coordinate reopened;
+\item the strongest defensible novelty class;
+\item a framework-improvement hypothesis, if one is warranted, with a cheapest prospective discriminator.
+\end{itemize}
+
+The method-case record is an observational layer. It does not authorize a framework change.
+
+\subsection{Human and infrastructure interventions}
+
+The longitudinal study also records exogenous interventions. Examples include manual schedule-prompt changes, human merge overrides, model/tool upgrades, CI changes and repository migrations. Without an intervention ledger, a later performance change can be falsely attributed to experience learning when it actually came from a stronger base model or a changed tool surface.
+
+Accordingly, a version comparison should bind at least model identity/revision, system-prompt or harness identity, tool policy, resource ceilings, repository state and evaluator identity. If a provider changes an unpinnable model behind an endpoint, comparisons spanning that change are treated as a new observational epoch unless a paired same-time control can recover comparability.
