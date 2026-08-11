@@ -406,6 +406,32 @@ def test_public_verifier_rejects_full_chain_score_summary_divergence(
         BUILDER_MODULE.verify_ingest_receipt(receipt, root=root)
 
 
+@pytest.mark.parametrize("job_id", ["3475212", "3476520", "3476521", "3476524"])
+def test_v4_1_tip_job_ingest_receipts_verify_against_committed_bundles(
+    job_id: str,
+) -> None:
+    """Tip-job transport bundles must stay byte-exact with their ingest receipts.
+
+    #192 landed tip ingest receipts whose source_bundle SHA/size must match the
+    committed tar.gz files; a mismatched materialized tarball must fail closed.
+    """
+    receipt_path = V41 / f"PAPER2_V4_1_NATIVE_JOB_{job_id}_INGEST_RECEIPT_20260811.json"
+    receipt = _load(receipt_path)
+    _validator(SCHEMA).validate(receipt)
+    BUILDER_MODULE.verify_ingest_receipt(receipt, root=ROOT)
+    assert receipt["native_execution"]["slurm_job_id"] == job_id
+    assert receipt["native_execution"]["governed_harvest_verdict"] == (
+        "HARVEST_V4_1_TASK_SEED_PASS_NONCONFIRMATORY"
+    )
+    assert receipt["verdict"] == (
+        "NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__"
+        "COMPARISON_NOT_ESTIMABLE"
+    )
+    assert receipt["task_seed_outcome"]["exact_conceptual_pass_arm_count"] == 0
+    assert receipt["task_seed_outcome"]["valid_scientific_success_arm_count"] == 0
+    assert receipt["quantitative_figure_generated"] is False
+
+
 def test_v4_1_scheduler_checkout_snapshot_and_hash_lineage_pass() -> None:
     receipt = _load(INGEST)
     native = receipt["native_execution"]
