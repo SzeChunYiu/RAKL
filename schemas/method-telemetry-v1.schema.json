@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/method-telemetry-v1.schema.json",
+  "title": "RAKL method telemetry v1",
+  "description": "Proposal-only typed decision record for one TaskEpisode, held as a SEPARATE object linked immutably to that episode so raw observation and interpretation stay separable and the evidence root keeps a stable content hash. Records reproducible decision variables only: ids, manifests, single-line bounded rationales, evidence pointers, outcomes, residuals and policy metadata. It carries no private reasoning transcript and mints no theorem, tool, gluing, review-independence or framework authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "telemetry_id",
+    "episode_id",
+    "episode_artifact_hash",
+    "fibre_snapshot_hash",
+    "public_trace_event_id",
+    "failure_class",
+    "gluing_status",
+    "next_action_id",
+    "claim_boundary",
+    "consulted_fibre_items",
+    "routing_influences",
+    "rejected_candidates",
+    "considered_alternatives",
+    "search_policy_decision",
+    "saturation_axis_deltas",
+    "reopened_axis_ids",
+    "structural_novelty",
+    "child_atom_id",
+    "coverage_receipt_id",
+    "coverage_receipt_hash",
+    "failure_evidence_pointers",
+    "evidence_pointers",
+    "artifact_hash",
+    "contains_private_reasoning_transcript",
+    "grants_chain_of_thought_disclosure",
+    "grants_theorem_authority",
+    "grants_tool_promotion",
+    "grants_gluing_authority",
+    "grants_review_independence"
+  ],
+  "properties": {
+    "schema_version": {"const": "method-telemetry-v1"},
+    "telemetry_id": {"$ref": "#/$defs/identifier"},
+    "episode_id": {"$ref": "#/$defs/identifier"},
+    "episode_artifact_hash": {
+      "description": "Opaque bound identifier of the episode artifact. Its format is the episode object's contract, not this object's; it is compared for equality and never reinterpreted here.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "fibre_snapshot_hash": {"type": "string", "minLength": 1, "maxLength": 256},
+    "public_trace_event_id": {"$ref": "#/$defs/identifier"},
+    "failure_class": {
+      "description": "NO_FAILURE_OBSERVED is checked and clean; UNCLASSIFIED_FAILURE records that a failure occurred and was not attributed. They are not interchangeable.",
+      "enum": [
+        "MATHEMATICAL",
+        "DECOMPOSITION",
+        "RETRIEVAL",
+        "REPRESENTATION",
+        "BRIDGE_GLUING",
+        "SOURCE_PROVENANCE",
+        "VERIFICATION",
+        "TOOLING_CI",
+        "META_POLICY",
+        "NO_FAILURE_OBSERVED",
+        "UNCLASSIFIED_FAILURE"
+      ]
+    },
+    "gluing_status": {
+      "enum": [
+        "LOCAL_ONLY",
+        "GLUED_TO_GLOBAL",
+        "GLUING_OBSTRUCTED",
+        "GLUING_NOT_ASSESSED"
+      ]
+    },
+    "next_action_id": {"$ref": "#/$defs/identifier"},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "consulted_fibre_items": {
+      "description": "Fibre items actually opened, not only the aggregate snapshot hash.",
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "item_hash"],
+        "properties": {
+          "item_id": {"$ref": "#/$defs/identifier"},
+          "item_hash": {"type": "string", "minLength": 1, "maxLength": 256}
+        }
+      }
+    },
+    "routing_influences": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reference_id", "effect_on_routing", "evidence_pointer"],
+        "properties": {
+          "kind": {"enum": ["PRIOR_TOOL", "PRIOR_FAILURE", "PRIOR_EPISODE"]},
+          "reference_id": {"$ref": "#/$defs/identifier"},
+          "effect_on_routing": {"$ref": "#/$defs/boundedRationale"},
+          "evidence_pointer": {"type": "string", "minLength": 1, "maxLength": 1024}
+        }
+      }
+    },
+    "rejected_candidates": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "rejection_reason", "evidence_pointer"],
+        "properties": {
+          "candidate_id": {"$ref": "#/$defs/identifier"},
+          "rejection_reason": {"$ref": "#/$defs/boundedRationale"},
+          "evidence_pointer": {"type": "string", "minLength": 1, "maxLength": 1024}
+        }
+      }
+    },
+    "considered_alternatives": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["alternative_id", "kind", "not_selected_because"],
+        "properties": {
+          "alternative_id": {"$ref": "#/$defs/identifier"},
+          "kind": {"type": "string", "minLength": 1, "maxLength": 128},
+          "not_selected_because": {"$ref": "#/$defs/boundedRationale"}
+        }
+      }
+    },
+    "search_policy_decision": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_id",
+            "policy_version",
+            "selected_action_id",
+            "selection_rule",
+            "expected_discriminator"
+          ],
+          "properties": {
+            "policy_id": {"$ref": "#/$defs/identifier"},
+            "policy_version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "selected_action_id": {"$ref": "#/$defs/identifier"},
+            "selection_rule": {"$ref": "#/$defs/boundedRationale"},
+            "expected_discriminator": {"$ref": "#/$defs/boundedRationale"}
+          }
+        }
+      ]
+    },
+    "saturation_axis_deltas": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["axis_id", "before", "after", "reopened"],
+        "properties": {
+          "axis_id": {"$ref": "#/$defs/identifier"},
+          "before": {"type": "number"},
+          "after": {"type": "number"},
+          "reopened": {"type": "boolean"}
+        }
+      }
+    },
+    "reopened_axis_ids": {
+      "description": "Derived view of saturation_axis_deltas; the runtime refutes any disagreement between the two.",
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identifier"}
+    },
+    "structural_novelty": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["measure_id", "score", "baseline_reference", "method_reference"],
+          "properties": {
+            "measure_id": {"$ref": "#/$defs/identifier"},
+            "score": {"type": "number"},
+            "baseline_reference": {"type": "string", "minLength": 1, "maxLength": 512},
+            "method_reference": {"type": "string", "minLength": 1, "maxLength": 512}
+          }
+        }
+      ]
+    },
+    "child_atom_id": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]
+    },
+    "coverage_receipt_id": {
+      "description": "Optional link to a research-memory-coverage-v1 receipt. Coverage semantics are that object's contract and are never re-implemented here.",
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]
+    },
+    "coverage_receipt_hash": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "failure_evidence_pointers": {"$ref": "#/$defs/pointerArray"},
+    "evidence_pointers": {"$ref": "#/$defs/pointerArray"},
+    "artifact_hash": {
+      "oneOf": [{"const": ""}, {"$ref": "#/$defs/sha256"}]
+    },
+    "contains_private_reasoning_transcript": {"const": false},
+    "grants_chain_of_thought_disclosure": {"const": false},
+    "grants_theorem_authority": {"const": false},
+    "grants_tool_promotion": {"const": false},
+    "grants_gluing_authority": {"const": false},
+    "grants_review_independence": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "minLength": 1, "maxLength": 512},
+    "boundedRationale": {
+      "description": "A single-line bounded decision record. The pattern forbids line breaks and control whitespace, so no field of this object can hold a multi-step reasoning transcript.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\r\\n\\v\\f\\t\\u001c-\\u001e\\u2028\\u2029]+$"
+    },
+    "pointerArray": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    }
+  }
+}
