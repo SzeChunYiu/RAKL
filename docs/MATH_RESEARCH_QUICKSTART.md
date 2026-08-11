@@ -63,9 +63,9 @@ context = MathContextFiber(
 
 If a useful everyday analogy exists, store it as `CrossDomainAnalogy`. It must map source roles to target roles, state the common abstraction and shared constraints, list disanalogies, propose a transferable principle, and define a mathematical validation/falsification obligation. An analogy is a proposal source, not evidence.
 
-## 3. Record the public research trace
+## 3. Record the public research trace and expert context review
 
-The context packet alone is not enough. Record what the atomization produced and why the next action is being attempted.
+The context packet alone is not enough. Record what atomization produced, what the role-separated expert cell objected to, and why the next action is being attempted.
 
 ```python
 from rakl.research_trace import (
@@ -79,10 +79,13 @@ kinds = (
     ResearchTraceEventType.CONTEXT_FROZEN,
     ResearchTraceEventType.ANALOGY_SCAN,
     ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
+    ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
     ResearchTraceEventType.NEXT_STEP_PROPOSED,
 )
 entries = []
+previous_hash = ""
 for i, kind in enumerate(kinds, start=1):
+    artifact_hash = f"sha256:event-{i}"
     entries.append(
         ResearchTraceEntry(
             event_id=f"event-{i}",
@@ -91,14 +94,19 @@ for i, kind in enumerate(kinds, start=1):
             timestamp=f"2026-08-11T04:0{i}:00+00:00",
             state_summary="current public research state",
             action_summary="bounded action taken at this step",
-            evidence_pointers=("sha256:context-packet",) if kind is ResearchTraceEventType.CONTEXT_FROZEN else (f"artifact:{i}",),
+            evidence_pointers=("sha256:context-packet",)
+            if kind is ResearchTraceEventType.CONTEXT_FROZEN
+            else (f"artifact:{i}",),
             alternatives_considered=("alternative A", "alternative B"),
             decision_rationale="concise evidence-grounded reason for selecting this next action",
+            outputs=(f"output:{i}",),
             uncertainties=("remaining uncertainty",),
             next_steps=("next atomic action",),
-            artifact_hash=f"sha256:event-{i}",
+            artifact_hash=artifact_hash,
+            previous_event_hash=previous_hash,
         )
     )
+    previous_hash = artifact_hash
 trace = MathResearchTrace(trace_id="trace-001", entries=tuple(entries))
 
 plan = plan_math_research(
@@ -110,7 +118,9 @@ plan = plan_math_research(
 assert plan.candidate_generation_allowed
 ```
 
-The trace is an auditable scientific decision ledger, **not raw hidden chain-of-thought**. It should let another researcher reconstruct what was known, what alternatives were considered, what was selected, what evidence supported the choice, what remained uncertain and what came next.
+`EXPERT_CONTEXT_REVIEW` should summarize at least five same-context roles: domain/theory, analogy/method transfer, adversarial falsification, formal methods/verifier trust, and novelty/research value. Preserve disagreements and unresolved uncertainty. These roles are not independent peer review.
+
+The trace is an auditable scientific decision ledger, **not raw hidden chain-of-thought**. It should let another researcher reconstruct what was known, what alternatives were considered, what was selected, what evidence supported the choice, what remained uncertain and what came next. Hash chaining makes silent insertion/reordering detectable.
 
 Machine-readable contracts:
 
@@ -119,7 +129,7 @@ Machine-readable contracts:
 
 ## 4. Generate, falsify and record candidates
 
-Only now may the LLM propose proof ideas, invariants or constructions. Append `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED` and `RESIDUAL_OPENED` events as applicable. Failed candidates remain permanent negative history.
+Only now may the LLM propose proof ideas, invariants or constructions. Append `CANDIDATE_PROPOSED`, `FALSIFIER_RUN`, `RESULT_RECORDED` and `RESIDUAL_OPENED` events as applicable. Failed candidates remain permanent negative history. The full trace may be checked with `audit_research_trace`.
 
 ## 5. Bind the intended claim to a formal statement
 
