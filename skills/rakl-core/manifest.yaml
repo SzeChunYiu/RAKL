@@ -1,4 +1,4 @@
-version: 0.6.3
+version: 0.6.4
 
 always_load:
   - static/core/principles.md
@@ -65,6 +65,7 @@ workflow_composition:
       - run-cross-domain-and-everyday-analogy-scan
       - build-method-transfer-matrix
       - run-role-separated-expert-context-review
+      - review-global-failure-experience-lattice
       - record-auditable-pre-candidate-trace
       - hash-chain-trace-chronology
       - freeze-context-and-trace-chronology
@@ -83,6 +84,7 @@ workflow_composition:
       - perspective-discovery
       - mathematical-research
       - mechanism-invention
+      - self-rakl
   mechanism-invention:
     recommended_pre_steps:
       - failure-diagnosis
@@ -102,6 +104,8 @@ invention_resources:
   proof_dag: src/rakl/proof_dag.py
   mathematical_context_gate: src/rakl/math_context.py
   mathematical_research_trace: src/rakl/research_trace.py
+  failure_experience_lattice: src/rakl/failure_lattice.py
+  metacognitive_gap_auditor: src/rakl/metacognition.py
   mathematical_research_runtime: src/rakl/math_research_runtime.py
   mathematical_research_api: src/rakl/math_research_api.py
   dimensional_oracle: src/rakl/math_oracles.py
@@ -120,6 +124,12 @@ invariants:
   - everyday_analogy_is_proposal_only
   - role_separated_expert_context_review_before_candidate
   - same_context_expert_roles_are_not_independent_review
+  - global_failure_memory_review_before_new_candidate
+  - failure_observation_is_not_automatically_failure_cause
+  - local_failure_never_globally_blacklists_a_method
+  - method_reuse_requires_scope_or_difference_witness_when_prior_failure_is_relevant
+  - only_verified_impossibility_can_globally_block_within_its_registered_scope
+  - repeated_unclassified_failures_may_open_ontology_or_method_basis_gap
   - context_packet_chronology_precedes_candidate
   - auditable_research_trace_precedes_candidate
   - research_trace_hash_chain_is_tamper_evident
@@ -170,3 +180,4 @@ schemas:
   formalism: ../../schemas/formalism.schema.json
   mathematical_context_fiber: ../../schemas/math-context-fiber.schema.json
   mathematical_research_trace: ../../schemas/math-research-trace.schema.json
+  failure_experience_lattice: ../../schemas/failure-experience-lattice.schema.json
