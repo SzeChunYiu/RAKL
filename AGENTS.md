@@ -131,13 +131,16 @@ For any task that may change RAKL framework behavior, research workflow, authori
 
 1. read `RAKL_VERSION.json` if present;
 2. read `docs/RAKL_UPGRADE_PROTOCOL.md`;
-3. inspect the affected contract in `src/rakl/method_specs.py` and the relevant protected gates;
-4. classify the change as Class A implementation, Class B workflow/method, or Class C constitution **before editing**;
-5. for Class B/C changes, freeze the upgrade hypothesis, predicted meta-QoIs, evaluator/benchmark identity, negative controls and rollback plan before evaluated outcomes;
-6. implement on a challenger branch/PR and preserve the exact parent/candidate identity;
-7. never interpret deployment, a green badge from another SHA, a caller-supplied authority Boolean, same-session review, or the candidate's own evaluation narrative as promotion evidence;
-8. never change a protected evaluator/threshold/assurance packet in the same challenger that it judges unless a separately governed evaluator migration has been frozen;
-9. require fresh assurance for a strong method-evolution claim and keep exposed assurance packets out of later strong claims;
-10. after any promotion, separately attest that active `main` contains the approved content and passes exact-active-main validation.
+3. read `docs/RAKL_METROLOGY.md` and freeze the affected process/meta-QoI measurements before evaluating a Class-B/C challenger;
+4. inspect the affected contract in `src/rakl/method_specs.py` and the relevant protected gates;
+5. classify the change as Class A implementation, Class B workflow/method, or Class C constitution **before editing**;
+6. for Class B/C changes, freeze the upgrade hypothesis, predicted meta-QoIs, evaluator/benchmark identity, negative controls and rollback plan before evaluated outcomes;
+7. implement on a challenger branch/PR and preserve the exact parent/candidate identity;
+8. never interpret deployment, a green badge from another SHA, a caller-supplied authority Boolean, same-session review, or the candidate's own evaluation narrative as promotion evidence;
+9. never change a protected evaluator/threshold/assurance packet in the same challenger that it judges unless a separately governed evaluator migration has been frozen;
+10. require fresh assurance for a strong method-evolution claim and keep exposed assurance packets out of later strong claims;
+11. after any promotion, separately attest that active `main` contains the approved content and passes exact-active-main validation.
+
+For consequential research/framework runs, record enough measurement state to compare pre/post behavior: exact method/Git version, state fingerprints, process surfaces invoked, fibre/retrieval identities, outcome, residual transformation, resources, retained novelty vector, new episodes/lessons/failures/tools, saturation changes and gate/provenance status. Raw repository growth is not evidence of learning.
 
 A direct operator instruction may override this process operationally. Record such an event as an explicit operator/process override. It may move code, but it does not create Self-RAKL evolution evidence by itself.
