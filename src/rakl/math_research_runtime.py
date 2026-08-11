@@ -3,6 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple
 
+from .math_context import (
+    REQUIRED_PRE_CANDIDATE_ACTIONS,
+    ContextGateReport,
+    ContextGateVerdict,
+    MathContextFiber,
+    audit_math_context_fiber,
+)
 from .math_research_assurance import (
     AssuranceReport,
     AssuranceVerdict,
@@ -30,10 +37,19 @@ class MathResearchPlan:
     planning_state: ProblemState
     candidate_paths: Tuple[PathCandidate, ...]
     next_blockers: Tuple[ObstructionKind, ...]
+    context_gate: ContextGateReport
+    pre_candidate_actions: Tuple[str, ...]
+    candidate_generation_allowed: bool
 
 
-def _facts_from_record(record: MathResearchRecord) -> frozenset[str]:
+def _facts_from_record(
+    record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
+) -> frozenset[str]:
     facts: set[str] = set()
+    if audit_math_context_fiber(context_fiber).verdict is ContextGateVerdict.PASS:
+        facts.add("context_fiber_frozen")
+        facts.add("analogue_method_transfer_mapped")
     if record.computational_support:
         facts.add("counterexample_screen_complete")
     if record.formalization is not None:
@@ -71,7 +87,7 @@ def _obstructions_from_record(record: MathResearchRecord) -> frozenset[Obstructi
     if proof.verdict is not AssuranceVerdict.PASS:
         blockers.add(ObstructionKind.PROOF_GAP)
 
-    # Novelty and value are deliberately downstream of proof authority.  They
+    # Novelty and value are deliberately downstream of proof authority. They
     # remain visible as future blockers so the path planner can expose the full
     # publication route, but cannot compensate for the proof blocker.
     novelty = audit_novelty(record.novelty)
@@ -86,11 +102,12 @@ def derive_planning_state(
     *,
     signature: ProblemSignature,
     record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
 ) -> ProblemState:
     return ProblemState(
         state_id=record.claim_id,
         signature=signature,
-        facts=_facts_from_record(record),
+        facts=_facts_from_record(record, context_fiber),
         obstructions=_obstructions_from_record(record),
     )
 
@@ -99,29 +116,54 @@ def plan_math_research(
     *,
     signature: ProblemSignature,
     record: MathResearchRecord,
+    context_fiber: MathContextFiber | None = None,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
     top_k: int = 8,
 ) -> MathResearchPlan:
-    """Compile assurance status into obstruction-guided candidate research paths.
+    """Compile assurance status into obstruction-guided research paths.
 
-    The returned paths are planning objects only.  Canonical theorem/novelty
-    authority is still determined exclusively by ``classify_math_record``.
+    Candidate generation is fail-closed behind the mathematical context gate.
+    Until a context fiber records the active atom, structural coordinates,
+    equivalent formulations, solved/near-solved analogues, method-transfer
+    assumptions, disanalogies, repair questions, source anchors and pre-candidate
+    chronology, this function returns no mathematical candidate paths. It returns
+    only the required context-building actions.
+
+    Once the context gate passes, returned paths are still planning objects only.
+    Canonical theorem/novelty authority remains determined by the assurance layer.
     """
 
     assurance = classify_math_record(record)
-    state = derive_planning_state(signature=signature, record=record)
-    paths = search_operator_paths(
-        state,
-        operators,
-        max_depth=max_depth,
-        top_k=top_k,
+    context_gate = audit_math_context_fiber(context_fiber)
+    state = derive_planning_state(
+        signature=signature,
+        record=record,
+        context_fiber=context_fiber,
     )
+
+    if context_gate.verdict is not ContextGateVerdict.PASS:
+        paths: Tuple[PathCandidate, ...] = ()
+        pre_candidate_actions = REQUIRED_PRE_CANDIDATE_ACTIONS
+        candidate_generation_allowed = False
+    else:
+        paths = search_operator_paths(
+            state,
+            operators,
+            max_depth=max_depth,
+            top_k=top_k,
+        )
+        pre_candidate_actions = ()
+        candidate_generation_allowed = True
+
     return MathResearchPlan(
         assurance=assurance,
         planning_state=state,
         candidate_paths=paths,
         next_blockers=tuple(sorted(state.obstructions, key=lambda item: item.value)),
+        context_gate=context_gate,
+        pre_candidate_actions=pre_candidate_actions,
+        candidate_generation_allowed=candidate_generation_allowed,
     )
 
 
