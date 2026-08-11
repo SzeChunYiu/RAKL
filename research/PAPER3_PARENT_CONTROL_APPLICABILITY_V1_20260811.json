@@ -1,0 +1,68 @@
+{
+  "claim_boundary": "Applicability freeze only; no parent baseline has been executed or reproduced, and a style-labelled approximation must not be reported as a faithful parent reproduction.",
+  "frozen_at_utc": "2026-08-11T04:05:38Z",
+  "frozen_before_external_labels_visible": true,
+  "object": "Fair matched parent controls for Paper 3 training-data selection and inference-time workflow transfer.",
+  "parents": [
+    {
+      "applicable_phases": [
+        "training_data_selection"
+      ],
+      "current_execution_status": "NOT_RUN",
+      "full_fidelity_requirements": [
+        "Freeze skill definitions and evaluation skills before outcome access.",
+        "Learn or reproduce the data-driven skill dependency relation from the parent-observable training signal rather than substituting curator structural labels.",
+        "Run the adaptive sequential sampler with matched base model, tokenizer, corpus candidates, total token budget, evaluation schedule and random-seed policy.",
+        "Report the parent objective and all per-round sampling decisions and checkpoints as receipts."
+      ],
+      "non_applicable_claims": [
+        "Skill-It is not an inference-time workflow-transfer baseline.",
+        "A fixed dependency-Jaccard feature is not a faithful reproduction of adaptive Skill-It sampling."
+      ],
+      "parent_id": "skill_it",
+      "parent_projection": "Data-driven skill dependency learning and adaptive sequential data sampling for language-model training.",
+      "source": "Chen et al., Skill-It! A Data-Driven Skills Framework for Understanding and Training Language Models, NeurIPS 2023."
+    },
+    {
+      "applicable_phases": [
+        "training_data_selection"
+      ],
+      "current_execution_status": "NOT_RUN",
+      "full_fidelity_requirements": [
+        "Use a mathematical pretraining corpus and parent-compatible skill labels and skill graph, or document a preregistered domain adaptation as a partial diagnostic rather than a reproduction.",
+        "Match base model, tokenizer, candidate data, token budget, optimization budget and mathematical downstream evaluations across arms.",
+        "Implement the graph-guided selection rule rather than replacing it with static tag overlap.",
+        "Account for graph construction and data-scoring cost in total cost-to-capability."
+      ],
+      "non_applicable_claims": [
+        "MASS is not an inference-time retrieval or workflow-transfer baseline.",
+        "Performance outside mathematical pretraining is an adaptation test, not direct reproduction of the published scope."
+      ],
+      "parent_id": "mass",
+      "parent_projection": "Mathematical pretraining-data selection through a mathematical skill graph.",
+      "source": "Li et al., MASS: Mathematical Data Selection via Skill Graphs for Pretraining Large Language Models, ICML 2025."
+    },
+    {
+      "applicable_phases": [
+        "inference_workflow_transfer"
+      ],
+      "current_execution_status": "NOT_RUN",
+      "full_fidelity_requirements": [
+        "Use tasks admitting an explicit operator library and executable workflow graph; otherwise mark SWIFT not applicable.",
+        "Match base model, operator library, source workflows, workflow-search budget, task interface, execution budget and success verifier.",
+        "Reproduce structural-prior extraction and transfer, including the parent refusal or negative-transfer behavior where available.",
+        "Charge source-workflow search and structural-prior construction before reporting marginal or break-even savings."
+      ],
+      "non_applicable_claims": [
+        "SWIFT is not a training-data-selection baseline.",
+        "A graph-similarity scalar without executable workflow transfer is not a faithful SWIFT reproduction.",
+        "Scientific source-target pairs without a shared executable operator interface fall outside direct SWIFT applicability."
+      ],
+      "parent_id": "swift",
+      "parent_projection": "Amortized transfer of structural workflow priors across agent tasks.",
+      "source": "Du et al., Why Search When You Can Transfer? Amortized Agentic Workflow Design from Structural Priors, arXiv:2604.25012, 2026."
+    }
+  ],
+  "qoi": "Which parent is a valid control for which phase, and what must be reproduced before its name can carry comparative authority?",
+  "schema_version": "paper3-parent-control-applicability-v1"
+}

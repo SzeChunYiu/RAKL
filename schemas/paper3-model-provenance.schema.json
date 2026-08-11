@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-model-provenance.schema.json",
+  "title": "Paper 3 frozen external model provenance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "model_id", "repository", "revision", "retrieved_at_utc", "registry_last_modified_utc", "license_from_model_card_metadata", "revision_authorities", "files", "authority_boundary"],
+  "properties": {
+    "schema_version": {"const": "paper3-model-provenance-v1"},
+    "model_id": {"type": "string", "minLength": 1},
+    "repository": {"type": "string", "format": "uri"},
+    "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "retrieved_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "registry_last_modified_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "license_from_model_card_metadata": {"type": "string", "minLength": 1},
+    "revision_authorities": {
+      "type": "array", "minItems": 2,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source", "observed_revision"],
+        "properties": {
+          "source": {"type": "string", "minLength": 1},
+          "observed_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "files": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "bytes", "sha256", "git_blob_id", "hash_authority"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "bytes": {"type": "integer", "minimum": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "git_blob_id": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "hash_authority": {"enum": ["locally_sha256_hashed_exact_revision_download", "hugging_face_api_lfs_sha256_not_yet_locally_verified"]}
+        }
+      }
+    },
+    "authority_boundary": {"type": "string", "minLength": 1}
+  }
+}

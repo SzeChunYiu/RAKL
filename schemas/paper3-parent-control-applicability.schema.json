@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/rakl/paper3-parent-control-applicability.schema.json",
+  "title": "Paper 3 parent-control applicability freeze",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "frozen_at_utc", "frozen_before_external_labels_visible", "object", "qoi", "claim_boundary", "parents"],
+  "properties": {
+    "schema_version": {"const": "paper3-parent-control-applicability-v1"},
+    "frozen_at_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "frozen_before_external_labels_visible": {"const": true},
+    "object": {"type": "string", "minLength": 1},
+    "qoi": {"type": "string", "minLength": 1},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "parents": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["parent_id", "source", "parent_projection", "applicable_phases", "full_fidelity_requirements", "non_applicable_claims", "current_execution_status"],
+        "properties": {
+          "parent_id": {"enum": ["skill_it", "mass", "swift"]},
+          "source": {"type": "string", "minLength": 1},
+          "parent_projection": {"type": "string", "minLength": 1},
+          "applicable_phases": {"type": "array", "minItems": 1, "items": {"enum": ["training_data_selection", "inference_workflow_transfer"]}},
+          "full_fidelity_requirements": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "non_applicable_claims": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "current_execution_status": {"const": "NOT_RUN"}
+        }
+      }
+    }
+  }
+}
