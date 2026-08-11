@@ -175,7 +175,8 @@ def recommend_breakthrough_modes(signals: LearningControlSignals) -> LearningCon
     The ordering is intentional: safe routine reuse is preferred when exact scope
     evidence supports it; conflict/novelty/fixation override routine execution;
     persistent high-diversity/high-context stagnation escalates to a method-basis
-    audit instead of endless same-basis search.
+    audit instead of endless same-basis search. Missing evidence alone never
+    activates an expensive reflective/retrieval mode.
     """
 
     modes: list[BreakthroughMode] = []
@@ -204,9 +205,9 @@ def recommend_breakthrough_modes(signals: LearningControlSignals) -> LearningCon
         modes.append(BreakthroughMode.CONTRASTIVE_DISCRIMINATION)
         reasons.append("contrastive_cases_can_localize_the_discriminating_coordinate")
 
-    if signals.retrieval_uncertain or signals.familiar_context_match is None:
+    if signals.retrieval_uncertain:
         modes.append(BreakthroughMode.RETRIEVAL_REHEARSAL)
-        reasons.append("relevant_experience_retrieval_is_uncertain")
+        reasons.append("registered_retrieval_uncertainty_requires_a_retrieval_probe")
 
     if signals.mature_tool_available and signals.transfer_boundary_unstable:
         modes.append(BreakthroughMode.DELIBERATE_PRACTICE)
@@ -241,7 +242,6 @@ def recommend_breakthrough_modes(signals: LearningControlSignals) -> LearningCon
         modes.append(BreakthroughMode.META_METHOD_BASIS_AUDIT)
         reasons.append("high_coverage_high_diversity_stagnation_with_redundant_failures_supports_method_basis_audit")
 
-    # De-duplicate while preserving rule priority/order.
     unique_modes = tuple(dict.fromkeys(modes))
     if not unique_modes:
         return LearningControlReport(
