@@ -71,9 +71,12 @@ def _parse_time(value: str) -> datetime | None:
         return None
     normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
     try:
-        return datetime.fromisoformat(normalized)
+        parsed = datetime.fromisoformat(normalized)
     except ValueError:
         return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 def audit_math_context_fiber(fiber: MathContextFiber | None) -> ContextGateReport:
@@ -114,7 +117,6 @@ def audit_math_context_fiber(fiber: MathContextFiber | None) -> ContextGateRepor
     frozen_at = _parse_time(fiber.frozen_at)
     if frozen_at is None:
         reasons.append("context_freeze_time_missing_or_invalid")
-    first_candidate_at = None
     if fiber.first_candidate_at is not None:
         first_candidate_at = _parse_time(fiber.first_candidate_at)
         if first_candidate_at is None:
