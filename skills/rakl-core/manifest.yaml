@@ -1,4 +1,4 @@
-version: 0.6.2
+version: 0.6.3
 
 always_load:
   - static/core/principles.md
@@ -64,7 +64,9 @@ workflow_composition:
       - map-solved-and-near-solved-analogues
       - run-cross-domain-and-everyday-analogy-scan
       - build-method-transfer-matrix
+      - run-role-separated-expert-context-review
       - record-auditable-pre-candidate-trace
+      - hash-chain-trace-chronology
       - freeze-context-and-trace-chronology
     recommended_pre_steps:
       - perspective-discovery
@@ -116,8 +118,11 @@ invariants:
   - analogue_method_transfer_before_invention
   - cross_domain_analogy_requires_structural_witness
   - everyday_analogy_is_proposal_only
+  - role_separated_expert_context_review_before_candidate
+  - same_context_expert_roles_are_not_independent_review
   - context_packet_chronology_precedes_candidate
   - auditable_research_trace_precedes_candidate
+  - research_trace_hash_chain_is_tamper_evident
   - every_material_step_records_state_evidence_residual_and_next_action
   - research_trace_is_decision_record_not_private_chain_of_thought
   - literature_list_is_not_method_transfer_matrix
