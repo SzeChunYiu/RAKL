@@ -53,20 +53,7 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # v1.6.3
         with:
           packages: latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
-          version: 1.3
-
-      - name: Ensure TeX packages (fallback apt)
-        run: |
-          set -euo pipefail
-          if ! kpsewhich lmodern.sty >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends \
-              latexmk texlive-latex-extra texlive-fonts-recommended \
-              texlive-science lmodern poppler-utils
-          fi
-          kpsewhich lmodern.sty
-          latexmk -v | head -1
-
+          version: 1.1
       - name: Compile exact Paper 3 v4 manuscript
         shell: bash
         run: |
