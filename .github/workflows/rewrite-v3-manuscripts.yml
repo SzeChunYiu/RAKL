@@ -6,6 +6,7 @@ on:
       - publication/v3-manuscripts-20260811
     paths:
       - scripts/rewrite_v3_manuscripts.py
+      - scripts/audit_publication_citations.py
       - .github/workflows/rewrite-v3-manuscripts.yml
   workflow_dispatch:
 
@@ -81,6 +82,8 @@ jobs:
           grep -F 'TRANSFER\_NOVEL' publication/papers/paper-03-directional-structural-witnesses/sections/02c_v3_experience_transfer.tex
           grep -F 'Experience cannot promote theorem truth' publication/papers/paper-04-verified-discovery/main.tex
           ! grep -R -n -E 'we establish (empirical|universal).*superiority|global novelty is established|universal continual-learning gain' publication/papers
+      - name: Audit all citation keys
+        run: python scripts/audit_publication_citations.py
       - name: Commit rewritten manuscripts
         shell: bash
         run: |
