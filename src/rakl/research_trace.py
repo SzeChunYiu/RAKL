@@ -18,6 +18,7 @@ class ResearchTraceEventType(str, Enum):
     CONTEXT_FROZEN = "CONTEXT_FROZEN"
     ANALOGY_SCAN = "ANALOGY_SCAN"
     METHOD_TRANSFER_REVIEW = "METHOD_TRANSFER_REVIEW"
+    EXPERT_CONTEXT_REVIEW = "EXPERT_CONTEXT_REVIEW"
     NEXT_STEP_PROPOSED = "NEXT_STEP_PROPOSED"
     CANDIDATE_PROPOSED = "CANDIDATE_PROPOSED"
     FALSIFIER_RUN = "FALSIFIER_RUN"
@@ -54,6 +55,7 @@ class ResearchTraceEntry:
     residuals: Tuple[str, ...] = ()
     next_steps: Tuple[str, ...] = ()
     artifact_hash: str = ""
+    previous_event_hash: str = ""
 
 
 @dataclass(frozen=True)
@@ -73,6 +75,7 @@ REQUIRED_PRE_CANDIDATE_EVENTS: Tuple[ResearchTraceEventType, ...] = (
     ResearchTraceEventType.CONTEXT_FROZEN,
     ResearchTraceEventType.ANALOGY_SCAN,
     ResearchTraceEventType.METHOD_TRANSFER_REVIEW,
+    ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
     ResearchTraceEventType.NEXT_STEP_PROPOSED,
 )
 
@@ -81,6 +84,7 @@ REQUIRED_TRACE_ACTIONS: Tuple[str, ...] = (
     "record_current_context_snapshot_and_context_packet_hash",
     "record_cross_domain_analogy_scan_result",
     "record_method_transfer_matrix_and_disanalogies",
+    "record_role_separated_expert_context_review",
     "record_proposed_next_step_with_alternatives_and_decision_rationale",
 )
 
@@ -98,27 +102,30 @@ def _parse_time(value: str) -> datetime | None:
     return parsed
 
 
-def audit_pre_candidate_trace(
-    trace: MathResearchTrace | None,
-    *,
-    atom_id: str,
-    context_packet_hash: str,
-) -> ResearchTraceReport:
-    """Require a chronological public research ledger before candidate generation."""
+def audit_research_trace(trace: MathResearchTrace | None) -> ResearchTraceReport:
+    """Validate the append-only public research decision ledger.
+
+    The audit checks chronology, hash chaining and event-specific minimum content.
+    It never treats the trace's rationale as proof or scientific evidence.
+    """
 
     if trace is None:
         return ResearchTraceReport(
             TraceGateVerdict.CANNOT_CHECK,
             ("math_research_trace_missing",),
         )
+
     reasons: list[str] = []
     if not trace.trace_id:
         reasons.append("trace_id_missing")
-    if not atom_id:
-        reasons.append("trace_atom_id_missing")
+    if not trace.entries:
+        reasons.append("trace_entries_missing")
+        return ResearchTraceReport(TraceGateVerdict.FAIL, tuple(reasons))
 
     ids: set[str] = set()
-    atom_entries: list[tuple[datetime, ResearchTraceEntry]] = []
+    previous_time: datetime | None = None
+    previous_hash = ""
+
     for index, entry in enumerate(trace.entries):
         prefix = f"trace_entry_{index}"
         if not entry.event_id:
@@ -126,6 +133,7 @@ def audit_pre_candidate_trace(
         elif entry.event_id in ids:
             reasons.append(f"{prefix}:duplicate_event_id")
         ids.add(entry.event_id)
+
         if not entry.atom_id:
             reasons.append(f"{prefix}:atom_id_missing")
         if not entry.state_summary:
@@ -136,14 +144,81 @@ def audit_pre_candidate_trace(
             reasons.append(f"{prefix}:evidence_pointers_missing")
         if not entry.artifact_hash:
             reasons.append(f"{prefix}:artifact_hash_missing")
+
         timestamp = _parse_time(entry.timestamp)
         if timestamp is None:
             reasons.append(f"{prefix}:timestamp_missing_or_invalid")
-        elif entry.atom_id == atom_id:
-            atom_entries.append((timestamp, entry))
+        elif previous_time is not None and timestamp < previous_time:
+            reasons.append(f"{prefix}:timestamp_regression")
+        else:
+            previous_time = timestamp
 
-    atom_entries.sort(key=lambda item: item[0])
-    event_types = [entry.event_type for _, entry in atom_entries]
+        if index == 0:
+            if entry.previous_event_hash:
+                reasons.append(f"{prefix}:first_event_previous_hash_must_be_empty")
+        elif entry.previous_event_hash != previous_hash:
+            reasons.append(f"{prefix}:previous_event_hash_mismatch")
+        previous_hash = entry.artifact_hash
+
+        if entry.event_type in {
+            ResearchTraceEventType.EXPERT_CONTEXT_REVIEW,
+            ResearchTraceEventType.NEXT_STEP_PROPOSED,
+            ResearchTraceEventType.CANDIDATE_PROPOSED,
+        }:
+            if not entry.alternatives_considered:
+                reasons.append(f"{prefix}:alternatives_considered_missing")
+            if not entry.decision_rationale:
+                reasons.append(f"{prefix}:decision_rationale_missing")
+
+        if entry.event_type is ResearchTraceEventType.EXPERT_CONTEXT_REVIEW:
+            if not entry.uncertainties:
+                reasons.append(f"{prefix}:expert_review_uncertainties_missing")
+
+        if entry.event_type is ResearchTraceEventType.NEXT_STEP_PROPOSED:
+            if not entry.next_steps:
+                reasons.append(f"{prefix}:next_steps_missing")
+
+        if entry.event_type is ResearchTraceEventType.CANDIDATE_PROPOSED:
+            if not entry.outputs:
+                reasons.append(f"{prefix}:candidate_identity_output_missing")
+
+        if entry.event_type is ResearchTraceEventType.RESULT_RECORDED:
+            if not (entry.outputs or entry.residuals):
+                reasons.append(f"{prefix}:result_output_or_residual_missing")
+
+        if entry.event_type is ResearchTraceEventType.RESIDUAL_OPENED:
+            if not entry.residuals:
+                reasons.append(f"{prefix}:residuals_missing")
+            if not entry.next_steps:
+                reasons.append(f"{prefix}:residual_next_steps_missing")
+
+    if reasons:
+        return ResearchTraceReport(TraceGateVerdict.FAIL, tuple(reasons))
+    return ResearchTraceReport(
+        TraceGateVerdict.PASS,
+        ("auditable_research_trace_integrity_passed",),
+    )
+
+
+def audit_pre_candidate_trace(
+    trace: MathResearchTrace | None,
+    *,
+    atom_id: str,
+    context_packet_hash: str,
+) -> ResearchTraceReport:
+    """Require a chronological public research ledger before candidate generation."""
+
+    base = audit_research_trace(trace)
+    if base.verdict is not TraceGateVerdict.PASS:
+        return base
+    assert trace is not None
+
+    reasons: list[str] = []
+    if not atom_id:
+        reasons.append("trace_atom_id_missing")
+
+    atom_entries = [entry for entry in trace.entries if entry.atom_id == atom_id]
+    event_types = [entry.event_type for entry in atom_entries]
     positions: list[int] = []
     for required in REQUIRED_PRE_CANDIDATE_EVENTS:
         if required not in event_types:
@@ -155,7 +230,7 @@ def audit_pre_candidate_trace(
 
     context_entries = [
         entry
-        for _, entry in atom_entries
+        for entry in atom_entries
         if entry.event_type is ResearchTraceEventType.CONTEXT_FROZEN
     ]
     if context_entries and context_packet_hash:
@@ -168,7 +243,7 @@ def audit_pre_candidate_trace(
 
     candidate_positions = [
         i
-        for i, (_, entry) in enumerate(atom_entries)
+        for i, entry in enumerate(atom_entries)
         if entry.event_type is ResearchTraceEventType.CANDIDATE_PROPOSED
     ]
     if candidate_positions and positions:
