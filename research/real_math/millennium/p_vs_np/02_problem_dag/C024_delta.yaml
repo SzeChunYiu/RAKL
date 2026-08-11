@@ -1,0 +1,39 @@
+candidate:
+  id: C024
+  parent_atom: O9d12a2a1
+  claim: "Every pair-feasible nonnegative weighting of relevant semi-filters lower-bounds cover complexity and cyclic intersection complexity by its total weight."
+  status: SOURCE_BOUND_DERIVED_PROOF_DRAFT
+  authority: NO_NOVELTY_CLAIM_ROOT_AUTHORITY_NONE
+  source:
+    - "Cavalar-Oliveira ECCC TR25-033 Definitions 18-21, Theorem 30"
+  proof_mechanism:
+    - "interpret rho(A,B) as minimum set cover in the cover graph"
+    - "use a fractional packing w on filter vertices with neighborhood mass at most 1 for every pair vertex"
+    - "charge each counted intersection pair at most one newly covered unit of dual mass"
+    - "deduplicate covered filter mass so cyclic reuse cannot double-count"
+  closes:
+    - "generic existence of a union-free, one-intersection-Lipschitz certificate interface"
+  does_not_close:
+    - "construction of an explicit super-logarithmic certificate"
+    - "novelty"
+    - "formal proof / isolated recheck"
+    - "R004 asymptotic lower bound"
+    - "P != NP"
+
+residual:
+  id: O9d12a2a1a
+  parent: O9d12a2a1
+  from_candidate: C024
+  target: "construct or refute an explicit analysable pair-feasible semi-filter weighting of total mass omega(log N) on a target surviving current R004 upper-bound adversaries"
+  status: OPEN
+  discriminator: "first symmetry-reduce/calibrate the fractional packing on G_NEQ; only then evaluate QR or another surviving target"
+  branch_outcomes:
+    - id: B1
+      outcome: "fractional certificate collapses to O(log N) or less on calibration and broad symmetric families"
+      consequence: "record a bounded failure family and reject naive semi-filter weighting classes"
+    - id: B2
+      outcome: "explicit super-logarithmic feasible mass is proved on a survivor"
+      consequence: "open target-specific lower-bound candidate under fresh assurance"
+    - id: B3
+      outcome: "calibration exposes an integrality-gap or representation bottleneck without a broad ceiling"
+      consequence: "open a failure-cause atom for the missing semi-filter coordinate / weighting basis"
