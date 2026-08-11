@@ -1,8 +1,22 @@
 # Paper II Novelty Campaign — Execution Order and Evidence Gates
 
-**Status:** `PROPOSAL-ONLY / MASTER_DEPENDENCY_ISSUE / RESULTS_BEFORE_CLAIMS`
-**Refs:** #158
+**Status:** `NEGATIVE_NARROWING_PATH_COMPLETE / TERMINAL_SCIENTIFIC_CHILDREN / PUBLICATION_REMAINS_ON_257`
+**Refs:** #158 (terminal receipt: `research/paper2_novelty_campaign/ISSUE_158_TERMINAL_RECEIPT.json`)
 **This is a coordination surface only. It grants no authority and changes no code.**
+
+### Scoreboard (2026-08-11, post ORACLE floor)
+
+| Issue | State | Verdict |
+|------:|-------|---------|
+| #152 | CLOSED | formal noninterference landed |
+| #154 | CLOSED | ALR benchmark landed |
+| #138 | CLOSED | immutable negative history |
+| #131 | CLOSED | shadow trials |
+| #247 | TERMINAL | `MODEL_CAPABILITY_FLOOR_0_5B` |
+| #155 | TERMINAL | `CANNOT_IDENTIFY` (factorial blocked) |
+| #156 | TERMINAL | `CANNOT_IDENTIFY` (matched empirics blocked) |
+| #157 | TERMINAL | `CANNOT_IDENTIFY` (promotion blocked) |
+| #158 | TERMINAL | negative/narrowing path complete |
 
 ---
 
