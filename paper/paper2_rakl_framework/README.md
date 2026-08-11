@@ -1,17 +1,27 @@
-# RAKL saturated epistemic-mechanics paper source
+# RAKL framework paper
 
-This directory is the chaptered source for the Round-050 manuscript. `main.tex` contains the preamble and abstract; every top-level manuscript section lives in `sections/`.
+Title: **RAKL for Evidence-Governed AI-Assisted Scientific Research**
 
-## Build
+This is the canonical self-contained publication package. `main.tex` contains the preamble and abstract; every top-level manuscript section/chapter lives as one TeX file in `sections/`. Publication materialization consolidates the two historical multi-part sections so the canonical package has no chapter-fragment dependency.
 
-Without `build_identity.tex`, the source compiles with an explicit `UNBOUND` implementation identity. A release build supplies `build_identity.tex` containing the exact implementation subject SHA and passing-test count, then runs:
+## Local build
+
+Run:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+python build.py
 ```
 
-The `release/` sibling directory is generated only after the implementation/source commit is fixed. It contains the exact bound TeX source and reviewed PDF.
+The builder regenerates the receipt-bound demonstration figures from `figures/source_data/`, writes the release build identity, compiles with `latexmk`, and materializes `final.pdf`. Without a supplied release identity the underlying TeX source remains explicitly unbound rather than inventing one.
+
+## Package contents
+
+- `sections/`: canonical section/chapter TeX files and bibliography material.
+- `figures/`: publication schematics, figure generator, generated vector/bitmap outputs, and the source receipts needed by the demonstration plots.
+- `review/PUBLICATION_READINESS.md`: internal Nature-style readiness record, not independent peer review or journal acceptance.
+- `SOURCE_MANIFEST.json`: source-package lineage.
+- `final.pdf`: release PDF after the publication gate passes.
 
 ## Scientific boundary
 
-The paper is a methods/formalism/preregistration release. Same-context manuscript saturation is not independent peer review, open-world completeness, or evidence of empirical scientific superiority.
+The paper is an architecture/formalism, deterministic reference trace and preregistered evaluation release. The latest native staging evidence establishes an auditable real-inference bridge only: it records successful asset staging but zero evaluated model runs/results at the publication cutoff. Same-context saturation, staging success, software-test count and context compression are not evidence of empirical scientific superiority. Matched architecture-by-evidence-access and prospective OWMD claims remain open until their registered evaluations produce valid receipts.
