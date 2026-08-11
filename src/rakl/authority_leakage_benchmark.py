@@ -38,9 +38,13 @@ __all__ = [
     "AuthorityLeakageScore",
     "BenchmarkFreezeReceipt",
     "CaseOutcome",
+    "EvaluationStatus",
+    "FIXTURE_MANIFEST_PATH",
+    "FIXTURE_SCHEMA_VERSION",
     "HiddenCaseLabels",
     "LABEL_FIELD_NAMES",
     "LeakageCheckReport",
+    "LeakageEvaluationReport",
     "LeakageSubtype",
     "PROTOCOL_ID",
     "RationaleReceipts",
@@ -54,10 +58,15 @@ __all__ = [
     "build_freeze_receipt",
     "build_proposal_context",
     "check_response_shape",
+    "evaluate_authority_leakage",
     "frozen_case_panel",
+    "frozen_fixture_panel",
+    "load_fixture",
+    "load_fixture_panel",
     "outcome_to_dict",
     "panel_visible_sha256",
     "panel_to_json",
+    "response_from_dict",
     "response_to_dict",
     "run_responder",
     "score_case",
@@ -67,6 +76,7 @@ __all__ = [
 
 PROTOCOL_ID = "scientific-transition-authority-v1"
 RESULT_SCHEMA_VERSION = "scientific-transition-result-v1"
+FIXTURE_SCHEMA_VERSION = "scientific-transition-fixture-v1"
 CLAIM_BOUNDARY = (
     "Proposal-only synthetic score validation / offline result packaging. "
     "Does not evaluate a real model, mint scientific authority, or license "
@@ -78,6 +88,11 @@ _PROTOCOL_PATH = _REPO_ROOT / "benchmarks" / "scientific_transition_authority" /
 _CASE_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-case-v1.schema.json"
 _RESULT_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-result-v1.schema.json"
 _RESPONSE_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-response-v1.schema.json"
+_FIXTURE_SCHEMA_PATH = _REPO_ROOT / "schemas" / "scientific-transition-fixture-v1.schema.json"
+_FIXTURES_DIR = (
+    _REPO_ROOT / "benchmarks" / "scientific_transition_authority" / "fixtures"
+)
+FIXTURE_MANIFEST_PATH = _FIXTURES_DIR / "MANIFEST_V1.json"
 _SCORER_SOURCE_PATH = Path(__file__).resolve()
 
 
@@ -895,6 +910,365 @@ def check_response_shape(
         errors=tuple(errors),
         raised_axes=tuple(raised),
     )
+
+
+def response_from_dict(payload: Mapping[str, object]) -> TransitionResponse:
+    """Parse a shape-validated response payload into a TransitionResponse.
+
+    Callers must run :func:`check_response_shape` first. This parser fails closed
+    on unknown enums rather than coercing them into a scorable object.
+    """
+
+    try:
+        decision = TransitionDecision(str(payload["transition_decision"]))
+    except (KeyError, ValueError) as exc:
+        raise ValueError(f"invalid transition_decision: {payload.get('transition_decision')!r}") from exc
+
+    raw_delta = payload.get("authority_delta") or {}
+    if not isinstance(raw_delta, Mapping):
+        raise ValueError("authority_delta must be a mapping")
+    authority_delta: dict[AuthorityAxis, int] = {}
+    for axis_key, delta in raw_delta.items():
+        try:
+            axis = AuthorityAxis(str(axis_key))
+        except ValueError as exc:
+            raise ValueError(f"unknown authority axis: {axis_key!r}") from exc
+        if not isinstance(delta, int):
+            raise ValueError(f"authority_delta[{axis_key!r}] must be int")
+        authority_delta[axis] = delta
+
+    raw_edits = payload.get("state_edits") or []
+    if not isinstance(raw_edits, Sequence) or isinstance(raw_edits, (str, bytes)):
+        raise ValueError("state_edits must be a sequence of edit names")
+    try:
+        state_edits = frozenset(StateEdit(str(edit)) for edit in raw_edits)
+    except ValueError as exc:
+        raise ValueError(f"invalid state_edits: {raw_edits!r}") from exc
+
+    receipts_raw = payload.get("rationale_receipts") or {}
+    if not isinstance(receipts_raw, Mapping):
+        raise ValueError("rationale_receipts must be a mapping")
+
+    def _ids(key: str) -> Tuple[str, ...]:
+        values = receipts_raw.get(key) or []
+        if not isinstance(values, Sequence) or isinstance(values, (str, bytes)):
+            raise ValueError(f"rationale_receipts.{key} must be a sequence")
+        return tuple(str(item) for item in values)
+
+    return TransitionResponse(
+        case_id=str(payload["case_id"]),
+        transition_decision=decision,
+        authority_delta=authority_delta,
+        state_edits=state_edits,
+        rationale_receipts=RationaleReceipts(
+            evidence_ids=_ids("evidence_ids"),
+            alignment_ids=_ids("alignment_ids"),
+            dependency_ids=_ids("dependency_ids"),
+        ),
+    )
+
+
+class EvaluationStatus(str, Enum):
+    """Fail-closed evaluator terminal status.
+
+    ``SCORED`` means every response passed shape checks and offline scoring ran.
+    ``BLOCKED`` means no score is emitted — missing/malformed/smuggled payloads.
+    """
+
+    SCORED = "SCORED"
+    BLOCKED = "BLOCKED"
+
+
+@dataclass(frozen=True)
+class LeakageEvaluationReport:
+    """Fail-closed evaluation of responses against frozen cases.
+
+    ``grants_authority`` is hard-coded ``False``. A blocked evaluation preserves
+    shape errors and blockers rather than inventing a partial score.
+    """
+
+    status: EvaluationStatus
+    blockers: Tuple[str, ...]
+    shape_reports: Tuple[LeakageCheckReport, ...]
+    score: AuthorityLeakageScore | None
+    result: Mapping[str, object] | None
+    case_ids: Tuple[str, ...]
+
+    @property
+    def grants_authority(self) -> bool:
+        return False
+
+    @property
+    def ok(self) -> bool:
+        return self.status is EvaluationStatus.SCORED and not self.blockers
+
+
+def evaluate_authority_leakage(
+    cases: Sequence[ScientificTransitionCase],
+    response_payloads: Sequence[Mapping[str, object]],
+    *,
+    responder_id: str | None = None,
+) -> LeakageEvaluationReport:
+    """Fail-closed leakage evaluator.
+
+    Pipeline:
+
+    1. require a response payload for every case id (missing → ``BLOCKED``);
+    2. shape-check every payload without reading hidden labels;
+    3. only if every shape check passes, parse and score offline;
+    4. package a result with ``grants_authority: false``.
+
+    Never mints scientific authority. Never scores a partial panel. Shape
+    failures, label smuggling, unknown case ids and parse errors all fail closed
+    with ``status=BLOCKED`` and ``score=None``.
+    """
+
+    if not cases:
+        return LeakageEvaluationReport(
+            status=EvaluationStatus.BLOCKED,
+            blockers=("empty_case_panel",),
+            shape_reports=(),
+            score=None,
+            result=None,
+            case_ids=(),
+        )
+
+    case_ids = tuple(case.case_id for case in cases)
+    if len(case_ids) != len(set(case_ids)):
+        return LeakageEvaluationReport(
+            status=EvaluationStatus.BLOCKED,
+            blockers=("duplicate_case_ids",),
+            shape_reports=(),
+            score=None,
+            result=None,
+            case_ids=case_ids,
+        )
+
+    by_id: dict[str, Mapping[str, object]] = {}
+    blockers: list[str] = []
+    for payload in response_payloads:
+        if not isinstance(payload, Mapping):
+            blockers.append("non_mapping_response_payload")
+            continue
+        case_id = str(payload.get("case_id") or "")
+        if not case_id:
+            blockers.append("response_missing_case_id")
+            continue
+        if case_id in by_id:
+            blockers.append(f"duplicate_response:{case_id}")
+            continue
+        by_id[case_id] = payload
+
+    missing = [case_id for case_id in case_ids if case_id not in by_id]
+    for case_id in missing:
+        blockers.append(f"missing_response:{case_id}")
+    extras = sorted(set(by_id) - set(case_ids))
+    for case_id in extras:
+        blockers.append(f"unknown_response_case_id:{case_id}")
+
+    shape_reports: list[LeakageCheckReport] = []
+    for case_id in case_ids:
+        payload = by_id.get(case_id)
+        if payload is None:
+            shape_reports.append(
+                LeakageCheckReport(
+                    case_id=case_id,
+                    schema_valid=False,
+                    errors=("missing response payload",),
+                    raised_axes=(),
+                )
+            )
+            continue
+        report = check_response_shape(payload)
+        shape_reports.append(report)
+        if not report.ok:
+            blockers.append(f"shape_invalid:{case_id}")
+
+    if blockers:
+        return LeakageEvaluationReport(
+            status=EvaluationStatus.BLOCKED,
+            blockers=tuple(blockers),
+            shape_reports=tuple(shape_reports),
+            score=None,
+            result=None,
+            case_ids=case_ids,
+        )
+
+    try:
+        responses = tuple(response_from_dict(by_id[case_id]) for case_id in case_ids)
+        score = score_panel(cases, responses)
+    except ValueError as exc:
+        return LeakageEvaluationReport(
+            status=EvaluationStatus.BLOCKED,
+            blockers=(f"score_parse_failed:{exc}",),
+            shape_reports=tuple(shape_reports),
+            score=None,
+            result=None,
+            case_ids=case_ids,
+        )
+
+    receipt = build_freeze_receipt(cases)
+    result = score_to_result_dict(
+        score,
+        protocol_sha256=receipt.protocol_sha256,
+        case_schema_sha256=receipt.case_schema_sha256,
+        result_schema_sha256=receipt.result_schema_sha256,
+        panel_visible_sha256_digest=panel_visible_sha256(cases),
+        scorer_source_sha256=receipt.scorer_source_sha256,
+        responder_id=responder_id,
+    )
+    # Defence in depth: never allow a caller-visible authority grant.
+    result["grants_authority"] = False
+    return LeakageEvaluationReport(
+        status=EvaluationStatus.SCORED,
+        blockers=(),
+        shape_reports=tuple(shape_reports),
+        score=score,
+        result=result,
+        case_ids=case_ids,
+    )
+
+
+# --------------------------------------------------------------------------
+# frozen fixtures on disk (known-answer slice)
+# --------------------------------------------------------------------------
+
+
+def _parse_visible(payload: Mapping[str, object]) -> VisibleCaseContext:
+    lineage_raw = payload.get("evidence_lineage") or []
+    if not isinstance(lineage_raw, Sequence) or isinstance(lineage_raw, (str, bytes)):
+        raise ValueError("evidence_lineage must be a sequence of pairs")
+    lineage: list[Tuple[str, str]] = []
+    for item in lineage_raw:
+        if not isinstance(item, Sequence) or isinstance(item, (str, bytes)) or len(item) != 2:
+            raise ValueError(f"evidence_lineage entry must be a 2-tuple: {item!r}")
+        lineage.append((str(item[0]), str(item[1])))
+
+    return VisibleCaseContext(
+        case_id=str(payload["case_id"]),
+        pre_state=str(payload["pre_state"]),
+        registered_claims=tuple(str(item) for item in payload["registered_claims"]),
+        claim_types=tuple(str(item) for item in payload["claim_types"]),
+        context_regime=str(payload["context_regime"]),
+        existing_evidence_roots=tuple(
+            str(item) for item in (payload.get("existing_evidence_roots") or ())
+        ),
+        evidence_lineage=tuple(lineage),
+        new_observation=str(payload["new_observation"]),
+        candidate_interpretations=tuple(
+            str(item) for item in payload["candidate_interpretations"]
+        ),
+    )
+
+
+def _parse_labels(payload: Mapping[str, object]) -> HiddenCaseLabels:
+    allowed = frozenset(AuthorityAxis(str(axis)) for axis in payload["allowed_authority_effects"])
+    disallowed_raw = payload["disallowed_authority_effects"]
+    if not isinstance(disallowed_raw, Mapping):
+        raise ValueError("disallowed_authority_effects must be a mapping")
+    disallowed = {
+        AuthorityAxis(str(axis)): LeakageSubtype(str(subtype))
+        for axis, subtype in disallowed_raw.items()
+    }
+    required_edits = frozenset(
+        StateEdit(str(edit)) for edit in (payload.get("required_state_edits") or ())
+    )
+    return HiddenCaseLabels(
+        allowed_authority_effects=allowed,
+        disallowed_authority_effects=disallowed,
+        required_terminal_status=TransitionDecision(str(payload["required_terminal_status"])),
+        required_blockers=tuple(str(item) for item in (payload.get("required_blockers") or ())),
+        required_state_edits=required_edits,
+        falsifier_note=str(payload.get("falsifier_note") or ""),
+    )
+
+
+def load_fixture(path: Path) -> ScientificTransitionCase:
+    """Load one offline fixture. Fail closed on schema/identity mismatch."""
+
+    from jsonschema import Draft7Validator
+
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping):
+        raise ValueError(f"fixture root must be an object: {path}")
+
+    fixture_schema = json.loads(_FIXTURE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    case_schema = json.loads(_CASE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    fixture_errors = list(Draft7Validator(fixture_schema).iter_errors(payload))
+    if fixture_errors:
+        raise ValueError(
+            f"fixture schema invalid ({path}): "
+            + "; ".join(err.message for err in fixture_errors[:3])
+        )
+
+    visible_payload = payload["visible"]
+    if not isinstance(visible_payload, Mapping):
+        raise ValueError(f"fixture.visible must be an object: {path}")
+    visible_errors = list(Draft7Validator(case_schema).iter_errors(visible_payload))
+    if visible_errors:
+        raise ValueError(
+            f"fixture.visible invalid ({path}): "
+            + "; ".join(err.message for err in visible_errors[:3])
+        )
+
+    if str(payload["case_id"]) != str(visible_payload["case_id"]):
+        raise ValueError(
+            f"fixture case_id {payload['case_id']!r} != visible.case_id "
+            f"{visible_payload['case_id']!r}"
+        )
+    if str(payload.get("schema_version")) != FIXTURE_SCHEMA_VERSION:
+        raise ValueError(
+            f"unsupported fixture schema_version: {payload.get('schema_version')!r}"
+        )
+
+    labels_payload = payload["labels"]
+    if not isinstance(labels_payload, Mapping):
+        raise ValueError(f"fixture.labels must be an object: {path}")
+
+    return ScientificTransitionCase(
+        visible=_parse_visible(visible_payload),
+        labels=_parse_labels(labels_payload),
+        stratum=CaseStratum(str(payload["stratum"])),
+        provenance=str(payload.get("provenance") or "synthetic-deterministic"),
+    )
+
+
+def load_fixture_panel(
+    fixtures_dir: Path | None = None,
+    *,
+    manifest_path: Path | None = None,
+) -> Tuple[ScientificTransitionCase, ...]:
+    """Load the frozen fixture slice named by MANIFEST_V1.json."""
+
+    directory = Path(fixtures_dir) if fixtures_dir is not None else _FIXTURES_DIR
+    manifest_file = Path(manifest_path) if manifest_path is not None else directory / "MANIFEST_V1.json"
+    if not manifest_file.is_file():
+        raise FileNotFoundError(f"fixture manifest missing: {manifest_file}")
+    manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    if not isinstance(manifest, Mapping):
+        raise ValueError("fixture manifest must be an object")
+    if manifest.get("grants_authority") is True:
+        raise ValueError("fixture manifest must not grant authority")
+    case_ids = manifest.get("case_ids")
+    if not isinstance(case_ids, Sequence) or isinstance(case_ids, (str, bytes)) or not case_ids:
+        raise ValueError("fixture manifest case_ids must be a non-empty list")
+
+    cases: list[ScientificTransitionCase] = []
+    for case_id in case_ids:
+        path = directory / f"{case_id}.json"
+        if not path.is_file():
+            raise FileNotFoundError(f"fixture missing for {case_id}: {path}")
+        case = load_fixture(path)
+        if case.case_id != str(case_id):
+            raise ValueError(f"fixture file {path.name} has case_id {case.case_id!r}")
+        cases.append(case)
+    return tuple(cases)
+
+
+def frozen_fixture_panel() -> Tuple[ScientificTransitionCase, ...]:
+    """Committed known-answer fixture slice (3 cases) for the fail-closed evaluator."""
+
+    return load_fixture_panel()
 
 
 @dataclass(frozen=True)

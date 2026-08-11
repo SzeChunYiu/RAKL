@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/scientific-transition-fixture-v1.schema.json",
+  "title": "ScientificTransitionFixture v1",
+  "description": "Offline adjudication fixture for one ScientificTransitionCase (refs #154). Holds visible context AND hidden labels together for the fail-closed evaluator. This schema is never the proposal-generating context: proposers must receive only the 'visible' object (validated by scientific-transition-case-v1). Proposal-only; grants no scientific authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "stratum",
+    "provenance",
+    "development_only",
+    "visible",
+    "labels"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "scientific-transition-fixture-v1"
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stratum": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "E", "F"]
+    },
+    "provenance": {
+      "type": "string",
+      "minLength": 1
+    },
+    "development_only": {
+      "type": "boolean",
+      "description": "True when labels are not independently defended. V1 known-answer fixtures are false."
+    },
+    "visible": {
+      "type": "object",
+      "description": "Must also validate against scientific-transition-case-v1.schema.json. Loader enforces that gate separately so this schema stays self-contained."
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_authority_effects",
+        "disallowed_authority_effects",
+        "required_terminal_status",
+        "required_blockers",
+        "required_state_edits",
+        "falsifier_note"
+      ],
+      "properties": {
+        "allowed_authority_effects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["G", "R", "M", "I", "D"]
+          },
+          "uniqueItems": true
+        },
+        "disallowed_authority_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "G": { "$ref": "#/definitions/leakage_subtype" },
+            "R": { "$ref": "#/definitions/leakage_subtype" },
+            "M": { "$ref": "#/definitions/leakage_subtype" },
+            "I": { "$ref": "#/definitions/leakage_subtype" },
+            "D": { "$ref": "#/definitions/leakage_subtype" }
+          }
+        },
+        "required_terminal_status": {
+          "type": "string",
+          "enum": [
+            "SUPPORTED",
+            "REFUTED",
+            "PARTIALLY_IDENTIFIED",
+            "BLOCKED",
+            "CANNOT_CHECK"
+          ]
+        },
+        "required_blockers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "required_state_edits": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "add",
+              "supersede",
+              "restrict_scope",
+              "retain_negative_history",
+              "no_change"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "falsifier_note": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "leakage_subtype": {
+      "type": "string",
+      "enum": [
+        "prediction_to_mechanism",
+        "mechanism_to_identification",
+        "provenance_to_independent_evidence",
+        "experience_to_authority",
+        "failure_to_impossibility",
+        "access_routing_to_authority",
+        "self_evolution_to_method_authority"
+      ]
+    }
+  }
+}
