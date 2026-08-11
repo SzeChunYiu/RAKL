@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/research-identity-reservation-v1.schema.json",
+  "title": "RAKL research identity reservation v1",
+  "description": "Proposal-only concurrent-branch identity reservation. Binds (application_namespace, root_id, atom_label, context_hash) before authority-bearing or longitudinal use. Detection-only auditor; no proof/theorem/lesson authority. Companion runtime: rakl.identity_reservation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "application_namespace",
+    "root_id",
+    "atom_label",
+    "context_hash",
+    "parent_atom_id",
+    "human_short_label",
+    "creator_branch_or_episode",
+    "frozen_at_utc",
+    "base_commit",
+    "identity_status",
+    "aliases",
+    "supersession_successor",
+    "reservation_canonical_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "research-identity-reservation-v1"},
+    "application_namespace": {"type": "string", "minLength": 1},
+    "root_id": {"type": "string", "minLength": 1},
+    "atom_label": {"type": "string", "minLength": 1},
+    "context_hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "parent_atom_id": {"type": "string"},
+    "human_short_label": {"type": "string", "minLength": 1},
+    "creator_branch_or_episode": {"type": "string", "minLength": 1},
+    "frozen_at_utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z$"
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "identity_status": {
+      "enum": ["RESERVED", "FROZEN", "SUPERSEDED"]
+    },
+    "aliases": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "supersession_successor": {
+      "type": ["string", "null"]
+    },
+    "reservation_canonical_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
