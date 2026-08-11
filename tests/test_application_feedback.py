@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.resources
 import json
 import subprocess
 from dataclasses import FrozenInstanceError, replace
@@ -168,7 +169,7 @@ def _bundle_document(repo: Path, payloads: dict[str, dict[str, object]]) -> dict
                     "path": path,
                     "git_blob_sha": _git(repo, "rev-parse", f"HEAD:{path}"),
                 },
-                "payload": payloads[name],
+                "payload": copy.deepcopy(payloads[name]),
                 "payload_canonical_sha256": canonical_json_sha256(payloads[name]),
                 "application_bindings": {
                     "result_id": f"result-{name}",
@@ -265,6 +266,12 @@ def test_schema_files_are_valid_and_accept_receipt_and_bundle(tmp_path: Path) ->
         schema = json.loads((root / "schemas" / name).read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
         assert list(Draft202012Validator(schema).iter_errors(instance)) == []
+    packaged = importlib.resources.files("rakl.schemas").joinpath(
+        "application-feedback-bundle.schema.json"
+    )
+    assert packaged.read_bytes() == (
+        root / "schemas/application-feedback-bundle.schema.json"
+    ).read_bytes()
 
 
 @pytest.mark.parametrize(
@@ -345,6 +352,18 @@ def test_malformed_typed_payload_and_nonfinite_json_fail_closed(tmp_path: Path) 
     receipt = _import(nonfinite, repo)
     assert receipt.verdict is not FeedbackImportVerdict.QUARANTINED_PROPOSAL
     assert any("canonical_json_invalid" in reason for reason in receipt.reasons)
+
+    scalar = copy.deepcopy(payloads)
+    scalar["failure"]["failure_id"] = 123
+    (repo / "lessons/failure.json").write_text(
+        json.dumps(scalar["failure"], indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "commit malformed scalar")
+    scalar_document = _bundle_document(repo, scalar)
+    receipt = _import(scalar_document, repo)
+    assert receipt.verdict is FeedbackImportVerdict.REJECT
+    assert any("failure_payload_invalid" in reason for reason in receipt.reasons)
 
 
 def test_duplicate_and_namespaced_id_violations_reject(tmp_path: Path) -> None:
@@ -474,6 +493,11 @@ def test_negative_receipts_validate_and_rejected_history_cannot_authorize_lineag
         "bundle_canonical_sha256": "x",
     }
     cannot = _import(invalid, repo)
+    assert cannot.verdict is FeedbackImportVerdict.CANNOT_CHECK
+    assert list(Draft202012Validator(receipt_schema).iter_errors(cannot.to_dict())) == []
+
+    overlong = dict(invalid, bundle_id="x" * 513)
+    cannot = _import(overlong, repo)
     assert cannot.verdict is FeedbackImportVerdict.CANNOT_CHECK
     assert list(Draft202012Validator(receipt_schema).iter_errors(cannot.to_dict())) == []
 

@@ -10,6 +10,7 @@ or promotion state.
 from __future__ import annotations
 
 import hashlib
+import importlib.resources
 import json
 import re
 import subprocess
@@ -76,13 +77,13 @@ def _bundle_hash(document: Mapping[str, object]) -> str:
 
 
 def _schema_validation_reasons(document: Mapping[str, object]) -> Tuple[str, ...] | None:
-    schema_path = (
-        Path(__file__).resolve().parents[2]
-        / "schemas"
-        / "application-feedback-bundle.schema.json"
-    )
     try:
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        schema_text = (
+            importlib.resources.files("rakl.schemas")
+            .joinpath("application-feedback-bundle.schema.json")
+            .read_text(encoding="utf-8")
+        )
+        schema = json.loads(schema_text)
         Draft202012Validator.check_schema(schema)
     except (OSError, json.JSONDecodeError, TypeError, ValueError):
         return None
@@ -292,26 +293,35 @@ def _payload_strings(
     return tuple(value)
 
 
+def _payload_text(
+    payload: Mapping[str, object], key: str, *, allow_empty: bool = False
+) -> str:
+    value = payload.get(key)
+    if not isinstance(value, str) or (not allow_empty and not value.strip()):
+        raise ValueError(f"payload field {key!r} must be a string")
+    return value
+
+
 def _failure_from_payload(payload: Mapping[str, object]) -> FailureExperience:
     return FailureExperience(
-        failure_id=str(payload["failure_id"]),
-        atom_id=str(payload["atom_id"]),
-        candidate_id=str(payload["candidate_id"]),
-        context_packet_hash=str(payload["context_packet_hash"]),
-        research_trace_event_id=str(payload["research_trace_event_id"]),
-        method_family=str(payload["method_family"]),
-        failure_mode=str(payload["failure_mode"]),
+        failure_id=_payload_text(payload, "failure_id"),
+        atom_id=_payload_text(payload, "atom_id"),
+        candidate_id=_payload_text(payload, "candidate_id"),
+        context_packet_hash=_payload_text(payload, "context_packet_hash"),
+        research_trace_event_id=_payload_text(payload, "research_trace_event_id"),
+        method_family=_payload_text(payload, "method_family"),
+        failure_mode=_payload_text(payload, "failure_mode"),
         residual_signature=_payload_strings(payload, "residual_signature"),
         broken_assumptions=_payload_strings(payload, "broken_assumptions", default=()),
         scope_conditions=_payload_strings(payload, "scope_conditions"),
         competing_diagnoses=_payload_strings(payload, "competing_diagnoses"),
-        selected_diagnosis=str(payload.get("selected_diagnosis", "")),
-        diagnosis_status=FailureDiagnosisStatus(str(payload["diagnosis_status"])),
+        selected_diagnosis=_payload_text(payload, "selected_diagnosis", allow_empty=True),
+        diagnosis_status=FailureDiagnosisStatus(_payload_text(payload, "diagnosis_status")),
         evidence_pointers=_payload_strings(payload, "evidence_pointers"),
-        falsifier_or_attempt=str(payload["falsifier_or_attempt"]),
-        observed_result=str(payload["observed_result"]),
-        artifact_hash=str(payload["artifact_hash"]),
-        timestamp=str(payload["timestamp"]),
+        falsifier_or_attempt=_payload_text(payload, "falsifier_or_attempt"),
+        observed_result=_payload_text(payload, "observed_result"),
+        artifact_hash=_payload_text(payload, "artifact_hash"),
+        timestamp=_payload_text(payload, "timestamp"),
         local_repair_attempts=_payload_strings(payload, "local_repair_attempts", default=()),
     )
 
@@ -322,18 +332,18 @@ def _tool_from_payload(payload: Mapping[str, object]) -> ResearchTool:
         if required not in obligations:
             obligations.append(required)
     return ResearchTool(
-        tool_id=str(payload["tool_id"]),
-        name=str(payload["name"]),
-        kind=str(payload["kind"]),
-        abstraction=str(payload["abstraction"]),
-        source_atom_id=str(payload["source_atom_id"]),
-        source_candidate_id=str(payload["source_candidate_id"]),
+        tool_id=_payload_text(payload, "tool_id"),
+        name=_payload_text(payload, "name"),
+        kind=_payload_text(payload, "kind"),
+        abstraction=_payload_text(payload, "abstraction"),
+        source_atom_id=_payload_text(payload, "source_atom_id"),
+        source_candidate_id=_payload_text(payload, "source_candidate_id"),
         source_result_ids=_payload_strings(payload, "source_result_ids"),
-        source_context_hash=str(payload["source_context_hash"]),
+        source_context_hash=_payload_text(payload, "source_context_hash"),
         authority=ResearchToolAuthority.HEURISTIC,
         preconditions=_payload_strings(payload, "preconditions"),
         structural_signature=_payload_strings(payload, "structural_signature"),
-        operation=str(payload["operation"]),
+        operation=_payload_text(payload, "operation"),
         guaranteed_effects=_payload_strings(payload, "guaranteed_effects"),
         non_guarantees=_payload_strings(payload, "non_guarantees"),
         validation_obligations=tuple(obligations),
@@ -341,7 +351,7 @@ def _tool_from_payload(payload: Mapping[str, object]) -> ResearchTool:
         known_failure_ids=_payload_strings(payload, "known_failure_ids", default=()),
         successful_reuse_ids=_payload_strings(payload, "successful_reuse_ids", default=()),
         proof_backing=_payload_strings(payload, "proof_backing", default=()),
-        artifact_hash=str(payload["artifact_hash"]),
+        artifact_hash=_payload_text(payload, "artifact_hash"),
     )
 
 
@@ -507,7 +517,9 @@ def _receipt(
         if bundle
         else (
             bundle_id_raw.strip()
-            if isinstance(bundle_id_raw, str) and bundle_id_raw.strip()
+            if isinstance(bundle_id_raw, str)
+            and bundle_id_raw.strip()
+            and len(bundle_id_raw.strip()) <= 512
             else "UNBOUND"
         )
     )
@@ -764,8 +776,10 @@ def import_application_feedback(
                 "method_family",
                 "failure_mode",
                 "residual_signature",
+                "broken_assumptions",
                 "scope_conditions",
                 "competing_diagnoses",
+                "selected_diagnosis",
                 "diagnosis_status",
                 "evidence_pointers",
                 "falsifier_or_attempt",
@@ -837,13 +851,30 @@ def import_application_feedback(
             for key in sorted(required - payload.keys()):
                 cannot.append(prefix + f"meta_payload_{key}_missing")
             pointers = payload.get("evidence_pointers")
-            if not isinstance(pointers, list) or not {
+            if (
+                not isinstance(pointers, list)
+                or not all(isinstance(value, str) for value in pointers)
+                or not {
                 item.result_id,
                 item.trace_event_id,
-            }.issubset(set(str(value) for value in pointers)):
+                }.issubset(set(pointers))
+            ):
                 reject.append(prefix + "payload_result_trace_identity_mismatch")
             if payload.get("context_sha256") != item.context_sha256:
                 reject.append(prefix + "payload_context_identity_mismatch")
+            for key in (
+                "observation_id",
+                "method_surface",
+                "observation",
+                "candidate_framework_delta",
+                "validation_status",
+            ):
+                try:
+                    _payload_text(payload, key)
+                except ValueError:
+                    reject.append(prefix + f"meta_payload_{key}_invalid")
+            if payload.get("validation_status") != "UNVALIDATED_PROPOSAL":
+                reject.append(prefix + "meta_payload_authority_not_proposal_only")
 
     if (
         not bundle.proposal_only
