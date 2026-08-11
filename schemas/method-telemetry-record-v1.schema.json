@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/method-telemetry-record-v1.schema.json",
+  "title": "RAKL method telemetry record v1",
+  "description": "Proposal-only typed research-method telemetry bound to one immutable TaskEpisode. Interpretation of an evidence root, never a replacement for it. Carries ids, content hashes, enumerated reason codes, bounded single-line notes, evidence pointers and outcomes; carries no private chain-of-thought transcript. Mints no method authority and makes no search-completeness claim: coverage of the search universe is owned by the cross-problem coverage receipt, referenced here by id and content hash only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "episode_id",
+    "episode_artifact_hash",
+    "task_id",
+    "atom_id",
+    "public_trace_event_id",
+    "claim_boundary",
+    "consulted_items_status",
+    "routing_influence_status",
+    "rejected_candidates_status",
+    "alternatives_status",
+    "failure_category",
+    "search_policy_decision",
+    "gluing",
+    "novelty",
+    "next_action",
+    "consulted_fibre_items",
+    "routing_influences",
+    "rejected_candidates",
+    "alternatives_considered",
+    "saturation_axis_deltas",
+    "reopened_saturation_axis_ids",
+    "coverage_receipt_ref",
+    "failure_note",
+    "evidence_pointers",
+    "record_canonical_sha256",
+    "is_episode_evidence_root",
+    "grants_method_authority",
+    "discloses_private_chain_of_thought"
+  ],
+  "properties": {
+    "schema_version": {"const": "method-telemetry-record-v1"},
+    "episode_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "episode_artifact_hash": {
+      "description": "Content hash of the exact TaskEpisode this record interprets. Binding by hash makes rebinding to a different episode detectable rather than silent.",
+      "$ref": "#/$defs/sha256"
+    },
+    "task_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "atom_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "public_trace_event_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "claim_boundary": {"$ref": "#/$defs/boundedNote"},
+    "consulted_items_status": {
+      "description": "NONE_OCCURRED is a positive statement that nothing was consulted; UNRECORDED means the set was never captured. Silence is not a search.",
+      "$ref": "#/$defs/recordedSetStatus"
+    },
+    "routing_influence_status": {"$ref": "#/$defs/recordedSetStatus"},
+    "rejected_candidates_status": {"$ref": "#/$defs/recordedSetStatus"},
+    "alternatives_status": {"$ref": "#/$defs/recordedSetStatus"},
+    "failure_category": {
+      "description": "NONE means the episode did not fail. UNCLASSIFIED means it failed and the category was not established, which routes to the metacognitive auditor rather than licensing further guessing.",
+      "enum": [
+        "NONE",
+        "MATHEMATICAL",
+        "DECOMPOSITION",
+        "RETRIEVAL",
+        "REPRESENTATION",
+        "BRIDGE_GLUING",
+        "SOURCE_PROVENANCE",
+        "VERIFICATION",
+        "TOOLING_CI",
+        "META_POLICY",
+        "UNCLASSIFIED"
+      ]
+    },
+    "search_policy_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_kind",
+        "selected_action_id",
+        "decision_note",
+        "considered_alternative_ids"
+      ],
+      "properties": {
+        "policy_kind": {
+          "description": "DEFAULT_SEQUENTIAL is the ordinary case and is not a defect. UNRECORDED is fail-closed and never collapses into a default policy.",
+          "enum": [
+            "EXPERIENCE_MEMORY_ROUTED",
+            "FAILURE_LATTICE_AVOIDANCE",
+            "EXPERT_REVIEW_RECOMMENDATION",
+            "SATURATION_AXIS_REOPENED",
+            "CHEAPEST_FALSIFIER_FIRST",
+            "OPERATOR_DIRECTED",
+            "DEFAULT_SEQUENTIAL",
+            "UNRECORDED"
+          ]
+        },
+        "selected_action_id": {"type": "string", "minLength": 1, "maxLength": 512},
+        "decision_note": {"$ref": "#/$defs/boundedNote"},
+        "considered_alternative_ids": {"$ref": "#/$defs/idList"}
+      }
+    },
+    "gluing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "local_scope_id",
+        "global_scope_id",
+        "obstruction_ids",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "description": "UNOBSERVED is fail-closed and never means glued.",
+          "enum": [
+            "NOT_APPLICABLE",
+            "LOCAL_ONLY",
+            "LOCAL_CONSISTENT_GLOBAL_UNTESTED",
+            "GLOBAL_OBSTRUCTION_FOUND",
+            "GLOBALLY_GLUED",
+            "UNOBSERVED"
+          ]
+        },
+        "local_scope_id": {"type": "string", "maxLength": 512},
+        "global_scope_id": {"type": ["string", "null"], "maxLength": 512},
+        "obstruction_ids": {"$ref": "#/$defs/idList"},
+        "note": {"$ref": "#/$defs/boundedNote"}
+      }
+    },
+    "novelty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "novelty_class",
+        "comparison_basis_ids",
+        "changed_structural_coordinates",
+        "note"
+      ],
+      "properties": {
+        "novelty_class": {
+          "description": "NOT_ASSESSED exists so an ordinary episode is not forced to manufacture a novelty claim.",
+          "enum": [
+            "NOT_ASSESSED",
+            "NO_STRUCTURAL_NOVELTY",
+            "RECOMBINATION_OF_KNOWN",
+            "NEW_STRUCTURAL_COORDINATE"
+          ]
+        },
+        "comparison_basis_ids": {"$ref": "#/$defs/idList"},
+        "changed_structural_coordinates": {"$ref": "#/$defs/idList"},
+        "note": {"$ref": "#/$defs/boundedNote"}
+      }
+    },
+    "next_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["next_action_id", "child_atom_id", "rationale_note"],
+      "properties": {
+        "next_action_id": {"type": "string", "minLength": 1, "maxLength": 512},
+        "child_atom_id": {"type": ["string", "null"], "maxLength": 512},
+        "rationale_note": {"$ref": "#/$defs/boundedNote"}
+      }
+    },
+    "consulted_fibre_items": {
+      "description": "The individual fibre items actually used. The episode's aggregate fibre_snapshot_hash cannot express this.",
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "item_content_hash", "role"],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "item_content_hash": {"$ref": "#/$defs/sha256"},
+          "role": {
+            "enum": [
+              "DEFINITION",
+              "THEOREM",
+              "COUNTEREXAMPLE",
+              "METHOD",
+              "REPRESENTATION",
+              "SOURCE",
+              "DATA"
+            ]
+          }
+        }
+      }
+    },
+    "routing_influences": {
+      "description": "changed_action distinguishes consulting prior experience from being redirected by it.",
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reference_id", "changed_action", "note"],
+        "properties": {
+          "kind": {
+            "enum": [
+              "PRIOR_TOOL",
+              "PRIOR_FAILURE",
+              "PRIOR_EPISODE",
+              "PRIOR_LESSON"
+            ]
+          },
+          "reference_id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "changed_action": {"type": "boolean"},
+          "note": {"$ref": "#/$defs/boundedNote"}
+        }
+      }
+    },
+    "rejected_candidates": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "retrieval_source", "reason_code", "note"],
+        "properties": {
+          "candidate_id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "retrieval_source": {"type": "string", "minLength": 1, "maxLength": 512},
+          "reason_code": {"$ref": "#/$defs/rejectionReason"},
+          "note": {"$ref": "#/$defs/boundedNote"}
+        }
+      }
+    },
+    "alternatives_considered": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["alternative_id", "kind", "selected", "reason_code", "note"],
+        "properties": {
+          "alternative_id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "kind": {
+            "enum": [
+              "OPERATOR",
+              "MOTIF",
+              "REPRESENTATION",
+              "DECOMPOSITION",
+              "FALSIFIER"
+            ]
+          },
+          "selected": {"type": "boolean"},
+          "reason_code": {
+            "oneOf": [{"$ref": "#/$defs/rejectionReason"}, {"type": "null"}]
+          },
+          "note": {"$ref": "#/$defs/boundedNote"}
+        }
+      }
+    },
+    "saturation_axis_deltas": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["axis_id", "delta", "note"],
+        "properties": {
+          "axis_id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "delta": {
+            "enum": ["ADVANCED", "UNCHANGED", "REOPENED", "REGRESSED"]
+          },
+          "note": {"$ref": "#/$defs/boundedNote"}
+        }
+      }
+    },
+    "reopened_saturation_axis_ids": {"$ref": "#/$defs/idList"},
+    "coverage_receipt_ref": {
+      "description": "Pointer to a cross-problem coverage receipt. Held by id and content hash only; no coverage semantics are re-derived here and holding a pointer mints no completeness claim.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["synthesis_id", "receipt_canonical_sha256"],
+          "properties": {
+            "synthesis_id": {"type": "string", "minLength": 1, "maxLength": 512},
+            "receipt_canonical_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        {"type": "null"}
+      ]
+    },
+    "failure_note": {"$ref": "#/$defs/boundedNote"},
+    "evidence_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "record_canonical_sha256": {"$ref": "#/$defs/sha256"},
+    "is_episode_evidence_root": {
+      "description": "Always false. This record interprets an immutable episode; it never becomes a second evidence root.",
+      "const": false
+    },
+    "grants_method_authority": {"const": false},
+    "discloses_private_chain_of_thought": {
+      "description": "Always false. The record has a fixed field set with no free-form narrative slot, and every note is length- and line-bounded.",
+      "const": false
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "boundedNote": {
+      "description": "A single-line rationale of at most 240 characters. The bound is a disclosure control: a decision record names a reason code and adds at most one short clarifying line. Multi-line content is treated as an attempted reasoning transcript.",
+      "type": "string",
+      "maxLength": 240,
+      "not": {"pattern": "[\\r\\n]"}
+    },
+    "idList": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "recordedSetStatus": {
+      "enum": ["ITEMS_RECORDED", "NONE_OCCURRED", "UNRECORDED"]
+    },
+    "rejectionReason": {
+      "enum": [
+        "PRECONDITION_MISMATCH",
+        "STRUCTURAL_COORDINATE_MISMATCH",
+        "KNOWN_FAILURE_SCOPE_MATCH",
+        "SUPERSEDED_BY_SELECTED",
+        "INSUFFICIENT_EVIDENCE",
+        "COST_EXCEEDS_BUDGET",
+        "OUT_OF_SCOPE_AUTHORITY",
+        "DUPLICATE_OF_RETAINED",
+        "UNVERIFIABLE_PROVENANCE"
+      ]
+    }
+  }
+}
