@@ -11,19 +11,18 @@ from rakl.objective_transfer_robustness import (
     FAMILIES,
     RobustTask,
     generate,
-    lexical_score,
     mechanism_predict,
     relational_predict,
     verify,
 )
-from scripts.paper2_robustness_development import (
+from rakl.robustness_analysis import (
     binary_probability,
     brier,
     lexical_predict,
     twin_predict,
 )
 
-CONFIRMATORY_SEED = 2026081212
+CONFIRMATORY_SEED = 2026081213
 N_PER_CELL = 15
 EXPECTED_N = 810
 FROZEN_LEXICAL_THRESHOLD = 0.40064102564102566
@@ -160,7 +159,7 @@ def summarize(
 
     broad_supported = not reasons
     return {
-        "schema": "paper2-robustness-confirmatory-v1",
+        "schema": "paper2-robustness-confirmatory-v1.1",
         "seed": seed,
         "n_per_cell": n_per_cell,
         "n": len(tasks),
