@@ -1,0 +1,43 @@
+{
+  "schema_version": "rakl-issue-terminal-receipt-v1",
+  "issue": 409,
+  "packet_id": "competitive-advantage-causal-attribution-v1",
+  "terminal_status": "CANNOT_CHECK",
+  "scientific_verdict": "BLOCKED_UPSTREAM_EPOCH1_INPUTS_ABSENT",
+  "claim_boundary": "Terminal ownership receipt only. No CompetitorAdvantageCase inventory, no matched discriminators, no ROOT_CAUSE_SUPPORTED handoffs, and no Self-RAKL challenger from unexplained leaderboard gaps. Causal attribution cannot start without frozen #407 mechanism/fair-comparison contracts and #408 Epoch-1 case-level comparisons.",
+  "kill_criterion_applied": "Issue #409 requires frozen inputs from #407 (MECHANISM_MATRIX / FAIR_COMPARISON_MATRIX) and #408 (CASE_LEVEL_COMPARISONS / EARLIEST_FAILURE_MAP_V1 / WEAKNESS_MAP_V1 / COST_MATRIX_V1). Both parents remain open without those artifacts on main. Inventing competitor advantages or cargo-cult feature copies is forbidden. Fail closed with CANNOT_CHECK / BLOCKED_UPSTREAM_EPOCH1_INPUTS_ABSENT.",
+  "acceptance_assessment": {
+    "mechanism_matrix_present": false,
+    "fair_comparison_matrix_present": false,
+    "epoch1_case_level_comparisons_present": false,
+    "advantage_cases_emitted": false,
+    "matched_discriminators_run": false,
+    "challenger_handoffs_emitted": false,
+    "cargo_cult_copying_performed": false
+  },
+  "upstream_dependencies": {
+    "parent_master": 405,
+    "mechanism_freeze_issue": 407,
+    "epoch1_benchmark_issue": 408,
+    "observed_states": {
+      "405": "OPEN_OR_UNMET_AT_CLAIM",
+      "407": "OPEN_WITHOUT_REQUIRED_ARTIFACTS",
+      "408": "OPEN_WITHOUT_EPOCH1_RESULTS"
+    }
+  },
+  "forbidden_actions_honored": [
+    "NO_INVENTED_COMPETITOR_WINS",
+    "NO_CARGO_CULT_FEATURE_COPY",
+    "NO_CHALLENGER_FROM_UNEXPLAINED_GAP",
+    "NO_EPOCH1_TASK_EVALUATOR_MUTATION"
+  ],
+  "reopen_requires": [
+    "Frozen #407 MECHANISM_MATRIX and FAIR_COMPARISON_MATRIX bound by content hash",
+    "Frozen #408 Epoch-1 case-level comparisons and weakness/cost maps bound by content hash",
+    "Fresh attribution packet version before discriminator outputs"
+  ],
+  "evaluated_results_accessed": false,
+  "grants_scientific_authority": false,
+  "promotional_lift_claim_allowed": false,
+  "created_at_utc": "2026-08-12T05:05:00Z"
+}
