@@ -78,3 +78,14 @@ Pointer receipts under `research/capability_gated_closeout_20260812/` close ORAC
 | #367 | `BLOCKED_CAPABILITY__CANNOT_BIND_CONFIRMATORY_FOUR_ARM` |
 
 Index: `research/capability_gated_closeout_20260812/CLOSEOUT_INDEX.md`. Ladder parents #247/#356/#372/#379 remain CLOSED. No 14B; no Phase-0; no gate softening.
+
+## Fail-closed framework contract closeout (2026-08-12)
+
+Pointer receipts under `research/fail_closed_framework_closeout_20260812/` close proposal-only contract gaps before protected integration (PR **#480**):
+
+| Issue | Disposition |
+|------:|-------------|
+| #478 | `FAIL_CLOSED_CONTRACT_RESTORED` — quantifier CONDITIONAL gluing |
+| #479 | `FAIL_CLOSED_CONTRACT_RESTORED` — pre-scratch MATERIALIZED requires durable ack |
+
+Index: `research/fail_closed_framework_closeout_20260812/CLOSEOUT_INDEX.md`. No scientific authority; `CAPABLE_MODEL_AVAILABLE` unchanged.
