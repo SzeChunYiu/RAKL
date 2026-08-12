@@ -51,7 +51,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from rakl.cycle_metrics_harvest import (
+    build_instrumentation_row,
+    instrumentation_coverage,
+)
+
 HARVESTER_VERSION = "paper5-longitudinal-harvest-v1"
+INSTRUMENTATION_VERSION = "paper5-cycle-metrics-instrumentation-v1"
 UNIVERSE_SCHEMA = "paper5-longitudinal-event-universe-v1"
 
 #: Basename markers identifying a cycle-metrology artifact.
@@ -248,6 +254,24 @@ def main() -> None:
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
 
+    instrumentation_rows = [
+        build_instrumentation_row(env, instrumented_at=harvested_at) for env in envelopes
+    ]
+    instrumentation_path = args.out_dir / "prospective_cycle_metrics_instrumentation.jsonl"
+    with instrumentation_path.open("w", encoding="utf-8") as handle:
+        for row in instrumentation_rows:
+            handle.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")
+
+    instrumentation_report = instrumentation_coverage(instrumentation_rows)
+    instrumentation_report["instrumentation_version"] = INSTRUMENTATION_VERSION
+    instrumentation_report["instrumentation_sha256"] = hashlib.sha256(
+        instrumentation_path.read_bytes()
+    ).hexdigest()
+    (args.out_dir / "cycle_metrics_instrumentation_report.json").write_text(
+        json.dumps(instrumentation_report, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
     print(universe)
     print(f"  events                    {report['event_count']}")
     print(f"  reachable from main       {report['reachable_from_main_history']}")
@@ -256,6 +280,12 @@ def main() -> None:
     print(f"  without schema_version    {report['events_without_declared_schema_version']}")
     print(f"  carrying CANNOT_* markers {report['events_carrying_unmeasured_markers']}")
     print(f"  unparseable               {report['unparseable_count']}")
+    print(instrumentation_path)
+    print(f"  v1 instrumentation rows   {instrumentation_report['row_count']}")
+    print(
+        "  rows with known denominators "
+        f"{instrumentation_report['rows_with_known_denominators']}"
+    )
 
 
 if __name__ == "__main__":

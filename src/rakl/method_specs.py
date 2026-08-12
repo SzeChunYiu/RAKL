@@ -228,6 +228,8 @@ V3_IMPLEMENTATION_OWNER_MAP = {
     "src/rakl/v3.py": "software_architecture_execution",
     "src/rakl/shadow_artifact_hash.py": "software_architecture_execution",
     "src/rakl/summation_compatibility.py": "contextual_theory_gluing",
+    "src/rakl/quantifier_compatibility.py": "contextual_theory_gluing",
+    "src/rakl/pre_scratch_fibre_freeze.py": "software_architecture_execution",
 }
 
 V3_PUBLIC_AUTHORITY_SURFACE_OWNERS = {
