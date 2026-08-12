@@ -13,11 +13,11 @@ L_t=\pi_{\mathrm{train}}(R_t,\theta_t).
 \]
 The intended decomposition is
 \[
-\boxed{
+\boxed{%
 \begin{aligned}
 \pi_{\mathrm{epi}} &: \text{what is scientifically licensed?}\\
-\pi_{\mathrm{search}} &: \text{what should be inspected or attempted next?}\\
-\pi_{\mathrm{train}} &: \text{what may be useful to receive gradient budget next?}
+\pi_{\mathrm{search}} &: \text{what should be inspected next?}\\
+\pi_{\mathrm{train}} &: \text{what may receive gradient budget next?}
 \end{aligned}}
 \]
 The three views may share canonical identities, structural objects, lineage and negative history, but they do not share authority semantics.  In particular,
@@ -29,19 +29,19 @@ The three views may share canonical identities, structural objects, lineage and 
 
 The representation lifecycle used elsewhere in v3 carries over to training.  A safe training-time pipeline is
 \[
+\begin{aligned}
 D_{\mathrm{raw}}
-\longrightarrow
-\pi_{\mathrm{train}}
-\longrightarrow
-\text{derived structural training view}
-\longrightarrow
-\text{batch materialization}
-\longrightarrow
-\text{optimizer update}.
+&\longrightarrow \pi_{\mathrm{train}}
+\longrightarrow \text{derived structural training view} \\
+&\longrightarrow \text{batch materialization}
+\longrightarrow \text{optimizer update}.
+\end{aligned}
 \]
 Raw examples and their provenance remain canonical.  A structural label, mastery estimate or selection score is a derived view with a reconstruction pointer; it cannot rewrite the underlying example or be counted as an independent evidence root merely because it appears in several derived batches.  This mirrors the archive/index/working-set distinction in bounded cognition.
 
+\begin{sloppypar}
 The executable proposal-only contract in \path{src/rakl/training_projection.py} binds every derived training candidate to a raw-item identity, a registered \texttt{StructuralObject}, an exact model checkpoint and a frozen probe family.  It rejects unknown structure identities, checkpoint drift, post-hoc mastery definitions and confirmatory-target leakage.  Its objects explicitly expose no scientific-authority grant and make no claim that adaptive training is effective.
+\end{sloppypar}
 
 \subsection{Learner state is vector-valued and checkpoint-bound}
 
@@ -66,15 +66,13 @@ The analogy with bounded prompt cognition is useful but limited.  Prompt compila
 
 The failure-to-policy arrow follows the same governed pattern used by Self-RAKL search evolution:
 \[
-\text{observed learning failure/flat progress}
-\rightarrow
-\text{typed diagnosis}
-\rightarrow
-\text{bounded allocation-policy challenger}
-\rightarrow
-\text{fresh assurance}
-\rightarrow
-\text{promote, narrow or reject}.
+\begin{aligned}
+&\text{observed learning failure/flat progress}
+\rightarrow \text{typed diagnosis} \\
+&\rightarrow \text{bounded allocation-policy challenger}
+\rightarrow \text{fresh assurance} \\
+&\rightarrow \text{promote, narrow or reject}.
+\end{aligned}
 \]
 A low marginal gain does not directly authorize a new curriculum idea.  It may reflect genuine same-structure saturation, an unmastered composition or boundary, forgetting, an optimization/model floor, or a defective structural extractor.  The discriminating experiment must separate these explanations first.
 
