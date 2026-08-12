@@ -360,3 +360,37 @@ def test_diagnostic_results_jsonl_covers_all_items() -> None:
     path = OUT / "DIAGNOSTIC_RESULTS" / "qwen2.5-7b-instruct.jsonl"
     rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
     assert [r["task_id"] for r in rows] == list(TASK_IDS)
+
+
+def test_stage2_challenger_surfaces_are_canonically_defined() -> None:
+    """Stage 2 challenger must define the role; sealed parent must stay undefined."""
+    stage2 = OUT / "protocol_stage2"
+    system = (stage2 / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8")
+    runner = (stage2 / "RUNNER_INSTRUCTION_BLOCK.txt").read_text(encoding="utf-8")
+    sealed = (V2_EXEC / "protocol" / "SYSTEM_PROMPT.txt").read_text(encoding="utf-8")
+
+    assert audit_instruction_semantics(system, surface_label="stage2-system").verdict == (
+        "EVIDENCE_ROLE_DEFINED_CANONICAL"
+    )
+    assert audit_instruction_semantics(runner, surface_label="stage2-runner").verdict == (
+        "EVIDENCE_ROLE_DEFINED_CANONICAL"
+    )
+    assert audit_instruction_semantics(sealed, surface_label="sealed-parent").verdict == (
+        "EVIDENCE_ROLE_UNDEFINED"
+    )
+    assert role_definition_hint_leakage(CANONICAL_EVIDENCE_ROLE_DEFINITION) == ()
+    assert "E1" not in CANONICAL_EVIDENCE_ROLE_DEFINITION
+    for token in ("T1", "T2", "T3", "T4", "T5"):
+        assert token not in system
+        assert token not in runner
+
+
+def test_stage2_receipt_is_development_only() -> None:
+    receipt = json.loads((OUT / "STAGE2_INTERFACE_CHALLENGER_RECEIPT.json").read_text(encoding="utf-8"))
+    assert receipt["terminal"] == "STAGED_INTERFACE_DEVELOPMENT_PROMISING"
+    assert receipt["grants_scientific_authority"] is False
+    assert receipt["CAPABLE_MODEL_AVAILABLE"] == "NO_REFUTED"
+    assert "No CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3" in receipt["explicit_non_claims"]
+    spec = json.loads((OUT / "INTERFACE_CHALLENGER_SPEC.json").read_text(encoding="utf-8"))
+    assert spec["gold_convention"] == "LICENSES_VERDICT"
+    assert "mutating sealed v2_exec SYSTEM_PROMPT.txt" in spec["forbidden_repairs"]
