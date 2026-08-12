@@ -1,95 +1,113 @@
-# Graded evidence-integration battery v1 — GLM-5.2, n=30 per cell
+# Graded evidence-integration battery v1 — GLM-5.2
 
 **Status:** `NON_SEALED_HOSTED_EVIDENCE`. Not the registered Paper II protocol, not
 confirmatory, grants no scientific authority. A hosted endpoint is not
-weight-attestable. Recorded because it is the first arm comparison in this
-project run on an instrument that was *demonstrated* to be able to register a
-difference.
+weight-attestable. Recorded because these are the first arm comparisons in this
+project run on instruments *demonstrated* able to register a difference.
+
+Total: **~540 model runs** across six configurations, every one gated by leak
+controls that abort the run on failure.
 
 ## Why it exists
 
 The single pendulum task is at floor for Qwen2.5 0.5B-7B and at ceiling for
-GLM-5.2 (30/30 both arms, `paper2_hosted_capability_probe_v1`). It cannot
+GLM-5.2 (30/30 both arms — `paper2_hosted_capability_probe_v1`), so it cannot
 register an effect of either sign. This battery builds a difficulty gradient
-that stresses the one coordinate that was never saturated: evidence-ID binding.
+stressing the one coordinate that was never saturated: evidence-ID binding.
 
 ## Design
 
 Procedurally generated evidence-integration tasks. Sources make claims under
-context coordinates; only some dimensions are **load-bearing** for the target
-question. A source is misaligned only if it differs from the target on a
-load-bearing dimension. Ground truth is computed by a verifier over generator
-structure — **never** by recording which coordinate was perturbed.
+context coordinates; only some dimensions are **load-bearing**. A source is
+misaligned only if it differs from the target on a load-bearing dimension.
+Ground truth comes from a verifier over generator structure — **never** from
+recording which coordinate was perturbed.
 
-| Level | sources | dims | near-misses |
-|---|---|---|---|
-| L1 | 8 | 2 | 2 |
-| L2 | 14 | 4 | 4 |
-| L3 | 20 | 4 | 7 |
-| L4 | 26 | 5 | 10 |
+- **DIRECT**: raw source prose + question.
+- **RAKL**: same prose plus normalized context coordinates. No target
+  comparison, no relevance filtering, no disposition.
 
-- **DIRECT** arm: raw source prose + question.
-- **RAKL** arm: same prose plus normalized context coordinates. No target
-  comparison, no relevance filtering, no disposition. The model must still
-  decide which dimensions bind and apply them.
+## Leak controls — run before any delta, abort on failure
 
-## Leak controls — run before any delta, run aborts if either fails
+1. **Mechanical baseline** — tag-only all-dimension set comparison, no LLM.
+   `exact_pass = 0.00` at every level.
+2. **Disposition scan** — no per-source verdict in either prompt. Zero hits.
 
-1. **Mechanical baseline** — a tag-only all-dimension set-comparison program, no
-   LLM. Scores `exact_pass = 0.00` at every level (mean F1 0.79-0.83). The RAKL
-   context map alone therefore does not hand over the answer.
-2. **Disposition scan** — no per-source verdict appears in either prompt. Zero
-   hits at every level.
+Both caught real defects **in this battery** before any comparison ran:
+- v0 shipped a precomputed `differing_dimensions` field to the RAKL arm; the
+  mechanical baseline scored **1.00 exact**. The arm was being handed the label.
+- The prompt stated the naive rule while the verifier applied the relevance rule,
+  penalising the model for following instructions.
 
-Both controls caught a real defect in v0 of this battery: the RAKL arm shipped a
-precomputed `differing_dimensions` relation, and the mechanical baseline scored
-**1.00 exact** — the arm was being handed the label. Dimension relevance was
-added so that naive all-dimension comparison fails. A second defect was caught by
-inspection: the prompt stated the naive rule while the verifier applied the
-relevance rule, so the model was penalised for following instructions. Both fixed
-before any comparison was run.
+A third arm — **selective retrieval** — was built and then **withheld**: its
+structural-proximity prefilter discards ~100% of misaligned sources
+(recall 0.00–0.11), so it would post a large negative as an artifact of the
+retriever rather than of RAKL. A construct that can only fail is as invalid as
+one that can only pass.
 
-## Result — no RAKL effect, on a validated instrument
+## Result A — relevance stated (n=30/cell)
 
 ```
-lvl  src dim nm | DIRECT ex   f1    | RAKL   ex   f1    | delta_f1   p      | mech_f1
-L1     8  2   2 | 0.03  0.906      | 0.07  0.881      | -0.0248  0.391    | 0.82
-L2    14  4   4 | 0.10  0.870      | 0.17  0.867      | -0.0031  0.910    | 0.81
-L3    20  4   7 | 0.03  0.856      | 0.00  0.847      | -0.0091  0.737    | 0.83
-L4    26  5  10 | 0.03  0.811      | 0.03  0.829      | +0.0184  0.508    | 0.79
+lvl  src dim nm | DIRECT f1 | RAKL f1 | delta_f1   p     | mech_f1
+L1     8  2   2 |   0.906   |  0.881  | -0.0248  0.391   | 0.82
+L2    14  4   4 |   0.870   |  0.867  | -0.0031  0.910   | 0.81
+L3    20  4   7 |   0.856   |  0.847  | -0.0091  0.737   | 0.83
+L4    26  5  10 |   0.811   |  0.829  | +0.0184  0.508   | 0.79
 ```
 
-Mean delta across levels **-0.0046**; three of four negative; no trend with
-difficulty. All p > 0.39.
+Difficulty axis works: DIRECT declines monotonically 0.906 → 0.811
+(slope −0.030/level), misaligned-F1 0.911 → 0.734. Both arms sit **above** the
+mechanical baseline (+0.082/+0.060/+0.031/+0.024) — the model is reasoning, not
+tag-matching. This is the sensitivity demonstration the pendulum never had.
 
-## Instrument validity
+## Scale is not a difficulty lever
 
-**The difficulty axis works.** DIRECT mean F1 declines monotonically
-0.906 → 0.870 → 0.856 → 0.811 (slope -0.030/level), and misaligned-F1 declines
-0.911 → 0.834 → 0.801 → 0.734. Difficulty is doing what it was built to do.
+Extending to 26/34/40 sources with multi-dimensional near-misses gives DIRECT
+mean F1 **0.834 / 0.840 / 0.822** — a flat asymptote. Adding more of the same
+does not make the task harder; the residual error is not reasoning difficulty.
 
-**The arms are above the mechanical baseline** at every level (+0.082, +0.060,
-+0.031, +0.024), so the model is performing relevance reasoning rather than the
-naive rule. This is the sensitivity demonstration the pendulum instrument never
-had.
+## Result B — relevance hidden (n=30/cell)
 
-**`exact_pass` remains near-floor (0.00-0.17)** and is the wrong primary
-endpoint: it is an all-or-nothing conjunction that discards the graded signal.
-Mean F1 is the informative endpoint, exactly as the Paper II power analysis
-predicted.
+Load-bearing dimensions no longer enumerated; the model must classify each
+dimension as physical setup vs recording procedure from a stated rule.
 
-## What this licenses, and what it does not
+```
+lvl  src nm | DIRECT f1  misF1 | RAKL f1  misF1 | delta_f1   p     | mech_f1
+R0    10  5 |   0.792    0.752 |  0.770   0.705 | -0.0214  0.422   | 0.78
+R1    14  6 |   0.789    0.702 |  0.770   0.639 | -0.0188  0.465   | 0.77
+R1b   16  8 |   0.777    0.668 |  0.795   0.739 | +0.0181  0.483   | 0.80
+```
 
-Licensed: on this synthetic evidence-integration family, at this operating point,
-normalized context coordinates alone produce **no measurable benefit** over raw
-prose, and the direction is if anything slightly negative.
+**Both arms collapse onto the mechanical baseline** (deltas vs mech: +0.009,
++0.014, −0.026 for DIRECT; −0.012, −0.004, −0.007 for RAKL). With relevance
+hidden, GLM-5.2 does not perform the relevance step — it falls back to naive
+all-dimension matching. That is a genuine capability finding, and it means this
+configuration also cannot discriminate: both arms are executing the same
+heuristic.
+
+## What this licenses
+
+**Normalization-only RAKL shows no measurable benefit in any of six
+configurations** (~540 runs). Deltas: −0.025, −0.003, −0.009, +0.018, −0.021,
+−0.019, +0.018. All p > 0.39, no trend with difficulty, direction inconsistent.
 
 **Not** licensed:
-- No claim about RAKL as a whole. The treatment here is *normalization only* — a
+- No claim about RAKL as a whole. The treatment is *normalization only* — a
   deliberately narrow operationalization. Selective retrieval, experience
-  conditioning and typed authority are untested by this battery.
-- No claim about the registered pendulum protocol; this is a different task family.
-- Not a proof of no effect. At n=30/cell the observed spread leaves small effects
-  (delta < ~0.05 in mean F1) undetectable. Pooling all levels (n≈120/arm) is the
-  cheap next step, followed by testing the retrieval and experience arms that this
-  battery does not touch.
+  conditioning and typed authority remain untested.
+- Not a proof of no effect. n=30/cell leaves deltas below ~0.05 mean F1
+  undetectable.
+- Result B's null is weaker than Result A's, because both arms sat at the
+  mechanical baseline — an instrument at its floor is uninformative in the same
+  way one at ceiling is.
+
+## The pointer this gives Paper II
+
+When relevance is stated, the model reasons and normalization adds nothing —
+the extraction was never the bottleneck. When relevance is hidden, the model
+stops reasoning and normalization still adds nothing — because normalized
+coordinates do not say *which* coordinates matter.
+
+Both halves point the same way: if RAKL has value on this task family, it is in
+**relevance determination**, not representation. That is a different treatment
+and it is the one worth building next.

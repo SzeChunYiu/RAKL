@@ -24,6 +24,9 @@ import random
 from dataclasses import dataclass, field
 
 DIMS = ["locale", "regime", "idealization", "instrument", "timescale"]
+PHYSICAL_DIMS = {"locale", "regime", "idealization"}   # setup; load-bearing
+PROCEDURAL_DIMS = {"instrument", "timescale"}          # recording; not load-bearing
+
 VALS = {
     "locale": ["earth", "moon", "orbit", "lab"],
     "regime": ["small_amplitude", "moderate_amplitude", "large_amplitude"],
@@ -49,18 +52,27 @@ class Task:
     target_context: dict
     target_topic: str
     relevant_dims: list = field(default_factory=list)
+    hide_relevance: bool = False
     gold_support: list = field(default_factory=list)
     gold_misaligned: list = field(default_factory=list)
     gold_refuted: list = field(default_factory=list)
 
 
-def generate(rng: random.Random, *, n_sources: int, n_dims: int, n_near_miss: int, idx: int) -> Task:
+def generate(rng: random.Random, *, n_sources: int, n_dims: int, n_near_miss: int, idx: int,
+             multi_dim: bool = False, hide_relevance: bool = False) -> Task:
     dims = DIMS[:n_dims]
     # Only some dimensions are load-bearing for the target QoI. Differing on an
     # IRRELEVANT dimension does not misalign a source. This is what makes the
     # task require reasoning rather than tag set-equality.
-    n_rel = max(1, n_dims // 2)
-    relevant = dims[:n_rel]
+    if hide_relevance:
+        # Load-bearing = dimensions describing the PHYSICAL SETUP. Which dimension
+        # is physical vs procedural is never enumerated; the model must classify.
+        relevant = [d for d in dims if d in PHYSICAL_DIMS]
+        if not relevant:
+            relevant = dims[:1]
+    else:
+        n_rel = max(1, n_dims // 2)
+        relevant = dims[:n_rel]
     target_ctx = {d: rng.choice(VALS[d]) for d in dims}
     topic = "period_response"
     sources, i = [], 1
@@ -85,9 +97,19 @@ def generate(rng: random.Random, *, n_sources: int, n_dims: int, n_near_miss: in
     irrelevant = [d for d in dims if d not in relevant]
     for j in range(n_near_miss):
         c = dict(target_ctx)
-        pool = relevant if (j % 2 == 0 or not irrelevant) else irrelevant
-        d = rng.choice(pool)
-        c[d] = rng.choice([v for v in VALS[d] if v != target_ctx[d]])
+        if multi_dim and irrelevant and j % 3 == 2:
+            # differs on SEVERAL irrelevant dims but no relevant one -> still ALIGNED.
+            # "any difference" heuristics fail hardest here.
+            for d in rng.sample(irrelevant, min(len(irrelevant), 2)):
+                c[d] = rng.choice([v for v in VALS[d] if v != target_ctx[d]])
+        elif multi_dim and irrelevant and j % 3 == 1:
+            # differs on one relevant AND one irrelevant -> MISALIGNED
+            for d in (rng.choice(relevant), rng.choice(irrelevant)):
+                c[d] = rng.choice([v for v in VALS[d] if v != target_ctx[d]])
+        else:
+            pool = relevant if (j % 2 == 0 or not irrelevant) else irrelevant
+            d = rng.choice(pool)
+            c[d] = rng.choice([v for v in VALS[d] if v != target_ctx[d]])
         mk(c, rng.choice([True, False]), "adjacent-context study")
     # refuted: same context, denies the effect, contradicted by the aligned supporters
     for _ in range(max(1, n_sources // 6)):
@@ -102,6 +124,7 @@ def generate(rng: random.Random, *, n_sources: int, n_dims: int, n_near_miss: in
 
     t = Task(f"EVID-{n_sources}s{n_dims}d{n_near_miss}x-{idx:03d}", sources, target_ctx, topic,
              relevant_dims=list(relevant))
+    t.hide_relevance = hide_relevance
     # VERIFIER: ground truth from structure, not from what was perturbed
     for s in sources:
         if any(s.context.get(d) != target_ctx[d] for d in relevant):
@@ -129,8 +152,15 @@ def _common(t: Task) -> str:
         f"TARGET QUESTION\nFor the target context ({tgt}), which sources support the conclusion that "
         f"the {t.target_topic} increases; which are informative but context-misaligned for this target; "
         f"and which are refuted by the aligned evidence?\n\n"
-        f"LOAD-BEARING DIMENSIONS for this question: {', '.join(t.relevant_dims)}. The remaining "
-        f"context dimensions are recording conventions and do not affect whether a source applies.\n"
+        + (
+            "LOAD-BEARING RULE: a context dimension is load-bearing if it describes the PHYSICAL SETUP "
+            "under which the quantity arises; it is NOT load-bearing if it describes the RECORDING "
+            "PROCEDURE used to observe it. Decide for yourself which of the dimensions present are "
+            "which; they are not listed for you.\n"
+            if t.hide_relevance else
+            f"LOAD-BEARING DIMENSIONS for this question: {', '.join(t.relevant_dims)}. The remaining "
+            f"context dimensions are recording conventions and do not affect whether a source applies.\n"
+        ) + 
         f"A source is context-misaligned ONLY IF it differs from the target on a load-bearing "
         f"dimension; differing on a non-load-bearing dimension does NOT misalign it. Among "
         f"context-aligned sources, one that denies what the aligned majority establishes is refuted.\n\n"
@@ -205,3 +235,43 @@ def disposition_scan(t: Task) -> dict:
         body = p.split("TARGET QUESTION")[0]   # per-source content only
         out[name] = [term for term in DISPOSITION_TERMS if term.lower() in body.lower()]
     return out
+
+
+def retrieval_prompt(t: Task, *, keep_frac: float = 0.6) -> str:
+    """RAKL selective-retrieval arm: prefilter by structural proximity to the target.
+
+    Ranks by count of matching context dimensions across ALL dimensions, so the
+    retriever cannot see which dimensions are load-bearing and therefore cannot
+    see the label. Retrieved set deliberately still contains misaligned sources.
+    """
+    k = max(3, int(round(len(t.sources) * keep_frac)))
+    ranked = sorted(
+        t.sources,
+        key=lambda s: (-sum(1 for d in t.target_context if s.context.get(d) == t.target_context[d]), s.sid),
+    )
+    kept = sorted(ranked[:k], key=lambda s: int(s.sid[1:]))
+    body = "\n".join(f"[{s.sid}] {s.claim}" for s in kept)
+    cmap = "\n".join(
+        json.dumps({"source_id": s.sid, "context": s.context,
+                    "asserts_increase": s.polarity, "topic": s.topic}, sort_keys=True)
+        for s in kept
+    )
+    tgt = json.dumps({"target_context": t.target_context}, sort_keys=True)
+    return (f"RAKL-RETRIEVED EVIDENCE (structural proximity to target; {k} of {len(t.sources)} sources; "
+            f"the retriever is blind to which dimensions are load-bearing)\n\n{body}\n\n"
+            f"RAKL CONTEXT MAP (normalized coordinates)\n{cmap}\n{tgt}\n\n{_common(t)}")
+
+
+def retrieval_recall(t: Task, *, keep_frac: float = 0.6) -> dict:
+    """How much gold the prefilter discards -- a retrieval arm that drops gold
+    sources is handicapped, and that must be reported, not hidden."""
+    k = max(3, int(round(len(t.sources) * keep_frac)))
+    ranked = sorted(
+        t.sources,
+        key=lambda s: (-sum(1 for d in t.target_context if s.context.get(d) == t.target_context[d]), s.sid),
+    )
+    kept = {s.sid for s in ranked[:k]}
+    def rec(g):
+        return 1.0 if not g else len(kept & set(g)) / len(g)
+    return {"support": rec(t.gold_support), "misaligned": rec(t.gold_misaligned),
+            "refuted": rec(t.gold_refuted)}

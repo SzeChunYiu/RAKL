@@ -23,7 +23,8 @@ BASE = os.environ["ANTHROPIC_BASE_URL"].rstrip("/")
 TOKEN = os.environ["ANTHROPIC_AUTH_TOKEN"]
 MODEL = os.environ.get("RUN_MODEL", "glm-5.2")
 N = int(os.environ.get("RUN_N", "30"))
-LEVELS = [("L1", 8, 2, 2), ("L2", 14, 4, 4), ("L3", 20, 4, 7), ("L4", 26, 5, 10)]
+# In-band configs (hidden relevance). R1 measured DIRECT mean_f1=0.708, inside [0.35,0.75].
+LEVELS = [("R0", 10, 5, 5), ("R1", 14, 5, 6), ("R1b", 16, 5, 8)]
 
 
 def call(prompt: str) -> tuple[str | None, str | None]:
@@ -87,7 +88,7 @@ def main() -> int:
     rng = random.Random(20260812)
     tasks, controls = {}, {}
     for lvl, ns, nd, nm in LEVELS:
-        ts = [generate(rng, n_sources=ns, n_dims=nd, n_near_miss=nm, idx=i) for i in range(N)]
+        ts = [generate(rng, n_sources=ns, n_dims=nd, n_near_miss=nm, idx=i, multi_dim=True, hide_relevance=True) for i in range(N)]
         tasks[lvl] = ts
         mech = [score(mechanical_baseline(t), t) for t in ts]
         leaks = sorted({f"{a}:{x}" for t in ts for a, xs in disposition_scan(t).items() for x in xs})
@@ -131,7 +132,7 @@ def main() -> int:
                               "delta_mean_f1": df1, "p_mean_f1": pf1,
                               "delta_exact": dex, "p_exact": pex,
                               "mechanical_mean_f1": controls[lvl]["mechanical_mean_f1"]}
-    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "main-battery-result.json")
+    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "main-inband-result.json")
     with open(dest, "w") as f:
         json.dump(out, f, indent=1)
     print(json.dumps(out, indent=1))
