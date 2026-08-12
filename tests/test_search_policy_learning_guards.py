@@ -1,3 +1,5 @@
+import pytest
+
 from rakl.epistemic_search import (
     EvidenceStance,
     ScientificSearchQuestion,
@@ -8,14 +10,21 @@ from rakl.epistemic_search import (
     SearchVertical,
 )
 from rakl.search_policy_learning import (
+    CounterfactualSearchRun,
+    RootCauseCertificationVerdict,
+    SearchFailureReceipt,
     SearchFailureSignature,
     SearchPolicy,
+    SearchRootCauseCertificate,
+    SearchRootCauseDiagnostic,
+    build_search_failure_receipt,
+    certify_search_root_cause,
     compile_search_intents_with_policy,
     derive_search_policy_update,
     materialize_search_policy_challenger,
+    propose_registered_counterfactual_policy,
     select_candidates_with_policy,
 )
-from rakl.search_policy_learning import SearchFailureReceipt
 
 
 def _rank(**overrides):
@@ -55,18 +64,81 @@ def _candidate(candidate_id, **overrides):
     return SearchCandidate(candidate_id=candidate_id, **values)
 
 
-def _failure(signature, policy_version="p1"):
-    return SearchFailureReceipt(
-        failure_id="f1",
-        question_id="q1",
-        policy_version=policy_version,
-        signature=signature,
-        causal_evidence_ids=("case-1",),
-        known_answer_validated=True,
-        root_cause_confirmed=True,
-        counterfactual_discriminator_passed=True,
-        frozen_before_update=True,
+def _run(run_id, policy, passed):
+    return CounterfactualSearchRun(
+        run_id=run_id,
+        policy=policy,
+        evaluation_receipt_hash=f"eval-{run_id}",
+        outcome_passed=passed,
+        case_subject_hash="case",
+        task_input_hash="task",
+        candidate_pool_hash="pool",
+        model_subject_hash="model",
+        tool_contract_hash="tools",
+        resource_contract_hash="resources",
     )
+
+
+def _certified_receipt(signature, incumbent):
+    probe = propose_registered_counterfactual_policy(
+        incumbent,
+        signature,
+        to_policy_version="probe-v2",
+    )
+    diagnostic = SearchRootCauseDiagnostic(
+        diagnostic_id="diag",
+        certificate_id="cert",
+        failure_id="failure",
+        question_id="q1",
+        hypothesized_signature=signature,
+        validated_reference_signature=signature,
+        diagnosis_reference_receipt_hash="gold",
+        causal_evidence_ids=("case-1",),
+        baseline=_run("baseline", incumbent, False),
+        counterfactual=_run("counterfactual", probe, True),
+        frozen_before_policy_update=True,
+    )
+    result = certify_search_root_cause(diagnostic)
+    assert result.verdict is RootCauseCertificationVerdict.ROOT_CAUSE_CERTIFIED
+    assert result.certificate is not None
+    return build_search_failure_receipt(result.certificate)
+
+
+def test_root_cause_and_failure_receipts_cannot_be_self_certified_with_raw_constructor():
+    with pytest.raises(ValueError, match="issued by certify_search_root_cause"):
+        SearchRootCauseCertificate(
+            certificate_id="fake",
+            diagnostic_id="fake-diagnostic",
+            failure_id="fake-failure",
+            question_id="q1",
+            incumbent_policy_version="p1",
+            counterfactual_policy_version="p2",
+            signature=SearchFailureSignature.QUERY_DRIFT,
+            intervention_parameters=("max_semantic_expansion_terms",),
+            baseline_run_id="b",
+            counterfactual_run_id="c",
+            baseline_evaluation_receipt_hash="beval",
+            counterfactual_evaluation_receipt_hash="ceval",
+            matched_material_context_hash="ctx",
+            diagnosis_reference_receipt_hash="gold",
+            causal_evidence_ids=("case",),
+            subject_hash="h" * 64,
+            _issuer=object(),
+        )
+
+    # Even a structurally plausible failure receipt must be issued by the builder.
+    incumbent = SearchPolicy("p1", max_semantic_expansion_terms=8)
+    certified = _certified_receipt(SearchFailureSignature.QUERY_DRIFT, incumbent)
+    with pytest.raises(ValueError, match="built by build_search_failure_receipt"):
+        SearchFailureReceipt(
+            failure_id=certified.failure_id,
+            question_id=certified.question_id,
+            policy_version=certified.policy_version,
+            causal_evidence_ids=certified.causal_evidence_ids,
+            observed_candidate_ids=(),
+            root_cause_certificate=certified.root_cause_certificate,
+            _issuer=object(),
+        )
 
 
 def test_benchmark_target_leak_is_excluded_even_from_reserved_slot():
@@ -98,7 +170,12 @@ def test_benchmark_target_leak_is_excluded_even_from_exploration():
         "clean-novel",
         rank=_rank(root_obligation_relevance=0.2, novel_route_value=0.9),
     )
-    policy = SearchPolicy("p1", max_candidates=2, exploration_fraction=0.5, preserve_counterevidence=False)
+    policy = SearchPolicy(
+        "p1",
+        max_candidates=2,
+        exploration_fraction=0.5,
+        preserve_counterevidence=False,
+    )
     selected = select_candidates_with_policy((exploit, leaked_novel, clean_novel), policy)
     ids = {item.candidate_id for item in selected}
     assert "leaked-novel" not in ids
@@ -159,8 +236,9 @@ def test_confirmed_missed_counterevidence_changes_next_budget_allocation():
     incumbent = SearchPolicy("p1", max_candidates=1, preserve_counterevidence=False)
     assert select_candidates_with_policy((support, refute), incumbent) == (support,)
 
+    receipt = _certified_receipt(SearchFailureSignature.MISSED_COUNTEREVIDENCE, incumbent)
     assessment = derive_search_policy_update(
-        _failure(SearchFailureSignature.MISSED_COUNTEREVIDENCE),
+        receipt,
         incumbent,
         update_id="u1",
         to_policy_version="p2",
