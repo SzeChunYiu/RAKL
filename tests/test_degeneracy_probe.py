@@ -27,6 +27,7 @@ from rakl.degeneracy_probe import (
     probe_arm_answer_leak,
     probe_blind_responder,
     probe_boolean_combination,
+    probe_decoupling,
     probe_records,
     probe_single_feature,
 )
@@ -383,3 +384,64 @@ def test_missing_gold_reports_cannot_check_not_clean() -> None:
     report = probe_arm_answer_leak(ArmPair("no-gold", "S1 S2 marker", "S1 S2", {}))
     assert report.status is DegeneracyStatus.CANNOT_CHECK
     assert report.exit_code == 3
+
+
+# --------------------------------------------------------------------------
+# Decoupling rate: near-determinism, which exact-match probes miss
+# --------------------------------------------------------------------------
+
+W = ("invariant", "boundary", "qoi", "directional")
+
+
+def _decoupling_records(n_decoupled: int, n_total: int = 16) -> list[LabeledRecord]:
+    records = []
+    for index in range(n_total):
+        witnesses = {name: True for name in W}
+        label = index >= n_decoupled  # first n_decoupled break AND == label
+        records.append(LabeledRecord(f"c{index:02d}", witnesses, label))
+    return records
+
+
+def test_exact_and_is_degenerate() -> None:
+    findings = probe_decoupling(_decoupling_records(0), W, surface="exact-and")
+    assert findings[0].status is DegeneracyStatus.DEGENERATE
+    assert findings[0].coupling is CouplingKind.AUTHORED_FROM_LABEL
+    assert findings[0].coverage == 0.0
+
+
+def test_few_decoupled_records_are_suspect_not_clean() -> None:
+    """The gap this probe exists to close.
+
+    ``probe_boolean_combination`` fires only on exact reproduction, so a label
+    agreeing with AND on 13 of 16 records passes as CLEAN — even though the
+    panel's informativeness rests entirely on the 3 that decouple.
+    """
+
+    records = _decoupling_records(3)
+    assert probe_boolean_combination(records, surface="near") == ()
+    findings = probe_decoupling(records, W, surface="near", min_decoupled=4)
+    assert findings[0].status is DegeneracyStatus.SUSPECT
+    assert abs(findings[0].coverage - 3 / 16) < 1e-9
+
+
+def test_enough_decoupled_records_is_clean() -> None:
+    findings = probe_decoupling(_decoupling_records(8), W, surface="ok", min_decoupled=4)
+    assert findings[0].status is DegeneracyStatus.CLEAN
+
+
+def test_stratum_with_zero_decoupled_records_is_flagged() -> None:
+    """A fold tested on such a stratum cannot distinguish judgement from the AND."""
+
+    records = _decoupling_records(6)
+    strata = {r.record_id: ("A" if i < 8 else "B") for i, r in enumerate(records)}
+    findings = probe_decoupling(
+        records, W, surface="strata", strata=strata, min_decoupled=4
+    )
+    assert findings[0].status is DegeneracyStatus.SUSPECT
+    assert any("ZERO decoupled" in item for item in findings[0].evidence)
+
+
+def test_missing_witness_fields_report_cannot_check() -> None:
+    records = [LabeledRecord("c0", {"other": True}, True)]
+    findings = probe_decoupling(records, W, surface="missing")
+    assert findings[0].status is DegeneracyStatus.CANNOT_CHECK
