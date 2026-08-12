@@ -14,6 +14,7 @@ import pytest
 from rakl.pre_action_receipt import RetrievalAuthority, SelectedRetrieval
 from rakl.pre_scratch_fibre_freeze import (
     ChronologyQoIVerdict,
+    DurablePersistenceAcknowledgement,
     HookMaterializationStatus,
     PreScratchChronologyObservation,
     compute_pre_scratch_chronology_qoi,
@@ -55,26 +56,78 @@ def _hook_kwargs(**overrides: object) -> dict[str, object]:
     return base
 
 
+def _persistence_ack(receipt) -> DurablePersistenceAcknowledgement:
+    return DurablePersistenceAcknowledgement(
+        receipt_canonical_sha256=receipt.receipt_canonical_sha256,
+        storage_pointer=f"storage://pre-scratch/{receipt.receipt_id}",
+        persisted_at_utc="2026-08-12T06:59:59Z",
+    )
+
+
 def test_hook_materializes_durable_receipt_before_exposure() -> None:
-    result = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    built = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    assert built.materialization_status is HookMaterializationStatus.BUILT_NOT_PERSISTED
+    assert built.receipt is not None
+    assert built.durable_receipt_pointer is None
+
+    result = run_pre_scratch_fibre_freeze_hook(
+        **_hook_kwargs(persistence_acknowledgement=_persistence_ack(built.receipt))
+    )
     assert result.materialization_status is HookMaterializationStatus.MATERIALIZED
     assert result.receipt is not None
     assert result.durable_receipt_pointer is not None
     assert result.receipt.frozen_at_utc == "2026-08-12T07:00:00Z"
-    assert result.receipt.episode_pointer == result.durable_receipt_pointer
+    assert result.durable_receipt_pointer.startswith("storage://pre-scratch/")
 
 
 def test_hook_reuses_prior_materialized_receipt() -> None:
-    first = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    first_built = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    first = run_pre_scratch_fibre_freeze_hook(
+        **_hook_kwargs(persistence_acknowledgement=_persistence_ack(first_built.receipt))
+    )
     second = run_pre_scratch_fibre_freeze_hook(
         **_hook_kwargs(
             hook_invoked_at_utc="2026-08-12T07:01:00Z",
             prior_materialized_receipt=first.receipt,
+            persistence_acknowledgement=_persistence_ack(first.receipt),
         )
     )
     assert second.materialization_status is HookMaterializationStatus.ALREADY_MATERIALIZED
     assert second.receipt is first.receipt
     assert second.durable_receipt_pointer == first.durable_receipt_pointer
+
+
+def test_hook_without_persistence_ack_is_built_not_persisted() -> None:
+    result = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    assert result.materialization_status is HookMaterializationStatus.BUILT_NOT_PERSISTED
+    assert result.receipt is not None
+    assert result.durable_receipt_pointer is None
+    assert "receipt_built_without_durable_persistence_acknowledgement" in result.reasons
+
+
+def test_hook_rejects_stale_or_missing_persistence_ack() -> None:
+    built = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+    stale = DurablePersistenceAcknowledgement(
+        receipt_canonical_sha256="0" * 64,
+        storage_pointer="storage://pre-scratch/stale",
+        persisted_at_utc="2026-08-12T06:59:59Z",
+    )
+    result = run_pre_scratch_fibre_freeze_hook(
+        **_hook_kwargs(persistence_acknowledgement=stale)
+    )
+    assert result.materialization_status is HookMaterializationStatus.CANNOT_CHECK
+    assert "persistence_acknowledgement_hash_mismatch" in result.reasons
+
+    late = DurablePersistenceAcknowledgement(
+        receipt_canonical_sha256=built.receipt.receipt_canonical_sha256,
+        storage_pointer="storage://pre-scratch/late",
+        persisted_at_utc="2026-08-12T07:01:00Z",
+    )
+    late_result = run_pre_scratch_fibre_freeze_hook(
+        **_hook_kwargs(persistence_acknowledgement=late)
+    )
+    assert late_result.materialization_status is HookMaterializationStatus.CANNOT_CHECK
+    assert "persistence_acknowledgement_after_hook_invocation" in late_result.reasons
 
 
 def test_non_consequential_turn_skips_materialization() -> None:
@@ -152,7 +205,16 @@ def test_hook_and_qoi_documents_validate_against_schemas() -> None:
     jsonschema.Draft202012Validator.check_schema(hook_schema)
     jsonschema.Draft202012Validator.check_schema(qoi_schema)
 
-    hook_doc = run_pre_scratch_fibre_freeze_hook(**_hook_kwargs()).document()
+    hook_doc = run_pre_scratch_fibre_freeze_hook(
+        **_hook_kwargs(
+            persistence_acknowledgement=DurablePersistenceAcknowledgement(
+                receipt_canonical_sha256=run_pre_scratch_fibre_freeze_hook(**_hook_kwargs())
+                .receipt.receipt_canonical_sha256,
+                storage_pointer="storage://pre-scratch/schema-test",
+                persisted_at_utc="2026-08-12T06:59:59Z",
+            )
+        )
+    ).document()
     jsonschema.validate(hook_doc, hook_schema)
 
     qoi_doc = compute_pre_scratch_chronology_qoi(

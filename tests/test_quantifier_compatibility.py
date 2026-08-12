@@ -97,6 +97,35 @@ def test_gw_quant_3_time_supremum_misalignment_rejects_compatible_construction()
         )
 
 
+def test_gw_quant_4b_conditional_with_substitution_no_rejects_construction() -> None:
+    with pytest.raises(ValueError, match="CONDITIONAL gluing requires substitution permission YES"):
+        _witness(
+            witness_id="W-quant-4b",
+            atom_id="A-scope-4b",
+            source_claim_scope="pointwise bound promoted globally",
+            point_global_scope=ScopeAlignment.MISALIGNED,
+            point_global_substitution_permitted=PermissionStatus.NO,
+            gluing_status=GluingStatus.CONDITIONAL,
+            condition="some-nonempty-condition",
+            evidence_pointers=("evidence:test",),
+        )
+
+
+def test_gw_quant_4c_conditional_not_applicable_bridge_rejects_construction() -> None:
+    with pytest.raises(ValueError, match="explicit scope-bridge witness"):
+        _witness(
+            witness_id="W-quant-4c",
+            atom_id="A-scope-4c",
+            source_claim_scope="pointwise bound promoted globally",
+            point_global_scope=ScopeAlignment.MISALIGNED,
+            point_global_substitution_permitted=PermissionStatus.YES,
+            required_scope_witness="NOT_APPLICABLE",
+            gluing_status=GluingStatus.CONDITIONAL,
+            condition="some-nonempty-condition",
+            evidence_pointers=("evidence:test",),
+        )
+
+
 def test_gw_quant_4_sequence_limit_conditional_with_uniform_bound() -> None:
     witness = _witness(
         witness_id="W-quant-4",

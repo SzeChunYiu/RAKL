@@ -247,15 +247,26 @@ class QuantifierCompatibilityWitness:
                 "misaligned scope axes without substitution witness cannot be COMPATIBLE: "
                 + ",".join(mismatches)
             )
+        if mismatches and self.gluing_status is GluingStatus.CONDITIONAL:
+            raise ValueError(
+                "CONDITIONAL gluing requires substitution permission YES on every misaligned axis: "
+                + ",".join(mismatches)
+            )
         if mismatches and self.gluing_status not in {
             GluingStatus.INCOMPATIBLE,
-            GluingStatus.CONDITIONAL,
             GluingStatus.FAIL_CLOSED_UNKNOWN,
         }:
             raise ValueError(
-                "misaligned scope axes require INCOMPATIBLE, CONDITIONAL, or FAIL_CLOSED_UNKNOWN: "
+                "misaligned scope axes without substitution witness require "
+                "INCOMPATIBLE or FAIL_CLOSED_UNKNOWN: "
                 + ",".join(mismatches)
             )
+        if self.gluing_status is GluingStatus.CONDITIONAL and self._misaligned_axes():
+            bridge = self.required_scope_witness.strip().upper()
+            if bridge in {"UNKNOWN", "NOT_APPLICABLE"}:
+                raise ValueError(
+                    "CONDITIONAL gluing with misaligned axes requires an explicit scope-bridge witness"
+                )
 
     @property
     def unknown_fields(self) -> Tuple[str, ...]:
@@ -269,6 +280,21 @@ class QuantifierCompatibilityWitness:
             sequence_limit_substitution_permitted=self.sequence_limit_substitution_permitted,
             norm_quantifier_substitution_permitted=self.norm_quantifier_substitution_permitted,
             required_scope_witness=self.required_scope_witness,
+        )
+
+    def _misaligned_axes(self) -> Tuple[str, ...]:
+        return tuple(
+            name
+            for name, value in zip(
+                _SCOPE_AXIS_FIELDS,
+                (
+                    self.point_global_scope,
+                    self.time_supremum_scope,
+                    self.sequence_limit_scope,
+                    self.norm_quantifier_scope,
+                ),
+            )
+            if value is ScopeAlignment.MISALIGNED
         )
 
     @property
@@ -458,6 +484,29 @@ def audit_quantifier_compatibility(
                 gluing_status=witness.gluing_status,
                 grants_gluing_authority=False,
             )
+        if witness.misaligned_axes_without_substitution:
+            return QuantifierCompatibilityAudit(
+                witness_id=witness.witness_id,
+                atom_id=expected_atom_id,
+                verdict=WitnessAuditVerdict.INCOMPATIBLE,
+                reasons=(
+                    "conditional_gluing_blocked_without_substitution_witness:"
+                    + ",".join(witness.misaligned_axes_without_substitution),
+                ),
+                gluing_status=witness.gluing_status,
+                grants_gluing_authority=False,
+            )
+        if witness._misaligned_axes():
+            bridge = witness.required_scope_witness.strip().upper()
+            if bridge in {"UNKNOWN", "NOT_APPLICABLE"}:
+                return QuantifierCompatibilityAudit(
+                    witness_id=witness.witness_id,
+                    atom_id=expected_atom_id,
+                    verdict=WitnessAuditVerdict.FAIL_CLOSED_UNKNOWN,
+                    reasons=("conditional_gluing_missing_scope_bridge_witness",),
+                    gluing_status=witness.gluing_status,
+                    grants_gluing_authority=False,
+                )
         return QuantifierCompatibilityAudit(
             witness_id=witness.witness_id,
             atom_id=expected_atom_id,
