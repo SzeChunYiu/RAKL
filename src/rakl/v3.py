@@ -143,6 +143,15 @@ from .saturation_vector import (
     assess_saturation_vector,
 )
 from .unified_substrate import UnifiedSubstrateSnapshot, materialize_unified_substrate
+from .shadow_artifact_hash import (
+    DigestMode,
+    assert_stale_hash_fails,
+    bind_artifact_hash,
+    canonical_bytes as shadow_canonical_bytes,
+    hash_document as shadow_hash_document,
+    parse_digest as shadow_parse_digest,
+    verify_document_hash,
+)
 from .v3_runtime import (
     ConsolidationOutcome,
     FailureProjectionSpec,
@@ -176,6 +185,7 @@ __all__ = [
     "DriverRequest",
     "DriverResult",
     "DriverTask",
+    "DigestMode",
     "EpisodeAdmissionReceipt",
     "EpisodeOutcome",
     "EpisodeStorageAdmission",
@@ -248,9 +258,11 @@ __all__ = [
     "assess_lesson_consolidation",
     "assess_rakl_triviality",
     "assess_saturation_vector",
+    "assert_stale_hash_fails",
     "benchmark_protocol_subject_hash",
     "benchmark_result_subject_hash",
     "boundary_lesson_from_supported_failure",
+    "bind_artifact_hash",
     "canonical_inventory_episodes",
     "classify_problem_novelty",
     "canonical_sha256",
@@ -303,6 +315,10 @@ __all__ = [
     "state_fingerprint",
     "state_fingerprint_v2",
     "supersede_scientific_authority",
+    "shadow_canonical_bytes",
+    "shadow_hash_document",
+    "shadow_parse_digest",
+    "verify_document_hash",
     "validate_admission_receipt",
     "validate_episode",
     "validate_experience_benchmark",
