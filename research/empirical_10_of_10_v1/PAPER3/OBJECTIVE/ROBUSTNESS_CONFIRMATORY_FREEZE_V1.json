@@ -1,0 +1,41 @@
+{
+  "schema": "paper2.robustness.confirmatory.freeze.v1",
+  "status": "FROZEN_BEFORE_CONFIRMATORY_OUTCOME",
+  "development_receipt": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RECEIPT_V1.json",
+  "confirmatory_seed": 2026081212,
+  "n_per_cell": 15,
+  "expected_total_n": 810,
+  "families": [
+    "algorithm_invariants",
+    "causal_transport",
+    "linear_systems",
+    "local_global_gluing",
+    "optimization",
+    "pgm_dseparation"
+  ],
+  "frozen_arms": ["lexical", "relational", "mechanism", "twin", "full"],
+  "frozen_lexical_threshold": 0.40064102564102566,
+  "primary_contrast": "FULL_APPLICABILITY_CONTRACT - MECHANISM_DERIVED_EFFECT_ONLY",
+  "primary_loss": "binary Brier over decidable ACCEPT/REJECT cases",
+  "registered_mde": 0.05,
+  "alpha_two_sided": 0.05,
+  "family_generalization_gate": {
+    "full_minus_mechanism_brier_gain_positive_in_all_six_families": true,
+    "exact_two_sided_sign_test_p_required": 0.03125,
+    "full_valid_accept_not_more_than_0_02_below_mechanism_in_any_family": true,
+    "full_invalid_false_accept_no_worse_than_mechanism_in_every_family": true,
+    "full_invalid_false_accept_lower_than_mechanism_in_aggregate": true,
+    "overall_paired_brier_gain_at_least_mde": true,
+    "overall_95pct_interval_lower_bound_above_zero": true
+  },
+  "uncertainty": {
+    "method": "paired item-level percentile bootstrap over decidable items",
+    "resamples": 20000,
+    "bootstrap_seed": 2026081212001,
+    "interval": [0.025, 0.975],
+    "role": "registered 95% interval required by robustness preregistration; does not replace family sign/safety gates"
+  },
+  "confirmatory_outcomes_accessed": false,
+  "downstream_seed_2026081221_remains_forbidden_until_confirmatory_receipt": true,
+  "claim_boundary": "A passing result supports broad known-world exact-verifier family robustness only; no learned-witness, natural-domain, frontier-model, independent-human or universal-science claim."
+}
