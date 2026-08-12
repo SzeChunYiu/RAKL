@@ -1,22 +1,27 @@
 """Failure-driven SearchPolicy evolution for RAKL (#433, #434).
 
-This module encodes the central continual-improvement arrow explicitly::
+This module makes the continual-improvement arrow executable::
 
-    failure_t -> diagnosed search defect_t -> bounded policy challenger_{t+1}
+    failure_t
+      -> typed root-cause diagnosis_t
+      -> bounded SearchPolicyDelta_t
+      -> policy challenger_{t+1}
+      -> fresh assurance
 
-not::
+and explicitly rejects::
 
     failure_t -> another unconstrained idea
 
-A failed trajectory does not directly mutate search behavior.  It must first
-produce a frozen, known-answer-validated ``SearchFailureReceipt`` with a typed
-root-cause signature.  That signature maps to an allow-listed search-policy
-repair.  The resulting successor is a *challenger*, not a claim that the policy
-is better.  Only fresh held-out assurance may establish improvement and only
-Self-RAKL governance may promote a challenger.
+A failed trajectory cannot mutate search directly.  It must first yield a
+frozen, known-answer-validated ``SearchFailureReceipt`` whose root cause survives
+a counterfactual discriminator.  Each registered failure signature maps to an
+allow-listed, *operational* policy repair: the successor changes query intent,
+selection/diversification, exploration, or feedback learning on the next search.
 
-The policy affects retrieval/routing only.  Failure frequency, ranking feedback,
-policy updates, and successful fresh assurance never mint scientific authority.
+The successor is still only a challenger.  The update function cannot claim it
+is better; fresh held-out assurance and protected Self-RAKL governance own that
+judgement and any later promotion.  Search/ranking feedback never mints
+scientific authority.
 """
 
 from __future__ import annotations
@@ -24,9 +29,22 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from enum import Enum
 from hashlib import sha256
-from typing import Sequence, Tuple
+from math import ceil
+from typing import Callable, Sequence, Tuple
 
-from .epistemic_search import SearchCandidate, diversify_candidates
+from .epistemic_search import (
+    EvidenceStance,
+    ScientificSearchQuestion,
+    SearchCandidate,
+    SearchFeedback,
+    SearchIndexKind,
+    SearchIntent,
+    SearchIntentKind,
+    SearchVertical,
+    bias_corrected_feedback_value,
+    compile_search_intents,
+    diversify_candidates,
+)
 
 __all__ = [
     "FailureDrivenUpdateAssessment",
@@ -36,15 +54,15 @@ __all__ = [
     "SearchPolicy",
     "SearchPolicyDelta",
     "SearchPolicyUpdateProposal",
+    "compile_search_intents_with_policy",
     "derive_search_policy_update",
     "materialize_search_policy_challenger",
+    "search_feedback_value_with_policy",
     "select_candidates_with_policy",
 ]
 
 
 class SearchFailureSignature(str, Enum):
-    """Search-layer root causes that have registered repair semantics."""
-
     MISSED_COUNTEREVIDENCE = "MISSED_COUNTEREVIDENCE"
     SAME_ROOT_OVERCONCENTRATION = "SAME_ROOT_OVERCONCENTRATION"
     MECHANISM_MONOCULTURE = "MECHANISM_MONOCULTURE"
@@ -71,7 +89,7 @@ class FailureDrivenUpdateVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class SearchPolicy:
-    """Versioned routing/search policy.  No coordinate is scientific authority."""
+    """Versioned routing/search policy; no field is scientific authority."""
 
     version: str
     max_candidates: int = 12
@@ -83,11 +101,13 @@ class SearchPolicy:
     min_substantive_match_score: float = 0.0
     max_verification_cost: float = 1.0e9
     exploration_fraction: float = 0.0
-    require_root_goal_binding: bool = True
+    max_semantic_expansion_terms: int = 8
     require_freshness_retraction_intent: bool = True
     require_negative_result_intent: bool = True
-    require_structural_intent: bool = False
-    require_method_intent: bool = False
+    preserve_retraction_slot: bool = False
+    preserve_negative_result_slot: bool = False
+    preserve_structural_slot: bool = False
+    preserve_method_tool_slot: bool = False
     require_propensity_corrected_feedback: bool = True
 
     def __post_init__(self) -> None:
@@ -97,6 +117,8 @@ class SearchPolicy:
             raise ValueError("max_candidates must be positive")
         if self.max_per_evidence_root < 1 or self.max_per_mechanism_family < 1:
             raise ValueError("diversification limits must be positive")
+        if self.max_semantic_expansion_terms < 0:
+            raise ValueError("max_semantic_expansion_terms cannot be negative")
         for name in (
             "min_root_obligation_relevance",
             "min_expected_information_gain",
@@ -116,7 +138,7 @@ class SearchPolicy:
 
 @dataclass(frozen=True)
 class SearchFailureReceipt:
-    """Frozen diagnosis of why a search trajectory failed."""
+    """Frozen causal diagnosis of why one search trajectory failed."""
 
     failure_id: str
     question_id: str
@@ -152,13 +174,6 @@ class SearchPolicyDelta:
 
 @dataclass(frozen=True)
 class SearchPolicyUpdateProposal:
-    """One failure-bound policy challenger proposal.
-
-    ``expected_metric`` and ``falsifier`` state the hypothesis.  They do not
-    assert improvement.  ``subject_hash`` binds the exact failure, incumbent and
-    parameter changes for later fresh assurance.
-    """
-
     update_id: str
     failure_id: str
     signature: SearchFailureSignature
@@ -203,7 +218,7 @@ def _registered_repair(
     policy: SearchPolicy,
     signature: SearchFailureSignature,
 ) -> tuple[Tuple[SearchPolicyDelta, ...], str, str]:
-    """Return the only registered v1 repair family for a typed search failure."""
+    """Return the registered v1 policy repair for a confirmed search failure."""
 
     if signature is SearchFailureSignature.MISSED_COUNTEREVIDENCE:
         return (
@@ -211,7 +226,7 @@ def _registered_repair(
                 "preserve_counterevidence",
                 policy.preserve_counterevidence,
                 True,
-                "counterevidence_must_survive_diversification",
+                "reserve_counterevidence_in_diversification",
             ),
             "counterevidence_recall",
             "fresh counterevidence recall does not improve without harming valid support retrieval",
@@ -239,49 +254,57 @@ def _registered_repair(
             "exploration_fraction",
             policy.exploration_fraction,
             min(1.0, round(policy.exploration_fraction + 0.05, 10)),
-            "reserve_small_exploration_budget_for_alternative_mechanisms",
+            "reserve_bounded_novel_route_exploration",
         )
         return deltas, "mechanism_family_coverage", "fresh mechanism-family coverage does not improve"
     if signature is SearchFailureSignature.QUERY_DRIFT:
         return (
             _delta(
-                "require_root_goal_binding",
-                policy.require_root_goal_binding,
-                True,
-                "bind_every_query_expansion_to_root_goal_and_atom",
+                "max_semantic_expansion_terms",
+                policy.max_semantic_expansion_terms,
+                max(0, policy.max_semantic_expansion_terms - 2),
+                "contract_semantic_expansion_after_confirmed_query_drift",
             ),
             "query_drift_rate",
-            "fresh query-drift rate does not decrease",
+            "fresh query-drift rate does not decrease without material recall loss",
         )
     if signature is SearchFailureSignature.MISSED_RETRACTION_OR_SUPERSESSION:
-        return (
-            _delta(
-                "require_freshness_retraction_intent",
-                policy.require_freshness_retraction_intent,
-                True,
-                "force_freshness_retraction_search_intent",
-            ),
-            "retraction_detection_recall",
-            "fresh retraction/supersession recall does not improve",
+        deltas = ()
+        deltas += _delta(
+            "require_freshness_retraction_intent",
+            policy.require_freshness_retraction_intent,
+            True,
+            "force_freshness_retraction_query_intent",
         )
+        deltas += _delta(
+            "preserve_retraction_slot",
+            policy.preserve_retraction_slot,
+            True,
+            "reserve_retraction_or_correction_candidate_slot",
+        )
+        return deltas, "retraction_detection_recall", "fresh retraction/supersession recall does not improve"
     if signature is SearchFailureSignature.MISSED_NEGATIVE_RESULT:
-        return (
-            _delta(
-                "require_negative_result_intent",
-                policy.require_negative_result_intent,
-                True,
-                "force_negative_result_search_intent",
-            ),
-            "negative_result_recall",
-            "fresh negative-result recall does not improve",
+        deltas = ()
+        deltas += _delta(
+            "require_negative_result_intent",
+            policy.require_negative_result_intent,
+            True,
+            "force_negative_result_query_intent",
         )
+        deltas += _delta(
+            "preserve_negative_result_slot",
+            policy.preserve_negative_result_slot,
+            True,
+            "reserve_negative_result_candidate_slot",
+        )
+        return deltas, "negative_result_recall", "fresh negative-result recall does not improve"
     if signature is SearchFailureSignature.SURFACE_MATCH_STRUCTURAL_MISS:
         return (
             _delta(
-                "require_structural_intent",
-                policy.require_structural_intent,
+                "preserve_structural_slot",
+                policy.preserve_structural_slot,
                 True,
-                "require_structure_mechanism_search_not_only_surface_terms",
+                "reserve_candidate_retrieved_from_structural_index",
             ),
             "structural_match_recall",
             "fresh structurally relevant retrieval does not improve",
@@ -289,10 +312,10 @@ def _registered_repair(
     if signature is SearchFailureSignature.METHOD_OBLIGATION_UNSERVED:
         return (
             _delta(
-                "require_method_intent",
-                policy.require_method_intent,
+                "preserve_method_tool_slot",
+                policy.preserve_method_tool_slot,
                 True,
-                "require_method_operator_search_for_open_obligations",
+                "reserve_method_or_operator_candidate_slot",
             ),
             "obligation_discharge_route_recall",
             "fresh method/operator retrieval does not improve obligation discharge",
@@ -375,7 +398,7 @@ def _registered_repair(
             "exploration_fraction",
             policy.exploration_fraction,
             min(1.0, round(policy.exploration_fraction + 0.05, 10)),
-            "collect_bounded_counterfactual_exposure_for_policy_learning",
+            "collect_bounded_counterfactual_exposure",
         )
         return deltas, "bias_corrected_search_utility", "fresh bias-corrected utility does not improve"
     raise AssertionError(f"unhandled search failure signature: {signature}")
@@ -389,7 +412,7 @@ def _proposal_hash(
 ) -> str:
     payload = repr(
         (
-            "SEARCH_POLICY_FAILURE_UPDATE_V1",
+            "SEARCH_POLICY_FAILURE_UPDATE_V2",
             receipt.failure_id,
             receipt.question_id,
             receipt.policy_version,
@@ -410,13 +433,7 @@ def derive_search_policy_update(
     update_id: str,
     to_policy_version: str,
 ) -> FailureDrivenUpdateAssessment:
-    """Map one validated failure to its registered bounded policy repair.
-
-    There is intentionally no caller-supplied arbitrary delta argument.  If the
-    diagnosed failure has no remaining registered repair at the current policy,
-    the correct result is ``NO_REGISTERED_POLICY_REPAIR`` rather than inventing a
-    random mechanism.
-    """
+    """Map one validated failure to the registered bounded search-policy repair."""
 
     if not update_id.strip() or not to_policy_version.strip():
         return FailureDrivenUpdateAssessment(
@@ -491,7 +508,7 @@ def materialize_search_policy_challenger(
     incumbent: SearchPolicy,
     proposal: SearchPolicyUpdateProposal,
 ) -> SearchPolicy:
-    """Materialize the exact proposed policy as an experimental challenger."""
+    """Materialize the exact proposal; this does not establish improvement."""
 
     if proposal.from_policy_version != incumbent.version:
         raise ValueError("proposal is not bound to incumbent policy version")
@@ -505,15 +522,127 @@ def materialize_search_policy_challenger(
     return replace(incumbent, **changes)
 
 
+def _intent_terms(question: ScientificSearchQuestion) -> Tuple[str, ...]:
+    for terms in (
+        question.residual_terms,
+        question.source_native_terms,
+        question.semantic_expansions,
+        question.structural_coordinates,
+    ):
+        cleaned = tuple(term.strip() for term in terms if term.strip())
+        if cleaned:
+            return cleaned
+    return (question.root_goal,)
+
+
+def _forced_intent(
+    question: ScientificSearchQuestion,
+    kind: SearchIntentKind,
+    purpose: str,
+) -> SearchIntent:
+    return SearchIntent(
+        intent_id=f"{question.question_id}:policy:{kind.value}",
+        kind=kind,
+        terms=_intent_terms(question),
+        purpose=purpose,
+        root_goal_hash=question.root_goal_hash,
+        atom_id=question.atom_id,
+    )
+
+
+def compile_search_intents_with_policy(
+    question: ScientificSearchQuestion,
+    policy: SearchPolicy,
+) -> Tuple[SearchIntent, ...]:
+    """Compile next-iteration intents under a versioned learned search policy."""
+
+    base = list(compile_search_intents(question))
+    rewritten: list[SearchIntent] = []
+    for intent in base:
+        if intent.kind is SearchIntentKind.SEMANTIC_EXPANSION:
+            terms = intent.terms[: policy.max_semantic_expansion_terms]
+            if not terms:
+                continue
+            intent = replace(intent, terms=terms)
+        rewritten.append(intent)
+
+    present = {intent.kind for intent in rewritten}
+    if policy.require_freshness_retraction_intent and SearchIntentKind.FRESHNESS_RETRACTION not in present:
+        rewritten.append(
+            _forced_intent(
+                question,
+                SearchIntentKind.FRESHNESS_RETRACTION,
+                "policy-required freshness/retraction check after prior search failure",
+            )
+        )
+    if policy.require_negative_result_intent and SearchIntentKind.NEGATIVE_RESULT not in present:
+        rewritten.append(
+            _forced_intent(
+                question,
+                SearchIntentKind.NEGATIVE_RESULT,
+                "policy-required negative-result search after prior search failure",
+            )
+        )
+    return tuple(rewritten)
+
+
+def _route_key(candidate: SearchCandidate) -> tuple[object, ...]:
+    rank = candidate.rank
+    return (
+        -rank.root_obligation_relevance,
+        -rank.expected_information_gain,
+        -rank.context_alignment,
+        -rank.structural_fit,
+        -max(rank.contradiction_value, rank.negative_result_value),
+        rank.failure_risk,
+        rank.verification_cost + rank.retrieval_cost,
+        candidate.candidate_id,
+    )
+
+
+def _explore_key(candidate: SearchCandidate) -> tuple[object, ...]:
+    rank = candidate.rank
+    return (
+        -rank.novel_route_value,
+        -rank.independent_root_contribution,
+        -rank.structural_fit,
+        candidate.candidate_id,
+    )
+
+
+def _can_add(candidate: SearchCandidate, selected: Sequence[SearchCandidate], policy: SearchPolicy) -> bool:
+    if any(item.canonical_content_id == candidate.canonical_content_id for item in selected):
+        return False
+    if candidate.evidence_root_id:
+        root_count = sum(item.evidence_root_id == candidate.evidence_root_id for item in selected)
+        if root_count >= policy.max_per_evidence_root:
+            return False
+    if candidate.mechanism_family:
+        mechanism_count = sum(item.mechanism_family == candidate.mechanism_family for item in selected)
+        if mechanism_count >= policy.max_per_mechanism_family:
+            return False
+    return True
+
+
+def _reserve_one(
+    selected: list[SearchCandidate],
+    candidates: Sequence[SearchCandidate],
+    policy: SearchPolicy,
+    predicate: Callable[[SearchCandidate], bool],
+) -> None:
+    if len(selected) >= policy.max_candidates:
+        return
+    for candidate in sorted((item for item in candidates if predicate(item)), key=_route_key):
+        if candidate not in selected and _can_add(candidate, selected, policy):
+            selected.append(candidate)
+            return
+
+
 def select_candidates_with_policy(
     candidates: Sequence[SearchCandidate],
     policy: SearchPolicy,
 ) -> Tuple[SearchCandidate, ...]:
-    """Apply policy thresholds/diversification to already-retrieved candidates.
-
-    This is routing only.  Thresholds may change what is inspected next, but
-    cannot upgrade evidence or scientific authority.
-    """
+    """Apply the learned policy to next-iteration candidate selection."""
 
     eligible = tuple(
         item
@@ -525,10 +654,92 @@ def select_candidates_with_policy(
     )
     if not eligible:
         return ()
-    return diversify_candidates(
+
+    selected: list[SearchCandidate] = []
+    if policy.preserve_retraction_slot:
+        _reserve_one(
+            selected,
+            eligible,
+            policy,
+            lambda item: item.stance is EvidenceStance.RETRACTION_CORRECTION,
+        )
+    if policy.preserve_negative_result_slot:
+        _reserve_one(
+            selected,
+            eligible,
+            policy,
+            lambda item: item.stance is EvidenceStance.NEGATIVE_RESULT,
+        )
+    if policy.preserve_structural_slot:
+        _reserve_one(
+            selected,
+            eligible,
+            policy,
+            lambda item: SearchIndexKind.STRUCTURAL in item.index_kinds,
+        )
+    if policy.preserve_method_tool_slot:
+        _reserve_one(
+            selected,
+            eligible,
+            policy,
+            lambda item: (
+                item.vertical is SearchVertical.METHOD_TOOL
+                or SearchIndexKind.METHOD_OPERATOR in item.index_kinds
+            ),
+        )
+
+    explore_slots = 0
+    if policy.exploration_fraction > 0:
+        explore_slots = min(
+            policy.max_candidates - len(selected),
+            max(1, ceil(policy.max_candidates * policy.exploration_fraction)),
+        )
+    exploit_target = max(0, policy.max_candidates - len(selected) - explore_slots)
+
+    exploit_order = diversify_candidates(
         eligible,
-        limit=policy.max_candidates,
+        limit=max(1, len(eligible)),
         max_per_evidence_root=policy.max_per_evidence_root,
         max_per_mechanism_family=policy.max_per_mechanism_family,
         preserve_counterevidence=policy.preserve_counterevidence,
     )
+    for candidate in exploit_order:
+        if len(selected) >= policy.max_candidates - explore_slots:
+            break
+        if candidate not in selected and _can_add(candidate, selected, policy):
+            selected.append(candidate)
+            if len(selected) >= exploit_target + (policy.max_candidates - explore_slots - exploit_target):
+                break
+
+    if explore_slots:
+        added = 0
+        for candidate in sorted(eligible, key=_explore_key):
+            if added >= explore_slots or len(selected) >= policy.max_candidates:
+                break
+            if candidate not in selected and _can_add(candidate, selected, policy):
+                selected.append(candidate)
+                added += 1
+
+    if len(selected) < policy.max_candidates:
+        for candidate in exploit_order:
+            if len(selected) >= policy.max_candidates:
+                break
+            if candidate not in selected and _can_add(candidate, selected, policy):
+                selected.append(candidate)
+
+    return tuple(selected)
+
+
+def search_feedback_value_with_policy(
+    feedback: SearchFeedback,
+    policy: SearchPolicy,
+    *,
+    max_weight: float = 10.0,
+) -> float:
+    """Convert observation feedback to a routing-learning signal under policy."""
+
+    if feedback.verified_downstream_success is None or not feedback.inspected:
+        return 0.0
+    if policy.require_propensity_corrected_feedback:
+        return bias_corrected_feedback_value(feedback, max_weight=max_weight)
+    return 1.0 if feedback.verified_downstream_success else -1.0
