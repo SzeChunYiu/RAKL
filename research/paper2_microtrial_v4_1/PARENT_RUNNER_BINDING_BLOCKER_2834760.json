@@ -1,0 +1,11 @@
+{
+  "schema_version": "paper2-v4-1-parent-runner-binding-blocker-v1",
+  "created_at_utc": "2026-08-12T10:30:00Z",
+  "main_head_sha": "2834760f4ae96684654a2080f5f36b24dc1d1ef7",
+  "verdict": "V4_1_BATCH_PREFLIGHT_BLOCKER_AT_MAIN",
+  "object": "Frozen V4.1 batch parent_runner binding vs active main checkout",
+  "detail": "research/paper2_microtrial_v4_1/BATCH_CONTRACT_V4_1.json binds parent_runner src/rakl/paper2_pendulum_microtrial.py to sha256 51f3e992206dcfeccceea98388fb799848c5f0b600361c7a52c1047dd9ce9590, but main @2834760 hashes 7bbf0acb03e064f0129bf639d00dfe37d712fc19816642175777604bc6213e8b (matches V4.4 binding). Fresh V4.1 native submit/harvest at main fails closed on allocated preflight until the contract is re-frozen with the current parent_runner digest or execution uses an ancestor checkout that still matches the frozen digest.",
+  "v4_4_nonconfirmatory_job_3477848_at_main": "COMPLETED harvest+ingest permitted; not a V4.1 replay.",
+  "confirmatory_submit_permitted": false,
+  "claim_boundary": "Process blocker receipt only; does not reinterpret V4/V4.1 negatives or mint arm-comparison authority."
+}

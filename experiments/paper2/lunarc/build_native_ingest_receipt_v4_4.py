@@ -532,7 +532,7 @@ def build(*, job_id: str, created_at_utc: str, expected_execution_head: str) -> 
     _require(_bundle_members(bundle) == member_map, "transport bundle differs from copied source files")
 
     claim_boundary = (
-        "Adaptive non-confirmatory engineering evidence only. V4.4 job 3476746 "
+        f"Adaptive non-confirmatory engineering evidence only. V4.4 job {job_id} "
         "is a leak-free sealed replay: both arms are parse_valid/"
         "scorable (DIRECT 1/5, RAKL_CONTEXT 2/5) with exact_conceptual_pass_arm_count=0 "
         "under the unchanged exact gate on Qwen2.5-1.5B-Instruct. This is not a 1.5B "
