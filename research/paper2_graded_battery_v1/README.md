@@ -111,3 +111,84 @@ coordinates do not say *which* coordinates matter.
 Both halves point the same way: if RAKL has value on this task family, it is in
 **relevance determination**, not representation. That is a different treatment
 and it is the one worth building next.
+
+## Pooled estimate — a precise null, not merely a non-significant one
+
+Seven configurations, inverse-variance pooled (SE recovered from each config's
+delta and two-sided p):
+
+| config | delta | p | SE |
+|---|---:|---:|---:|
+| L1 stated, 8 src | −0.0248 | 0.391 | 0.0289 |
+| L2 stated, 14 src | −0.0031 | 0.910 | 0.0274 |
+| L3 stated, 20 src | −0.0091 | 0.737 | 0.0271 |
+| L4 stated, 26 src | +0.0184 | 0.508 | 0.0278 |
+| R0 hidden, 10 src | −0.0214 | 0.422 | 0.0267 |
+| R1 hidden, 14 src | −0.0188 | 0.465 | 0.0257 |
+| R1b hidden, 16 src | +0.0181 | 0.483 | 0.0258 |
+
+```
+POOLED delta (RAKL - DIRECT, mean F1) = -0.0056
+  SE 0.0102   95% CI [-0.0256, +0.0144]   p = 0.584
+```
+
+**Any true benefit larger than +0.014 mean F1 is excluded at 95% confidence.**
+Normalization-only RAKL cannot be helping by more than ~1.4 F1 points on this
+task family at this operating point.
+
+This is the difference between "we did not detect an effect" and "an effect of
+practically meaningful size is ruled out". Every prior arm comparison in this
+repository ran at n=1 (one task, one seed) and could only ever produce the
+former; the latter is a result.
+
+Caveat preserved: this bounds the *normalization* treatment only. It says nothing
+about selective retrieval, experience conditioning or typed authority, and the
+bound applies to this synthetic evidence-integration family, not to the
+registered pendulum protocol.
+
+## Relevance-oracle headroom — the second hypothesis is dead too
+
+Result A/B pointed at relevance determination as the remaining candidate. This
+tests it directly: **matched** tasks (same seed, byte-identical sources,
+identical gold), differing in exactly one thing — whether the load-bearing
+dimensions are named. `same_relevance=True` forces the same load-bearing set in
+both conditions.
+
+```
+RELEVANCE_STATED   n=30  mean_f1 0.803  misF1 0.794  exact 0.03   (mech 0.77)
+RELEVANCE_HIDDEN   n=29  mean_f1 0.801  misF1 0.739  exact 0.03   (mech 0.77)
+
+HEADROOM (stated - hidden) = +0.0020   SE 0.0256
+                             95% CI [-0.0481, +0.0522]   p = 0.937
+```
+
+**A perfect relevance oracle is worth +0.002 mean F1.** Handing the model the
+answer to the hardest sub-step gains essentially nothing. The oracle does lift the
+misaligned coordinate (+0.055) but it washes out in the mean.
+
+A first attempt at this measurement was **invalid and is recorded as such**: the
+two conditions used different load-bearing sets (`hide_relevance` selected the
+3 physical dimensions, the stated branch selected `dims[:2]`), so they were
+different tasks with different gold, and it reported a spurious −0.035. Fixed by
+forcing an identical relevance set; the corrected estimate is +0.002.
+
+## Combined conclusion for this task family
+
+Two independent information-provision treatments, both null:
+
+| treatment | delta mean F1 | 95% CI |
+|---|---:|---|
+| normalization (7 configs pooled) | −0.006 | [−0.026, +0.014] |
+| perfect relevance oracle | +0.002 | [−0.048, +0.052] |
+
+The model is **not information-limited** on this task. It has the sources, it can
+extract the contexts, and it gains nothing from being told which contexts matter.
+Its residual ~0.20 error is execution consistency, not missing knowledge.
+
+This is why supplying structure cannot help here, and it sharpens what a valid
+RAKL test requires: a setting where the needed information is genuinely
+**absent** from the prompt — a corpus exceeding the context window (so retrieval
+is load-bearing), or a task sequence where the answer depends on a lesson from an
+earlier task (so experience is load-bearing). Single-turn tasks whose evidence
+fits in the context window cannot express RAKL's claims, whatever their
+difficulty.
