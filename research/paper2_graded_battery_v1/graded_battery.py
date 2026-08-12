@@ -59,12 +59,13 @@ class Task:
 
 
 def generate(rng: random.Random, *, n_sources: int, n_dims: int, n_near_miss: int, idx: int,
-             multi_dim: bool = False, hide_relevance: bool = False) -> Task:
+             multi_dim: bool = False, hide_relevance: bool = False,
+             same_relevance: bool = False) -> Task:
     dims = DIMS[:n_dims]
     # Only some dimensions are load-bearing for the target QoI. Differing on an
     # IRRELEVANT dimension does not misalign a source. This is what makes the
     # task require reasoning rather than tag set-equality.
-    if hide_relevance:
+    if hide_relevance or same_relevance:
         # Load-bearing = dimensions describing the PHYSICAL SETUP. Which dimension
         # is physical vs procedural is never enumerated; the model must classify.
         relevant = [d for d in dims if d in PHYSICAL_DIMS]
