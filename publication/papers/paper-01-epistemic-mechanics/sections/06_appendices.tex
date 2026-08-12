@@ -142,33 +142,18 @@ This projection prevents a perverse interpretation of ``accumulate until nothing
 
 This appendix carries implementation metadata so the main scientific argument does not contain a numbered chapter devoted to repository bookkeeping.
 
-\subsection{Source layout}
-
-The manuscript is maintained as a modular TeX project:
-
-\begin{itemize}[leftmargin=*]
-\item \path{paper/epistemic_mechanics_round050/main.tex}: document driver, packages, notation and section inputs;
-\item \path{paper/epistemic_mechanics_round050/sections/01_introduction_foundations_state.tex}: introduction, related foundations and canonical-state mechanics;
-\item \path{paper/epistemic_mechanics_round050/sections/02_compatibility_authority.tex}: compatibility, gluing, closure-system lattice and scalar inadequacy;
-\item \path{paper/epistemic_mechanics_round050/sections/03_workspace.tex}: workspace lineage, constrained selection and provenance;
-\item \path{paper/epistemic_mechanics_round050/sections/04_owmd.tex}: OWMD and bounded epistemic saturation;
-\item \path{paper/epistemic_mechanics_round050/sections/05_pendulum_discussion.tex}: worked mechanics derivation, discussion and conclusion;
-\item \path{paper/epistemic_mechanics_round050/sections/06_appendices.tex}: notation, additional derivations, saturation protocol and reproducibility; and
-\item \path{paper/epistemic_mechanics_round050/sections/07_bibliography.tex}: complete manuscript bibliography.
-\end{itemize}
-
-The release builder recursively inlines the local \verb|\input| files and then binds the resulting single TeX artifact to the exact evaluated Git subject and observed software-test count. Thus the repository is convenient to edit by scientific section while the CI artifact is self-contained for archival/submission purposes.
-
 \subsection{Reference implementation}
 
-The principal code correspondences are:
+The manuscript is maintained as a modular \TeX{} project whose release builder inlines the section sources into a single self-contained artifact and binds it to the exact evaluated Git subject and observed software-test count, so that the archival build is reproducible while the working source remains editable by scientific section.
+
+The formalism is accompanied by a reference implementation whose principal components correspond to the paper as follows:
 
 \begin{itemize}[leftmargin=*]
-\item \path{src/rakl/typed_lattice.py} and \path{src/rakl/compatibility_complex.py}: atoms, pairwise compatibility witnesses, constructive paths and the conservative compatibility-complex name;
-\item \path{src/rakl/lattice_metrology.py}: basis-bound geometric metrics and target-conditioned epistemic gain;
-\item \path{src/rakl/workspace.py}: capacity gate, reservation policy, broadcast, interventions and cognitive/evidential provenance types;
-\item \path{src/rakl/open_world_discovery.py}: functional signatures, capability owners, route records, audit provenance, bounded discovery closure, discovery workspace and hidden-name benchmark;
-\item \path{src/rakl/epistemic_saturation.py}: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry; and
+\item a typed-lattice / compatibility-complex layer: atoms, pairwise compatibility witnesses, constructive paths and the conservative compatibility-complex name;
+\item a lattice-metrology component: basis-bound geometric metrics and target-conditioned epistemic gain;
+\item a workspace component: capacity gate, reservation policy, broadcast, interventions and cognitive/evidential provenance types;
+\item an open-world-discovery component: functional signatures, capability owners, route records, audit provenance, bounded discovery closure, discovery workspace and hidden-name benchmark;
+\item an epistemic-saturation component: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry; and
 \item the corresponding test modules: executable regression contracts for these invariants.
 \end{itemize}
 
