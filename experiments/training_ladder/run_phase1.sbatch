@@ -23,10 +23,14 @@ set -euo pipefail
 # Parameters (override on submit, e.g. `sbatch --export=ALL,MODEL_PATH=... run_phase1.sbatch`)
 # --------------------------------------------------------------------------- #
 # Staged Qwen ladder lives under /projects/hep/fs9/users/scyiu/RAKL-paper2/assets/*/model
-REPO_ROOT="${REPO_ROOT:-$HOME/RAKL}"
+REPO_ROOT="${REPO_ROOT:-/projects/hep/fs9/users/scyiu/orion}"
 ASSET_ROOT="${ASSET_ROOT:-/projects/hep/fs9/users/scyiu/RAKL-paper2/assets}"
-# Point MODEL_PATH at one staged model dir, e.g. "$ASSET_ROOT/qwen2_5_0_5b_instruct/model"
-MODEL_PATH="${MODEL_PATH:-$ASSET_ROOT/qwen2_5_0_5b_instruct/model}"
+# Staged Qwen ladder (exact dirs):
+#   0.5B: $ASSET_ROOT/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct
+#   1.5B: $ASSET_ROOT/paper2-model-qwen25-1_5b-v4-3/model/Qwen--Qwen2.5-1.5B-Instruct
+#   3B:   $ASSET_ROOT/paper2-model-qwen25-3b-v1/model/Qwen--Qwen2.5-3B-Instruct
+#   7B:   $ASSET_ROOT/paper2-model-qwen25-7b-v1/model/Qwen--Qwen2.5-7B-Instruct
+MODEL_PATH="${MODEL_PATH:-$ASSET_ROOT/paper2-cpu-v3-2/model/Qwen--Qwen2.5-0.5B-Instruct}"
 MAX_EXPOSURE="${MAX_EXPOSURE:-64}"
 FAMILIES="${FAMILIES:-sequence_composition,balance_conservation,state_reachability}"
 OUT_DIR="${OUT_DIR:-$REPO_ROOT/experiments/training_ladder/phase1_out}"
@@ -67,6 +71,8 @@ export TRANSFORMERS_OFFLINE=1
 export PYTHONHASHSEED=0
 
 cd "$REPO_ROOT"
+# Make the 'orion' package importable (orion -> rakl impl) without installing.
+export PYTHONPATH="$REPO_ROOT/src:${PYTHONPATH:-}"
 python experiments/training_ladder/exposure_executor.py \
   --model "$MODEL_PATH" \
   --families "$FAMILIES" \
