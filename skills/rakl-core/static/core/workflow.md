@@ -167,7 +167,7 @@ Do not invent or propose a candidate while the active context/method-transfer/an
 When a runtime gate exists, obey it. For mathematical research, call:
 
 ```text
-plan_math_research(..., context_fiber=..., memory_review=..., transformation_memory=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=...)
+plan_math_research(..., context_fiber=..., memory_review=..., transformation_memory=..., shortcut_review=..., research_trace=..., preservation_receipt=..., expected_preservation_sha256=..., framework_subject_binding=..., framework_subject_observation=...)
 ```
 
 If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`.

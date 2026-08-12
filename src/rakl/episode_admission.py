@@ -19,9 +19,11 @@ filename heuristics are deliberately not consulted: renaming a file or omitting
 
 Scope, stated as narrowly as the artifact supports:
 
-* **Not wired into any runtime path.** ``add_episode`` / ``record_task_episode``
-  are unchanged. Automatic enforcement at protected consumers remains a separate
-  change.
+* **Wired into protected inventory consumers** via
+  :func:`require_protected_consumer_admission`,
+  :func:`filter_canonical_inventory_episodes`, and
+  :func:`record_task_episode` (optional admission receipt on the v3 runtime).
+  Path/filename heuristics remain deliberately ignored.
 * **No authority.** A ``PROPOSAL_SHADOW_STORED`` receipt grants search/failure
   retention only. A ``CANONICAL_INVENTORY_ADMITTED`` receipt is a registration
   claim about inventory discoverability, never proof, lesson, tool, gluing,
@@ -373,3 +375,85 @@ def count_canonical_authority_episodes(
         if report.satisfies_canonical_inventory:
             total += 1
     return total
+
+
+def filter_canonical_inventory_episodes(
+    pairs: Iterable[Tuple[TaskEpisode, EpisodeAdmissionReceipt | None]],
+    *,
+    claimed_path_or_name_hint: str | None = None,
+) -> Tuple[TaskEpisode, ...]:
+    """Return episodes that satisfy canonical inventory under explicit receipts.
+
+    ``claimed_path_or_name_hint`` is accepted only to prove path/extension
+    heuristics are ignored: adversarial filenames never change the verdict.
+    """
+
+    admitted: list[TaskEpisode] = []
+    for episode, receipt in pairs:
+        report = audit_episode_admission(
+            episode,
+            receipt,
+            claimed_path_or_name_hint=claimed_path_or_name_hint,
+        )
+        if report.satisfies_canonical_inventory:
+            admitted.append(episode)
+    return tuple(admitted)
+
+
+def require_protected_consumer_admission(
+    episode: TaskEpisode,
+    receipt: EpisodeAdmissionReceipt | None,
+    *,
+    protected_consumer: ProtectedConsumer = ProtectedConsumer.CANONICAL_INVENTORY,
+    claimed_path_or_name_hint: str | None = None,
+) -> EpisodeAdmissionReport:
+    """Fail closed unless the episode is canonically admitted for ``protected_consumer``.
+
+    Used by protected inventory / promotion / lesson / proof / root consumers so
+    applications cannot mint canonicality from path, extension, or top-level ids.
+    """
+
+    report = audit_episode_admission(
+        episode,
+        receipt,
+        protected_consumer=protected_consumer,
+        claimed_path_or_name_hint=claimed_path_or_name_hint,
+    )
+    if report.verdict is not AdmissionVerdict.CANONICAL_ADMITTED:
+        raise ValueError(
+            "protected consumer rejected episode: "
+            + ", ".join(report.reasons or (report.verdict.value,))
+        )
+    return report
+
+
+def retain_proposal_shadow_episode(
+    episode: TaskEpisode,
+    receipt: EpisodeAdmissionReceipt | None,
+    *,
+    claimed_path_or_name_hint: str | None = None,
+) -> EpisodeAdmissionReport:
+    """Retain a proposal/shadow episode for search/failure learning only.
+
+    Hard-fails if the caller routes the same pair into a protected consumer
+    without a separate :func:`require_protected_consumer_admission` call — this
+    helper never marks canonical inventory membership.
+    """
+
+    report = audit_episode_admission(
+        episode,
+        receipt,
+        claimed_path_or_name_hint=claimed_path_or_name_hint,
+    )
+    if report.verdict is AdmissionVerdict.CANONICAL_ADMITTED:
+        # Canonical receipts are valid storage too; retention is allowed, but
+        # canonical counting must go through filter/require helpers explicitly.
+        return report
+    if report.verdict is not AdmissionVerdict.SHADOW_RETAINED:
+        raise ValueError(
+            "proposal/shadow retention rejected: "
+            + ", ".join(report.reasons or (report.verdict.value,))
+        )
+    if report.satisfies_canonical_inventory:
+        raise ValueError("shadow retention must not satisfy canonical inventory")
+    return report
