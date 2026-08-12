@@ -6,9 +6,9 @@ The evaluator separates three questions that must not be collapsed:
 * which candidate mechanisms remain compatible with the observed regimes?
 * is point identification licensed, or must a survivor set remain open?
 
-Known-answer worlds explicitly supply candidate predictions by regime.  The gold
+Known-answer worlds explicitly supply candidate predictions by regime. The gold
 survivor set is therefore computed mechanically from observations; no LLM judge
-is needed.  A correct target prediction can still receive
+is needed. A correct target prediction can still receive
 ``PREDICTION_SUCCESS_WITH_MECHANISM_FAILURE`` when the claimed mechanism is
 incompatible with the same world's evidence.
 
@@ -126,9 +126,7 @@ def _gold_survivors(world: MechanismWorld) -> tuple[Tuple[str, ...], Tuple[str, 
         for observation in world.observations:
             key = (mechanism_id, observation.regime_id)
             if key not in predictions:
-                reasons.append(
-                    f"missing_prediction:{mechanism_id}:{observation.regime_id}"
-                )
+                reasons.append(f"missing_prediction:{mechanism_id}:{observation.regime_id}")
                 compatible = False
                 break
             if predictions[key] != observation.outcome:
@@ -260,7 +258,7 @@ def evaluate_mechanism_fidelity(
     )
     if prediction_correct and not mechanism_ok:
         verdict = MechanismFidelityVerdict.PREDICTION_SUCCESS_WITH_MECHANISM_FAILURE
-    elif not mechanism_ok:
+    elif not prediction_correct or not mechanism_ok:
         verdict = MechanismFidelityVerdict.MECHANISM_OR_IDENTIFICATION_FAILURE
     else:
         verdict = MechanismFidelityVerdict.PASS
