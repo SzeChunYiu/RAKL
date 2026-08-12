@@ -1,0 +1,53 @@
+{
+  "correction_supersession_policy": "Corrections append SUPERSEDED lineage; never silent rewrite of prior episode content under the same episode_id.",
+  "domain_vocabulary_policy": "Domain nouns are recorded separately from structural fingerprint coordinates and are never the structural ground truth.",
+  "episode_identity_policy": {
+    "do_not_collapse_when_preconditions_or_forbidden_losses_differ": true,
+    "equivalence_classes": [
+      "same_source_same_event",
+      "same_mechanism_restated_vocabulary",
+      "same_transformation_materially_different_preconditions",
+      "same_obstruction_different_transformation",
+      "same_transformation_different_effect",
+      "hostile_near_miss_shared_failure_divergent_forbidden_loss"
+    ],
+    "structural_duplicate_key": "hash(sorted structural coords)",
+    "unique_episode_id_required": true
+  },
+  "fingerprint_coordinates": [
+    "roles",
+    "relations",
+    "constraints",
+    "failure_mechanisms",
+    "invariants_to_preserve",
+    "desired_transition",
+    "forbidden_losses"
+  ],
+  "frozen_at_utc": "2026-08-12T05:10:00Z",
+  "frozen_before_bulk_collection": true,
+  "grants_scientific_authority": false,
+  "ontology_version_id": "obstruction-transformation-corpus-ontology-v1",
+  "promotion_rule": "Verified authorities require a SOURCE_VERIFICATION_RECEIPTS entry; model summary of a paper is insufficient.",
+  "provenance_allowed_evidence_classes": [
+    "in_repo_receipt_json",
+    "primary_source_pointer",
+    "explicit_PROPOSAL_ONLY_marker",
+    "supersession_lineage_pointer"
+  ],
+  "source_authority_rubric": {
+    "PROOF_BACKED": "Machine-checked or published proof binds the transformation effect",
+    "PROPOSAL_ONLY": "Default for synthetic/generated/model-summarized candidates",
+    "SOURCE_EVENT_VERIFIED": "Underlying source checked for exact O/T/O' claims",
+    "SUPERSEDED": "Retained negative/history; not a viable strict route",
+    "VERIFIED_LOCAL": "In-repo or locally witnessed event with bound receipts"
+  },
+  "synthetic_default_authority": "PROPOSAL_ONLY",
+  "training_evaluation_leakage_policy": "Design fixtures from PR #376 tests and DEVELOPMENT construction notes must not enter EVALUATION_MEMORY / FRESH_TARGETS confirmatory partitions for #401.",
+  "transformation_normalization_rules": [
+    "transformation_name is a stable family label",
+    "operation is the concrete act applied",
+    "effects are recorded resulting_relations, not hoped-for goals",
+    "every source precondition must be listed even if UNKNOWN:/CANNOT_CHECK"
+  ],
+  "version_snapshot_hashing": "snapshot_hash = semantic_shortcut._memory_hash over memory_id, source_universe, episodes, evidence_pointers"
+}

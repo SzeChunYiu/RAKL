@@ -1,0 +1,939 @@
+{
+  "episodes": [
+    {
+      "artifact_hash": "207c9002ba5402c1ae6e46a1324ef71e3d326c7839b36979c82bf82945e66347",
+      "authority": "VERIFIED_LOCAL",
+      "episode_id": "OTC-V1-RAKL-CAPABLE-MODEL-GATE-TERMINUS",
+      "evidence_pointers": [
+        "research/paper2_oracle_capability_gate_v2_exec/ORACLE_DECISION_RECEIPT_V2_EXEC.json",
+        "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json",
+        "research/paper2_alr_a3a4_confirmatory_prep_wave1_v1/CAPABILITY_GATE.json"
+      ],
+      "known_breakpoints": [
+        "reopen_only_with_pre_outcome_protocol_redesign_or_authorized_ORACLE_ge_2_of_3"
+      ],
+      "lineage_ids": [],
+      "operation": "fail_closed_gate_then_record_ladder_terminus",
+      "preconditions": [
+        "authorized_ORACLE_scales_exhausted_or_gate_failed",
+        "success_rate_below_two_thirds_at_each_authorized_scale",
+        "V2_EXEC_sealed_tasks_evaluated_under_frozen_protocol"
+      ],
+      "preserved_invariants": [
+        "prior_floor_receipts_immutable",
+        "no_threshold_softening_after_outcomes"
+      ],
+      "relaxed_or_broken_constraints": [
+        "expectation_that_7B_V2_EXEC_clears_gate"
+      ],
+      "resulting_relations": [
+        "CAPABLE_MODEL_AVAILABLE=NO_REFUTED",
+        "confirmatory_model_jobs_forbidden",
+        "Wave-2_confirmatory_unlock=no"
+      ],
+      "source_context": "RAKL Paper II confirmatory empirics under ORACLE capability ladder",
+      "source_domain": "scientific_experimental_method",
+      "source_obstruction": {
+        "constraints": [
+          "preregistered_scale_staircase",
+          "no_outcome_driven_threshold_softening",
+          "no_14B_32B_without_new_preregistration"
+        ],
+        "desired_transition": [
+          "authorized_confirmatory_execution_or_honest_terminal"
+        ],
+        "domain": "scientific_experimental_method",
+        "failure_mechanisms": [
+          "model_capability_floor_below_two_thirds",
+          "confirmatory_authorize_without_capable_model"
+        ],
+        "forbidden_losses": [
+          "fake_capable_model_clearance",
+          "promotional_lift_from_non_confirmatory_scores"
+        ],
+        "invariants_to_preserve": [
+          "negative_history_preserved",
+          "CAPABLE_MODEL_AVAILABLE_fail_closed"
+        ],
+        "obstruction_id": "O-capable-model-absent",
+        "relations": [
+          "confirmatory_job_requires_capable_model",
+          "oracle_success_rate_gates_authorize"
+        ],
+        "roles": [
+          "evaluator",
+          "subject_model",
+          "confirmatory_protocol",
+          "claim_boundary"
+        ]
+      },
+      "transformation_name": "terminal_stop_capable_model_no_refuted"
+    },
+    {
+      "artifact_hash": "c4f868b5f46a4f5706a649e020d9f2eece8e9201ee25cefe937a4bfd525900b3",
+      "authority": "VERIFIED_LOCAL",
+      "episode_id": "OTC-V1-RAKL-A3A4-MATCHED-BLOCKED",
+      "evidence_pointers": [
+        "research/capability_gated_closeout_20260812/ISSUE_352_TERMINAL_RECEIPT.json",
+        "research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_PACKET_V1.json",
+        "research/paper2_alr_a3a4_confirmatory_prep_wave1_v1/PREP_PACKET.json"
+      ],
+      "known_breakpoints": [
+        "science_acceptance_remains_open_until_capable_model_gate_clears"
+      ],
+      "lineage_ids": [
+        "OTC-V1-RAKL-CAPABLE-MODEL-GATE-TERMINUS"
+      ],
+      "operation": "record_CANNOT_EXECUTE_and_forbid_confirmatory_jobs",
+      "preconditions": [
+        "wave1_prep_frozen",
+        "CAPABLE_MODEL_AVAILABLE=false",
+        "no_confirmatory_authorize_receipt"
+      ],
+      "preserved_invariants": [
+        "parent_matched_packet_v1_immutable",
+        "non_confirmatory_scores_not_reinterpreted"
+      ],
+      "relaxed_or_broken_constraints": [],
+      "resulting_relations": [
+        "scientific_verdict=CANNOT_EXECUTE_CONFIRMATORY_A3_A4_MATCHED_ABLATION",
+        "confirmatory_A3_A4_forbidden"
+      ],
+      "source_context": "Paper II A3\u2194A4 matched empirical ablation after #156 / Wave-1 prep",
+      "source_domain": "scientific_experimental_method",
+      "source_obstruction": {
+        "constraints": [
+          "external_system_naming_ban",
+          "parent_V1_packet_immutable",
+          "capable_model_gate_shared_with_ALR"
+        ],
+        "desired_transition": [
+          "confirmatory_matched_identification_or_honest_CANNOT_EXECUTE"
+        ],
+        "domain": "scientific_experimental_method",
+        "failure_mechanisms": [
+          "interpreting_non_confirmatory_scores_as_A4_gt_A3",
+          "confirmatory_run_without_authorize_receipt"
+        ],
+        "forbidden_losses": [
+          "A4_gt_A3_claim_under_NO_REFUTED"
+        ],
+        "invariants_to_preserve": [
+          "non_confirmatory_3476749_history_only",
+          "prep_hashes_bound"
+        ],
+        "obstruction_id": "O-a3a4-identification-without-capable-model",
+        "relations": [
+          "matched_resources_and_prompts",
+          "typed_authority_intervention_on_A4"
+        ],
+        "roles": [
+          "A3_arm",
+          "A4_arm",
+          "matched_panel",
+          "typed_authority_license"
+        ]
+      },
+      "transformation_name": "cannot_execute_confirmatory_a3_a4_terminal"
+    },
+    {
+      "artifact_hash": "7adf1645074d001d582833f13aaea922b7df26fdcc1ad501b1358f267cc93265",
+      "authority": "SUPERSEDED",
+      "episode_id": "OTC-V1-RAKL-SCALE-SHOPPING-SUPERSEDED",
+      "evidence_pointers": [
+        "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.md"
+      ],
+      "known_breakpoints": [
+        "blocked_by_campaign_scoreboard_and_V2_EXEC_terminus"
+      ],
+      "lineage_ids": [
+        "OTC-V1-RAKL-CAPABLE-MODEL-GATE-TERMINUS"
+      ],
+      "operation": "propose_14B_or_32B_without_new_preregistration",
+      "preconditions": [
+        "prior_scale_failed_gate"
+      ],
+      "preserved_invariants": [
+        "negative_outcome_still_on_record"
+      ],
+      "relaxed_or_broken_constraints": [
+        "preregistered_stop_at_7B"
+      ],
+      "resulting_relations": [
+        "protocol_illegal_escalation_proposed"
+      ],
+      "source_context": "Post-FLOOR_7B temptation to escalate to 14B/32B without new preregistration",
+      "source_domain": "scientific_experimental_method",
+      "source_obstruction": {
+        "constraints": [
+          "preregistered_stop_rule"
+        ],
+        "desired_transition": [
+          "clear_capable_model_by_larger_scale"
+        ],
+        "domain": "scientific_experimental_method",
+        "failure_mechanisms": [
+          "outcome_driven_scale_shopping"
+        ],
+        "forbidden_losses": [
+          "silent_protocol_mutation"
+        ],
+        "invariants_to_preserve": [
+          "protocol_identity_before_outcomes"
+        ],
+        "obstruction_id": "O-scale-shopping-after-floor",
+        "relations": [
+          "escalation_after_negative_outcome"
+        ],
+        "roles": [
+          "operator",
+          "oracle_ladder",
+          "claim_boundary"
+        ]
+      },
+      "transformation_name": "unauthorized_scale_escalation"
+    },
+    {
+      "artifact_hash": "ba4df3282371996d2541f0bdfb037d229c5f64ba304ab4b232c2671d312e6961",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ALG-FINITE-REVISITATION-VISITED-SET",
+      "evidence_pointers": [
+        "docs/SEMANTIC_SHORTCUT_ROUTER.md#structural-semantic-coordinates",
+        "PROPOSAL_ONLY:classic_visited_set_pattern"
+      ],
+      "known_breakpoints": [
+        "fails_if_state_identity_unstable",
+        "does_not_by_itself_prove_semantic_correctness_of_map"
+      ],
+      "lineage_ids": [],
+      "operation": "maintain_visited_set_reject_reentry",
+      "preconditions": [
+        "states_hashable_or_orderable",
+        "transition_observable"
+      ],
+      "preserved_invariants": [
+        "deterministic_transition_semantics"
+      ],
+      "relaxed_or_broken_constraints": [
+        "assumption_that_path_is_acyclic"
+      ],
+      "resulting_relations": [
+        "cycle_detected_or_traversal_terminates",
+        "each_state_processed_at_most_once"
+      ],
+      "source_context": "PROPOSAL_ONLY structural exemplar: iterating a map over a finite set with possible revisits",
+      "source_domain": "algorithms_data_structures",
+      "source_obstruction": {
+        "constraints": [
+          "finite_cardinality",
+          "deterministic_transition"
+        ],
+        "desired_transition": [
+          "detect_or_break_revisitation",
+          "ensure_progress_or_halt"
+        ],
+        "domain": "algorithms_data_structures",
+        "failure_mechanisms": [
+          "nontermination_via_cycle",
+          "duplicate_work_on_revisit"
+        ],
+        "forbidden_losses": [
+          "silently_loop_forever"
+        ],
+        "invariants_to_preserve": [
+          "state_set_membership_well_defined"
+        ],
+        "obstruction_id": "O-finite-state-revisitation",
+        "relations": [
+          "iterated_application",
+          "possible_return_to_seen_state"
+        ],
+        "roles": [
+          "walker",
+          "finite_state_set",
+          "transition_map"
+        ]
+      },
+      "transformation_name": "record_visited_and_halt_on_repeat"
+    },
+    {
+      "artifact_hash": "07bf813c0eb242a02fdc5bad9f4191d06dca506970ad90c36f88b837f4306b2e",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ALG-FINITE-REVISITATION-MARK-ARRAY",
+      "evidence_pointers": [
+        "docs/SEMANTIC_SHORTCUT_ROUTER.md#structural-semantic-coordinates",
+        "PROPOSAL_ONLY:mark_array_restatement"
+      ],
+      "known_breakpoints": [
+        "fails_if_state_identity_unstable",
+        "does_not_by_itself_prove_semantic_correctness_of_map"
+      ],
+      "lineage_ids": [
+        "OTC-V1-ALG-FINITE-REVISITATION-VISITED-SET"
+      ],
+      "operation": "maintain_visited_set_reject_reentry",
+      "preconditions": [
+        "states_hashable_or_orderable",
+        "transition_observable"
+      ],
+      "preserved_invariants": [
+        "deterministic_transition_semantics"
+      ],
+      "relaxed_or_broken_constraints": [
+        "assumption_that_path_is_acyclic"
+      ],
+      "resulting_relations": [
+        "cycle_detected_or_traversal_terminates",
+        "each_state_processed_at_most_once"
+      ],
+      "source_context": "PROPOSAL_ONLY vocabulary restatement of visited-set cycle break (mark array)",
+      "source_domain": "algorithms_data_structures",
+      "source_obstruction": {
+        "constraints": [
+          "finite_cardinality",
+          "deterministic_transition"
+        ],
+        "desired_transition": [
+          "detect_or_break_revisitation",
+          "ensure_progress_or_halt"
+        ],
+        "domain": "algorithms_data_structures",
+        "failure_mechanisms": [
+          "nontermination_via_cycle",
+          "duplicate_work_on_revisit"
+        ],
+        "forbidden_losses": [
+          "silently_loop_forever"
+        ],
+        "invariants_to_preserve": [
+          "state_set_membership_well_defined"
+        ],
+        "obstruction_id": "O-finite-state-revisitation-mark-array",
+        "relations": [
+          "iterated_application",
+          "possible_return_to_seen_state"
+        ],
+        "roles": [
+          "walker",
+          "finite_state_set",
+          "transition_map"
+        ]
+      },
+      "transformation_name": "record_visited_and_halt_on_repeat"
+    },
+    {
+      "artifact_hash": "683b29aab790e65f5ffde4af0b35edf9be7b7412c99bc35fb44da043e184fbef",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ALG-FINITE-REVISITATION-ALLOW-REVISIT-CACHE",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:hostile_near_miss_cache_revisit"
+      ],
+      "known_breakpoints": [
+        "unsound_if_state_identity_collides",
+        "unsound_under_mutation"
+      ],
+      "lineage_ids": [],
+      "operation": "cache_result_by_state_allow_reentry_read",
+      "preconditions": [
+        "pure_transition_or_sound_memo",
+        "cache_invalidation_policy_known"
+      ],
+      "preserved_invariants": [
+        "memo_soundness"
+      ],
+      "relaxed_or_broken_constraints": [
+        "single_visit_mandate"
+      ],
+      "resulting_relations": [
+        "revisit_returns_cached_value",
+        "work_not_duplicated"
+      ],
+      "source_context": "HOSTILE_NEAR_MISS: revisitation tolerated when memoized values remain valid",
+      "source_domain": "algorithms_data_structures",
+      "source_obstruction": {
+        "constraints": [
+          "finite_cardinality",
+          "deterministic_transition"
+        ],
+        "desired_transition": [
+          "reuse_memoized_result_on_revisit"
+        ],
+        "domain": "algorithms_data_structures",
+        "failure_mechanisms": [
+          "nontermination_via_cycle",
+          "duplicate_work_on_revisit"
+        ],
+        "forbidden_losses": [
+          "discard_valid_memo",
+          "force_single_visit_when_cache_hit_is_safe"
+        ],
+        "invariants_to_preserve": [
+          "state_set_membership_well_defined",
+          "memo_soundness"
+        ],
+        "obstruction_id": "O-finite-state-revisitation-cache-ok",
+        "relations": [
+          "iterated_application",
+          "possible_return_to_seen_state"
+        ],
+        "roles": [
+          "walker",
+          "finite_state_set",
+          "transition_map"
+        ]
+      },
+      "transformation_name": "memoize_and_reuse_on_revisit"
+    },
+    {
+      "artifact_hash": "5d6929da1ce7388091e8541b48ed9fd25273462d088661df1657c64363f9a2a5",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-SW-SHARED-MUTABLE-FLAKE-ISOLATE",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:test_isolation_pattern"
+      ],
+      "known_breakpoints": [
+        "expensive_fixture_rebuild",
+        "hidden_process_global_state"
+      ],
+      "lineage_ids": [],
+      "operation": "fresh_fixture_or_transaction_rollback_per_case",
+      "preconditions": [
+        "fixture_clonable_or_rebuildable"
+      ],
+      "preserved_invariants": [
+        "asserted_behavioral_contract"
+      ],
+      "relaxed_or_broken_constraints": [
+        "shared_mutable_optimization"
+      ],
+      "resulting_relations": [
+        "tests_independent",
+        "order_shuffle_stable"
+      ],
+      "source_context": "PROPOSAL_ONLY: flaky test from shared mutable fixture across cases",
+      "source_domain": "software_verification_debugging",
+      "source_obstruction": {
+        "constraints": [
+          "parallel_or_shuffled_order_possible"
+        ],
+        "desired_transition": [
+          "deterministic_isolated_pass_fail"
+        ],
+        "domain": "software_verification_debugging",
+        "failure_mechanisms": [
+          "order_dependent_flake",
+          "cross_test_contamination"
+        ],
+        "forbidden_losses": [
+          "hide_flake_by_forcing_order"
+        ],
+        "invariants_to_preserve": [
+          "each_test_logical_independence"
+        ],
+        "obstruction_id": "O-shared-mutable-test-state",
+        "relations": [
+          "tests_mutate_shared_state",
+          "order_dependent_assertions"
+        ],
+        "roles": [
+          "test_case",
+          "shared_fixture",
+          "mutator",
+          "assertor"
+        ]
+      },
+      "transformation_name": "isolate_fixtures_per_test"
+    },
+    {
+      "artifact_hash": "915c2fdd3bd61b3cf7b7f36158748ebf523ebf9db1b8b83adaad0eafe3f1ae03",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-CTRL-UNSTABLE-FEEDBACK-ADD-DAMPING",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:classical_damping_intuition"
+      ],
+      "known_breakpoints": [
+        "CANNOT_CHECK:plant_model_mismatch",
+        "delay_dominant_loops"
+      ],
+      "lineage_ids": [],
+      "operation": "lower_proportional_gain_and_or_add_derivative_term",
+      "preconditions": [
+        "loop_structure_known",
+        "gain_tunable"
+      ],
+      "preserved_invariants": [
+        "closed_loop_tracking_objective"
+      ],
+      "relaxed_or_broken_constraints": [
+        "aggressive_rise_time_target"
+      ],
+      "resulting_relations": [
+        "oscillation_attenuated",
+        "stability_margin_improved"
+      ],
+      "source_context": "PROPOSAL_ONLY: high-gain feedback induces oscillation",
+      "source_domain": "control_dynamical_systems",
+      "source_obstruction": {
+        "constraints": [
+          "actuator_limits",
+          "delay_in_loop"
+        ],
+        "desired_transition": [
+          "damped_stable_tracking"
+        ],
+        "domain": "control_dynamical_systems",
+        "failure_mechanisms": [
+          "oscillation",
+          "actuator_saturation"
+        ],
+        "forbidden_losses": [
+          "remove_feedback_entirely_without_replacement"
+        ],
+        "invariants_to_preserve": [
+          "stability_margin_requirement"
+        ],
+        "obstruction_id": "O-unstable-high-gain-feedback",
+        "relations": [
+          "feedback_loop",
+          "gain_amplifies_error"
+        ],
+        "roles": [
+          "controller",
+          "plant",
+          "error_signal",
+          "actuator"
+        ]
+      },
+      "transformation_name": "reduce_gain_or_add_damping"
+    },
+    {
+      "artifact_hash": "5763b10c267e77256c30f8fcc2cd9ba78a76f5bf213e9ce7fe48b1fb5c0586a0",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-OPT-LOCAL-MIN-MULTISTART",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:multistart_pattern"
+      ],
+      "known_breakpoints": [
+        "still_not_global_certificate",
+        "UNKNOWN:adequate_init_coverage"
+      ],
+      "lineage_ids": [],
+      "operation": "restart_from_diverse_inits_compare_best",
+      "preconditions": [
+        "restart_budget_available",
+        "init_distribution_defined"
+      ],
+      "preserved_invariants": [
+        "objective_definition_fixed"
+      ],
+      "relaxed_or_broken_constraints": [
+        "single_trajectory_mandate"
+      ],
+      "resulting_relations": [
+        "multiple_basins_sampled",
+        "best_of_restarts_reported"
+      ],
+      "source_context": "PROPOSAL_ONLY: local search trapped in basin",
+      "source_domain": "optimization_operations_research",
+      "source_obstruction": {
+        "constraints": [
+          "nonconvex_landscape"
+        ],
+        "desired_transition": [
+          "escape_basin_or_certify_local_only"
+        ],
+        "domain": "optimization_operations_research",
+        "failure_mechanisms": [
+          "premature_convergence",
+          "basin_entrapment"
+        ],
+        "forbidden_losses": [
+          "relabel_local_min_as_global_without_certificate"
+        ],
+        "invariants_to_preserve": [
+          "objective_definition_fixed"
+        ],
+        "obstruction_id": "O-local-minimum-trap",
+        "relations": [
+          "local_move_neighborhood",
+          "objective_decrease_preferred"
+        ],
+        "roles": [
+          "searcher",
+          "objective",
+          "basin",
+          "init_point"
+        ]
+      },
+      "transformation_name": "multi_start_or_basin_hopping"
+    },
+    {
+      "artifact_hash": "8d37e7736a081883e0d76c232eb75451dfb71e0ff4e7ba39cf53865e5e7dc31d",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ENG-SPOF-ADD-REDUNDANCY",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:redundancy_pattern"
+      ],
+      "known_breakpoints": [
+        "correlated_failures",
+        "failover_split_brain"
+      ],
+      "lineage_ids": [],
+      "operation": "add_failover_replica_or_alternate_route",
+      "preconditions": [
+        "failure_detection_exists",
+        "state_replication_feasible"
+      ],
+      "preserved_invariants": [
+        "safety_interlocks_must_remain"
+      ],
+      "relaxed_or_broken_constraints": [
+        "minimize_component_count"
+      ],
+      "resulting_relations": [
+        "single_fault_no_longer_total_outage"
+      ],
+      "source_context": "PROPOSAL_ONLY: single point of failure in critical path",
+      "source_domain": "engineering_fault_repair",
+      "source_obstruction": {
+        "constraints": [
+          "availability_SLO"
+        ],
+        "desired_transition": [
+          "survive_single_component_fault"
+        ],
+        "domain": "engineering_fault_repair",
+        "failure_mechanisms": [
+          "total_outage_on_one_fault"
+        ],
+        "forbidden_losses": [
+          "disable_safety_interlocks_to_gain_availability"
+        ],
+        "invariants_to_preserve": [
+          "safety_interlocks_must_remain"
+        ],
+        "obstruction_id": "O-single-point-of-failure",
+        "relations": [
+          "all_paths_through_one_component"
+        ],
+        "roles": [
+          "critical_component",
+          "dependent_services",
+          "failure_mode"
+        ]
+      },
+      "transformation_name": "introduce_redundant_path"
+    },
+    {
+      "artifact_hash": "7f904311d02a1a66d3059cf23842c2b75304ea2d88e2fa044ff7be2a14a0b411",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-BIO-RUNAWAY-FEEDBACK-NEGATIVE-REGULATION",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:textbook_negative_feedback_schema"
+      ],
+      "known_breakpoints": [
+        "surface_resemblance_insufficient_for_SOURCE_EVENT_VERIFIED",
+        "pathway-specific_exceptions"
+      ],
+      "lineage_ids": [],
+      "operation": "introduce_inhibitor_or_degradation_path_on_signal",
+      "preconditions": [
+        "CANNOT_CHECK:concrete_pathway_identity_in_cited_source"
+      ],
+      "preserved_invariants": [
+        "organism_viability_window"
+      ],
+      "relaxed_or_broken_constraints": [
+        "unregulated_amplification"
+      ],
+      "resulting_relations": [
+        "signal_bounded",
+        "homeostasis_restored"
+      ],
+      "source_context": "PROPOSAL_ONLY analogy: runaway positive feedback without negative regulation",
+      "source_domain": "biology_regulatory_systems",
+      "source_obstruction": {
+        "constraints": [
+          "finite_resource_pool"
+        ],
+        "desired_transition": [
+          "restore_bounded_homeostasis"
+        ],
+        "domain": "biology_regulatory_systems",
+        "failure_mechanisms": [
+          "unbounded_amplification",
+          "resource_exhaustion"
+        ],
+        "forbidden_losses": [
+          "kill_all_signaling"
+        ],
+        "invariants_to_preserve": [
+          "organism_viability_window"
+        ],
+        "obstruction_id": "O-runaway-positive-feedback",
+        "relations": [
+          "positive_feedback_loop"
+        ],
+        "roles": [
+          "signal",
+          "amplifier",
+          "effector"
+        ]
+      },
+      "transformation_name": "add_negative_feedback_regulation"
+    },
+    {
+      "artifact_hash": "831547c91b9b4ec214a36af37fa69a71a8cd3f75b9390adf628289323bcc5e69",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ORG-APPROVAL-BOTTLENECK-PARALLEL-AUDIT",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:delegation_with_audit"
+      ],
+      "known_breakpoints": [
+        "inconsistent_delegates",
+        "audit_log_tampering"
+      ],
+      "lineage_ids": [],
+      "operation": "authorize_multiple_approvers_plus_immutable_audit_trail",
+      "preconditions": [
+        "delegation_policy_exists",
+        "audit_log_writeable"
+      ],
+      "preserved_invariants": [
+        "auditability_of_authorization"
+      ],
+      "relaxed_or_broken_constraints": [
+        "single_human_gate"
+      ],
+      "resulting_relations": [
+        "approvals_parallelizable",
+        "audit_trail_intact"
+      ],
+      "source_context": "PROPOSAL_ONLY: single approver bottleneck stalls throughput",
+      "source_domain": "organizational_workflow_systems",
+      "source_obstruction": {
+        "constraints": [
+          "compliance_requires_authorization"
+        ],
+        "desired_transition": [
+          "higher_throughput_without_losing_audit"
+        ],
+        "domain": "organizational_workflow_systems",
+        "failure_mechanisms": [
+          "queue_explosion",
+          "idle_downstream"
+        ],
+        "forbidden_losses": [
+          "approve_without_record"
+        ],
+        "invariants_to_preserve": [
+          "auditability_of_authorization"
+        ],
+        "obstruction_id": "O-single-approver-bottleneck",
+        "relations": [
+          "all_approvals_serialize_on_one_person"
+        ],
+        "roles": [
+          "requester",
+          "sole_approver",
+          "work_item",
+          "audit_log"
+        ]
+      },
+      "transformation_name": "delegate_with_parallel_authority_and_audit"
+    },
+    {
+      "artifact_hash": "07acbe236c8f5bb4876b78a99ed9c4045a4b1a3c6afee326bf5dc7eecbc0ad29",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-ORD-LOST-OBJECT-RETRACE-LAST-LOCUS",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:everyday_retrace_heuristic"
+      ],
+      "known_breakpoints": [
+        "false_last_known_memory",
+        "object_moved_by_other_agent"
+      ],
+      "lineage_ids": [],
+      "operation": "order_search_by_recency_path_then_expand",
+      "preconditions": [
+        "last_known_locus_remembered"
+      ],
+      "preserved_invariants": [
+        "object_conservation_in_space"
+      ],
+      "relaxed_or_broken_constraints": [
+        "uniform_random_search"
+      ],
+      "resulting_relations": [
+        "search_ordered",
+        "last_known_path_checked_first"
+      ],
+      "source_context": "PROPOSAL_ONLY everyday: lost object search",
+      "source_domain": "ordinary_planning_cases",
+      "source_obstruction": {
+        "constraints": [
+          "finite_attention_budget"
+        ],
+        "desired_transition": [
+          "recover_object_or_bound_absence"
+        ],
+        "domain": "ordinary_planning_cases",
+        "failure_mechanisms": [
+          "thrashing_random_search",
+          "skipping_last_known_locus"
+        ],
+        "forbidden_losses": [
+          "claim_absence_without_exhausting_last_known_path"
+        ],
+        "invariants_to_preserve": [
+          "object_conservation_in_space"
+        ],
+        "obstruction_id": "O-lost-object-unbounded-search",
+        "relations": [
+          "object_last_seen_at_locus",
+          "search_expands_without_bound"
+        ],
+        "roles": [
+          "searcher",
+          "missing_object",
+          "candidate_locations"
+        ]
+      },
+      "transformation_name": "retrace_from_last_known_locus"
+    },
+    {
+      "artifact_hash": "655eaa6a673ee344ca1337711f906e74955cba82b60ebdc8ebeb265083269858",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-MATH-FORALL-BY-EXAMPLES-COUNTEREXAMPLE-FIRST",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:counterexample_first_heuristic"
+      ],
+      "known_breakpoints": [
+        "does_not_mint_proof",
+        "CANNOT_CHECK:undecidable_instance_space"
+      ],
+      "lineage_ids": [],
+      "operation": "adversarial_instance_search_then_repair_statement_or_proof_plan",
+      "preconditions": [
+        "statement_formalizable_enough_to_test_instances"
+      ],
+      "preserved_invariants": [
+        "statement_quantifier_structure"
+      ],
+      "relaxed_or_broken_constraints": [
+        "example_sufficiency_assumption"
+      ],
+      "resulting_relations": [
+        "counterexample_found_or_instance_space_sampled",
+        "examples_demoted_from_proof_status"
+      ],
+      "source_context": "PROPOSAL_ONLY: attempting to establish \u2200 via confirming examples only",
+      "source_domain": "formal_mathematics_theorem_proving",
+      "source_obstruction": {
+        "constraints": [
+          "statement_is_universal"
+        ],
+        "desired_transition": [
+          "refute_or_prove_with_proper_universal_method"
+        ],
+        "domain": "formal_mathematics_theorem_proving",
+        "failure_mechanisms": [
+          "induction_from_examples_fallacy",
+          "missed_counterexample"
+        ],
+        "forbidden_losses": [
+          "promote_examples_to_proof"
+        ],
+        "invariants_to_preserve": [
+          "statement_quantifier_structure"
+        ],
+        "obstruction_id": "O-forall-supported-only-by-examples",
+        "relations": [
+          "examples_entail_existential_support_only"
+        ],
+        "roles": [
+          "claimant",
+          "universal_statement",
+          "example_oracle",
+          "adversary"
+        ]
+      },
+      "transformation_name": "search_counterexample_before_proof_attempt"
+    },
+    {
+      "artifact_hash": "00a9ccfba32fe744dd98336d1f5f30d3d68261341bbf0a02f329d894f931e01b",
+      "authority": "PROPOSAL_ONLY",
+      "episode_id": "OTC-V1-MATH-FORALL-BY-EXAMPLES-INDUCTION-SCHEMA",
+      "evidence_pointers": [
+        "PROPOSAL_ONLY:induction_schema_alternative"
+      ],
+      "known_breakpoints": [
+        "wrong_measure",
+        "does_not_apply_to_non-inductive_universals"
+      ],
+      "lineage_ids": [],
+      "operation": "choose_well_founded_measure_and_inductive_step",
+      "preconditions": [
+        "well_founded_measure_exists",
+        "inductive_step_obligations_stated"
+      ],
+      "preserved_invariants": [
+        "statement_quantifier_structure"
+      ],
+      "relaxed_or_broken_constraints": [
+        "example_sufficiency_assumption"
+      ],
+      "resulting_relations": [
+        "proof_obligations_reduced_to_base_and_step"
+      ],
+      "source_context": "PROPOSAL_ONLY: same quantifier obstruction, induction-schema transformation",
+      "source_domain": "formal_mathematics_theorem_proving",
+      "source_obstruction": {
+        "constraints": [
+          "statement_is_universal"
+        ],
+        "desired_transition": [
+          "refute_or_prove_with_proper_universal_method"
+        ],
+        "domain": "formal_mathematics_theorem_proving",
+        "failure_mechanisms": [
+          "induction_from_examples_fallacy",
+          "missed_counterexample"
+        ],
+        "forbidden_losses": [
+          "promote_examples_to_proof"
+        ],
+        "invariants_to_preserve": [
+          "statement_quantifier_structure"
+        ],
+        "obstruction_id": "O-forall-supported-only-by-examples-induction",
+        "relations": [
+          "examples_entail_existential_support_only"
+        ],
+        "roles": [
+          "claimant",
+          "universal_statement",
+          "example_oracle",
+          "adversary"
+        ]
+      },
+      "transformation_name": "apply_induction_schema"
+    }
+  ],
+  "evidence_pointers": [
+    "research/obstruction_transformation_corpus_v1/EPISODES.jsonl",
+    "research/obstruction_transformation_corpus_v1/ONTOLOGY_VERSION.json",
+    "research/obstruction_transformation_corpus_v1/SOURCE_UNIVERSE_MANIFEST.json",
+    "research/obstruction_transformation_corpus_v1/SOURCE_VERIFICATION_RECEIPTS/"
+  ],
+  "memory_id": "otc-v1-seed-memory",
+  "snapshot_hash": "732ec44e38414fdb17a445d457c8089fa21153a3fafcab83f44a55ffa4ec09ac",
+  "source_universe": [
+    "research/paper2_oracle_capability_gate_v2_exec/",
+    "research/paper2_closest_parent/",
+    "research/paper2_alr_a3a4_confirmatory_prep_wave1_v1/",
+    "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json",
+    "docs/SEMANTIC_SHORTCUT_ROUTER.md",
+    "PROPOSAL_ONLY:seed_structural_exemplars_v1"
+  ]
+}
