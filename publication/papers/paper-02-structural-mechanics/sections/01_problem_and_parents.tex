@@ -22,3 +22,21 @@ The residual is a conjunction not established by the parents above. We ask wheth
 \end{enumerate}
 
 This makes the paper mechanism-seeking rather than leaderboard-seeking. If a skill graph, workflow prior or semantic retriever already supplies the same predictive transfer signal at lower cost, the RAKL structural layer has not earned its complexity. Conversely, a positive result is strongest when the same structural identifier is learned or stored once and measurably improves both data selection and later inference on domains whose surface vocabulary would not have linked them directly.
+
+\subsection{Terminology at a glance}
+
+For readers from machine learning or systems engineering, the following plain-language glosses fix the vocabulary used throughout; formal definitions appear at first technical use.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Quantity of interest (QoI)] the specific target quantity a transfer is meant to preserve; correctness is judged relative to it, not to overall similarity.
+\item[Directional structural witness] the typed object that licenses moving structure from a source to a target: a role map, the invariants that must be preserved, the properties that are \emph{not} preserved, target boundary conditions, and evidence.
+\item[Obligation set] the witness expanded into an executable checklist of transfer obligations, each evaluated \texttt{SATISFIED} / \texttt{VIOLATED} / \texttt{UNKNOWN}.
+\item[Non-compensatory] a single violated load-bearing obligation forces rejection; strength elsewhere cannot buy it back --- there is no weighted average.
+\item[\texttt{LICENSED} / \texttt{REJECTED} / \texttt{CANNOT\_CHECK}] the three fail-closed verdicts: transfer allowed, transfer refused on a violation, or abstention when required evidence is missing (\texttt{UNKNOWN}~$\neq$~\texttt{VIOLATED}).
+\item[Fibre] the retrieval index/representation scoped to a fixed (QoI, context) into which an episode is moved.
+\item[Forbidden loss] a property whose loss under transfer invalidates the reuse even if the mapping otherwise fits.
+\item[Demoted evidence] an evidence path deliberately denied confirmatory/independent authority (e.g.\ an AI operator standing in for an absent independent annotator).
+\item[Structural-OOD] out-of-distribution by structure: a known structure in a new domain, or a whole structure family held out.
+\item[MDE] minimum detectable effect --- the smallest effect size a frozen test is powered to detect.
+\item[TPVS; break-even count] billable inference tokens per \emph{valid} solve (a solve that also passes the transfer/verification gates); and the smallest reuse count at which the structural layer is no more costly than the comparator.
+\end{description}

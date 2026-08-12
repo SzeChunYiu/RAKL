@@ -1,4 +1,4 @@
-\section{Engineering reporting contract}
+\section{Engineering reporting contract}\label{sec:reporting}
 
 The empirical article must be interpretable as an AI-systems result, not only as a representation proposal. We therefore predeclare a reporting contract that couples capability, transfer validity and resource cost. The experimental unit is the task or evaluation item; repeated seeds are nested replicates. Principal comparisons freeze the base checkpoint, tokenizer, task set, held-out domains/families, context window, tool permissions, evaluator, budget schedule and seed schedule. Training-selection comparisons additionally freeze the downstream optimizer and training recipe; inference comparisons freeze the model weights.
 
@@ -29,6 +29,25 @@ C_{\rm total}(n)={}&C_{\rm induction}+C_{\rm training\ delta}+C_{\rm storage}\\
 \end{aligned}
 \]
 The empirical break-even count is the smallest registered reuse count for which RAKL is no more costly than the comparator while the capability target and invalid-transfer ceiling remain satisfied. A workload with no break-even in the registered horizon is reported as such.
+
+Table~\ref{tab:transfer-metrics} summarizes the portable quantities an implementer can instrument on their own cross-domain reuse system. They are reported as a profile, never a single score, and describe transfer discipline and cost, not raw accuracy.
+
+\begin{table}[t]
+\footnotesize
+\begin{tabular}{@{}p{0.24\textwidth} p{0.42\textwidth} p{0.28\textwidth}@{}}
+\hline
+\textbf{Metric} & \textbf{Definition} & \textbf{What it tells an engineer} \\
+\hline
+Invalid-transfer false-accept rate & verifier-invalid transfers the gate licensed, over all invalid transfers & whether the gate is truly fail-closed; the load-bearing safety number (target $0$) \\
+Abstention coverage & cases resolved to \texttt{CANNOT\_CHECK}, over all cases & how often the gate honestly declines instead of guessing \\
+Paired reduction vs.\ strongest control & held-out paired binary-Brier (or accuracy) reduction of the full contract over the best non-structural control, with bootstrap CI & whether witnessed structure adds value beyond the strongest baseline, not just beyond lexical similarity \\
+Break-even count & smallest reuse count at which the structural layer is no costlier than the comparator; ``no finite break-even'' when reuse never pays & when reuse becomes economical for a workload \\
+Tokens per valid solve (TPVS) & billable inference tokens over count of solves that also pass the transfer/verification gates ($\infty$ at zero valid solves) & cost per \emph{trustworthy} success, not per raw answer \\
+\hline
+\end{tabular}
+\caption{Transfer-governance metrics an implementer can instrument. Reported as a profile; each measures transfer discipline or cost rather than accuracy alone.}
+\label{tab:transfer-metrics}
+\end{table}
 
 \subsection{Main display logic}
 
