@@ -43,7 +43,7 @@ The paper makes seven contributions.
 
 The scope is deliberately narrower than the ambition of autonomous science. We do not claim that these structures make a model conscious, that a finite process can exhaust the scientific literature, or that the current implementation improves real scientific outcomes. The paper provides formal and executable governance mechanics. Empirical superiority requires matched experiments; external credibility requires independent review; and unrestricted completeness is excluded by construction.
 
-\section{Foundations and the gap between them}
+\section{Foundations and the gap between them}\label{sec:foundations}
 
 Epistemic mechanics sits near several mature fields, but the combination needed for evidence-governed research agents is not supplied by any one of them. This section treats the neighboring literatures as constraints on novelty. Where an older field already owns a function, the contribution here is the integration and the additional boundary, not a renamed invention.
 
@@ -71,7 +71,7 @@ These are essential capabilities, and RAKL does not claim novelty for provenance
 
 Scientific contradiction is rarely well-defined without context. McCarthy's work on formalizing context and Giunchiglia's account of contextual reasoning both emphasize that assertions may be valid relative to a local theory or context and require explicit lifting when moved elsewhere \cite{mccarthy1993,giunchiglia1993}. Sheaf theory provides a mathematical language for local data and global consistency. In contextuality theory, compatible local assignments need not extend to a global assignment \cite{abramsky2011}. Applied sheaf work has used the same local-to-global machinery to reason about structured data and sensor consistency \cite{curry2014,robinson2017}.
 
-The analogy is useful but should not be exaggerated. RAKL's present atlas is not a full sheaf implementation. What is retained is the obligation structure: local claims live over declared domains and contexts; overlaps require alignment maps; and pairwise compatibility does not automatically license global gluing. Section~4 makes the obstruction concrete with a finite parity example.
+The analogy is useful but should not be exaggerated. RAKL's present atlas is not a full sheaf implementation. What is retained is the obligation structure: local claims live over declared domains and contexts; overlaps require alignment maps; and pairwise compatibility does not automatically license global gluing. Section~\ref{sec:compatibility} makes the obstruction concrete with a finite parity example.
 
 \subsection{Causality, evidence and intervention}
 
@@ -81,7 +81,7 @@ Causal models make a related distinction between observational association and i
 
 The neighboring fields thus own substantial parts of the problem. Truth-maintenance systems own justification-sensitive revision; AGM owns abstract belief change; argumentation owns attack/acceptance structure; provenance systems own lineage; contextual logics and sheaves own local-to-global obligations; causal models own intervention semantics; agent architectures own tool use, memory and iterative proposal generation. The open problem addressed here is how to compose these functions into a scientific-state machine in which (i) context is first-class, (ii) evidence and authority remain typed, (iii) proposals cannot silently promote themselves, (iv) active computational access is transient, (v) discovery can deliberately escape current vocabulary, and (vi) recursive research has a defensible stopping rule.
 
-That last requirement is especially important. A system that never stops is unusable; a system that stops because it has stopped asking new kinds of questions is unreliable. The saturation construction in Section~8 treats stopping as an epistemic certificate rather than an intuition about having ``read enough.''
+That last requirement is especially important. A system that never stops is unusable; a system that stops because it has stopped asking new kinds of questions is unreliable. The saturation construction in Section~\ref{sec:saturation} treats stopping as an epistemic certificate rather than an intuition about having ``read enough.''
 
 \section{Epistemic state and transition mechanics}
 
@@ -105,7 +105,7 @@ where \(G_c\) is grounding/provenance support, \(R_c\) is representation/relatio
 \quad\Longleftrightarrow\quad
 \forall q\in\{G,R,M,I,D\},\; \alpha_1^{(q)}\subseteq \alpha_2^{(q)}
 \]
-when certificate inclusion is the relevant local order. More general coordinate-specific entailment relations can replace set inclusion without changing the product-order argument in Section~5.
+when certificate inclusion is the relevant local order. More general coordinate-specific entailment relations can replace set inclusion without changing the product-order argument in Section~\ref{sec:authority}.
 
 \subsection{Canonical state}
 

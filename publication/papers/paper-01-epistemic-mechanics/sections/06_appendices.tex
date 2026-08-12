@@ -53,7 +53,7 @@ The separation matters because only a subset of these transitions can change cur
 
 \subsection{The parity obstruction as a constraint matrix}
 
-The three parity equations from Section~4 can be written over \(\mathbb F_2\) as
+The three parity equations from Section~\ref{sec:compatibility} can be written over \(\mathbb F_2\) as
 \[
 \begin{bmatrix}
 1&1&0\\
@@ -97,7 +97,7 @@ The grounding coordinate of \(\alpha\) strictly dominates that of \(\beta\), whi
 
 \subsection{Sensitivity of the workspace selection theorem}
 
-The proof in Section~6 relies on unit item cost and additive utility. To see why, suppose two unreserved candidates have utilities \(u_1=6,u_2=5\) but costs \(c_1=3,c_2=1\), and only two units of residual capacity remain. Global priority by \(u\) would attempt to select item 1 even though it is infeasible, while item 2 is feasible. With several heterogeneous costs the residual problem becomes a knapsack instance.
+The proof in Section~\ref{sec:workspace} relies on unit item cost and additive utility. To see why, suppose two unreserved candidates have utilities \(u_1=6,u_2=5\) but costs \(c_1=3,c_2=1\), and only two units of residual capacity remain. Global priority by \(u\) would attempt to select item 1 even though it is infeasible, while item 2 is feasible. With several heterogeneous costs the residual problem becomes a knapsack instance.
 
 Similarly, let two candidates each have individual utility 5 but a redundancy penalty of 8 when co-selected. Additive greedy selection assigns value 10 to the pair, while the true joint utility is 2. A diversity-aware workspace therefore requires either a different optimization objective or a submodular/structured selection algorithm. The theorem should not be cited outside the assumptions printed in its statement.
 
@@ -182,12 +182,12 @@ Paper claim & Formal/evidential support & Executable correspondence \\
 Paper claim & Formal/evidential support & Executable correspondence \\
 \midrule
 \endhead
-Workspace selection changes access, not authority & Proposition in Section 6; type/codomain argument & \path{workspace.py}; workspace tests \\
+Workspace selection changes access, not authority & Proposition in Section~\ref{sec:workspace}; type/codomain argument & \path{workspace.py}; workspace tests \\
 Coactivation does not imply compatibility & Explicit contradictory-selection countermodel & \path{coactivation_pairs}; workspace tests \\
 Current atom/witness/path object is not itself a lattice & Lattice-definition audit; absent order/meet/join obligations & \path{compatibility_complex.py}; terminology tests \\
-Closed states of a valid closure operator form a complete lattice & Closure-system theorem in Section 4 & Formal result; universal closure operator not yet implemented \\
+Closed states of a valid closure operator form a complete lattice & Closure-system theorem in Section~\ref{sec:compatibility} & Formal result; universal closure operator not yet implemented \\
 Pairwise compatibility need not glue globally & Three-context parity obstruction & Formal result; higher-order solver remains an open implementation fiber \\
-Authority cannot be faithfully represented by one scalar when incomparability exists & Total-order contradiction theorem in Section 5 & Authority remains coordinate-typed in framework design \\
+Authority cannot be faithfully represented by one scalar when incomparability exists & Total-order contradiction theorem in Section~\ref{sec:authority} & Authority remains coordinate-typed in framework design \\
 OWMD can issue only bounded closure & Finite-transcript non-certifiability theorem & \path{open_world_discovery.py}; closure tests \\
 Hidden-name retrieval must be ontology-independent & GWT-OMISSION-01 definition & hidden-name benchmark tests \\
 Saturation requires repeated zero substantive gain under stable basis & finite-basis fixed-point theorem plus operational certificate & \path{epistemic_saturation.py}; saturation tests \\
