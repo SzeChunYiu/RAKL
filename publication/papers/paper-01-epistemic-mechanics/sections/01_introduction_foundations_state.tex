@@ -14,7 +14,14 @@ The central architecture is shown in Figure~\ref{fig:architecture} and can be su
 \[
 \boxed{\text{computational access}\neq\text{cross-context coherence}\neq\text{epistemic authority}.}
 \]
-Computational access asks whether an object is active and reusable by downstream computation. Coherence asks whether objects can coexist after their contexts, representations and regimes have been aligned. Authority asks what the registered evidence licenses the system to assert. None of these coordinates is a monotone proxy for the other two.
+Computational access asks whether an object is active and reusable by downstream computation. Coherence asks whether objects can coexist after their contexts, representations and regimes have been aligned. Authority asks what the registered evidence licenses the system to assert. None of these coordinates is a monotone proxy for the other two; Figure~\ref{fig:three-sep} makes their independence concrete with two example claims.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/three_separations.pdf}
+\caption{The three separations are independent coordinates, not a ladder. Two example claims are placed on each plane: a live workspace conjecture~(A) has high computational access but low authority, while a refuted claim~(B) is retained in negative history with zero authority. A claim's position on one plane does not determine its position on the others; treating any one as a proxy for another is the failure mode this paper is designed to prevent.}
+\label{fig:three-sep}
+\end{figure}
 
 A second separation distinguishes persistent epistemic state from a transient workspace. Contemporary language-model systems already use retrieval, tools, scratchpads and memory hierarchies to extend what can be brought into a model's immediate context \cite{lewis2020,yao2023,schick2023,packer2023,mialon2023}. Generative agents and reflection-based agents likewise maintain memories or textual feedback that can influence future behavior \cite{park2023,shinn2023}. These mechanisms are useful models of computational access, but they do not define scientific authority. In the architecture developed here, a workspace can change what downstream operators see without acquiring any canonical write permission.
 
