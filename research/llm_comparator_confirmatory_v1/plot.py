@@ -10,7 +10,7 @@ from matplotlib.ticker import MultipleLocator
 HERE=Path(__file__).resolve().parent
 rows=[json.loads(l) for l in open(HERE/"raw_results.jsonl") if l.strip()]
 CONDS=["DIRECT","FREE_COT","RAKL_GATE"]
-LBL={"DIRECT":"Direct\n(plain)","FREE_COT":"Free CoT\n(control)","RAKL_GATE":"RAKL gate\n(obligations)"}
+LBL={"DIRECT":"Direct\n(plain)","FREE_COT":"Free CoT\n(control)","RAKL_GATE":"Orion gate\n(obligations)"}
 BLUE,VERM,INK,GREEN="#0072B2","#D55E00","#222222","#009E73"
 COL={"DIRECT":INK,"FREE_COT":"#888888","RAKL_GATE":BLUE}
 rng=np.random.default_rng(7)
