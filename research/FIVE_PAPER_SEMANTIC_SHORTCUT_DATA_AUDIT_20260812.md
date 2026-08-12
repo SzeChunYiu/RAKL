@@ -60,13 +60,13 @@ An `(O,T,O')` episode may change retrieval/search priority after a valid target 
 
 **Owned claim surface:** whole-framework architecture, continual experience, method evolution, matched empirical programme.
 
-The canonical abstract is stale at the audit cutoff. It currently terminates the ORACLE capability discussion at the 0.5B floor. The later repository campaign exhausted the authorized staircase:
+The canonical abstract was stale at the audit cutoff because it terminated the ORACLE capability discussion at the first 0.5B floor. The later repository campaign exhausted the preregistered scale staircase:
 
 ```text
 0.5B -> 1.5B -> 3B -> 7B
 ```
 
-and the final registered job is:
+with the scale terminus:
 
 ```text
 job: 3476788
@@ -75,19 +75,32 @@ success: 1/3
 parse: 3/3
 ```
 
-The associated campaign update records:
+Issue #379 then froze a **new versioned task/gate revisit rather than scale shopping**. The sealed-task executable revisit stayed at 7B and produced:
 
 ```text
-Wave-2 blocker: #379
-terminal scoreboard: PR #380
-No Phase-0
-No promotional lift
-#138 remains closed
+job: 3476813
+protocol: ORACLE_CAPABILITY_GATE_V2_0_EXEC
+verdict: MODEL_CAPABILITY_FLOOR_7B_V2_EXEC
+success: 2/5
+parse: 5/5
+mean_score: 0.5000
+CAPABLE_MODEL_AVAILABLE: NO_REFUTED
+Wave-2 confirmatory unlock: no
 ```
 
-Earlier microtrial evidence must remain separated from this terminal capability result. In V4.2, both arms were scorable at `3/5` versus `3/5` with one evaluated seed/task unit; the repository explicitly recorded that the arm comparison was not estimable. Parse/format effects therefore must not be represented as a reasoning-performance gain.
+The associated chronology preserves:
 
-**Required manuscript correction:** replace the 0.5B terminal framing with the final 7B floor and explicitly preserve that no powered RAKL-vs-parent efficacy comparison was opened by this staircase.
+```text
+No Phase-0
+No confirmatory Wave-2 model empirics
+No promotional learning lift
+No 14B/32B escalation from the failed registered ladder
+Prior 0.5B/1.5B/3B/7B floors remain negative history
+```
+
+Earlier microtrial evidence must remain separated from these capability-gate results. In V4.2, both arms were scorable at `3/5` versus `3/5` with one evaluated seed/task unit; the repository explicitly recorded that the arm comparison was not estimable. Parse/format effects therefore must not be represented as a reasoning-performance gain.
+
+**Required manuscript correction:** replace the 0.5B terminal framing with both the 7B scale-ladder terminus and the later sealed 7B V2 gate failure, explicitly preserving that neither opened a powered RAKL-vs-parent efficacy comparison.
 
 **Semantic-shortcut evidence status:** implemented method/router only; efficacy belongs to #401.
 
@@ -95,7 +108,7 @@ Earlier microtrial evidence must remain separated from this terminal capability 
 
 **Owned claim surface:** cross-domain transfer mapping, boundary awareness, natural-domain transfer benchmark.
 
-The canonical abstract and `03b_current_data_status.tex` are stale. They still say issue #217 remains open and that no annotation/training path exists.
+The canonical abstract and `03b_current_data_status.tex` were stale. They still said issue #217 remained open and that no annotation/training path existed.
 
 The later repository chronology is:
 
@@ -137,7 +150,7 @@ No result in PR #376 establishes faster proof discovery, greater theorem-solving
 
 **Owned claim surface:** experience-to-method consolidation, retained-growth metrology, governed RAKL evolution.
 
-The canonical abstract is stale where it says the independent retained-novelty audit merely awaits #255. The actual chronology is stronger but still non-independent:
+The canonical abstract was stale where it said the independent retained-novelty audit merely awaited #255. The actual chronology is stronger but still non-independent:
 
 - Phase-0 independent-audit substrate was frozen from #253;
 - retained event universe: **104 events**;
@@ -163,7 +176,7 @@ The five papers must use the following shared constraints at this cutoff:
 4. **No absolute novelty claim.** The internal prior-art audit is bounded; #403 owns independent system-level novelty review.
 5. **Paper III:** demoted AI_OPERATOR pilot PASS is not independent-human confirmation. #359 remains open.
 6. **Paper V:** demoted AI_OPERATOR novelty-audit completion is not independent construct validity. #353 remains open.
-7. **Paper II:** the authorized ORACLE staircase terminates at the 7B floor, not the older 0.5B checkpoint; no powered Phase-0/promotional lift followed.
+7. **Paper II:** the registered scale staircase terminates at 7B (job 3476788), and the separately frozen sealed-task revisit at the same scale also fails its gate (job 3476813); `CAPABLE_MODEL_AVAILABLE=NO_REFUTED`, with no Phase-0 or promotional lift.
 8. **Negative history is retained.** Environment failures, nulls, power limits and capability floors remain publication-visible when relevant.
 
 ## Open work map
@@ -173,6 +186,7 @@ The five papers must use the following shared constraints at this cutoff:
 | #401 | matched semantic-shortcut efficacy/safety/cost experiment | scoped empirical performance claim only |
 | #402 | provenance-bound `(O,T,O')` corpus and coverage metrology | bounded retrieval/coverage claims |
 | #403 | independent prior-art audit of the exact system-level claim | stronger scoped novelty wording, if supported |
+| #404 | exact-subject five-paper manuscript/PDF artifact synchronization | reader-facing artifact identity/layout only |
 | #359 | Paper-III independent external human roles | independent transfer-confirmation lane, subject to power/design limits |
 | #353 | Paper-V independent external novelty/construct-validity audit | independent retained-growth construct validity, if supported |
 
@@ -180,10 +194,11 @@ The five papers must use the following shared constraints at this cutoff:
 
 ```text
 IMPLEMENTATION: DEPLOYED
-FIVE_PAPER_CONCEPTUAL_UPDATE: REQUIRED
-PAPER_II_DATA_STATUS: STALE -> CORRECT_TO_FLOOR_7B
-PAPER_III_DATA_STATUS: STALE -> CORRECT_TO_DEMOTED_AI_OPERATOR + #359
-PAPER_V_NOVELTY_STATUS: STALE -> CORRECT_TO_FROZEN_104/174 + DEMOTED + #353
+FIVE_PAPER_SOURCE_UPDATE: APPLIED_ON_PUBLICATION_BRANCH
+PAPER_II_DATA_STATUS: CORRECT_TO_7B_LADDER + 7B_V2_EXEC_GATE_FAIL
+PAPER_III_DATA_STATUS: CORRECT_TO_DEMOTED_AI_OPERATOR + #359
+PAPER_V_NOVELTY_STATUS: CORRECT_TO_FROZEN_104/174 + DEMOTED + #353
 SEMANTIC_SHORTCUT_EMPIRICAL_SUPERIORITY: NOT_ESTABLISHED
 INDEPENDENT_SYSTEM_NOVELTY: NOT_ESTABLISHED
+CANONICAL_PDF_ARTIFACT_SYNC: OPEN_UNDER_#404
 ```
