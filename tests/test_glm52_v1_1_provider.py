@@ -12,8 +12,20 @@ if str(SUITE) not in sys.path:
     sys.path.insert(0, str(SUITE))
 
 
+
+def _import_suite_provider():
+    """Reload suite provider after v1 mechanism modules may have cached `provider`."""
+    for name in list(sys.modules):
+        if name == "provider" or name.startswith("provider."):
+            del sys.modules[name]
+    while str(SUITE) in sys.path:
+        sys.path.remove(str(SUITE))
+    sys.path.insert(0, str(SUITE))
+    return importlib.import_module("provider")
+
+
 def test_provider_reexports_canonical_client():
-    provider = importlib.import_module("provider")
+    provider = _import_suite_provider()
     from rakl.hosted_anthropic_client import AnthropicCompatClient, REQUIRED_ENV_VARS
 
     assert provider.REQUIRED_ENV_VARS == REQUIRED_ENV_VARS

@@ -20,6 +20,11 @@ def test_suite_provider_reexports_shared_client():
     from pathlib import Path
 
     suite = Path(__file__).resolve().parents[1] / "research" / "glm52_mechanism_suite_v1_1"
+    for name in list(sys.modules):
+        if name == "provider" or name.startswith("provider."):
+            del sys.modules[name]
+    while str(suite) in sys.path:
+        sys.path.remove(str(suite))
     sys.path.insert(0, str(suite))
     provider = importlib.import_module("provider")
     assert provider.REQUIRED_ENV_VARS == REQUIRED_ENV_VARS

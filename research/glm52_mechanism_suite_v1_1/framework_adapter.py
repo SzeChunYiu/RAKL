@@ -25,7 +25,7 @@ from rakl.experience_substrate import ExperienceLedger, TaskEpisode
 from rakl.problem_fibre import ProblemAtom, compile_problem_fibre
 from rakl.v3_authority import canonical_sha256
 
-from common import file_sha256, stable_hash
+from suite_common import file_sha256, stable_hash
 
 PROTOCOL_ID = "GLM52-MECHANISM-SUITE-V1.1"
 PROTOCOL_VERSION = "1.1.0"
