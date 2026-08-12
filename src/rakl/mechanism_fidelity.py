@@ -243,9 +243,13 @@ def evaluate_mechanism_fidelity(
     scope_correct = claimed_scope == registered_scope
 
     prediction_to_mechanism_leak = prediction_correct and not mechanism_support_valid
+    # CAWM is reserved for a wrong/overreaching mechanism state accompanying a
+    # correct target result. Merely failing to identify a uniquely surviving
+    # mechanism remains an identification failure, but is not mislabeled as a
+    # falsified mechanism narrative.
     cawm = prediction_correct and (
         not mechanism_support_valid
-        or not identification_correct
+        or mechanism_to_identification_leak
         or not survivor_set_correct
     )
 
