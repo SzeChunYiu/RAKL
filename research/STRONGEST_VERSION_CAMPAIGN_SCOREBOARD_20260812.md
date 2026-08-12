@@ -1,11 +1,11 @@
 # Strongest-version campaign scoreboard — 2026-08-12 (V2_EXEC floor after 3476813)
 
-**Tip main at reconstruction:** `496edc5ead136980287ac2e72efb486691945366` (Paper II transport obligations v2 #491; prior #488 V4.4 ingest 3477848, #485 GLM Wave-2 offline freeze)
+**Tip main at reconstruction:** `29d382463eb353696f8ac224dd885bfb2148f55d` (#492 capability V3 Stage 2 challenger; prior #493 scaffolds, #491 transport v2, #488 V4.4 ingest 3477848, #485 GLM Wave-2 offline freeze)
 **Machine-readable:** `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json`  
 **Publication manifest:** `publication/PUBLICATION_SERIES_V2.json`  
 **CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED` (false)  
 **Wave-2 confirmatory unlock:** **no** (terminal under current protocols)  
-**GitHub issue sweep (2026-08-12):** **4 closed** (#478 #479 #459 #464) · **15 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468 #486 #487 #489 #490)
+**GitHub issue sweep (2026-08-12):** **5 closed** (#478 #479 #459 #464 #486) · **14 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468 #487 #489 #490)
 
 Closed GitHub issues are historical terminals, **not** proof the scientific question was answered.
 
@@ -124,6 +124,8 @@ Fail-closed contract restoration for overlapping hooks: see fail-closed closeout
 | #485 | `4c5e4583` | GLM Wave-2 **offline** freeze receipts — `NO_NEW_GLM_OUTCOME`; no confirmatory GLM runs |
 | #488 | `4a3b6b92` | Paper2 V4.4 LUNARC **3477848** native ingest (non-confirmatory; exact_conceptual_pass_arm_count=0 preserved) |
 | #491 | `496edc5e` | Paper II executable directional transport obligations v2 (`StructuralWitnessV2`) |
+| #493 | `e3ffc2ce` | Scoreboard tip sync + #461 exposure scaffold + #444 OBJECTIVE lane + paper-02 overfull fix |
+| #492 | `29d38246` | Capability V3 Stage 2 interface challenger freeze — `STAGED_INTERFACE_DEVELOPMENT_PROMISING` only; no CAPABLE_MODEL auth |
 
 ### #488 ingest pointer
 
@@ -132,6 +134,10 @@ Fail-closed contract restoration for overlapping hooks: see fail-closed closeout
 - Status: `research/paper2_microtrial_v4_4/NATIVE_EXECUTION_STATUS.json`
 - Bundle: `research/paper2_microtrial_v4_4/native_bundles/PAPER2_V4_4_NATIVE_JOB_3477848.tar.gz`
 - Do **not** resubmit redundant V4.4 confirmatory jobs against 3477848.
+
+### #486 closed
+
+- Closed as `IMPLEMENTED_EXECUTABLE_TRANSPORT_OBLIGATIONS_V2` after #491 on tip (no empirics clearance for #444).
 
 ### #491 transport pointer
 
@@ -148,7 +154,7 @@ Fail-closed contract restoration for overlapping hooks: see fail-closed closeout
 
 - `research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/` — directory contract + manifests; `OBJECTIVE_LANE_SCAFFOLD_ONLY`.
 
-## Open issues after tip sync (15)
+## Open issues after tip sync (14)
 
 | Issue | Blocker (honest) |
 |------:|------------------|
@@ -156,14 +162,13 @@ Fail-closed contract restoration for overlapping hooks: see fail-closed closeout
 | #442 | Campaign coordinator — children blocked (#447 capability, #443/#444 empirics) |
 | #443 | `CAPABLE_MODEL=NO_REFUTED` / Wave-2 offline freeze only (#485); no confirmatory GLM |
 | #444 | Objective lane scaffolded; confirmatory items + independent humans still absent |
-| #447 | Stage 0/1 defect preserved; Stage 2 challenger on PR path / tip when merged — still no `CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3` |
+| #447 | Stage 2 `STAGED_INTERFACE_DEVELOPMENT_PROMISING` (#492); Stages 3–5 open; **no** `CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3` |
 | #455 | Paper III training-time extension — conditional on #461 mechanism signal |
 | #461 | Instrument + exposure scaffold frozen — no learner outcomes / no mechanism signal |
 | #462 | Publication decision gate — conditional Structural Learning Mechanics |
 | #466 | Phase 2 adaptive-vs-static — conditional on #461 |
 | #467 | Phase 3 train→inference identity — conditional |
 | #468 | Phase 4 generalization law — conditional |
-| #486 | Transport v2 landed via #491 — close when tip contains #491 and acceptance checked |
-| #487 | 2026 nearest-work threat audit — deliverables not yet written |
-| #489 | Paper I adversarial epistemic-governance benchmark — not started |
-| #490 | NMI-grade flagship story/evidence gate — blocked on #444/#486/#487 |
+| #487 | 2026 nearest-work threat audit — scaffold only until CLAIM_MATRIX filled |
+| #489 | Paper I adversarial epistemic-governance benchmark — design scaffold only |
+| #490 | NMI-grade flagship story/evidence gate — design PR path / blocked on #444/#487 empirics |
