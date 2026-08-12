@@ -1,0 +1,229 @@
+{
+  "alternative_diagnoses": [
+    {
+      "discriminator": "If an incumbent typed field already binds semantic existential identity across roles, no companion is needed.",
+      "id": "ALT_DOCUMENTATION_ONLY"
+    },
+    {
+      "discriminator": "If the pathology occurs only in the motivating application and not in fresh mathematical worlds, do not generalize the method.",
+      "id": "ALT_APPLICATION_ONLY"
+    },
+    {
+      "discriminator": "If a binder-aware parser feeding unchanged v1 fields fully distinguishes all worlds, classify as implementation rather than Class B.",
+      "id": "ALT_PARSER_NOT_METHOD"
+    },
+    {
+      "discriminator": "If the companion rejects alpha-renamed or compatible same-role reuse in fresh worlds, reject or redesign it.",
+      "id": "ALT_OVERCONSTRAINING"
+    },
+    {
+      "discriminator": "If the companion activates on routes without a joint-witness obligation, treat excess activation as a blocker.",
+      "id": "ALT_NO_ACTIVATION_POLICY"
+    }
+  ],
+  "candidate": {
+    "candidate_id": "quantifier-cowitness-shadow-v0.1",
+    "candidate_identity_status": "TO_BE_HASHED_AFTER_IMPLEMENTATION",
+    "implementation_mode": "PROPOSAL_SHADOW_COMPANION_NOT_PROTECTED_CONSUMER",
+    "owner_surface": "contextual_theory_gluing",
+    "predicted_files": [
+      "src/rakl/quantifier_cowitness.py",
+      "schemas/quantifier-cowitness-review-v1.schema.json",
+      "tests/test_quantifier_cowitness.py"
+    ]
+  },
+  "candidate_contract": {
+    "authority": "ROUTING_GLUING_ONLY_NOT_THEOREM",
+    "identity_rules": [
+      "One semantic binder id may serve multiple roles when all occurrences have a compatible object type and scope.",
+      "Alpha-renamed occurrences may be identified only by an explicit ALPHA_RENAMED_SAME_BINDER relation with evidence.",
+      "Equal display symbols are never identity evidence.",
+      "Distinct binder ids with an explicit DISTINCT_BINDERS relation cannot satisfy a required joint-witness obligation.",
+      "Missing or conflicting identity evidence returns CANNOT_CHECK rather than PASS.",
+      "When no conclusion or route requests joint witness reuse, the companion remains non-activated and returns PASS only for routing disposition, not theorem truth."
+    ],
+    "inputs": [
+      "typed binder occurrences",
+      "semantic binder ids and scope ids",
+      "display symbols",
+      "quantifier kinds",
+      "mathematical object types",
+      "role labels",
+      "explicit identity relations with evidence",
+      "joint witness obligations",
+      "activation predicate"
+    ],
+    "non_guarantees": [
+      "theorem truth",
+      "existence of any witness",
+      "proof validity",
+      "source applicability",
+      "novelty",
+      "identification",
+      "independent review",
+      "framework improvement",
+      "method promotion"
+    ],
+    "outputs": [
+      "PASS",
+      "FAIL",
+      "CANNOT_CHECK",
+      "activated boolean",
+      "blocking reasons",
+      "content hash"
+    ],
+    "protected_consumer_activation": "FORBIDDEN_IN_THIS_ROUND"
+  },
+  "change_class": "CLASS_B_WORKFLOW_METHOD_CHALLENGER",
+  "development_benchmark": {
+    "benchmark_id": "QCB-DEV-20260812-v1",
+    "blocking_invariants": [
+      "no_theorem_authority",
+      "missing_identity_fails_closed",
+      "same_symbol_is_not_identity",
+      "protected_consumers_unchanged",
+      "negative_history_preserved"
+    ],
+    "challenger_adapter": "Evaluate only the frozen typed co-witness packet using the proposal-shadow companion.",
+    "chronology": "FROZEN_BEFORE_CHALLENGER_IMPLEMENTATION_AND_OUTCOME_ACCESS",
+    "parent_adapter": "Evaluate the incumbent v1 scope witness with all four scope axes aligned, then translate GLUING_AUTHORITY_OK to PASS; the adapter may not infer semantic binder identity from display symbols.",
+    "primary_meta_qois": [
+      {
+        "name": "exact_world_classification",
+        "threshold": "7/7"
+      },
+      {
+        "name": "unsafe_joint_witness_false_passes",
+        "threshold": 0
+      },
+      {
+        "name": "alpha_rename_false_rejections",
+        "threshold": 0
+      },
+      {
+        "name": "nonactivation_errors",
+        "threshold": 0
+      }
+    ],
+    "worlds": [
+      {
+        "activation": true,
+        "expected": "PASS",
+        "id": "DEV-SAME-WITNESS-MULTIROLE",
+        "purpose": "One existential binder is explicitly reused for two different roles."
+      },
+      {
+        "activation": true,
+        "expected": "FAIL",
+        "id": "DEV-SEPARATE-WITNESSES-GLUED",
+        "purpose": "Two explicitly distinct existential binders are incorrectly required to be one witness."
+      },
+      {
+        "activation": true,
+        "expected": "PASS",
+        "id": "DEV-ALPHA-RENAMED-EQUIVALENT",
+        "purpose": "An explicit alpha-renaming relation preserves one semantic binder despite different glyphs."
+      },
+      {
+        "activation": true,
+        "expected": "PASS",
+        "id": "DEV-COMPATIBLE-SAME-ROLE-REUSE",
+        "purpose": "Repeated occurrence of one binder in the same role remains compatible."
+      },
+      {
+        "activation": true,
+        "expected": "FAIL",
+        "id": "DEV-SAME-SYMBOL-INDEPENDENT-CONSTANTS",
+        "purpose": "The same glyph in independently quantified scopes must not be conflated."
+      },
+      {
+        "activation": true,
+        "expected": "CANNOT_CHECK",
+        "id": "DEV-MISSING-IDENTITY-EVIDENCE",
+        "purpose": "Joint reuse is requested but binder relation evidence is absent."
+      },
+      {
+        "activation": false,
+        "expected": "PASS",
+        "id": "DEV-NONACTIVATION-NO-JOINT-OBLIGATION",
+        "purpose": "Independent clauses do not request a shared witness; the companion must stay inactive."
+      }
+    ]
+  },
+  "fresh_assurance_plan": {
+    "class_balance": {
+      "CANNOT_CHECK": 2,
+      "FAIL": 2,
+      "NONACTIVATION_PASS": 2,
+      "PASS": 2
+    },
+    "freshness_rules": [
+      "No world may be the Yang-Mills motivating application or a literal/symbol-renamed development world.",
+      "Use at least four mathematical domains and at least three distinct quantifier/scope shapes.",
+      "A lineage-separated evaluator freezes exact world bytes, expected labels, resource contract, thresholds, and hashes after challenger identity is fixed and before candidate execution.",
+      "The challenger author receives only the aggregate plan before evaluation and may not edit evaluator bytes.",
+      "Repeated exposure consumes the reserve; redesign requires a new reserve."
+    ],
+    "matched_comparison": "Run exact parent and exact challenger from the same frozen task state with identical parser/input annotations, model/tool budget, and evaluator.",
+    "minimum_worlds": 8,
+    "pass_rule": "All hard invariants clean; no unsafe false PASS; all CANNOT_CHECK and nonactivation worlds exact; challenger exact accuracy strictly exceeds parent under the frozen matched comparison.",
+    "reserve_id": "QCB-ASSURANCE-RESERVE-v1",
+    "status": "CANNOT_CHECK_PENDING_LINEAGE_SEPARATED_RESERVE_CREATION",
+    "strong_evolution_claim": "FORBIDDEN_UNTIL_FRESH_ASSURANCE_AND_GOVERNANCE_APPROVAL",
+    "verdicts": [
+      "PASS",
+      "FAIL",
+      "CANNOT_CHECK"
+    ]
+  },
+  "mathematical_research_lesson": {
+    "attempted_implication": "From separately available existential statements or locally valid roles, infer that one common object satisfies all role obligations.",
+    "competing_causes": [
+      "ordinary algebraic inequality failure",
+      "scope-axis mismatch already typed by v1",
+      "source theorem misquotation",
+      "notation-only ambiguity with no load-bearing joint requirement"
+    ],
+    "exact_result_or_failure": "The implication is invalid without a joint-existence/co-witness identity premise: (exists x P(x)) and (exists y Q(y)) does not imply exists z(P(z) and Q(z)). Reusing the glyph C neither supplies nor refutes that premise.",
+    "falsifier": "A derivation of the joint conclusion from the separate existentials alone, or proof that every targeted route carries an already-checkable identity premise in the incumbent contract.",
+    "repair": "Require an explicit binder/occurrence identity graph plus declared joint-witness obligations; alpha-renaming preserves semantic binder identity while same display symbols never establish identity.",
+    "scope": "Local-to-global routing steps whose conclusion needs the same existential object across two or more declared roles.",
+    "supported_cause": "The missing premise concerns semantic binder identity and joint satisfiability, not point/global, time/supremum, sequence/limit, or norm/quantifier alignment."
+  },
+  "observed_pathology": {
+    "affected_incumbent": "src/rakl/quantifier_compatibility.py@quantifier-compatibility-witness-v1",
+    "attribution_status": "SUPPORTED_BY_INCUMBENT_CONTRACT_INSPECTION_NOT_YET_FRESHLY_ASSURED",
+    "epistemic_cut": "A local-to-global route requiring one object to satisfy multiple obligations needs evidence of joint witness identity; coordinate-wise scope alignment alone cannot supply it.",
+    "exact_gap": "The v1 witness types four scope-alignment axes and substitution permissions but has no binder occurrence, binder identity, quantifier scope, alpha-renaming, role dependency, or joint-existential co-witness field. It therefore cannot distinguish one existential witness reused across roles from two independently quantified witnesses that merely share a display symbol.",
+    "failure_attribution": "METHOD_CONTRACT_REPRESENTATION_GAP_CANDIDATE",
+    "motivating_application_boundary": "One Yang-Mills source-applicability result motivated inspection but remains application evidence only. It is not development evidence, fresh assurance, independent review, or promotion authority."
+  },
+  "parent": {
+    "constitution_epoch": "v3-authority-hardening-20260811",
+    "main_sha": "d21592b0ff8da988deabb923fd549891ff8ad9f0",
+    "method_version": "3.0.0",
+    "repository": "https://github.com/SzeChunYiu/RAKL.git"
+  },
+  "preregistration_canonical_sha256": "9f63ea934f97f879ac472db1b0ef8beeb8d909df46ede3fe52c5dc869d2e60d8",
+  "promotion_boundary": "A green development test or merged PR establishes only proposal implementation/conformance. It gives zero mathematical truth credit and no RAKL improvement claim.",
+  "protected_paths": {
+    "evaluator_migration": "NONE",
+    "must_not_change": [
+      "src/rakl/gluing_learning.py",
+      "src/rakl/atlas_gluing.py",
+      "src/rakl/hard_gates.py",
+      "src/rakl/promotion.py",
+      "src/rakl/promotion_attestation.py",
+      "RAKL_CONSTITUTION.md"
+    ]
+  },
+  "recorded_at_utc": "2026-08-12T16:59:00Z",
+  "resource_contract": {
+    "cost_claim": "NONE",
+    "development": "local deterministic Python only",
+    "fresh_assurance": "to be frozen by reserve curator"
+  },
+  "rollback_plan": "Revert the additive proposal-shadow module, schema, tests, and packet. No incumbent consumer, method version, Constitution rule, protected threshold, or historical record is mutated.",
+  "schema_version": "rakl-class-b-preregistration-v1",
+  "status": "PREREGISTERED_PROPOSAL_ONLY"
+}
