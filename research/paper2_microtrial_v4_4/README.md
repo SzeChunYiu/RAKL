@@ -1,6 +1,6 @@
 # Paper-2 pendulum microtrial V4.4 (executable)
 
-Status: **FROZEN_READY_NOT_EXECUTED** until a post-merge batch head binding.
+Status: **NATIVE_REPLAY_INGESTED** — non-confirmatory jobs **3476746** and **3477848** @ main `2834760` (see `NATIVE_EXECUTION_STATUS.json`).
 
 ## Difference vs V4.3.1
 
@@ -17,3 +17,4 @@ unchanged.
 
 - No RAKL-vs-DIRECT reclaim from sealed leaked v4_2 / v4_3_1 fields.
 - No #247 capability-floor clearance from this packet freeze or a single microtrial.
+- Both-parse outcomes remain **exact_conceptual_pass_arm_count=0** (serialization repair only).

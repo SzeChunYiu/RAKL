@@ -20,19 +20,7 @@
                   "const": true
                 },
                 "score": {
-                  "type": "object",
                   "additionalProperties": false,
-                  "required": [
-                    "conceptual_correct",
-                    "conceptual_total",
-                    "exact_conceptual_pass",
-                    "misalignment_recall",
-                    "refutation_precision",
-                    "refutation_recall",
-                    "required_support_recall",
-                    "support_precision",
-                    "unsupported_source_count"
-                  ],
                   "properties": {
                     "conceptual_correct": {
                       "const": 1
@@ -61,7 +49,19 @@
                     "unsupported_source_count": {
                       "const": 0
                     }
-                  }
+                  },
+                  "required": [
+                    "conceptual_correct",
+                    "conceptual_total",
+                    "exact_conceptual_pass",
+                    "misalignment_recall",
+                    "refutation_precision",
+                    "refutation_recall",
+                    "required_support_recall",
+                    "support_precision",
+                    "unsupported_source_count"
+                  ],
+                  "type": "object"
                 }
               },
               "required": [
@@ -87,19 +87,7 @@
                   "const": true
                 },
                 "score": {
-                  "type": "object",
                   "additionalProperties": false,
-                  "required": [
-                    "conceptual_correct",
-                    "conceptual_total",
-                    "exact_conceptual_pass",
-                    "misalignment_recall",
-                    "refutation_precision",
-                    "refutation_recall",
-                    "required_support_recall",
-                    "support_precision",
-                    "unsupported_source_count"
-                  ],
                   "properties": {
                     "conceptual_correct": {
                       "const": 2
@@ -128,7 +116,19 @@
                     "unsupported_source_count": {
                       "const": 0
                     }
-                  }
+                  },
+                  "required": [
+                    "conceptual_correct",
+                    "conceptual_total",
+                    "exact_conceptual_pass",
+                    "misalignment_recall",
+                    "refutation_precision",
+                    "refutation_recall",
+                    "required_support_recall",
+                    "support_precision",
+                    "unsupported_source_count"
+                  ],
+                  "type": "object"
                 }
               },
               "required": [
@@ -230,19 +230,19 @@
           "const": true
         },
         "head_sha": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{40}$"
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
         },
         "repo_path": {
-          "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "type": "string"
         },
         "subject_ancestor": {
           "const": true
         },
         "tree_sha": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{40}$"
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
         }
       },
       "required": [
@@ -255,8 +255,8 @@
       "type": "object"
     },
     "headSha": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{40}$"
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
     },
     "sha256": {
       "pattern": "^[0-9a-f]{64}$",
@@ -310,7 +310,7 @@
   "description": "Governed repository-ingest receipt for native LUNARC V4.4 pendulum job 3476576 (Qwen2.5-1.5B-Instruct serialization repair). Adaptive non-confirmatory engineering authority only; not a 1.5B improvement claim.",
   "properties": {
     "claim_boundary": {
-      "const": "Adaptive non-confirmatory engineering evidence only. V4.4 job 3476746 is a leak-free sealed replay: both arms are parse_valid/scorable (DIRECT 1/5, RAKL_CONTEXT 2/5) with exact_conceptual_pass_arm_count=0 under the unchanged exact gate on Qwen2.5-1.5B-Instruct. This is not a 1.5B improvement claim. Parent job 3476566 remains the DIRECT schema-envelope parse-null residual. No invented passes, no gate softening, no arm win/loss, paired effect, promotional metric, #138 experience section B authority, general superiority, independent review, or peer-review claim is permitted."
+      "const": "Adaptive non-confirmatory engineering evidence only. V4.4 job 3477848 is a leak-free sealed replay: both arms are parse_valid/scorable (DIRECT 1/5, RAKL_CONTEXT 2/5) with exact_conceptual_pass_arm_count=0 under the unchanged exact gate on Qwen2.5-1.5B-Instruct. This is not a 1.5B improvement claim. Parent job 3476566 remains the DIRECT schema-envelope parse-null residual. No invented passes, no gate softening, no arm win/loss, paired effect, promotional metric, #138 experience section B authority, general superiority, independent review, or peer-review claim is permitted."
     },
     "created_at_utc": {
       "format": "date-time",
@@ -336,8 +336,8 @@
       "additionalProperties": false,
       "properties": {
         "account": {
-          "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "type": "string"
         },
         "execution_checkout": {
           "$ref": "#/$defs/executionCheckout"
@@ -350,8 +350,8 @@
           "const": "HARVEST_V4_4_TASK_SEED_PASS_NONCONFIRMATORY"
         },
         "nodes": {
-          "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "type": "string"
         },
         "output_normalization_policy_id": {
           "const": "PENDULUM_EXACT_JSON_OR_FENCE_PLUS_REGISTERED_ENVELOPE_UNWRAP_V4_3_1"
@@ -366,8 +366,8 @@
           "const": "841bbe286de4c2ebb8cdd1e547256047ded3fd47"
         },
         "partition": {
-          "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "type": "string"
         },
         "post_attestation_result_receipt_sha256": {
           "$ref": "#/$defs/sha256"
@@ -376,8 +376,8 @@
           "const": true
         },
         "scheduler_elapsed_seconds": {
-          "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "type": "number"
         },
         "scheduler_exit_status": {
           "const": [
@@ -393,7 +393,7 @@
           ]
         },
         "slurm_job_id": {
-          "const": "3476746"
+          "const": "3477848"
         },
         "snapshot_canonical_sha256": {
           "$ref": "#/$defs/sha256"
@@ -406,8 +406,8 @@
           "type": "string"
         },
         "stderr_warning_lines": {
-          "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "type": "integer"
         },
         "v4_reinterpretation_permitted": {
           "const": false
@@ -449,8 +449,8 @@
       "const": false
     },
     "receipt_id": {
-      "type": "string",
-      "pattern": "^PAPER2_V4_4_NATIVE_JOB_[0-9]+_INGEST_RECEIPT_[0-9]{8}$"
+      "pattern": "^PAPER2_V4_4_NATIVE_JOB_[0-9]+_INGEST_RECEIPT_[0-9]{8}$",
+      "type": "string"
     },
     "schema_version": {
       "const": "paper2-v4-4-native-ingest-receipt-v1"
@@ -463,8 +463,8 @@
           "type": "integer"
         },
         "path": {
-          "type": "string",
-          "pattern": "^research/paper2_microtrial_v4_4/native_bundles/PAPER2_V4_4_NATIVE_JOB_[0-9]+\\.tar\\.gz$"
+          "pattern": "^research/paper2_microtrial_v4_4/native_bundles/PAPER2_V4_4_NATIVE_JOB_[0-9]+\\.tar\\.gz$",
+          "type": "string"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"
@@ -777,19 +777,7 @@
                     "const": true
                   },
                   "score": {
-                    "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                      "conceptual_correct",
-                      "conceptual_total",
-                      "exact_conceptual_pass",
-                      "misalignment_recall",
-                      "refutation_precision",
-                      "refutation_recall",
-                      "required_support_recall",
-                      "support_precision",
-                      "unsupported_source_count"
-                    ],
                     "properties": {
                       "conceptual_correct": {
                         "const": 1
@@ -818,7 +806,19 @@
                       "unsupported_source_count": {
                         "const": 0
                       }
-                    }
+                    },
+                    "required": [
+                      "conceptual_correct",
+                      "conceptual_total",
+                      "exact_conceptual_pass",
+                      "misalignment_recall",
+                      "refutation_precision",
+                      "refutation_recall",
+                      "required_support_recall",
+                      "support_precision",
+                      "unsupported_source_count"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -844,19 +844,7 @@
                     "const": true
                   },
                   "score": {
-                    "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                      "conceptual_correct",
-                      "conceptual_total",
-                      "exact_conceptual_pass",
-                      "misalignment_recall",
-                      "refutation_precision",
-                      "refutation_recall",
-                      "required_support_recall",
-                      "support_precision",
-                      "unsupported_source_count"
-                    ],
                     "properties": {
                       "conceptual_correct": {
                         "const": 2
@@ -885,7 +873,19 @@
                       "unsupported_source_count": {
                         "const": 0
                       }
-                    }
+                    },
+                    "required": [
+                      "conceptual_correct",
+                      "conceptual_total",
+                      "exact_conceptual_pass",
+                      "misalignment_recall",
+                      "refutation_precision",
+                      "refutation_recall",
+                      "required_support_recall",
+                      "support_precision",
+                      "unsupported_source_count"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
