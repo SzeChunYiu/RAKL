@@ -1,0 +1,65 @@
+{
+  "schema": "paper3-objective-confirmatory-predictive-v1",
+  "status": "CONFIRMATORY_OBJECTIVE_COMPLETE",
+  "seed": 2026081202,
+  "n": 576,
+  "gold_counts": {"ACCEPT": 256, "REJECT": 256, "CANNOT_CHECK": 64},
+  "decidable_n": 512,
+  "registered_required_decidable_n": 431,
+  "registered_mde_binary_brier": 0.05,
+  "lexical_threshold_frozen": 0.2761904761904762,
+  "arms": {
+    "LEXICAL_JACCARD": {
+      "exact3": 0.4409722222222222,
+      "decidable_accuracy": 0.49609375,
+      "valid_accept": 0.51171875,
+      "invalid_false_accept": 0.51953125,
+      "q2_valid_distant_accept": 0.0234375,
+      "q3_semantic_near_miss_false_accept": 1.0
+    },
+    "RELATIONAL_ONLY": {
+      "exact3": 0.8194444444444444,
+      "valid_accept": 1.0,
+      "invalid_false_accept": 0.375,
+      "unknown_abstain": 0.875,
+      "q2_valid_distant_accept": 1.0,
+      "q3_semantic_near_miss_false_accept": 0.25
+    },
+    "MECHANISM_DERIVED_EFFECT_ONLY": {
+      "exact3": 0.875,
+      "valid_accept": 1.0,
+      "invalid_false_accept": 0.25,
+      "unknown_abstain": 0.875,
+      "q2_valid_distant_accept": 1.0,
+      "q3_semantic_near_miss_false_accept": 0.0
+    },
+    "COORDINATE_ABLATED_TWIN": {
+      "exact3": 0.8472222222222222,
+      "valid_accept": 1.0,
+      "invalid_false_accept": 0.25,
+      "unknown_abstain": 0.625
+    },
+    "FULL_APPLICABILITY_CONTRACT": {
+      "exact3": 1.0,
+      "valid_accept": 1.0,
+      "invalid_false_accept": 0.0,
+      "unknown_abstain": 1.0,
+      "q2_valid_distant_accept": 1.0,
+      "q3_semantic_near_miss_false_accept": 0.0
+    }
+  },
+  "blind_attacks_exact3": {
+    "always_accept": 0.4444444444444444,
+    "always_reject": 0.4444444444444444,
+    "always_cannot_check": 0.1111111111111111,
+    "majority": 0.4444444444444444,
+    "family_majority": 0.4444444444444444
+  },
+  "semantic_decorrelation": {
+    "flow": {"accept_mean": 0.33156293767507006, "reject_mean": 0.3243544292717087, "mean_diff": 0.007208508403361347, "permutation_p": 0.8101189881011899},
+    "logic": {"accept_mean": 0.3765796703296703, "reject_mean": 0.3745764652014652, "mean_diff": 0.002003205128205121, "permutation_p": 0.9657034296570343},
+    "units": {"accept_mean": 0.37190934065934067, "reject_mean": 0.37859432234432233, "mean_diff": -0.006684981684981661, "permutation_p": 0.8263173682631737},
+    "state": {"accept_mean": 0.3727013221153846, "reject_mean": 0.3727013221153846, "mean_diff": 0.0, "permutation_p": 1.0}
+  },
+  "claim_boundary": "Fresh preregistered exact-verifier known-world result. The full arm consumes machine-readable structural facts and is not a learned natural-language witness extractor. External reranker/LLM and natural-domain human validity coordinates remain pending."
+}
