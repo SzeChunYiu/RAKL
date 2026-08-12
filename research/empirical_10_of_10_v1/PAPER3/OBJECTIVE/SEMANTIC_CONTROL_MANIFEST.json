@@ -1,19 +1,29 @@
 {
-  "baseline_mid_band": {
-    "max": 0.75,
-    "min": 0.35
-  },
-  "controls_planned": [
-    "strong_semantic_reranker",
-    "relation_system_similarity",
-    "mechanism_alignment_llm_judge_matched_budget"
+  "baseline_mid_band": {"max": 0.75, "min": 0.35},
+  "confirmatory_frozen_controls": [
+    "lexical_jaccard_threshold",
+    "relational_only_structural_control",
+    "derived_effect_mechanism_alignment_control",
+    "coordinate_ablated_twin",
+    "full_applicability_contract"
   ],
-  "created_at_utc": "2026-08-12T11:00:00Z",
-  "executed": false,
+  "development": {
+    "executed": true,
+    "lexical_accuracy_decidable": 0.50625,
+    "lexical_threshold": 0.2761904761904762,
+    "mechanism_alignment_exact3": 0.875,
+    "relational_exact3": 0.8194444444444444
+  },
+  "external_controls_required_for_strongest_model_claim": [
+    "strong_semantic_reranker_or_cross_encoder",
+    "frontier_llm_direct_transfer_validity_judge_matched_context",
+    "mechanism_alignment_llm_control_matched_budget"
+  ],
+  "external_controls_executed": false,
   "grants_scientific_authority": false,
   "issue_number": 444,
   "mid_band_measured_on": "disjoint_development_set_before_confirmatory",
-  "schema_version": "paper3-objective-semantic-control-manifest-v0",
-  "status": "SCAFFOLD_ONLY__CONTROL_NOT_RUN",
-  "tip_sha": "496edc5ead136980287ac2e72efb486691945366"
+  "schema_version": "paper3-objective-semantic-control-manifest-v1",
+  "status": "DETERMINISTIC_CONTROLS_FROZEN__EXTERNAL_MODEL_CONTROLS_PENDING",
+  "claim_boundary": "objective-known-world controls do not establish natural-language or model-level superiority"
 }

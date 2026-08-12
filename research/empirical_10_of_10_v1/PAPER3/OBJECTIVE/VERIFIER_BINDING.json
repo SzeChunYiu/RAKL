@@ -1,17 +1,19 @@
 {
-  "created_at_utc": "2026-08-12T11:00:00Z",
-  "decision_enum": [
-    "ACCEPT",
-    "REJECT",
-    "CANNOT_CHECK"
-  ],
-  "executed": false,
+  "decision_enum": ["ACCEPT", "REJECT", "CANNOT_CHECK"],
+  "development_executed": true,
+  "family_verifiers": {
+    "finite_graph_flow": "mapped directed path feasibility under demand/capacity",
+    "logical_entailment": "Horn closure contains mapped target query",
+    "unit_coordinate_transforms": "target operation derives registered output dimension under boundary/precondition",
+    "finite_state_transition_systems": "candidate action sequence reaches target goal under deterministic transitions"
+  },
+  "gold_independence_test": "hidden perturbation identity is mutated in unit tests and verifier decision must remain unchanged",
   "grants_scientific_authority": false,
   "issue_number": 444,
-  "note": "Witness outputs are candidate scores only; hidden gold remains sealed.",
-  "schema_version": "paper3-objective-verifier-binding-v0",
-  "status": "SCAFFOLD_ONLY__BINDING_DECLARED_NOT_EXECUTED",
-  "tip_sha": "496edc5ead136980287ac2e72efb486691945366",
+  "note": "Family verifier outputs are hidden gold. Structural extractor outputs are candidate predictions; no code path may assign gold from item type or perturbation identity.",
+  "objective_module": "src/rakl/objective_transfer_benchmark.py",
+  "schema_version": "paper3-objective-verifier-binding-v1",
+  "status": "DEVELOPMENT_VERIFIED__CONFIRMATORY_BINDING_FROZEN",
   "transport_issue": 486,
   "transport_obligations_module": "src/rakl/structural_transport_v2.py",
   "transport_pr": 491
