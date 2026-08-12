@@ -1,0 +1,70 @@
+{
+  "design": {
+    "test": "paired difference, two-sided",
+    "alpha": 0.05,
+    "power": 0.8,
+    "mde_paired_brier": 0.05,
+    "k_constant": 7.84888
+  },
+  "sample_size_by_sigma_d": [
+    {
+      "sigma_d": 0.1,
+      "required_n": 32
+    },
+    {
+      "sigma_d": 0.1236,
+      "required_n": 48
+    },
+    {
+      "sigma_d": 0.15,
+      "required_n": 71
+    },
+    {
+      "sigma_d": 0.2,
+      "required_n": 126
+    },
+    {
+      "sigma_d": 0.25,
+      "required_n": 197
+    },
+    {
+      "sigma_d": 0.3,
+      "required_n": 283
+    }
+  ],
+  "inherited_assumption": {
+    "inherited_n": 48,
+    "adequate_only_if_sigma_d_at_most": 0.1236,
+    "status": "UNVERIFIED_ASSUMPTION",
+    "note": "the prior ~n=48 figure was inherited, not derived here; it holds only under this sigma_d ceiling, which is tight for a paired Brier difference on binary outcomes"
+  },
+  "discriminating_fraction": {
+    "definition": "q = fraction of items on which the semantic and structural arms diverge; NOT the v2.1 decoupling rate, which compares the label to AND(witnesses) rather than one arm to another",
+    "table": [
+      {
+        "q": 1.0,
+        "total_items_for_48_discriminating": 48
+      },
+      {
+        "q": 0.5,
+        "total_items_for_48_discriminating": 96
+      },
+      {
+        "q": 0.3,
+        "total_items_for_48_discriminating": 160
+      },
+      {
+        "q": 0.188,
+        "total_items_for_48_discriminating": 256
+      }
+    ],
+    "estimation_rule": "q and sigma_d are estimated on a disjoint development set before the confirmatory set is generated and before any confirmatory outcome is accessed; n is then recomputed and recorded in an amendment"
+  },
+  "per_stratum_minima": {
+    "min_items_per_family_x_item_type": 4,
+    "min_discriminating_items_per_family": 4,
+    "rationale": "#449 found the matching_allocation family contributed zero decoupled items, making one leave-one-family-out fold uninformative by construction; a packet-level count hides that"
+  },
+  "claims": [],
+  "grants_authority": false
+}
