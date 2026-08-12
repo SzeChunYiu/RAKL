@@ -14,8 +14,10 @@ import pytest
 
 from rakl.paper2_capability_v3_diagnostic import (
     CANONICAL_EVIDENCE_ROLE_DEFINITION,
+    FORBIDDEN_ROLE_DEFINITION_HINT_TERMS,
     audit_instruction_semantics,
     diagnose_stage_bottleneck,
+    role_definition_hint_leakage,
     stage_decompose,
 )
 
@@ -101,6 +103,36 @@ def test_audit_silent_on_noncanonical_role_definitions(definition: str) -> None:
     )
     assert audit.defines_evidence_role is True
     assert audit.verdict == "EVIDENCE_ROLE_DEFINED_NONCANONICAL"
+
+
+def test_canonical_definition_carries_no_panel_hints() -> None:
+    """The repair must define the field, not name the discriminations under test."""
+    assert role_definition_hint_leakage(CANONICAL_EVIDENCE_ROLE_DEFINITION) == ()
+
+
+def test_canonical_definition_names_no_evidence_id_or_task() -> None:
+    text = CANONICAL_EVIDENCE_ROLE_DEFINITION
+    assert not any(f"E{n}" in text for n in range(1, 10))
+    assert not any(f"T{n}" in text for n in range(1, 10))
+
+
+def test_hint_leakage_detector_fires_on_the_rejected_draft() -> None:
+    """No-alarm pairing: the detector must catch the draft that motivated it."""
+    rejected_draft = (
+        "selected_evidence_ids MUST list exactly the evidence ids that license your "
+        "verdict; rejected_evidence_ids MUST list every other supplied id, including "
+        "evidence that is on-topic but unreliable, superseded, or measures a different "
+        "quantity of interest."
+    )
+    leaked = role_definition_hint_leakage(rejected_draft)
+    assert "unreliable" in leaked
+    assert "supersed" in leaked
+    assert "quantity of interest" in leaked
+
+
+def test_hint_term_list_is_nonempty_and_lowercase() -> None:
+    assert FORBIDDEN_ROLE_DEFINITION_HINT_TERMS
+    assert all(term == term.lower() for term in FORBIDDEN_ROLE_DEFINITION_HINT_TERMS)
 
 
 def test_audit_reports_absent_fields_distinctly() -> None:

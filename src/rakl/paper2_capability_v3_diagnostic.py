@@ -46,10 +46,12 @@ __all__ = [
     "CANONICAL_EVIDENCE_ROLE_DEFINITION",
     "EVIDENCE_ROLE_READING_CLAIM_REFERENT",
     "EVIDENCE_ROLE_READING_LICENSES_VERDICT",
+    "FORBIDDEN_ROLE_DEFINITION_HINT_TERMS",
     "InstructionSemanticsAudit",
     "ItemDiagnosis",
     "audit_instruction_semantics",
     "diagnose_stage_bottleneck",
+    "role_definition_hint_leakage",
     "stage_decompose",
 ]
 
@@ -59,11 +61,51 @@ EVIDENCE_ROLE_READING_CLAIM_REFERENT = "CLAIM_REFERENT"
 #: Exact marker a repaired interface must carry so the ``LICENSES_VERDICT`` reading is
 #: stated rather than assumed. Kept as one constant so contract, runner and guard test
 #: cannot drift apart.
+#:
+#: Deliberately states the partition rule and nothing else. An earlier draft appended
+#: example rejection categories ("on-topic but unreliable, superseded, measures a
+#: different quantity of interest"); those name precisely the discriminations the
+#: qualification panel tests, so they would have hinted the answers rather than defining
+#: the field. :data:`FORBIDDEN_ROLE_DEFINITION_HINT_TERMS` and its guard test keep that
+#: leakage out.
 CANONICAL_EVIDENCE_ROLE_DEFINITION = (
     "selected_evidence_ids MUST list exactly the evidence ids that license your verdict; "
-    "rejected_evidence_ids MUST list every other supplied id, including evidence that is "
-    "on-topic but unreliable, superseded, or measures a different quantity of interest."
+    "rejected_evidence_ids MUST list every other supplied evidence id."
 )
+
+#: Substrings that must never appear in a role definition because each names a
+#: discrimination the qualification panel tests, so stating it would hint the answer
+#: rather than define the field.
+#:
+#: The verdict enum tokens are deliberately *absent* from this list. They are already
+#: public in the system prompt, so a definition phrased as "the evidence that supports
+#: your verdict" reveals nothing about which item is which; forbidding them would only
+#: false-positive on legitimate wording.
+FORBIDDEN_ROLE_DEFINITION_HINT_TERMS: tuple[str, ...] = (
+    "calibrat",
+    "tolerance",
+    "quantity of interest",
+    "qoi",
+    "supersed",
+    "unreliable",
+    "stale",
+    "drift",
+    "temperature",
+    "form factor",
+    "scope mismatch",
+    "contradict",
+    "corroborat",
+)
+
+
+def role_definition_hint_leakage(text: str) -> tuple[str, ...]:
+    """Return forbidden hint terms present in a candidate role definition.
+
+    An empty tuple means the definition states the partition rule without naming any
+    discrimination the panel tests.
+    """
+    haystack = text.lower()
+    return tuple(term for term in FORBIDDEN_ROLE_DEFINITION_HINT_TERMS if term in haystack)
 
 # Heuristic sweep for *any* role-defining language attached to the evidence fields,
 # regardless of wording. This exists so an absence claim is backed by a justified search
