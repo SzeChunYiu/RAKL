@@ -226,6 +226,8 @@ V3_IMPLEMENTATION_OWNER_MAP = {
     "src/rakl/v3_scientific_authority.py": "authority_promotion",
     "src/rakl/driver_learning.py": "software_architecture_execution",
     "src/rakl/v3.py": "software_architecture_execution",
+    "src/rakl/shadow_artifact_hash.py": "software_architecture_execution",
+    "src/rakl/summation_compatibility.py": "contextual_theory_gluing",
 }
 
 V3_PUBLIC_AUTHORITY_SURFACE_OWNERS = {
