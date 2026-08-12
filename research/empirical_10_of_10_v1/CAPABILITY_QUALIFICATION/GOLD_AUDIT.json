@@ -1,0 +1,145 @@
+{
+  "all_partitions_disjoint": true,
+  "all_partitions_total": true,
+  "alternative_reading_ruled_out": "selected = relevant evidence",
+  "alternative_reading_ruled_out_by": {
+    "observation": "E2 is an on-topic mass reading (51.20 kg) for a mass claim, yet gold places it in rejected_evidence_ids because the instrument drifted out of tolerance and was not recalibrated. A relevance reading would have selected it.",
+    "task_id": "T1"
+  },
+  "convention_informative_task_ids": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+  ],
+  "gold_convention": "LICENSES_VERDICT",
+  "gold_convention_statement": "selected_evidence_ids = exactly the evidence that licenses the stated verdict; rejected_evidence_ids = every other supplied id, including on-topic but unreliable or off-quantity evidence.",
+  "gold_verdict": "GOLD_INTERNALLY_CONSISTENT",
+  "instruction_surface_audits": [
+    {
+      "canonical_definition_present": false,
+      "defines_evidence_role": false,
+      "mentions_rejected_field": true,
+      "mentions_selected_field": true,
+      "patterns_swept": [
+        "licenses_verdict",
+        "basis_for_verdict",
+        "relied_upon",
+        "claim_referent",
+        "relevance_reading",
+        "definitional_copula",
+        "reject_definitional"
+      ],
+      "role_language_matches": [],
+      "surface_label": "SYSTEM_PROMPT.txt",
+      "verdict": "EVIDENCE_ROLE_UNDEFINED"
+    },
+    {
+      "canonical_definition_present": false,
+      "defines_evidence_role": false,
+      "mentions_rejected_field": true,
+      "mentions_selected_field": true,
+      "patterns_swept": [
+        "licenses_verdict",
+        "basis_for_verdict",
+        "relied_upon",
+        "claim_referent",
+        "relevance_reading",
+        "definitional_copula",
+        "reject_definitional"
+      ],
+      "role_language_matches": [],
+      "surface_label": "paper2_experience_benchmark_runner.build_user_prompt:instruction_block",
+      "verdict": "EVIDENCE_ROLE_UNDEFINED"
+    }
+  ],
+  "items": [
+    {
+      "convention_informative": true,
+      "gold_rejected": [
+        "E2",
+        "E3"
+      ],
+      "gold_selected": [
+        "E1"
+      ],
+      "gold_verdict": "SUPPORT",
+      "partition_is_disjoint": true,
+      "partition_is_total": true,
+      "stratum": "REPEATED_FAMILY",
+      "task_id": "T1"
+    },
+    {
+      "convention_informative": true,
+      "gold_rejected": [
+        "E1",
+        "E2"
+      ],
+      "gold_selected": [
+        "E3"
+      ],
+      "gold_verdict": "CONTEXT_MISALIGNED",
+      "partition_is_disjoint": true,
+      "partition_is_total": true,
+      "stratum": "CROSS_DOMAIN_TRANSFER",
+      "task_id": "T2"
+    },
+    {
+      "convention_informative": true,
+      "gold_rejected": [
+        "E1"
+      ],
+      "gold_selected": [
+        "E2",
+        "E3"
+      ],
+      "gold_verdict": "REFUTE",
+      "partition_is_disjoint": true,
+      "partition_is_total": true,
+      "stratum": "HOSTILE_NEAR_MISS",
+      "task_id": "T3"
+    },
+    {
+      "convention_informative": true,
+      "gold_rejected": [
+        "E3"
+      ],
+      "gold_selected": [
+        "E1",
+        "E2"
+      ],
+      "gold_verdict": "REFUTE",
+      "partition_is_disjoint": true,
+      "partition_is_total": true,
+      "stratum": "CONTEXT_ALIGNMENT",
+      "task_id": "T4"
+    },
+    {
+      "convention_informative": false,
+      "gold_rejected": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "gold_selected": [],
+      "gold_verdict": "CANNOT_CHECK",
+      "partition_is_disjoint": true,
+      "partition_is_total": true,
+      "stratum": "MISSING_EVIDENCE",
+      "task_id": "T5"
+    }
+  ],
+  "source_surfaces": [
+    {
+      "path": "research/paper2_oracle_capability_gate_v2_exec/protocol/SYSTEM_PROMPT.txt",
+      "sha256": "0a5b501d6dad0a32679f02d271750e0ed4dabc960494c7642d329ea71cd7be89"
+    },
+    {
+      "extracted_span": "build_user_prompt static instruction block",
+      "path": "src/rakl/paper2_experience_benchmark_runner.py",
+      "sha256": "74408a68fde60b3971cbdf80ff094f9cd3f72154cd0528d1582fc1acc6b9d617"
+    }
+  ],
+  "stage0_note": "Issue #447 Stage 0 requires this audit BEFORE model evaluation. It was not run for paper2-oracle-capability-gate-v2-exec. Running it retrospectively is why the terminal is an identifiability statement plus a versioned repair, and never a claim about what the 7B model can do.",
+  "stage0_verdict": "INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED"
+}

@@ -1,0 +1,273 @@
+{
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper2-capability-v3-bottleneck-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "Capability qualification V3 Stage 1 bottleneck receipt (issue #447). Records a per-stage diagnostic decomposition of a preserved development generation and the instruction-surface audit that constrains its interpretation. Emits no score and cannot authorize capability.",
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "authorization_boundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "consumer_issue_numbers": {
+      "items": {
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "diagnosis_state": {
+      "enum": [
+        "BASIC_EVIDENCE_REASONING_FLOOR",
+        "BENCHMARK_CONSTRUCT_DEFECT",
+        "CONTEXT_ALIGNMENT_FLOOR",
+        "EVIDENCE_BINDING_FLOOR",
+        "FINAL_READOUT_BOTTLENECK",
+        "NO_CLEAR_SINGLE_BOTTLENECK",
+        "VERDICT_COMPOSITION_BOTTLENECK"
+      ],
+      "type": "string"
+    },
+    "downstream_effect": {
+      "additionalProperties": true,
+      "properties": {
+        "capability_question": {
+          "type": "string"
+        },
+        "forbidden_next": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "required_next": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "capability_question",
+        "required_next",
+        "forbidden_next"
+      ],
+      "type": "object"
+    },
+    "gold_audit": {
+      "additionalProperties": true,
+      "properties": {
+        "gold_convention": {
+          "enum": [
+            "CLAIM_REFERENT",
+            "LICENSES_VERDICT"
+          ],
+          "type": "string"
+        },
+        "gold_verdict": {
+          "enum": [
+            "GOLD_INCONSISTENT",
+            "GOLD_INTERNALLY_CONSISTENT"
+          ],
+          "type": "string"
+        },
+        "stage0_verdict": {
+          "enum": [
+            "INSTRUMENT_CLEAN",
+            "INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "gold_convention",
+        "gold_verdict",
+        "stage0_verdict",
+        "items"
+      ],
+      "type": "object"
+    },
+    "identifiability_statement": {
+      "type": "object"
+    },
+    "instruction_surface_audits": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "defines_evidence_role": {
+            "type": "boolean"
+          },
+          "patterns_swept": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "surface_label": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "EVIDENCE_FIELDS_ABSENT",
+              "EVIDENCE_ROLE_DEFINED_CANONICAL",
+              "EVIDENCE_ROLE_DEFINED_NONCANONICAL",
+              "EVIDENCE_ROLE_UNDEFINED"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "surface_label",
+          "defines_evidence_role",
+          "verdict",
+          "patterns_swept"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "issue_number": {
+      "const": 447,
+      "type": "integer"
+    },
+    "item_count": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "no_rescore_guarantee": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "per_item": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "gold_verdict": {
+            "type": "string"
+          },
+          "inversion_identifiable": {
+            "type": "boolean"
+          },
+          "parse_valid": {
+            "type": "boolean"
+          },
+          "partition_exact_inversion": {
+            "type": "boolean"
+          },
+          "partition_exact_match": {
+            "type": "boolean"
+          },
+          "task_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "verdict_correct": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "task_id",
+          "parse_valid",
+          "verdict_correct",
+          "partition_exact_match",
+          "partition_exact_inversion",
+          "inversion_identifiable"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "preserved_sealed_verdict": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "preserved_sealed_verdict_status": {
+      "const": "UNCHANGED_BY_THIS_RECEIPT",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "receipt_type": {
+      "const": "paper2_capability_v3_stage1_bottleneck_receipt_v1",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "paper2-capability-v3-bottleneck-receipt-v1",
+      "type": "string"
+    },
+    "source_backend_version": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_job_id": {
+      "type": "integer"
+    },
+    "source_model_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_model_revision": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "stage_observables": {
+      "additionalProperties": true,
+      "properties": {
+        "D_EXACT_EVIDENCE_BINDING": {
+          "type": "object"
+        },
+        "E_VERDICT_COMPOSITION": {
+          "additionalProperties": true,
+          "properties": {
+            "comparability_note": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "comparability_note"
+          ],
+          "type": "object"
+        },
+        "F_FINAL_STRUCTURED_READOUT": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "F_FINAL_STRUCTURED_READOUT",
+        "D_EXACT_EVIDENCE_BINDING",
+        "E_VERDICT_COMPOSITION"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_type",
+    "schema_version",
+    "issue_number",
+    "source_job_id",
+    "source_model_id",
+    "preserved_sealed_verdict",
+    "preserved_sealed_verdict_status",
+    "gold_audit",
+    "per_item",
+    "diagnosis_state",
+    "rationale",
+    "item_count",
+    "stage_observables",
+    "instruction_surface_audits",
+    "no_rescore_guarantee",
+    "authorization_boundary",
+    "downstream_effect",
+    "identifiability_statement",
+    "artifact_sha256"
+  ],
+  "title": "Paper II capability qualification V3 Stage 1 bottleneck receipt",
+  "type": "object"
+}
