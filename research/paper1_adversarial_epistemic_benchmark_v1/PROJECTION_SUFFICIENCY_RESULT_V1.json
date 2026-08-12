@@ -1,0 +1,69 @@
+{
+  "schema": "paper1-projection-sufficiency-v1",
+  "status": "DETERMINISTIC_REPRESENTATIONAL_RESULT",
+  "n_families": 15,
+  "n_worlds": 30,
+  "twin_design": true,
+  "world_digest": "cd463750eba23d42daaa3ee9054687fd2096e473c4cfdeb6d1e4775a1ba37ec0",
+  "architectures": {
+    "TEXT_MEMORY_ONLY": {
+      "ambiguous_projected_states": 15,
+      "worlds_in_ambiguous_states": 30,
+      "identifiable_accuracy_upper_bound": 0.5,
+      "unavoidable_error_lower_bound": 0.5,
+      "zero_error_legitimate_update_recall_upper_bound": 0.0
+    },
+    "PROVENANCE_ONLY": {
+      "ambiguous_projected_states": 14,
+      "worlds_in_ambiguous_states": 28,
+      "identifiable_accuracy_upper_bound": 0.5333333333333333,
+      "unavoidable_error_lower_bound": 0.4666666666666667,
+      "zero_error_legitimate_update_recall_upper_bound": 0.058823529411764705
+    },
+    "SCALAR_CONFIDENCE": {
+      "ambiguous_projected_states": 15,
+      "worlds_in_ambiguous_states": 30,
+      "identifiable_accuracy_upper_bound": 0.5,
+      "unavoidable_error_lower_bound": 0.5,
+      "zero_error_legitimate_update_recall_upper_bound": 0.0
+    },
+    "PAIRWISE_COMPATIBILITY_ONLY": {
+      "ambiguous_projected_states": 15,
+      "worlds_in_ambiguous_states": 30,
+      "identifiable_accuracy_upper_bound": 0.5,
+      "unavoidable_error_lower_bound": 0.5,
+      "zero_error_legitimate_update_recall_upper_bound": 0.0
+    },
+    "MAJORITY_OR_REVIEWER_VOTE": {
+      "ambiguous_projected_states": 15,
+      "worlds_in_ambiguous_states": 30,
+      "identifiable_accuracy_upper_bound": 0.5,
+      "unavoidable_error_lower_bound": 0.5,
+      "zero_error_legitimate_update_recall_upper_bound": 0.0
+    },
+    "SIMPLE_TRANSACTIONAL_STATE": {
+      "ambiguous_projected_states": 13,
+      "worlds_in_ambiguous_states": 26,
+      "identifiable_accuracy_upper_bound": 0.5666666666666667,
+      "unavoidable_error_lower_bound": 0.43333333333333335,
+      "zero_error_legitimate_update_recall_upper_bound": 0.11764705882352941
+    },
+    "RAKL_TYPED_AUTHORITY": {
+      "ambiguous_projected_states": 0,
+      "worlds_in_ambiguous_states": 0,
+      "identifiable_accuracy_upper_bound": 1.0,
+      "unavoidable_error_lower_bound": 0.0,
+      "zero_error_legitimate_update_recall_upper_bound": 1.0
+    }
+  },
+  "diagnostic_examples": {
+    "provenance_only_resolves": ["F05_INDEPENDENCE_INFLATION"],
+    "transactional_resolves": ["F10_SUPERSESSION_STALE_RETRIEVAL", "F15_LEGITIMATE_SUPERSESSION"],
+    "pairwise_only_fails": ["F03_HIGHER_ORDER_GLUING"],
+    "typed_authority_collisions": []
+  },
+  "blanket_hold_accuracy": 0.36666666666666664,
+  "blanket_hold_legitimate_update_recall": 0.0,
+  "local_unit_tests": "7 passed",
+  "claim_boundary": "Representational sufficiency / collision benchmark only. These are identifiability upper/lower bounds on a constructed minimal-twin panel, not measured LLM accuracy, natural scientific validity, independent review, or empirical superiority on open-ended research."
+}
