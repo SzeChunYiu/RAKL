@@ -9,6 +9,7 @@ from rakl.training_projection import (
     TrainingUtilityVector,
     assess_training_projection,
     build_training_projection,
+    structural_catalog_digest,
 )
 
 
@@ -83,12 +84,13 @@ def _candidate(**overrides):
 
 
 def _snapshot(**overrides):
+    structures = (_structure(),)
     values = dict(
         projection_id="train-proj-1",
         model_checkpoint_hash="model-a",
-        structural_catalog_hash="catalog-a",
+        structural_catalog_hash=structural_catalog_digest(structures),
         probe_family_hash="probe-a",
-        structural_objects=(_structure(),),
+        structural_objects=structures,
         mastery_estimates=(_mastery(),),
         candidates=(_candidate(),),
         repetition_floor=0.1,
@@ -135,6 +137,23 @@ def test_unknown_structure_cannot_enter_mastery_or_training_candidate_view():
         _snapshot(mastery_estimates=(_mastery(structure_id="unknown"),))
     with pytest.raises(ValueError, match="unknown structural object"):
         _snapshot(candidates=(_candidate(structure_id="unknown"),))
+
+
+def test_structural_catalog_hash_is_content_bound():
+    structures = (_structure(),)
+    with pytest.raises(ValueError, match="catalog hash"):
+        _snapshot(structural_objects=structures, structural_catalog_hash="caller-label-only")
+
+    altered = (_structure(), _structure("s2"))
+    original_hash = structural_catalog_digest(structures)
+    with pytest.raises(ValueError, match="catalog hash"):
+        _snapshot(structural_objects=altered, structural_catalog_hash=original_hash)
+
+
+def test_structural_catalog_digest_is_order_invariant_across_objects():
+    a = _structure("a")
+    b = _structure("b")
+    assert structural_catalog_digest((a, b)) == structural_catalog_digest((b, a))
 
 
 def test_unmeasured_coordinate_is_cannot_check_not_zero_mastery():
@@ -185,3 +204,10 @@ def test_duplicate_raw_item_cannot_masquerade_as_two_independent_training_candid
                 _candidate(candidate_id="c2", raw_item_id="same", derived_view_id="v2"),
             )
         )
+
+
+def test_nonfinite_training_utility_is_rejected():
+    with pytest.raises(ValueError, match="finite"):
+        _utility(estimated_total_cost=float("nan"))
+    with pytest.raises(ValueError, match="finite"):
+        _utility(expected_transfer_gain=float("inf"))
