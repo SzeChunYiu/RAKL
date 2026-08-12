@@ -50,6 +50,7 @@ _ISO_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*Z$")
 class HookMaterializationStatus(str, Enum):
     MATERIALIZED = "MATERIALIZED"
     ALREADY_MATERIALIZED = "ALREADY_MATERIALIZED"
+    BUILT_NOT_PERSISTED = "BUILT_NOT_PERSISTED"
     SKIPPED_NOT_CONSEQUENTIAL = "SKIPPED_NOT_CONSEQUENTIAL"
     CANNOT_CHECK = "CANNOT_CHECK"
 
@@ -70,6 +71,23 @@ def _parse_utc(value: str) -> datetime | None:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         return None
     return parsed
+
+
+@dataclass(frozen=True)
+class DurablePersistenceAcknowledgement:
+    """Host/storage acknowledgement that exact receipt bytes were durably persisted."""
+
+    receipt_canonical_sha256: str
+    storage_pointer: str
+    persisted_at_utc: str
+
+    def __post_init__(self) -> None:
+        if not re.fullmatch(r"^[0-9a-f]{64}$", self.receipt_canonical_sha256):
+            raise ValueError("receipt_canonical_sha256 must be lowercase sha256 hex")
+        if not self.storage_pointer.strip():
+            raise ValueError("storage_pointer is required")
+        if not _ISO_UTC_RE.match(self.persisted_at_utc):
+            raise ValueError("persisted_at_utc must be ISO-8601 UTC ending in 'Z'")
 
 
 @dataclass(frozen=True)
@@ -95,6 +113,11 @@ class PreScratchFibreFreezeHookResult:
         if self.materialization_status is HookMaterializationStatus.ALREADY_MATERIALIZED:
             if self.receipt is None or self.durable_receipt_pointer is None:
                 raise ValueError("ALREADY_MATERIALIZED hook requires receipt and durable pointer")
+        if self.materialization_status is HookMaterializationStatus.BUILT_NOT_PERSISTED:
+            if self.receipt is None:
+                raise ValueError("BUILT_NOT_PERSISTED hook requires built receipt")
+            if self.durable_receipt_pointer is not None:
+                raise ValueError("BUILT_NOT_PERSISTED hook must not claim durable pointer")
 
     def content(self) -> Mapping[str, Any]:
         document: dict[str, Any] = {
@@ -239,6 +262,7 @@ def run_pre_scratch_fibre_freeze_hook(
     hook_invoked_at_utc: str,
     consequential_turn: bool,
     prior_materialized_receipt: PreActionFibreReceipt | None = None,
+    persistence_acknowledgement: DurablePersistenceAcknowledgement | None = None,
     receipt_id: str | None = None,
     framework_repository: str | None = None,
     framework_commit: str | None = None,
@@ -273,12 +297,33 @@ def run_pre_scratch_fibre_freeze_hook(
         )
 
     if prior_materialized_receipt is not None:
+        if persistence_acknowledgement is None:
+            return PreScratchFibreFreezeHookResult(
+                hook_id=hook_id,
+                materialization_status=HookMaterializationStatus.CANNOT_CHECK,
+                hook_invoked_at_utc=hook_invoked_at_utc,
+                receipt=prior_materialized_receipt,
+                durable_receipt_pointer=None,
+                reasons=("prior_receipt_durable_persistence_not_acknowledged",),
+            )
+        if (
+            persistence_acknowledgement.receipt_canonical_sha256
+            != prior_materialized_receipt.receipt_canonical_sha256
+        ):
+            return PreScratchFibreFreezeHookResult(
+                hook_id=hook_id,
+                materialization_status=HookMaterializationStatus.CANNOT_CHECK,
+                hook_invoked_at_utc=hook_invoked_at_utc,
+                receipt=prior_materialized_receipt,
+                durable_receipt_pointer=None,
+                reasons=("prior_receipt_persistence_hash_mismatch",),
+            )
         return PreScratchFibreFreezeHookResult(
             hook_id=hook_id,
             materialization_status=HookMaterializationStatus.ALREADY_MATERIALIZED,
             hook_invoked_at_utc=hook_invoked_at_utc,
             receipt=prior_materialized_receipt,
-            durable_receipt_pointer=prior_materialized_receipt.episode_pointer,
+            durable_receipt_pointer=persistence_acknowledgement.storage_pointer,
             reasons=("durable_receipt_already_materialized",),
         )
 
@@ -331,12 +376,50 @@ def run_pre_scratch_fibre_freeze_hook(
         frozen_at_utc=hook_invoked_at_utc,
         sequence_index=sequence_index,
     )
+    if persistence_acknowledgement is None:
+        return PreScratchFibreFreezeHookResult(
+            hook_id=hook_id,
+            materialization_status=HookMaterializationStatus.BUILT_NOT_PERSISTED,
+            hook_invoked_at_utc=hook_invoked_at_utc,
+            receipt=receipt,
+            durable_receipt_pointer=None,
+            reasons=("receipt_built_without_durable_persistence_acknowledgement",),
+        )
+    if persistence_acknowledgement.receipt_canonical_sha256 != receipt.receipt_canonical_sha256:
+        return PreScratchFibreFreezeHookResult(
+            hook_id=hook_id,
+            materialization_status=HookMaterializationStatus.CANNOT_CHECK,
+            hook_invoked_at_utc=hook_invoked_at_utc,
+            receipt=receipt,
+            durable_receipt_pointer=None,
+            reasons=("persistence_acknowledgement_hash_mismatch",),
+        )
+    hook_time = _parse_utc(hook_invoked_at_utc)
+    persisted_time = _parse_utc(persistence_acknowledgement.persisted_at_utc)
+    if hook_time is None or persisted_time is None:
+        return PreScratchFibreFreezeHookResult(
+            hook_id=hook_id,
+            materialization_status=HookMaterializationStatus.CANNOT_CHECK,
+            hook_invoked_at_utc=hook_invoked_at_utc,
+            receipt=receipt,
+            durable_receipt_pointer=None,
+            reasons=("persistence_or_hook_timestamp_unparseable",),
+        )
+    if persisted_time > hook_time:
+        return PreScratchFibreFreezeHookResult(
+            hook_id=hook_id,
+            materialization_status=HookMaterializationStatus.CANNOT_CHECK,
+            hook_invoked_at_utc=hook_invoked_at_utc,
+            receipt=receipt,
+            durable_receipt_pointer=None,
+            reasons=("persistence_acknowledgement_after_hook_invocation",),
+        )
     return PreScratchFibreFreezeHookResult(
         hook_id=hook_id,
         materialization_status=HookMaterializationStatus.MATERIALIZED,
         hook_invoked_at_utc=hook_invoked_at_utc,
         receipt=receipt,
-        durable_receipt_pointer=receipt.episode_pointer,
+        durable_receipt_pointer=persistence_acknowledgement.storage_pointer,
         reasons=("durable_pre_action_receipt_materialized_before_hypothesis_exposure",),
     )
 
