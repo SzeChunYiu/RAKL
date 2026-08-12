@@ -181,6 +181,57 @@ metric and many more, ideally-adversarial, rounds.
 
 ---
 
+## 7a. Can the mechanics produce a breakthrough? (the fire test)
+
+Test case: the first hominin realization that fire --- a dangerous natural event ---
+is a *controllable tool*. Decompose the breakthrough:
+
+1. **Affordance noticing** --- see a new *use* in an existing phenomenon (abduction over a surprising regularity).
+2. **Reframe** --- object "dangerous event" becomes "tool I control" (representation change).
+3. **Cross-domain transport** --- apply it to new functions: cooking, warmth, defence, tool-hardening (JUMP).
+4. **Constructive invention** --- devise a way to *make* it (friction, flint) --- a new operator.
+5. **Value recognition** --- judge it worth pursuing despite the danger (value/promise).
+6. **Retention & transmission** --- keep the method and teach it (method evolution).
+
+Against RAKL's three current mechanics: JUMP (II) and retention (III) and the
+`docs/` OWMD/constructive-invention layer cover 3, 4 and 6 in part. **But the spark
+--- steps 1, 2, 5 --- has no executable mechanic**, and worse:
+
+> **A fail-closed governance engine is structurally biased *against* breakthroughs.**
+> When "use fire" is first proposed it has zero evidence, so today's verifier returns
+> \texttt{CANNOT\_CHECK} or \texttt{REJECTED}. The very discipline that keeps RAKL from
+> fooling itself would kill the breakthrough at birth.
+
+So the honest answer is **no** --- the current three mechanics govern and refute; they
+do not (and by fail-closed design, resist) originating a category-creating breakthrough.
+
+What *would* let the system originate one is exactly the generative half, working
+together, with a **protected speculative lane** as the crux:
+
+- **VI Value/Promise** holds a *high-promise, low-evidence* proposal as worth pursuing
+  (importance and novelty high, evidence low) instead of discarding it --- the antidote
+  to fail-closed suppression.
+- **I workspace `NOVEL`/`CHALLENGE` partitions** carry it with *no authority* (so it is
+  neither rejected nor believed) while it is investigated.
+- **IV Generative** (affordance/reframe discovery, abduction, representation change,
+  cross-domain JUMP, constructive invention) does the enumeration that *surfaces* the
+  candidate at superhuman breadth.
+- **V Severity** designs the could-have-killed-it test that lets it *earn* authority
+  rather than assert it.
+- **IV `DIALECTIC`** crystallizes the new *concept/category* once it survives.
+
+The honest limit RAKL's own ethos demands: **no mechanic guarantees a breakthrough.**
+The creative leap is still bounded by the model and by serendipity. What the mechanics
+change is the odds and the machinery around the leap --- (a) not *filtering out* the wild
+idea by being too conservative; (b) *enumerating* affordances, reframes and cross-domain
+jumps exhaustively so more candidate breakthroughs surface; (c) *recognizing and
+protecting* a promising one; (d) *testing* it honestly; (e) *preserving and transmitting*
+it. That converts breakthrough from "wait for a rare genius" into "search the
+affordance/reframe space with perfect memory and no premature rejection" --- which is the
+one place a machine can plausibly out-*system* human discovery. Until the generative and
+severity mechanics exist and are saturation-certified, RAKL should claim only that it
+governs and transmits breakthroughs, not that it originates them.
+
 ## 7. Recommendation
 
 Publish this as a distinct paper — **"Generative Mechanics"** (or a trilogy IV/V/VI mirroring
