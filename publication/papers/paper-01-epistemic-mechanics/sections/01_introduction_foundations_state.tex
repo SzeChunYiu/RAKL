@@ -10,7 +10,7 @@ The resulting notion is not absolute completion. An unrestricted scientific worl
 
 \subsection{Three separations}
 
-The central architecture can be summarized by three inequalities:
+The central architecture is shown in Figure~\ref{fig:architecture} and can be summarized by three inequalities:
 \[
 \boxed{\text{computational access}\neq\text{cross-context coherence}\neq\text{epistemic authority}.}
 \]
@@ -19,6 +19,13 @@ Computational access asks whether an object is active and reusable by downstream
 A second separation distinguishes persistent epistemic state from a transient workspace. Contemporary language-model systems already use retrieval, tools, scratchpads and memory hierarchies to extend what can be brought into a model's immediate context \cite{lewis2020,yao2023,schick2023,packer2023,mialon2023}. Generative agents and reflection-based agents likewise maintain memories or textual feedback that can influence future behavior \cite{park2023,shinn2023}. These mechanisms are useful models of computational access, but they do not define scientific authority. In the architecture developed here, a workspace can change what downstream operators see without acquiring any canonical write permission.
 
 The third separation concerns geometric growth and scientific progress. Adding a node, splitting a category or storing another textual representation can increase the size of a knowledge graph while adding no scientific content. Conversely, a failed experiment, a counterexample or a newly discovered prior-art equivalence may add little geometric volume while substantially narrowing what can responsibly be claimed. For that reason the saturation rule introduced later uses a non-compensatory vector of epistemically meaningful changes rather than a single object count.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/architecture.pdf}
+\caption{RAKL as a state machine wrapped around a language-model generator. The generator $G_\theta$ and open-world mechanism discovery emit \emph{proposals} into a capacity-bounded workspace; these gain computational access but carry no write authority. A typed verifier evaluates a proposal, and only the resulting verified certificate crosses the write-authority boundary to update the canonical state through an append-only authority ledger, with refuted claims retained as negative history rather than discarded. A saturation check governs when the process may stop and when unresolved threads are reopened. Preserving this separation between proposal and canonical commitment is precisely the discipline an evidence-governed language-model research agent must maintain; the sections that follow make each component and each transition precise.}
+\label{fig:architecture}
+\end{figure}
 
 \subsection{Contributions and claim boundary}
 
