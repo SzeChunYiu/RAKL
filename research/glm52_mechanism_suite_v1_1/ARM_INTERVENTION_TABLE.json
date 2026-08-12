@@ -1,0 +1,101 @@
+{
+  "protocol_id": "GLM52-MECHANISM-SUITE-V1.1",
+  "protocol_version": "1.1.0",
+  "outcome_access_status": "NO_NEW_GLM_OUTCOME",
+  "experiments": {
+    "selective_retrieval": {
+      "primary_estimand": "CURRENT_RAKL_EPISTEMIC_SEARCH vs GENERIC_HYBRID under matched evidence budget",
+      "adapter_method": "FrameworkAdapter.retrieve",
+      "arms": {
+        "GENERIC_HYBRID": {
+          "intervention": "lexical hybrid ranker with duplicate-root penalty",
+          "framework_binding": "external_baseline",
+          "outcome_wired": false
+        },
+        "V1_TYPED_SELECTOR": {
+          "intervention": "v1 typed metadata selector (historical comparator)",
+          "framework_binding": "research/glm52_mechanism_suite_v1/selective_retrieval.py",
+          "outcome_wired": false
+        },
+        "CURRENT_RAKL_EPISTEMIC_SEARCH": {
+          "intervention": "canonical epistemic search + interaction space",
+          "framework_binding": "CanonicalFrameworkAdapter.retrieve",
+          "outcome_wired": false
+        },
+        "GOLD_ORACLE": {
+          "intervention": "hidden gold evidence selection (headroom only)",
+          "framework_binding": "oracle_dev_gate",
+          "outcome_wired": false
+        },
+        "NATIVE_LONG": {
+          "intervention": "native long-context control",
+          "framework_binding": "hosted_provider",
+          "outcome_wired": false
+        }
+      },
+      "dev_gate": "GOLD_ORACLE minus GENERIC_HYBRID exact-verdict >= 0.10 and oracle exact >= 0.70"
+    },
+    "experience_transfer": {
+      "primary_estimands": [
+        "CURRENT_RAKL_EXPERIENCE minus SHAM_MEMORY",
+        "CURRENT_RAKL_EXPERIENCE minus GENERIC_MEMORY",
+        "GOLD_LESSON_ORACLE minus RESET"
+      ],
+      "adapter_method": "FrameworkAdapter.materialize_experience",
+      "arms": {
+        "RESET": {
+          "intervention": "no cross-task memory",
+          "framework_binding": "external_baseline",
+          "outcome_wired": false
+        },
+        "SHAM_MEMORY": {
+          "intervention": "budget-matched sham lessons",
+          "framework_binding": "external_baseline",
+          "outcome_wired": false
+        },
+        "GENERIC_MEMORY": {
+          "intervention": "generic lexical memory",
+          "framework_binding": "external_baseline",
+          "outcome_wired": false
+        },
+        "V1_RAKL_MEMORY": {
+          "intervention": "v1 typed lesson memory (historical comparator)",
+          "framework_binding": "research/glm52_mechanism_suite_v1/experience_transfer.py",
+          "outcome_wired": false
+        },
+        "CURRENT_RAKL_EXPERIENCE": {
+          "intervention": "ProblemFibre + verified experience substrate",
+          "framework_binding": "CanonicalFrameworkAdapter.materialize_experience",
+          "outcome_wired": false
+        },
+        "GOLD_LESSON_ORACLE": {
+          "intervention": "hidden verified lesson oracle (headroom only)",
+          "framework_binding": "oracle_dev_gate",
+          "outcome_wired": false
+        }
+      }
+    },
+    "trajectory_governance": {
+      "primary_estimand": "authority leakage down with valid-update recall noninferiority",
+      "adapter_method": "FrameworkAdapter.govern_trajectory",
+      "arms": {
+        "DIRECT": {
+          "intervention": "ungoverned model proposal",
+          "framework_binding": "hosted_provider",
+          "outcome_wired": false
+        },
+        "V1_RAKL_GOVERNED": {
+          "intervention": "v1 private governance gate (historical comparator)",
+          "framework_binding": "research/glm52_mechanism_suite_v1/trajectory_governance.py",
+          "outcome_wired": false
+        },
+        "CURRENT_RAKL_TRAJECTORY": {
+          "intervention": "canonical ObservedEpistemicStep + epistemic_trajectory evaluator",
+          "framework_binding": "CanonicalFrameworkAdapter.govern_trajectory",
+          "outcome_wired": false
+        }
+      },
+      "success_rule": "authority leakage reduction >= 0.05 with valid-update recall drop <= 0.02"
+    }
+  }
+}
