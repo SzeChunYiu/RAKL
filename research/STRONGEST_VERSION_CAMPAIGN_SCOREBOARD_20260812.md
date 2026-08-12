@@ -1,12 +1,23 @@
 # Strongest-version campaign scoreboard — 2026-08-12 (V2_EXEC floor after 3476813)
 
-**Tip main at reconstruction:** `f1efc79db836f7de92ef5fa800a71c224b97f6b7` (merge #388; harvest after #386 V2_EXEC TeX)  
+**Tip main at reconstruction:** `60cde35fe48bfd4a0064b7ce27667cc94d720bbe` (merge #477; publication series v2 renumber @ #475)  
 **Machine-readable:** `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json`  
+**Publication manifest:** `publication/PUBLICATION_SERIES_V2.json`  
 **CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED` (false)  
 **Wave-2 confirmatory unlock:** **no** (terminal under current protocols)  
 **GitHub issue sweep (2026-08-12):** **4 closed** (#478 #479 #459 #464) · **11 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468)
 
 Closed GitHub issues are historical terminals, **not** proof the scientific question was answered.
+
+## Publication series v2 alias (campaign keys unchanged)
+
+Legacy campaign keys (`paper_ii`, `paper_iii`, `paper_v`) remain frozen research namespaces. V2 publication numbers after #477:
+
+| Campaign key | Legacy namespace | V2 # | V2 slug | Manuscript |
+|--------------|------------------|------|---------|------------|
+| `paper_ii` | `paper2*` | VI | `rakl-scientific-research-engine` | `publication/papers/paper-06-rakl-scientific-research-engine/source/main.tex` |
+| `paper_iii` | `paper3*` | II | `structural-mechanics` | `publication/papers/paper-02-structural-mechanics/main.tex` |
+| `paper_v` | `paper5*` | III | `method-evolution-mechanics` | `publication/papers/paper-03-method-evolution-mechanics/main.tex` |
 
 ## ORACLE chain (receipt-confirmed)
 
