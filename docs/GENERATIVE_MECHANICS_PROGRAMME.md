@@ -84,6 +84,49 @@ RAKL today has the CLOSE stroke; this programme is the GROW stroke. Saturate-the
 exactly half the method --- and the generative mechanics are what stop it from being an engine
 that closes forever over too small a world.
 
+## 1b. The shortest path, and one dimension higher (the meta-method)
+
+**Problem-solving is connecting fibres.** A hard theorem is a goal fibre; the axioms/known
+results are starting fibres; a proof is a path composing operators (SEARCH within a domain,
+JUMP across, GLUE compositions) that bridges start to goal.
+
+**Does the framework provide a *shorter* path? Not intrinsically.** The length of the
+shortest proof is a property of the theorem + axioms + logic *in a fixed representation*; no
+search procedure changes it. What RAKL does is make a shorter path *exist* and *findable*:
+- **change the space** --- proof length is not invariant to representation; searching over the
+  atlas of charts makes the effective shortest path the minimum over the *union* of
+  representations, often far shorter than in any one;
+- **JUMP adds shortcut edges** --- a cross-domain transport is a long-range link; a few such
+  links collapse path lengths (the small-world effect), reaching bridges a within-domain
+  search never would;
+- **GLUE accumulates verified waypoints** --- proved lemmas shrink the effective distance for
+  future problems;
+- **guided search + perfect negative history** --- find the path faster even at fixed length.
+
+So RAKL does not shorten the path in your space; it lets you *grow the space* (new charts,
+new jump-edges) so a shorter path exists, and prunes the search so you find it. The bridge you
+need often does not exist until you add an edge --- the GROW stroke.
+
+**One dimension higher --- the meta-method is the point.** Level 0: solve a problem (traverse
+fibres start->goal). Level 1: a *method* is a reusable path-pattern that traverses level 0.
+Level 2: the *method-space*, whose objects are methods and whose morphisms are
+method-transformations (generalize, specialize, compose, evolve-under-failure); "improve a
+method" is an operator here (Paper III experience->method, DIALECTIC concept-evolution).
+
+RAKL is **self-similar across levels**: the same GROW/CLOSE fibre-traversal-with-bounded-
+saturation is the operator at every level. Therefore:
+
+> The "generalized method that contains every method" is not a bigger list of methods --- it is
+> the **scale-invariant loop itself** (traverse, glue, saturate, grow-when-stuck), the same
+> operator at every dimension. Specific methods are its projections at level 0; meta-methods are
+> its projections at level 2; the loop is the invariant. "The method to improve methods" is RAKL
+> applied to itself --- the meta-lattice whose object is RAKL --- a fixed point, and bounded
+> method-saturation is the claim that this fixed point is *reachable* without infinite regress.
+
+Honesty marker: the scale-invariance and fixed-point are a **conjecture/framing**, not a
+theorem; open-world non-certifiability caps it --- one can never certify the loop contains
+*every* method, only that it is bounded-saturated relative to the methods observed.
+
 ## 2. Diagnosis (what the five rounds agree on)
 
 **RAKL is a superb refutation / governance engine and an absent generative engine.**
