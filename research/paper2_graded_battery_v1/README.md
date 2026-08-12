@@ -111,3 +111,37 @@ coordinates do not say *which* coordinates matter.
 Both halves point the same way: if RAKL has value on this task family, it is in
 **relevance determination**, not representation. That is a different treatment
 and it is the one worth building next.
+
+## Pooled estimate — a precise null, not merely a non-significant one
+
+Seven configurations, inverse-variance pooled (SE recovered from each config's
+delta and two-sided p):
+
+| config | delta | p | SE |
+|---|---:|---:|---:|
+| L1 stated, 8 src | −0.0248 | 0.391 | 0.0289 |
+| L2 stated, 14 src | −0.0031 | 0.910 | 0.0274 |
+| L3 stated, 20 src | −0.0091 | 0.737 | 0.0271 |
+| L4 stated, 26 src | +0.0184 | 0.508 | 0.0278 |
+| R0 hidden, 10 src | −0.0214 | 0.422 | 0.0267 |
+| R1 hidden, 14 src | −0.0188 | 0.465 | 0.0257 |
+| R1b hidden, 16 src | +0.0181 | 0.483 | 0.0258 |
+
+```
+POOLED delta (RAKL - DIRECT, mean F1) = -0.0056
+  SE 0.0102   95% CI [-0.0256, +0.0144]   p = 0.584
+```
+
+**Any true benefit larger than +0.014 mean F1 is excluded at 95% confidence.**
+Normalization-only RAKL cannot be helping by more than ~1.4 F1 points on this
+task family at this operating point.
+
+This is the difference between "we did not detect an effect" and "an effect of
+practically meaningful size is ruled out". Every prior arm comparison in this
+repository ran at n=1 (one task, one seed) and could only ever produce the
+former; the latter is a result.
+
+Caveat preserved: this bounds the *normalization* treatment only. It says nothing
+about selective retrieval, experience conditioning or typed authority, and the
+bound applies to this synthetic evidence-integration family, not to the
+registered pendulum protocol.
