@@ -1,6 +1,6 @@
 {
   "schema": "paper2.robustness.confirmatory.execution_failure.v1",
-  "status": "EXECUTION_FAILURE_AFTER_REGISTERED_SEED_STEP_STARTED",
+  "status": "EXECUTION_FAILURE_PRE_OUTCOME_IMPORT",
   "failed_confirmatory_seed": 2026081212,
   "seed_status": "RETIRED_DO_NOT_REUSE",
   "registered_n_per_cell": 15,
@@ -15,13 +15,22 @@
   "confirmatory_result_artifact": null,
   "scientific_result_materialized": false,
   "raw_metric_receipt_available": false,
-  "root_cause_status": "UNDER_AUDIT",
+  "registered_seed_generated": false,
+  "root_cause": {
+    "exception": "ModuleNotFoundError",
+    "message": "No module named 'scripts'",
+    "location": "scripts/paper2_robustness_confirmatory.py:19 during module import",
+    "failing_import": "from scripts.paper2_robustness_development import (...) ",
+    "chronology": "failure occurred before summarize(), generate(), or any confirmatory task/verifier/metric computation",
+    "source_log_response": "/response/turn373",
+    "diagnosis": "execution-path packaging/import defect; pytest import path had masked the script-as-entrypoint failure"
+  },
   "repair_policy": [
-    "Never reuse seed 2026081212.",
-    "Do not change registered MDE, n=810, lexical threshold, family set, safety margins, bootstrap method or success gates based on this failed attempt.",
-    "Diagnose on fresh non-confirmatory audit seeds only.",
-    "Any repair must be versioned and limited to a demonstrated execution/interface defect.",
-    "Choose a new confirmatory seed and bind the repaired subject before first repaired confirmatory access."
+    "Never reuse seed 2026081212 despite zero outcome materialization; preserve the failed attempt as immutable history.",
+    "Do not change registered MDE, n=810, lexical threshold, family set, safety margins, bootstrap method or success gates.",
+    "Move the shared analysis helpers out of the scripts namespace into an importable src/rakl module without changing their semantics.",
+    "Prove helper equivalence on fresh non-confirmatory tasks and execute the repaired entrypoint on a fresh non-confirmatory smoke seed before any new confirmatory seed.",
+    "Choose and bind a new confirmatory seed before first repaired confirmatory access."
   ],
-  "claim_boundary": "No scientific robustness conclusion may be drawn from this failed execution. The absence of an uploaded result artifact is not treated as permission to reuse the failed seed."
+  "claim_boundary": "No scientific robustness conclusion may be drawn from this failed execution. The audit establishes that no registered confirmatory outcome was accessed or materialized."
 }
