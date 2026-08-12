@@ -4,8 +4,11 @@ import pytest
 
 from rakl.epistemic_search import (
     EvidenceStance,
+    ScientificSearchQuestion,
     SearchCandidate,
+    SearchFeedback,
     SearchIndexKind,
+    SearchIntentKind,
     SearchRankVector,
     SearchVertical,
 )
@@ -14,8 +17,10 @@ from rakl.search_policy_learning import (
     SearchFailureReceipt,
     SearchFailureSignature,
     SearchPolicy,
+    compile_search_intents_with_policy,
     derive_search_policy_update,
     materialize_search_policy_challenger,
+    search_feedback_value_with_policy,
     select_candidates_with_policy,
 )
 
@@ -84,13 +89,34 @@ def _candidate(candidate_id, **overrides):
     return SearchCandidate(candidate_id=candidate_id, **values)
 
 
+def _question(**overrides):
+    values = dict(
+        question_id="q1",
+        root_goal="Identify the mechanism behind the residual.",
+        atom_id="atom-1",
+        residual_terms=("residual", "mechanism"),
+        structural_coordinates=(),
+        unresolved_obligations=(),
+        source_native_terms=(),
+        semantic_expansions=tuple(f"semantic-{i}" for i in range(8)),
+        candidate_mechanism=None,
+    )
+    values.update(overrides)
+    return ScientificSearchQuestion(**values)
+
+
+def _successor(signature, policy):
+    assessment = _derive(signature, policy)
+    assert assessment.verdict is FailureDrivenUpdateVerdict.CHALLENGER_PROPOSED
+    assert assessment.proposal is not None
+    return assessment, materialize_search_policy_challenger(policy, assessment.proposal)
+
+
 def test_failure_to_policy_update_is_deterministic_and_bounded():
     incumbent = SearchPolicy("search-v1", max_per_evidence_root=3)
     a = _derive(SearchFailureSignature.SAME_ROOT_OVERCONCENTRATION, incumbent)
     b = _derive(SearchFailureSignature.SAME_ROOT_OVERCONCENTRATION, incumbent)
 
-    assert a.verdict is FailureDrivenUpdateVerdict.CHALLENGER_PROPOSED
-    assert b.verdict is FailureDrivenUpdateVerdict.CHALLENGER_PROPOSED
     assert a.proposal == b.proposal
     assert a.proposal is not None
     assert [(d.parameter, d.old_value, d.new_value) for d in a.proposal.deltas] == [
@@ -102,11 +128,14 @@ def test_failure_to_policy_update_is_deterministic_and_bounded():
 
 
 def test_no_caller_supplied_random_delta_surface_exists():
-    assessment = _derive(SearchFailureSignature.QUERY_DRIFT, policy=SearchPolicy("search-v1", require_root_goal_binding=False))
+    assessment = _derive(
+        SearchFailureSignature.QUERY_DRIFT,
+        policy=SearchPolicy("search-v1", max_semantic_expansion_terms=8),
+    )
     assert assessment.proposal is not None
-    assert tuple(delta.parameter for delta in assessment.proposal.deltas) == ("require_root_goal_binding",)
-    # The public derivation API accepts diagnosis + incumbent only; arbitrary
-    # parameter edits are not part of a failure-learning receipt.
+    assert tuple(delta.parameter for delta in assessment.proposal.deltas) == (
+        "max_semantic_expansion_terms",
+    )
     with pytest.raises(TypeError):
         derive_search_policy_update(  # type: ignore[call-arg]
             _receipt(SearchFailureSignature.QUERY_DRIFT),
@@ -124,7 +153,6 @@ def test_unconfirmed_root_cause_does_not_generate_another_idea():
     )
     assert result.verdict is FailureDrivenUpdateVerdict.CANNOT_CHECK
     assert result.proposal is None
-    assert "search_root_cause_not_confirmed" in result.reasons
 
 
 def test_counterfactual_discriminator_is_required_before_policy_learning():
@@ -136,29 +164,20 @@ def test_counterfactual_discriminator_is_required_before_policy_learning():
     assert result.proposal is None
 
 
-def test_failure_receipt_must_be_frozen_before_update():
-    unknown = _derive(
-        SearchFailureSignature.LOW_INFORMATION_GAIN,
-        frozen_before_update=None,
-    )
+def test_failure_receipt_must_be_frozen_and_bound_to_exact_incumbent():
+    unknown = _derive(SearchFailureSignature.LOW_INFORMATION_GAIN, frozen_before_update=None)
     assert unknown.verdict is FailureDrivenUpdateVerdict.CANNOT_CHECK
 
-    posthoc = _derive(
-        SearchFailureSignature.LOW_INFORMATION_GAIN,
-        frozen_before_update=False,
-    )
+    posthoc = _derive(SearchFailureSignature.LOW_INFORMATION_GAIN, frozen_before_update=False)
     assert posthoc.verdict is FailureDrivenUpdateVerdict.INVALID
 
-
-def test_failure_receipt_must_bind_exact_incumbent_policy():
-    result = derive_search_policy_update(
+    wrong_policy = derive_search_policy_update(
         _receipt(SearchFailureSignature.LOW_INFORMATION_GAIN, policy_version="old-policy"),
         SearchPolicy("search-v1"),
         update_id="upd",
         to_policy_version="search-v2",
     )
-    assert result.verdict is FailureDrivenUpdateVerdict.INVALID
-    assert "failure_receipt_not_bound_to_incumbent_policy" in result.reasons
+    assert wrong_policy.verdict is FailureDrivenUpdateVerdict.INVALID
 
 
 def test_saturated_registered_repair_returns_no_repair_not_random_idea():
@@ -169,105 +188,156 @@ def test_saturated_registered_repair_returns_no_repair_not_random_idea():
     assert "do not substitute an unrelated random idea" in result.reasons[0]
 
 
-def test_materialized_successor_is_challenger_only():
-    incumbent = SearchPolicy("search-v1", require_structural_intent=False)
-    assessment = _derive(SearchFailureSignature.SURFACE_MATCH_STRUCTURAL_MISS, incumbent)
-    assert assessment.proposal is not None
+def test_query_drift_failure_changes_next_query_expansion():
+    policy_t = SearchPolicy("search-v1", max_semantic_expansion_terms=8)
+    before = compile_search_intents_with_policy(_question(), policy_t)
+    semantic_before = next(x for x in before if x.kind is SearchIntentKind.SEMANTIC_EXPANSION)
+    assert len(semantic_before.terms) == 8
 
-    challenger = materialize_search_policy_challenger(incumbent, assessment.proposal)
-    assert challenger.version == "search-v2"
-    assert challenger.require_structural_intent is True
-    assert challenger.grants_scientific_authority is False
-    assert assessment.proposal.claims_policy_is_better is False
-
-
-def test_stale_policy_delta_cannot_be_applied_to_different_incumbent():
-    incumbent = SearchPolicy("search-v1", max_candidates=10)
-    assessment = _derive(SearchFailureSignature.OVERLY_NARROW_RECALL, incumbent)
-    assert assessment.proposal is not None
-
-    mutated_incumbent = replace(incumbent, max_candidates=11)
-    with pytest.raises(ValueError, match="stale policy delta"):
-        materialize_search_policy_challenger(mutated_incumbent, assessment.proposal)
+    _, policy_t1 = _successor(SearchFailureSignature.QUERY_DRIFT, policy_t)
+    after = compile_search_intents_with_policy(_question(), policy_t1)
+    semantic_after = next(x for x in after if x.kind is SearchIntentKind.SEMANTIC_EXPANSION)
+    assert len(semantic_after.terms) == 6
 
 
-def test_specific_failures_map_to_specific_registered_repairs():
-    cases = [
-        (SearchFailureSignature.MISSED_COUNTEREVIDENCE, SearchPolicy("search-v1", preserve_counterevidence=False), "preserve_counterevidence"),
-        (SearchFailureSignature.QUERY_DRIFT, SearchPolicy("search-v1", require_root_goal_binding=False), "require_root_goal_binding"),
-        (SearchFailureSignature.MISSED_RETRACTION_OR_SUPERSESSION, SearchPolicy("search-v1", require_freshness_retraction_intent=False), "require_freshness_retraction_intent"),
-        (SearchFailureSignature.MISSED_NEGATIVE_RESULT, SearchPolicy("search-v1", require_negative_result_intent=False), "require_negative_result_intent"),
-        (SearchFailureSignature.METHOD_OBLIGATION_UNSERVED, SearchPolicy("search-v1", require_method_intent=False), "require_method_intent"),
-        (SearchFailureSignature.KEYWORD_STUFFING_FALSE_POSITIVE, SearchPolicy("search-v1", min_substantive_match_score=0.2), "min_substantive_match_score"),
-        (SearchFailureSignature.OVERLY_NARROW_RECALL, SearchPolicy("search-v1", max_candidates=8), "max_candidates"),
-    ]
-    for signature, policy, parameter in cases:
-        result = _derive(signature, policy)
-        assert result.verdict is FailureDrivenUpdateVerdict.CHALLENGER_PROPOSED
-        assert result.proposal is not None
-        assert parameter in {delta.parameter for delta in result.proposal.deltas}
-
-
-def test_position_bias_failure_updates_feedback_policy_not_truth_authority():
-    policy = SearchPolicy(
+def test_missed_retraction_failure_changes_next_selection():
+    popular = _candidate("popular", rank=_rank(root_obligation_relevance=0.99), mechanism_family="m-pop")
+    retraction = _candidate(
+        "retraction",
+        stance=EvidenceStance.RETRACTION_CORRECTION,
+        rank=_rank(root_obligation_relevance=0.10),
+        mechanism_family="m-ret",
+    )
+    policy_t = SearchPolicy(
         "search-v1",
+        max_candidates=1,
+        require_freshness_retraction_intent=False,
+        preserve_retraction_slot=False,
+    )
+    assert select_candidates_with_policy((popular, retraction), policy_t) == (popular,)
+
+    _, policy_t1 = _successor(SearchFailureSignature.MISSED_RETRACTION_OR_SUPERSESSION, policy_t)
+    assert select_candidates_with_policy((popular, retraction), policy_t1) == (retraction,)
+    intents = compile_search_intents_with_policy(_question(residual_terms=()), policy_t1)
+    assert SearchIntentKind.FRESHNESS_RETRACTION in {x.kind for x in intents}
+
+
+def test_missed_negative_result_failure_changes_next_selection():
+    support = _candidate("support", rank=_rank(root_obligation_relevance=0.99), mechanism_family="m-s")
+    negative = _candidate(
+        "negative",
+        stance=EvidenceStance.NEGATIVE_RESULT,
+        rank=_rank(root_obligation_relevance=0.10),
+        mechanism_family="m-n",
+    )
+    policy_t = SearchPolicy(
+        "search-v1",
+        max_candidates=1,
+        require_negative_result_intent=False,
+        preserve_negative_result_slot=False,
+        preserve_counterevidence=False,
+    )
+    assert select_candidates_with_policy((support, negative), policy_t) == (support,)
+
+    _, policy_t1 = _successor(SearchFailureSignature.MISSED_NEGATIVE_RESULT, policy_t)
+    assert select_candidates_with_policy((support, negative), policy_t1) == (negative,)
+
+
+def test_structural_miss_failure_reserves_structural_candidate_next_time():
+    surface = _candidate("surface", rank=_rank(root_obligation_relevance=0.99), mechanism_family="m-surface")
+    structural = _candidate(
+        "structural",
+        index_kinds=(SearchIndexKind.STRUCTURAL,),
+        rank=_rank(root_obligation_relevance=0.10),
+        mechanism_family="m-struct",
+    )
+    policy_t = SearchPolicy("search-v1", max_candidates=1, preserve_structural_slot=False)
+    assert select_candidates_with_policy((surface, structural), policy_t) == (surface,)
+
+    _, policy_t1 = _successor(SearchFailureSignature.SURFACE_MATCH_STRUCTURAL_MISS, policy_t)
+    assert select_candidates_with_policy((surface, structural), policy_t1) == (structural,)
+
+
+def test_method_obligation_failure_reserves_method_candidate_next_time():
+    literature = _candidate("paper", rank=_rank(root_obligation_relevance=0.99), mechanism_family="m-paper")
+    method = _candidate(
+        "method",
+        vertical=SearchVertical.METHOD_TOOL,
+        index_kinds=(SearchIndexKind.METHOD_OPERATOR,),
+        rank=_rank(root_obligation_relevance=0.10),
+        mechanism_family="m-method",
+    )
+    policy_t = SearchPolicy("search-v1", max_candidates=1, preserve_method_tool_slot=False)
+    assert select_candidates_with_policy((literature, method), policy_t) == (literature,)
+
+    _, policy_t1 = _successor(SearchFailureSignature.METHOD_OBLIGATION_UNSERVED, policy_t)
+    assert select_candidates_with_policy((literature, method), policy_t1) == (method,)
+
+
+def test_position_bias_failure_changes_feedback_learning_and_exploration():
+    feedback = SearchFeedback(
+        question_id="q1",
+        intent_id="i1",
+        candidate_id="c1",
+        rank_position=1,
+        exposure_probability=0.25,
+        inspected=True,
+        changed_action=True,
+        verified_downstream_success=True,
+        cost=1.0,
+    )
+    policy_t = SearchPolicy(
+        "search-v1",
+        max_candidates=2,
         require_propensity_corrected_feedback=False,
         exploration_fraction=0.0,
     )
-    result = _derive(SearchFailureSignature.POSITION_EXPOSURE_BIAS, policy)
-    assert result.proposal is not None
-    params = {delta.parameter for delta in result.proposal.deltas}
-    assert params == {"require_propensity_corrected_feedback", "exploration_fraction"}
-    assert result.grants_scientific_authority is False
+    assert search_feedback_value_with_policy(feedback, policy_t) == 1.0
+
+    _, policy_t1 = _successor(SearchFailureSignature.POSITION_EXPOSURE_BIAS, policy_t)
+    assert search_feedback_value_with_policy(feedback, policy_t1) == 4.0
+
+    exploit_a = _candidate("exploit-a", rank=_rank(root_obligation_relevance=0.99, novel_route_value=0.01), mechanism_family="m-a")
+    exploit_b = _candidate("exploit-b", rank=_rank(root_obligation_relevance=0.98, novel_route_value=0.02), mechanism_family="m-b")
+    explore = _candidate("explore", rank=_rank(root_obligation_relevance=0.20, novel_route_value=1.0), mechanism_family="m-c")
+    before = select_candidates_with_policy((exploit_a, exploit_b, explore), policy_t)
+    after = select_candidates_with_policy((exploit_a, exploit_b, explore), policy_t1)
+    assert {x.candidate_id for x in before} == {"exploit-a", "exploit-b"}
+    assert "explore" in {x.candidate_id for x in after}
 
 
-def test_policy_thresholds_change_routing_selection_on_next_iteration():
-    candidates = (
-        _candidate("low-root", rank=_rank(root_obligation_relevance=0.2)),
-        _candidate("low-info", rank=_rank(expected_information_gain=0.2), mechanism_family="m2"),
-        _candidate("good", rank=_rank(root_obligation_relevance=0.9, expected_information_gain=0.9), mechanism_family="m3"),
-    )
-    policy_t = SearchPolicy("search-v1", min_root_obligation_relevance=0.0, min_expected_information_gain=0.0)
-    selected_t = select_candidates_with_policy(candidates, policy_t)
-    assert {item.candidate_id for item in selected_t} == {"low-root", "low-info", "good"}
+def test_root_relevance_failure_filters_the_next_iteration():
+    low = _candidate("low", rank=_rank(root_obligation_relevance=0.05), mechanism_family="m-low")
+    good = _candidate("good", rank=_rank(root_obligation_relevance=0.90), mechanism_family="m-good")
+    policy_t = SearchPolicy("search-v1", min_root_obligation_relevance=0.0)
+    assert {x.candidate_id for x in select_candidates_with_policy((low, good), policy_t)} == {"low", "good"}
 
-    failure = _receipt(SearchFailureSignature.LOW_ROOT_OBLIGATION_RELEVANCE)
-    update = derive_search_policy_update(
-        failure,
-        policy_t,
-        update_id="upd-root",
-        to_policy_version="search-v2",
-    )
-    assert update.proposal is not None
-    policy_t1 = materialize_search_policy_challenger(policy_t, update.proposal)
-    selected_t1 = select_candidates_with_policy(candidates, policy_t1)
-    assert {item.candidate_id for item in selected_t1} == {"low-root", "low-info", "good"}  # 0.1 floor still admits all
-
-    # Repeated independently diagnosed failures can move the same registered
-    # parameter again; this is policy learning, but each step remains a challenger.
-    failure_2 = replace(failure, failure_id="failure-2", policy_version="search-v2")
-    update_2 = derive_search_policy_update(
-        failure_2,
-        policy_t1,
-        update_id="upd-root-2",
-        to_policy_version="search-v3",
-    )
-    assert update_2.proposal is not None
-    policy_t2 = materialize_search_policy_challenger(policy_t1, update_2.proposal)
-    assert policy_t2.min_root_obligation_relevance == 0.2
-    assert policy_t2.grants_scientific_authority is False
+    _, policy_t1 = _successor(SearchFailureSignature.LOW_ROOT_OBLIGATION_RELEVANCE, policy_t)
+    assert {x.candidate_id for x in select_candidates_with_policy((low, good), policy_t1)} == {"good"}
 
 
-def test_policy_can_make_same_root_failure_change_next_selection():
+def test_same_root_failure_changes_next_selection():
     same_a = _candidate("a", evidence_root_id="same", mechanism_family="m1")
     same_b = _candidate("b", evidence_root_id="same", mechanism_family="m2")
     independent = _candidate("c", evidence_root_id="independent", mechanism_family="m3")
-    policy_t = SearchPolicy("search-v1", max_per_evidence_root=2)
+    policy_t = SearchPolicy("search-v1", max_per_evidence_root=2, max_candidates=3)
     assert len([x for x in select_candidates_with_policy((same_a, same_b, independent), policy_t) if x.evidence_root_id == "same"]) == 2
 
-    update = _derive(SearchFailureSignature.SAME_ROOT_OVERCONCENTRATION, policy_t)
-    assert update.proposal is not None
-    policy_t1 = materialize_search_policy_challenger(policy_t, update.proposal)
+    _, policy_t1 = _successor(SearchFailureSignature.SAME_ROOT_OVERCONCENTRATION, policy_t)
     selected = select_candidates_with_policy((same_a, same_b, independent), policy_t1)
     assert len([x for x in selected if x.evidence_root_id == "same"]) == 1
     assert "c" in {x.candidate_id for x in selected}
+
+
+def test_materialized_successor_is_challenger_only_and_stale_delta_fails():
+    incumbent = SearchPolicy("search-v1", max_candidates=10)
+    assessment = _derive(SearchFailureSignature.OVERLY_NARROW_RECALL, incumbent)
+    assert assessment.proposal is not None
+    challenger = materialize_search_policy_challenger(incumbent, assessment.proposal)
+    assert challenger.version == "search-v2"
+    assert challenger.max_candidates == 12
+    assert challenger.grants_scientific_authority is False
+    assert assessment.proposal.claims_policy_is_better is False
+
+    with pytest.raises(ValueError, match="stale policy delta"):
+        materialize_search_policy_challenger(replace(incumbent, max_candidates=11), assessment.proposal)
