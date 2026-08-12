@@ -9,10 +9,10 @@ versions freeze.
 
 The benchmark is intentionally objective/fail-closed. Gold steps must be
 known-answer validated and frozen before candidate output. The evaluator checks
-exact action, exact evidence/root binding, authority continuity/noninterference,
-timing and negative-history preservation. A correct-looking terminal action with
-wrong evidence therefore cannot pass, and an always-CANNOT_CHECK strategy loses
-valid-update recall on positive controls.
+exact action, exact evidence/root binding, frozen step order, authority
+continuity/noninterference, timing and negative-history preservation. A
+correct-looking terminal action with wrong evidence therefore cannot pass, and
+an always-CANNOT_CHECK strategy loses valid-update recall on positive controls.
 
 No report here mutates scientific state or grants authority.
 """
@@ -289,7 +289,11 @@ def evaluate_epistemic_trajectory(
             reasons=("duplicate_sequence_index",),
         )
 
-    continuity_correct = True
+    gold_order = [step.step_id for step in case.gold_steps]
+    observed_order = [step.step_id for step in ordered_observed]
+    order_correct = observed_order == gold_order
+
+    continuity_correct = order_correct
     previous_after = case.initial_authority_fingerprint
     step_results: list[StepEvaluation] = []
 
@@ -367,13 +371,13 @@ def evaluate_epistemic_trajectory(
         )
         previous_after = observed.authority_after
 
-    passed = continuity_correct and all(step.passed for step in step_results)
-    reasons = () if passed else tuple(
-        sorted(
-            {reason for step in step_results for reason in step.reasons}
-            | ({"authority_trajectory_discontinuity"} if not continuity_correct else set())
-        )
-    )
+    passed = order_correct and continuity_correct and all(step.passed for step in step_results)
+    reason_set = {reason for step in step_results for reason in step.reasons}
+    if not order_correct:
+        reason_set.add("epistemic_step_order_mismatch")
+    if not continuity_correct:
+        reason_set.add("authority_trajectory_discontinuity")
+    reasons = () if passed else tuple(sorted(reason_set))
     return TrajectoryEvaluation(
         case_id=case.case_id,
         verdict=TrajectoryVerdict.PASS if passed else TrajectoryVerdict.FAIL,
@@ -397,6 +401,14 @@ def summarize_trajectory_panel(
     if set(evaluation_by_id) - set(case_by_id):
         raise ValueError("evaluation refers to unknown trajectory case")
 
+    observed_map: dict[str, Sequence[ObservedEpistemicStep]] = {}
+    for case_id, observed in observed_by_case:
+        if case_id not in case_by_id:
+            raise ValueError(f"observed trajectory refers to unknown case: {case_id}")
+        if case_id in observed_map:
+            raise ValueError(f"duplicate observed trajectory case: {case_id}")
+        observed_map[case_id] = observed
+
     valid_evaluations = [
         evaluation
         for evaluation in evaluations
@@ -413,6 +425,7 @@ def summarize_trajectory_panel(
     positive_correct = 0
     authority_inert_opportunities = 0
     authority_leaks = 0
+    valid_case_ids = {evaluation.case_id for evaluation in valid_evaluations}
     for evaluation in valid_evaluations:
         for result in evaluation.steps:
             gold = gold_lookup[(evaluation.case_id, result.step_id)]
@@ -427,7 +440,8 @@ def summarize_trajectory_panel(
 
     observed_actions = [
         step.action
-        for _, observed_steps in observed_by_case
+        for case_id, observed_steps in observed_map.items()
+        if case_id in valid_case_ids
         for step in observed_steps
     ]
     always_abstain = bool(observed_actions) and all(
