@@ -2,7 +2,7 @@
 
 \subsection{Training arm}
 
-The first phase uses small open models or controlled transformers so that the structural-redundancy mechanism can be tested before expensive scaling. Training datasets are generated or curated at controlled structural-redundancy levels while token length, difficulty and surface-semantic diversity are held as stable as feasible. Baselines include uniform sampling, exact/semantic deduplication or diversity selection, Skill-It-style dependency sampling, MASS-style skill-graph selection, and at least one faithful modern model-aware adaptive parent where the task representation permits it. MATES is a primary parent for evolving model-aware data influence \cite{yu2024mates}; STAT is a primary parent for learner-specific missing-skill targeting and explicit saturation-aware adaptive selection/synthesis \cite{he2026stat}. ADO and model-state-dependent spaced scheduling provide additional online/dynamic allocation controls \cite{jiang2025ado,elhattami2025sst}. Rho-1 supplies a strong selective-loss/token-utility parent where its reference-model contract is applicable \cite{lin2024rho1}. The RAKL arm differs only when it uses cross-domain structural objects and witnessed structural coordinates that these parents do not already provide.
+The first phase uses small open models or controlled transformers so that the structural-redundancy mechanism can be tested before expensive scaling. Training datasets are generated or curated at controlled structural-redundancy levels while token length, difficulty and surface-semantic diversity are held as stable as feasible. Baselines include uniform sampling, exact/semantic deduplication or diversity selection, Skill-It-style dependency sampling, MASS-style skill-graph selection, and at least one faithful modern model-aware adaptive parent where the task representation permits it. MATES is a primary parent for evolving model-aware data influence \cite{yu2024mates}; STAT is a primary parent for learner-specific missing-skill targeting and explicit saturation-aware adaptive selection/synthesis \cite{he2026stat}. ADO and model-state-dependent spaced scheduling provide additional online/dynamic allocation controls \cite{jiang2025ado,elhattami2025sst}. Rho-1 supplies a strong selective-loss/token-utility parent where its reference-model contract is applicable \cite{lin2024rho1}. The Orion arm differs only when it uses cross-domain structural objects and witnessed structural coordinates that these parents do not already provide.
 
 Primary outcomes are tokens/examples to a frozen structural-OOD capability target, total training compute where measurable, performance on structure-known/domain-new tasks, performance on genuinely structure-new tasks, calibration and negative transfer. A positive result on ordinary in-domain accuracy without structural OOD does not support the central claim. Skill-It can carry parent authority only if its data-driven dependency learning and sequential adaptive sampler are reproduced under matched model, corpus, token budget, evaluation schedule and seeds; static dependency overlap is not a faithful substitute. MASS is a mathematical-pretraining parent and requires a parent-compatible mathematical skill graph, selection rule and matched mathematical evaluation. MATES/STAT-style parents must likewise be reproduced with their model-state feedback or missing-skill mechanism intact; replacing them by a static score would artificially weaken the comparator.
 
@@ -19,15 +19,15 @@ The confirmatory matched arms are:
 \item uniform/random;
 \item strong semantic deduplication/diversity;
 \item strongest faithful skill/model-aware parent for the task family (for example STAT, MATES, Skill-It or MASS under its native contract);
-\item static RAKL structural curation;
-\item adaptive learner-conditioned RAKL;
+\item static Orion structural curation;
+\item adaptive learner-conditioned Orion;
 \item optionally, loss/perplexity-only and influence-only adaptive controls when resources permit.
 \end{enumerate}
 The primary extension estimand is
 \[
 \Delta_{\mathrm{adaptive}}=
-\operatorname{CTC}_{\mathrm{static\ RAKL}}-
-\operatorname{CTC}_{\mathrm{adaptive\ RAKL}},
+\operatorname{CTC}_{\mathrm{static\ Orion}}-
+\operatorname{CTC}_{\mathrm{adaptive\ Orion}},
 \]
 subject to registered non-inferiority/harm constraints for composition, boundary robustness, retention and invalid transfer. If $\Delta_{\mathrm{adaptive}}$ is measured but indistinguishable, learner-conditioned structural saturation is not established. A positive adaptive-versus-random contrast cannot substitute for this test.
 
@@ -35,19 +35,19 @@ The first controlled experiment varies independently the underlying principle, s
 
 Repetition is not forced to zero after apparent mastery. D4 reports that intelligently repeated data can improve pretraining \cite{tirumala2023d4}, and the training study therefore includes zero-revisit, low-floor, spaced/varied-revisit and continued-repetition controls. A strong adaptive result must save total cost without material forgetting, calibration loss or composition degradation. The scheduler is interpreted as reallocating \emph{marginal} budget, not certifying that repeated exposure has no value.
 
-The adaptive allocation policy is also subject to the same evidence-governed failure principle used elsewhere in RAKL: a flat or harmful training result first produces competing typed diagnoses (for example same-structure saturation, composition gap, boundary gap, representation gap, transfer-domain gap, forgetting, model/optimization floor or instrument defect). A policy change is justified only after a bounded matched discriminator supports the diagnosis; the resulting scheduler is a challenger and must generalize on disjoint fresh structures before promotion. Failure therefore motivates a specific tested allocation change rather than another unconstrained curriculum idea.
+The adaptive allocation policy is also subject to the same evidence-governed failure principle used elsewhere in Orion: a flat or harmful training result first produces competing typed diagnoses (for example same-structure saturation, composition gap, boundary gap, representation gap, transfer-domain gap, forgetting, model/optimization floor or instrument defect). A policy change is justified only after a bounded matched discriminator supports the diagnosis; the resulting scheduler is a challenger and must generalize on disjoint fresh structures before promotion. Failure therefore motivates a specific tested allocation change rather than another unconstrained curriculum idea.
 
 \subsection{Inference arm}
 
-The main inference experiment freezes the base model. Baselines include vanilla reasoning, semantic exemplar/memory retrieval, analogy prompting, a reusable reasoning-primitive library and, only where tasks expose a shared executable operator interface, a structural workflow prior in the style of SWIFT. The RAKL arm retrieves a structural object, validates a directional witness, retrieves or adapts a validated operator where one exists, and verifies the target result. Outcomes include capability, Q2 transfer, Q3 invalid-transfer rate, reasoning tokens, latency, search nodes, tool calls and verification cost. A faithful SWIFT comparison matches the base model, operator library, source workflows, workflow-search budget, interface, verifier and execution budget and charges prior-construction cost. For scientific pairs without an executable workflow interface, SWIFT is marked not applicable rather than weakened into a graph-similarity scalar.
+The main inference experiment freezes the base model. Baselines include vanilla reasoning, semantic exemplar/memory retrieval, analogy prompting, a reusable reasoning-primitive library and, only where tasks expose a shared executable operator interface, a structural workflow prior in the style of SWIFT. The Orion arm retrieves a structural object, validates a directional witness, retrieves or adapts a validated operator where one exists, and verifies the target result. Outcomes include capability, Q2 transfer, Q3 invalid-transfer rate, reasoning tokens, latency, search nodes, tool calls and verification cost. A faithful SWIFT comparison matches the base model, operator library, source workflows, workflow-search budget, interface, verifier and execution budget and charges prior-construction cost. For scientific pairs without an executable workflow interface, SWIFT is marked not applicable rather than weakened into a graph-similarity scalar.
 
-For the optional training-time extension, the strongest shared-substrate claim additionally requires exact registered structural identities to survive the train/inference boundary. The structure IDs, roles, relations, invariants and boundaries used to group or allocate training examples must be reusable by the inference-time transfer/witness layer. Recent work independently studies emergence and test-time use of learned structural information \cite{chen2026structure} and reusable latent experiences composed into adapters \cite{ling2026rex}; RAKL therefore claims no novelty for train/test structural reuse in the abstract. If the training scheduler requires an unrelated latent skill representation, the result must be reported as two mechanisms rather than one shared RAKL substrate.
+For the optional training-time extension, the strongest shared-substrate claim additionally requires exact registered structural identities to survive the train/inference boundary. The structure IDs, roles, relations, invariants and boundaries used to group or allocate training examples must be reusable by the inference-time transfer/witness layer. Recent work independently studies emergence and test-time use of learned structural information \cite{chen2026structure} and reusable latent experiences composed into adapters \cite{ling2026rex}; Orion therefore claims no novelty for train/test structural reuse in the abstract. If the training scheduler requires an unrelated latent skill representation, the result must be reported as two mechanisms rather than one shared Orion substrate.
 
 \subsection{Controlled structural redundancy}
 
 A synthetic or semi-synthetic generator produces datasets with increasing effective duplication of underlying structures while surface forms remain varied. The preregistered curve is
 \[
-G(\rho_S)=\operatorname{CTC}_{\mathrm{parent}}-\operatorname{CTC}_{\mathrm{RAKL}},
+G(\rho_S)=\operatorname{CTC}_{\mathrm{parent}}-\operatorname{CTC}_{\mathrm{Orion}},
 \]
 where $\rho_S$ is an uncertainty-aware structural-redundancy measure and CTC is cost to the frozen capability target. The analysis tests a predeclared monotone or rank relationship rather than choosing a curve after observing results.
 
@@ -55,7 +55,7 @@ For the learner-conditioned extension, static $\rho_S$ is insufficient. The same
 
 \subsection{Parent-method assimilation}
 
-Each strong baseline is first treated as a parent method. Its strongest relevant mechanism is reproduced as faithfully as feasible and mapped into the RAKL atlas. If the mechanism is useful, the final system may assimilate it; the scientific comparison then asks whether the residual RAKL structure adds value beyond the parent. For example, MASS and Skill-It become skill/dependency training-selection parents; MATES becomes an evolving model-aware influence parent; STAT becomes a missing-skill/saturation parent; ADO/Sst become online allocation parents; SWIFT becomes a workflow-structure parent; and Reasoning Primitive Induction/TraceCompiler become procedural-reuse parents. The project does not intentionally weaken them to preserve novelty.
+Each strong baseline is first treated as a parent method. Its strongest relevant mechanism is reproduced as faithfully as feasible and mapped into the Orion atlas. If the mechanism is useful, the final system may assimilate it; the scientific comparison then asks whether the residual Orion structure adds value beyond the parent. For example, MASS and Skill-It become skill/dependency training-selection parents; MATES becomes an evolving model-aware influence parent; STAT becomes a missing-skill/saturation parent; ADO/Sst become online allocation parents; SWIFT becomes a workflow-structure parent; and Reasoning Primitive Induction/TraceCompiler become procedural-reuse parents. The project does not intentionally weaken them to preserve novelty.
 
 The cheap signal gate separately requires a modern semantic comparator.  Its frozen control consumes the exact label-blind source and target descriptions with a hash-bound BGE cross-encoder while excluding proposed structural witnesses and all outcome fields. Missing or mismatched model files, content hashes, cases or pre-label chronology return \texttt{CANNOT\_CHECK}; surface Jaccard cannot be substituted. No descriptor or result exists at this protocol-freeze stage because the exact model asset has not been staged.
 
@@ -81,7 +81,7 @@ Large-scale training is not authorized unless the low-cost mechanism tests pass.
 \item structure labels are unstable across independent annotators or extraction methods;
 \item a parent method matches the cost/capability frontier;
 \item induction, mastery-probe, selection and verification cost eliminate any realistic break-even point;
-\item adaptive RAKL does not beat static RAKL on the preregistered fresh structural-OOD estimand;
+\item adaptive Orion does not beat static Orion on the preregistered fresh structural-OOD estimand;
 \item reduced repetition materially worsens retention, calibration, boundary robustness or composition generalization; or
 \item the training and inference systems require unrelated representations.
 \end{enumerate}
@@ -97,7 +97,7 @@ fails before invoking \texttt{sbatch} when any gate is absent or false.
 
 % RAKL_V3_MANUSCRIPT_UPDATE_20260811
 
-\subsection{RAKL v3 fresh-transfer evaluation}
+\subsection{Orion v3 fresh-transfer evaluation}
 The downstream v3 experiment separates memory persistence from transfer validity. Both arms use the same underlying model, tools and frozen development experiences. A semantic-control arm retrieves and reuses candidate past experience using the strongest feasible content model; the witness arm applies the directional structural/boundary gate before the same promoted lessons or operators can influence routing. Every fresh-transfer task starts independently from the same frozen post-development state so one transfer case cannot teach the next.
 
 Primary outcomes are target-task success/score, invalid-transfer or false-lesson reuse, repeated-failure rate, Q2 true accept, Q3 false accept and total resource use. Hostile near-misses are mandatory because an always-reuse policy can improve repeated-family tasks while increasing out-of-scope failures. A positive result requires material value beyond the strong content control under the same target verification rules; target scientific correctness cannot be inferred from the witness decision itself.

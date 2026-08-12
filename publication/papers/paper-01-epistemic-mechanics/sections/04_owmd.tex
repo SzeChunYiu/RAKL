@@ -63,7 +63,7 @@ A retrieved mechanism \(m\) is not simply appended as a citation. It is assimila
 \]
 The candidate record retains source identifiers, route identifiers, functional and structural fit, evidence quality, novelty threat, transfer cost and contradiction flags.
 
-This step protects the novelty claim. If a historical system already implements the function under materially equivalent assumptions, the correct action is to narrow the RAKL contribution. If the old system solves a strict superset of the function, the new mechanism may be subsumed. If it contributes a complementary property---for example, strong computational access but no evidence governance---the relationship should be stated as a decomposition rather than a priority claim. Unresolved candidates remain explicit research fibers.
+This step protects the novelty claim. If a historical system already implements the function under materially equivalent assumptions, the correct action is to narrow the Orion contribution. If the old system solves a strict superset of the function, the new mechanism may be subsumed. If it contributes a complementary property---for example, strong computational access but no evidence governance---the relationship should be stated as a decomposition rather than a priority claim. Unresolved candidates remain explicit research fibers.
 
 \subsection{Discovery workspace}
 
@@ -71,7 +71,7 @@ Retrieval can still be locally myopic if the candidate shortlist is ranked only 
 \[
 \{\mathrm{NEAR},\mathrm{REMOTE},\mathrm{CHALLENGE},\mathrm{HISTORICAL},\mathrm{FRESH}\}.
 \]
-The reference gate reserves slots for remote, challenging, historical and fresh candidates before filling by global priority. A missing reserved partition fails closed. The semantics are analogous to the research workspace of Section~6, but the object being diversified is a mechanism candidate rather than an active scientific claim.
+The reference gate reserves slots for remote, challenging, historical and fresh candidates before filling by global priority. A missing reserved partition fails closed. The semantics are analogous to the research workspace of Section~\ref{sec:workspace}, but the object being diversified is a mechanism candidate rather than an active scientific claim.
 
 \subsection{Bounded discovery closure}
 
@@ -108,7 +108,7 @@ The development history supplies a regression test. The benchmark withholds the 
 
 The benchmark currently validates the scoring, provenance and name-leakage contract. It does not establish prospective recall on arbitrary future hidden concepts. That stronger statement would require fresh pre-registered concepts whose identities are genuinely unavailable to the search process before execution.
 
-\section{Bounded epistemic saturation}
+\section{Bounded epistemic saturation}\label{sec:saturation}
 
 OWMD says when one required function has been searched broadly enough to receive a bounded closure certificate. The project-level stopping rule is larger. A paper or research program can still grow after its mechanism owners are known: a new derivation may appear, an assumption may need narrowing, a counterexample may invalidate a theorem, or a newly independent experiment may change an evidence coordinate. The system therefore needs a definition of \emph{epistemic saturation} rather than search completion alone.
 
@@ -122,7 +122,7 @@ A flat growth trace is meaningful only if the measurement semantics stay fixed. 
 \]
 where \(b\) is a basis identity, \(\Omega\) the research/manuscript scope, \(\iota\) an object-identity policy, \(\rho\) a discovery-route-family version, \(\nu\) a novelty/equivalence policy and \(\epsilon\) an evidence/authority policy. The implementation fingerprints these coordinates content-wise. A change of basis invalidates a longitudinal saturation comparison rather than being counted as new knowledge.
 
-This mirrors the metrology discipline used elsewhere in RAKL. Renaming or splitting a research fiber can change graph geometry without changing scientific content. Saturation therefore counts epistemic events, not raw representation edits.
+This mirrors the metrology discipline used elsewhere in Orion. Renaming or splitting a research fiber can change graph geometry without changing scientific content. Saturation therefore counts epistemic events, not raw representation edits.
 
 \subsection{Marginal epistemic growth vector}
 
@@ -146,7 +146,7 @@ with non-negative coordinates:
 \end{align*}
 A round is substantively flat when \(\Delta_r=\mathbf 0\). Representation-only changes---sentence polishing, file reorganization, equivalent notation or ontology renaming under the same identity policy---are tracked separately and do not reset epistemic flatness.
 
-The vector is deliberately non-compensatory. Ten new prose paragraphs cannot cancel one new counterexample; a large number of citations that duplicate existing evidence roots cannot compensate for an unresolved mechanism gap. This follows the same rationale as the earlier separation between description length, compression and target-relevant retained function. Minimum-description-length thinking warns against representational bookkeeping as progress \cite{rissanen1978}; the information bottleneck distinguishes compression from retained task-relevant information \cite{tishby2000}. RAKL uses these as analogies rather than claiming to optimize either formal objective.
+The vector is deliberately non-compensatory. Ten new prose paragraphs cannot cancel one new counterexample; a large number of citations that duplicate existing evidence roots cannot compensate for an unresolved mechanism gap. This follows the same rationale as the earlier separation between description length, compression and target-relevant retained function. Minimum-description-length thinking warns against representational bookkeeping as progress \cite{rissanen1978}; the information bottleneck distinguishes compression from retained task-relevant information \cite{tishby2000}. Orion uses these as analogies rather than claiming to optimize either formal objective.
 
 \subsection{Finite-basis fixed point}
 
@@ -218,4 +218,30 @@ This is why a paper can be saturated today and reopened by tomorrow's literature
 
 The long-form manuscript is generated under exactly this rule. Its state includes formal claims, proofs, counterexamples, evidence and literature links. A literature pass that discovers an equivalent mechanism changes \(\Delta V\); a mathematical audit that finds an omitted obstruction changes \(\Delta C\) or \(\Delta A\); an additional derivation changes \(\Delta D\); a new primary source can change \(\Delta E\) or \(\Delta V\). The manuscript must then grow or narrow accordingly.
 
-Only when heterogeneous discovery/review passes become substantively flat under a fixed basis may the paper be described as \emph{bounded-saturated}. In the closure-system interpretation of Section~4, the manuscript describes one closed epistemic state---a fixed point relative to the declared operator---inside a genuine lattice of closed states. That is the precise sense in which the paper can be a description of a saturated epistemic-mechanics lattice. It is not a statement that the unrestricted scientific world has stopped growing.
+Only when heterogeneous discovery/review passes become substantively flat under a fixed basis may the paper be described as \emph{bounded-saturated}. In the closure-system interpretation of Section~\ref{sec:compatibility}, the manuscript describes one closed epistemic state---a fixed point relative to the declared operator---inside a genuine lattice of closed states. That is the precise sense in which the paper can be a description of a saturated epistemic-mechanics lattice. It is not a statement that the unrestricted scientific world has stopped growing.
+
+\subsection{Instrumenting the mechanics: governance metrics}
+\label{sec:metrics}
+
+The separations developed above are not only definitional; each induces a quantity that an implementer can measure on a running evidence-governed agent. Table~\ref{tab:metrics} lists a set of \emph{governance metrics} that follow directly from the mechanics. They are process measurements rather than task-accuracy scores, and---consistent with the non-compensatory principle---they are meant to be read as a profile, not collapsed into a single number. For a language-model research or engineering agent, reporting them makes the proposal/authority discipline auditable and gives concrete signals of where an evidence boundary is being respected or crossed; none of them is by itself a claim of scientific or task superiority.
+
+\begin{table}[t]
+\footnotesize
+\begin{tabular}{@{}p{0.24\textwidth} p{0.42\textwidth} p{0.28\textwidth}@{}}
+\hline
+\textbf{Governance metric} & \textbf{Definition} & \textbf{What it indicates} \\
+\hline
+Unauthorized-write rate & canonical state changes lacking a valid verification certificate, over all canonical changes & whether proposal non-sovereignty holds; target $0$ \\
+Promotion selectivity & promoted claims over total proposals entering the workspace & stringency of the verification gate \\
+Negative-history retention & retained refuted/failed items over all refuted or failed generations & whether negative history is preserved rather than silently dropped; target $1$ \\
+Authority-profile coverage & per claim, the certified subset of the axes $(G,R,M,I,D)$, reported as a distribution & evidential completeness without collapsing distinct axes to a scalar \\
+Provenance--authority leakage & decisions in which high access or provenance substituted for a missing authority certificate, over audited decisions & whether \emph{access}/\emph{provenance} are being mistaken for \emph{authority} \\
+Alignment-before-contradiction & contradiction or equivalence judgements issued only after context/population/measurement alignment, over all such judgements & discipline of aligning context before asserting conflict or equivalence \\
+Global-section obstruction rate & pairwise-compatible claim sets found to admit no globally consistent assignment, over audited sets & gluing failures detected rather than concatenated into a false global claim \\
+Saturation-flatness & the marginal growth vector $\Delta=(\Delta M,\Delta E,\Delta C,\dots)$ per heterogeneous round; flat when every coordinate is zero under a fixed basis & a non-compensatory stopping signal, distinct from ``ran out of budget'' \\
+Route lexical-independence & discovery routes lexically independent of the seed vocabulary, over all completed routes & whether open-world search escapes the current vocabulary \\
+\hline
+\end{tabular}
+\caption{Governance metrics induced by the mechanics of this paper. Each is a measurable quantity on a running agent; they are reported as a profile, not a weighted average, and describe process discipline rather than task accuracy.}
+\label{tab:metrics}
+\end{table}

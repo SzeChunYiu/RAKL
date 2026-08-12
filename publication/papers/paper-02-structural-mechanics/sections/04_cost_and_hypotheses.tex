@@ -1,4 +1,4 @@
-\section{Structural amortization as a cost-to-capability hypothesis}
+\section{Structural amortization as a cost-to-capability hypothesis}\label{sec:cost}
 
 Reuse is not free. Let $C_I$ be the one-time cost of inducing, validating and storing a reusable structure. Let $c_B$ be the baseline per-task cost of solving without reuse and $c_R$ the per-task cost of retrieving, adapting and verifying the reusable structure. Then
 \[
@@ -10,7 +10,7 @@ When $c_R<c_B$, reuse becomes strictly cheaper once
 \[
 n>\frac{C_I}{c_B-c_R}.
 \]
-The executable reference in \path{src/rakl/amortization.py} reports this break-even count and returns no finite break-even when the reuse path is not cheaper per task. This elementary accounting is important because prior workflow-compilation work can reduce runtime calls without establishing net efficiency when offline compilation cost is omitted \cite{elyadouni2026tracecompiler}.
+The executable reference implementation reports this break-even count and returns no finite break-even when the reuse path is not cheaper per task. This elementary accounting is important because prior workflow-compilation work can reduce runtime calls without establishing net efficiency when offline compilation cost is omitted \cite{elyadouni2026tracecompiler}.
 
 The empirical paper uses a fuller vector
 \[
@@ -53,7 +53,7 @@ A structure identifier induced or registered during training/data curation can b
 
 The static training hypothesis above does not by itself imply that a structural family should receive the same training allocation throughout learning. Recent work already establishes substantial prior art for model-aware or online data selection, including evolving influence-based selection, online distribution optimization, model-state-dependent perplexity schedules and explicit missing-skill targeting \cite{yu2024mates,jiang2025ado,elhattami2025sst,he2026stat}. The present paper therefore claims no novelty for adaptive curricula, model-aware selection, saturation-aware reweighting, skill graphs or missing-skill profiles in general.
 
-A narrower RAKL extension remains open because the transfer substrate is not a flat skill label. For a registered structural object $S$, a future learner-conditioned training view may estimate a scoped mastery vector
+A narrower Orion extension remains open because the transfer substrate is not a flat skill label. For a registered structural object $S$, a future learner-conditioned training view may estimate a scoped mastery vector
 \[
 m_t(S)=\bigl(m_P,m_C,m_B,m_R,m_T,m_F\bigr),
 \]
@@ -70,13 +70,13 @@ and high in-domain principle accuracy does not establish boundary or cross-domai
 The training-time extension should therefore be interpreted as budget reallocation rather than destructive deduplication. Repeated exposure may still be useful for robustness, calibration, representation invariance and forgetting prevention; prior LLM curation work has shown that intelligently repeated data can outperform random single-use exposure \cite{tirumala2023d4}. A learner-conditioned scheduler must preserve a registered repetition/retention floor and preferentially move only the \emph{marginal} budget toward unsaturated compositions, boundaries, representations, domains or hostile near-misses.
 
 \begin{hypothesis}[Learner-conditioned structural allocation --- extension hypothesis]
-In a training distribution with surface-diverse structural redundancy, an adaptive scheduler conditioned on a frozen learner-specific mastery vector over registered relational structures reaches a preregistered structural-OOD capability target at lower total cost than \emph{static RAKL structural curation} and the strongest faithful model-aware/skill-aware parent, while satisfying registered composition, boundary, retention and negative-transfer constraints.
+In a training distribution with surface-diverse structural redundancy, an adaptive scheduler conditioned on a frozen learner-specific mastery vector over registered relational structures reaches a preregistered structural-OOD capability target at lower total cost than \emph{static Orion structural curation} and the strongest faithful model-aware/skill-aware parent, while satisfying registered composition, boundary, retention and negative-transfer constraints.
 \end{hypothesis}
 
 The critical comparison is therefore
 \[
-\boxed{\text{Adaptive RAKL}-\text{Static RAKL}},
+\boxed{\text{Adaptive Orion}-\text{Static Orion}},
 \]
-not merely RAKL versus random sampling. If this contrast is measured but indistinguishable, the learner-conditioned extension is not established even if static structural curation remains useful. If a simpler parent such as STAT- or MATES-style selection matches the result, the claim must narrow to any residual value contributed by the directional structural/boundary/shared-substrate machinery. No result for this extension is claimed in the present manuscript.
+not merely Orion versus random sampling. If this contrast is measured but indistinguishable, the learner-conditioned extension is not established even if static structural curation remains useful. If a simpler parent such as STAT- or MATES-style selection matches the result, the claim must narrow to any residual value contributed by the directional structural/boundary/shared-substrate machinery. No result for this extension is claimed in the present manuscript.
 
-Each hypothesis has a direct falsifier. Flat structural coefficients, high Q3 transfer, no break-even cost, a strong MASS/Skill-It/MATES/STAT/SWIFT-like parent matching RAKL, adaptive RAKL failing to beat static RAKL, harmful forgetting/composition trade-offs, or incompatible training/inference representations all narrow the paper.
+Each hypothesis has a direct falsifier. Flat structural coefficients, high Q3 transfer, no break-even cost, a strong MASS/Skill-It/MATES/STAT/SWIFT-like parent matching Orion, adaptive Orion failing to beat static Orion, harmful forgetting/composition trade-offs, or incompatible training/inference representations all narrow the paper.

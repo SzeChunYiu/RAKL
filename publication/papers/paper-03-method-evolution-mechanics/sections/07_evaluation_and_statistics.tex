@@ -36,6 +36,25 @@ R_F=
 \]
 A useful experience system should reduce $R_F$ on fresh tasks without increasing false transfer. Neither a high lesson yield nor a low lesson yield is intrinsically desirable. Excessive abstraction can be as harmful as failure to learn.
 
+Table~\ref{tab:method-metrics} lists the subset of these quantities an implementer can instrument on their own long-running agent \emph{today}, independent of the (unrun) causal-attribution study. They are process-health measurements, reported as a profile, not a single ``method score''.
+
+\begin{table}[t]
+\footnotesize
+\begin{tabular}{@{}p{0.27\textwidth} p{0.40\textwidth} p{0.27\textwidth}@{}}
+\hline
+\textbf{Metric} & \textbf{Definition} & \textbf{What it indicates} \\
+\hline
+Repeated-failure rate $R_F$ & failures whose structural signature was seen before, over all failures & whether the system actually learns from its own failures; target decreasing \\
+Lineage coverage & derived canonical objects with valid source ancestry, over all derived objects & whether growth is grounded rather than orphaned \\
+Unresolved-link / orphan rate & dangling references in the common substrate, over all links & silent decay of the knowledge base \\
+Supersession-preservation rate & superseded records retained in history, over all supersessions & whether negative/old history is preserved, not overwritten \\
+Invalid-promotion rate & promotions lacking a valid governed certificate, over all promotions & whether proposal/authority separation holds; target $0$ \\
+\hline
+\end{tabular}
+\caption{Method-health metrics an implementer can instrument on a long-running agent without the causal-attribution experiment. Reported as a profile; each measures process discipline, not task accuracy.}
+\label{tab:method-metrics}
+\end{table}
+
 \subsection{Process telemetry for the full method surface}
 
 \RAKL{} already declares canonical process surfaces in \texttt{method\_specs.py}. Paper 5 requires consequential invocations to be measurable. A proposal-only \texttt{ProcessTelemetry} record binds the method surface, input and output state identities, active task and fibre, outcome, registered cost, residual transformation, retrieved/selected/rejected object identities, verification artifacts and the retained novelty vector. The common aggregate for process $p$ reports
@@ -61,7 +80,14 @@ is reported only when blocker identity is stable. The more informative represent
 
 \subsection{Four-arm causal-attribution benchmark}
 
-The key empirical question is whether \RAKL{} contributes anything beyond the base model. We therefore extend the earlier reset-versus-learning design with a separate four-arm attribution benchmark. The same frozen task packet, model revision and registered resource ceiling are used in every arm:
+The key empirical question is whether \RAKL{} contributes anything beyond the base model. We therefore extend the earlier reset-versus-learning design with a separate four-arm attribution benchmark (Figure~\ref{fig:four-arm}). The same frozen task packet, model revision and registered resource ceiling are used in every arm:
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/four_arm_design.pdf}
+\caption{The preregistered four-arm causal-attribution design (\emph{planned; not yet executed}). The arms \texttt{MODEL\_ONLY}, \texttt{RAKL\_RESET} (static architecture, fresh state), \texttt{RAKL\_SHAM\_MEMORY} (budget-matched irrelevant memory) and \texttt{RAKL\_LEARNING} isolate four separate lift contrasts: architecture ($\text{RESET}-\text{MODEL\_ONLY}$), content ($\text{LEARNING}-\text{SHAM}$), experience ($\text{LEARNING}-\text{RESET}$) and total ($\text{LEARNING}-\text{MODEL\_ONLY}$). Result cells are empty by design: this is a registered design, not a result, and there is deliberately no single scalar ``Orion score.''}
+\label{fig:four-arm}
+\end{figure}
 
 \begin{description}[leftmargin=3.2cm,style=nextline]
 \item[\texttt{MODEL\_ONLY}] The same base LLM and permitted external tools operate without the \RAKL{} workflow or persistent \RAKL{} state.
@@ -88,7 +114,7 @@ and
 \Delta_{\mathrm{total}}(m)
 =m(\texttt{RAKL\_LEARNING})-m(\texttt{MODEL\_ONLY}).
 }
-There is deliberately no scalar ``RAKL score''.
+There is deliberately no scalar ``Orion score''.
 
 For binary task success, each matched pair is also assigned to \texttt{BOTH\_SUCCESS}, \texttt{RAKL\_ONLY\_SUCCESS}, \texttt{BASELINE\_ONLY\_SUCCESS} or \texttt{BOTH\_FAIL}. The asymmetric counts are scientifically important. A \texttt{RAKL\_ONLY\_SUCCESS} is direct scoped evidence of assistance; a \texttt{BASELINE\_ONLY\_SUCCESS} is direct evidence that the framework interfered and must be reported with equal prominence.
 
@@ -114,7 +140,7 @@ We use paired analyses whenever the same task can be evaluated under multiple ar
 
 Once a metric influences upgrades it becomes a target. We therefore prohibit one-number promotion. Benchmark and evaluator hashes, thresholds and hard authority invariants are protected from the challenger they judge. Raw storage growth never counts as improvement, hostile near-misses expose over-transfer, and a gain in success or efficiency cannot compensate for an authority, history, evaluator-integrity or fresh-transfer leakage failure. If an upgrade legitimately changes a metric or evaluator definition, that evaluator migration is treated as a separately governed parent change rather than being allowed to redefine the ruler inside the challenger.
 
-\subsection{What would demonstrate that RAKL is doing real work?}
+\subsection{What would demonstrate that Orion is doing real work?}
 
 We preregister a minimum evidentiary chain for the statement that the framework learned or assisted:
 \rakldisp{

@@ -2,7 +2,7 @@
 
 Language-model learning and inference both contain repeated work. During training, semantically different examples can instantiate the same dependency, conservation law, feedback motif, constraint pattern or reasoning routine. During inference, an agent can repeatedly reconstruct a procedure that was already solved in earlier trajectories. The tempting conclusion is that a system should externalize the repeated structure and reuse it. That conclusion is not novel. The research problem is to determine \emph{what counts as the same reusable structure, when transfer is valid, and when the cost of inducing and verifying the structure is actually lower than relearning or rediscovering it}.
 
-Several parent methods already occupy large parts of this space. Skill-It learns skill dependencies and uses them to adapt data sampling; in continual pretraining it reports a 3B-parameter model reaching higher evaluation-harness accuracy with 1B tokens than a uniform data-source baseline trained with 3B tokens \cite{chen2023skillit}. MASS constructs a mathematical skill graph for pretraining-data selection and reports comparable downstream mathematical performance after removing substantial fractions of the training tokens \cite{li2025mass}. These results make ``graph-guided data selection saves training data'' an inherited mechanism, not a RAKL contribution.
+Several parent methods already occupy large parts of this space. Skill-It learns skill dependencies and uses them to adapt data sampling; in continual pretraining it reports a 3B-parameter model reaching higher evaluation-harness accuracy with 1B tokens than a uniform data-source baseline trained with 3B tokens \cite{chen2023skillit}. MASS constructs a mathematical skill graph for pretraining-data selection and reports comparable downstream mathematical performance after removing substantial fractions of the training tokens \cite{li2025mass}. These results make ``graph-guided data selection saves training data'' an inherited mechanism, not a Orion contribution.
 
 The inference side is similarly mature. Reasoning Primitive Induction mines successful ReAct traces, clusters recurrent moves and compiles them into typed pseudo-tools that improve several held-out reasoning and planning tasks at lower average inference cost \cite{lei2026primitives}. TraceCompiler mines noisy tool-use traces into mostly deterministic workflows with evidence-bearing producer--consumer dependencies and can refuse compilation when an irreversible branch is underdetermined; importantly, it reports call reduction without claiming net efficiency because offline compilation cost was not measured \cite{elyadouni2026tracecompiler}. SWIFT directly frames agent-workflow design as amortized transfer from structural priors and reports large reductions in marginal per-task workflow-search cost across source and unseen tasks \cite{du2026swift}. Its operator-name randomization result further suggests that topological structure, not just semantic labels, carries much of the transfer signal.
 
@@ -21,4 +21,22 @@ The residual is a conjunction not established by the parents above. We ask wheth
 \item total cost accounting that includes the one-time induction and verification cost.
 \end{enumerate}
 
-This makes the paper mechanism-seeking rather than leaderboard-seeking. If a skill graph, workflow prior or semantic retriever already supplies the same predictive transfer signal at lower cost, the RAKL structural layer has not earned its complexity. Conversely, a positive result is strongest when the same structural identifier is learned or stored once and measurably improves both data selection and later inference on domains whose surface vocabulary would not have linked them directly.
+This makes the paper mechanism-seeking rather than leaderboard-seeking. If a skill graph, workflow prior or semantic retriever already supplies the same predictive transfer signal at lower cost, the Orion structural layer has not earned its complexity. Conversely, a positive result is strongest when the same structural identifier is learned or stored once and measurably improves both data selection and later inference on domains whose surface vocabulary would not have linked them directly.
+
+\subsection{Terminology at a glance}
+
+For readers from machine learning or systems engineering, the following plain-language glosses fix the vocabulary used throughout; formal definitions appear at first technical use.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Quantity of interest (QoI)] the specific target quantity a transfer is meant to preserve; correctness is judged relative to it, not to overall similarity.
+\item[Directional structural witness] the typed object that licenses moving structure from a source to a target: a role map, the invariants that must be preserved, the properties that are \emph{not} preserved, target boundary conditions, and evidence.
+\item[Obligation set] the witness expanded into an executable checklist of transfer obligations, each evaluated \texttt{SATISFIED} / \texttt{VIOLATED} / \texttt{UNKNOWN}.
+\item[Non-compensatory] a single violated load-bearing obligation forces rejection; strength elsewhere cannot buy it back --- there is no weighted average.
+\item[\texttt{LICENSED} / \texttt{REJECTED} / \texttt{CANNOT\_CHECK}] the three fail-closed verdicts: transfer allowed, transfer refused on a violation, or abstention when required evidence is missing (\texttt{UNKNOWN}~$\neq$~\texttt{VIOLATED}).
+\item[Fibre] the retrieval index/representation scoped to a fixed (QoI, context) into which an episode is moved.
+\item[Forbidden loss] a property whose loss under transfer invalidates the reuse even if the mapping otherwise fits.
+\item[Demoted evidence] an evidence path deliberately denied confirmatory/independent authority (e.g.\ an AI operator standing in for an absent independent annotator).
+\item[Structural-OOD] out-of-distribution by structure: a known structure in a new domain, or a whole structure family held out.
+\item[MDE] minimum detectable effect --- the smallest effect size a frozen test is powered to detect.
+\item[TPVS; break-even count] billable inference tokens per \emph{valid} solve (a solve that also passes the transfer/verification gates); and the smallest reuse count at which the structural layer is no more costly than the comparator.
+\end{description}

@@ -1,7 +1,7 @@
 \section{Obstruction--transformation memory and invention-last routing}
 \label{sec:semantic-shortcut}
 
-RAKL v3 now exposes a structural experience view whose reusable atom is not a whole paper, topic label or free-form lesson, but a scoped obstruction--transformation episode
+Orion v3 now exposes a structural experience view whose reusable atom is not a whole paper, topic label or free-form lesson, but a scoped obstruction--transformation episode
 \begin{equation}
 O\xrightarrow{T}O'.
 \end{equation}
@@ -21,7 +21,14 @@ The strict router is invention-last:
 \begin{equation}
 \texttt{SEARCH}\rightarrow\texttt{JUMP}\rightarrow\texttt{GLUE}\rightarrow\texttt{LIFT},
 \end{equation}
-with \texttt{CANNOT\_CHECK} whenever memory identity, target mapping, composition, coverage or residual evidence is insufficient.
+with \texttt{CANNOT\_CHECK} whenever memory identity, target mapping, composition, coverage or residual evidence is insufficient. Figure~\ref{fig:sjglrouter} shows the router.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/sjgl_router.pdf}
+\caption{The invention-last router. An active obstruction is routed through \texttt{SEARCH} (same-domain reuse), \texttt{JUMP} (cross-domain structural mapping) and \texttt{GLUE} (composition of partial effects); each stage exits to \texttt{CANNOT\_CHECK} when its evidence is insufficient. \texttt{LIFT} --- new representation/operator invention --- is reachable only after \texttt{SEARCH}/\texttt{JUMP}/\texttt{GLUE} are explicitly exhausted \emph{and} a repeated residual feature recurs across at least two distinct failed attempts; it emits a proposal-only \emph{MissingTransformationSpecification} and mints no scientific, theorem or novelty authority. Truth, novelty and research value remain separate downstream coordinates.}
+\label{fig:sjglrouter}
+\end{figure}
 
 \paragraph{SEARCH.}
 A directly applicable same-domain episode is preferred. Every enabling source precondition must be mapped or repaired; forbidden target losses block reuse; and the recorded transformation must cover the complete desired transition before it can count as a complete route.

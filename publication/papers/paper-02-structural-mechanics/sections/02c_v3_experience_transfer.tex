@@ -1,8 +1,8 @@
 % RAKL_V3_MANUSCRIPT_UPDATE_20260812
-\section{Directional witnesses as RAKL v3 experience-transfer relations}
+\section{Directional witnesses as Orion v3 experience-transfer relations}
 \label{sec:v3-transfer}
 
-RAKL v3 makes experience persistence an implemented architectural fact but leaves transfer validity as an evidence question. A source \texttt{TaskEpisode} says what happened in one registered context. A versioned \texttt{Lesson} is a scoped abstraction over one or more episodes. Neither object is automatically applicable to a new target. The role of the directional structural witness is to supply an explicit candidate relation
+Orion v3 makes experience persistence an implemented architectural fact but leaves transfer validity as an evidence question. A source \texttt{TaskEpisode} says what happened in one registered context. A versioned \texttt{Lesson} is a scoped abstraction over one or more episodes. Neither object is automatically applicable to a new target. The role of the directional structural witness is to supply an explicit candidate relation
 \[
 W_{s\rightarrow t}^{(q)}:
 (E_s,L_s,\gamma_s)
@@ -48,7 +48,14 @@ This yields a three-stage distinction:
 \;\neq\;
 \text{verified target success}.
 \]
-This paper studies the middle relation.
+This paper studies the middle relation (Figure~\ref{fig:transfer-ladder}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/transfer_ladder.pdf}
+\caption{Three stages of increasing evidential commitment. A retriever nominating a source episode is not the same as a directional witness discharging the load-bearing transport obligations under the target boundary, which is in turn not the same as the target problem's own verification path independently confirming success. This paper's contribution is the middle relation---witnessed applicability---which licenses eligible reuse without minting scientific authority; retrieval and end-to-end success are owned by other stages.}
+\label{fig:transfer-ladder}
+\end{figure}
 
 \subsection{Negative transfer is learned through an evidence ladder}
 A failed transfer attempt first creates a non-success task episode. It does not immediately establish that the witness class, operator or source lesson is invalid. The system records the failure as observed-only, then permits competing diagnoses such as context mismatch, broken invariant, implementation defect, missing evidence or an unrelated downstream failure. Only discriminating evidence can promote a supported diagnosis, and only fresh replay/transfer can turn that diagnosis into a reusable boundary lesson.
@@ -57,7 +64,7 @@ The resulting discipline prevents one near-miss from becoming a global blacklist
 
 Repeated transfer residuals also interact with the router's invention gate. They may contribute to a \texttt{LIFT} decision only after bounded direct, cross-domain and compositional search has been accounted for and the same residual feature appears across at least two distinct failures. Even then, the result is a missing-transformation specification rather than a new witnessed skill. The invented representation or operator must later earn target evidence separately.
 
-\subsection{Connection to RAKL-triviality}
+\subsection{Connection to Orion-triviality}
 V3 classifies a verified solution as \texttt{TRANSFER\_NOVEL} when no new primitive was invented but pre-existing problem-solving structure was transported into a new context by an explicit mapping witness. The directional witness studied here is a candidate evidence object for that classification. A solution should receive \texttt{TRANSFER\_NOVEL} only when the transfer relation is explicit, the target solution is independently verified, and resource ancestry shows that no new representation/operator/ontology was required.
 
 This gives Paper II a narrower post-v3 claim. The framework already possesses a persistent experience substrate; this paper does not claim novelty for persistence itself. It asks whether one scientifically scoped, boundary-aware relation can make cross-domain reuse safer and more measurable than semantic resemblance alone. The natural-domain, strong-control and independent-annotation gates remain necessary before that question can receive an independent empirical answer. The new semantic-shortcut implementation therefore strengthens the role and testability of the witness without converting the existing demoted pilot evidence into confirmatory natural-domain validation.
