@@ -82,6 +82,20 @@ def test_query_compiler_keeps_every_expansion_bound_to_same_root_goal():
     assert all(item.grants_scientific_authority is False for item in intents)
 
 
+def test_all_query_term_fields_reject_blank_entries():
+    for field in (
+        "residual_terms",
+        "structural_coordinates",
+        "unresolved_obligations",
+        "source_native_terms",
+        "semantic_expansions",
+    ):
+        with pytest.raises(ValueError, match="blank search terms"):
+            _question(**{field: ("valid", "   ")})
+    with pytest.raises(ValueError, match="candidate_mechanism cannot be blank"):
+        _question(candidate_mechanism="   ")
+
+
 def test_pareto_dominance_is_routing_only_not_truth():
     strong = _candidate("strong", rank=_rank(query_relevance=0.9, retrieval_cost=0.5))
     weak = _candidate("weak", rank=_rank(query_relevance=0.5, retrieval_cost=2.0))
@@ -89,6 +103,19 @@ def test_pareto_dominance_is_routing_only_not_truth():
     assert pareto_front((strong, weak)) == (strong,)
     assert strong.grants_scientific_authority is False
     assert strong.grants_evidence_independence is False
+
+
+def test_graph_centrality_is_not_a_pareto_benefit_coordinate():
+    scientifically_better = _candidate(
+        "better",
+        rank=_rank(query_relevance=0.9, graph_centrality=0.01),
+    )
+    popular_but_weaker = _candidate(
+        "popular",
+        rank=_rank(query_relevance=0.5, graph_centrality=1.0),
+    )
+    assert dominates(scientifically_better, popular_but_weaker) is True
+    assert pareto_front((scientifically_better, popular_but_weaker)) == (scientifically_better,)
 
 
 def test_high_citation_centrality_cannot_beat_root_relevance_in_routing_tiebreak():
@@ -146,7 +173,10 @@ def test_anti_epistemic_spam_flags_echoes_retractions_leaks_and_keyword_stuffing
         keyword_overlap_ratio=0.99,
         substantive_match_score=0.05,
     )
-    by_id = {item.candidate_id: set(item.flags) for item in detect_epistemic_spam((echo_a, echo_b, bad))}
+    by_id = {
+        item.candidate_id: set(item.flags)
+        for item in detect_epistemic_spam((echo_a, echo_b, bad))
+    }
     assert EpistemicSpamFlag.SAME_ROOT_ECHO in by_id["a"]
     assert EpistemicSpamFlag.SAME_ROOT_ECHO in by_id["b"]
     assert EpistemicSpamFlag.SYNTHETIC_CONSENSUS in by_id["b"]
@@ -157,7 +187,11 @@ def test_anti_epistemic_spam_flags_echoes_retractions_leaks_and_keyword_stuffing
 
 
 def test_benchmark_target_leak_is_excluded_from_interaction_space():
-    leaked = _candidate("leaked", benchmark_target_leak=True, rank=_rank(root_obligation_relevance=1.0))
+    leaked = _candidate(
+        "leaked",
+        benchmark_target_leak=True,
+        rank=_rank(root_obligation_relevance=1.0),
+    )
     clean = _candidate("clean")
     question = _question()
     space = build_interaction_space(
@@ -238,4 +272,6 @@ def test_duplicate_canonical_content_does_not_fill_interaction_space_twice():
     b = _candidate("b", canonical_content_id="same-content", mechanism_family="m2")
     c = _candidate("c", mechanism_family="m3")
     selected = diversify_candidates((a, b, c), limit=3, preserve_counterevidence=False)
-    assert len([item for item in selected if item.canonical_content_id == "same-content"]) == 1
+    assert len(
+        [item for item in selected if item.canonical_content_id == "same-content"]
+    ) == 1
