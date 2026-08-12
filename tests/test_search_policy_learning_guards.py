@@ -87,7 +87,7 @@ def _certified_receipt(signature, incumbent):
     )
     diagnostic = SearchRootCauseDiagnostic(
         diagnostic_id="diag",
-        certificate_id="cert",
+        certificate_id=f"cert-{signature.value}",
         failure_id="failure",
         question_id="q1",
         hypothesized_signature=signature,

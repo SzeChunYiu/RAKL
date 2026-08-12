@@ -116,7 +116,7 @@ def _certify(
     )
     diagnostic = SearchRootCauseDiagnostic(
         diagnostic_id="diag-1",
-        certificate_id="root-cert-1",
+        certificate_id=f"root-cert-{signature.value}",
         failure_id="failure-1",
         question_id="q1",
         hypothesized_signature=signature,
@@ -270,7 +270,7 @@ def test_failure_to_policy_update_is_deterministic_bounded_and_certificate_bound
     assert [(d.parameter, d.old_value, d.new_value) for d in a.proposal.deltas] == [
         ("max_per_evidence_root", 3, 2)
     ]
-    assert a.proposal.root_cause_certificate_id == "root-cert-1"
+    assert a.proposal.root_cause_certificate_id == "root-cert-SAME_ROOT_OVERCONCENTRATION"
     assert a.proposal.claims_policy_is_better is False
     assert a.proposal.eligible_for_canonical_promotion is False
 
