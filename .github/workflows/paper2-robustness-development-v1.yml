@@ -3,7 +3,7 @@ name: paper2-robustness-development-v1
 on:
   push:
     branches:
-      - paper2-robustness-development-run-v1
+      - main
     paths:
       - '.github/workflows/paper2-robustness-development-v1.yml'
       - 'research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RUN_V1.json'
@@ -87,7 +87,6 @@ jobs:
           lexical=r['arms']['lexical']['exact3']
           if not (twin > lexical and twin < 1.0):
               reasons.append('COORDINATE_ABLATED_TWIN_GATE_FAIL')
-          # Instrument integrity tests above own hidden-metadata and generator shortcut invariants.
           gate={
               'schema':'paper2-robustness-development-gate-v1',
               'subject_sha':Path('SUBJECT_SHA.txt').read_text().strip(),
