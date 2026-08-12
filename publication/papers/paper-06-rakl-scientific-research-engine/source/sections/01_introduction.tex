@@ -43,6 +43,20 @@ We do not claim novelty for multi-agent science, knowledge graphs, provenance, s
 \label{fig:architecture}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/four_loop_master.pdf}
+\caption{The engine as four coupled loops behind one authority firewall. Information$\to$knowledge, problem$\to$solution, experience$\to$method and RAKL$\to$better-RAKL each run as proposal dynamics on the left (access, not authority); only an evidence- and governance-bearing certificate (a verification, fresh-assurance or protected Self-RAKL gate) crosses the firewall to update canonical state on the right. Each loop's residual reopens a fibre; each loop's product couples into the next; the fourth loop's governed recursion may reopen loops~1--3. Persistence, retrieval, workspace occupancy, reflection and self-modification confer access but never scientific authority.}
+\label{fig:fourloop}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.94\textwidth]{figures/papers_integration_map.pdf}
+\caption{How this capstone integrates the series. Paper~I supplies the multi-axis authority poset $\alpha=(G,R,M,I,D)$ and the bounded workspace; Paper~II the directional transfer witness (\texttt{JUMP}) and typed transitions; Paper~III the Self-RAKL experience$\to$method loop and four-arm attribution; Paper~V the verified-discovery mathematical path (\texttt{SEARCH}$\cdot$\texttt{JUMP}$\cdot$\texttt{GLUE}$\cdot$\texttt{LIFT}). Paper~IV's training-time projection $\pi_{\mathrm{train}}$ is an \emph{optional}, decision-gated surface. The three projections share canonical identity and negative history but not authority semantics: training utility $\neq$ search rank $\neq$ scientific authority.}
+\label{fig:integration}
+\end{figure}
+
 \subsection{The control problem behind scientific agency}
 
 The central engineering problem is not whether a language model can emit a plausible next step. It is whether a research system can maintain a distinction between \emph{proposal dynamics} and \emph{scientific state dynamics}. A proposal can be useful before it is true, a contradiction can be informative before either side is rejected, and a model can be decision-useful while remaining mechanistically unidentified. These cases require state types that do not collapse into one scalar score. Recent benchmark evidence strengthens this motivation. Science Edge Evaluation (SEE) reports that even strong multimodal models remain far from reliable evidence-bounded inference on expert-curated laboratory questions, and that giving a visual agent tools improves access to information without making the scientific reasoning problem disappear \cite{han2026see}. SCHEMA similarly reports a gap between terminal answer accuracy and the integrity of intermediate scientific trajectories: a correct-looking endpoint can be reached through structurally defective reasoning \cite{feng2026schema}. These findings do not prove that \RAKL{} solves the problem. They make the target failure mode concrete.
@@ -54,6 +68,15 @@ This paper therefore uses ``epistemic mechanics'' in a deliberately operational 
 \subsection{What the paper is, and what it is not}
 
 A paper is not the Knowledge Atlas. It is a \emph{publication projection} of that atlas for a declared audience, claim boundary and evidence cutoff. This distinction matters for the present manuscript because a framework paper can become misleading in two opposite ways. It can be too compressed, leaving equations and named components without enough intellectual lineage to tell the reader why they are necessary. Or it can become encyclopedic, accumulating related work without increasing the reader's ability to distinguish the framework's objects, obligations and falsifiers. We therefore apply the same semantic-saturation principle to the manuscript that the method applies to literature search. Additional text is retained only when it contributes a new claim distinction, citation lineage, proof obligation, explanatory bridge, falsifier, implementation correspondence or reviewer-relevant boundary.
+
+Figure~\ref{fig:evidencematurity} states the evidence maturity of the engine at a glance, so that the empirical headline is read as \emph{pending} rather than claimed. The architecture and integration invariants are executed; efficacy, safety and cost claims are same-context-only or blocked behind a documented model-capability floor and separately registered experiments.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/evidence_maturity.pdf}
+\caption{Evidence maturity of the engine. \textbf{Executed:} the mechanics and their known-answer/hostile-world contracts, the immutable authority projection and the typed router (all proposal-only). \textbf{Same-context only:} interface self-repair (development-time), which is useful signal but not independent review or a superiority result. \textbf{Pending/blocked:} matched-workflow superiority, fresh-assurance self-evolution, a real quant-finance result, a fair external-LLM comparator and independent external review. The master blocker is a model-capability floor; no empirical-superiority claim is made in this paper.}
+\label{fig:evidencematurity}
+\end{figure}
 
 The resulting saturation claim is intentionally local. It is indexed by the source universe and freshness cutoff, the registered review lenses, the required route families, the current implementation subject, and the unresolved empirical coordinates. A later paper, method or counterexample that changes a novelty boundary or exposes a missing operator reopens the manuscript. ``Locally saturated'' therefore never means ``all relevant knowledge in the open world has been found.'' It means that under the registered search and review protocol, another pass produces no material semantic gain while all remaining open coordinates are explicit.
 
