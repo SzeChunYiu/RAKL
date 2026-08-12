@@ -43,6 +43,26 @@ The paper makes seven contributions.
 
 The scope is deliberately narrower than the ambition of autonomous science. We do not claim that these structures make a model conscious, that a finite process can exhaust the scientific literature, or that the current implementation improves real scientific outcomes. The paper provides formal and executable governance mechanics. Empirical superiority requires matched experiments; external credibility requires independent review; and unrestricted completeness is excluded by construction.
 
+\subsection{Terminology at a glance}
+\label{sec:glossary}
+
+For readers approaching this from machine learning or systems engineering, the following plain-language glosses fix the vocabulary used throughout the paper. Formal definitions appear at first technical use; this list is an on-ramp, not a substitute for them.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Access, coherence, authority] the three levels the paper keeps separate: whether a claim is \emph{active/reusable} by computation (access), whether it can \emph{coexist} with others after their contexts are aligned (coherence), and what the registered evidence \emph{licenses the system to assert} (authority). These are the terms used hereafter; ``available/credible/true'' are informal glosses only.
+\item[Proposal vs.\ canonical update] a model output is a \emph{proposal} with no write permission; the \emph{canonical} record changes only through a registered, verified transition.
+\item[Authority vector $(G,R,M,I,D)$] the five certified coordinates of a claim's authority: grounding/provenance, representation/relation, mechanism, identification/bounding, decision-usability. It is a vector, not a single score.
+\item[Workspace] a capacity-bounded, transient view that changes what downstream operators \emph{see} without granting any canonical write permission (access, not authority).
+\item[Epistemic projection] the slice of the full system state that is allowed to carry scientific authority, as opposed to memory or workspace views.
+\item[Compatibility complex vs.\ lattice] the claim graph is deliberately \emph{not} called a lattice unless a closure operator supplies the meet/join guarantees; the weaker default object is a typed compatibility complex.
+\item[Gluing / global section] a \emph{global section} is a single assignment consistent with all local claims at once; \emph{gluing} is assembling local pieces into one. Pairwise-compatible pieces need not glue.
+\item[Fiber] an open research thread or sub-question kept explicit until resolved.
+\item[Chart / atlas] a claim scoped to a domain, representation and regime (chart); the collection of them (atlas). Used here as an obligation structure, not a full sheaf implementation.
+\item[Bounded epistemic saturation] a principled stop condition: halt when repeated, deliberately varied search and review passes stop adding anything substantive under a fixed basis and freshness horizon --- not a claim of completeness.
+\item[Non-compensatory growth vector] progress is a vector of distinct event types; gains on one coordinate cannot offset gaps on another, so there is no single ``knowledge score.''
+\item[OWMD; SEARCH/JUMP/GLUE/LIFT] open-world mechanism discovery searches for a needed capability by its functional signature across diverse routes: reuse same-domain (SEARCH), transport cross-domain (JUMP), compose partial results (GLUE), or specify a missing operator (LIFT).
+\end{description}
+
 \section{Foundations and the gap between them}\label{sec:foundations}
 
 Epistemic mechanics sits near several mature fields, but the combination needed for evidence-governed research agents is not supplied by any one of them. This section treats the neighboring literatures as constraints on novelty. Where an older field already owns a function, the contribution here is the integration and the additional boundary, not a renamed invention.
