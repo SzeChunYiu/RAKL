@@ -1,0 +1,21 @@
+{
+  "protocol_id": "GLM52-MECHANISM-SUITE-V1.1",
+  "status": "PASS",
+  "observed_at": "2026-08-12T10:14:50Z",
+  "branch": "feat/glm52-mac-hosted-smoke",
+  "commit": "00fa20ee2f2028da80fc72901db17e651440b508",
+  "outcome_access": "NO_NEW_GLM_OUTCOME",
+  "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+  "confirmatory_unlocked": false,
+  "model_api_calls": 0,
+  "network_calls": 0,
+  "scientific_authority": "NONE",
+  "checks": [
+    "python -m pytest tests/test_glm52_v1_1_provider.py tests/test_glm52_v1_1_provider_config.py tests/test_glm52_v1_1_wave2_harness.py tests/test_glm52_v1_1_framework_adapter.py tests/test_glm52_v1_1_no_gold_leakage.py tests/test_glm52_v1_1_v1_unchanged.py tests/test_hosted_anthropic_client.py (29 passed)",
+    "python research/glm52_mechanism_suite_v1_1/offline_selftest.py",
+    "harness.selective_retrieval_harness.offline_selftest",
+    "harness.experience_transfer_harness.offline_selftest",
+    "harness.trajectory_governance_harness.offline_selftest"
+  ],
+  "claim_boundary": "Offline adapter and Wave-2 stub validation only. Does not authorize confirmatory mechanism-suite empirics or flip CAPABLE_MODEL_AVAILABLE."
+}
