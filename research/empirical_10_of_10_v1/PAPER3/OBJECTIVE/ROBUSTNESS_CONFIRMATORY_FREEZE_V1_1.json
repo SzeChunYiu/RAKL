@@ -1,0 +1,55 @@
+{
+  "schema": "paper2.robustness.confirmatory.freeze.v1.1",
+  "status": "FROZEN_BEFORE_CONFIRMATORY_OUTCOME",
+  "supersedes_execution_only": "ROBUSTNESS_CONFIRMATORY_FREEZE_V1.json",
+  "failure_audit": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_EXECUTION_FAILURE_V1.json",
+  "retired_seed": 2026081212,
+  "confirmatory_seed": 2026081213,
+  "n_per_cell": 15,
+  "expected_total_n": 810,
+  "families": [
+    "algorithm_invariants",
+    "causal_transport",
+    "linear_systems",
+    "local_global_gluing",
+    "optimization",
+    "pgm_dseparation"
+  ],
+  "frozen_arms": ["lexical", "relational", "mechanism", "twin", "full"],
+  "frozen_lexical_threshold": 0.40064102564102566,
+  "primary_contrast": "FULL_APPLICABILITY_CONTRACT - MECHANISM_DERIVED_EFFECT_ONLY",
+  "primary_loss": "binary Brier over decidable ACCEPT/REJECT cases",
+  "registered_mde": 0.05,
+  "alpha_two_sided": 0.05,
+  "preregistration_path": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_REGISTRATION_V1.md",
+  "preregistration_blob_sha": "04fadc112a541f37060bef9f7f5116d5c83eda9c",
+  "generator_path": "src/rakl/objective_transfer_robustness.py",
+  "generator_blob_sha": "33676013443e7e18942bf7050733e904f757e103",
+  "confirmatory_analysis_path": "scripts/paper2_robustness_confirmatory.py",
+  "confirmatory_analysis_blob_sha": "b23c3a59478ce03cdbc01540bb830394dae034a5",
+  "repair_scope": {
+    "root_cause": "script-entrypoint import path: ModuleNotFoundError: scripts",
+    "scientific_outcome_accessed_in_failed_v1": false,
+    "semantic_change_authorized": false,
+    "shared_helper_semantics": "must match frozen development helpers on fresh tasks",
+    "entrypoint_smoke_required_before_new_seed": true
+  },
+  "family_generalization_gate": {
+    "full_minus_mechanism_brier_gain_positive_in_all_six_families": true,
+    "exact_two_sided_sign_test_p_required": 0.03125,
+    "full_valid_accept_not_more_than_0_02_below_mechanism_in_any_family": true,
+    "full_invalid_false_accept_no_worse_than_mechanism_in_every_family": true,
+    "full_invalid_false_accept_lower_than_mechanism_in_aggregate": true,
+    "overall_paired_brier_gain_at_least_mde": true,
+    "overall_95pct_interval_lower_bound_above_zero": true
+  },
+  "uncertainty": {
+    "method": "paired item-level percentile bootstrap over decidable items",
+    "resamples": 20000,
+    "bootstrap_seed": 2026081212001,
+    "interval": [0.025, 0.975]
+  },
+  "confirmatory_outcomes_accessed": false,
+  "downstream_seed_2026081221_remains_forbidden_until_confirmatory_receipt": true,
+  "claim_boundary": "A passing result supports broad known-world exact-verifier family robustness only; no learned-witness, natural-domain, frontier-model, independent-human, downstream-utility or universal-science claim."
+}
