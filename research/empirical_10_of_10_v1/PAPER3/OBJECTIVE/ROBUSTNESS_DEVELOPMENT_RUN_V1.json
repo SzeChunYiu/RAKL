@@ -1,0 +1,35 @@
+{
+  "schema": "paper2.robustness.development.run.v1",
+  "status": "FROZEN_BEFORE_REGISTERED_DEVELOPMENT_OUTCOME",
+  "registered_seed": 2026081211,
+  "n_per_cell": 24,
+  "expected_total_n": 1296,
+  "registered_mde_paired_binary_brier": 0.05,
+  "alpha_two_sided": 0.05,
+  "target_power": 0.80,
+  "preregistration_path": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_REGISTRATION_V1.md",
+  "preregistration_blob_sha": "04fadc112a541f37060bef9f7f5116d5c83eda9c",
+  "generator_path": "src/rakl/objective_transfer_robustness.py",
+  "generator_blob_sha": "33676013443e7e18942bf7050733e904f757e103",
+  "analysis_path": "scripts/paper2_robustness_development.py",
+  "analysis_blob_sha": "3d3d01a8d607e35ca49877aae51d0f99ace5a693",
+  "allowed_development_tuning": [
+    "representation bugs",
+    "semantic-text generator balance",
+    "lexical threshold",
+    "confirmatory sample size from registered MDE",
+    "deterministic verifier/extractor correctness"
+  ],
+  "development_gates": {
+    "lexical_decidable_accuracy_min": 0.35,
+    "lexical_decidable_accuracy_max": 0.75,
+    "within_family_semantic_permutation_p_min": 0.05,
+    "coordinate_ablated_twin_must_be_imperfect": true,
+    "hidden_metadata_must_not_change_gold": true,
+    "shortcut_controls_must_fail": true,
+    "no_trivial_family_template": true
+  },
+  "confirmatory_not_authorized_until_development_receipt": true,
+  "confirmatory_seed": null,
+  "claim_boundary": "Development only. No broad robustness claim may be made from this epoch."
+}
