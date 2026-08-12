@@ -1,0 +1,34 @@
+{
+  "schema": "paper3-objective-confirmatory-packet-manifest-v1",
+  "status": "BYTE_REPRODUCIBLE_FROM_FROZEN_CODE_AND_SEED",
+  "seed": 2026081202,
+  "n": 576,
+  "n_per_base_cell": 16,
+  "generator": "src/rakl/objective_transfer_benchmark.py",
+  "runner": "scripts/paper2_objective_track_a_confirmatory.py",
+  "canonical_serialization": "UTF-8 JSONL; json.dumps(sort_keys=True,separators=(',',':')); LF newline after every record",
+  "files": {
+    "OBJECTIVE_TASKS_CONFIRMATORY_V1.jsonl": {
+      "bytes": 273294,
+      "sha256": "3516e48f9dd7923a950e09ece42cfee8c39548c699fe2f7d7d0ca6dee53e45f2"
+    },
+    "HIDDEN_GOLD_CONFIRMATORY_V1.jsonl": {
+      "bytes": 103704,
+      "sha256": "1c9ac8c412206972c5ddeeb92670819fca5adc2df79e1b52b6530aa9f0665308"
+    },
+    "MACHINE_WITNESS_OUTPUTS_CONFIRMATORY_V1.jsonl": {
+      "bytes": 192224,
+      "sha256": "92f9c0ecfa424066a1851f743a3429d4ed7478b02beb38a66b619ed0ae088053"
+    },
+    "SEMANTIC_CONTROL_SCORES_CONFIRMATORY_V1.jsonl": {
+      "bytes": 54784,
+      "sha256": "4031be31f256afe7e3e51440c5b5c25b70369034d57e8fce59dbe667a1d886e2"
+    }
+  },
+  "local_reproduction_check": {
+    "all_hashes_match": true,
+    "checked_after_confirmatory_run": true
+  },
+  "storage_note": "The synthetic packets are generated data rather than independent observations. The canonical repository artifact is the frozen generator+seed+serialization contract plus expected byte hashes; running the committed runner reconstructs all four full packets exactly and aborts on any hash mismatch.",
+  "claim_boundary": "Packet reproducibility does not add external validity or scientific authority."
+}
