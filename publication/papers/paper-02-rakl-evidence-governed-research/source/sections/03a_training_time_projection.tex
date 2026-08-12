@@ -1,0 +1,83 @@
+\section{Optional training-time projection and bounded gradient materialization}
+\label{sec:training-time-projection}
+
+The canonical v3 researcher does not require weight updates.  Its deployed continual-learning loop may keep the underlying model fixed while external state changes through episodes, lessons, failures, routing and governed method evolution.  The training-time extension studied in Paper~III is therefore an \emph{additional} architecture surface, not a reinterpretation of the existing \operatorname{Learn} map.
+
+Let $R_t$ denote the complete external RAKL state and $\theta_t$ an exact model checkpoint.  In addition to the authority-preserving epistemic projection
+\[
+K_t=\pi_{\mathrm{epi}}(R_t),
+\]
+and the derived search/routing view, define an optional learner-conditioned projection
+\[
+L_t=\pi_{\mathrm{train}}(R_t,\theta_t).
+\]
+The intended decomposition is
+\[
+\boxed{
+\begin{aligned}
+\pi_{\mathrm{epi}} &: \text{what is scientifically licensed?}\\
+\pi_{\mathrm{search}} &: \text{what should be inspected or attempted next?}\\
+\pi_{\mathrm{train}} &: \text{what may be useful to receive gradient budget next?}
+\end{aligned}}
+\]
+The three views may share canonical identities, structural objects, lineage and negative history, but they do not share authority semantics.  In particular,
+\[
+\text{training utility}\neq\text{search rank}\neq\text{scientific authority}.
+\]
+
+\subsection{Derived training views do not replace the raw corpus}
+
+The representation lifecycle used elsewhere in v3 carries over to training.  A safe training-time pipeline is
+\[
+D_{\mathrm{raw}}
+\longrightarrow
+\pi_{\mathrm{train}}
+\longrightarrow
+\text{derived structural training view}
+\longrightarrow
+\text{batch materialization}
+\longrightarrow
+\text{optimizer update}.
+\]
+Raw examples and their provenance remain canonical.  A structural label, mastery estimate or selection score is a derived view with a reconstruction pointer; it cannot rewrite the underlying example or be counted as an independent evidence root merely because it appears in several derived batches.  This mirrors the archive/index/working-set distinction in bounded cognition.
+
+The executable proposal-only contract in \path{src/rakl/training_projection.py} binds every derived training candidate to a raw-item identity, a registered \texttt{StructuralObject}, an exact model checkpoint and a frozen probe family.  It rejects unknown structure identities, checkpoint drift, post-hoc mastery definitions and confirmatory-target leakage.  Its objects explicitly expose no scientific-authority grant and make no claim that adaptive training is effective.
+
+\subsection{Learner state is vector-valued and checkpoint-bound}
+
+For a registered structural object $S$, a possible training view records
+\[
+m_t(S)=\bigl(m_P,m_C,m_B,m_R,m_T,m_F\bigr),
+\]
+for principle acquisition, composition mastery, boundary robustness, representation invariance, cross-domain transfer and retention.  The coordinates are operational probe measurements, not latent truth values.  Missing measurement remains missing rather than being coerced to zero.  The checkpoint binding is load-bearing: after $\theta_t\rightarrow\theta_{t+1}$, an old mastery vector is stale until the registered probes are re-evaluated or an explicitly validated transport rule exists.
+
+This factorization prevents a common curriculum shortcut.  High performance on isolated applications of two principles does not license the conclusion that their composition is mastered; likewise, in-domain accuracy does not license cross-domain or regime-shift mastery.  A future allocator can therefore reassign marginal compute toward whichever coordinates remain weak while preserving a registered repetition/retention floor.
+
+\subsection{Bounded gradient materialization is a resource problem, not an authority rule}
+
+A future allocation policy may be written schematically as
+\[
+B_t^*=\arg\max_{B\subseteq D_{\mathrm{raw}}}
+U_{\mathrm{train}}(B\mid L_t)
+\]
+subject to a declared training-compute budget, structural coverage, anti-forgetting/repetition requirements, challenge/near-miss coverage and leakage exclusions.  This expression defines the resource-allocation problem; the current framework claims no globally optimal solver and does not define a canonical scalarization of the utility vector.
+
+The analogy with bounded prompt cognition is useful but limited.  Prompt compilation chooses what a fixed model can inspect during one operation.  Training materialization chooses what may alter future model parameters.  Therefore a training decision requires stronger chronology and evaluation discipline: the learner-state probes and candidate policy must be frozen before the outcomes used to judge that policy, and fresh assurance cases must be disjoint from the examples that motivated or tuned the challenger.
+
+The failure-to-policy arrow follows the same governed pattern used by Self-RAKL search evolution:
+\[
+\text{observed learning failure/flat progress}
+\rightarrow
+\text{typed diagnosis}
+\rightarrow
+\text{bounded allocation-policy challenger}
+\rightarrow
+\text{fresh assurance}
+\rightarrow
+\text{promote, narrow or reject}.
+\]
+A low marginal gain does not directly authorize a new curriculum idea.  It may reflect genuine same-structure saturation, an unmastered composition or boundary, forgetting, an optimization/model floor, or a defective structural extractor.  The discriminating experiment must separate these explanations first.
+
+\subsection{Scope of the present architecture result}
+
+This section adds a typed integration surface only.  It does not establish a structural saturation law, a useful mastery estimator, lower training cost or superiority over model-aware data selection.  Paper~III owns the nearest-parent and matched training experiments, while the cheap Phase-0/1 programme must establish that learner-conditioned structural exposure has a measurable residual before an adaptive scheduler can earn a method claim.  If that residual is absent, \pi_{\mathrm{train}} remains a useful separation of state semantics but not evidence for a new training method.
