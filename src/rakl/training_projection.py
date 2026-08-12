@@ -398,6 +398,16 @@ def assess_training_projection(snapshot: TrainingProjectionSnapshot) -> Projecti
             ProjectionVerdict.INVALID,
             ("confirmatory_target_leak_in_training_candidate",),
         )
+    if not snapshot.candidates:
+        return ProjectionAssessment(
+            ProjectionVerdict.CANNOT_CHECK,
+            ("no_training_candidates_materialized",),
+        )
+    if not snapshot.mastery_estimates:
+        return ProjectionAssessment(
+            ProjectionVerdict.CANNOT_CHECK,
+            ("no_mastery_estimates_materialized",),
+        )
     if any(item.frozen_before_allocation is None for item in snapshot.mastery_estimates):
         return ProjectionAssessment(
             ProjectionVerdict.CANNOT_CHECK,
@@ -413,12 +423,18 @@ def assess_training_projection(snapshot: TrainingProjectionSnapshot) -> Projecti
             ProjectionVerdict.CANNOT_CHECK,
             ("one_or_more_mastery_coordinates_unmeasured",),
         )
-    if not snapshot.candidates:
+
+    mastery_by_structure = {item.structure_id: item for item in snapshot.mastery_estimates}
+    missing_candidate_mastery = tuple(
+        sorted({candidate.structure_id for candidate in snapshot.candidates if candidate.structure_id not in mastery_by_structure})
+    )
+    if missing_candidate_mastery:
         return ProjectionAssessment(
             ProjectionVerdict.CANNOT_CHECK,
-            ("no_training_candidates_materialized",),
+            tuple(f"candidate_structure_without_mastery:{structure_id}" for structure_id in missing_candidate_mastery),
         )
+
     return ProjectionAssessment(
         ProjectionVerdict.READY_FOR_EXPERIMENTAL_ALLOCATION,
-        ("identity_and_chronology_contract_complete; no efficacy claim implied",),
+        ("identity_chronology_and_candidate_mastery_contract_complete; no efficacy claim implied",),
     )
