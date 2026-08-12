@@ -127,6 +127,27 @@ Honesty marker: the scale-invariance and fixed-point are a **conjecture/framing*
 theorem; open-world non-certifiability caps it --- one can never certify the loop contains
 *every* method, only that it is bounded-saturated relative to the methods observed.
 
+**Higher dimensions (level 3, 4, ...): two opposite currents.** The tower continues --- level 3
+is a heuristic for choosing heuristics (Polya), level 4 a methodology of discovery (which is
+what RAKL itself is). It does not require a new mechanism per level, and it does not float free:
+- **Generativity flows *down* and is scale-invariant.** The GROW/CLOSE loop is parametric over
+  the object-type; level *k* = the same loop applied to level-(*k*-1) objects. RAKL at level 3 is
+  RAKL applied to (RAKL applied to problems). One generic procedure, reinstantiated --- so the
+  framework provides a pathway at every dimension without a new framework per dimension.
+- **Authority flows *up* from the ground and cannot self-recurse.** An improvement at level *k*
+  is validated only by its effect on level-(*k*-1) outcomes, recursing down to reality / a
+  verifier / a human. You can recurse the *generator* into itself; you cannot recurse the
+  *verifier* into itself (Godel/Lob made practical: no system certifies its own soundness). The
+  level-0 rule *proposer != authority* is therefore what keeps the whole tower from collapsing
+  into self-certifying nonsense: at every level the loop proposes, and authority comes from
+  outside and below.
+
+Hence **every higher-dimensional pathway is a loop that touches the ground.** The cost of
+altitude: evidence gets sparse (slow meta-saturation), feedback loops get long (validating one
+meta-method needs many object-level trials), and reliance on the ground grows (no shortcut past
+grounding). RAKL provides the pathway at every level; it does not provide a free lunch. (Framing,
+not theorem; the Godel/Lob ceiling is real, its application here is a model.)
+
 ## 2. Diagnosis (what the five rounds agree on)
 
 **RAKL is a superb refutation / governance engine and an absent generative engine.**
