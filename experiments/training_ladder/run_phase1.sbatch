@@ -45,17 +45,20 @@ echo "[phase1] out_dir=$OUT_DIR"
 # --------------------------------------------------------------------------- #
 # Environment: LUNARC PyTorch toolchain + a venv for peft/accelerate on top.
 # --------------------------------------------------------------------------- #
-module purge
-module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1
+# A PyTorch module is preferred but optional (name varies across the stack); the venv
+# self-contains a CUDA torch either way. Do not let a failed module load abort the job.
+module purge 2>/dev/null || true
+module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1 2>/dev/null \
+  || echo "[phase1] PyTorch module unavailable; using the venv's own CUDA torch"
 
 if [ ! -d "$VENV_DIR" ]; then
-  echo "[phase1] creating venv at $VENV_DIR (inherits module torch via system-site-packages)"
+  echo "[phase1] creating venv at $VENV_DIR"
   python -m venv --system-site-packages "$VENV_DIR"
   # shellcheck disable=SC1091
   source "$VENV_DIR/bin/activate"
   python -m pip install --upgrade pip
-  # torch is provided by the loaded module; only add the LoRA/training extras.
-  python -m pip install "peft>=0.10" "accelerate>=0.27"
+  # Install torch too (no-op if inherited from a module); + LoRA/training extras.
+  python -m pip install "torch" "peft>=0.10" "accelerate>=0.27"
 else
   # shellcheck disable=SC1091
   source "$VENV_DIR/bin/activate"
