@@ -117,6 +117,23 @@ why should the old counterexample/falsifier no longer apply?
 what cheapest test could show that this claimed difference is illusory?
 ```
 
+### Realization domain (obligation-strength typing)
+
+When a `DifferenceWitness` feeds **strict-reduction / obligation-strength**
+routing, it must also declare a realization domain:
+
+- `AMBIENT_REPRESENTATION` — distinction in an ambient encoding/statistic space;
+  may prune identities/representations, **must not** certify target-domain
+  obligation weakening (`REPRESENTATION_ONLY`).
+- `TARGET_DOMAIN` — hostile pair realized inside the fixed target theory.
+- `TRANSFERRED_WITH_WITNESS` — transported distinction; requires bound
+  source→target mapping, shared constraints, disanalogies, and assumptions.
+
+Missing domain typing fails closed as `CANNOT_CHECK`. Ordinary method-reuse
+assessment remains separate and does not mint obligation-strength authority.
+Same-context review still carries zero independent-review authority; promotion
+gates are unchanged.
+
 ## Learning loop
 
 ```text
