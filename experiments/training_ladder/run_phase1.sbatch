@@ -73,6 +73,18 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export PYTHONHASHSEED=0
 
+# Staged models use an HF-cache layout (a revision-hash subdir holds config.json +
+# weights). Auto-resolve MODEL_PATH to the directory that actually contains config.json.
+if [ ! -f "$MODEL_PATH/config.json" ]; then
+  resolved="$(find "$MODEL_PATH" -maxdepth 2 -name config.json -printf '%h\n' 2>/dev/null | head -1)"
+  if [ -n "$resolved" ]; then
+    MODEL_PATH="$resolved"
+    echo "[phase1] resolved model dir -> $MODEL_PATH"
+  else
+    echo "[phase1] ERROR: no config.json under $MODEL_PATH" >&2; exit 2
+  fi
+fi
+
 cd "$REPO_ROOT"
 # Make the 'orion' package importable (orion -> rakl impl) without installing.
 export PYTHONPATH="$REPO_ROOT/src:${PYTHONPATH:-}"
