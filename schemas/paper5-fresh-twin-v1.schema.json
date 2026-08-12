@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-fresh-twin-v1.schema.json",
+  "title": "Paper 5 fresh replay twin task",
+  "description": "Frozen untouched twin for causal bridge under #446. Solver bundle excludes hidden gold.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_version",
+    "generator_version",
+    "task_id",
+    "twin_kind",
+    "family_id_internal",
+    "seed",
+    "solver_bundle",
+    "evaluator_bundle",
+    "grants_scientific_authority",
+    "outcome_access_status"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper5-fresh-twin-v1"},
+    "protocol_version": {"type": "string", "minLength": 1},
+    "generator_version": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "pattern": "^FT-[0-9a-f]{16}$"},
+    "twin_kind": {"enum": ["VALID", "INVALID"]},
+    "family_id_internal": {"type": "string", "minLength": 1},
+    "seed": {"type": "integer", "minimum": 0},
+    "solver_bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "prompt", "local_evidence", "global_claim", "registered_actions"],
+      "properties": {
+        "task_id": {"type": "string", "pattern": "^FT-[0-9a-f]{16}$"},
+        "prompt": {"type": "string", "minLength": 1},
+        "local_evidence": {"type": "object"},
+        "global_claim": {"type": "object"},
+        "registered_actions": {
+          "type": "array",
+          "items": {
+            "enum": ["ACCEPT_VALID_GLUE", "REJECT_FALSE_TRANSFER", "ABSTAIN_CANNOT_CHECK"]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    },
+    "evaluator_bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "correct_action",
+        "deterministic_verifier",
+        "structural_signature_id",
+        "hidden_gold_hash"
+      ],
+      "properties": {
+        "task_id": {"type": "string", "pattern": "^FT-[0-9a-f]{16}$"},
+        "correct_action": {
+          "enum": ["ACCEPT_VALID_GLUE", "REJECT_FALSE_TRANSFER", "ABSTAIN_CANNOT_CHECK"]
+        },
+        "deterministic_verifier": {"type": "string", "minLength": 1},
+        "structural_signature_id": {"type": "string", "minLength": 1},
+        "hidden_gold_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "grants_scientific_authority": {"const": false},
+    "outcome_access_status": {
+      "type": "string",
+      "enum": ["NO_OUTCOME_ACCESSED", "CONFIRMATORY_OUTCOME_ACCESSED"]
+    }
+  }
+}

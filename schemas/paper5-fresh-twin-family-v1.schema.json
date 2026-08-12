@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/paper5-fresh-twin-family-v1.schema.json",
+  "title": "Paper 5 fresh twin failure-family registry entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "family_id",
+    "structural_signature",
+    "historical_motivation",
+    "development_only",
+    "valid_twin_estimand",
+    "invalid_twin_estimand",
+    "forbidden_solver_tokens"
+  ],
+  "properties": {
+    "family_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$"
+    },
+    "structural_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obstruction", "required_transition", "failure_mechanism"],
+      "properties": {
+        "obstruction": {"type": "string", "minLength": 1},
+        "required_transition": {"type": "string", "minLength": 1},
+        "failure_mechanism": {"type": "string", "minLength": 1}
+      }
+    },
+    "historical_motivation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Development lineage only; must never appear in solver-facing prompts."
+    },
+    "development_only": {"const": true},
+    "valid_twin_estimand": {
+      "type": "string",
+      "const": "ACCEPT_VALID_GLUE"
+    },
+    "invalid_twin_estimand": {
+      "type": "string",
+      "const": "REJECT_FALSE_TRANSFER"
+    },
+    "forbidden_solver_tokens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
