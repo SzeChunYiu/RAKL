@@ -39,3 +39,9 @@ def test_protocol_has_no_credential_value() -> None:
     text = (SUITE / "PROTOCOL.json").read_text(encoding="utf-8")
     assert "ANTHROPIC_AUTH_TOKEN" not in text
     assert "72bd139f" not in text
+
+
+def test_execution_blocker_records_no_new_glm_outcome() -> None:
+    obj = json.loads((SUITE / "EXECUTION_BLOCKER_20260812.json").read_text(encoding="utf-8"))
+    assert obj["scientific_claim"] == "NO_NEW_GLM52_OUTCOME"
+    assert obj["credential_handling"]["token_written_to_repo"] is False
