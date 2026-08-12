@@ -10,10 +10,10 @@ whether RAKL wins.
 | --- | --- | --- |
 | 0 gold + instrument audit | `GOLD_AUDIT.json` | complete — `INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED` |
 | 1 diagnostic decomposition | `BOTTLENECK_RECEIPT.json`, `DIAGNOSTIC_RESULTS/` | complete — `BENCHMARK_CONSTRUCT_DEFECT` |
-| 2 interface challenger | — | not yet run |
-| 3 model candidate freeze | — | not yet frozen |
-| 4 fresh qualification panel | — | not yet frozen |
-| 5 qualification decision | — | blocked on 2–4 |
+| 2 interface challenger | `INTERFACE_CHALLENGER_SPEC.json` / `protocol_stage2/` (PR #492) | development freeze when #492 merges — `STAGED_INTERFACE_DEVELOPMENT_PROMISING` only |
+| 3 model candidate freeze | `STAGE3_4_PROPOSAL_ONLY.json` | proposal-only — **not frozen** |
+| 4 fresh qualification panel | `STAGE3_4_PROPOSAL_ONLY.json` | proposal-only — **not frozen** |
+| 5 qualification decision | — | blocked on 3–4; no `CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3` |
 
 `CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3` does **not** exist. Every capability-dependent
 Paper II/V treatment experiment remains blocked.

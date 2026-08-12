@@ -1,11 +1,11 @@
 # Strongest-version campaign scoreboard — 2026-08-12 (V2_EXEC floor after 3476813)
 
-**Tip main at reconstruction:** `ac19f760cbb4` (merge #482 post-#477 sync; issue-sweep scoreboard via #483)
+**Tip main at reconstruction:** `496edc5ead136980287ac2e72efb486691945366` (Paper II transport obligations v2 #491; prior #488 V4.4 ingest 3477848, #485 GLM Wave-2 offline freeze)
 **Machine-readable:** `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json`  
 **Publication manifest:** `publication/PUBLICATION_SERIES_V2.json`  
 **CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED` (false)  
 **Wave-2 confirmatory unlock:** **no** (terminal under current protocols)  
-**GitHub issue sweep (2026-08-12):** **4 closed** (#478 #479 #459 #464) · **11 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468)
+**GitHub issue sweep (2026-08-12):** **4 closed** (#478 #479 #459 #464) · **15 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468 #486 #487 #489 #490)
 
 Closed GitHub issues are historical terminals, **not** proof the scientific question was answered.
 
@@ -113,18 +113,57 @@ PR **#470** (`5b583879`) landed proposal scaffolds; sweep closed as honest termi
 
 Fail-closed contract restoration for overlapping hooks: see fail-closed closeout (#478/#479, PR #480).
 
-## Open issues after sweep (11)
+## Post-sweep landings (same day, tip advancement)
+
+| PR | Merge SHA | What landed (authority: none unless stated) |
+|---:|-----------|-----------------------------------------------|
+| #480 | `2834760f4ae9` | Fail-closed quantifier CONDITIONAL + pre-scratch persistence ack |
+| #481 | `62e97d545f93` | Mac GLM hosted smoke runner/runbook (connectivity only) |
+| #482/#483 | `ac19f760` / `8438f370` | Publication harvest + issue-sweep scoreboard |
+| #484 | `53d71ea2` | Terminal receipts for #478/#479 |
+| #485 | `4c5e4583` | GLM Wave-2 **offline** freeze receipts — `NO_NEW_GLM_OUTCOME`; no confirmatory GLM runs |
+| #488 | `4a3b6b92` | Paper2 V4.4 LUNARC **3477848** native ingest (non-confirmatory; exact_conceptual_pass_arm_count=0 preserved) |
+| #491 | `496edc5e` | Paper II executable directional transport obligations v2 (`StructuralWitnessV2`) |
+
+### #488 ingest pointer
+
+- Packet: `research/paper2_microtrial_v4_4/`
+- Receipt: `research/paper2_microtrial_v4_4/NATIVE_INGEST_RECEIPT_3477848.json`
+- Status: `research/paper2_microtrial_v4_4/NATIVE_EXECUTION_STATUS.json`
+- Bundle: `research/paper2_microtrial_v4_4/native_bundles/PAPER2_V4_4_NATIVE_JOB_3477848.tar.gz`
+- Do **not** resubmit redundant V4.4 confirmatory jobs against 3477848.
+
+### #491 transport pointer
+
+- Code: `src/rakl/structural_transport_v2.py`
+- Oracle smoke: `research/paper2_transport_v2/ORACLE_CONFORMANCE_RESULT.json`
+- Known-world ablation: `research/paper2_transport_v2/KNOWN_WORLD_ABLATION_RESULT.json`
+- Implements #486 executable obligation semantics (proposal/code lane); does **not** clear #444 empirics.
+
+### #461 exposure scaffold pointer
+
+- `research/training_time_rakl_phase0_1/EXPOSURE_CURVE_HARNESS_SCAFFOLD.json` — pre-outcome harness only; no learner outcomes.
+
+### #444 Paper III objective lane pointer
+
+- `research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/` — directory contract + manifests; `OBJECTIVE_LANE_SCAFFOLD_ONLY`.
+
+## Open issues after tip sync (15)
 
 | Issue | Blocker (honest) |
 |------:|------------------|
 | #216 | External human reviewers — Paper I |
 | #442 | Campaign coordinator — children blocked (#447 capability, #443/#444 empirics) |
-| #443 | `CAPABLE_MODEL=NO_REFUTED` / capability V3 stage-2 |
-| #444 | External human validation absent — Paper III confirmatory |
-| #447 | Capability qualification V3 stage-1 instrument defect |
-| #455 | Paper III training-time extension — conditional on #461 signal |
-| #461 | Phase 0/1 ladder instrument frozen — awaiting downstream gates |
+| #443 | `CAPABLE_MODEL=NO_REFUTED` / Wave-2 offline freeze only (#485); no confirmatory GLM |
+| #444 | Objective lane scaffolded; confirmatory items + independent humans still absent |
+| #447 | Stage 0/1 defect preserved; Stage 2 challenger on PR path / tip when merged — still no `CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3` |
+| #455 | Paper III training-time extension — conditional on #461 mechanism signal |
+| #461 | Instrument + exposure scaffold frozen — no learner outcomes / no mechanism signal |
 | #462 | Publication decision gate — conditional Structural Learning Mechanics |
 | #466 | Phase 2 adaptive-vs-static — conditional on #461 |
 | #467 | Phase 3 train→inference identity — conditional |
 | #468 | Phase 4 generalization law — conditional |
+| #486 | Transport v2 landed via #491 — close when tip contains #491 and acceptance checked |
+| #487 | 2026 nearest-work threat audit — deliverables not yet written |
+| #489 | Paper I adversarial epistemic-governance benchmark — not started |
+| #490 | NMI-grade flagship story/evidence gate — blocked on #444/#486/#487 |

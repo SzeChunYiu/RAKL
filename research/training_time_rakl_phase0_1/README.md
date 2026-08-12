@@ -19,6 +19,7 @@ See [CLAIM_BOUNDARY.md](CLAIM_BOUNDARY.md).
 |------|------|
 | `PROTOCOL_FREEZE_PACKET.json` | Pre-outcome freeze |
 | `PROTOCOL_FREEZE_RECEIPT.json` | Freeze validation receipt |
+| `EXPOSURE_CURVE_HARNESS_SCAFFOLD.json` | Phase 1 exposure-curve harness scaffold (no learner runs) |
 
 ## Code
 
