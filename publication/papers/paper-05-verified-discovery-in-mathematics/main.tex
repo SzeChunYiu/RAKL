@@ -7,6 +7,7 @@
 \usepackage{lmodern}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newtheorem{definition}{Definition}
 \newtheorem{proposition}{Proposition}
@@ -154,11 +155,11 @@ Those representations are retrieval aids, not authority sources. A nearest-neigh
 \section{Counterexample, proof and novelty loops must not collapse}
 
 Mathematical research benefits from tight iteration, but the loops have different promotion semantics:
-\[
-\text{conjecture}\xrightarrow{\text{search}}\text{candidate},\qquad
-\text{candidate}\xrightarrow{\text{proof}}\text{theorem},\qquad
-\text{theorem}\xrightarrow{\text{novelty audit}}\text{scoped novelty status}.
-\]
+\begin{align*}
+\text{conjecture}&\xrightarrow{\text{search}}\text{candidate},\\
+\text{candidate}&\xrightarrow{\text{proof}}\text{theorem},\\
+\text{theorem}&\xrightarrow{\text{novelty audit}}\text{scoped novelty status}.
+\end{align*}
 A counterexample can send the first loop backward immediately. A failed novelty search cannot promote the second loop. A verified proof cannot silently complete the third.
 
 \section{Typed discovery search and reference implementation}
@@ -199,7 +200,7 @@ The broader principle is that research systems should accumulate capability fast
 Machine-assisted mathematical research should not be evaluated as if it were only a harder problem set. It is a coupled discovery-and-assurance process. By separating specification alignment, theorem truth, novelty, research value and verifier trust, the architecture converts many model errors into visible search cost while leaving the remaining trust assumptions explicit. The result is a framework in which increasingly capable proposal generators can be used without allowing proposal fluency to become mathematical authority by default.
 
 \section*{Code, materials and AI-use disclosure}
-The public code, benchmark and manuscript source are maintained at \url{https://github.com/SzeChunYiu/RAKL}. The canonical publication-series-v2 package is \path{publication/papers/paper-05-verified-discovery-in-mathematics/}; historical mathematical-assurance artifacts may retain the legacy Paper IV / \path{paper4} naming and remain immutable evidence identities. Language models were used for literature search, drafting and implementation assistance; they are not authors or independent reviewers. No model-generated judgement is represented as external human review.
+The public code, benchmark and manuscript source are maintained at \url{https://github.com/SzeChunYiu/RAKL}. The canonical publication-series-v2 package is \url{publication/papers/paper-05-verified-discovery-in-mathematics/}; historical mathematical-assurance artifacts may retain the legacy Paper IV / \path{paper4} naming and remain immutable evidence identities. Language models were used for literature search, drafting and implementation assistance; they are not authors or independent reviewers. No model-generated judgement is represented as external human review.
 
 \begin{thebibliography}{99}
 
