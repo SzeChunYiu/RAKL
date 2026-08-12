@@ -1,0 +1,54 @@
+{
+  "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+  "authority_boundary": "Proposal-only design freeze for Stages 3\u20134. Does not authorize CAPABLE_MODEL, does not run qualification, does not rescore sealed job 3476813, and does not mutate paper2-oracle-capability-gate-v2-exec.",
+  "grants_scientific_authority": false,
+  "issue_number": 447,
+  "prerequisite": {
+    "stage2_artifacts": [
+      "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/INTERFACE_CHALLENGER_SPEC.json",
+      "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE2_INTERFACE_CHALLENGER_RECEIPT.json",
+      "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/"
+    ],
+    "stage2_pr": 492,
+    "stage2_terminal_required": "STAGED_INTERFACE_DEVELOPMENT_PROMISING"
+  },
+  "schema_version": "paper2-capability-v3-stage3-4-proposal-v1",
+  "stage3_model_candidate_freeze": {
+    "forbidden": [
+      "scale shopping beyond preregistered set after outcomes",
+      "adding models because Stage 5 failed",
+      "treating sealed 3476813 rescore as Stage 5"
+    ],
+    "note": "Because CAPABLE_MODEL_AVAILABLE remains NO_REFUTED at V2_EXEC, Stage 3 freeze may still be recorded as a packet without unlocking confirmatory Paper II/V treatments.",
+    "proposed_freeze_fields": [
+      "candidate_id",
+      "model_id_revision",
+      "interface_id (must be Stage 2 challenger identity)",
+      "decoding_config_hash",
+      "stop_rule",
+      "chronology_hash_before_outcomes"
+    ],
+    "rule": "Freeze ordered candidate set and stop rule BEFORE any Stage 5 qualification outcomes.",
+    "status": "PROPOSAL_ONLY__NOT_FROZEN"
+  },
+  "stage4_fresh_panel_freeze": {
+    "exclusion": [
+      "sealed v2_exec development items used in Stage 1 diagnostics",
+      "any item whose gold was inspected during Stage 2 interface development"
+    ],
+    "proposed_freeze_fields": [
+      "panel_id",
+      "item_ids",
+      "hidden_gold_store_hash",
+      "leakage_audit_receipt",
+      "chronology_hash_before_outcomes"
+    ],
+    "rule": "Fresh held-out qualification panel excluded from Stage 1/2 development items; freeze before Stage 5 access.",
+    "status": "PROPOSAL_ONLY__NOT_FROZEN"
+  },
+  "stage5_explicit_non_claims": [
+    "Stage 3/4 proposal docs do not create CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "Passing Stage 2 development terminal is not Stage 5 qualification",
+    "No confirmatory Paper II/V treatment authorization from this file"
+  ]
+}
