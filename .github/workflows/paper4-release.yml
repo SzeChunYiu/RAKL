@@ -1,10 +1,9 @@
-name: paper4-release
+name: paper5-verified-discovery-release
 
 on:
   push:
     branches: [main]
   pull_request:
-
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -60,10 +59,11 @@ jobs:
           if not result['all_passed']:
               raise SystemExit('mathematical-research hostile benchmark failed')
           PY
-      - name: Stage exact-subject Paper IV manuscript
+      - name: Stage exact-subject Paper V manuscript (legacy Paper IV generator path)
         shell: bash
         run: |
           set -euo pipefail
+          # The generator/build path is a historical engineering identity. Publication series v2 maps it to Paper V.
           python paper/build_math_research_assurance.py \
             --output paper/build/math_research_assurance/main.tex \
             --subject-sha "$RAKL_SUBJECT_SHA" \
@@ -80,7 +80,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
             latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
             lmodern poppler-utils
-      - name: Compile and preflight Paper IV PDF
+      - name: Compile and preflight Paper V PDF
         shell: bash
         run: |
           set -euo pipefail
@@ -90,7 +90,7 @@ jobs:
           pdfinfo main.pdf | tee pdfinfo.txt
           pdffonts main.pdf | tee pdffonts.txt
           if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main.log; then
-            echo "Blocking Paper IV LaTeX/PDF warning detected" >&2
+            echo "Blocking Paper V LaTeX/PDF warning detected" >&2
             exit 1
           fi
           if grep -F 'UNBOUND' main.tex; then
@@ -106,10 +106,10 @@ jobs:
           PAGES="$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')"
           test "$PAGES" -ge 1
           test "$(find renders -maxdepth 1 -name 'page-*.png' | wc -l)" -eq "$PAGES"
-      - name: Upload Paper IV publication artifact
+      - name: Upload Paper V publication artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: paper4-publication-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          name: paper5-verified-discovery-publication-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
             paper/build/math_research_assurance/main.tex
             paper/build/math_research_assurance/main.pdf

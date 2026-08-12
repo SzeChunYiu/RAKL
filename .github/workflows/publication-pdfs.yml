@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-
 concurrency:
   # Unique group per run; never cancel. Sibling agents were mass-cancelling
   # tip-main harvests via API even when dispatch used run_id groups.
@@ -55,13 +54,13 @@ jobs:
             latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
             lmodern poppler-utils
 
-      - name: Generate receipt-bound Paper II figures
+      - name: Generate receipt-bound Paper VI figures (legacy Paper II namespace)
         run: |
           python -m rakl.mini_research_metrology
           python -m rakl.mini_archive_demo
           python paper/generate_demo_figures.py
 
-      - name: Stage five release manuscripts from canonical publication/
+      - name: Stage five extant manuscripts under publication series v2
         shell: bash
         run: |
           set -euo pipefail
@@ -69,23 +68,25 @@ jobs:
           rm -rf build/publication
           mkdir -p build/publication
 
-          # Stage reader-facing packages (not stale paper/ archives).
-          cp -a publication/papers/paper-01-epistemic-mechanics build/publication/paper-01
-          cp -a publication/papers/paper-02-rakl-evidence-governed-research/source \
+          # Paper IV is CONDITIONAL_NOT_A_MANUSCRIPT and is deliberately not staged as a PDF.
+          cp -a publication/papers/paper-01-epistemic-mechanics \
+            build/publication/paper-01
+          cp -a publication/papers/paper-02-structural-mechanics \
             build/publication/paper-02
-          cp -a publication/papers/paper-03-directional-structural-witnesses \
+          cp -a publication/papers/paper-03-method-evolution-mechanics \
             build/publication/paper-03
-          mkdir -p build/publication/paper-04
-          cp publication/papers/paper-04-verified-discovery/main.tex \
-            build/publication/paper-04/main.tex
-          cp -a publication/papers/paper-05-experience-governed-evolution \
-            build/publication/paper-05
+          mkdir -p build/publication/paper-05
+          cp publication/papers/paper-05-verified-discovery-in-mathematics/main.tex \
+            build/publication/paper-05/main.tex
+          cp -a publication/papers/paper-06-rakl-scientific-research-engine/source \
+            build/publication/paper-06
 
           rm -f build/publication/paper-0*/main.pdf
 
+          # These figures retain their historical generation machinery but belong to V2 Paper VI.
           for fig in fig5_demo_growth.pdf fig6_demo_context.pdf; do
             if [[ -f "paper/figures/generated/$fig" ]]; then
-              cp -f "paper/figures/generated/$fig" "build/publication/paper-02/$fig"
+              cp -f "paper/figures/generated/$fig" "build/publication/paper-06/$fig"
             fi
           done
 
@@ -93,28 +94,36 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import os
+          import re
+
           sha = os.environ["HEAD_SHA"]
           tests = int(os.environ["RAKL_SOFTWARE_TESTS"])
           p1 = Path("build/publication/paper-01/main.tex")
           text = p1.read_text(encoding="utf-8")
-          if r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}" not in text:
-              raise SystemExit("paper-01 missing UNBOUND ImplementationSHA anchor")
-          if r"\newcommand{\SoftwareTests}{UNBOUND}" not in text:
-              raise SystemExit("paper-01 missing UNBOUND SoftwareTests anchor")
-          text = text.replace(
-              r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}",
-              rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}",
-              1,
+
+          # Bind exactly one declaration of each release-identity macro.  The source may
+          # carry UNBOUND or a previously bound value; ambiguity fails closed.
+          impl_pattern = re.compile(r"^\\newcommand\{\\ImplementationSHA\}\{[^\n]*\}$", re.MULTILINE)
+          tests_pattern = re.compile(r"^\\newcommand\{\\SoftwareTests\}\{[^\n]*\}$", re.MULTILINE)
+          if len(impl_pattern.findall(text)) != 1:
+              raise SystemExit("paper-01 must contain exactly one ImplementationSHA declaration")
+          if len(tests_pattern.findall(text)) != 1:
+              raise SystemExit("paper-01 must contain exactly one SoftwareTests declaration")
+          text = impl_pattern.sub(
+              lambda _: rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}",
+              text,
+              count=1,
           )
-          text = text.replace(
-              r"\newcommand{\SoftwareTests}{UNBOUND}",
-              rf"\newcommand{{\SoftwareTests}}{{{tests}}}",
-              1,
+          text = tests_pattern.sub(
+              lambda _: rf"\newcommand{{\SoftwareTests}}{{{tests}}}",
+              text,
+              count=1,
           )
           if r"\section*{Code, materials and AI-use disclosure}" not in text:
               raise SystemExit("paper-01 missing AI-use disclosure")
           p1.write_text(text, encoding="utf-8")
-          Path("build/publication/paper-02/build_identity.tex").write_text(
+
+          Path("build/publication/paper-06/build_identity.tex").write_text(
               (
                   rf"\newcommand{{\SoftwareTests}}{{{tests}}}" + "\n"
                   + rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}" + "\n"
@@ -133,17 +142,17 @@ jobs:
           required_meta = ("Sze Chun Yiu", "Stockholm University", "sze-chun.yiu@fysik.su.se")
           disclosure_files = {
               "paper-01": None,
-              "paper-02": "sections/16_reproducibility_ai_use.tex",
+              "paper-02": None,
               "paper-03": None,
-              "paper-04": None,
               "paper-05": None,
+              "paper-06": "sections/16_reproducibility_ai_use.tex",
           }
           disclosure_needles = {
               "paper-01": r"\section*{Code, materials and AI-use disclosure}",
-              "paper-02": r"\section*{Reproducibility and AI-use statement}",
-              "paper-03": r"\section*{Code, materials and AI-use disclosure}",
-              "paper-04": r"\section*{Code, materials and AI-use disclosure}",
-              "paper-05": r"\section*{Code, data, materials and AI-use disclosure}",
+              "paper-02": r"\section*{Code, materials and AI-use disclosure}",
+              "paper-03": r"\section*{Code, data, materials and AI-use disclosure}",
+              "paper-05": r"\section*{Code, materials and AI-use disclosure}",
+              "paper-06": r"\section*{Reproducibility and AI-use statement}",
           }
           for paper, needle in disclosure_needles.items():
               path = Path(f"build/publication/{paper}/main.tex")
@@ -159,11 +168,11 @@ jobs:
                       raise SystemExit(f"{paper} author metadata missing: {required}")
           PY
 
-      - name: Compile and preflight all five PDFs
+      - name: Compile and preflight all five extant PDFs
         shell: bash
         run: |
           set -euo pipefail
-          for paper in paper-01 paper-02 paper-03 paper-04 paper-05; do
+          for paper in paper-01 paper-02 paper-03 paper-05 paper-06; do
             dir="build/publication/$paper"
             echo "=== $paper ==="
             (
@@ -188,12 +197,15 @@ jobs:
             )
           done
 
-      - name: Upload canonical publication build
+      - name: Upload canonical publication-series-v2 build
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: canonical-publication-pdfs-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          name: canonical-publication-v2-pdfs-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: |
             pytest.log
+            publication/PUBLICATION_SERIES_V2.md
+            publication/PUBLICATION_SERIES_V2.json
+            publication/papers/paper-04-structural-learning-mechanics/README.md
             build/publication/paper-01/main.tex
             build/publication/paper-01/main.pdf
             build/publication/paper-01/main.log
@@ -215,13 +227,6 @@ jobs:
             build/publication/paper-03/pdffonts.txt
             build/publication/paper-03/main.txt
             build/publication/paper-03/renders/*.png
-            build/publication/paper-04/main.tex
-            build/publication/paper-04/main.pdf
-            build/publication/paper-04/main.log
-            build/publication/paper-04/pdfinfo.txt
-            build/publication/paper-04/pdffonts.txt
-            build/publication/paper-04/main.txt
-            build/publication/paper-04/renders/*.png
             build/publication/paper-05/main.tex
             build/publication/paper-05/main.pdf
             build/publication/paper-05/main.log
@@ -229,4 +234,11 @@ jobs:
             build/publication/paper-05/pdffonts.txt
             build/publication/paper-05/main.txt
             build/publication/paper-05/renders/*.png
+            build/publication/paper-06/main.tex
+            build/publication/paper-06/main.pdf
+            build/publication/paper-06/main.log
+            build/publication/paper-06/pdfinfo.txt
+            build/publication/paper-06/pdffonts.txt
+            build/publication/paper-06/main.txt
+            build/publication/paper-06/renders/*.png
           if-no-files-found: error
