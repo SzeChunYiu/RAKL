@@ -459,3 +459,71 @@ schemas/lesson.schema.json
 See `docs/RAKL_V3_EXPERIENCE_SUBSTRATE.md` for the full implementation contract and `tests/test_rakl_v3_experience_substrate.py` for executable invariants.
 
 Optional evidence-backed extensions (associative retrieval, backward/multi-seed search, route health, typed telemetry, memory coverage, and related research) are coordinated in `docs/RAKL_EXTENSION_PROGRAMME.md` (#143). That document preserves this core; it does not activate new runtime policy or mint authority.
+
+## 14. Optional training-time projection
+
+RAKL can study weight-updating learning without turning model mastery into a scientific-state coordinate. The training-time extension is therefore a **derived checkpoint-bound projection**, not a new canonical field of `RAKLV3State`:
+
+```text
+pi_epi(R_t)            -> what is scientifically licensed?
+pi_search(R_t)         -> what should be inspected / attempted next?
+pi_train(R_t, theta_t) -> what may be useful to receive gradient budget next?
+```
+
+The views may share raw-item identities, structural objects, evidence lineage and negative history, but their scores and authority semantics do not coerce into one another:
+
+```text
+training utility != search rank != scientific authority
+```
+
+`pi_train` is checkpoint-sensitive. A mastery estimate bound to `theta_t` becomes stale after a weight update unless it is remeasured or a separately validated transport rule exists. Persisting it as timeless canonical state would therefore be incorrect.
+
+The proposal-only reference contract is:
+
+```text
+src/rakl/training_projection.py
+```
+
+It represents:
+
+```text
+StructuralMasteryEstimate
+  principle
+  composition
+  boundary
+  representation
+  transfer
+  retention
+
+TrainingAllocationCandidate
+  raw item identity
+  derived view identity
+  structural identity
+  checkpoint identity
+  vector training-utility hypothesis
+  provenance
+```
+
+The projection preserves the raw corpus rather than destructively replacing it, rejects target leakage and post-hoc/fingerprint mutation, and grants no scientific or transfer authority. It deliberately contains **no adaptive scheduler and no optimizer API**.
+
+The empirical dependency is fail-closed:
+
+```text
+#461 structural exposure curves
+-> only if MECHANISM_SIGNAL_PRESENT
+-> #466 powered Adaptive RAKL vs Static RAKL + strongest parent
+-> fresh train/inference identity test
+-> #462 Paper VI decision gate
+```
+
+Failure-driven training evolution follows the same governance pattern as search-policy evolution:
+
+```text
+observed learning failure / flat progress
+-> typed diagnosis
+-> bounded allocation-policy challenger
+-> fresh assurance
+-> promote / narrow / reject
+```
+
+A flat learning curve may indicate saturation, missing composition or boundary coverage, forgetting, an optimization/model floor, or a defective structural extractor. It does not directly authorize a random new curriculum.
