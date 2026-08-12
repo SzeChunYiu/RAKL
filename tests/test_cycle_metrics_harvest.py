@@ -126,6 +126,16 @@ def test_instrumentation_coverage_refuses_cross_version_pooling() -> None:
     assert report["comparable_across_declared_versions"] is False
 
 
+def test_longitudinal_harvester_wires_cycle_metrics_instrumentation() -> None:
+    harvest_script = ROOT / "experiments" / "paper5" / "harvest_raklmath_longitudinal.py"
+    source = harvest_script.read_text(encoding="utf-8")
+    assert "from rakl.cycle_metrics_harvest import" in source
+    assert "build_instrumentation_row" in source
+    assert "instrumentation_coverage" in source
+    assert "prospective_cycle_metrics_instrumentation.jsonl" in source
+    assert "cycle_metrics_instrumentation_report.json" in source
+
+
 @pytest.mark.skipif(not UNIVERSE.exists(), reason="frozen universe not present")
 def test_instrument_frozen_universe_without_rerunning_harvest() -> None:
     envelopes = []

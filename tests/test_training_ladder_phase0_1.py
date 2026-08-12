@@ -148,6 +148,25 @@ def test_freeze_script_check_only() -> None:
     assert payload["verdict"] == "PROTOCOL_FREEZE_PASS"
 
 
+def test_exposure_scaffold_script_emits_pre_outcome_harness(tmp_path: Path) -> None:
+    scaffold_script = ROOT / "experiments" / "training_ladder" / "build_exposure_scaffold.py"
+    out_dir = tmp_path / "packet"
+    proc = subprocess.run(
+        [sys.executable, str(scaffold_script), "--out-dir", str(out_dir)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
+    scaffold_path = out_dir / "EXPOSURE_CURVE_HARNESS_SCAFFOLD.json"
+    assert scaffold_path.is_file()
+    payload = json.loads(scaffold_path.read_text(encoding="utf-8"))
+    assert payload["grants_scientific_authority"] is False
+    assert payload["grants_efficacy_claim"] is False
+    assert payload["learner_outcomes_accessed"] is False
+    assert payload["schedule_entry_count"] > 0
+
+
 def test_freeze_refuses_outcome_artifacts(tmp_path: Path) -> None:
     import shutil
 
