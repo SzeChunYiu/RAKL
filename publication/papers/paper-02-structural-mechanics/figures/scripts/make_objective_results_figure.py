@@ -24,8 +24,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 REPO = Path(__file__).resolve().parents[4]
-EV = REPO / "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE"
-OUT = Path(__file__).resolve().parent / "objective_results"
+EV = Path(__file__).resolve().parent.parent / "data"
+OUT = Path(__file__).resolve().parent.parent / "objective_results"
 
 pr = json.loads((EV / "PREDICTIVE_RESULTS.json").read_text())
 pi = json.loads((EV / "PAIRED_INFERENCE.json").read_text())
