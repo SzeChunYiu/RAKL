@@ -64,11 +64,21 @@ def _evidence(**overrides):
         trial=_trial(),
         development_inference=(
             QoIInference("search_utility", InferentialState.DISTINGUISHABLE_BENEFIT, 0.20),
-            QoIInference("authority_leakage", InferentialState.MEASURED_BUT_INDISTINGUISHABLE, 0.0, hard_protected=True),
+            QoIInference(
+                "authority_leakage",
+                InferentialState.MEASURED_BUT_INDISTINGUISHABLE,
+                0.0,
+                hard_protected=True,
+            ),
         ),
         fresh_assurance_inference=(
             QoIInference("search_utility", InferentialState.DISTINGUISHABLE_BENEFIT, 0.15),
-            QoIInference("authority_leakage", InferentialState.MEASURED_BUT_INDISTINGUISHABLE, 0.0, hard_protected=True),
+            QoIInference(
+                "authority_leakage",
+                InferentialState.MEASURED_BUT_INDISTINGUISHABLE,
+                0.0,
+                hard_protected=True,
+            ),
         ),
         regression_atlas_passed=True,
         resource_only_gain=False,
@@ -132,6 +142,25 @@ def test_exact_failure_arrow_plus_fresh_gain_can_only_create_promotion_eligibili
     assert result.grants_scientific_authority is False
 
 
+def test_unknown_strongest_control_binding_is_cannot_identify_not_promotion_eligible():
+    result = assess_framework_challenger(
+        _search_card(),
+        _evidence(competitor_or_parent_control_bound=None),
+    )
+    assert result.decision is TournamentDecision.CANNOT_IDENTIFY
+    assert "strongest parent/competitor control binding is unknown" in result.reasons
+    assert result.promotion_eligible is False
+
+
+def test_explicitly_unbound_strongest_control_keeps_variant_experimental():
+    result = assess_framework_challenger(
+        _search_card(),
+        _evidence(competitor_or_parent_control_bound=False),
+    )
+    assert result.decision is TournamentDecision.KEEP_EXPERIMENTAL
+    assert result.promotion_eligible is False
+
+
 def test_duplicate_failure_driven_receipts_are_rejected():
     with pytest.raises(ValueError, match="failure-driven update ids must be unique"):
         _search_card(
@@ -142,8 +171,17 @@ def test_duplicate_failure_driven_receipts_are_rejected():
 def test_failure_driven_provenance_does_not_override_fresh_assurance_failure():
     evidence = _evidence(
         fresh_assurance_inference=(
-            QoIInference("search_utility", InferentialState.MEASURED_BUT_INDISTINGUISHABLE, 0.02),
-            QoIInference("authority_leakage", InferentialState.MEASURED_BUT_INDISTINGUISHABLE, 0.0, hard_protected=True),
+            QoIInference(
+                "search_utility",
+                InferentialState.MEASURED_BUT_INDISTINGUISHABLE,
+                0.02,
+            ),
+            QoIInference(
+                "authority_leakage",
+                InferentialState.MEASURED_BUT_INDISTINGUISHABLE,
+                0.0,
+                hard_protected=True,
+            ),
         )
     )
     result = assess_framework_challenger(_search_card(), evidence)
