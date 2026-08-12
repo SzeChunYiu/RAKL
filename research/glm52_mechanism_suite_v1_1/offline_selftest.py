@@ -9,6 +9,11 @@ def main() -> int:
     retrieval_test()
     experience_test()
     governance_test()
+    from wave2_freeze import validate_committed_receipts
+
+    failures = validate_committed_receipts()
+    if failures:
+        raise SystemExit("\n".join(failures))
     print("glm52 v1.1 wave2 offline self-tests: OK")
     return 0
 

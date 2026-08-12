@@ -35,6 +35,10 @@ Implementation: `rakl.hosted_anthropic_client` (shared) and thin
 | `HOSTED_PROVIDER_CONFIG.json` | claude-cn-aligned env manifest (no secrets) |
 | `FRAMEWORK_SUBJECT_MANIFEST.json` | Framework SHA, method version, module hashes |
 | `ARM_INTERVENTION_TABLE.json` | Arm definitions (docs/stubs only in this PR) |
+| `WAVE2_FREEZE_RECEIPT.json` | Offline Wave 2 scaffold freeze (no hosted outcomes) |
+| `NO_NEW_GLM_OUTCOME_RECEIPT.json` | Formal outcome-access block until dev gates pass |
+| `EMPIRICAL_INSTRUMENT_BINDINGS.json` | Paper II/III matched-arm, microtrial, descriptor hooks |
+| `OFFLINE_SELFTEST_RECEIPT.json` | Recorded offline validation pass (no API calls) |
 
 ## Issue ownership
 
