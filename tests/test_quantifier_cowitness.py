@@ -233,6 +233,59 @@ def test_unknown_relation_cannot_check_and_conflicting_identity_fails() -> None:
     assert _audit(conflicting).verdict is CoWitnessVerdict.FAIL
 
 
+def test_distinctness_propagates_through_identity_closure() -> None:
+    """A != B and B == C entail A != C for a requested co-witness."""
+
+    a = _occ("o-a-closure", "binder:a-closure", "k", "domain-radius")
+    b = _occ("o-b-closure", "binder:b-closure", "b", "intermediate-role")
+    c = _occ("o-c-closure", "binder:c-closure", "k", "forcing-coefficient")
+    review = _review(
+        (a, b, c),
+        relations=(
+            IdentityRelation(
+                "rel:a-distinct-b",
+                a.occurrence_id,
+                b.occurrence_id,
+                RelationKind.DISTINCT_BINDERS,
+                ("evidence:a-and-b-are-independent",),
+            ),
+            IdentityRelation(
+                "rel:b-alpha-c",
+                b.occurrence_id,
+                c.occurrence_id,
+                RelationKind.ALPHA_RENAMED_SAME_BINDER,
+                ("evidence:b-to-c-alpha-renaming",),
+            ),
+        ),
+        obligations=(_obligation(a.occurrence_id, c.occurrence_id),),
+    )
+    result = _audit(review)
+    assert result.verdict is CoWitnessVerdict.FAIL
+    assert "joint_obligation_contains_distinct_binders" in result.reasons
+    assert "same_display_symbol_is_not_identity_evidence" in result.reasons
+
+
+def test_known_nonexistential_failure_dominates_unknown_quantifier() -> None:
+    """UNKNOWN cannot mask a definitive FORALL obstruction."""
+
+    unknown = _occ("o-unknown-q", "binder:mixed-q", "q", "unknown-role")
+    universal = _occ("o-forall-q", "binder:mixed-q", "q", "universal-role")
+    unknown = BinderOccurrence(
+        **{**unknown.__dict__, "quantifier": QuantifierKind.UNKNOWN}
+    )
+    universal = BinderOccurrence(
+        **{**universal.__dict__, "quantifier": QuantifierKind.FORALL}
+    )
+    review = _review(
+        (unknown, universal),
+        obligations=(_obligation(unknown.occurrence_id, universal.occurrence_id),),
+    )
+    result = _audit(review)
+    assert result.verdict is CoWitnessVerdict.FAIL
+    assert "joint_obligation_quantifier_unknown" in result.reasons
+    assert "joint_obligation_requires_existential_occurrences" in result.reasons
+
+
 def test_type_mismatch_fails_even_when_identity_is_asserted() -> None:
     review = _review(
         (

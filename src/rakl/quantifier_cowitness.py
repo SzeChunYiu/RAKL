@@ -295,12 +295,23 @@ def _evaluate(review: CoWitnessReview) -> tuple[CoWitnessVerdict, Tuple[str, ...
             dsu.union(ids[0], item)
 
     reasons: list[str] = []
+    distinct_root_pairs: set[frozenset[str]] = set()
     for pair in explicit_distinct:
         left, right = tuple(pair)
-        if dsu.find(left) == dsu.find(right):
+        left_root, right_root = dsu.find(left), dsu.find(right)
+        if left_root == right_root:
             reasons.append("conflicting_same_and_distinct_identity_evidence")
+        else:
+            distinct_root_pairs.add(frozenset((left_root, right_root)))
     if reasons:
         return CoWitnessVerdict.FAIL, tuple(sorted(set(reasons)))
+
+    unknown_root_pairs = {
+        frozenset((dsu.find(left), dsu.find(right)))
+        for pair in unknown_pairs
+        for left, right in (tuple(pair),)
+        if dsu.find(left) != dsu.find(right)
+    }
 
     cannot_check = False
     for obligation in review.joint_obligations:
@@ -312,21 +323,25 @@ def _evaluate(review: CoWitnessReview) -> tuple[CoWitnessVerdict, Tuple[str, ...
         if QuantifierKind.UNKNOWN in quantifiers:
             cannot_check = True
             reasons.append("joint_obligation_quantifier_unknown")
-        elif any(kind is not QuantifierKind.EXISTS for kind in quantifiers):
+        if any(
+            kind in {QuantifierKind.FORALL, QuantifierKind.FREE_PARAMETER}
+            for kind in quantifiers
+        ):
             reasons.append("joint_obligation_requires_existential_occurrences")
 
         for left_index, left in enumerate(ids):
             for right in ids[left_index + 1 :]:
                 pair = frozenset((left, right))
                 left_occ, right_occ = by_id[left], by_id[right]
-                if pair in explicit_distinct:
+                root_pair = frozenset((dsu.find(left), dsu.find(right)))
+                if root_pair in distinct_root_pairs:
                     reasons.append("joint_obligation_contains_distinct_binders")
                     if left_occ.display_symbol == right_occ.display_symbol:
                         reasons.append("same_display_symbol_is_not_identity_evidence")
                 elif dsu.find(left) != dsu.find(right):
                     cannot_check = True
                     reasons.append("joint_identity_not_established")
-                    if pair in unknown_pairs:
+                    if root_pair in unknown_root_pairs:
                         reasons.append("joint_identity_relation_unknown")
 
     fail_reasons = {

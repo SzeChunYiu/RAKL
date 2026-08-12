@@ -1,0 +1,44 @@
+{
+  "artifact_sha256": "fa752fb9e8f526eb5fefab5fcab99907954c59cd04d70fd9e9096447ce09d315",
+  "attempted_implications": [
+    "A is explicitly distinct from B and B is identified with C, but no conclusion is drawn about A versus C.",
+    "An UNKNOWN quantifier makes the whole existential-typing check indeterminate even when another occurrence is definitively FORALL or a free parameter."
+  ],
+  "candidate_canonical_sha256": "122c67417da9725319a94e6badd56e898293161472a4175ea78200e91a0259eb",
+  "candidate_id": "quantifier-cowitness-shadow-v0.1.1",
+  "competing_causes": [
+    "display-symbol mismatch",
+    "object-type mismatch",
+    "missing joint-witness activation",
+    "purely operational test defect"
+  ],
+  "exact_failures": [
+    "Distinctness was queried only on direct occurrence pairs, so equivalence closure could hide a conclusive inequality.",
+    "An elif made uncertainty mask a separately known non-existential obstruction."
+  ],
+  "falsifiers": [
+    "A countermodel where A != B and B = C but A = C.",
+    "A valid joint existential witness whose required occurrence is universally quantified or only a free parameter under the frozen contract."
+  ],
+  "proof_evidence": [
+    "Substitutivity of equality: B=C and A!=B imply A!=C.",
+    "Conjunctive obligation typing: every required occurrence must satisfy EXISTS; a single FORALL/FREE_PARAMETER violates the contract."
+  ],
+  "recorded_at_utc": "2026-08-12T17:39:00Z",
+  "repairs": [
+    "Project explicit distinct relations to final DSU roots, reject any distinct relation internal to one root, and query distinct root pairs for every joint obligation.",
+    "Evaluate UNKNOWN and known non-existential quantifiers independently, then give deterministic failure precedence over cannot-check."
+  ],
+  "review_comments": [
+    3768651601,
+    3768651612
+  ],
+  "schema_version": "rakl-self-review-mathematical-lesson-v1",
+  "scope": "Proposal-shadow co-witness routing decisions after SAME_WITNESS, alpha-renaming, and binder-id closure.",
+  "software_checks_mathematical_credit": 0,
+  "status": "SAME_CONTEXT_AUTOMATED_REVIEW_REPAIR_NOT_INDEPENDENT_REVIEW",
+  "supported_causes": [
+    "Identity is an equivalence relation, so disequality must be represented between equivalence classes rather than raw occurrence pairs.",
+    "For a joint existential obligation, all listed occurrences must be existential; one known non-existential occurrence is a decisive falsifier independent of other unknowns."
+  ]
+}
