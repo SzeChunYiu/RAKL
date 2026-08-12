@@ -133,6 +133,8 @@ class FrameworkVariantCard:
             raise ValueError("framework variant card requires variant and parent identities")
         if not self.surfaces_changed:
             raise ValueError("framework variant card requires at least one changed surface")
+        if not self.triggering_evidence_ids:
+            raise ValueError("framework challenger requires triggering failure/evidence ids")
         if not self.difference_witness_hash.strip():
             raise ValueError("framework variant card requires a DifferenceWitness hash")
         if not self.root_cause_receipt_ids:
@@ -145,6 +147,8 @@ class FrameworkVariantCard:
             raise ValueError("framework challenger requires development cases")
         if not self.fresh_assurance_case_ids:
             raise ValueError("framework challenger requires fresh assurance cases")
+        if not self.rollback_variant_id.strip():
+            raise ValueError("framework challenger requires a rollback variant id")
         if self.variant_id == self.parent_version:
             raise ValueError("challenger variant must differ from parent")
         if len(set(self.surfaces_changed)) != len(self.surfaces_changed):
@@ -390,9 +394,6 @@ def assess_framework_challenger(
             evolution.verdict,
         )
 
-    # Existing SelfEvolutionAssessor is necessary but no longer sufficient: its
-    # point-estimate layer must also clear the typed inference and freshness
-    # policy above.
     if evolution.verdict is not EvolutionVerdict.SCOPED_EVOLUTION_EVIDENCE:
         return TournamentAssessment(
             TournamentDecision.CANNOT_IDENTIFY,
@@ -404,6 +405,15 @@ def assess_framework_challenger(
             evolution.verdict,
         )
 
+    if evidence.competitor_or_parent_control_bound is None:
+        return TournamentAssessment(
+            TournamentDecision.CANNOT_IDENTIFY,
+            ("strongest parent/competitor control binding is unknown",),
+            development_benefits,
+            fresh_benefits,
+            hard_regressions,
+            evolution.verdict,
+        )
     if evidence.competitor_or_parent_control_bound is False:
         return TournamentAssessment(
             TournamentDecision.KEEP_EXPERIMENTAL,
