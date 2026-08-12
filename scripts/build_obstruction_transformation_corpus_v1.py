@@ -801,7 +801,7 @@ def main() -> None:
                 "non_confirmatory_3476749_not_reinterpreted",
             ],
             "evidence_pointers": [
-                "research/paper2_closest_parent/ISSUE_352_TERMINAL_RECEIPT.json",
+                "research/capability_gated_closeout_20260812/ISSUE_352_TERMINAL_RECEIPT.json",
                 "research/paper2_closest_parent/A3_A4_MATCHED_EMPIRICAL_PACKET_V1.json",
             ],
             "non_guarantees": [
