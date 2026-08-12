@@ -25,6 +25,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from hashlib import sha256
+from math import isfinite
 from typing import Mapping, Sequence, Tuple
 
 from .structural_types import StructuralObject
@@ -39,6 +40,7 @@ __all__ = [
     "TrainingUtilityVector",
     "assess_training_projection",
     "build_training_projection",
+    "structural_catalog_digest",
 ]
 
 
@@ -65,8 +67,8 @@ class StructuralMasteryEstimate:
     """Checkpoint- and probe-bound estimate of structural learning state.
 
     Values are operational probe results in [0, 1], never probabilities of
-    scientific truth.  ``None`` means the coordinate is unmeasured; it is not
-    coerced to zero.  The vector is deliberately non-scalar because principle
+    scientific truth. ``None`` means the coordinate is unmeasured; it is not
+    coerced to zero. The vector is deliberately non-scalar because principle
     acquisition does not imply composition, boundary, transfer or retention
     mastery.
     """
@@ -87,8 +89,8 @@ class StructuralMasteryEstimate:
         if tuple(keys) != _COORDINATE_ORDER:
             raise ValueError("mastery coordinates must appear exactly once in canonical order")
         for _, value in self.coordinate_values:
-            if value is not None and not 0.0 <= value <= 1.0:
-                raise ValueError("measured mastery values must be in [0,1]")
+            if value is not None and (not isfinite(value) or not 0.0 <= value <= 1.0):
+                raise ValueError("measured mastery values must be finite and in [0,1]")
         if not self.measured_case_ids or any(not item.strip() for item in self.measured_case_ids):
             raise ValueError("mastery estimate requires non-empty measured case identities")
         if len(set(self.measured_case_ids)) != len(self.measured_case_ids):
@@ -115,9 +117,9 @@ class StructuralMasteryEstimate:
 class TrainingUtilityVector:
     """Vector-valued *hypothesis* about training value, oriented high=useful.
 
-    No scalarization is canonically defined.  The final two coordinates are
+    No scalarization is canonically defined. The final two coordinates are
     burdens/risks and therefore must not be mixed into a scientific-authority
-    score.  These values are routing/allocation features only until a registered
+    score. These values are routing/allocation features only until a registered
     experiment validates a policy that uses them.
     """
 
@@ -143,10 +145,10 @@ class TrainingUtilityVector:
             "negative_transfer_risk",
         ):
             value = getattr(self, name)
-            if not 0.0 <= value <= 1.0:
-                raise ValueError(f"{name} must be in [0,1]")
-        if self.estimated_total_cost < 0:
-            raise ValueError("estimated training cost cannot be negative")
+            if not isfinite(value) or not 0.0 <= value <= 1.0:
+                raise ValueError(f"{name} must be finite and in [0,1]")
+        if not isfinite(self.estimated_total_cost) or self.estimated_total_cost < 0:
+            raise ValueError("estimated training cost must be finite and non-negative")
 
     @property
     def grants_scientific_authority(self) -> bool:
@@ -194,7 +196,7 @@ class TrainingAllocationCandidate:
 class TrainingProjectionSnapshot:
     """Immutable candidate projection ``pi_train(R_t, theta_t)``.
 
-    The snapshot is an experimental allocation view.  It owns neither raw-data
+    The snapshot is an experimental allocation view. It owns neither raw-data
     semantics nor scientific authority and is stale as soon as the bound model
     checkpoint changes.
     """
@@ -229,6 +231,34 @@ class ProjectionAssessment:
     @property
     def grants_scientific_authority(self) -> bool:
         return False
+
+
+def _structural_object_row(item: StructuralObject) -> tuple[object, ...]:
+    """Canonical content row for one registered structural object."""
+
+    return (
+        item.structure_id,
+        item.domain,
+        item.qoi,
+        item.context_id,
+        tuple((role.role_id, role.kind) for role in item.roles),
+        tuple(relation.signature for relation in item.relations),
+        tuple(sorted(item.invariants)),
+        tuple((boundary.key, boundary.value) for boundary in item.boundaries),
+        tuple(item.evidence_ids),
+    )
+
+
+def structural_catalog_digest(structural_objects: Sequence[StructuralObject]) -> str:
+    """Content-bind a structural catalog independently of caller naming.
+
+    The digest sorts by structural identity but preserves role/relation/boundary
+    order *within* each object because that order is part of the registered
+    representation. Scientific authority is unaffected by this digest.
+    """
+
+    rows = tuple(sorted((_structural_object_row(item) for item in structural_objects), key=lambda row: str(row[0])))
+    return sha256(repr(("RAKL_TRAINING_STRUCTURAL_CATALOG_V1", rows)).encode("utf-8")).hexdigest()
 
 
 def _snapshot_hash(
@@ -271,20 +301,23 @@ def build_training_projection(
 ) -> TrainingProjectionSnapshot:
     """Construct an immutable proposal-only training projection.
 
-    This validates identity/binding only.  It neither estimates mastery nor
-    selects a batch.  Those are empirical mechanisms owned by #461/#455.
+    This validates identity/binding only. It neither estimates mastery nor
+    selects a batch. Those are empirical mechanisms owned by #461/#455.
     """
 
     if not projection_id.strip():
         raise ValueError("training projection requires identity")
     if not model_checkpoint_hash.strip() or not structural_catalog_hash.strip() or not probe_family_hash.strip():
         raise ValueError("training projection requires checkpoint/catalog/probe hashes")
-    if not 0.0 <= repetition_floor <= 1.0:
-        raise ValueError("repetition floor must be in [0,1]")
+    if not isfinite(repetition_floor) or not 0.0 <= repetition_floor <= 1.0:
+        raise ValueError("repetition floor must be finite and in [0,1]")
 
     structure_ids = [item.structure_id for item in structural_objects]
     if len(structure_ids) != len(set(structure_ids)):
         raise ValueError("structural catalog ids must be unique")
+    expected_catalog_hash = structural_catalog_digest(structural_objects)
+    if structural_catalog_hash != expected_catalog_hash:
+        raise ValueError("structural catalog hash does not match supplied structural objects")
     known_structures = set(structure_ids)
 
     estimate_ids = [item.structure_id for item in mastery_estimates]
