@@ -166,6 +166,33 @@ def test_unmeasured_coordinate_is_cannot_check_not_zero_mastery():
     assert "one_or_more_mastery_coordinates_unmeasured" in assessment.reasons
 
 
+def test_empty_mastery_set_is_cannot_check_not_ready():
+    snapshot = _snapshot(mastery_estimates=())
+    assessment = assess_training_projection(snapshot)
+    assert assessment.verdict is ProjectionVerdict.CANNOT_CHECK
+    assert "no_mastery_estimates_materialized" in assessment.reasons
+
+
+def test_candidate_structure_without_matching_mastery_is_cannot_check():
+    structures = (_structure("s1"), _structure("s2"))
+    snapshot = _snapshot(
+        structural_objects=structures,
+        structural_catalog_hash=structural_catalog_digest(structures),
+        mastery_estimates=(_mastery(structure_id="s1"),),
+        candidates=(
+            _candidate(
+                candidate_id="cand-s2",
+                raw_item_id="raw-s2",
+                derived_view_id="view-s2",
+                structure_id="s2",
+            ),
+        ),
+    )
+    assessment = assess_training_projection(snapshot)
+    assert assessment.verdict is ProjectionVerdict.CANNOT_CHECK
+    assert "candidate_structure_without_mastery:s2" in assessment.reasons
+
+
 def test_posthoc_projection_or_mastery_estimate_fails_closed():
     posthoc_projection = _snapshot(frozen_before_outcome_access=False)
     assert assess_training_projection(posthoc_projection).verdict is ProjectionVerdict.INVALID
