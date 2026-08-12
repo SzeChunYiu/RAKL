@@ -15,5 +15,6 @@ v1 harness is read-only. Proxies stand in for hosted `exact_verdict` until dev g
 
 ```bash
 python research/glm52_mechanism_suite_v1_1/offline_selftest.py
-pytest tests/test_glm52_v1_1_wave2_harness.py
+python research/glm52_mechanism_suite_v1_1/wave2_freeze.py
+pytest tests/test_glm52_v1_1_wave2_harness.py tests/test_glm52_v1_1_wave2_freeze.py
 ```
