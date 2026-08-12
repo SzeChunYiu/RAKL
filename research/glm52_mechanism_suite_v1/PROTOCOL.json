@@ -1,0 +1,43 @@
+{
+  "protocol_id": "GLM52-MECHANISM-SUITE-V1",
+  "status": "REGISTRATION_ONLY_NO_NEW_MODEL_OUTCOMES_ACCESSED_IN_THIS_BUILD",
+  "model_family": "glm-5.2",
+  "provider_contract": "Anthropic-compatible endpoint from environment; no credential is stored in repository artifacts",
+  "principles": [
+    "existing null results remain valid for their scoped treatments",
+    "development redesign may use only instrument behavior, retrieval diagnostics, and baseline/oracle development outcomes",
+    "RAKL arm development outcomes may not be used to tune task difficulty or confirmatory thresholds",
+    "confirmatory seeds are disjoint from development seeds",
+    "a failed development headroom/difficulty gate refuses confirmatory execution",
+    "any redesign after confirmatory outcome access requires a new protocol version"
+  ],
+  "experiments": {
+    "selective_retrieval": {
+      "arms": ["GENERIC_HYBRID", "RAKL_SELECTIVE", "GOLD_ORACLE", "NATIVE_LONG"],
+      "dev_gate": "GOLD_ORACLE minus GENERIC_HYBRID exact-verdict >= 0.10 and oracle exact >= 0.70; ignores RAKL_SELECTIVE outcomes",
+      "primary_confirmatory_comparison": "RAKL_SELECTIVE minus GENERIC_HYBRID",
+      "secondary": ["evidence_f1", "native-long-context comparison", "provider usage/cost"]
+    },
+    "experience_transfer": {
+      "arms": ["RESET", "SHAM_MEMORY", "GENERIC_MEMORY", "RAKL_MEMORY", "GOLD_LESSON_ORACLE"],
+      "dev_gate": "GOLD_LESSON_ORACLE minus RESET exact-verdict >= 0.10 and oracle exact >= 0.70; ignores RAKL_MEMORY outcomes",
+      "primary_confirmatory_comparisons": ["RAKL_MEMORY minus SHAM_MEMORY", "RAKL_MEMORY minus GENERIC_MEMORY"],
+      "secondary": ["RAKL_MEMORY minus RESET", "overtransfer rate"]
+    },
+    "trajectory_governance": {
+      "arms": ["DIRECT", "RAKL_GOVERNED"],
+      "dev_gate": "DIRECT step accuracy must be between 0.35 and 0.85; difficulty may be tuned only from DIRECT",
+      "confirmatory_success": "authority leakage reduction >= 0.05 with valid-update recall drop no worse than 0.02",
+      "noncompensatory": "blanket abstention cannot count as success"
+    }
+  },
+  "seed_domains": {
+    "selective_dev": "11000-series",
+    "selective_confirm": "91000-series",
+    "experience_dev": "21000-series",
+    "experience_confirm": "121000-series",
+    "trajectory_dev": "31000-series",
+    "trajectory_confirm": "131000-series"
+  },
+  "authority_boundary": "Hosted exploratory/confirmatory research evidence only; no automatic paper claim, framework promotion, scientific authority, or model-weight attestation."
+}
