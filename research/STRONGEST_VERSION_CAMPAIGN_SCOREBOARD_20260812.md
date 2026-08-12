@@ -1,10 +1,11 @@
 # Strongest-version campaign scoreboard — 2026-08-12 (V2_EXEC floor after 3476813)
 
-**Tip main at reconstruction:** `60cde35fe48bfd4a0064b7ce27667cc94d720bbe` (merge #477; publication series v2 renumber @ #475)  
+**Tip main at reconstruction:** `ac19f760cbb4` (merge #482 post-#477 sync; issue-sweep scoreboard via #483)
 **Machine-readable:** `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json`  
 **Publication manifest:** `publication/PUBLICATION_SERIES_V2.json`  
 **CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED` (false)  
-**Wave-2 confirmatory unlock:** **no** (terminal under current protocols)
+**Wave-2 confirmatory unlock:** **no** (terminal under current protocols)  
+**GitHub issue sweep (2026-08-12):** **4 closed** (#478 #479 #459 #464) · **11 open** (#216 #442 #443 #444 #447 #455 #461 #462 #466 #467 #468)
 
 Closed GitHub issues are historical terminals, **not** proof the scientific question was answered.
 
@@ -100,3 +101,30 @@ Pointer receipts under `research/fail_closed_framework_closeout_20260812/` close
 | #479 | `FAIL_CLOSED_CONTRACT_RESTORED` — pre-scratch MATERIALIZED requires durable ack |
 
 Index: `research/fail_closed_framework_closeout_20260812/CLOSEOUT_INDEX.md`. No scientific authority; `CAPABLE_MODEL_AVAILABLE` unchanged.
+
+## Framework scaffold closeout (2026-08-12)
+
+PR **#470** (`5b583879`) landed proposal scaffolds; sweep closed as honest terminals (prospective validation / QoI stub still deferred):
+
+| Issue | Disposition | Module |
+|------:|-------------|--------|
+| #459 | `SCAFFOLD_COMPLETE__PROSPECTIVE_VALIDATION_DEFERRED` | `src/rakl/quantifier_compatibility.py` |
+| #464 | `SCAFFOLD_COMPLETE__QOI_NOT_VALIDATED_STUB` | `src/rakl/pre_scratch_fibre_freeze.py` |
+
+Fail-closed contract restoration for overlapping hooks: see fail-closed closeout (#478/#479, PR #480).
+
+## Open issues after sweep (11)
+
+| Issue | Blocker (honest) |
+|------:|------------------|
+| #216 | External human reviewers — Paper I |
+| #442 | Campaign coordinator — children blocked (#447 capability, #443/#444 empirics) |
+| #443 | `CAPABLE_MODEL=NO_REFUTED` / capability V3 stage-2 |
+| #444 | External human validation absent — Paper III confirmatory |
+| #447 | Capability qualification V3 stage-1 instrument defect |
+| #455 | Paper III training-time extension — conditional on #461 signal |
+| #461 | Phase 0/1 ladder instrument frozen — awaiting downstream gates |
+| #462 | Publication decision gate — conditional Structural Learning Mechanics |
+| #466 | Phase 2 adaptive-vs-static — conditional on #461 |
+| #467 | Phase 3 train→inference identity — conditional |
+| #468 | Phase 4 generalization law — conditional |
