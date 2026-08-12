@@ -7,7 +7,7 @@ Each run is bound to the frozen protocol packet hash `fce2bb17…`, `grants_scie
 | Model | Terminal | Note |
 |---|---|---|
 | Qwen2.5-0.5B | `NO_STATE_DEPENDENT_RESIDUAL` | barely clears floor (max 0.667); no differential state-dependent gain |
-| Qwen2.5-1.5B | (running) | |
+| Qwen2.5-1.5B | `MODEL_FLOOR` | stuck at 0.5; never cleared floor on principle |
 | Qwen2.5-3B | (running) | |
 | Qwen2.5-7B | (running) | |
 
