@@ -1,7 +1,7 @@
-# Solving New Mathematics with RAKL — an explicit protocol
+# Solving New Mathematics with Orion — an explicit protocol
 
 How the framework solves a *new* math problem, including one that needs a *new method* --
-derived from how LLMs actually solve math today, and mapped onto RAKL's two-stroke
+derived from how LLMs actually solve math today, and mapped onto Orion's two-stroke
 GROW/CLOSE loop (`docs/GENERATIVE_MECHANICS_PROGRAMME.md` §1a). Proposal-only; honest about
 what is built, what is proposed, and what no framework can guarantee.
 
@@ -29,21 +29,21 @@ Every system that has produced real mathematical results shares one mechanism:
   **largest cap sets found in 20 years** -- genuinely new mathematics, because novelty is
   bounded by the *evaluator*, not by prior knowledge.
 
-Three invariants fall out, and they are exactly RAKL's:
+Three invariants fall out, and they are exactly Orion's:
 1. **Verification is the enabler.** You can only trust generation that a sound oracle can check.
 2. **The LLM is the GROW/mutation operator**; the verifier is the CLOSE/selection oracle.
 3. **What verifies is retained and reused** (self-training / evolutionary pool) -- method evolution.
 
 ---
 
-## 2. The RAKL protocol (the two-stroke loop, instantiated for math)
+## 2. The Orion protocol (the two-stroke loop, instantiated for math)
 
-Each step lists: real-system analogue -> RAKL machinery that exists -> proposed generative
+Each step lists: real-system analogue -> Orion machinery that exists -> proposed generative
 mechanic where a gap remains.
 
 ### Phase 0 -- Intake and framing
 - **Autoformalize** the problem: natural language -> a formal statement in a checkable system
-  (Lean-style). *[AlphaProof autoformalization -> RAKL `math_context.py`, autoformalization in
+  (Lean-style). *[AlphaProof autoformalization -> Orion `math_context.py`, autoformalization in
   `MATHEMATICAL_RESEARCH_ASSURANCE.md`]*
 - **Well-posedness certificate**: is the statement decidable/answerable as posed; are the
   load-bearing terms unambiguous? An ambiguous term whose senses change the answer opens a
@@ -164,7 +164,7 @@ decide whether the invention is real.
 
 ## 5. What is built vs. what is the gap
 
-- **Already in RAKL (the CLOSE stroke):** `proof_dag.py`, `formal_oracles.py`, `math_oracles.py`,
+- **Already in Orion (the CLOSE stroke):** `proof_dag.py`, `formal_oracles.py`, `math_oracles.py`,
   `symbolic_discovery.py`, `strategy_motifs.py`, `backward_multiseed.py`, `constructive_lattice.py`,
   `invention*.py`, `math_research_assurance.py`, autoformalization, counterexample-first,
   verified-lemma checkpointing, and Paper V's assurance architecture.
@@ -174,7 +174,7 @@ decide whether the invention is real.
   choose which residual to attack. The severity coordinate $S$ formalizes "a proof that clears a
   sound checker is the most severe test," tying Phase 3 to Mechanic V.
 
-The honest headline: **RAKL can solve a *formalizable* new math problem, including one needing a
+The honest headline: **Orion can solve a *formalizable* new math problem, including one needing a
 new method, by recursively inventing the missing operator and letting a sound verifier confer
 authority -- as a system, not a smarter model. For non-formalizable frontier math it assists but
 cannot certify.** That is exactly the boundary its own ethos demands.

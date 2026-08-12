@@ -1,7 +1,7 @@
 # Generative Mechanics — a Method-Saturation Programme
 
 Status: research proposal / synthesis. Proposal-only; no canonical authority.
-Source: a five-domain completeness audit of the three RAKL mechanics (mathematics,
+Source: a five-domain completeness audit of the three Orion mechanics (mathematics,
 science, engineering, philosophy, and LLM-vs-human problem-solving), read against
 the papers and the `docs/` method layer.
 
@@ -21,8 +21,8 @@ problem-solving primitives**:
 > relative to those sources, that basis, and that horizon. Any newly observed primitive
 > reopens it.
 
-This is Paper I's own bounded-saturation rule, turned on RAKL's own method basis — the
-"meta-lattice whose object is RAKL." Three constraints, forced by RAKL's own results,
+This is Paper I's own bounded-saturation rule, turned on Orion's own method basis — the
+"meta-lattice whose object is Orion." Three constraints, forced by Orion's own results,
 keep it honest:
 
 1. **Bounded, never absolute.** Paper I proves open-world non-certifiability: no finite
@@ -60,10 +60,10 @@ It is tempting to conclude the whole project is: **saturate the lattice, and the
 is contained in it.** That is exactly half right, and the missing half is the point of this
 programme:
 
-- **CLOSE (saturate the lattice).** RAKL's closure operator is extensive/monotone/idempotent;
+- **CLOSE (saturate the lattice).** Orion's closure operator is extensive/monotone/idempotent;
   its fixed points form a complete lattice and a saturated state is a fixed point. Closing
   the lattice reveals *everything the current basis entails* --- the deductive, parallelizable,
-  compressible half RAKL already does well. For any problem whose answer is a compatible
+  compressible half Orion already does well. For any problem whose answer is a compatible
   gluing of known atoms, saturation finds it.
 - **The word "contained" is what open-world non-certifiability forbids.** The lattice is built
   from a *finite basis*; saturation is *bounded* relative to declared atoms/routes/horizon.
@@ -80,7 +80,7 @@ programme:
 The generalized discovery method is therefore a **two-stroke loop**: GROW the basis, CLOSE the
 lattice, inspect the residual, and bounded-saturate over *both* (stop only when neither
 heterogeneous basis-growth nor closure adds anything substantive; reopen on any new primitive).
-RAKL today has the CLOSE stroke; this programme is the GROW stroke. Saturate-the-lattice is
+Orion today has the CLOSE stroke; this programme is the GROW stroke. Saturate-the-lattice is
 exactly half the method --- and the generative mechanics are what stop it from being an engine
 that closes forever over too small a world.
 
@@ -92,7 +92,7 @@ JUMP across, GLUE compositions) that bridges start to goal.
 
 **Does the framework provide a *shorter* path? Not intrinsically.** The length of the
 shortest proof is a property of the theorem + axioms + logic *in a fixed representation*; no
-search procedure changes it. What RAKL does is make a shorter path *exist* and *findable*:
+search procedure changes it. What Orion does is make a shorter path *exist* and *findable*:
 - **change the space** --- proof length is not invariant to representation; searching over the
   atlas of charts makes the effective shortest path the minimum over the *union* of
   representations, often far shorter than in any one;
@@ -103,7 +103,7 @@ search procedure changes it. What RAKL does is make a shorter path *exist* and *
   future problems;
 - **guided search + perfect negative history** --- find the path faster even at fixed length.
 
-So RAKL does not shorten the path in your space; it lets you *grow the space* (new charts,
+So Orion does not shorten the path in your space; it lets you *grow the space* (new charts,
 new jump-edges) so a shorter path exists, and prunes the search so you find it. The bridge you
 need often does not exist until you add an edge --- the GROW stroke.
 
@@ -113,14 +113,14 @@ Level 2: the *method-space*, whose objects are methods and whose morphisms are
 method-transformations (generalize, specialize, compose, evolve-under-failure); "improve a
 method" is an operator here (Paper III experience->method, DIALECTIC concept-evolution).
 
-RAKL is **self-similar across levels**: the same GROW/CLOSE fibre-traversal-with-bounded-
+Orion is **self-similar across levels**: the same GROW/CLOSE fibre-traversal-with-bounded-
 saturation is the operator at every level. Therefore:
 
 > The "generalized method that contains every method" is not a bigger list of methods --- it is
 > the **scale-invariant loop itself** (traverse, glue, saturate, grow-when-stuck), the same
 > operator at every dimension. Specific methods are its projections at level 0; meta-methods are
-> its projections at level 2; the loop is the invariant. "The method to improve methods" is RAKL
-> applied to itself --- the meta-lattice whose object is RAKL --- a fixed point, and bounded
+> its projections at level 2; the loop is the invariant. "The method to improve methods" is Orion
+> applied to itself --- the meta-lattice whose object is Orion --- a fixed point, and bounded
 > method-saturation is the claim that this fixed point is *reachable* without infinite regress.
 
 Honesty marker: the scale-invariance and fixed-point are a **conjecture/framing**, not a
@@ -129,10 +129,10 @@ theorem; open-world non-certifiability caps it --- one can never certify the loo
 
 **Higher dimensions (level 3, 4, ...): two opposite currents.** The tower continues --- level 3
 is a heuristic for choosing heuristics (Polya), level 4 a methodology of discovery (which is
-what RAKL itself is). It does not require a new mechanism per level, and it does not float free:
+what Orion itself is). It does not require a new mechanism per level, and it does not float free:
 - **Generativity flows *down* and is scale-invariant.** The GROW/CLOSE loop is parametric over
-  the object-type; level *k* = the same loop applied to level-(*k*-1) objects. RAKL at level 3 is
-  RAKL applied to (RAKL applied to problems). One generic procedure, reinstantiated --- so the
+  the object-type; level *k* = the same loop applied to level-(*k*-1) objects. Orion at level 3 is
+  Orion applied to (Orion applied to problems). One generic procedure, reinstantiated --- so the
   framework provides a pathway at every dimension without a new framework per dimension.
 - **Authority flows *up* from the ground and cannot self-recurse.** An improvement at level *k*
   is validated only by its effect on level-(*k*-1) outcomes, recursing down to reality / a
@@ -145,12 +145,12 @@ what RAKL itself is). It does not require a new mechanism per level, and it does
 Hence **every higher-dimensional pathway is a loop that touches the ground.** The cost of
 altitude: evidence gets sparse (slow meta-saturation), feedback loops get long (validating one
 meta-method needs many object-level trials), and reliance on the ground grows (no shortcut past
-grounding). RAKL provides the pathway at every level; it does not provide a free lunch. (Framing,
+grounding). Orion provides the pathway at every level; it does not provide a free lunch. (Framing,
 not theorem; the Godel/Lob ceiling is real, its application here is a model.)
 
 ## 2. Diagnosis (what the five rounds agree on)
 
-**RAKL is a superb refutation / governance engine and an absent generative engine.**
+**Orion is a superb refutation / governance engine and an absent generative engine.**
 
 It is strong — often superhumanly — on the *conservative / hygienic* half of discovery:
 falsification, append-only negative history, replication and evidence-independence,
@@ -163,15 +163,15 @@ Per domain, the deepest single hole:
 
 | Domain | Deepest missing move |
 |---|---|
-| Mathematics | **Lakatos concept-evolution** — a counterexample can only *reject*; it can never *edit the definition/statement* (monster-barring, lemma-incorporation). RAKL is fail-closed, so it cannot create concepts. |
+| Mathematics | **Lakatos concept-evolution** — a counterexample can only *reject*; it can never *edit the definition/statement* (monster-barring, lemma-incorporation). Orion is fail-closed, so it cannot create concepts. |
 | Science | **Severity / corroboration** — the verifier is pass/fail against *existing* evidence; a claim surviving ten weak checks is indistinguishable from one surviving a single brutal, could-have-killed-it test. |
-| Engineering | **Trade-off dissolution** — RAKL records Pareto fronts but never tries to *break* one (TRIZ ideality); and failure-learning is *reactive*, never prospective (no FMEA before building). |
-| Philosophy | **Value / taste** — RAKL governs a *given* target but cannot *choose* targets by importance/depth/fruitfulness; and it never asks *what a question means* (well-posedness). |
+| Engineering | **Trade-off dissolution** — Orion records Pareto fronts but never tries to *break* one (TRIZ ideality); and failure-learning is *reactive*, never prospective (no FMEA before building). |
+| Philosophy | **Value / taste** — Orion governs a *given* target but cannot *choose* targets by importance/depth/fruitfulness; and it never asks *what a question means* (well-posedness). |
 | LLM path | **Generator-level diversity, a validated taste oracle, per-claim calibration** — the workspace itself concedes it can only rearrange locally-generated objects. |
 
 The LLM round adds the "better path" reading: human heuristics are *one specialization*
 of a universal problem-solving operator set, tuned to the human strength/weakness profile.
-RAKL is the **re-specialization of the same operators for the inverted LLM profile** —
+Orion is the **re-specialization of the same operators for the inverted LLM profile** —
 amplify breadth/throughput/tireless recall, externalize memory, substitute checkable
 verification, gate authority so fluency cannot self-promote. The framework is therefore
 positioned as the *LLM-optimal generalization* of problem-solving, not a new epistemology.
@@ -217,7 +217,7 @@ cluster into exactly three phases the current three mechanics under-serve.
 
 ## 4. The missing half: three proposed mechanics
 
-RAKL today has three mechanics — **I Epistemic** (govern), **II Structural** (transfer),
+Orion today has three mechanics — **I Epistemic** (govern), **II Structural** (transfer),
 **III Method-evolution** (learn). The audit says the missing half is three more, one per
 under-served phase of the research loop `propose -> stress-test -> select`:
 
@@ -250,7 +250,7 @@ The judgment front-end that decides *what to pursue and what a question means*:
 - Fitness-for-purpose stop — halt on decision-sufficiency, not only no-gain saturation.
 - Inquiry-ethics / dual-use gate — fail-closed, non-compensatory, mandatory human signoff on the review band.
 
-**Every proposed mechanic keeps the four invariants that make RAKL RAKL:** proposal-only
+**Every proposed mechanic keeps the four invariants that make Orion Orion:** proposal-only
 (non-sovereign); poset, never scalar; frozen benchmark/threshold before outcome access;
 and explicit model-vs-system attribution.
 
@@ -299,13 +299,13 @@ is a *controllable tool*. Decompose the breakthrough:
 5. **Value recognition** --- judge it worth pursuing despite the danger (value/promise).
 6. **Retention & transmission** --- keep the method and teach it (method evolution).
 
-Against RAKL's three current mechanics: JUMP (II) and retention (III) and the
+Against Orion's three current mechanics: JUMP (II) and retention (III) and the
 `docs/` OWMD/constructive-invention layer cover 3, 4 and 6 in part. **But the spark
 --- steps 1, 2, 5 --- has no executable mechanic**, and worse:
 
 > **A fail-closed governance engine is structurally biased *against* breakthroughs.**
 > When "use fire" is first proposed it has zero evidence, so today's verifier returns
-> \texttt{CANNOT\_CHECK} or \texttt{REJECTED}. The very discipline that keeps RAKL from
+> \texttt{CANNOT\_CHECK} or \texttt{REJECTED}. The very discipline that keeps Orion from
 > fooling itself would kill the breakthrough at birth.
 
 So the honest answer is **no** --- the current three mechanics govern and refute; they
@@ -326,7 +326,7 @@ together, with a **protected speculative lane** as the crux:
   rather than assert it.
 - **IV `DIALECTIC`** crystallizes the new *concept/category* once it survives.
 
-The honest limit RAKL's own ethos demands: **no mechanic guarantees a breakthrough.**
+The honest limit Orion's own ethos demands: **no mechanic guarantees a breakthrough.**
 The creative leap is still bounded by the model and by serendipity. What the mechanics
 change is the odds and the machinery around the leap --- (a) not *filtering out* the wild
 idea by being too conservative; (b) *enumerating* affordances, reframes and cross-domain
@@ -335,7 +335,7 @@ protecting* a promising one; (d) *testing* it honestly; (e) *preserving and tran
 it. That converts breakthrough from "wait for a rare genius" into "search the
 affordance/reframe space with perfect memory and no premature rejection" --- which is the
 one place a machine can plausibly out-*system* human discovery. Until the generative and
-severity mechanics exist and are saturation-certified, RAKL should claim only that it
+severity mechanics exist and are saturation-certified, Orion should claim only that it
 governs and transmits breakthroughs, not that it originates them.
 
 ## 7. Recommendation
@@ -343,7 +343,7 @@ governs and transmits breakthroughs, not that it originates them.
 Publish this as a distinct paper — **"Generative Mechanics"** (or a trilogy IV/V/VI mirroring
 I/II/III) — whose completeness argument *is* the method-saturation ledger of §5, not an
 asserted list. That makes the human-completeness claim falsifiable and evidence-governed,
-which is the only kind of completeness claim RAKL is permitted to make. The individual
+which is the only kind of completeness claim Orion is permitted to make. The individual
 mechanics can be prototyped and confirmed one at a time on frozen benchmarks (Paper II's
 confirmatory-lane protocol), starting with the two highest-leverage and most self-contained:
 the **severity coordinate `S`** (Mechanic V) and the **value/promise projection** (Mechanic VI).

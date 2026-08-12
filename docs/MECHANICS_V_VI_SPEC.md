@@ -1,4 +1,4 @@
-# RAKL Mechanics V & VI — Testable Specification
+# Orion Mechanics V & VI — Testable Specification
 
 The **Severity coordinate `S`** and the **Value/Promise projection `v(g)`** — the two
 highest-leverage, most self-contained mechanics from
