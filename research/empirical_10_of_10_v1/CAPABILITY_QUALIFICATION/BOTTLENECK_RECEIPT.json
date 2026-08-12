@@ -1,0 +1,375 @@
+{
+  "artifact_sha256": "18d6d00211d50d8f509e82f9a92c1553beb3630d980f210f91107e556558a7a4",
+  "authorization_boundary": "Stage 1 development diagnostics cannot authorize capability. No CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 may be derived from this receipt.",
+  "consumer_issue_numbers": [
+    443,
+    446
+  ],
+  "diagnosis_state": "BENCHMARK_CONSTRUCT_DEFECT",
+  "downstream_effect": {
+    "capability_question": "UNIDENTIFIED_AT_THIS_INSTRUMENT",
+    "forbidden_next": [
+      "rescoring job 3476813 under the other convention",
+      "lowering any frozen threshold",
+      "authorizing capability from these development items"
+    ],
+    "required_next": "versioned interface repair, then a fresh held-out qualification panel"
+  },
+  "gold_audit": {
+    "all_partitions_disjoint": true,
+    "all_partitions_total": true,
+    "alternative_reading_ruled_out": "selected = relevant evidence",
+    "alternative_reading_ruled_out_by": {
+      "observation": "E2 is an on-topic mass reading (51.20 kg) for a mass claim, yet gold places it in rejected_evidence_ids because the instrument drifted out of tolerance and was not recalibrated. A relevance reading would have selected it.",
+      "task_id": "T1"
+    },
+    "convention_informative_task_ids": [
+      "T1",
+      "T2",
+      "T3",
+      "T4"
+    ],
+    "gold_convention": "LICENSES_VERDICT",
+    "gold_convention_statement": "selected_evidence_ids = exactly the evidence that licenses the stated verdict; rejected_evidence_ids = every other supplied id, including on-topic but unreliable or off-quantity evidence.",
+    "gold_verdict": "GOLD_INTERNALLY_CONSISTENT",
+    "instruction_surface_audits": [
+      {
+        "canonical_definition_present": false,
+        "defines_evidence_role": false,
+        "mentions_rejected_field": true,
+        "mentions_selected_field": true,
+        "patterns_swept": [
+          "licenses_verdict",
+          "basis_for_verdict",
+          "relied_upon",
+          "claim_referent",
+          "relevance_reading",
+          "definitional_copula",
+          "reject_definitional"
+        ],
+        "role_language_matches": [],
+        "surface_label": "SYSTEM_PROMPT.txt",
+        "verdict": "EVIDENCE_ROLE_UNDEFINED"
+      },
+      {
+        "canonical_definition_present": false,
+        "defines_evidence_role": false,
+        "mentions_rejected_field": true,
+        "mentions_selected_field": true,
+        "patterns_swept": [
+          "licenses_verdict",
+          "basis_for_verdict",
+          "relied_upon",
+          "claim_referent",
+          "relevance_reading",
+          "definitional_copula",
+          "reject_definitional"
+        ],
+        "role_language_matches": [],
+        "surface_label": "paper2_experience_benchmark_runner.build_user_prompt:instruction_block",
+        "verdict": "EVIDENCE_ROLE_UNDEFINED"
+      }
+    ],
+    "items": [
+      {
+        "convention_informative": true,
+        "gold_rejected": [
+          "E2",
+          "E3"
+        ],
+        "gold_selected": [
+          "E1"
+        ],
+        "gold_verdict": "SUPPORT",
+        "partition_is_disjoint": true,
+        "partition_is_total": true,
+        "stratum": "REPEATED_FAMILY",
+        "task_id": "T1"
+      },
+      {
+        "convention_informative": true,
+        "gold_rejected": [
+          "E1",
+          "E2"
+        ],
+        "gold_selected": [
+          "E3"
+        ],
+        "gold_verdict": "CONTEXT_MISALIGNED",
+        "partition_is_disjoint": true,
+        "partition_is_total": true,
+        "stratum": "CROSS_DOMAIN_TRANSFER",
+        "task_id": "T2"
+      },
+      {
+        "convention_informative": true,
+        "gold_rejected": [
+          "E1"
+        ],
+        "gold_selected": [
+          "E2",
+          "E3"
+        ],
+        "gold_verdict": "REFUTE",
+        "partition_is_disjoint": true,
+        "partition_is_total": true,
+        "stratum": "HOSTILE_NEAR_MISS",
+        "task_id": "T3"
+      },
+      {
+        "convention_informative": true,
+        "gold_rejected": [
+          "E3"
+        ],
+        "gold_selected": [
+          "E1",
+          "E2"
+        ],
+        "gold_verdict": "REFUTE",
+        "partition_is_disjoint": true,
+        "partition_is_total": true,
+        "stratum": "CONTEXT_ALIGNMENT",
+        "task_id": "T4"
+      },
+      {
+        "convention_informative": false,
+        "gold_rejected": [
+          "E1",
+          "E2",
+          "E3"
+        ],
+        "gold_selected": [],
+        "gold_verdict": "CANNOT_CHECK",
+        "partition_is_disjoint": true,
+        "partition_is_total": true,
+        "stratum": "MISSING_EVIDENCE",
+        "task_id": "T5"
+      }
+    ],
+    "source_surfaces": [
+      {
+        "path": "research/paper2_oracle_capability_gate_v2_exec/protocol/SYSTEM_PROMPT.txt",
+        "sha256": "0a5b501d6dad0a32679f02d271750e0ed4dabc960494c7642d329ea71cd7be89"
+      },
+      {
+        "extracted_span": "build_user_prompt static instruction block",
+        "path": "src/rakl/paper2_experience_benchmark_runner.py",
+        "sha256": "74408a68fde60b3971cbdf80ff094f9cd3f72154cd0528d1582fc1acc6b9d617"
+      }
+    ],
+    "stage0_note": "Issue #447 Stage 0 requires this audit BEFORE model evaluation. It was not run for paper2-oracle-capability-gate-v2-exec. Running it retrospectively is why the terminal is an identifiability statement plus a versioned repair, and never a claim about what the 7B model can do.",
+    "stage0_verdict": "INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED"
+  },
+  "identifiability_statement": {
+    "T1": "convention-insensitive; carries no information about evidence binding",
+    "T2": "measurement cannot separate H_inversion from H_incapacity",
+    "T3": "measurement cannot separate H_inversion from H_incapacity",
+    "T4": "verdict error is convention-invariant and is a real composition failure",
+    "T5": "convention-insensitive; carries no information about evidence binding"
+  },
+  "instruction_surface_audits": [
+    {
+      "canonical_definition_present": false,
+      "defines_evidence_role": false,
+      "mentions_rejected_field": true,
+      "mentions_selected_field": true,
+      "patterns_swept": [
+        "licenses_verdict",
+        "basis_for_verdict",
+        "relied_upon",
+        "claim_referent",
+        "relevance_reading",
+        "definitional_copula",
+        "reject_definitional"
+      ],
+      "role_language_matches": [],
+      "surface_label": "SYSTEM_PROMPT.txt",
+      "verdict": "EVIDENCE_ROLE_UNDEFINED"
+    },
+    {
+      "canonical_definition_present": false,
+      "defines_evidence_role": false,
+      "mentions_rejected_field": true,
+      "mentions_selected_field": true,
+      "patterns_swept": [
+        "licenses_verdict",
+        "basis_for_verdict",
+        "relied_upon",
+        "claim_referent",
+        "relevance_reading",
+        "definitional_copula",
+        "reject_definitional"
+      ],
+      "role_language_matches": [],
+      "surface_label": "paper2_experience_benchmark_runner.build_user_prompt:instruction_block",
+      "verdict": "EVIDENCE_ROLE_UNDEFINED"
+    }
+  ],
+  "issue_number": 447,
+  "item_count": 5,
+  "no_rescore_guarantee": "This decomposition emits no score and no convention-corrected success count. Sealed job verdicts are unchanged.",
+  "per_item": [
+    {
+      "gold_rejected": [
+        "E2",
+        "E3"
+      ],
+      "gold_selected": [
+        "E1"
+      ],
+      "gold_verdict": "SUPPORT",
+      "inversion_identifiable": true,
+      "notes": [],
+      "parse_valid": true,
+      "partition_exact_inversion": false,
+      "partition_exact_match": true,
+      "partition_matches_up_to_label": true,
+      "predicted_rejected": [
+        "E2",
+        "E3"
+      ],
+      "predicted_selected": [
+        "E1"
+      ],
+      "predicted_verdict": "SUPPORT",
+      "task_id": "T1",
+      "verdict_correct": true
+    },
+    {
+      "gold_rejected": [
+        "E1",
+        "E2"
+      ],
+      "gold_selected": [
+        "E3"
+      ],
+      "gold_verdict": "CONTEXT_MISALIGNED",
+      "inversion_identifiable": true,
+      "notes": [
+        "partition_solved_labels_swapped"
+      ],
+      "parse_valid": true,
+      "partition_exact_inversion": true,
+      "partition_exact_match": false,
+      "partition_matches_up_to_label": true,
+      "predicted_rejected": [
+        "E3"
+      ],
+      "predicted_selected": [
+        "E1",
+        "E2"
+      ],
+      "predicted_verdict": "CONTEXT_MISALIGNED",
+      "task_id": "T2",
+      "verdict_correct": true
+    },
+    {
+      "gold_rejected": [
+        "E1"
+      ],
+      "gold_selected": [
+        "E2",
+        "E3"
+      ],
+      "gold_verdict": "REFUTE",
+      "inversion_identifiable": true,
+      "notes": [
+        "partition_solved_labels_swapped"
+      ],
+      "parse_valid": true,
+      "partition_exact_inversion": true,
+      "partition_exact_match": false,
+      "partition_matches_up_to_label": true,
+      "predicted_rejected": [
+        "E2",
+        "E3"
+      ],
+      "predicted_selected": [
+        "E1"
+      ],
+      "predicted_verdict": "CONTEXT_MISALIGNED",
+      "task_id": "T3",
+      "verdict_correct": false
+    },
+    {
+      "gold_rejected": [
+        "E3"
+      ],
+      "gold_selected": [
+        "E1",
+        "E2"
+      ],
+      "gold_verdict": "REFUTE",
+      "inversion_identifiable": true,
+      "notes": [
+        "partition_neither_match_nor_inversion"
+      ],
+      "parse_valid": true,
+      "partition_exact_inversion": false,
+      "partition_exact_match": false,
+      "partition_matches_up_to_label": false,
+      "predicted_rejected": [
+        "E1",
+        "E2"
+      ],
+      "predicted_selected": [],
+      "predicted_verdict": "CANNOT_CHECK",
+      "task_id": "T4",
+      "verdict_correct": false
+    },
+    {
+      "gold_rejected": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "gold_selected": [],
+      "gold_verdict": "CANNOT_CHECK",
+      "inversion_identifiable": true,
+      "notes": [],
+      "parse_valid": true,
+      "partition_exact_inversion": false,
+      "partition_exact_match": true,
+      "partition_matches_up_to_label": true,
+      "predicted_rejected": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "predicted_selected": [],
+      "predicted_verdict": "CANNOT_CHECK",
+      "task_id": "T5",
+      "verdict_correct": true
+    }
+  ],
+  "preserved_sealed_verdict": "MODEL_CAPABILITY_FLOOR_7B_V2_EXEC",
+  "preserved_sealed_verdict_status": "UNCHANGED_BY_THIS_RECEIPT",
+  "rationale": "At least one generation reproduced the gold evidence partition exactly with the two labels swapped, while the instruction surface defines no role semantics for selected_evidence_ids/rejected_evidence_ids. Evidence-binding capability is not identifiable from this instrument.",
+  "receipt_type": "paper2_capability_v3_stage1_bottleneck_receipt_v1",
+  "schema_version": "paper2-capability-v3-bottleneck-receipt-v1",
+  "source_backend_version": "transformers-4.55.0/torch-2.8.0+cpu",
+  "source_job_id": 3476813,
+  "source_model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "source_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "stage_observables": {
+    "A_EVIDENCE_RELEVANCE__B_EVIDENCE_POLARITY__C_CONTEXT_QOI_ALIGNMENT": {
+      "note": "A single-shot structured readout exposes no intermediate artefact for these stages, so per-stage accuracy cannot be computed from preserved outputs. This is itself the Stage 1 finding that motivates a staged interface challenger under issue #447 Stage 2.",
+      "separability": "NOT_SEPARABLE_IN_MONOLITHIC_READOUT"
+    },
+    "D_EXACT_EVIDENCE_BINDING": {
+      "inversion_identifiable_item_count": 5,
+      "partition_exact_inversion_count": 2,
+      "partition_exact_match_count": 2,
+      "partition_matches_up_to_label_count": 4
+    },
+    "E_VERDICT_COMPOSITION": {
+      "comparability_note": "Verdict accuracy is a Stage 1 per-stage diagnostic metric. It is NOT comparable to the frozen exact-success gate, which requires verdict AND support recall AND reject recall jointly. Do not compare this number to any success threshold.",
+      "verdict_accuracy": 0.6,
+      "verdict_correct_count": 3
+    },
+    "F_FINAL_STRUCTURED_READOUT": {
+      "parse_valid_count": 5,
+      "parse_valid_rate": 1.0
+    }
+  }
+}
