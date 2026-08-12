@@ -126,7 +126,9 @@ plan_math_research(...,
     shortcut_review=...,
     research_trace=...,
     preservation_receipt=...,
-    expected_preservation_sha256=...)
+    expected_preservation_sha256=...,
+    framework_subject_binding=...,
+    framework_subject_observation=...)
 ```
 
 If `candidate_generation_allowed` is false, execute only `pre_candidate_actions`. Do not bypass a gate by calling lower-level candidate operators or by generating a candidate first and backfilling context, memory, transformation memory, shortcut review or trace later.

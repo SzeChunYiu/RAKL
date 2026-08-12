@@ -43,6 +43,13 @@ from .research_trace import (
     TraceGateVerdict,
     audit_pre_candidate_trace,
 )
+from .framework_candidate_freeze import (
+    REQUIRED_FRAMEWORK_SUBJECT_ACTIONS,
+    CandidateFreezeRevalidationReport,
+    FrameworkSubjectFreezeBinding,
+    FrameworkSubjectRevalidationObservation,
+    gate_candidate_materialization_framework_subject,
+)
 from .root_coordinate_preservation import (
     REQUIRED_PRESERVATION_ACTIONS,
     PreservationGateReport,
@@ -73,6 +80,7 @@ class MathResearchPlan:
     pre_candidate_actions: Tuple[str, ...]
     candidate_generation_allowed: bool
     preservation_gate: PreservationGateReport | None = None
+    framework_subject_gate: CandidateFreezeRevalidationReport | None = None
 
 
 def _facts_from_record(
@@ -199,6 +207,9 @@ def plan_math_research(
     preservation_receipt: RootCoordinatePreservationReceipt | None = None,
     require_preservation_gate: bool = False,
     expected_preservation_sha256: str | None = None,
+    framework_subject_binding: FrameworkSubjectFreezeBinding | None = None,
+    framework_subject_observation: FrameworkSubjectRevalidationObservation | None = None,
+    require_framework_subject_gate: bool = False,
     operators: Tuple[ResearchOperator, ...] = DEFAULT_OPERATOR_ATLAS,
     max_depth: int = 4,
     top_k: int = 8,
@@ -227,6 +238,10 @@ def plan_math_research(
        preservation receipt is supplied, missing/stale/refuted receipts fail closed
        before expensive candidate search. Free-form brainstorming that neither
        requires nor supplies a receipt leaves this gate inactive.
+    6. **Framework-subject gate** (issue #385) — when required, or when a freeze
+       binding is supplied, revalidate the authoritative ``RAKL/main`` SHA before
+       candidate materialization. Protected method/gate/schema/runtime drift fails
+       closed; non-method publication/research drift may be acknowledged.
 
     These gates govern reproducible discovery, not theorem truth. Returned paths
     remain planning objects only; theorem and novelty authority stay controlled by
@@ -296,6 +311,15 @@ def plan_math_research(
         required=preservation_required,
     )
 
+    framework_subject_required = (
+        require_framework_subject_gate or framework_subject_binding is not None
+    )
+    framework_subject_gate = gate_candidate_materialization_framework_subject(
+        framework_subject_binding,
+        framework_subject_observation,
+        required=framework_subject_required,
+    )
+
     state = derive_planning_state(
         signature=signature,
         record=record,
@@ -326,6 +350,10 @@ def plan_math_research(
         paths = ()
         pre_candidate_actions = REQUIRED_PRESERVATION_ACTIONS
         candidate_generation_allowed = False
+    elif not framework_subject_gate.licenses_candidate_materialization:
+        paths = ()
+        pre_candidate_actions = REQUIRED_FRAMEWORK_SUBJECT_ACTIONS
+        candidate_generation_allowed = False
     else:
         paths = search_operator_paths(
             state,
@@ -348,6 +376,7 @@ def plan_math_research(
         pre_candidate_actions=pre_candidate_actions,
         candidate_generation_allowed=candidate_generation_allowed,
         preservation_gate=preservation_gate,
+        framework_subject_gate=framework_subject_gate,
     )
 
 

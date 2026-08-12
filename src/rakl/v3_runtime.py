@@ -15,7 +15,23 @@ from .experience_learning import (
     lesson_to_research_tool,
     promoted_lesson_version,
 )
-from .experience_substrate import ExperienceLedger, Lesson, LessonKind, TaskEpisode, add_episode, add_lesson
+from .experience_substrate import (
+    EpisodeAdmissionReceipt as SubstrateAdmissionReceipt,
+    ExperienceLedger,
+    Lesson,
+    LessonKind,
+    TaskEpisode,
+    add_admission_receipt,
+    add_episode,
+    add_lesson,
+)
+from .episode_admission import (
+    EpisodeAdmissionReceipt as ProposalEpisodeAdmissionReceipt,
+    ProtectedConsumer,
+    filter_canonical_inventory_episodes,
+    require_protected_consumer_admission,
+    retain_proposal_shadow_episode,
+)
 from .evolution_archive import EvolutionArchive
 from .failure_lattice import (
     FailureDiagnosisStatus,
@@ -52,10 +68,12 @@ __all__ = [
     "consolidate_lesson",
     "materialize_state_substrate",
     "promote_scientific_authority",
+    "protected_canonical_inventory",
     "record_saturation_round",
     "record_task_episode",
     "register_scientific_claim",
     "register_scientific_evidence",
+    "require_protected_inventory_admission",
     "revoke_scientific_authority",
     "state_fingerprint",
     "state_fingerprint_v2",
@@ -161,14 +179,44 @@ def record_task_episode(
     episode: TaskEpisode,
     *,
     failure_spec: FailureProjectionSpec | None = None,
+    admission_receipt: SubstrateAdmissionReceipt | None = None,
+    proposal_admission_receipt: ProposalEpisodeAdmissionReceipt | None = None,
+    protected_consumer: ProtectedConsumer | None = None,
+    claimed_path_or_name_hint: str | None = None,
 ) -> RAKLV3State:
     """Fast learning loop: persist the episode immediately, then record failure evidence.
 
     Failure projection defaults to OBSERVED_ONLY.  Root-cause support must be
     supplied explicitly; merely failing cannot mint a reusable obstruction.
+
+    Admission wiring (issue #395):
+
+    * ``admission_receipt`` — ledger-native substrate receipt stored on the
+      experience ledger for exhaustive inventory membership.
+    * ``proposal_admission_receipt`` — proposal-only
+      :mod:`rakl.episode_admission` receipt. When ``protected_consumer`` is set,
+      the pair is fail-closed audited before persistence; shadow-only receipts
+      are retained for search/failure learning and never counted as canonical
+      merely because a path/extension hint was supplied.
     """
 
+    if protected_consumer is not None:
+        require_protected_consumer_admission(
+            episode,
+            proposal_admission_receipt,
+            protected_consumer=protected_consumer,
+            claimed_path_or_name_hint=claimed_path_or_name_hint,
+        )
+    elif proposal_admission_receipt is not None:
+        retain_proposal_shadow_episode(
+            episode,
+            proposal_admission_receipt,
+            claimed_path_or_name_hint=claimed_path_or_name_hint,
+        )
+
     experience = add_episode(state.experience, episode)
+    if admission_receipt is not None:
+        experience = add_admission_receipt(experience, admission_receipt)
     failures = state.failures
     if failure_spec is not None:
         failure = episode_to_failure_experience(
@@ -187,6 +235,36 @@ def record_task_episode(
         )
         failures = add_failure_experience(failures, failure)
     return replace(state, experience=experience, failures=failures)
+
+
+def require_protected_inventory_admission(
+    episode: TaskEpisode,
+    receipt: ProposalEpisodeAdmissionReceipt | None,
+    *,
+    protected_consumer: ProtectedConsumer = ProtectedConsumer.CANONICAL_INVENTORY,
+    claimed_path_or_name_hint: str | None = None,
+):
+    """Runtime alias: fail closed unless episode_admission admits the episode."""
+
+    return require_protected_consumer_admission(
+        episode,
+        receipt,
+        protected_consumer=protected_consumer,
+        claimed_path_or_name_hint=claimed_path_or_name_hint,
+    )
+
+
+def protected_canonical_inventory(
+    pairs: Iterable[tuple[TaskEpisode, ProposalEpisodeAdmissionReceipt | None]],
+    *,
+    claimed_path_or_name_hint: str | None = None,
+) -> Tuple[TaskEpisode, ...]:
+    """Runtime inventory consumer bound to episode_admission receipts."""
+
+    return filter_canonical_inventory_episodes(
+        pairs,
+        claimed_path_or_name_hint=claimed_path_or_name_hint,
+    )
 
 
 def consolidate_lesson(
