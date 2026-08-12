@@ -12,15 +12,15 @@ and explicitly rejects::
 
     failure_t -> another unconstrained idea
 
-A failed trajectory cannot mutate search directly.  It must first yield a
-frozen, known-answer-validated ``SearchFailureReceipt`` whose root cause survives
-a counterfactual discriminator.  Each registered failure signature maps to an
-allow-listed, *operational* policy repair: the successor changes query intent,
+A failed trajectory cannot mutate search directly. It must first yield a frozen,
+known-answer-validated ``SearchFailureReceipt`` whose root cause survives a
+counterfactual discriminator. Each registered failure signature maps to an
+allow-listed, operational policy repair: the successor changes query intent,
 selection/diversification, exploration, or feedback learning on the next search.
 
-The successor is still only a challenger.  The update function cannot claim it
+The successor is still only a challenger. The update function cannot claim it
 is better; fresh held-out assurance and protected Self-RAKL governance own that
-judgement and any later promotion.  Search/ranking feedback never mints
+judgement and any later promotion. Search/ranking feedback never mints
 scientific authority.
 """
 
@@ -522,16 +522,10 @@ def materialize_search_policy_challenger(
     return replace(incumbent, **changes)
 
 
-def _intent_terms(question: ScientificSearchQuestion) -> Tuple[str, ...]:
-    for terms in (
-        question.residual_terms,
-        question.source_native_terms,
-        question.semantic_expansions,
-        question.structural_coordinates,
-    ):
-        cleaned = tuple(term.strip() for term in terms if term.strip())
-        if cleaned:
-            return cleaned
+def _root_bound_intent_terms(question: ScientificSearchQuestion) -> Tuple[str, ...]:
+    residual = tuple(term.strip() for term in question.residual_terms if term.strip())
+    if residual:
+        return residual
     return (question.root_goal,)
 
 
@@ -543,7 +537,7 @@ def _forced_intent(
     return SearchIntent(
         intent_id=f"{question.question_id}:policy:{kind.value}",
         kind=kind,
-        terms=_intent_terms(question),
+        terms=_root_bound_intent_terms(question),
         purpose=purpose,
         root_goal_hash=question.root_goal_hash,
         atom_id=question.atom_id,
@@ -644,10 +638,13 @@ def select_candidates_with_policy(
 ) -> Tuple[SearchCandidate, ...]:
     """Apply the learned policy to next-iteration candidate selection."""
 
+    # The benchmark-target-leak boundary is hard and precedes every reserve,
+    # exploit, and exploration path. No policy learning can weaken it.
     eligible = tuple(
         item
         for item in candidates
-        if item.rank.root_obligation_relevance >= policy.min_root_obligation_relevance
+        if not item.benchmark_target_leak
+        and item.rank.root_obligation_relevance >= policy.min_root_obligation_relevance
         and item.rank.expected_information_gain >= policy.min_expected_information_gain
         and item.substantive_match_score >= policy.min_substantive_match_score
         and item.rank.verification_cost <= policy.max_verification_cost
@@ -656,6 +653,22 @@ def select_candidates_with_policy(
         return ()
 
     selected: list[SearchCandidate] = []
+
+    # Counterevidence is load-bearing and reserves budget before more specialized
+    # slots or exploration. Specialized policies may add further negative/
+    # retraction coverage if room remains.
+    if policy.preserve_counterevidence:
+        _reserve_one(
+            selected,
+            eligible,
+            policy,
+            lambda item: item.stance
+            in {
+                EvidenceStance.REFUTE,
+                EvidenceStance.NEGATIVE_RESULT,
+                EvidenceStance.RETRACTION_CORRECTION,
+            },
+        )
     if policy.preserve_retraction_slot:
         _reserve_one(
             selected,
@@ -689,12 +702,12 @@ def select_candidates_with_policy(
         )
 
     explore_slots = 0
-    if policy.exploration_fraction > 0:
+    if policy.exploration_fraction > 0 and len(selected) < policy.max_candidates:
         explore_slots = min(
             policy.max_candidates - len(selected),
             max(1, ceil(policy.max_candidates * policy.exploration_fraction)),
         )
-    exploit_target = max(0, policy.max_candidates - len(selected) - explore_slots)
+    exploit_limit = policy.max_candidates - explore_slots
 
     exploit_order = diversify_candidates(
         eligible,
@@ -704,12 +717,10 @@ def select_candidates_with_policy(
         preserve_counterevidence=policy.preserve_counterevidence,
     )
     for candidate in exploit_order:
-        if len(selected) >= policy.max_candidates - explore_slots:
+        if len(selected) >= exploit_limit:
             break
         if candidate not in selected and _can_add(candidate, selected, policy):
             selected.append(candidate)
-            if len(selected) >= exploit_target + (policy.max_candidates - explore_slots - exploit_target):
-                break
 
     if explore_slots:
         added = 0
@@ -720,6 +731,9 @@ def select_candidates_with_policy(
                 selected.append(candidate)
                 added += 1
 
+    # If diversity constraints made the reserved exploration budget impossible to
+    # fill, use remaining admissible exploitation candidates rather than returning
+    # an unnecessarily short interaction space.
     if len(selected) < policy.max_candidates:
         for candidate in exploit_order:
             if len(selected) >= policy.max_candidates:
