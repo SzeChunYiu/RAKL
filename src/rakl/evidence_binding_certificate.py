@@ -3,7 +3,7 @@
 This module bridges two existing RAKL surfaces without replacing either one:
 
 * :mod:`rakl.claim_evidence` validates exact source/span identity plus an
-  externally supplied, known-answer-validated semantic review.  Its reports are
+  externally supplied, known-answer-validated semantic review. Its reports are
   intentionally proposal-only and mint no scientific authority.
 * :mod:`rakl.v3_scientific_authority` binds scientific promotion to canonical
   claim text, authority axis, scope, evidence-content digests and a protected
@@ -14,9 +14,9 @@ relations the same exact evidence objects the authority proposal claims, and are
 those relations sufficient for the requested scientific-authority coordinate?
 
 A correct-looking terminal answer with the wrong evidence ids therefore fails.
-This file is a challenger/development surface only.  It is not wired into the
+This file is a challenger/development surface only. It is not wired into the
 canonical v3 promotion path and every public report/certificate explicitly
-returns ``grants_scientific_authority == False``.  Canonical promotion requires
+returns ``grants_scientific_authority == False``. Canonical promotion requires
 fresh assurance and a separately governed integration change.
 """
 
@@ -74,7 +74,7 @@ class ReviewedEvidenceBinding:
 class EvidenceBindingCertificate:
     """Content-addressed proposal that the bound relations can support a promotion.
 
-    The certificate itself never mints authority.  ``subject_hash`` exists so a
+    The certificate itself never mints authority. ``subject_hash`` exists so a
     future protected evaluator can bind the *exact* claim/evidence relation set
     rather than trusting a caller-supplied boolean.
     """
@@ -126,11 +126,7 @@ def _terminal_root(
     evidence_id: str,
     registered: Mapping[str, ScientificEvidenceBinding],
 ) -> str:
-    """Resolve a derivation chain to its terminal registered root.
-
-    Cycles/unknown upstream ids fail closed later because the returned terminal
-    will not describe a distinct registered independent root.
-    """
+    """Resolve a derivation chain to its terminal registered root."""
 
     current = evidence_id
     seen: set[str] = set()
@@ -208,11 +204,11 @@ def evaluate_evidence_binding_for_promotion(
 ) -> EvidenceBindingAssessment:
     """Check exact reviewed claim/evidence relations before scientific promotion.
 
-    No semantic relation is inferred in this function.  It accepts only
-    ``ClaimEvidenceReport`` values that were already produced by the frozen
-    claim-evidence validator from a known-answer-validated semantic review.
+    No semantic relation is inferred here. Only ``ClaimEvidenceReport`` values
+    already produced by the claim-evidence validator from known-answer-validated
+    semantic review can become resolved bindings.
 
-    Version-1 intentionally requires ``proposal.scope_id == claim.scope``.  A
+    Version 1 intentionally requires ``proposal.scope_id == claim.scope``. A
     future context-transport witness may relax this under its own verified
     contract; a caller boolean is not accepted as a substitute.
     """
@@ -220,6 +216,7 @@ def evaluate_evidence_binding_for_promotion(
     invalid: list[str] = []
     cannot_check: list[str] = []
     conflicts: list[str] = []
+    semantic_resolution_incomplete = False
 
     if not certificate_id.strip():
         invalid.append("binding_certificate_id_required")
@@ -240,6 +237,7 @@ def evaluate_evidence_binding_for_promotion(
 
     if not bindings:
         cannot_check.append("no_reviewed_claim_evidence_bindings")
+        semantic_resolution_incomplete = True
 
     evidence_ids = [item.evidence_id for item in bindings]
     link_ids = [item.link.link_id for item in bindings]
@@ -286,12 +284,15 @@ def evaluate_evidence_binding_for_promotion(
             continue
         if report.verdict is ClaimEvidenceVerdict.REVIEWED_INSUFFICIENT_EVIDENCE:
             cannot_check.append(f"reviewed_evidence_insufficient:{item.evidence_id}")
+            semantic_resolution_incomplete = True
             continue
         if report.verdict is ClaimEvidenceVerdict.LOCATOR_VERIFIED_SEMANTICS_UNREVIEWED:
             cannot_check.append(f"semantic_relation_unreviewed:{item.evidence_id}")
+            semantic_resolution_incomplete = True
             continue
         if report.verdict is ClaimEvidenceVerdict.CANNOT_CHECK:
             cannot_check.append(f"claim_evidence_report_cannot_check:{item.evidence_id}")
+            semantic_resolution_incomplete = True
             continue
         if report.verdict is ClaimEvidenceVerdict.TRIAL_INVALID:
             invalid.append(f"claim_evidence_report_invalid:{item.evidence_id}")
@@ -317,9 +318,14 @@ def evaluate_evidence_binding_for_promotion(
     if not bound_support_ids:
         cannot_check.append("promotion_requires_reviewed_support_binding")
     if proposal_ids != bound_support_ids:
-        invalid.append(
-            "promotion_evidence_ids_do_not_exactly_match_reviewed_support_bindings"
-        )
+        if semantic_resolution_incomplete:
+            cannot_check.append(
+                "promotion_support_binding_not_fully_resolved_for_proposal_evidence"
+            )
+        else:
+            invalid.append(
+                "promotion_evidence_ids_do_not_exactly_match_reviewed_support_bindings"
+            )
     if refutation_ids:
         conflicts.append(
             "promotion_has_bound_refuting_evidence:" + ",".join(sorted(refutation_ids))
