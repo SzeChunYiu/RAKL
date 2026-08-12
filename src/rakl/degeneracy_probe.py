@@ -62,6 +62,7 @@ __all__ = [
     "probe_arm_answer_leak",
     "probe_blind_responder",
     "probe_boolean_combination",
+    "probe_decoupling",
     "probe_records",
     "probe_single_feature",
 ]
@@ -380,6 +381,107 @@ def probe_boolean_combination(
                     )
                     return tuple(findings)  # smallest combination is the finding
     return tuple(findings)
+
+
+def probe_decoupling(
+    records: Sequence[LabeledRecord],
+    witness_fields: Sequence[str],
+    *,
+    surface: str = "records",
+    strata: Mapping[str, str] | None = None,
+    min_decoupled: int = 4,
+) -> tuple[DegeneracyFinding, ...]:
+    """Report how many records distinguish the label from ``AND(witness_fields)``.
+
+    ``probe_boolean_combination`` only fires on *exact* reproduction, so a label
+    that agrees with the mechanical AND on 13 of 16 records passes as CLEAN. That
+    is the wrong reading: the informativeness of such a panel rests entirely on
+    the 3 records that decouple, and a fold containing none of them cannot
+    distinguish genuine judgement from the AND.
+
+    The decoupling rate is therefore reported as a *quantity*, not a pass/fail,
+    and stratum-level counts are surfaced because a rate computed over the whole
+    packet hides strata that contribute zero decoupled records.
+
+    ``min_decoupled`` is the count below which a confirmatory read is called
+    underpowered. It must be frozen before labels are unsealed; choosing it after
+    seeing the rate would make this diagnostic another construct that cannot
+    return its negative outcome.
+    """
+
+    usable = [
+        item
+        for item in records
+        if all(name in item.features for name in witness_fields)
+        and isinstance(item.label, bool)
+    ]
+    if not usable or not witness_fields:
+        return (
+            DegeneracyFinding(
+                probe="decoupling_rate",
+                surface=surface,
+                detail=(
+                    "witness fields or boolean labels absent; decoupling was NOT "
+                    "assessed"
+                ),
+                coupling=CouplingKind.CORRELATED,
+                status=DegeneracyStatus.CANNOT_CHECK,
+            ),
+        )
+
+    decoupled = [
+        item
+        for item in usable
+        if all(bool(item.features[name]) for name in witness_fields) != bool(item.label)
+    ]
+    rate = len(decoupled) / len(usable)
+
+    if not decoupled:
+        status, coupling = DegeneracyStatus.DEGENERATE, CouplingKind.AUTHORED_FROM_LABEL
+        verdict = (
+            "the label is exactly AND(witnesses) on every record, so the panel "
+            "cannot return a negative result about the witness arm"
+        )
+    elif len(decoupled) < min_decoupled:
+        status, coupling = DegeneracyStatus.SUSPECT, CouplingKind.DETERMINISTIC
+        verdict = (
+            f"only {len(decoupled)} record(s) decouple the label from "
+            f"AND(witnesses); below the frozen minimum of {min_decoupled} a "
+            "confirmatory read rests on a handful of items"
+        )
+    else:
+        status, coupling = DegeneracyStatus.CLEAN, CouplingKind.CORRELATED
+        verdict = f"{len(decoupled)} record(s) decouple the label from AND(witnesses)"
+
+    evidence = [
+        f"{item.record_id}: AND="
+        f"{all(bool(item.features[n]) for n in witness_fields)} label={item.label}"
+        for item in decoupled[:6]
+    ]
+    if strata:
+        per_stratum = Counter(strata.get(item.record_id, "?") for item in decoupled)
+        empty = sorted(set(strata.values()) - set(per_stratum))
+        evidence.append("decoupled per stratum: " + str(dict(sorted(per_stratum.items()))))
+        if empty:
+            evidence.append(
+                "strata with ZERO decoupled records (a fold tested on these cannot "
+                "distinguish judgement from the AND): " + ", ".join(empty)
+            )
+            if status is DegeneracyStatus.CLEAN:
+                status = DegeneracyStatus.SUSPECT
+
+    return (
+        DegeneracyFinding(
+            probe="decoupling_rate",
+            surface=surface,
+            detail=f"decoupling rate {rate:.3f} over {len(usable)} records: {verdict}",
+            coupling=coupling,
+            status=status,
+            coverage=rate,
+            baseline=None,
+            evidence=tuple(evidence),
+        ),
+    )
 
 
 def probe_blind_responder(

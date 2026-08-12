@@ -1,11 +1,13 @@
 {
-  "worst_status": "DEGENERATE",
+  "worst_status": "CANNOT_CHECK",
+  "worst_status_including_sealed_known": "DEGENERATE",
   "counts": {
-    "CLEAN": 0,
+    "CLEAN": 2,
     "SUSPECT": 0,
     "DEGENERATE": 3,
-    "CANNOT_CHECK": 4
+    "CANNOT_CHECK": 5
   },
+  "sealed_known_degenerate": 3,
   "reports": [
     {
       "surface": "paper2_microtrial_v1 RAKL_CONTEXT vs DIRECT_CORPUS",
@@ -43,7 +45,9 @@
         "37 tokens are unique to the treatment arm; they resolve to 2 distinct leak site(s)",
         "gold provenance: paper2_microtrial_v1 (local)",
         "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
-        "graded fields NOT LOCATED (unassessed, not clean): none"
+        "graded fields NOT LOCATED (unassessed, not clean): none",
+        "sealed known Type B defect under issue #283; scores preserved as NOT_INFORMATIVE",
+        "exit_policy: sealed-known DEGENERATE does not drive sweep exit"
       ]
     },
     {
@@ -52,6 +56,19 @@
       "exit_code": 1,
       "records_probed": 8,
       "findings": [
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v4_2 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "2 marker(s) unique to the treatment arm ('CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION', 'Earth_20_degree_target') occur on 2 line(s) that mention exactly ['S4', 'S5'], the gold value of graded field 'misaligned_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"left\": \"S4\", \"reason\": \"S4 is scoped to the small-angle approximation\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}",
+            "{\"left\": \"S5\", \"reason\": \"Moon and Earth gravity contexts differ\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}"
+          ]
+        },
         {
           "probe": "arm_answer_key_leak",
           "surface": "paper2_microtrial_v4_2 RAKL_CONTEXT vs DIRECT_CORPUS",
@@ -66,10 +83,12 @@
         }
       ],
       "reasons": [
-        "37 tokens are unique to the treatment arm; they resolve to 1 distinct leak site(s)",
+        "37 tokens are unique to the treatment arm; they resolve to 2 distinct leak site(s)",
         "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
-        "graded fields CHECKED: required_refuted_source_ids",
-        "graded fields NOT LOCATED (unassessed, not clean): misaligned_source_ids"
+        "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): none",
+        "sealed known Type B defect under issue #283; scores preserved as NOT_INFORMATIVE",
+        "exit_policy: sealed-known DEGENERATE does not drive sweep exit"
       ]
     },
     {
@@ -78,6 +97,19 @@
       "exit_code": 1,
       "records_probed": 8,
       "findings": [
+        {
+          "probe": "arm_answer_key_leak",
+          "surface": "paper2_microtrial_v4_3_1 RAKL_CONTEXT vs DIRECT_CORPUS",
+          "detail": "2 marker(s) unique to the treatment arm ('CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION', 'Earth_20_degree_target') occur on 2 line(s) that mention exactly ['S4', 'S5'], the gold value of graded field 'misaligned_source_ids'; a model that copies them scores perfectly without reasoning, so any treatment-arm advantage on this field is spurious",
+          "coupling": "AUTHORED_FROM_LABEL",
+          "status": "DEGENERATE",
+          "coverage": 1.0,
+          "baseline": null,
+          "evidence": [
+            "{\"left\": \"S4\", \"reason\": \"S4 is scoped to the small-angle approximation\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}",
+            "{\"left\": \"S5\", \"reason\": \"Moon and Earth gravity contexts differ\", \"relation\": \"CONTEXT_MISALIGNED_FOR_DIRECT_CONTRADICTION\", \"right\": \"Earth_20_degree_target\"}"
+          ]
+        },
         {
           "probe": "arm_answer_key_leak",
           "surface": "paper2_microtrial_v4_3_1 RAKL_CONTEXT vs DIRECT_CORPUS",
@@ -92,10 +124,22 @@
         }
       ],
       "reasons": [
-        "37 tokens are unique to the treatment arm; they resolve to 1 distinct leak site(s)",
+        "37 tokens are unique to the treatment arm; they resolve to 2 distinct leak site(s)",
         "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
-        "graded fields CHECKED: required_refuted_source_ids",
-        "graded fields NOT LOCATED (unassessed, not clean): misaligned_source_ids"
+        "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): none",
+        "sealed known Type B defect under issue #283; scores preserved as NOT_INFORMATIVE",
+        "exit_policy: sealed-known DEGENERATE does not drive sweep exit"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_frozen_sources RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CANNOT_CHECK",
+      "exit_code": 3,
+      "records_probed": 0,
+      "findings": [],
+      "reasons": [
+        "arm prompt pair not present in this directory"
       ]
     },
     {
@@ -136,6 +180,32 @@
       "findings": [],
       "reasons": [
         "arm prompt pair not present in this directory"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_4 RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CLEAN",
+      "exit_code": 0,
+      "records_probed": 8,
+      "findings": [],
+      "reasons": [
+        "28 tokens are unique to the treatment arm; they resolve to 0 distinct leak site(s)",
+        "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
+        "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): none"
+      ]
+    },
+    {
+      "surface": "paper2_microtrial_v4_4_leakfree_draft RAKL_CONTEXT vs DIRECT_CORPUS",
+      "status": "CLEAN",
+      "exit_code": 0,
+      "records_probed": 8,
+      "findings": [],
+      "reasons": [
+        "28 tokens are unique to the treatment arm; they resolve to 0 distinct leak site(s)",
+        "gold provenance: research/ROUND044_MATCHED_LLM_MICROTRIAL_PREREGISTRATION.json",
+        "graded fields CHECKED: misaligned_source_ids, required_refuted_source_ids",
+        "graded fields NOT LOCATED (unassessed, not clean): none"
       ]
     }
   ]
