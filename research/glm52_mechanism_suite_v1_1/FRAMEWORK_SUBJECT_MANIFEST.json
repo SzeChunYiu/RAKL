@@ -1,0 +1,26 @@
+{
+  "protocol_id": "GLM52-MECHANISM-SUITE-V1.1",
+  "protocol_version": "1.1.0",
+  "status": "REGISTRATION_ONLY_NO_NEW_GLM_OUTCOME",
+  "framework_sha": "BOUND_AT_RUNTIME",
+  "method_version": "BOUND_AT_RUNTIME",
+  "adapter_version": "1.1.0",
+  "adapter_module": "research/glm52_mechanism_suite_v1_1/framework_adapter.py",
+  "predecessor_protocol_id": "GLM52-MECHANISM-SUITE-V1",
+  "outcome_access_status": "NO_NEW_GLM_OUTCOME",
+  "provider_profile": {
+    "name": "claude-cn / Z.AI Anthropic-compatible gateway",
+    "required_env": ["ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN"],
+    "optional_env": ["ANTHROPIC_MODEL", "RUN_MODEL", "API_TIMEOUT_MS", "GLM52_MAX_RETRIES"],
+    "operator_setup": "source ~/.claude-cn.env",
+    "shared_client": "src/rakl/hosted_anthropic_client.py"
+  },
+  "bound_framework_modules": [
+    "src/rakl/epistemic_search.py",
+    "src/rakl/problem_fibre.py",
+    "src/rakl/epistemic_trajectory.py",
+    "src/rakl/v3_authority.py",
+    "src/rakl/experience_substrate.py"
+  ],
+  "authority_boundary": "Hosted mechanism-suite evidence only; no framework promotion or manuscript authority."
+}
