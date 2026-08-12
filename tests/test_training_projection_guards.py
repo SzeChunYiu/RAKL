@@ -9,6 +9,7 @@ from rakl.training_projection import (
     TrainingUtilityVector,
     assess_training_projection,
     build_training_projection,
+    structural_catalog_digest,
 )
 
 
@@ -24,6 +25,7 @@ def _snapshot():
         boundaries=(BoundaryCondition("regime", "base"),),
         evidence_ids=("generator",),
     )
+    structures = (structure,)
     mastery = StructuralMasteryEstimate(
         structure_id="s1",
         model_checkpoint_hash="model-a",
@@ -55,9 +57,9 @@ def _snapshot():
     return build_training_projection(
         projection_id="p1",
         model_checkpoint_hash="model-a",
-        structural_catalog_hash="catalog-a",
+        structural_catalog_hash=structural_catalog_digest(structures),
         probe_family_hash="probe-a",
-        structural_objects=(structure,),
+        structural_objects=structures,
         mastery_estimates=(mastery,),
         candidates=(candidate,),
         repetition_floor=0.1,
