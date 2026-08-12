@@ -85,7 +85,34 @@ among the coordinates the extractor reports.
 The twin is run **before** any Δ is reported. A collapse is a first-class result
 and is published as a negative finding, not repaired by regenerating items.
 
-### 3.1 Semantic decorrelation
+### 3.1 Difficulty band — a task at either extreme cannot discriminate
+
+A benchmark whose baseline arm scores at floor or ceiling is uninformative in
+**both** directions, independently of how well its provenance is documented.
+
+Live precedent: on a hosted GLM-5.2 endpoint the repaired v4_4 arm pair scores
+**30/30 exact pass in both arms** (#452). The capability floor is cleared, which
+is good — and the task is now at ceiling, so it can no longer separate the arms
+at all. Generated items reproduce that trap easily, with better provenance and
+the same emptiness.
+
+**Registered: the `SEMANTIC_ONLY` baseline arm must land in a mid-range band,
+`0.35 <= accuracy <= 0.75`, measured on the disjoint development set before the
+confirmatory set is generated.**
+
+- Above the band, item difficulty is increased (harder near-misses, longer
+  mappings) and the dev set is regenerated.
+- Below the band, difficulty is decreased.
+- The band is a property of the *baseline*, not of the witness arm; tuning
+  difficulty against the witness arm's score would select for a positive result
+  and is prohibited.
+- The realised baseline accuracy is reported whether or not it lands in band. A
+  confirmatory set generated outside the band is reported as such.
+
+This check runs before outcome access on the confirmatory set, so it cannot be
+used to choose a difficulty that flatters the result.
+
+### 3.2 Semantic decorrelation
 
 `SEMANTIC_NEAR_MISS_INVALID_TRANSFER` is not one item type among several — it is
 the load-bearing stratum. If invalid items are also lexically distant, a BM25
@@ -152,19 +179,70 @@ amendment to this document. If the required `n` exceeds what can be generated,
 that is reported as an underpowered study rather than absorbed by lowering the
 MDE.
 
-### 4.2 Per-stratum minima
+### 4.2 Per-stratum minima — derived, not chosen
 
-A packet-level count hides strata that contribute nothing — #449 found the
+A packet-level count hides strata that contribute nothing: #449 found the
 `matching_allocation` family contributed **zero** decoupled items, making one of
 four leave-one-family-out folds uninformative by construction.
 
-Registered: **each family × each item type must contain at least 4 items, and
-each family must contain at least 4 discriminating items.** A stratum below
-either floor is reported as underpowered for that stratum; the overall result is
-not reported as if the stratum had been tested.
+The minimum is **derived from the estimand**, so it cannot be gamed by picking a
+number after seeing the realised rate.
 
-Both minima are fixed here, before generation. They are not to be revised after
-seeing the realised rates.
+On a non-decoupled item the witness arm and the mechanical `AND` rule are
+identical *by construction*: such items contribute `d_i = 0` and carry no
+information about the estimand. **Effective n is therefore the decoupled count**,
+and the §4 arithmetic applies to the decoupled subset directly:
+
+```text
+required_decoupled  =  ceil( (z_0.975 + z_0.80)^2 * sigma_d^2 / MDE^2 )
+required_total      =  ceil( required_decoupled / q )
+```
+
+which reproduces the §4.1 figures exactly (48 / 0.188 = 256). The two
+calculations were already consistent; naming the reason makes the criterion a
+**consequence of the registered MDE** rather than a judgement call.
+
+#### Structural non-degeneracy floor
+
+Separately from power, and on top of the total: **no leave-one-family-out fold
+may contain fewer than 5 decoupled items.**
+
+This is a *structural non-degeneracy condition, not a power threshold*. A fold at
+zero decoupled items is fully explained by `AND(witnesses)` and cannot
+distinguish the arms at all; a fold at one or two yields a coin flip rather than
+an estimate. Five is the minimum at which a fold produces a non-degenerate
+per-fold estimate. It is justified on that ground alone and is **not** claimed to
+deliver fold-level power.
+
+Also registered: **each family × item type cell must contain at least 4 items.**
+
+All three minima are fixed here, before generation, and are not to be revised
+after seeing the realised rates. A stratum below any floor is reported as
+underpowered for that stratum; the overall result is not reported as if that
+stratum had been tested.
+
+### 4.3 Fold count and the family-generalization claim
+
+Leave-one-family-out over *k* families yields *k* folds. With the three families
+of §5, one degenerate fold leaves two — and **two folds do not support a
+family-level generalization claim**.
+
+**Decision: a fourth family is carried as insurance**, rather than scoping
+family generalization out. The target thesis in #444 is explicitly stated over a
+"family-diverse benchmark", so dropping family-level generalization would weaken
+the headline claim materially, whereas a fourth family is close to free in item
+count — the total is power-driven (§4.1), so a fourth family spreads the same
+items rather than requiring more. Its real cost is one additional verifier.
+
+Fourth family: **state-transition systems**, with reachability preservation under
+the candidate map as the verifier. Chosen for an exact and cheap decision
+procedure on finite systems, and for structural distance from flow,
+deductive and dimensional structure alike.
+
+With four families and `required_decoupled = 48`, the expected per-fold decoupled
+count is 12, comfortably above the floor of 5; the floor binds only if
+decoupling is severely uneven across families, which is the case it exists to
+catch.
 
 ---
 
@@ -181,6 +259,12 @@ families with an executable verifier achieve that.
 | finite graph flow / cut / matching | exact max-flow = min-cut | combinatorial; the documented Ford–Fulkerson → Boykov graph-cuts transfer anchors it |
 | logical entailment + countermodel pairs | decidable; countermodel is the witness | symbolic/deductive; high-surface-similarity near-misses are easy to construct |
 | unit / coordinate transforms with exact invariants | dimensional consistency check | algebraic/dimensional; structurally distant from both above |
+
+**Fourth family (§4.3, insurance against a degenerate LOFO fold):**
+
+| Family | Verifier | Why |
+|---|---|---|
+| state-transition systems | reachability preservation under the candidate map | exact and cheap on finite systems; structurally distant from flow, deductive and dimensional alike |
 
 **Item types (5), chosen for discrimination rather than coverage:**
 
@@ -276,7 +360,19 @@ Before confirmatory generation: extractor code revision, model identity, tool
 policy, prompt/template hashes, resource ceiling, coordinate schema, abstention
 semantics. Recorded with SHA-256 in the amendment alongside the `n` computation.
 
-## 11. What this registration does not establish
+## 11. Amendment log
+
+**Amendment 1** — made before any item was generated and before any outcome was
+accessed, so nothing here was informed by a result.
+
+| Change | Section | Why |
+|---|---|---|
+| per-fold minimum **derived** from the estimand rather than chosen | §4.2 | effective n is the decoupled count, so the MDE arithmetic applies to that subset directly; makes the criterion a consequence of the registered MDE rather than a judgement call |
+| structural non-degeneracy floor: **≥5 decoupled per LOFO fold** | §4.2 | a fold at zero is fully explained by `AND(witnesses)`; one or two is a coin flip. Explicitly *not* a power threshold |
+| **fourth family added** (state-transition systems) | §4.3, §5 | 3 families → 3 folds; one degenerate fold leaves 2, which cannot support the family-level generalization the #444 thesis states. Nearly free in item count since the total is power-driven |
+| **difficulty band** `0.35 ≤ baseline ≤ 0.75` | §3.1 | v4_4 scores 30/30 in both arms on GLM-5.2 (#452) — floor cleared, ceiling hit, cannot discriminate either way. Generated items reproduce that trap with better provenance and the same emptiness |
+
+## 12. What this registration does not establish
 
 - No result. No items generated, no outcome accessed.
 - Claim **C** is out of scope and remains blocked on #217. `AI_OPERATOR` remains

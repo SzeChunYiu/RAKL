@@ -96,13 +96,49 @@ def build_report() -> dict[str, object]:
                 "amendment"
             ),
         },
+        "derivation_of_minima": {
+            "principle": (
+                "on a non-decoupled item the witness arm and the mechanical AND "
+                "rule are identical by construction, so it contributes d_i = 0 "
+                "and carries no information about the estimand; effective n IS "
+                "the decoupled count"
+            ),
+            "required_decoupled": "ceil(K * sigma_d^2 / MDE^2)  -- same formula, applied to the decoupled subset",
+            "required_total": "ceil(required_decoupled / q)",
+            "consequence": (
+                "the minimum is a consequence of the registered MDE, not a "
+                "number chosen after seeing the realised decoupling rate"
+            ),
+        },
         "per_stratum_minima": {
             "min_items_per_family_x_item_type": 4,
-            "min_discriminating_items_per_family": 4,
+            "min_decoupled_items_per_lofo_fold": 5,
+            "fold_floor_kind": "STRUCTURAL_NON_DEGENERACY_NOT_POWER",
+            "fold_floor_rationale": (
+                "a fold with zero decoupled items is fully explained by "
+                "AND(witnesses) and cannot distinguish the arms; one or two "
+                "yields a coin flip rather than an estimate. Five is the minimum "
+                "for a non-degenerate per-fold estimate and is NOT claimed to "
+                "deliver fold-level power. #449 found the matching_allocation "
+                "family contributed zero, which a packet-level count hides"
+            ),
+            "families": 4,
+            "expected_decoupled_per_fold_at_n48": 12,
+        },
+        "difficulty_band": {
+            "arm": "SEMANTIC_ONLY",
+            "min_accuracy": 0.35,
+            "max_accuracy": 0.75,
+            "measured_on": "disjoint development set, before confirmatory generation",
             "rationale": (
-                "#449 found the matching_allocation family contributed zero "
-                "decoupled items, making one leave-one-family-out fold "
-                "uninformative by construction; a packet-level count hides that"
+                "a baseline at floor or ceiling cannot discriminate in either "
+                "direction regardless of provenance quality; on a hosted GLM-5.2 "
+                "endpoint the repaired v4_4 arm pair scores 30/30 in both arms "
+                "(#452), clearing the floor but hitting the ceiling"
+            ),
+            "prohibited": (
+                "tuning difficulty against the WITNESS arm's score, which would "
+                "select for a positive result"
             ),
         },
         "claims": [],
