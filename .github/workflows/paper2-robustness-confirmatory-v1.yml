@@ -1,0 +1,116 @@
+name: paper2-robustness-confirmatory-v1
+
+on:
+  pull_request:
+    paths:
+      - 'research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_TRIGGER_V1.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  confirmatory:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Bind exact evaluated subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee SUBJECT_SHA.txt
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install RAKL
+        run: pip install -e '.[test]'
+
+      - name: Verify frozen confirmatory identities before outcome generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          p=json.loads(Path('research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_FREEZE_V1.json').read_text())
+          assert p['status']=='FROZEN_BEFORE_CONFIRMATORY_OUTCOME'
+          assert p['confirmatory_seed']==2026081212
+          assert p['n_per_cell']==15
+          assert p['expected_total_n']==810
+          assert p['frozen_lexical_threshold']==0.40064102564102566
+          assert p['uncertainty']['resamples']==20000
+          assert p['uncertainty']['bootstrap_seed']==2026081212001
+          assert p['confirmatory_outcomes_accessed'] is False
+          for path,key in [
+              (p['preregistration_path'],'preregistration_blob_sha'),
+              (p['generator_path'],'generator_blob_sha'),
+              (p['confirmatory_analysis_path'],'confirmatory_analysis_blob_sha'),
+          ]:
+              got=subprocess.check_output(['git','hash-object',path], text=True).strip()
+              assert got==p[key], (path, got, p[key])
+          print('CONFIRMATORY_FROZEN_IDENTITIES_OK')
+          PY
+
+      - name: Run robustness instrument and confirmatory-analysis tests before registered seed
+        run: |
+          pytest -q tests/test_objective_transfer_robustness_instrument.py
+          pytest -q tests/test_paper2_robustness_confirmatory_analysis.py
+
+      - name: Execute registered confirmatory seed once on bound subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/paper2_robustness_confirmatory.py | tee ROBUSTNESS_CONFIRMATORY_RESULT.json
+
+      - name: Emit typed confirmatory terminal without hiding a scientific negative as CI failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('ROBUSTNESS_CONFIRMATORY_RESULT.json').read_text())
+          assert r['seed']==2026081212
+          assert r['n_per_cell']==15
+          assert r['n']==810
+          terminal=(
+              'BROAD_KNOWN_WORLD_SIX_FAMILY_ROBUSTNESS_SUPPORTED'
+              if r['broad_known_world_robustness_supported']
+              else 'ROBUSTNESS_CONFIRMATORY_SCOPED_OR_NEGATIVE'
+          )
+          gate={
+              'schema':'paper2-robustness-confirmatory-gate-v1',
+              'subject_sha':Path('SUBJECT_SHA.txt').read_text().strip(),
+              'seed':r['seed'],
+              'n':r['n'],
+              'terminal':terminal,
+              'broad_known_world_robustness_supported':r['broad_known_world_robustness_supported'],
+              'gate_reasons':r['gate_reasons'],
+              'family_sign_test':r['family_sign_test'],
+              'primary_paired_binary_brier':r['primary_paired_binary_brier'],
+              'claim_boundary':r['claim_boundary'],
+          }
+          Path('ROBUSTNESS_CONFIRMATORY_GATE.json').write_text(json.dumps(gate, indent=2, sort_keys=True)+'\n')
+          print('CONFIRMATORY_TYPED_TERMINAL='+terminal)
+          if r['gate_reasons']:
+              print('\n'.join(r['gate_reasons']))
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper2-robustness-confirmatory-${{ github.sha }}
+          path: |
+            ROBUSTNESS_CONFIRMATORY_RESULT.json
+            ROBUSTNESS_CONFIRMATORY_GATE.json
+            SUBJECT_SHA.txt
+            research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_FREEZE_V1.json
+            research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RECEIPT_V1.json
+          if-no-files-found: error
+          retention-days: 90
