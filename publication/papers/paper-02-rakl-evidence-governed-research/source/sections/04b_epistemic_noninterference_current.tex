@@ -1,48 +1,21 @@
-\subsection{Epistemic noninterference and the current integration boundary}
+\subsection{Epistemic noninterference on the composed v3 authority surface}
 
-The v3 experience substrate is designed to change future search behaviour without allowing experience-side state to silently become scientific authority.  The current executable specification names this property \emph{epistemic noninterference}.  Let $\pi_{\mathrm{auth}}(X)$ denote the scientific-authority projection over the registered grounding, representation, mechanism, identification and decision-use coordinates.  For a transition sequence composed only of experience, retrieval, workspace, strategy, reflection or routing operations, the intended invariant is
+The v3 experience substrate is designed to change future search behaviour without allowing experience-side state to silently become scientific authority.  The executable specification names this property \emph{epistemic noninterference}.  Let $\pi_{\mathrm{auth}}(X)$ denote the scientific-authority projection over registered grounding, representation, mechanism, identification and decision-use coordinates.  For a transition sequence composed only of experience, retrieval, workspace, strategy, reflection, routing or training-allocation operations, the intended invariant is
 \[
 \pi_{\mathrm{auth}}(\tau_E^*(X_t))=\pi_{\mathrm{auth}}(X_t),
 \]
-unless the sequence contains a separately registered evidence-bearing promotion transition.  The invariant is not monotonicity: refutation may legitimately revoke active authority while preserving the historical certificate and challenge record.
+unless the sequence contains a separately registered evidence-bearing scientific-authority transition.  The projection is non-monotone: a properly attested refutation may revoke active authority while preserving the historical certificate and challenge record.
 
-The executable checker in
-\path{src/rakl/epistemic_noninterference.py}
-distinguishes scientific authority from computational access, retrieval
-priority, proposal probability, strategy preference, lesson reuse and
-scientific-evidence identity.  Its planted hostile worlds cover
-experience-to-evidence leakage, repetition-to-authority,
-routing-to-authority, reflection-to-authority, failure-to-impossibility,
-provenance-to-independence, prediction-to-mechanism,
-mechanism-to-identification, workspace-to-authority and
-self-evolution-to-authority.  Benign controls verify both that
-non-authority state can actually move and that a legal evidence-bearing
-promotion can still change authority.  Mutation tests reject trivial
-checkers that always pass, always fail, or relabel the absence of an
-integration surface as success.
+The historical pre-integration runtime returned \path{NO_INTEGRATION_SURFACE} because experience state and scientific authority were not yet composed.  That result is preserved as negative/incomplete history rather than retrospectively relabelled as a pass.  The current revision supersedes that boundary.  \texttt{RAKLV3State} now carries an immutable \texttt{ScientificAuthorityProjection} containing canonical claim atoms, content-bound scientific-evidence bindings, certificate/event history and the active scientific-authority view.  The integration is deliberately immutable so a transition cannot mutate a shared ledger behind both the pre- and post-transition projections.
 
-At the present evidence cutoff the result is deliberately narrower than a
-deployment guarantee.  \texttt{RAKLV3State} composes the experience
-substrate but does not yet compose \texttt{AuthorityLedger} or a
-persistent canonical scientific-state store.  The checker therefore
-reports \path{NO_INTEGRATION_SURFACE}, not \texttt{PASS}, for the full
-v3 runtime.  This means the architecture specifies and tests the intended
-boundary at the integration interface; it does not yet demonstrate
-end-to-end enforcement across one composed experience-plus-scientific-authority
-state machine.
+Scientific authority is certificate-bound rather than declaration-bound.  Promotion resolves a protected attestation whose subject binds the actual claim text, requested axis, scope and registered evidence digests.  Method-authority attestations for Lessons or ResearchTools are not accepted as scientific-authority attestations.  Public v3 transitions are classified by ownership, and only the registered scientific promotion, revocation and supersession transitions own the authority coordinate.  Registering a claim or evidence object changes canonical scientific content but does not by itself grant authority.
 
-The audit also exposed a concrete future hazard: the read-only unified
-substrate can materialize several distinct authority-like notions into
-generic metadata even though lesson authority, tool authority, projection
-authority and scientific authority are not interchangeable.  Any future
-composition that reads such metadata as one scalar authority would violate
-the type discipline.  This is why the noninterference contract is retained
-as an executable integration obligation rather than described only in prose.
+Historical benchmark identity is also protected.  The original state fingerprint remains the v1 experience/framework fingerprint, while \texttt{state\_fingerprint\_v2} explicitly includes the scientific-authority projection.  Authority-sensitive experiments must therefore pin v2 instead of silently changing the byte identity of older benchmark packets.
 
-V3 additionally separates retained experience from canonical admission.  A
-\texttt{TaskEpisode} may be preserved as \path{PROPOSAL_SHADOW_STORED}
-without satisfying the stronger \path{CANONICAL_INVENTORY_ADMITTED} gate,
-and protected consumers fail closed if a shadow object is presented as
-canonical inventory.  This makes persistence itself non-authoritative:
-storing a trajectory is not the same operation as admitting it to a
-protected scientific or method inventory.
+The executable checker in \path{src/rakl/epistemic_noninterference.py}, together with \path{src/rakl/v3_scientific_authority.py}, now exercises the invariant against this real composition surface.  Planted hostile worlds cover experience-to-evidence leakage, repetition/routing/reflection/workspace/self-evolution shortcuts, failure-to-impossibility, provenance-to-independence, prediction-to-mechanism, mechanism-to-identification and unattested authority movement.  Benign controls require both that non-authority state actually changes and that a legitimate evidence-bearing promotion or refutation can still move the authority projection.  Integration-path mutation tests separately plant bypasses in the authority contract and require the suite to detect them.
+
+This result is still narrower than a behavioural deployment claim.  It establishes that the composed runtime has an executable protected authority interface under the registered transitions.  It does not establish that a language model will rarely propose unsupported claims, that RAKL has lower behavioural authority leakage than strong controls, or that any particular base model is capable of executing the epistemic protocol.  Those are separately measured questions.
+
+The same boundary extends to the optional training projection introduced in Section~\ref{sec:training-time-projection}.  A model checkpoint, mastery estimate or gradient-allocation proposal may change dramatically while the scientific-authority projection remains unchanged.  A training run may later provide evidence for a claim \emph{about model behaviour} only through a separately registered evaluator/run/artifact binding and the ordinary scientific promotion path.  Thus weight updates, like experience and retrieval, are behaviour-changing operations rather than scientific-authority shortcuts.
+
+V3 additionally separates retained experience from canonical admission.  A \texttt{TaskEpisode} may be preserved as \path{PROPOSAL_SHADOW_STORED} without satisfying the stronger \path{CANONICAL_INVENTORY_ADMITTED} gate, and protected consumers fail closed if a shadow object is presented as canonical inventory.  Persistence, retrieval, training exposure and repeated success therefore remain distinct from scientific evidence and authority.
