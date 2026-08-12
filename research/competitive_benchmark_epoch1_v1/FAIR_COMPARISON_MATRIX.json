@@ -1,0 +1,61 @@
+{
+  "issue": 407,
+  "schema_version": "fair-comparison-matrix-v1",
+  "systems": {
+    "agent_laboratory": {
+      "classification": "NATIVE_BEST_PRACTICE_ONLY",
+      "executable_track": "YES",
+      "model_normalization": "MODEL_NORMALIZATION_FEASIBLE",
+      "notes": "Human-in-the-loop time must be cost-accounted.",
+      "resource": "COST_ACCOUNTED_NOT_EQUAL"
+    },
+    "ai_researcher": {
+      "classification": "NATIVE_BEST_PRACTICE_ONLY",
+      "executable_track": "PARTIAL_OPEN_COMMIT_ONLY",
+      "model_normalization": "MODEL_NORMALIZATION_NOT_FEASIBLE",
+      "model_normalization_reason": "Open commit vs production Novix SaaS may disagree",
+      "notes": "Exclude SaaS-only behaviors.",
+      "resource": "CANNOT_NORMALIZE_RESOURCES"
+    },
+    "ai_scientist_v2": {
+      "classification": "MODEL_NORMALIZATION_FEASIBLE",
+      "executable_track": "YES",
+      "model_normalization": "MODEL_NORMALIZATION_FEASIBLE",
+      "model_normalization_reason": "API-model substitution typically possible without rewriting tree-search architecture",
+      "notes": "License NOASSERTION — legal review before redistribution.",
+      "resource": "COST_ACCOUNTED_NOT_EQUAL"
+    },
+    "aris": {
+      "classification": "NATIVE_BEST_PRACTICE_ONLY",
+      "executable_track": "YES_WITH_DUAL_MODEL_HOST",
+      "model_normalization": "MODEL_NORMALIZATION_NOT_FEASIBLE",
+      "model_normalization_reason": "Cross-family executor/reviewer is load-bearing",
+      "notes": "Architecture-causal claims require preserving adversarial cross-family review.",
+      "resource": "COST_ACCOUNTED_NOT_EQUAL"
+    },
+    "autosci": {
+      "classification": "NATIVE_BEST_PRACTICE_ONLY",
+      "executable_track": "YES_WITH_NATIVE_RUNTIME",
+      "model_normalization": "MODEL_NORMALIZATION_NOT_FEASIBLE",
+      "model_normalization_reason": "main track is Claude Code harness-native; paper track may differ; substituting models can bypass SciFlow/SciEvolve assumptions",
+      "notes": "PUBLIC_ARTIFACT_CONTRACT_MISMATCH risk between arxiv-v1 and main.",
+      "resource": "NATIVE_RESOURCE_POLICY"
+    },
+    "evoscientist": {
+      "classification": "MODEL_NORMALIZATION_FEASIBLE",
+      "executable_track": "YES",
+      "model_normalization": "MODEL_NORMALIZATION_FEASIBLE",
+      "model_normalization_reason": "Upstream exposes configurable LLM backends; confirm on frozen commit",
+      "notes": "Do not rename a RAKL approximation as EvoScientist.",
+      "resource": "COST_ACCOUNTED_NOT_EQUAL"
+    },
+    "sciagentarena": {
+      "classification": "EXACT_REPRODUCTION_FEASIBLE",
+      "executable_track": "YES_AS_SUBSTRATE",
+      "model_normalization": "N/A",
+      "notes": "Not a researcher competitor; used for compatibility classification.",
+      "resource": "STRICT_RESOURCE_MATCHED",
+      "role": "EVALUATION_SUBSTRATE"
+    }
+  }
+}
