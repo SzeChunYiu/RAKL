@@ -25,6 +25,13 @@ $\operatorname{Transfer}(A\to B;q)$ for the directional decision under QoI $q$. 
   \item $\mathrm{REJECTED}$ if at least one load-bearing obligation is demonstrably violated;
   \item $\mathrm{CANNOT\_CHECK}$ otherwise, whenever at least one load-bearing obligation remains unresolved.
 \end{itemize}
-Thus several preserved relations cannot compensate for a violated target boundary, wrong transfer direction or forbidden loss. Conversely, a property declared irrelevant to the registered QoI may be listed as a permissible loss rather than forcing global structural equivalence. Each load-bearing obligation is content-bound to evidence rather than inheriting authority merely because the witness object contains some evidence somewhere. The implementation emits an obligation-level trace and a deterministic content hash so that a confirmatory benchmark can freeze the exact witness contract before outcome access.
+Thus several preserved relations cannot compensate for a violated target boundary, wrong transfer direction or forbidden loss. Conversely, a property declared irrelevant to the registered QoI may be listed as a permissible loss rather than forcing global structural equivalence. Each load-bearing obligation is content-bound to evidence rather than inheriting authority merely because the witness object contains some evidence somewhere. The implementation emits an obligation-level trace and a deterministic content hash so that a confirmatory benchmark can freeze the exact witness contract before outcome access. The full fail-closed decision procedure is shown in Figure~\ref{fig:transfer-decision}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/transfer_decision.pdf}
+\caption{The fail-closed transfer decision. A nominated source is evaluated against the applicability obligation set (role map, preserved invariants $I^+$, forbidden losses $I^-$, target boundary, QoI), each with a three-valued status. The rule is non-compensatory: any single demonstrably violated load-bearing obligation forces \texttt{REJECTED}; only when every load-bearing obligation is satisfied is the transfer \texttt{LICENSED}; an unresolved obligation yields \texttt{CANNOT\_CHECK}. No count of preserved relations can buy back a violation.}
+\label{fig:transfer-decision}
+\end{figure}
 
 These semantics are an implementation and evaluation contract, not an empirical superiority result. The confirmatory question remains whether machine-produced obligations improve valid distant transfer and reduce hostile semantic near-misses relative to strong semantic, relational and mechanism-alignment controls under matched resources.
