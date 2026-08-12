@@ -1,33 +1,55 @@
 \subsection{Current confirmatory-data status}
 
-The strong semantic-control execution lane has advanced since the original
-manuscript freeze.  The exact \path{BAAI/bge-reranker-v2-m3} asset was staged
-on FS9 and subsequent label-blind descriptor jobs 3476527--3476529 reached
-\path{HARVEST_DESCRIPTOR_READY}.  Sixteen v2.1 source--target items therefore
-have content-bound semantic descriptors available under the preserved
-zero-label chronology.  This is execution preparation only:
-\path{training_authorized=false}, no witnessed-structure model comparison has
-been scored against external labels, and no confirmatory transfer metric is
-licensed by descriptor readiness alone.
+The strong semantic-control execution lane has advanced beyond the original
+manuscript freeze. The exact \path{BAAI/bge-reranker-v2-m3} asset was staged
+on FS9 and the label-blind descriptor jobs 3476527--3476529 reached
+\path{HARVEST_DESCRIPTOR_READY}. Sixteen v2.1 source--target items therefore
+have content-bound semantic descriptors under the preserved pre-annotation
+chronology.
 
-The external-evidence gate remains open.  The original public annotation issue was deleted during automation and has been recreated as issue \#217 with the same human-only contract.  Two genuinely distinct annotators must independently label all 16 items; a distinct adjudicator may act only after both responses are frozen; and a separate provenance auditor must verify role separation, expertise/conflict metadata and chronology.  At the current evidence cutoff issue \#217 remains open and no qualifying response, adjudication or provenance-audit artifact exists in the public repository.
+The later operator-override path must be distinguished from independent
+confirmation. Issue \#217 was closed after a demoted
+\path{AI_OPERATOR / NON_INDEPENDENT} annotation path was added. That path does
+not attest independent external annotators, an independent adjudicator or an
+independent provenance auditor, and it does not grant Constitution-grade
+confirmatory authority. The first demoted LUNARC train/inference pair,
+3476750/3476751, failed because the system Python environment lacked
+\path{torch}; those failures remain negative history. After the runner was
+hardened, demoted jobs 3476753 (training) and 3476754 (inference) passed under
+\path{DEMOTED_AI_OPERATOR} authority. They establish that the demoted execution
+path can run; they do not establish independent natural-domain structural
+signal.
 
-Consequently the confirmatory question is still unanswered: whether witnessed
-structural features add predictive value beyond the strongest frozen
-non-structural control on independently judged natural-domain cases.  The
-missing data are human labels and adjudication, not additional same-session
-model generations.  Until those artifacts exist, the correct paper status is
-\path{BLOCKED_ON_HUMAN_ANNOTATION}; training/inference and confirmatory
-Paper-III numbers remain fail-closed.
+The independent-human coordinate was subsequently frozen in issue \#332 as
+\path{CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS} with verdict
+\path{DEMOTED_AI_OPERATOR_PATH_COMPLETE__INDEPENDENT_REVIEW_ABSENT}. The
+remaining human-only residual is now tracked by open successor issue \#359,
+which still requires two genuinely external independent annotators, a distinct
+adjudicator and a distinct provenance auditor. AI-operator outputs are not
+promoted to those roles.
+
+Consequently the independent confirmatory question remains unanswered: whether
+witnessed structural features add predictive value beyond the strongest frozen
+non-structural control on independently judged natural-domain cases. The
+repository contains a demoted pilot execution, not independent confirmation.
+Until qualifying external evidence exists, the correct scientific status is
+\path{INDEPENDENT_CONFIRMATION_ABSENT}; any demoted pilot metric must be labeled
+as non-independent and cannot license the paper's strongest natural-domain
+transfer claim.
 
 \subsection{Pre-label power design}
 
 Before any external judgement, a label-blind power study (\#248) registered a
 primary paired Brier-reduction MDE of 0.05 and simulated paired bootstrap/sign-flip
-resolution under plausible item-level noise.  The frozen v2.1 sixteen-item packet
+resolution under plausible item-level noise. The frozen v2.1 sixteen-item packet
 is \emph{underpowered} for that MDE: adequate resolution requires roughly
 $n\approx 48$ items across the registered noise envelope, whereas the solicited
-confirmatory set remains $n=16$.  The study therefore scopes external validation as
+confirmatory set remains $n=16$. The study therefore scopes external validation as
 \path{CONFIRMATORY\_PACKET\_POWER\_LIMITED}: indistinguishable outcomes are
 inconclusive rather than negative evidence, and confirmatory refutation claims
 remain blocked when intervals include zero.
+
+The power limitation is not repaired by the demoted AI-operator path. Even if a
+future independent-human response is obtained for the frozen $n=16$ packet, the
+registered precision/MDE interpretation remains in force; the item set cannot be
+enlarged post-label and then represented as the same confirmatory epoch.
