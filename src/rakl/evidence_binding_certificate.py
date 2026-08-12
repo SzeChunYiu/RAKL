@@ -318,7 +318,11 @@ def evaluate_evidence_binding_for_promotion(
     if not bound_support_ids:
         cannot_check.append("promotion_requires_reviewed_support_binding")
     if proposal_ids != bound_support_ids:
-        if semantic_resolution_incomplete:
+        if conflicts:
+            conflicts.append(
+                "promotion_support_binding_conflicted_for_proposal_evidence"
+            )
+        elif semantic_resolution_incomplete:
             cannot_check.append(
                 "promotion_support_binding_not_fully_resolved_for_proposal_evidence"
             )
