@@ -7,12 +7,14 @@ feedback) while enforcing a RAKL-specific boundary:
     rank / centrality / popularity / inspection frequency != scientific authority
 
 It does not crawl the public internet itself and it does not replace
-``ProblemFibre``.  Instead it defines a bounded layer that can compile a fibre's
+``ProblemFibre``. Instead it defines a bounded layer that can compile a fibre's
 research residual into typed search intents, fuse already-retrieved candidates,
 and construct an immutable interaction-space snapshot for downstream tools.
 
-All scores are routing/search scores only.  No object in this module grants
-scientific or target authority.
+All scores are routing/search scores only. No object in this module grants
+scientific or target authority. Graph/citation centrality is deliberately kept
+*out* of Pareto benefit coordinates: it can serve as a late navigation tiebreak,
+but popularity cannot make a scientifically weaker candidate Pareto-undominated.
 """
 
 from __future__ import annotations
@@ -96,6 +98,18 @@ class ScientificSearchQuestion:
     def __post_init__(self) -> None:
         if not self.question_id.strip() or not self.root_goal.strip() or not self.atom_id.strip():
             raise ValueError("scientific search question requires question/root/atom ids")
+        term_sets = {
+            "residual_terms": self.residual_terms,
+            "structural_coordinates": self.structural_coordinates,
+            "unresolved_obligations": self.unresolved_obligations,
+            "source_native_terms": self.source_native_terms,
+            "semantic_expansions": self.semantic_expansions,
+        }
+        for name, terms in term_sets.items():
+            if any(not term.strip() for term in terms):
+                raise ValueError(f"{name} cannot contain blank search terms")
+        if self.candidate_mechanism is not None and not self.candidate_mechanism.strip():
+            raise ValueError("candidate_mechanism cannot be blank")
 
     @property
     def root_goal_hash(self) -> str:
@@ -233,35 +247,47 @@ class SearchFeedback:
         return False
 
 
+def _dedupe_terms(terms: Sequence[str]) -> Tuple[str, ...]:
+    return tuple(dict.fromkeys(term.strip() for term in terms if term.strip()))
+
+
 def compile_search_intents(question: ScientificSearchQuestion) -> Tuple[SearchIntent, ...]:
     """Compile one scientific residual into purpose-bound search intents."""
 
-    base = tuple(dict.fromkeys(term for term in question.residual_terms if term.strip()))
-    structural = tuple(dict.fromkeys(term for term in question.structural_coordinates if term.strip()))
+    base = _dedupe_terms(question.residual_terms)
+    structural = _dedupe_terms(question.structural_coordinates)
+    source_native = _dedupe_terms(question.source_native_terms)
+    semantic = _dedupe_terms(question.semantic_expansions)
+    obligations = _dedupe_terms(question.unresolved_obligations)
+    mechanism = question.candidate_mechanism.strip() if question.candidate_mechanism else None
     intents: list[tuple[SearchIntentKind, Tuple[str, ...], str]] = []
 
     if base:
         intents.append((SearchIntentKind.EXACT_TERMINOLOGY, base, "exact terms for the current residual"))
-    if question.source_native_terms:
+    if source_native:
         intents.append(
             (
                 SearchIntentKind.SOURCE_NATIVE_TERMINOLOGY,
-                tuple(dict.fromkeys(question.source_native_terms)),
+                source_native,
                 "recover source-native vocabulary without changing the root question",
             )
         )
-    if question.semantic_expansions:
+    if semantic:
         intents.append(
             (
                 SearchIntentKind.SEMANTIC_EXPANSION,
-                tuple(dict.fromkeys(question.semantic_expansions)),
+                semantic,
                 "bounded synonym/paraphrase expansion for recall",
             )
         )
-    if structural or question.candidate_mechanism:
-        terms = structural + ((question.candidate_mechanism,) if question.candidate_mechanism else ())
+    if structural or mechanism:
+        terms = structural + ((mechanism,) if mechanism else ())
         intents.append(
-            (SearchIntentKind.STRUCTURAL_MECHANISM, tuple(dict.fromkeys(terms)), "search mechanism/structure rather than surface nouns")
+            (
+                SearchIntentKind.STRUCTURAL_MECHANISM,
+                tuple(dict.fromkeys(terms)),
+                "search mechanism/structure rather than surface nouns",
+            )
         )
     if base:
         intents.extend(
@@ -275,11 +301,11 @@ def compile_search_intents(question: ScientificSearchQuestion) -> Tuple[SearchIn
                 (SearchIntentKind.FRESHNESS_RETRACTION, base, "seek recent versions, corrections, retractions and supersessions"),
             ]
         )
-    if question.unresolved_obligations:
+    if obligations:
         intents.append(
             (
                 SearchIntentKind.METHOD_OPERATOR,
-                tuple(dict.fromkeys(question.unresolved_obligations)),
+                obligations,
                 "seek methods/tools that can discharge unresolved obligations",
             )
         )
@@ -306,6 +332,9 @@ def compile_search_intents(question: ScientificSearchQuestion) -> Tuple[SearchIn
 
 
 def _benefit_coordinates(vector: SearchRankVector) -> tuple[float, ...]:
+    # graph_centrality is intentionally excluded. It is a navigation hint used
+    # only after obligation/relevance/fidelity coordinates, not a Pareto value
+    # that could make a popular but weaker item undominated.
     return (
         vector.query_relevance,
         vector.root_obligation_relevance,
@@ -318,7 +347,6 @@ def _benefit_coordinates(vector: SearchRankVector) -> tuple[float, ...]:
         vector.contradiction_value,
         vector.negative_result_value,
         vector.novel_route_value,
-        vector.graph_centrality,
     )
 
 
@@ -344,11 +372,15 @@ def dominates(left: SearchCandidate, right: SearchCandidate) -> bool:
 
 def pareto_front(candidates: Iterable[SearchCandidate]) -> Tuple[SearchCandidate, ...]:
     pool = tuple(candidates)
-    front = [candidate for candidate in pool if not any(dominates(other, candidate) for other in pool if other is not candidate)]
+    front = [
+        candidate
+        for candidate in pool
+        if not any(dominates(other, candidate) for other in pool if other is not candidate)
+    ]
     return tuple(sorted(front, key=lambda item: item.candidate_id))
 
 
-def _routing_tiebreak(candidate: SearchCandidate) -> tuple[float, ... | str]:
+def _routing_tiebreak(candidate: SearchCandidate) -> tuple[object, ...]:
     """Deterministic routing tiebreak *after* vector/Pareto reasoning.
 
     Centrality appears late and cannot compensate for poor root/context fit.
@@ -436,7 +468,12 @@ def diversify_candidates(
             (
                 item
                 for item in ordered
-                if item.stance in {EvidenceStance.REFUTE, EvidenceStance.NEGATIVE_RESULT, EvidenceStance.RETRACTION_CORRECTION}
+                if item.stance
+                in {
+                    EvidenceStance.REFUTE,
+                    EvidenceStance.NEGATIVE_RESULT,
+                    EvidenceStance.RETRACTION_CORRECTION,
+                }
                 and admissible(item)
             ),
             None,
@@ -476,12 +513,23 @@ def build_interaction_space(
 
     if not space_id.strip() or max_candidates < 1:
         raise ValueError("interaction space requires id and positive candidate budget")
-    if any(intent.root_goal_hash != question.root_goal_hash or intent.atom_id != question.atom_id for intent in intents):
+    if any(
+        intent.root_goal_hash != question.root_goal_hash or intent.atom_id != question.atom_id
+        for intent in intents
+    ):
         raise ValueError("query drift: intent is not bound to the same root goal/atom")
 
     selected = diversify_candidates(candidates, limit=max_candidates)
-    evidence_roots = tuple(sorted({item.evidence_root_id for item in selected if item.evidence_root_id}))
-    negative_ids = tuple(sorted(item.candidate_id for item in selected if item.negative_history or item.stance is EvidenceStance.NEGATIVE_RESULT))
+    evidence_roots = tuple(
+        sorted({item.evidence_root_id for item in selected if item.evidence_root_id})
+    )
+    negative_ids = tuple(
+        sorted(
+            item.candidate_id
+            for item in selected
+            if item.negative_history or item.stance is EvidenceStance.NEGATIVE_RESULT
+        )
+    )
     payload = repr(
         (
             space_id,
@@ -494,7 +542,7 @@ def build_interaction_space(
             evidence_roots,
             negative_ids,
             tuple(sorted(set(allowed_tool_ids))),
-            question.unresolved_obligations,
+            _dedupe_terms(question.unresolved_obligations),
             max_candidates,
         )
     ).encode("utf-8")
@@ -509,7 +557,7 @@ def build_interaction_space(
         evidence_root_ids=evidence_roots,
         negative_history_ids=negative_ids,
         allowed_tool_ids=tuple(sorted(set(allowed_tool_ids))),
-        unresolved_obligations=question.unresolved_obligations,
+        unresolved_obligations=_dedupe_terms(question.unresolved_obligations),
         max_candidates=max_candidates,
         snapshot_hash=sha256(payload).hexdigest(),
     )
