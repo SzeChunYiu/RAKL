@@ -1,0 +1,33 @@
+{
+  "protocol_id": "GLM52-MECHANISM-SUITE-V1.1",
+  "hosted_api_profile": "claude-cn",
+  "provider_gateway": "Z.AI Anthropic-compatible Messages API",
+  "canonical_client_module": "rakl.hosted_anthropic_client",
+  "suite_local_binding": "research/glm52_mechanism_suite_v1_1/provider.py",
+  "operator_env_file": "~/.claude-cn.env",
+  "default_base_url": "https://api.z.ai/api/anthropic",
+  "default_model": "glm-5.2",
+  "auth_header": "x-api-key",
+  "anthropic_version_header": "2023-06-01",
+  "required_env_vars": [
+    "ANTHROPIC_BASE_URL",
+    "ANTHROPIC_AUTH_TOKEN"
+  ],
+  "optional_env_vars": [
+    "ANTHROPIC_MODEL",
+    "RUN_MODEL",
+    "API_TIMEOUT_MS",
+    "GLM52_MAX_RETRIES"
+  ],
+  "model_resolution_order": [
+    "RUN_MODEL",
+    "ANTHROPIC_MODEL",
+    "glm-5.2"
+  ],
+  "credential_policy": {
+    "env_only": true,
+    "never_in_git": true,
+    "never_in_result_artifacts": true,
+    "never_in_repr_or_logs": true
+  }
+}
