@@ -36,10 +36,10 @@ Seven state abstractions are compared at the representation level: text-memory s
 
 \begin{table}[ht]
 \centering
-\small
-\begin{tabular}{lccc}
+\footnotesize
+\begin{tabular}{p{0.27\linewidth} >{\centering\arraybackslash}p{0.16\linewidth} >{\centering\arraybackslash}p{0.16\linewidth} >{\centering\arraybackslash}p{0.19\linewidth}}
 \toprule
-State projection & Identifiable accuracy upper bound & Unavoidable error lower bound & Zero-error legitimate-update recall upper bound\\
+State projection & Identifiable accuracy & Unavoidable error & Zero-error update recall\\
 \midrule
 Text memory only & 0.500 & 0.500 & 0.000\\
 Provenance only & 0.533 & 0.467 & 0.059\\
@@ -50,7 +50,7 @@ Simple transactional state & 0.567 & 0.433 & 0.118\\
 Typed RAKL authority state & 1.000 & 0.000 & 1.000\\
 \bottomrule
 \end{tabular}
-\caption{Deterministic representation audit on 30 constructed minimal-twin worlds. These are identifiability bounds induced by the frozen projections, not observed language-model accuracies.}
+\caption{Deterministic representation audit on 30 constructed minimal-twin worlds. The second column is the identifiable-accuracy upper bound, the third its unavoidable-error lower bound, and the fourth the zero-error legitimate-update recall upper bound. These are bounds induced by the frozen projections, not observed language-model accuracies.}
 \label{tab:projection-sufficiency}
 \end{table}
 
