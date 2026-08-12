@@ -1,0 +1,48 @@
+\subsection{Optional weight-updating learning is a separate projection}
+\label{sec:training-time-projection}
+
+The external-state account above does not require the underlying model weights to change.  A separate extension may also study weight-updating learning.  This case needs an additional type distinction rather than a reinterpretation of the epistemic state.  Let $\theta_t$ denote the model checkpoint and define a learner-conditioned training projection
+\[
+L_t=\pi_{\mathrm{train}}(R_t,\theta_t).
+\]
+A training projection may contain checkpoint-bound estimates of which registered problem structures the current learner can already execute, which structural coordinates remain weak, and which raw examples are candidates for further gradient allocation.  It is computational state about the learner.  It is not a scientific-authority view of the external world.
+
+This distinction matters because training utility and scientific authority can vary independently.  A synthetic exercise can be highly useful for teaching a composition while carrying no authority about nature; conversely, a high-authority measurement can be scientifically decisive while adding little new training signal to a particular model checkpoint.  Accordingly, for a training item $x$ and a scientific claim $c$,
+\[
+U_{\mathrm{train}}(x\mid\theta_t)\not\Rightarrow \alpha(c),
+\qquad
+\alpha(x)\not\Rightarrow U_{\mathrm{train}}(x\mid\theta_t).
+\]
+The notation $\alpha(x)$ in the second relation means only that the source object from which $x$ is derived may itself carry scientific authority; it does not turn that authority into a gradient-allocation score.
+
+For a registered relational structure $S$, a possible learner-state view is vector-valued,
+\[
+m_t(S)=\bigl(m_P,m_C,m_B,m_R,m_T,m_F\bigr),
+\]
+for principle acquisition, composition mastery, boundary robustness, representation invariance, cross-domain transfer and retention.  These coordinates are operational probe results bound to $\theta_t$ and to a frozen probe family.  They are not truth probabilities.  In particular,
+\[
+\operatorname{mastered}(A)+\operatorname{mastered}(B)
+\not\Rightarrow
+\operatorname{mastered}(A+B),
+\]
+and a later parameter update can make an earlier mastery estimate stale without changing the authority of any scientific claim.
+
+\begin{proposition}[Training-update non-sovereignty]
+Consider a transition that changes only model parameters, learner-state measurements, training-allocation state or records of the training run, and whose transition ancestry contains no separately licensed scientific evidence/promotion event.  Then the transition cannot by itself increase the scientific-authority projection of any external claim.
+\end{proposition}
+
+\begin{proof}
+The weight update and its training projection have codomain in model/computational state.  Scientific authority remains owned by the content-bound scientific transition system.  A measured training result may later become evidence for a claim \emph{about the trained model} only after the corresponding run, evaluator and artifact identities are registered through the ordinary evidential path.  The optimizer step itself has no scientific-authority write capability.  Hence a pure training transition can change behaviour while leaving scientific authority unchanged.
+\end{proof}
+
+Thus the v3 separation extends from
+\[
+\text{experience priority}\neq\text{scientific authority}
+\]
+to
+\[
+\boxed{\text{training utility}\neq\text{search priority}\neq\text{scientific authority}}.
+\]
+The distinction is intentionally stronger than saying that training data have provenance.  Provenance can identify what influenced the learner; it does not state what that influence is scientifically allowed to establish.
+
+The executable reference object for this extension is \path{src/rakl/training_projection.py}.  It binds structural mastery estimates and derived training candidates to an exact checkpoint and probe family, preserves raw-item identities, fails closed on post-hoc or target-leaking projections and exposes no scientific-authority grant.  It deliberately implements no adaptive scheduler.  The existence of the projection is therefore an architecture result only; whether learner-conditioned structural allocation improves transferable capability is a separate empirical question owned by the training-time evaluation programme.
