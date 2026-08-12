@@ -1,32 +1,36 @@
 """Failure-driven SearchPolicy evolution for RAKL (#433, #434).
 
-This module makes the continual-improvement arrow executable::
+The central continual-improvement contract is::
 
     failure_t
-      -> typed root-cause diagnosis_t
+      -> typed root-cause hypothesis_t
+      -> matched one-repair counterfactual probe_t
+      -> root-cause certificate_t
       -> bounded SearchPolicyDelta_t
       -> policy challenger_{t+1}
       -> fresh assurance
 
-and explicitly rejects::
+not::
 
     failure_t -> another unconstrained idea
 
-A failed trajectory cannot mutate search directly. It must first yield a frozen,
-known-answer-validated ``SearchFailureReceipt`` whose root cause survives a
-counterfactual discriminator. Each registered failure signature maps to an
-allow-listed, operational policy repair: the successor changes query intent,
-selection/diversification, exploration, or feedback learning on the next search.
+The distinction is load-bearing.  A failed trajectory cannot directly mutate
+search behavior and a caller cannot self-certify root cause with booleans.  A
+root-cause certificate is issued only when the same frozen case is evaluated
+under the incumbent policy and exactly one registered repair package, with
+material task/candidate/model/tool/resource context hashes held fixed.  The
+baseline must fail, the counterfactual must pass, and a frozen known-answer
+root-cause reference must agree with the hypothesized failure signature.
 
-The successor is still only a challenger. The update function cannot claim it
-is better; fresh held-out assurance and protected Self-RAKL governance own that
-judgement and any later promotion. Search/ranking feedback never mints
-scientific authority.
+That counterfactual result is development/root-cause evidence only.  It does not
+establish that the successor policy is generally better.  Fresh disjoint
+assurance plus protected Self-RAKL governance own that judgement and any later
+promotion.  Search/ranking feedback never mints scientific authority.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, fields, replace
 from enum import Enum
 from hashlib import sha256
 from math import ceil
@@ -47,16 +51,24 @@ from .epistemic_search import (
 )
 
 __all__ = [
+    "CounterfactualSearchRun",
     "FailureDrivenUpdateAssessment",
     "FailureDrivenUpdateVerdict",
+    "RootCauseCertificationAssessment",
+    "RootCauseCertificationVerdict",
     "SearchFailureReceipt",
     "SearchFailureSignature",
     "SearchPolicy",
     "SearchPolicyDelta",
     "SearchPolicyUpdateProposal",
+    "SearchRootCauseCertificate",
+    "SearchRootCauseDiagnostic",
+    "build_search_failure_receipt",
+    "certify_search_root_cause",
     "compile_search_intents_with_policy",
     "derive_search_policy_update",
     "materialize_search_policy_challenger",
+    "propose_registered_counterfactual_policy",
     "search_feedback_value_with_policy",
     "select_candidates_with_policy",
 ]
@@ -83,6 +95,13 @@ class SearchFailureSignature(str, Enum):
 class FailureDrivenUpdateVerdict(str, Enum):
     CHALLENGER_PROPOSED = "CHALLENGER_PROPOSED"
     NO_REGISTERED_POLICY_REPAIR = "NO_REGISTERED_POLICY_REPAIR"
+    CANNOT_CHECK = "CANNOT_CHECK"
+    INVALID = "INVALID"
+
+
+class RootCauseCertificationVerdict(str, Enum):
+    ROOT_CAUSE_CERTIFIED = "ROOT_CAUSE_CERTIFIED"
+    COUNTERFACTUAL_DID_NOT_RESCUE = "COUNTERFACTUAL_DID_NOT_RESCUE"
     CANNOT_CHECK = "CANNOT_CHECK"
     INVALID = "INVALID"
 
@@ -137,34 +156,6 @@ class SearchPolicy:
 
 
 @dataclass(frozen=True)
-class SearchFailureReceipt:
-    """Frozen causal diagnosis of why one search trajectory failed."""
-
-    failure_id: str
-    question_id: str
-    policy_version: str
-    signature: SearchFailureSignature
-    causal_evidence_ids: Tuple[str, ...]
-    observed_candidate_ids: Tuple[str, ...] = ()
-    known_answer_validated: bool | None = None
-    root_cause_confirmed: bool | None = None
-    counterfactual_discriminator_passed: bool | None = None
-    frozen_before_update: bool | None = None
-
-    def __post_init__(self) -> None:
-        if not self.failure_id.strip() or not self.question_id.strip() or not self.policy_version.strip():
-            raise ValueError("failure receipt requires failure/question/policy identities")
-        if not self.causal_evidence_ids:
-            raise ValueError("failure receipt requires causal evidence ids")
-        if len(set(self.causal_evidence_ids)) != len(self.causal_evidence_ids):
-            raise ValueError("causal evidence ids must be unique")
-
-    @property
-    def grants_scientific_authority(self) -> bool:
-        return False
-
-
-@dataclass(frozen=True)
 class SearchPolicyDelta:
     parameter: str
     old_value: object
@@ -173,9 +164,159 @@ class SearchPolicyDelta:
 
 
 @dataclass(frozen=True)
+class CounterfactualSearchRun:
+    """One exact run receipt used in a matched root-cause discriminator."""
+
+    run_id: str
+    policy: SearchPolicy
+    evaluation_receipt_hash: str
+    outcome_passed: bool
+    case_subject_hash: str
+    task_input_hash: str
+    candidate_pool_hash: str
+    model_subject_hash: str
+    tool_contract_hash: str
+    resource_contract_hash: str
+
+    def __post_init__(self) -> None:
+        for name in (
+            "run_id",
+            "evaluation_receipt_hash",
+            "case_subject_hash",
+            "task_input_hash",
+            "candidate_pool_hash",
+            "model_subject_hash",
+            "tool_contract_hash",
+            "resource_contract_hash",
+        ):
+            if not getattr(self, name).strip():
+                raise ValueError(f"counterfactual search run requires {name}")
+
+    @property
+    def material_context_tuple(self) -> tuple[str, ...]:
+        return (
+            self.case_subject_hash,
+            self.task_input_hash,
+            self.candidate_pool_hash,
+            self.model_subject_hash,
+            self.tool_contract_hash,
+            self.resource_contract_hash,
+        )
+
+
+@dataclass(frozen=True)
+class SearchRootCauseDiagnostic:
+    """Frozen matched experiment for one hypothesized search failure cause."""
+
+    diagnostic_id: str
+    certificate_id: str
+    failure_id: str
+    question_id: str
+    hypothesized_signature: SearchFailureSignature
+    validated_reference_signature: SearchFailureSignature | None
+    diagnosis_reference_receipt_hash: str | None
+    causal_evidence_ids: Tuple[str, ...]
+    baseline: CounterfactualSearchRun
+    counterfactual: CounterfactualSearchRun
+    frozen_before_policy_update: bool | None
+
+    def __post_init__(self) -> None:
+        for name in ("diagnostic_id", "certificate_id", "failure_id", "question_id"):
+            if not getattr(self, name).strip():
+                raise ValueError(f"root-cause diagnostic requires {name}")
+        if not self.causal_evidence_ids:
+            raise ValueError("root-cause diagnostic requires causal evidence ids")
+        if len(set(self.causal_evidence_ids)) != len(self.causal_evidence_ids):
+            raise ValueError("causal evidence ids must be unique")
+
+
+_ROOT_CAUSE_CERTIFICATE_ISSUER = object()
+_FAILURE_RECEIPT_ISSUER = object()
+
+
+@dataclass(frozen=True)
+class SearchRootCauseCertificate:
+    certificate_id: str
+    diagnostic_id: str
+    failure_id: str
+    question_id: str
+    incumbent_policy_version: str
+    counterfactual_policy_version: str
+    signature: SearchFailureSignature
+    intervention_parameters: Tuple[str, ...]
+    baseline_run_id: str
+    counterfactual_run_id: str
+    baseline_evaluation_receipt_hash: str
+    counterfactual_evaluation_receipt_hash: str
+    matched_material_context_hash: str
+    diagnosis_reference_receipt_hash: str
+    causal_evidence_ids: Tuple[str, ...]
+    subject_hash: str
+    _issuer: object = field(repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if self._issuer is not _ROOT_CAUSE_CERTIFICATE_ISSUER:
+            raise ValueError("SearchRootCauseCertificate must be issued by certify_search_root_cause")
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+    @property
+    def proves_general_policy_improvement(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class RootCauseCertificationAssessment:
+    verdict: RootCauseCertificationVerdict
+    reasons: Tuple[str, ...] = ()
+    certificate: SearchRootCauseCertificate | None = None
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
+class SearchFailureReceipt:
+    """Failure identity bound to a certified matched root-cause experiment."""
+
+    failure_id: str
+    question_id: str
+    policy_version: str
+    causal_evidence_ids: Tuple[str, ...]
+    observed_candidate_ids: Tuple[str, ...]
+    root_cause_certificate: SearchRootCauseCertificate
+    _issuer: object = field(repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if self._issuer is not _FAILURE_RECEIPT_ISSUER:
+            raise ValueError("SearchFailureReceipt must be built by build_search_failure_receipt")
+        certificate = self.root_cause_certificate
+        if self.failure_id != certificate.failure_id:
+            raise ValueError("failure receipt/certificate failure identity mismatch")
+        if self.question_id != certificate.question_id:
+            raise ValueError("failure receipt/certificate question identity mismatch")
+        if self.policy_version != certificate.incumbent_policy_version:
+            raise ValueError("failure receipt/certificate incumbent policy mismatch")
+        if tuple(sorted(self.causal_evidence_ids)) != tuple(sorted(certificate.causal_evidence_ids)):
+            raise ValueError("failure receipt/certificate causal evidence mismatch")
+
+    @property
+    def signature(self) -> SearchFailureSignature:
+        return self.root_cause_certificate.signature
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
 class SearchPolicyUpdateProposal:
     update_id: str
     failure_id: str
+    root_cause_certificate_id: str
     signature: SearchFailureSignature
     from_policy_version: str
     to_policy_version: str
@@ -206,6 +347,15 @@ class FailureDrivenUpdateAssessment:
     @property
     def grants_scientific_authority(self) -> bool:
         return False
+
+
+def _policy_hash(policy: SearchPolicy) -> str:
+    payload = tuple((item.name, getattr(policy, item.name)) for item in fields(policy))
+    return sha256(repr(payload).encode("utf-8")).hexdigest()
+
+
+def _material_context_hash(run: CounterfactualSearchRun) -> str:
+    return sha256(repr(run.material_context_tuple).encode("utf-8")).hexdigest()
 
 
 def _delta(parameter: str, old: object, new: object, rationale: str) -> Tuple[SearchPolicyDelta, ...]:
@@ -404,6 +554,188 @@ def _registered_repair(
     raise AssertionError(f"unhandled search failure signature: {signature}")
 
 
+def _apply_deltas(policy: SearchPolicy, deltas: Sequence[SearchPolicyDelta], to_version: str) -> SearchPolicy:
+    changes: dict[str, object] = {"version": to_version}
+    for delta in deltas:
+        if not hasattr(policy, delta.parameter):
+            raise ValueError(f"unknown search policy parameter: {delta.parameter}")
+        if getattr(policy, delta.parameter) != delta.old_value:
+            raise ValueError(f"stale policy delta for {delta.parameter}")
+        changes[delta.parameter] = delta.new_value
+    return replace(policy, **changes)
+
+
+def propose_registered_counterfactual_policy(
+    incumbent: SearchPolicy,
+    signature: SearchFailureSignature,
+    *,
+    to_policy_version: str,
+) -> SearchPolicy:
+    """Materialize the one registered repair package for a root-cause probe.
+
+    This is a development counterfactual, not a promoted policy and not a claim
+    of improvement.
+    """
+
+    if not to_policy_version.strip() or to_policy_version == incumbent.version:
+        raise ValueError("counterfactual policy requires a distinct successor version")
+    deltas, _, _ = _registered_repair(incumbent, signature)
+    if not deltas:
+        raise ValueError("registered repair is already saturated for this failure signature")
+    return _apply_deltas(incumbent, deltas, to_policy_version)
+
+
+def _policy_differences(
+    baseline: SearchPolicy,
+    counterfactual: SearchPolicy,
+) -> Tuple[SearchPolicyDelta, ...]:
+    differences: list[SearchPolicyDelta] = []
+    for item in fields(SearchPolicy):
+        if item.name == "version":
+            continue
+        old = getattr(baseline, item.name)
+        new = getattr(counterfactual, item.name)
+        if old != new:
+            differences.append(SearchPolicyDelta(item.name, old, new, "observed_counterfactual_difference"))
+    return tuple(differences)
+
+
+def certify_search_root_cause(
+    diagnostic: SearchRootCauseDiagnostic,
+) -> RootCauseCertificationAssessment:
+    """Certify one matched, one-repair counterfactual root-cause discriminator."""
+
+    if diagnostic.frozen_before_policy_update is None:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.CANNOT_CHECK,
+            ("root_cause_diagnostic_freeze_chronology_unknown",),
+        )
+    if diagnostic.frozen_before_policy_update is False:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("root_cause_diagnostic_defined_posthoc",),
+        )
+    if diagnostic.validated_reference_signature is None or not diagnostic.diagnosis_reference_receipt_hash:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.CANNOT_CHECK,
+            ("known_answer_root_cause_reference_missing",),
+        )
+    if diagnostic.validated_reference_signature is not diagnostic.hypothesized_signature:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("hypothesized_search_failure_signature_disagrees_with_validated_reference",),
+        )
+
+    baseline = diagnostic.baseline
+    counterfactual = diagnostic.counterfactual
+    if baseline.policy.version == counterfactual.policy.version:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("counterfactual_policy_version_must_differ",),
+        )
+    if baseline.material_context_tuple != counterfactual.material_context_tuple:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("counterfactual_search_probe_not_materially_matched",),
+        )
+    if baseline.outcome_passed:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("baseline_run_did_not_fail",),
+        )
+    if not counterfactual.outcome_passed:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.COUNTERFACTUAL_DID_NOT_RESCUE,
+            ("registered_repair_did_not_rescue_the_frozen_failure_case",),
+        )
+
+    expected_deltas, _, _ = _registered_repair(
+        baseline.policy,
+        diagnostic.hypothesized_signature,
+    )
+    if not expected_deltas:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("registered_repair_already_saturated_in_baseline_policy",),
+        )
+    actual_deltas = _policy_differences(baseline.policy, counterfactual.policy)
+    expected_rows = tuple(
+        sorted((item.parameter, item.old_value, item.new_value) for item in expected_deltas)
+    )
+    actual_rows = tuple(
+        sorted((item.parameter, item.old_value, item.new_value) for item in actual_deltas)
+    )
+    if actual_rows != expected_rows:
+        return RootCauseCertificationAssessment(
+            RootCauseCertificationVerdict.INVALID,
+            ("counterfactual_policy_does_not_equal_exact_registered_repair",),
+        )
+
+    matched_context_hash = _material_context_hash(baseline)
+    subject_payload = (
+        "SEARCH_ROOT_CAUSE_CERTIFICATE_V1",
+        diagnostic.certificate_id,
+        diagnostic.diagnostic_id,
+        diagnostic.failure_id,
+        diagnostic.question_id,
+        diagnostic.hypothesized_signature.value,
+        baseline.run_id,
+        counterfactual.run_id,
+        baseline.evaluation_receipt_hash,
+        counterfactual.evaluation_receipt_hash,
+        _policy_hash(baseline.policy),
+        _policy_hash(counterfactual.policy),
+        matched_context_hash,
+        diagnostic.diagnosis_reference_receipt_hash,
+        tuple(sorted(diagnostic.causal_evidence_ids)),
+        expected_rows,
+    )
+    certificate = SearchRootCauseCertificate(
+        certificate_id=diagnostic.certificate_id,
+        diagnostic_id=diagnostic.diagnostic_id,
+        failure_id=diagnostic.failure_id,
+        question_id=diagnostic.question_id,
+        incumbent_policy_version=baseline.policy.version,
+        counterfactual_policy_version=counterfactual.policy.version,
+        signature=diagnostic.hypothesized_signature,
+        intervention_parameters=tuple(sorted(item.parameter for item in expected_deltas)),
+        baseline_run_id=baseline.run_id,
+        counterfactual_run_id=counterfactual.run_id,
+        baseline_evaluation_receipt_hash=baseline.evaluation_receipt_hash,
+        counterfactual_evaluation_receipt_hash=counterfactual.evaluation_receipt_hash,
+        matched_material_context_hash=matched_context_hash,
+        diagnosis_reference_receipt_hash=diagnostic.diagnosis_reference_receipt_hash,
+        causal_evidence_ids=tuple(sorted(diagnostic.causal_evidence_ids)),
+        subject_hash=sha256(repr(subject_payload).encode("utf-8")).hexdigest(),
+        _issuer=_ROOT_CAUSE_CERTIFICATE_ISSUER,
+    )
+    return RootCauseCertificationAssessment(
+        RootCauseCertificationVerdict.ROOT_CAUSE_CERTIFIED,
+        (),
+        certificate,
+    )
+
+
+def build_search_failure_receipt(
+    certificate: SearchRootCauseCertificate,
+    *,
+    observed_candidate_ids: Sequence[str] = (),
+) -> SearchFailureReceipt:
+    """Bind a certified root cause into the only receipt accepted by policy learning."""
+
+    if certificate._issuer is not _ROOT_CAUSE_CERTIFICATE_ISSUER:
+        raise ValueError("unissued root-cause certificate")
+    return SearchFailureReceipt(
+        failure_id=certificate.failure_id,
+        question_id=certificate.question_id,
+        policy_version=certificate.incumbent_policy_version,
+        causal_evidence_ids=certificate.causal_evidence_ids,
+        observed_candidate_ids=tuple(observed_candidate_ids),
+        root_cause_certificate=certificate,
+        _issuer=_FAILURE_RECEIPT_ISSUER,
+    )
+
+
 def _proposal_hash(
     receipt: SearchFailureReceipt,
     policy: SearchPolicy,
@@ -412,11 +744,13 @@ def _proposal_hash(
 ) -> str:
     payload = repr(
         (
-            "SEARCH_POLICY_FAILURE_UPDATE_V2",
+            "SEARCH_POLICY_FAILURE_UPDATE_V3",
             receipt.failure_id,
             receipt.question_id,
             receipt.policy_version,
             receipt.signature.value,
+            receipt.root_cause_certificate.certificate_id,
+            receipt.root_cause_certificate.subject_hash,
             tuple(sorted(receipt.causal_evidence_ids)),
             policy,
             to_version,
@@ -433,8 +767,19 @@ def derive_search_policy_update(
     update_id: str,
     to_policy_version: str,
 ) -> FailureDrivenUpdateAssessment:
-    """Map one validated failure to the registered bounded search-policy repair."""
+    """Map one certified failure to its exact registered search-policy repair."""
 
+    if receipt._issuer is not _FAILURE_RECEIPT_ISSUER:
+        return FailureDrivenUpdateAssessment(
+            FailureDrivenUpdateVerdict.INVALID,
+            ("failure_receipt_not_issued_by_root_cause_certifier",),
+        )
+    certificate = receipt.root_cause_certificate
+    if certificate._issuer is not _ROOT_CAUSE_CERTIFICATE_ISSUER:
+        return FailureDrivenUpdateAssessment(
+            FailureDrivenUpdateVerdict.INVALID,
+            ("root_cause_certificate_not_issued_by_certifier",),
+        )
     if not update_id.strip() or not to_policy_version.strip():
         return FailureDrivenUpdateAssessment(
             FailureDrivenUpdateVerdict.INVALID,
@@ -450,31 +795,6 @@ def derive_search_policy_update(
             FailureDrivenUpdateVerdict.INVALID,
             ("failure_receipt_not_bound_to_incumbent_policy",),
         )
-    if receipt.known_answer_validated is not True:
-        return FailureDrivenUpdateAssessment(
-            FailureDrivenUpdateVerdict.CANNOT_CHECK,
-            ("failure_diagnosis_not_known_answer_validated",),
-        )
-    if receipt.root_cause_confirmed is not True:
-        return FailureDrivenUpdateAssessment(
-            FailureDrivenUpdateVerdict.CANNOT_CHECK,
-            ("search_root_cause_not_confirmed",),
-        )
-    if receipt.counterfactual_discriminator_passed is not True:
-        return FailureDrivenUpdateAssessment(
-            FailureDrivenUpdateVerdict.CANNOT_CHECK,
-            ("root_cause_counterfactual_discriminator_not_passed",),
-        )
-    if receipt.frozen_before_update is not True:
-        verdict = (
-            FailureDrivenUpdateVerdict.CANNOT_CHECK
-            if receipt.frozen_before_update is None
-            else FailureDrivenUpdateVerdict.INVALID
-        )
-        return FailureDrivenUpdateAssessment(
-            verdict,
-            ("failure_receipt_not_frozen_before_policy_update",),
-        )
 
     deltas, expected_metric, falsifier = _registered_repair(policy, receipt.signature)
     if not deltas:
@@ -485,10 +805,16 @@ def derive_search_policy_update(
                 "do not substitute an unrelated random idea",
             ),
         )
+    if tuple(sorted(item.parameter for item in deltas)) != certificate.intervention_parameters:
+        return FailureDrivenUpdateAssessment(
+            FailureDrivenUpdateVerdict.INVALID,
+            ("certified_root_cause_intervention_no_longer_matches_registered_repair",),
+        )
 
     proposal = SearchPolicyUpdateProposal(
         update_id=update_id,
         failure_id=receipt.failure_id,
+        root_cause_certificate_id=certificate.certificate_id,
         signature=receipt.signature,
         from_policy_version=policy.version,
         to_policy_version=to_policy_version,
@@ -512,14 +838,7 @@ def materialize_search_policy_challenger(
 
     if proposal.from_policy_version != incumbent.version:
         raise ValueError("proposal is not bound to incumbent policy version")
-    changes: dict[str, object] = {"version": proposal.to_policy_version}
-    for delta in proposal.deltas:
-        if not hasattr(incumbent, delta.parameter):
-            raise ValueError(f"unknown search policy parameter: {delta.parameter}")
-        if getattr(incumbent, delta.parameter) != delta.old_value:
-            raise ValueError(f"stale policy delta for {delta.parameter}")
-        changes[delta.parameter] = delta.new_value
-    return replace(incumbent, **changes)
+    return _apply_deltas(incumbent, proposal.deltas, proposal.to_policy_version)
 
 
 def _root_bound_intent_terms(question: ScientificSearchQuestion) -> Tuple[str, ...]:
@@ -638,8 +957,6 @@ def select_candidates_with_policy(
 ) -> Tuple[SearchCandidate, ...]:
     """Apply the learned policy to next-iteration candidate selection."""
 
-    # The benchmark-target-leak boundary is hard and precedes every reserve,
-    # exploit, and exploration path. No policy learning can weaken it.
     eligible = tuple(
         item
         for item in candidates
@@ -653,10 +970,6 @@ def select_candidates_with_policy(
         return ()
 
     selected: list[SearchCandidate] = []
-
-    # Counterevidence is load-bearing and reserves budget before more specialized
-    # slots or exploration. Specialized policies may add further negative/
-    # retraction coverage if room remains.
     if policy.preserve_counterevidence:
         _reserve_one(
             selected,
@@ -731,9 +1044,6 @@ def select_candidates_with_policy(
                 selected.append(candidate)
                 added += 1
 
-    # If diversity constraints made the reserved exploration budget impossible to
-    # fill, use remaining admissible exploitation candidates rather than returning
-    # an unnecessarily short interaction space.
     if len(selected) < policy.max_candidates:
         for candidate in exploit_order:
             if len(selected) >= policy.max_candidates:
