@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/difference-witness-realization-domain-v1.schema.json",
+  "title": "RAKL DifferenceWitness realization-domain typing (proposal/shadow)",
+  "$comment": "Issue #396. Types where a DifferenceWitness hostile/distinction pair is realized. Does not weaken promotion gates or mint independent-review authority. Ordinary method-reuse assessment remains separate from obligation-strength routing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_atom_id",
+    "target_context_hash",
+    "method_family",
+    "prior_failure_ids",
+    "changed_structural_coordinates",
+    "restored_or_replaced_assumptions",
+    "prior_falsifier_escape_reason",
+    "cheapest_repeat_failure_test",
+    "evidence_pointers"
+  ],
+  "properties": {
+    "target_atom_id": {"type": "string", "minLength": 1},
+    "target_context_hash": {"type": "string", "minLength": 1},
+    "method_family": {"type": "string", "minLength": 1},
+    "prior_failure_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "changed_structural_coordinates": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "restored_or_replaced_assumptions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "prior_falsifier_escape_reason": {"type": "string", "minLength": 1},
+    "cheapest_repeat_failure_test": {"type": "string", "minLength": 1},
+    "evidence_pointers": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "realization_domain": {
+      "type": ["string", "null"],
+      "enum": [
+        "AMBIENT_REPRESENTATION",
+        "TARGET_DOMAIN",
+        "TRANSFERRED_WITH_WITNESS",
+        null
+      ]
+    },
+    "transfer_source_context_hash": {"type": "string"},
+    "transfer_role_mapping": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "transfer_shared_constraints": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "transfer_disanalogies": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "transfer_assumptions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "realization_domain": {"const": "TRANSFERRED_WITH_WITNESS"}
+        },
+        "required": ["realization_domain"]
+      },
+      "then": {
+        "required": [
+          "transfer_source_context_hash",
+          "transfer_role_mapping",
+          "transfer_shared_constraints",
+          "transfer_disanalogies",
+          "transfer_assumptions"
+        ],
+        "properties": {
+          "transfer_source_context_hash": {"type": "string", "minLength": 1},
+          "transfer_role_mapping": {"type": "array", "minItems": 1},
+          "transfer_shared_constraints": {"type": "array", "minItems": 1},
+          "transfer_disanalogies": {"type": "array", "minItems": 1},
+          "transfer_assumptions": {"type": "array", "minItems": 1}
+        }
+      }
+    }
+  ]
+}

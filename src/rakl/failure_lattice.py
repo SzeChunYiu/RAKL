@@ -35,6 +35,35 @@ class ReuseVerdict(str, Enum):
     GLOBALLY_BLOCKED_BY_VERIFIED_IMPOSSIBILITY = "GLOBALLY_BLOCKED_BY_VERIFIED_IMPOSSIBILITY"
 
 
+class RealizationDomain(str, Enum):
+    """Where a DifferenceWitness's hostile/distinction pair is realized.
+
+    ``AMBIENT_REPRESENTATION``
+        Distinction exists in some ambient encoding/statistic space. It may prune
+        algebraic identities or representations, but must not by itself certify
+        that an obligation is strictly weaker in the fixed target theory.
+    ``TARGET_DOMAIN``
+        Hostile pair / distinction is realized inside the fixed target theory.
+    ``TRANSFERRED_WITH_WITNESS``
+        Distinction is transported from a source realization; requires an explicit
+        source→target mapping with assumptions and disanalogies bound.
+    """
+
+    AMBIENT_REPRESENTATION = "AMBIENT_REPRESENTATION"
+    TARGET_DOMAIN = "TARGET_DOMAIN"
+    TRANSFERRED_WITH_WITNESS = "TRANSFERRED_WITH_WITNESS"
+
+
+class ObligationStrengthVerdict(str, Enum):
+    """Authority status for strict-reduction / obligation-strength routing claims."""
+
+    ACCEPTED_TARGET_DOMAIN = "ACCEPTED_TARGET_DOMAIN"
+    ACCEPTED_TRANSFERRED_WITH_WITNESS = "ACCEPTED_TRANSFERRED_WITH_WITNESS"
+    REPRESENTATION_ONLY = "REPRESENTATION_ONLY"
+    CANNOT_CHECK = "CANNOT_CHECK"
+    REJECTED_INCOMPLETE_TRANSFER = "REJECTED_INCOMPLETE_TRANSFER"
+
+
 @dataclass(frozen=True)
 class FailureExperience:
     failure_id: str
@@ -84,6 +113,14 @@ class DifferenceWitness:
     prior_falsifier_escape_reason: str
     cheapest_repeat_failure_test: str
     evidence_pointers: Tuple[str, ...]
+    # Realization-domain typing (#396). Optional for ordinary method-reuse
+    # witnesses; required for obligation-strength / consequential routing claims.
+    realization_domain: RealizationDomain | None = None
+    transfer_source_context_hash: str = ""
+    transfer_role_mapping: Tuple[str, ...] = ()
+    transfer_shared_constraints: Tuple[str, ...] = ()
+    transfer_disanalogies: Tuple[str, ...] = ()
+    transfer_assumptions: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -91,6 +128,21 @@ class FailureReuseAssessment:
     verdict: ReuseVerdict
     relevant_failure_ids: Tuple[str, ...]
     reasons: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ObligationStrengthAssessment:
+    """Typed gate result for obligation-strength / strict-reduction routing.
+
+    ``may_certify_target_obligation_weakening`` is true only for
+    ``TARGET_DOMAIN`` or a fully bound ``TRANSFERRED_WITH_WITNESS``. Ambient /
+    incomplete / missing typing never mints target-domain attainability.
+    Promotion gates and independent-review authority are unchanged.
+    """
+
+    verdict: ObligationStrengthVerdict
+    reasons: Tuple[str, ...]
+    may_certify_target_obligation_weakening: bool
 
 
 def _parse_time(value: str) -> datetime | None:
@@ -391,6 +443,86 @@ def assess_method_reuse(
         ReuseVerdict.DIFFERENCE_WITNESSED,
         tuple(item.failure_id for item in relevant),
         ("reuse_allowed_with_targeted_repeat_failure_test",),
+    )
+
+
+def validate_difference_witness_transfer_binding(
+    witness: DifferenceWitness,
+) -> Tuple[str, ...]:
+    """Return missing binding fields for TRANSFERRED_WITH_WITNESS witnesses."""
+
+    if witness.realization_domain is not RealizationDomain.TRANSFERRED_WITH_WITNESS:
+        return ()
+    reasons: list[str] = []
+    if not witness.transfer_source_context_hash:
+        reasons.append("transfer_source_context_hash_missing")
+    if not witness.transfer_role_mapping:
+        reasons.append("transfer_role_mapping_missing")
+    if not witness.transfer_shared_constraints:
+        reasons.append("transfer_shared_constraints_missing")
+    if not witness.transfer_disanalogies:
+        reasons.append("transfer_disanalogies_missing")
+    if not witness.transfer_assumptions:
+        reasons.append("transfer_assumptions_missing")
+    return tuple(reasons)
+
+
+def assess_obligation_strength_claim(
+    difference_witness: DifferenceWitness | None,
+) -> ObligationStrengthAssessment:
+    """Gate strict-reduction / obligation-strength claims by realization domain.
+
+    Representation-only ambient distinctions must not certify that an obligation
+    is strictly weaker in the fixed target problem. Missing typing fails closed
+    as ``CANNOT_CHECK``. Same-context review still carries zero independent-
+    review authority; existing promotion gates remain unchanged.
+    """
+
+    if difference_witness is None:
+        return ObligationStrengthAssessment(
+            ObligationStrengthVerdict.CANNOT_CHECK,
+            ("difference_witness_missing",),
+            False,
+        )
+    domain = difference_witness.realization_domain
+    if domain is None:
+        return ObligationStrengthAssessment(
+            ObligationStrengthVerdict.CANNOT_CHECK,
+            ("realization_domain_unspecified",),
+            False,
+        )
+    if domain is RealizationDomain.AMBIENT_REPRESENTATION:
+        return ObligationStrengthAssessment(
+            ObligationStrengthVerdict.REPRESENTATION_ONLY,
+            (
+                "ambient_representation_may_prune_identities_but_not_certify_"
+                "target_domain_obligation_weakening",
+            ),
+            False,
+        )
+    if domain is RealizationDomain.TARGET_DOMAIN:
+        return ObligationStrengthAssessment(
+            ObligationStrengthVerdict.ACCEPTED_TARGET_DOMAIN,
+            ("hostile_pair_realized_in_fixed_target_theory",),
+            True,
+        )
+    if domain is RealizationDomain.TRANSFERRED_WITH_WITNESS:
+        missing = validate_difference_witness_transfer_binding(difference_witness)
+        if missing:
+            return ObligationStrengthAssessment(
+                ObligationStrengthVerdict.REJECTED_INCOMPLETE_TRANSFER,
+                missing,
+                False,
+            )
+        return ObligationStrengthAssessment(
+            ObligationStrengthVerdict.ACCEPTED_TRANSFERRED_WITH_WITNESS,
+            ("transfer_binding_complete_for_target_obligation_routing",),
+            True,
+        )
+    return ObligationStrengthAssessment(
+        ObligationStrengthVerdict.CANNOT_CHECK,
+        ("realization_domain_unrecognized",),
+        False,
     )
 
 

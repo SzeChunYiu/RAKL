@@ -1,0 +1,41 @@
+{
+  "schema_version": "difference-witness-realization-domain-proposal-v1",
+  "issue": 396,
+  "change_class": "B_WORKFLOW_METHOD_PROPOSAL_SHADOW",
+  "status": "IMPLEMENTED_PROPOSAL_ONLY",
+  "title": "Type DifferenceWitness by realization domain",
+  "created_at_utc": "2026-08-12T05:00:00Z",
+  "parent_method_version": "3.0.0",
+  "hypothesis": "Separating AMBIENT_REPRESENTATION from TARGET_DOMAIN / TRANSFERRED_WITH_WITNESS prevents representation freedom from being misread as target-domain obligation weakening in consequential routing.",
+  "artifacts": {
+    "runtime": "src/rakl/failure_lattice.py",
+    "schema": "schemas/difference-witness-realization-domain-v1.schema.json",
+    "docs": "docs/FAILURE_EXPERIENCE_LATTICE.md",
+    "tests": "tests/test_failure_lattice.py"
+  },
+  "gate_hypothesis": {
+    "obligation_strength_requires": [
+      "TARGET_DOMAIN",
+      "TRANSFERRED_WITH_WITNESS"
+    ],
+    "ambient_status": "REPRESENTATION_ONLY",
+    "unspecified_status": "CANNOT_CHECK",
+    "incomplete_transfer_status": "REJECTED_INCOMPLETE_TRANSFER"
+  },
+  "authority_boundary": {
+    "grants_scientific_authority": false,
+    "weakens_promotion_gates": false,
+    "independent_review_claimed": false,
+    "application_theorem_claimed": false,
+    "capable_model_required": false,
+    "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+    "note": "CAPABLE_MODEL is orthogonal; this is schema/gate typing only."
+  },
+  "validation_cases": [
+    "ambient_synthetic_pair_rejected_as_target_domain_attainability",
+    "genuine_target_pair_accepted_for_obligation_strength",
+    "transferred_pair_accepted_only_when_assumptions_bound"
+  ],
+  "rollback_plan": "Revert DifferenceWitness optional realization-domain fields and assess_obligation_strength_claim; ordinary assess_method_reuse remains the prior surface.",
+  "claim_boundary": "Proposal/shadow Class-B refinement only. Does not promote a method version, mint theorem authority, or change Constitution evaluators."
+}
