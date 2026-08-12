@@ -1,6 +1,8 @@
-# RAKL — Recursive Atomic Knowledge Lattice
+# Orion — Evidence-Governed Research Operating System for LLMs
 
-RAKL is a mechanism-first, recursively self-improving research operating system for solving hard problems with an LLM without reducing research to blind model search.
+> **Naming.** The framework is named **Orion**. `RAKL` (the original "Recursive Atomic Knowledge Lattice" codename) is retained as the repository name and the internal code namespace — and in frozen identifiers such as `RAKL_math`, `RAKL_LEARNING`, `RAKLV3State`, receipt/job names, and the immutable commit URLs cited below. Those are deliberately **not** renamed: they are the frozen provenance that lets the papers' honesty claims stay verifiable. In short: **Orion is the framework; `RAKL` is the codename/namespace kept for provenance.**
+
+Orion is a mechanism-first, recursively self-improving research operating system for solving hard problems with an LLM without reducing research to blind model search.
 
 > **Paper 1 external-review solicitation:** External reviewers are invited through [GitHub issue #41](https://github.com/SzeChunYiu/RAKL/issues/41) using the [immutable solicitation packet at commit `9d3eb91c6bfc746d6c843f6c1c6b0f7cea887dc6`](https://github.com/SzeChunYiu/RAKL/tree/9d3eb91c6bfc746d6c843f6c1c6b0f7cea887dc6/review/paper1/external_solicitation). As observed on 2026-08-11, the issue has zero public responses. This is a solicitation, not independent review, peer review, or acceptance.
 
