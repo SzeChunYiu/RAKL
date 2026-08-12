@@ -1,0 +1,117 @@
+name: paper2-robustness-development-v1
+
+on:
+  push:
+    branches:
+      - paper2-robustness-development-run-v1
+    paths:
+      - '.github/workflows/paper2-robustness-development-v1.yml'
+      - 'research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RUN_V1.json'
+      - 'scripts/paper2_robustness_development.py'
+      - 'src/rakl/objective_transfer_robustness.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  development:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Bind exact evaluated subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee SUBJECT_SHA.txt
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install RAKL
+        run: pip install -e '.[test]'
+
+      - name: Verify frozen identities before outcome generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          p=json.loads(Path('research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RUN_V1.json').read_text())
+          assert p['status']=='FROZEN_BEFORE_REGISTERED_DEVELOPMENT_OUTCOME'
+          assert p['registered_seed']==2026081211
+          assert p['n_per_cell']==24
+          for path,key in [
+              (p['preregistration_path'],'preregistration_blob_sha'),
+              (p['generator_path'],'generator_blob_sha'),
+              (p['analysis_path'],'analysis_blob_sha'),
+          ]:
+              got=subprocess.check_output(['git','hash-object',path], text=True).strip()
+              assert got==p[key], (path, got, p[key])
+          print('FROZEN_IDENTITIES_OK')
+          PY
+
+      - name: Run instrument integrity tests before registered seed
+        run: pytest -q tests/test_objective_transfer_robustness_instrument.py
+
+      - name: Execute registered development seed exactly once on bound subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/paper2_robustness_development.py | tee ROBUSTNESS_DEVELOPMENT_RESULT.json
+
+      - name: Classify development gate without converting a scientific failure into CI failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('ROBUSTNESS_DEVELOPMENT_RESULT.json').read_text())
+          reasons=[]
+          if r['seed'] != 2026081211: reasons.append('SEED_MISMATCH')
+          if r['n_per_cell'] != 24 or r['n'] != 1296: reasons.append('SAMPLE_SIZE_MISMATCH')
+          a=r['lexical_decidable_accuracy']
+          if not (0.35 <= a <= 0.75): reasons.append('LEXICAL_ACCURACY_OUTSIDE_REGISTERED_GATE')
+          for family,row in r['semantic_decorrelation'].items():
+              if row['permutation_p'] < 0.05:
+                  reasons.append(f'SEMANTIC_DECORRELATION_FAIL:{family}')
+          twin=r['arms']['twin']['exact3']
+          lexical=r['arms']['lexical']['exact3']
+          if not (twin > lexical and twin < 1.0):
+              reasons.append('COORDINATE_ABLATED_TWIN_GATE_FAIL')
+          # Instrument integrity tests above own hidden-metadata and generator shortcut invariants.
+          gate={
+              'schema':'paper2-robustness-development-gate-v1',
+              'subject_sha':Path('SUBJECT_SHA.txt').read_text().strip(),
+              'seed':r['seed'],
+              'n':r['n'],
+              'gate_pass':not reasons,
+              'reasons':reasons,
+              'confirmatory_n_per_cell_candidate':r['confirmatory_n_per_cell_candidate'],
+              'confirmatory_total_candidate':r['confirmatory_total_candidate'],
+              'claim_boundary':'DEVELOPMENT_ONLY; no broad robustness claim',
+          }
+          Path('ROBUSTNESS_DEVELOPMENT_GATE.json').write_text(json.dumps(gate, indent=2, sort_keys=True)+'\n')
+          print('DEVELOPMENT_TYPED_TERMINAL=' + ('PASS' if not reasons else 'FAIL'))
+          if reasons:
+              print('\n'.join(reasons))
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper2-robustness-development-${{ github.sha }}
+          path: |
+            ROBUSTNESS_DEVELOPMENT_RESULT.json
+            ROBUSTNESS_DEVELOPMENT_GATE.json
+            SUBJECT_SHA.txt
+            research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RUN_V1.json
+          if-no-files-found: error
+          retention-days: 90
