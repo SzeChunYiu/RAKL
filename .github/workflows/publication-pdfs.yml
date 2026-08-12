@@ -94,27 +94,35 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import os
+          import re
+
           sha = os.environ["HEAD_SHA"]
           tests = int(os.environ["RAKL_SOFTWARE_TESTS"])
           p1 = Path("build/publication/paper-01/main.tex")
           text = p1.read_text(encoding="utf-8")
-          if r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}" not in text:
-              raise SystemExit("paper-01 missing UNBOUND ImplementationSHA anchor")
-          if r"\newcommand{\SoftwareTests}{UNBOUND}" not in text:
-              raise SystemExit("paper-01 missing UNBOUND SoftwareTests anchor")
-          text = text.replace(
-              r"\newcommand{\ImplementationSHA}{\texttt{UNBOUND}}",
-              rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}",
-              1,
+
+          # Bind exactly one declaration of each release-identity macro.  The source may
+          # carry UNBOUND or a previously bound value; ambiguity fails closed.
+          impl_pattern = re.compile(r"^\\newcommand\{\\ImplementationSHA\}\{[^\n]*\}$", re.MULTILINE)
+          tests_pattern = re.compile(r"^\\newcommand\{\\SoftwareTests\}\{[^\n]*\}$", re.MULTILINE)
+          if len(impl_pattern.findall(text)) != 1:
+              raise SystemExit("paper-01 must contain exactly one ImplementationSHA declaration")
+          if len(tests_pattern.findall(text)) != 1:
+              raise SystemExit("paper-01 must contain exactly one SoftwareTests declaration")
+          text = impl_pattern.sub(
+              lambda _: rf"\newcommand{{\ImplementationSHA}}{{\texttt{{{sha}}}}}",
+              text,
+              count=1,
           )
-          text = text.replace(
-              r"\newcommand{\SoftwareTests}{UNBOUND}",
-              rf"\newcommand{{\SoftwareTests}}{{{tests}}}",
-              1,
+          text = tests_pattern.sub(
+              lambda _: rf"\newcommand{{\SoftwareTests}}{{{tests}}}",
+              text,
+              count=1,
           )
           if r"\section*{Code, materials and AI-use disclosure}" not in text:
               raise SystemExit("paper-01 missing AI-use disclosure")
           p1.write_text(text, encoding="utf-8")
+
           Path("build/publication/paper-06/build_identity.tex").write_text(
               (
                   rf"\newcommand{{\SoftwareTests}}{{{tests}}}" + "\n"
