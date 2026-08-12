@@ -11,12 +11,21 @@ It prevents a framework challenger from earning promotion eligibility by:
 * reusing cases that motivated or tuned the challenger;
 * relying on positive point estimates without typed inferential evidence;
 * trading a hard epistemic/safety regression for a larger capability gain;
-* winning only because it consumed more resources; or
-* treating competitor/literature inspiration as promotion evidence.
+* winning only because it consumed more resources;
+* treating competitor/literature inspiration as promotion evidence; or
+* changing search/ranking policy without a typed failure-driven update receipt.
 
-A successful assessment is only **promotion eligibility**.  Actual incumbent
+For search surfaces the causal chain is explicit::
+
+    failure_t
+      -> root-cause receipt
+      -> bounded search-policy update receipt
+      -> challenger_{t+1}
+      -> fresh assurance
+
+A successful assessment is only **promotion eligibility**. Actual incumbent
 promotion remains owned by the protected governance path in
-``evolution_archive.promote_incumbent``.  Nothing here can mint scientific
+``evolution_archive.promote_incumbent``. Nothing here can mint scientific
 claim authority.
 """
 
@@ -60,6 +69,21 @@ class EvolutionSurface(str, Enum):
     PLANNING_SEARCH = "PLANNING_SEARCH"
 
 
+_SEARCH_EVOLUTION_SURFACES = frozenset(
+    {
+        EvolutionSurface.CRAWL_POLICY,
+        EvolutionSurface.QUERY_COMPILATION,
+        EvolutionSurface.RETRIEVAL_POLICY,
+        EvolutionSurface.RANKING,
+        EvolutionSurface.DIVERSIFICATION,
+        EvolutionSurface.INTERACTION_SPACE,
+        EvolutionSurface.ANTI_EPISTEMIC_SPAM,
+        EvolutionSurface.SEARCH_FEEDBACK,
+        EvolutionSurface.PLANNING_SEARCH,
+    }
+)
+
+
 class InferentialState(str, Enum):
     DISTINGUISHABLE_BENEFIT = "DISTINGUISHABLE_BENEFIT"
     DISTINGUISHABLE_HARM = "DISTINGUISHABLE_HARM"
@@ -100,6 +124,7 @@ class FrameworkVariantCard:
     development_case_ids: Tuple[str, ...]
     fresh_assurance_case_ids: Tuple[str, ...]
     rollback_variant_id: str
+    failure_driven_update_ids: Tuple[str, ...] = ()
     resource_delta: Tuple[Tuple[str, float], ...] = ()
     frozen_before_fresh_assurance: bool | None = None
 
@@ -138,6 +163,14 @@ class FrameworkVariantCard:
         resource_names = [name for name, _ in self.resource_delta]
         if len(resource_names) != len(set(resource_names)):
             raise ValueError("resource delta keys must be unique")
+        if len(set(self.failure_driven_update_ids)) != len(self.failure_driven_update_ids):
+            raise ValueError("failure-driven update ids must be unique")
+        if set(self.surfaces_changed) & _SEARCH_EVOLUTION_SURFACES:
+            if not self.failure_driven_update_ids:
+                raise ValueError(
+                    "search-policy challenger requires a failure-driven policy update receipt; "
+                    "failure cannot jump directly to an arbitrary idea"
+                )
 
     @property
     def grants_scientific_authority(self) -> bool:
@@ -167,6 +200,7 @@ class TournamentEvidence:
     resource_only_gain: bool = False
     history_preserved: bool = True
     competitor_or_parent_control_bound: bool | None = None
+    bound_failure_driven_update_ids: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -230,6 +264,11 @@ def assess_framework_challenger(
         reasons.append("trial_child_does_not_match_variant_card")
     if trial.development_benchmark_id == trial.assurance_benchmark_id:
         reasons.append("development_and_assurance_benchmark_identity_must_differ")
+    if card.failure_driven_update_ids:
+        if tuple(sorted(evidence.bound_failure_driven_update_ids)) != tuple(
+            sorted(card.failure_driven_update_ids)
+        ):
+            reasons.append("failure_driven_search_policy_update_receipts_not_exactly_bound")
     if card.frozen_before_fresh_assurance is None:
         return TournamentAssessment(
             TournamentDecision.CANNOT_IDENTIFY,
