@@ -1,0 +1,56 @@
+{
+  "schema_version": "paper2-capability-v3-interface-challenger-v1",
+  "issue_number": 447,
+  "stage": 2,
+  "challenger_id": "CAPABILITY_V3_STAGE2_ROLE_DEFINED_INTERFACE",
+  "created_at_utc": "2026-08-12T11:00:00Z",
+  "authority_boundary": "Development interface challenger only. Success yields at most STAGED_INTERFACE_DEVELOPMENT_PROMISING. Cannot authorize CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3. Must not rescore sealed job 3476813 or mutate paper2-oracle-capability-gate-v2-exec.",
+  "parent_diagnosis": {
+    "receipt": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/BOTTLENECK_RECEIPT.json",
+    "diagnosis_state": "BENCHMARK_CONSTRUCT_DEFECT",
+    "stage0_verdict": "INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED",
+    "rationale": "Instruction surfaces named selected_evidence_ids/rejected_evidence_ids without defining the LICENSES_VERDICT partition rule."
+  },
+  "gold_convention": "LICENSES_VERDICT",
+  "gold_convention_statement": "selected_evidence_ids = exactly the evidence that licenses the stated verdict; rejected_evidence_ids = every other supplied id, including on-topic but unreliable or off-quantity evidence.",
+  "canonical_evidence_role_definition": "selected_evidence_ids MUST list exactly the evidence ids that license your verdict; rejected_evidence_ids MUST list every other supplied evidence id.",
+  "forbidden_repairs": [
+    "gold-aware correction",
+    "semantic evaluator feedback before final answer",
+    "changing evidence/task text",
+    "adding task-specific hints",
+    "loosening scientific correctness threshold",
+    "rescoring sealed job 3476813",
+    "mutating sealed v2_exec SYSTEM_PROMPT.txt"
+  ],
+  "allowed_repairs": [
+    "append canonical evidence-role definition to a versioned challenger system prompt",
+    "versioned runner instruction block that includes the same canonical definition",
+    "schema validation + one bounded syntax-only repair pass (if separately frozen)"
+  ],
+  "challenger_surfaces": {
+    "system_prompt": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/SYSTEM_PROMPT.txt",
+    "runner_instruction_block": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/RUNNER_INSTRUCTION_BLOCK.txt"
+  },
+  "sealed_parent_surfaces_untouched": [
+    "research/paper2_oracle_capability_gate_v2_exec/protocol/SYSTEM_PROMPT.txt",
+    "src/rakl/paper2_experience_benchmark_runner.py build_user_prompt static instruction block"
+  ],
+  "acceptance_for_development_promising": {
+    "required": [
+      "audit_instruction_semantics on both challenger surfaces returns EVIDENCE_ROLE_DEFINED_CANONICAL",
+      "role_definition_hint_leakage(canonical_definition) is empty",
+      "challenger surfaces do not name E1..En or T1..Tn",
+      "sealed parent surfaces remain byte-identical and continue to audit as EVIDENCE_ROLE_UNDEFINED"
+    ],
+    "success_terminal": "STAGED_INTERFACE_DEVELOPMENT_PROMISING",
+    "does_not_authorize": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3"
+  },
+  "next_gate_after_promising": [
+    "Stage 3: freeze model candidate set / ordering before qualification outcomes",
+    "Stage 4: freeze fresh held-out qualification panel excluded from Stage 1/2 development items",
+    "Stage 5: qualification decision on fresh panel only"
+  ],
+  "CAPABLE_MODEL_AVAILABLE": "NO_REFUTED",
+  "grants_scientific_authority": false
+}
