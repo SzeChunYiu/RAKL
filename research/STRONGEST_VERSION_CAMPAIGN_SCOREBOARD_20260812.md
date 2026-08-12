@@ -53,9 +53,9 @@ These may proceed **without** a capable model. They do **not** clear `CAPABLE_MO
 | Closest-parent / function-matched literature audit | V2 landed | `PRIMARY_SOURCE_AUDIT_V2_RECEIPT.json` — AutoSci/MemClaw/AI-scientists full text; 12 inherited / 10 residual / 1 adopt; confirmatory A3↔A4 still `CANNOT_IDENTIFY`; 3476749 non-confirmatory (upgrade-recall=0) |
 | Paper-III human recruitment packet | frozen / open recruitment | `research/paper3_powered_noncircular_human_packet_v1/` (#359/#358) — `BLOCKED_HUMAN`; do not invent annotators; AI_OPERATOR demoted floors already closed |
 | Paper-V independent novelty human residual | frozen / open recruitment | `research/paper5_independent_novelty_human_residual_v1/` (#353) — `BLOCKED_HUMAN` |
-| Sham matcher unit tests | actionable | `tests/test_paper5_active_sham.py` + `research/paper5_sham_policy_v1/` — instrument-only; confirmatory four-arm still unauthorized (#367) |
+| Sham matcher unit tests | actionable | `tests/test_paper5_active_sham.py` + `research/paper5_sham_policy_v1/` — instrument-only; confirmatory four-arm binding closed as blocked (#367) |
 | Honest TeX / scoreboard narrowing | actionable | Preserve negatives; no promotional lift |
-| Pre-outcome protocol redesign (optional successor) | proposal-only | New versioned packet identity required; must freeze before evaluated outcomes; must not soften ≥2/3 after 3476813 |
+| Pre-outcome protocol redesign (optional) | proposal-only / new issue | #398 closed as leftover under TERMINAL_STOP; any redesign needs a **new** versioned packet + issue, freeze before outcomes, no ≥2/3 softening after 3476813 |
 
 ## Explicitly not actionable without capable model
 
@@ -64,3 +64,17 @@ These may proceed **without** a capable model. They do **not** clear `CAPABLE_MO
 - Phase-0 architecture staircase
 - 14B/32B ORACLE without new preregistration
 - Treating closed #247/#372/#379 as scientific clearance
+
+## Capability-gated leftover closeout (2026-08-12)
+
+Pointer receipts under `research/capability_gated_closeout_20260812/` close ORACLE/capability siblings still open after V2_EXEC GATE_FAIL:
+
+| Issue | Disposition |
+|------:|-------------|
+| #398 | `TERMINAL_STOP__ORACLE_CAPABILITY_GATE_LEFTOVER` |
+| #399 | `BLOCKED_CAPABILITY__CANNOT_IDENTIFY_RAKL_LEARNING` |
+| #350 | `BLOCKED_CAPABILITY__CANNOT_EXECUTE_CONFIRMATORY_ALR` |
+| #352 | `BLOCKED_CAPABILITY__CANNOT_IDENTIFY_A3_A4` |
+| #367 | `BLOCKED_CAPABILITY__CANNOT_BIND_CONFIRMATORY_FOUR_ARM` |
+
+Index: `research/capability_gated_closeout_20260812/CLOSEOUT_INDEX.md`. Ladder parents #247/#356/#372/#379 remain CLOSED. No 14B; no Phase-0; no gate softening.
