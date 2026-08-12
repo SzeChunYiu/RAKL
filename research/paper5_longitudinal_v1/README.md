@@ -19,7 +19,6 @@
 | `seven_axis_cohort_summary.json` | per-schema-version sums only |
 | `figure_sources.json` + `figures/` | Fig 2 cohort curves; Fig 3/4/7 status panels |
 | `DATASET_MANIFEST.json` / `ANALYSIS_RECEIPT.json` | binding receipt |
-| `RAKL_CYCLE_METRICS_PROTOCOL_V1.md` | prospective `rakl-cycle-metrics-v1` schema protocol (#446) |
 
 ## Reproduce
 
