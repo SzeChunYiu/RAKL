@@ -54,7 +54,14 @@ Typed RAKL authority state & 1.000 & 0.000 & 1.000\\
 \label{tab:projection-sufficiency}
 \end{table}
 
-The aggregate numbers are less informative than the collision pattern. The provenance-only representation distinguishes the correlated-versus-independent-root twin because independence is part of that projection, but it still collapses the higher-order-gluing, prediction-versus-mechanism and mechanism-versus-identification twins. The simple transactional state distinguishes the supersession twins because active/version/superseded fields are present, yet it still collapses the typed evidential and causal-authority distinctions. Pairwise compatibility necessarily collapses the parity-style higher-order-gluing twin because pairwise compatibility is fixed while global compatibility changes. The typed projection separates every registered twin because the load-bearing coordinate is retained.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/projection_collision.pdf}
+\caption{Twin-pair separation structure behind Table~\ref{tab:projection-sufficiency}. Each cell records whether a projection architecture (rows) separates the minimal twin pair of an adversarial failure family (columns, F01--F15) or collides it; blue is separated, grey is collided. Six representation-level baselines collide on 13--15 of the fifteen families, while only the typed authority projection separates all fifteen. The advantage is therefore a broad structural property of which coordinate each family turns on, not an artefact of a single aggregate score. Computed live from the same audit code as Table~\ref{tab:projection-sufficiency}.}
+\label{fig:projection-collision}
+\end{figure}
+
+The aggregate numbers are less informative than the collision pattern (Figure~\ref{fig:projection-collision}). The provenance-only representation distinguishes the correlated-versus-independent-root twin because independence is part of that projection, but it still collapses the higher-order-gluing, prediction-versus-mechanism and mechanism-versus-identification twins. The simple transactional state distinguishes the supersession twins because active/version/superseded fields are present, yet it still collapses the typed evidential and causal-authority distinctions. Pairwise compatibility necessarily collapses the parity-style higher-order-gluing twin because pairwise compatibility is fixed while global compatibility changes. The typed projection separates every registered twin because the load-bearing coordinate is retained.
 
 A blanket ``hold'' policy cannot exploit the zero-leakage side of this comparison: it is correct on only 0.367 of the constructed worlds and has zero recall on legitimate canonical changes. The benchmark therefore couples representation sufficiency to non-refusal controls rather than rewarding systems that achieve safety by preventing all scientific state evolution.
 
