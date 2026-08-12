@@ -8,3 +8,4 @@
 | provider | claude-cn / Z.AI Anthropic-compatible gateway (env-only) |
 | provider manifest | `HOSTED_PROVIDER_CONFIG.json` |
 | confirmatory | **BLOCKED** until v1 non-RAKL dev gates pass on hosted runs |
+| wave2_lanes | L2 retrieval, L3 experience, L4 governance — offline stubs only |

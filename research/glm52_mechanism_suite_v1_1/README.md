@@ -9,8 +9,9 @@ canonical RAKL machinery:
 - typed authority (`v3_authority`)
 - epistemic trajectory scoring (`evaluate_epistemic_trajectory`)
 
-**Status:** `REGISTRATION_ONLY` — `NO_NEW_GLM_OUTCOME`. Harness stubs wire
-interfaces only; no confirmatory model runs until non-RAKL dev gates pass.
+**Status:** `REGISTRATION_ONLY` — `NO_NEW_GLM_OUTCOME`. L1 adapter + Wave 2 offline
+harness lanes (see `WAVE2_HANDOFF_LANES.md`); no confirmatory model runs until
+non-RAKL dev gates pass.
 
 ## Provider (claude-cn / Z.AI gateway)
 
@@ -29,6 +30,7 @@ Implementation: `rakl.hosted_anthropic_client` (shared) and thin
 | File | Role |
 |------|------|
 | `PROTOCOL_V1_1.md` | Frozen scientific design inherited from v1 + adapter delta |
+| `WAVE2_HANDOFF_LANES.md` | Lane 2–4 offline harness map (post-L1) |
 | `FRAMEWORK_ADAPTER_SPEC.md` | Adapter contract and canonical binding |
 | `HOSTED_PROVIDER_CONFIG.json` | claude-cn-aligned env manifest (no secrets) |
 | `FRAMEWORK_SUBJECT_MANIFEST.json` | Framework SHA, method version, module hashes |
