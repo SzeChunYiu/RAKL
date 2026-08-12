@@ -347,35 +347,3 @@ which is the only kind of completeness claim Orion is permitted to make. The ind
 mechanics can be prototyped and confirmed one at a time on frozen benchmarks (Paper II's
 confirmatory-lane protocol), starting with the two highest-leverage and most self-contained:
 the **severity coordinate `S`** (Mechanic V) and the **value/promise projection** (Mechanic VI).
-
----
-
-## Addendum (2026-08-13): multiscale mechanics-of-mechanics programme
-
-A companion proposal-only design package is vendored at
-`docs/design/orion_mechanics_multiscale_plan/` (19 files). It grants **no** scientific,
-method, or promotion authority; it is a challenger research plan. It sharpens the
-generative half of the mechanics above into three testable directions:
-
-1. **Mechanics-of-mechanics / meta-controller.** Search over *answer + way of finding the
-   answer*: a solver state `Z_t=(G,R,D,S,K,M,O,H,V,C,E)` (goal, representation,
-   decomposition, scale, knowledge, memory, operator basis, search policy, verification,
-   compute, residual). A **MechanicDeficiencyWitness** — the solving-time analogue of the
-   directional structural witness — attributes an observed residual to a specific deficient
-   coordinate, auditable and bounded, never introspective opinion.
-2. **Solvability field (lightning challenger).** Construct `Φ` over solver states such that a
-   cheap local signal predicts verified global progress:
-   `⟨d(a), −∇Φ(z)⟩ > 0 ⇒ E[ΔR_root | a] > 0` often enough to cut search cost. Falsifiable;
-   registered failure gates include `FIELD_FALSE_ATTRACTOR_FAILURE`,
-   `FIELD_CONSTRUCTION_COST_FAILURE`, `FIELD_REQUIRES_ORACLE_REPRESENTATION`.
-3. **Mechanics atlas / higher-dimension assimilation.** Treat existing theories/algorithms as
-   a *dataset of mechanisms* (representation assumed, local rule, emergent global objective,
-   feedback signal, scale, memory, verifier, failure mode, cost regime) rather than boxes to
-   choose between — a mechanism vector to learn over.
-
-**Paper status.** These are integrated into the manuscripts only as **prospective mechanics**
-(Paper III §prospective-generative-mechanics; Paper VI discussion), explicitly proposal-only
-and outside the evidence those papers report. Implementation, if pursued, follows the same
-gate discipline as Paper IV's training arm: cheap known worlds first, matched resources,
-freeze-before-outcome, promote only on a strict surviving effect. It is **not** required for
-the current papers to be publication-ready.

@@ -47,7 +47,7 @@ records.  Staging success is therefore not reported as model performance.
 The executed bridge is deliberately narrower than the confirmatory factorial.
 One sealed known-answer pendulum task at seed 17 compared two
 prompt materializations, \texttt{DIRECT\_CORPUS} and
-\texttt{RAKL\_CONTEXT}, using identical complete-sealed evidence, model,
+\texttt{Orion\_CONTEXT}, using identical complete-sealed evidence, model,
 questions, evaluator, no-tool policy and resource ceiling.  Native job 3475193
 completed in 64 seconds with scheduler return code zero and emitted two arm
 records plus one task--seed index binding the raw output,
@@ -62,7 +62,7 @@ are schema validated, while the harvest parser follows the native nested
 
 The receipt chain and eight-file pre/post snapshot identity passed, but both
 frozen evaluator parses failed and both scores are null.  The
-\texttt{RAKL\_CONTEXT} arm emitted exactly one lowercase JSON fence; the
+\texttt{Orion\_CONTEXT} arm emitted exactly one lowercase JSON fence; the
 \texttt{DIRECT\_CORPUS} arm emitted fenced JSON followed by prose.  Their
 recorded input/output token counts are respectively 1,140/108 and 638/320, but
 with zero scorable arms these are execution coordinates rather than an
@@ -96,7 +96,7 @@ was unchanged across inference.  The governed harvest admits one task--seed
 unit with two arm records and no receipt failure.
 
 This is a partial parser-engineering result, not comparative evidence.
-\texttt{RAKL\_CONTEXT} is the sole parse-valid/scorable arm; it answers 3 of 5
+\texttt{Orion\_CONTEXT} is the sole parse-valid/scorable arm; it answers 3 of 5
 conceptual fields correctly but fails the exact conceptual gate.
 \texttt{DIRECT\_CORPUS} again appends prose after a JSON fence, so its score
 remains null under the frozen exact normalizer.  Consequently V4.1 has one
@@ -132,7 +132,7 @@ stop-after-JSON clipping.  Native job 3476540 completes with both arms
 is repaired.  Both arms fail \texttt{exact\_conceptual\_pass} under the
 unchanged gate (receipt-bound \texttt{conceptual\_correct}=3/5 on each arm).
 A later Type~B answer-key leak audit (issue~\texttt{\#283}) shows that
-\texttt{RAKL\_CONTEXT} prompts in V4.2/V4.3.1 embed gold-refutation markers for
+\texttt{Orion\_CONTEXT} prompts in V4.2/V4.3.1 embed gold-refutation markers for
 \texttt{required\_refuted\_source\_ids}; field-level arm deltas on that
 coordinate are therefore uninformative and are not reported as comparative
 evidence.  Under the frozen zero-success convention, token count per valid
@@ -155,7 +155,7 @@ Qwen2.5-1.5B-Instruct.  Parent job 3476566 remains the DIRECT schema-envelope
 parse-null residual
 (\path{HARVEST_V4_3_TASK_SEED_PASS_NONCONFIRMATORY}; ingest
 \path{NATIVE_EXECUTION_CHAIN_PASS__ONE_ARM_SCORABLE_NO_EXACT_PASS__1_5B_NO_EXACT_PASS};
-\texttt{DIRECT\_CORPUS} \texttt{parse\_valid=false}; \texttt{RAKL\_CONTEXT}
+\texttt{DIRECT\_CORPUS} \texttt{parse\_valid=false}; \texttt{Orion\_CONTEXT}
 one-arm scorable with receipt-bound \texttt{conceptual\_correct}=2/5 and
 \texttt{exact\_conceptual\_pass=false}).  As of
 V4.3.1 native job 3476576
@@ -163,7 +163,7 @@ V4.3.1 native job 3476576
 \path{NATIVE_EXECUTION_CHAIN_PASS__BOTH_ARMS_SCORABLE_NO_EXACT_PASS__SERIALIZATION_REPAIR_STILL_ZERO_EXACT}),
 both arms are \texttt{parse\_valid}/scorable and
 \texttt{exact\_conceptual\_pass\_arm\_count} remains 0.  Receipt-bound
-\texttt{conceptual\_correct} counts are DIRECT 1/5 and RAKL\_CONTEXT 3/5, but
+\texttt{conceptual\_correct} counts are DIRECT 1/5 and Orion\_CONTEXT 3/5, but
 those field fractions are not arm-comparative evidence under the Type~B leak
 on \texttt{required\_refuted\_source\_ids} (issue~\texttt{\#283}).  The repair is
 serialization-only; it is not a 1.5B improvement claim.  Promotional /

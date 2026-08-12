@@ -1,4 +1,4 @@
-% Standalone RAKL provenance map (Paper VI): Papers I-V -> engine components.
+% Standalone Orion provenance map (Paper VI): Papers I-V -> engine components.
 % Build:  pdflatex papers_integration_map.tex  -> papers_integration_map.pdf
 \documentclass[border=6pt]{standalone}
 \usepackage{tikz}
@@ -25,7 +25,7 @@
 % ---- left column: source papers I, II, III, V, IV ----
 \node[paper] (p1) at (0, 0)      {Paper I\\{\scriptsize Epistemic Mechanics}};
 \node[paper] (p2) at (0,-\ry)    {Paper II\\{\scriptsize Directional Transfer}};
-\node[paper] (p3) at (0,-2*\ry)  {Paper III\\{\scriptsize Self-RAKL}};
+\node[paper] (p3) at (0,-2*\ry)  {Paper III\\{\scriptsize Self-Orion}};
 \node[paper] (p5) at (0,-3*\ry)  {Paper V\\{\scriptsize Verified Discovery}};
 \node[paper, draw=black!45, fill=black!3, dashed] (p4) at (0,-4*\ry)
       {Paper IV\\{\scriptsize Structural Learning}\\{\scriptsize\itshape optional / conditional}};
@@ -33,7 +33,7 @@
 % ---- right column: engine components ----
 \node[comp] (c1) at (7.6, 0)     {Multi-axis authority poset $\alpha=(G,R,M,I,D)$\\+ bounded workspace $W_t$};
 \node[comp] (c2) at (7.6,-\ry)   {Directional transfer witness (\texttt{JUMP})\\+ typed transitions $T_{ij}^{\tau,\sigma}$};
-\node[comp] (c3) at (7.6,-2*\ry) {Self-RAKL: experience $\to$ method\\+ four-arm method-change receipt};
+\node[comp] (c3) at (7.6,-2*\ry) {Self-Orion: experience $\to$ method\\+ four-arm method-change receipt};
 \node[comp] (c5) at (7.6,-3*\ry) {Verified-discovery math path\\\texttt{SEARCH}$\cdot$\texttt{JUMP}$\cdot$\texttt{GLUE}$\cdot$\texttt{LIFT}};
 \node[opt]  (c4) at (7.6,-4*\ry) {Optional training projection $\pi_{\mathrm{train}}(R_t,\theta_t)$\\{\scriptsize gate \#462; not conflated with $\operatorname{Learn}$}};
 
@@ -43,7 +43,7 @@
         fit=(c1)(c4), inner sep=9pt] (engine) {};
 \end{scope}
 \node[lbl, text=oiblue!70, anchor=south east] at ([yshift=1pt]engine.north east)
-      {RAKL v3 research engine \ (Paper VI capstone) \ };
+      {Orion research engine \ (Paper VI capstone) \ };
 
 % ---- provenance arrows ----
 \draw[prov] (p1) -- node[lbl,above]{authority + workspace} (c1);
