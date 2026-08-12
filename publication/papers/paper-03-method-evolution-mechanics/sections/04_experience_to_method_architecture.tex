@@ -20,7 +20,7 @@ The slow loop operates on already-recorded episodes:
 }
 A failed fresh transfer bounds or contradicts a lesson rather than being averaged away. Promotion creates a new lesson version; it does not mutate the source episodes or silently replace the old lesson.
 
-This architecture responds to a known failure mode of agentic memory. Continually rewriting consolidated memory can degrade performance even when the underlying experiences were useful, while retaining raw episodes can remain competitive \cite{zhang2026faultymemory}. RAKL therefore treats consolidation as a defeasible derived view rather than the canonical memory root.
+This architecture responds to a known failure mode of agentic memory. Continually rewriting consolidated memory can degrade performance even when the underlying experiences were useful, while retaining raw episodes can remain competitive \cite{zhang2026faultymemory}. Orion therefore treats consolidation as a defeasible derived view rather than the canonical memory root.
 
 \subsection{Authority of a lesson}
 
@@ -91,7 +91,7 @@ Repeated successful contiguous operator sequences can be proposed as strategy mo
 }
 The motif is not accepted because it occurred frequently. Contradictory episodes containing the same sequence remain attached to the motif, and applicability is context-indexed.
 
-This separates two kinds of reusable knowledge that recent systems often combine under ``skills.'' Agent Workflow Memory learns reusable routines \cite{wang2024awm}; AutoSkills constructs multi-level skill hierarchies \cite{wang2026autoskills}; and XSkill separates action-level experience from task-level skills \cite{jiang2026xskill}. RAKL uses a similar intuition but adds evidence lineage, falsifiers, authority boundaries and cross-context contradiction as first-class fields because the target application is open-ended research rather than only task completion.
+This separates two kinds of reusable knowledge that recent systems often combine under ``skills.'' Agent Workflow Memory learns reusable routines \cite{wang2024awm}; AutoSkills constructs multi-level skill hierarchies \cite{wang2026autoskills}; and XSkill separates action-level experience from task-level skills \cite{jiang2026xskill}. Orion uses a similar intuition but adds evidence lineage, falsifiers, authority boundaries and cross-context contradiction as first-class fields because the target application is open-ended research rather than only task completion.
 
 \subsection{Problem fibres as retrieval state}
 
@@ -138,9 +138,9 @@ The system should not infer ``missing operator'' merely because repeated attempt
 
 The resulting report permits escalation to an invention process. It does not prove that invention is necessary. This fail-closed distinction is important for studying ``scientific creativity.'' A system that invents new formal objects whenever it is confused may look creative while simply failing to retrieve or compose what already exists.
 
-\subsection{RAKL-triviality as an empirical hypothesis}
+\subsection{Orion-triviality as an empirical hypothesis}
 
-Let $N_R(P)$ denote the minimum genuinely novel problem-solving structure required for a verified solution of problem $P$ relative to RAKL state $R$. If existing resources, operators and motifs suffice through composition or transfer, then $N_R(P)=0$. For a solved distribution $D$ we can define
+Let $N_R(P)$ denote the minimum genuinely novel problem-solving structure required for a verified solution of problem $P$ relative to Orion state $R$. If existing resources, operators and motifs suffice through composition or transfer, then $N_R(P)=0$. For a solved distribution $D$ we can define
 \[
 \rho_R(D)=\frac{|\{P\in D:N_R(P)=0\}|}{|D|}.
 \]
@@ -148,9 +148,9 @@ This is not assumed to be high. It is a measurable hypothesis about the relation
 
 The longitudinal observatory extends the question from terminal solutions to research progress. A problem may remain unsolved while a useful subproblem is classified as transfer-novel or representation-novel. Over many episodes, the distribution of novelty classes can reveal whether the system's bottleneck is missing knowledge, missing representations, missing operators or merely poor routing among already-known components.
 
-\subsection{Unified substrate and Self-RAKL}
+\subsection{Unified substrate and Self-Orion}
 
-The v3 unified substrate materializes a read-only typed overlay over specialized stores. Epistemic items, operators, episodes, failures, strategy motifs and architecture variants can be related without transferring semantic authority to the overlay itself. This lets Self-RAKL represent its own variants as meta-method objects while preserving the original stores that own proof, failure or promotion semantics.
+The v3 unified substrate materializes a read-only typed overlay over specialized stores. Epistemic items, operators, episodes, failures, strategy motifs and architecture variants can be related without transferring semantic authority to the overlay itself. This lets Self-Orion represent its own variants as meta-method objects while preserving the original stores that own proof, failure or promotion semantics.
 
 The intended recursion is therefore not
 \[
