@@ -1,0 +1,48 @@
+{
+  "schema": "rakl.tcsq.sq2.intervention_fidelity.result.v1",
+  "status": "FINITE_INTERVENTION_DEPENDENCY_RECOVERY_SUPPORTED_ON_REGISTERED_KNOWN_WORLD",
+  "scientific_authority": "DEVELOPMENT_FINITE_INTERVENTION_ONLY",
+  "evaluated_subject_sha": "2d2232b495530243c7975d04c7aeb73f9357cb2e",
+  "workflow": {
+    "name": "tcsq-sq2-intervention-fidelity",
+    "run_id": 31594815092,
+    "job_id": 94107695034,
+    "artifact_id": 9140594718,
+    "artifact_zip_sha256": "3f2056659f65963ac1734356bb2385c545f21bf11083978aa9de7c79164c495c"
+  },
+  "design": {
+    "seed": 20260812981,
+    "n_per_cell": 4,
+    "n": 144,
+    "paper2_confirmatory_seed_used": false,
+    "paper2_confirmatory_seed_forbidden": 2026081202,
+    "families": ["flow", "logic", "state", "units"],
+    "candidate_schema": "human-registered public field paths",
+    "interventions": "human-registered type-safe adversarial field interventions",
+    "dependency_rule": "field is sensitive iff its intervention changes the untouched exact family verifier decision on at least one fresh task",
+    "score_target": "exact code-level public dependency set of the frozen family verifier"
+  },
+  "aggregate": {
+    "true_positive": 26,
+    "false_positive": 0,
+    "false_negative": 0,
+    "true_negative": 22,
+    "precision": 1.0,
+    "recall": 1.0,
+    "specificity": 1.0,
+    "all_family_exact_dependency_recovery": true
+  },
+  "family_exact_dependency_recovery": {
+    "flow": true,
+    "logic": true,
+    "state": true,
+    "units": true
+  },
+  "claim_boundary": [
+    "This supports exact dependency recovery by a finite registered intervention audit on the four known-world verifier families.",
+    "This does not test free-form natural-language quotient discovery or a learned/LLM quotient proposer.",
+    "The candidate field schema and perturbation library are human-specified and therefore supply substantial prior structure.",
+    "This does not establish total-cost, latency, token, FLOP, energy or natural-domain benefit.",
+    "No Paper II Track-A confirmatory seed, item, or outcome was used."
+  ]
+}

@@ -1,0 +1,74 @@
+name: tcsq-sq1-oracle-upper-bound
+
+on:
+  push:
+    branches:
+      - paper2-tcsq-v0
+    paths:
+      - 'src/rakl/semantic_quotient*.py'
+      - 'src/rakl/objective_transfer_benchmark.py'
+      - 'scripts/tcsq_sq1_oracle_upper_bound.py'
+      - 'tests/test_tcsq_sq1_oracle_upper_bound.py'
+      - '.github/workflows/tcsq-sq1-oracle.yml'
+  pull_request:
+    paths:
+      - 'src/rakl/semantic_quotient*.py'
+      - 'src/rakl/objective_transfer_benchmark.py'
+      - 'scripts/tcsq_sq1_oracle_upper_bound.py'
+      - 'tests/test_tcsq_sq1_oracle_upper_bound.py'
+      - '.github/workflows/tcsq-sq1-oracle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sq1:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Bind exact evaluated subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee SUBJECT_SHA.txt
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install RAKL
+        run: pip install -e '.[test]'
+
+      - name: Run SQ-1 unit contract
+        run: pytest -q tests/test_tcsq_sq1_oracle_upper_bound.py
+
+      - name: Run full fresh-seed SQ-1 oracle upper bound
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/tcsq_sq1_oracle_upper_bound.py | tee SQ1_ORACLE_UPPER_BOUND_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('SQ1_ORACLE_UPPER_BOUND_RESULT.json').read_text())
+          assert p['paper2_confirmatory_seed_used'] is False
+          assert p['exact_original_verifier_agreement'] == 1.0
+          assert all(v == 1.0 for v in p['family_agreement'].values())
+          assert p['aggregate_public_primitive_reduction_fraction'] > 0
+          print('SQ1_TYPED_TERMINAL=ORACLE_QUOTIENT_DECISION_SUFFICIENCY_SUPPORTED_ON_REGISTERED_KNOWN_WORLD')
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tcsq-sq1-oracle-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            SQ1_ORACLE_UPPER_BOUND_RESULT.json
+            SUBJECT_SHA.txt
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,48 @@
+{
+  "schema": "rakl.tcsq.sq1.oracle_upper_bound.result.v1",
+  "status": "ORACLE_QUOTIENT_DECISION_SUFFICIENCY_SUPPORTED_ON_REGISTERED_KNOWN_WORLD",
+  "scientific_authority": "DEVELOPMENT_ORACLE_UPPER_BOUND_ONLY",
+  "evaluated_subject_sha": "5fb0969bdfdcbb1092fafb4d6702c631df72a4c0",
+  "workflow": {
+    "name": "tcsq-sq1-oracle-upper-bound",
+    "run_id": 31594431313,
+    "job_id": 94106486847,
+    "artifact_id": 9140454171,
+    "artifact_zip_sha256": "96c25cb87e8f0dc7cafee0fbc7302465af644c890fbaf1fd529f337e3713ddb6"
+  },
+  "design": {
+    "seed": 20260812971,
+    "n_per_cell": 20,
+    "n": 720,
+    "paper2_confirmatory_seed_used": false,
+    "paper2_confirmatory_seed_forbidden": 2026081202,
+    "families": ["flow", "logic", "state", "units"],
+    "gold_generation": "untouched exact family verifier from merged Paper II Track A instrument",
+    "quotient_construction": "oracle verifier-dependency slice over public fields; does not read item_type, perturbation, or verifier outcome"
+  },
+  "results": {
+    "exact_original_verifier_agreement": 1.0,
+    "family_agreement": {
+      "flow": 1.0,
+      "logic": 1.0,
+      "state": 1.0,
+      "units": 1.0
+    },
+    "gold_counts": {
+      "ACCEPT": 320,
+      "CANNOT_CHECK": 80,
+      "REJECT": 320
+    },
+    "mean_raw_public_primitive_count": 24.708333333333332,
+    "mean_oracle_quotient_primitive_count": 18.458333333333332,
+    "aggregate_public_primitive_reduction_fraction": 0.25295109612141653,
+    "mean_raw_semantic_text_tokens_excluded_from_oracle_quotient": 19.625
+  },
+  "claim_boundary": [
+    "This supports existence of a smaller decision-sufficient public representation for the registered exact-verifier tasks under an oracle dependency map.",
+    "This does not test whether an LLM or learned proposer can discover the quotient.",
+    "Primitive-count reduction is not token, latency, FLOP, energy, or total-cost reduction.",
+    "No Paper II confirmatory Track A item or outcome was used to design or execute SQ-1.",
+    "The result does not establish natural-domain scientific validity, cross-family universality, or external-model superiority."
+  ]
+}

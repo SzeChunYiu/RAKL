@@ -1,0 +1,69 @@
+name: tcsq-sq2-intervention-fidelity
+
+on:
+  push:
+    branches:
+      - paper2-tcsq-v0
+    paths:
+      - 'src/rakl/objective_transfer_benchmark.py'
+      - 'scripts/tcsq_sq2_intervention_fidelity.py'
+      - 'tests/test_tcsq_sq2_intervention_fidelity.py'
+      - '.github/workflows/tcsq-sq2-intervention.yml'
+  pull_request:
+    paths:
+      - 'src/rakl/objective_transfer_benchmark.py'
+      - 'scripts/tcsq_sq2_intervention_fidelity.py'
+      - 'tests/test_tcsq_sq2_intervention_fidelity.py'
+      - '.github/workflows/tcsq-sq2-intervention.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sq2:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Bind exact evaluated subject
+        run: git rev-parse HEAD | tee SUBJECT_SHA.txt
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install RAKL
+        run: pip install -e '.[test]'
+
+      - name: Run SQ-2 unit contract
+        run: pytest -q tests/test_tcsq_sq2_intervention_fidelity.py
+
+      - name: Run full fresh-seed SQ-2 intervention audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/tcsq_sq2_intervention_fidelity.py | tee SQ2_INTERVENTION_FIDELITY_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('SQ2_INTERVENTION_FIDELITY_RESULT.json').read_text())
+          assert p['paper2_confirmatory_seed_used'] is False
+          assert p['aggregate']['all_family_exact_dependency_recovery'] is True
+          assert p['aggregate']['false_positive'] == 0
+          assert p['aggregate']['false_negative'] == 0
+          print('SQ2_TYPED_TERMINAL=FINITE_INTERVENTION_DEPENDENCY_RECOVERY_SUPPORTED_ON_REGISTERED_KNOWN_WORLD')
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tcsq-sq2-intervention-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            SQ2_INTERVENTION_FIDELITY_RESULT.json
+            SUBJECT_SHA.txt
+          if-no-files-found: error
+          retention-days: 30
