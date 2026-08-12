@@ -1,0 +1,67 @@
+{
+  "authority": {
+    "grants_method_improvement": false,
+    "grants_promotion": false,
+    "grants_theorem_authority": false,
+    "independent_review": false,
+    "protected_consumers_activated": false,
+    "routing_gluing_only": true
+  },
+  "candidate_canonical_sha256": "122c67417da9725319a94e6badd56e898293161472a4175ea78200e91a0259eb",
+  "candidate_id": "quantifier-cowitness-shadow-v0.1.1",
+  "checks": [
+    {
+      "command": "pytest -q tests/test_quantifier_cowitness.py tests/test_quantifier_compatibility.py tests/test_child_operator_ownership.py tests/test_rakl_v3_authority_hardening.py tests/test_formal_contracts.py",
+      "exit_code": 0,
+      "kind": "POST_IDENTITY_TARGETED_CONFORMANCE",
+      "passed": 37
+    },
+    {
+      "collected_tests": 2796,
+      "command": "pytest -q",
+      "exit_code": 0,
+      "kind": "POST_IDENTITY_FULL_REPOSITORY_CONFORMANCE",
+      "terminal_progress": "100%"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "kind": "OPERATIONAL_CHECK"
+    }
+  ],
+  "chronology": {
+    "bugbot_comments_observed_before_repair": true,
+    "candidate_identity_committed_before_reported_full_replay": true,
+    "fresh_assurance_consumed": false,
+    "hostile_regressions_observed_red_before_repair": true,
+    "preregistration_commit": "681599ebd50d8da945c329ce2f48ac9b69dbe8a1",
+    "strict_prospective_development_claim": false
+  },
+  "fresh_assurance": {
+    "reason": "No lineage-separated unseen reserve was created or executed.",
+    "status": "CANNOT_CHECK"
+  },
+  "frozen_parent_main_sha": "d21592b0ff8da988deabb923fd549891ff8ad9f0",
+  "implementation_commit_sha": "237135ac4cfef0c5eaf984d6319a829169f51195",
+  "mathematical_credit_from_checks": 0,
+  "mathematical_lesson_pointer": "BUGBOT_REPAIR_MATH_LESSON.json",
+  "next_required_gate": "Root review and separate fresh assurance; do not activate protected consumers.",
+  "receipt_canonical_sha256": "542766b5778169b87d9686bc228b958f6d2330851a8839989a12269684f42340",
+  "recorded_at_utc": "2026-08-12T17:19:28Z",
+  "review_findings_repaired": [
+    {
+      "comment_id": 3768651601,
+      "finding": "UNKNOWN masked a known non-existential failure",
+      "red_result": "CANNOT_CHECK",
+      "repaired_result": "FAIL"
+    },
+    {
+      "comment_id": 3768651612,
+      "finding": "DISTINCT_BINDERS did not propagate through identity closure",
+      "red_result": "CANNOT_CHECK",
+      "repaired_result": "FAIL"
+    }
+  ],
+  "schema_version": "rakl-proposal-shadow-conformance-receipt-v1",
+  "status": "IMPLEMENTATION_CONFORMANCE_PASS_NOT_METHOD_IMPROVEMENT"
+}
