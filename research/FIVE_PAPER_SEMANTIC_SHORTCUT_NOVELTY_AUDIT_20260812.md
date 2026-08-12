@@ -3,7 +3,7 @@
 **Internal audit cutoff:** 2026-08-12  
 **Implementation lineage:** PR #376  
 **Audit authority:** `INTERNAL_PRIOR_ART_AUDIT`  
-**Independent successor:** #403
+**Independent successor:** #403 (`CLOSED` as `INTERNAL_PRIOR_ART_AUDIT_COMPLETE__INDEPENDENT_REVIEW_ABSENT`; structured packet `research/semantic_shortcut_prior_art_audit_v1/`)
 
 ## Question audited
 
@@ -36,7 +36,7 @@ The internal review deliberately separated five backgrounds:
 4. **agent-memory specialist** — compares episodic experience, hierarchical skills, selective retrieval and memory consolidation;
 5. **scientific-assurance reviewer** — asks whether target transfer, provenance, bounded exhaustion and scientific-authority separation are materially distinct or just renamed standard controls.
 
-The reviewers were same-process analytical roles, not independent external peer reviewers. #403 owns independent confirmation.
+The reviewers were same-process analytical roles, not independent external peer reviewers. #403 closed the structured strongest-parent packet under the same INTERNAL authority without inventing independent humans.
 
 ## Nearest prior-art families
 
@@ -168,13 +168,14 @@ COMPONENT_NOVELTY: MOSTLY_PRECEDED / NOT_CLAIMED
 FULL_CONTRACT_MATCH_FOUND: NO MATCH IDENTIFIED IN REGISTERED INTERNAL SEARCH
 SYSTEM_LEVEL_NOVELTY: BOUNDED CANDIDATE ONLY
 INDEPENDENT_NOVELTY_AUTHORITY: ABSENT
-SUCCESSOR: #403
+SUCCESSOR: #403 CLOSED AS INTERNAL_PRIOR_ART_AUDIT_COMPLETE__INDEPENDENT_REVIEW_ABSENT
+PACKET: research/semantic_shortcut_prior_art_audit_v1/
 ```
 
 ## Manuscript wording authorized by this audit
 
 The five papers may use wording equivalent to:
 
-> The contribution claimed here is the fail-closed integration and executable governance contract, not the invention of case-based reasoning, analogy, structural retrieval, skill memory, failure repair, partial-plan reuse or counterexample-guided synthesis individually. In a bounded internal primary-source search through 12 August 2026, we did not identify one source with the same complete content-bound SEARCH–JUMP–GLUE–LIFT contract; this is not a global priority certificate, and independent prior-art review remains open under #403.
+> The contribution claimed here is the fail-closed integration and executable governance contract, not the invention of case-based reasoning, analogy, structural retrieval, skill memory, failure repair, partial-plan reuse or counterexample-guided synthesis individually. In a bounded internal primary-source search through 12 August 2026, we did not identify one source with the same complete content-bound SEARCH–JUMP–GLUE–LIFT contract; this is not a global priority certificate. Independent external prior-art reviewers were unavailable and were not invented; status remains INTERNAL_PRIOR_ART_AUDIT (#403).
 
 The papers must **not** use absolute-first language on the basis of this audit.

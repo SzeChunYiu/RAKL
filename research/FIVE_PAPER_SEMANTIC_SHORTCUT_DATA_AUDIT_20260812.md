@@ -158,11 +158,11 @@ The canonical abstract was stale where it said the independent retained-novelty 
 - cutoff: `2026-08-11T21:05:57Z`;
 - independent external novelty labels at that freeze: **zero**;
 - #255 later closed a demoted `AI_OPERATOR` audit-process lane with `grants_scientific_authority=false` and `independent_review_claimed=false`;
-- open successor #353 owns the still-absent independent external human novelty/construct-validity audit.
+- #353 closed as `CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS` / `BLOCKED_HUMAN` (acceptance path 2); independent external novelty/construct-validity remains absent.
 
 Therefore no independent retained-novelty precision, false-collapse rate or axis-validity result is authorized.
 
-**Required manuscript correction:** report the frozen 104/174 audit universe and demoted process completion, but keep retained-growth construct validity explicitly internal/unconfirmed and point the remaining independent-human residual to #353.
+**Required manuscript correction:** report the frozen 104/174 audit universe and demoted process completion, but keep retained-growth construct validity explicitly internal/unconfirmed; #353 is a closed BLOCKED_HUMAN residual rather than an open recruitment promise.
 
 **Semantic-shortcut integration:** a validated transformation can become a scoped structural episode and, separately, a reusable ResearchTool only after its own promotion evidence. Failed attempts can create residual structure; repeated residuals may support a LIFT specification, but LIFT cannot self-certify a new method.
 
@@ -173,9 +173,9 @@ The five papers must use the following shared constraints at this cutoff:
 1. **No RAKL 3.1 superiority claim.** PR #376 is an operational deployment/challenger, not matched evidence that the new method outperforms its parent.
 2. **No semantic-shortcut efficacy number.** #401 owns the first matched efficacy/safety/cost evaluation.
 3. **No corpus-coverage claim yet.** #402 owns the provenance-bound episode corpus and its coverage metrology.
-4. **No absolute novelty claim.** The internal prior-art audit is bounded; #403 owns independent system-level novelty review.
+4. **No absolute novelty claim.** The internal prior-art audit is bounded; #403 closed as `INTERNAL_PRIOR_ART_AUDIT` without independent external reviewers.
 5. **Paper III:** demoted AI_OPERATOR pilot PASS is not independent-human confirmation. #359 remains open.
-6. **Paper V:** demoted AI_OPERATOR novelty-audit completion is not independent construct validity. #353 remains open.
+6. **Paper V:** demoted AI_OPERATOR novelty-audit completion is not independent construct validity. #353 closed BLOCKED_HUMAN / humans-absent.
 7. **Paper II:** the registered scale staircase terminates at 7B (job 3476788), and the separately frozen sealed-task revisit at the same scale also fails its gate (job 3476813); `CAPABLE_MODEL_AVAILABLE=NO_REFUTED`, with no Phase-0 or promotional lift.
 8. **Negative history is retained.** Environment failures, nulls, power limits and capability floors remain publication-visible when relevant.
 
@@ -185,10 +185,10 @@ The five papers must use the following shared constraints at this cutoff:
 |---|---|---|
 | #401 | matched semantic-shortcut efficacy/safety/cost experiment | scoped empirical performance claim only |
 | #402 | provenance-bound `(O,T,O')` corpus and coverage metrology | bounded retrieval/coverage claims |
-| #403 | independent prior-art audit of the exact system-level claim | stronger scoped novelty wording, if supported |
+| #403 | CLOSED — internal prior-art / strongest-parent packet | no independent novelty authority; INTERNAL only |
 | #404 | exact-subject five-paper manuscript/PDF artifact synchronization | reader-facing artifact identity/layout only |
 | #359 | Paper-III independent external human roles | independent transfer-confirmation lane, subject to power/design limits |
-| #353 | Paper-V independent external novelty/construct-validity audit | independent retained-growth construct validity, if supported |
+| #353 | CLOSED — Paper-V independent novelty residual BLOCKED_HUMAN | no independent construct validity; humans still absent |
 
 ## Audit verdict
 
@@ -197,8 +197,8 @@ IMPLEMENTATION: DEPLOYED
 FIVE_PAPER_SOURCE_UPDATE: APPLIED_ON_PUBLICATION_BRANCH
 PAPER_II_DATA_STATUS: CORRECT_TO_7B_LADDER + 7B_V2_EXEC_GATE_FAIL
 PAPER_III_DATA_STATUS: CORRECT_TO_DEMOTED_AI_OPERATOR + #359
-PAPER_V_NOVELTY_STATUS: CORRECT_TO_FROZEN_104/174 + DEMOTED + #353
+PAPER_V_NOVELTY_STATUS: CORRECT_TO_FROZEN_104/174 + DEMOTED + #353_BLOCKED_HUMAN_CLOSED
 SEMANTIC_SHORTCUT_EMPIRICAL_SUPERIORITY: NOT_ESTABLISHED
-INDEPENDENT_SYSTEM_NOVELTY: NOT_ESTABLISHED
+INDEPENDENT_SYSTEM_NOVELTY: NOT_ESTABLISHED__#403_INTERNAL_CLOSED
 CANONICAL_PDF_ARTIFACT_SYNC: OPEN_UNDER_#404
 ```

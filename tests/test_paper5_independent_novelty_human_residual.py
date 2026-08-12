@@ -90,3 +90,24 @@ def test_independent_packet_manifest_blocks_demoted_reuse() -> None:
         "PUBLIC_AUDIT_PACKET.json",
     ):
         assert manifest["artifact_status"][name] == "BLOCKED_HUMAN"
+
+
+def test_issue_353_terminal_receipt_honest_close() -> None:
+    receipt = _load(RESIDUAL / "ISSUE_353_TERMINAL_RECEIPT.json")
+    freeze = _load(RESIDUAL / "BLOCKED_HUMAN_PACKET_FREEZE.json")
+    assert receipt["issue"] == 353
+    assert receipt["parent_issue"] == 255
+    assert receipt["terminal_status"] == "CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS"
+    assert receipt["acceptance_path"] == 2
+    assert receipt["humans_invented"] is False
+    assert receipt["independent_external_human"] is False
+    assert receipt["grants_scientific_authority"] is False
+    assert receipt["promotional_lift_claim_allowed"] is False
+    assert receipt["capable_model_available"] == "NO_REFUTED"
+    assert receipt["acceptance_assessment"]["demoted_track_treated_as_independent"] is False
+    assert (
+        receipt["evidence_pointers"]["blocked_human_freeze_sha256"]
+        == _sha256(RESIDUAL / "BLOCKED_HUMAN_PACKET_FREEZE.json")
+    )
+    assert freeze["successor_issue"] == 353
+    assert freeze["terminal_status"] == receipt["terminal_status"]
