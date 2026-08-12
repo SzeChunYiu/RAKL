@@ -1,21 +1,21 @@
 """Proposal-only scientific-authority transport laws (refs #428).
 
 The v3 runtime already enforces subject-bound scientific promotion and explicit
-lineage for evidence roots.  This module asks a different question: after an
+lineage for evidence roots. This module asks a different question: after an
 already-authorized scientific object is summarized, consolidated, delegated,
 derived, corroborated, or passed through Self-RAKL, what authority may the
 successor *inherit without new evidence*?
 
-Version 1 is intentionally conservative and typed rather than scalar.  It never
-orders G/R/M/I/D as one confidence ladder.  Without a separately verified
+Version 1 is intentionally conservative and typed rather than scalar. It never
+orders G/R/M/I/D as one confidence ladder. Without a separately verified
 semantic/scope transport witness, inherited authority must preserve the exact
-claim, authority axis, scope, and evidence set.  Cross-claim or cross-scope
+claim, authority axis, scope, and evidence set. Cross-claim or cross-scope
 transport therefore returns ``CANNOT_CHECK``; cross-axis or injected-evidence
 amplification is ``INVALID``.
 
 The module also provides a read-only revocation propagation planner over evidence
-roots.  It does not mutate :class:`~rakl.authority_ledger.AuthorityLedger` and it
-never grants scientific authority.  Canonical runtime wiring requires fresh
+roots. It does not mutate :class:`~rakl.authority_ledger.AuthorityLedger` and it
+never grants scientific authority. Canonical runtime wiring requires fresh
 assurance and a separately governed integration change.
 """
 
@@ -161,7 +161,7 @@ def evaluate_authority_transport(
     """Evaluate whether a successor can inherit authority without amplification.
 
     This is a *transport* checker only; success means the requested transformation
-    did not introduce a stronger authority assertion than its sources.  It never
+    did not introduce a stronger authority assertion than its sources. It never
     issues a successor certificate.
     """
 
@@ -206,15 +206,20 @@ def evaluate_authority_transport(
             cannot_check.append("semantic_derivation_requires_verified_claim_transport_witness")
         if len(scopes) != 1 or request.successor_scope_id not in scopes:
             cannot_check.append("scope_transport_requires_verified_scope_witness")
-        if len(axes) != 1:
-            cannot_check.append("multi_axis_transport_requires_typed_projection")
-        elif request.successor_axis not in axes:
+
+        # A requested axis absent from *all* source certificates is authority
+        # amplification regardless of whether the source set itself spans one
+        # or multiple typed axes. Mixed-source projection remains CANNOT_CHECK
+        # only when the requested axis is actually among the source axes.
+        if request.successor_axis not in axes:
             invalid.append(
                 "cross_axis_authority_amplification:"
                 + ",".join(sorted(axis.name for axis in axes))
                 + "->"
                 + request.successor_axis.name
             )
+        if len(axes) != 1:
+            cannot_check.append("multi_axis_transport_requires_typed_projection")
 
         source_evidence = tuple(
             sorted({evidence_id for item in source_certificates for evidence_id in item.evidence_ids})
