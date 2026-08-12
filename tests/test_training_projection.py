@@ -26,7 +26,7 @@ def _structure(structure_id="s1"):
     )
 
 
-def _coords(**overrides):
+def _coords(overrides=None):
     values = {
         MasteryCoordinate.PRINCIPLE: 0.9,
         MasteryCoordinate.COMPOSITION: 0.2,
@@ -35,7 +35,7 @@ def _coords(**overrides):
         MasteryCoordinate.TRANSFER: 0.25,
         MasteryCoordinate.RETENTION: 0.8,
     }
-    values.update(overrides)
+    values.update(overrides or {})
     return tuple((coordinate, values[coordinate]) for coordinate in MasteryCoordinate)
 
 
@@ -139,7 +139,7 @@ def test_unknown_structure_cannot_enter_mastery_or_training_candidate_view():
 
 def test_unmeasured_coordinate_is_cannot_check_not_zero_mastery():
     estimate = _mastery(
-        coordinate_values=_coords(**{MasteryCoordinate.TRANSFER: None}),
+        coordinate_values=_coords({MasteryCoordinate.TRANSFER: None}),
     )
     snapshot = _snapshot(mastery_estimates=(estimate,))
     assessment = assess_training_projection(snapshot)
