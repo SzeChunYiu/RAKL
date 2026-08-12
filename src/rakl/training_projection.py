@@ -239,6 +239,7 @@ def _snapshot_hash(
     mastery_estimates: Sequence[StructuralMasteryEstimate],
     candidates: Sequence[TrainingAllocationCandidate],
     repetition_floor: float,
+    frozen_before_outcome_access: bool | None,
 ) -> str:
     payload = repr(
         (
@@ -250,6 +251,7 @@ def _snapshot_hash(
             tuple(mastery_estimates),
             tuple(candidates),
             repetition_floor,
+            frozen_before_outcome_access,
         )
     ).encode("utf-8")
     return sha256(payload).hexdigest()
@@ -325,6 +327,7 @@ def build_training_projection(
             mastery_estimates,
             candidates,
             repetition_floor,
+            frozen_before_outcome_access,
         ),
     )
 
@@ -332,6 +335,21 @@ def build_training_projection(
 def assess_training_projection(snapshot: TrainingProjectionSnapshot) -> ProjectionAssessment:
     """Fail-closed readiness check for *experimental* allocation use only."""
 
+    expected_hash = _snapshot_hash(
+        snapshot.projection_id,
+        snapshot.model_checkpoint_hash,
+        snapshot.structural_catalog_hash,
+        snapshot.probe_family_hash,
+        snapshot.mastery_estimates,
+        snapshot.candidates,
+        snapshot.repetition_floor,
+        snapshot.frozen_before_outcome_access,
+    )
+    if snapshot.snapshot_hash != expected_hash:
+        return ProjectionAssessment(
+            ProjectionVerdict.INVALID,
+            ("training_projection_content_hash_mismatch",),
+        )
     if snapshot.frozen_before_outcome_access is None:
         return ProjectionAssessment(
             ProjectionVerdict.CANNOT_CHECK,
