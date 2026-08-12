@@ -1,6 +1,6 @@
 # Strongest-version campaign scoreboard — 2026-08-12 (V2_EXEC floor after 3476813)
 
-**Tip main at reconstruction:** `60cde35fe48bfd4a0064b7ce27667cc94d720bbe` (merge #477; publication series v2 renumber @ #475)  
+**Tip main at reconstruction:** `ac19f760cbb4` (merge #482 post-#477 sync; issue-sweep scoreboard via #483)
 **Machine-readable:** `research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260812.json`  
 **Publication manifest:** `publication/PUBLICATION_SERIES_V2.json`  
 **CAPABLE_MODEL_AVAILABLE:** `NO_REFUTED` (false)  
