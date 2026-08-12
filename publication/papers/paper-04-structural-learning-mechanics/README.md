@@ -1,8 +1,8 @@
-# Paper IV — Structural Learning Mechanics (CONDITIONAL RESERVED)
+# Paper IV — Structural Learning Mechanics (DESIGN/PROTOCOL PREPRINT; empirical claim RESERVED)
 
-This directory reserves the publication-series-v2 slot only. It is **not a manuscript and not a publication claim**.
+`main.tex` is a **preregistered design-and-protocol preprint**. It makes **zero empirical claims**: it states the ready conceptual mechanics (learner-conditioned structural data allocation) and freezes, in advance, the Phase 0–4 experimental protocol. No training run has been executed; every quantitative value in it is a preregistered design parameter, not a measurement.
 
-A standalone Paper IV may be created only if decision gate #462 authorizes it after the registered training-time programme:
+A standalone **empirical** Paper IV — one that reports training results — may be created only if decision gate #462 authorizes it after the registered training-time programme. Until then the preprint stands as architecture + frozen protocol only:
 
 - #461 Phase 0/1 — known-structure generator and structural exposure curves;
 - #466 Phase 2 — powered Adaptive vs Static RAKL and strongest-parent comparison;

@@ -1,4 +1,4 @@
-# RAKL Publication Series V2
+# Orion Publication Series V2 (internal namespace: RAKL)
 
 **Effective date:** 2026-08-12  
 **Migration owner:** #475  
@@ -10,10 +10,10 @@
 |---|---|---|---|
 | Paper I — **Epistemic Mechanics for Evidence-Governed Scientific Research** | foundational scientific-authority/state mechanics | `paper-01-epistemic-mechanics`, `paper1*` | `ARXIV_PREPRINT_READY`; no independent-human-review claim |
 | Paper II — **Structural Mechanics: Directional Structural Witnesses for Fail-Closed Cross-Domain Transfer** | relational/QoI/boundary/preservation mechanics | historical Paper III, `paper3*` | `READY_WITH_EXPLICIT_LIMITATIONS`; strongest objective/external-validation version still active |
-| Paper III — **Method-Evolution Mechanics: From Experience to Method** | failure→diagnosis→lesson/method→fresh assurance / Self-RAKL mechanics | historical Paper V, `paper5*` | `READY_WITH_EXPLICIT_LIMITATIONS`; four-arm causal attribution and prospective metrology remain active |
-| Paper IV — **Structural Learning Mechanics** | learner-conditioned structural saturation and training allocation | training-time extension (`#455/#461/#462/#466/#467/#468`) | `CONDITIONAL_NOT_A_MANUSCRIPT` until #462 authorizes |
+| Paper III — **Method-Evolution Mechanics: From Experience to Method** | failure→diagnosis→lesson/method→fresh assurance / Self-Orion (self-application) mechanics | historical Paper V, `paper5*` | `READY_WITH_EXPLICIT_LIMITATIONS`; four-arm causal attribution and prospective metrology remain active |
+| Paper IV — **Structural Learning Mechanics** | learner-conditioned structural saturation and training allocation | training-time extension (`#455/#461/#462/#466/#467/#468`) | design-and-protocol preprint present (no empirical claim); standalone *empirical* paper `CONDITIONAL` until #462 authorizes |
 | Paper V — **Verified Discovery in Mathematics** | mathematical assurance application | historical Paper IV, `paper4*` | `ARXIV_PREPRINT_READY` as assurance-architecture paper |
-| Paper VI — **RAKL Scientific Research Engine** | capstone integration/application of Papers I–V | historical Paper II, `paper2*` | `CAPSTONE_NOT_READY`; active capability/causal/competitive evidence should land before final release |
+| Paper VI — **Orion Scientific Research Engine** | capstone integration/application of Papers I–V | historical Paper II, `paper2*` | `CAPSTONE_NOT_READY`; active capability/causal/competitive evidence should land before final release |
 
 ## Conceptual stack
 
