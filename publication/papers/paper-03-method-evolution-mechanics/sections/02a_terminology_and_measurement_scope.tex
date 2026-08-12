@@ -8,3 +8,39 @@ Accordingly, this paper uses \emph{RAKL state growth} or \emph{retained structur
 This distinction matters empirically. A new obstruction, a new operator and a new epistemic claim are different typed additions and should not be added into one raw scalar. The seven-axis vector preserves these distinctions, while raw node/edge counts remain inventory measurements. A local lattice view can have its own domain-specific size, closure or concept-count statistics, but those statistics are reported with the exact local view and cannot be promoted to a global RAKL complexity measure.
 
 Measurement coverage is equally explicit. The v3 runtime owns episodes, lessons, tools, failures, saturation and optional evolution state. Legacy epistemic \texttt{KnowledgeFiber} projections are included in a metrology snapshot only when the caller supplies the exact fibres that define the measurement universe. The resulting unified-substrate hash covers those supplied objects, while the v3 state fingerprint covers only the v3-owned value state. Neither quantity attests arbitrary repository files or external services.
+
+\subsection{Terminology at a glance}
+
+For readers from machine learning or systems engineering, the following plain-language glosses fix the load-bearing vocabulary; formal definitions appear at first technical use.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[\texttt{TaskEpisode} / \texttt{Lesson}] an immutable typed record of one research attempt in one context; and a versioned, \emph{defeasible} abstraction over one or more episodes.
+\item[Defeasible] revisable in light of later evidence; a lesson is a working generalization, not a proof.
+\item[Non-sovereign] a proposal or method change cannot promote itself; canonical/method authority is minted only by a separate governed step.
+\item[Fibre] the research thread/index scoped to a fixed problem and context.
+\item[\texttt{DifferenceWitness}] the typed object recording \emph{why} a transfer or reuse was rejected --- the specific structural difference that broke it.
+\item[meta-QoI] the quantity a method change predicts it will improve (e.g.\ a predicted drop in the repeated-failure rate $R_F$); a Class-B challenger must state one before outcomes are seen.
+\item[ORACLE arm] an upper-bound evaluation arm given oracle assistance, used to test whether the base model can perform the task \emph{at all} before any learning claim is made.
+\item[\texttt{RESET} vs \texttt{LEARNING} arms] fresh-model-without-learned-method vs with-method arms of the attribution design.
+\item[Sham memory] a budget-matched, structurally-irrelevant memory control that isolates memory \emph{content} lift from mere extra context.
+\item[Retained (semantic) novelty] an addition judged genuinely new after de-duplication against prior state, as opposed to raw growth.
+\item[Epistemic non-interference] the invariant that experience-side state cannot be confused with, or leak into, scientific authority.
+\item[\texttt{SEARCH}/\texttt{JUMP}/\texttt{GLUE}/\texttt{LIFT}] the escalating retrieval/composition routes: reuse same-domain, transport cross-domain, compose partial results, specify a missing operator.
+\end{description}
+
+\begin{table}[t]
+\footnotesize
+\begin{tabular}{@{}p{0.42\textwidth} p{0.52\textwidth}@{}}
+\hline
+\textbf{Status token} & \textbf{Plain meaning} \\
+\hline
+\texttt{MODEL\_CAPABILITY\_FLOOR\_$m$} & at model size $m$ the base model cannot clear the task threshold, so learning effects are unidentifiable there \\
+\texttt{CAPABLE\_MODEL\_AVAILABLE=NO\_REFUTED} & no model that clears the gate is yet available; the causal study stays unauthorized \\
+\texttt{NEGATIVE\_NO\_TRANSFER\_SUCCESS\_LIFT} & a scoped null: no measured transfer-success improvement, not evidence of harm \\
+\texttt{DEMOTED\_AI\_OPERATOR} & an evidence path deliberately denied independent/confirmatory authority \\
+\texttt{PROPOSAL\_SHADOW\_STORED} vs \texttt{CANONICAL\_INVENTORY\_ADMITTED} & recorded as a non-authoritative proposal vs admitted to the canonical record \\
+\hline
+\end{tabular}
+\caption{Legend for the governance status tokens used in the results and status tables.}
+\label{tab:status-legend}
+\end{table}

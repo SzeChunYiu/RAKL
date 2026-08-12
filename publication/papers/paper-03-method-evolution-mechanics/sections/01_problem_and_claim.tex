@@ -18,7 +18,14 @@ Our central claim is architectural and methodological:
 A long-running LLM research system can treat its own research trajectories as typed evidence for method improvement if raw episodes are preserved, diagnoses and abstractions remain defeasible, method changes are evaluated as content-identified challengers against frozen matched baselines and fresh transfer tasks, and promotion is separated from both proposal generation and operational deployment.
 \end{quote}
 
-This paper supports that claim at three different evidence levels that must not be conflated.
+Figure~\ref{fig:method-loop} shows the loop this claim describes. This paper supports that claim at three different evidence levels that must not be conflated.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/method_loop.pdf}
+\caption{The experience-to-method loop. Observed research produces frozen \texttt{TaskEpisode}s; diagnoses and lessons accumulate as defeasible, versioned state that re-ranks routing priority but carries no authority. A framework change is packaged as a content-identified challenger which may cross the \emph{authority boundary} only by passing a governed evaluation: matched development baselines, fresh protected assurance, and governed promotion. Retained experience thus affects \emph{search priority}, never scientific or method authority directly --- the same proposal/commitment separation as Paper~I, applied to the method itself.}
+\label{fig:method-loop}
+\end{figure}
 
 \begin{enumerate}[leftmargin=*]
 \item \textbf{Implemented architecture.} \RAKL{} v3 contains executable objects for immutable task episodes, versioned lessons, failure revisions, problem fibres, local-to-global gluing, experience-conditioned routing, vector saturation, problem-novelty classification, branching evolution variants and matched experience benchmarks.
