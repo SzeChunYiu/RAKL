@@ -42,6 +42,48 @@ The five audits below are **rounds 1–5** of this ledger — already convergent
 
 ---
 
+## 1a. Motivation: why discovery is slow, and the two-stroke generalized method
+
+Human discovery of a single hard result took generations, but most of that time was
+**not** the creative leap. It was compressible overhead: building prerequisite towers,
+serial mortal bandwidth with lossy transmission, redundant un-shared re-search of the
+same dead-ends, and being stuck in the wrong representational frame. A machine changes
+those constants --- perfect negative-history memory (no redundant re-search), true
+parallelism, no mortality, instant transmission --- which is exactly evolutionary/cultural
+search with civilizational constants (the FunSearch/AlphaEvolve/AlphaProof pattern: model
+as mutation, verifier as selection, memory as inheritance, parallelism as population). The
+compression is real but **gated by verification, not generation**: you can only compress a
+field as fast as you can *check* it, some dependency depth is irreducibly serial, and
+parallelism buys orders of magnitude, not omniscience.
+
+It is tempting to conclude the whole project is: **saturate the lattice, and the solution
+is contained in it.** That is exactly half right, and the missing half is the point of this
+programme:
+
+- **CLOSE (saturate the lattice).** RAKL's closure operator is extensive/monotone/idempotent;
+  its fixed points form a complete lattice and a saturated state is a fixed point. Closing
+  the lattice reveals *everything the current basis entails* --- the deductive, parallelizable,
+  compressible half RAKL already does well. For any problem whose answer is a compatible
+  gluing of known atoms, saturation finds it.
+- **The word "contained" is what open-world non-certifiability forbids.** The lattice is built
+  from a *finite basis*; saturation is *bounded* relative to declared atoms/routes/horizon.
+  The solution is in the lattice **iff the basis already spans its primitives.** If the
+  breakthrough needs a new atom (a reframe, an affordance, a concept the field never posed),
+  it is *not* in the current lattice, and **closure never creates it** --- closure adds only
+  what the atoms already imply. (Defining the lattice over "all possible atoms" is the Library
+  of Babel: infinite, non-enumerable, and vacuous; the real question is reachability by bounded
+  goal-directed expansion, which cannot be certified in finite time.)
+- **GROW (expand the basis).** The generative mechanics inject primitives the lattice did not
+  contain --- abduction, representation change/reframing, affordance discovery, cross-domain
+  JUMP, constructive invention, concept-evolution under counterexample.
+
+The generalized discovery method is therefore a **two-stroke loop**: GROW the basis, CLOSE the
+lattice, inspect the residual, and bounded-saturate over *both* (stop only when neither
+heterogeneous basis-growth nor closure adds anything substantive; reopen on any new primitive).
+RAKL today has the CLOSE stroke; this programme is the GROW stroke. Saturate-the-lattice is
+exactly half the method --- and the generative mechanics are what stop it from being an engine
+that closes forever over too small a world.
+
 ## 2. Diagnosis (what the five rounds agree on)
 
 **RAKL is a superb refutation / governance engine and an absent generative engine.**
