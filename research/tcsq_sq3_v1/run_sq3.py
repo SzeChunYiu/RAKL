@@ -109,7 +109,7 @@ from rakl.semantic_quotient_assurance import (
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-RESULT_FILE = HERE / "results" / "sq3_net_cost_advantage.json"
+RESULT_FILE = HERE / "results" / "sq3.json"
 
 SEED = 461
 PAPER2_CONFIRMATORY_SEED_DO_NOT_USE = 2026081202
@@ -680,8 +680,8 @@ def bootstrap_ci(values: list[float], rng: random.Random, resamples: int) -> dic
     means.sort()
     return {
         "mean": statistics.fmean(values),
-        "ci95_lo": means[int(0.025 * resamples)],
-        "ci95_hi": means[int(0.975 * resamples)],
+        "lo": means[int(0.025 * resamples)],
+        "hi": means[int(0.975 * resamples)],
         "n": n,
     }
 
@@ -768,9 +768,26 @@ def generate_results(
 
     positive = [
         cell for cell in cells
-        if cell["net_advantage"]["net_vs_best_control"]["ci95_lo"] > 0  # type: ignore[index]
+        if cell["net_advantage"]["net_vs_best_control"]["lo"] > 0  # type: ignore[index]
     ]
     crossover = min((cell["redundancy_rate"] for cell in positive), default=None)  # type: ignore[misc]
+
+    # Top-level aggregate net advantage (hoisted for gate)
+    # Honest aggregate: bootstrap on per-cell means across all redundancy rates
+    cell_means = [cell["net_advantage"]["net_vs_best_control"]["mean"] for cell in cells]
+    n_cells = len(cell_means)
+    aggregate_boot = random.Random(seed + 42)
+    boot_means = []
+    for _ in range(BOOTSTRAP_RESAMPLES):
+        boot_means.append(sum(cell_means[aggregate_boot.randrange(n_cells)] for _ in range(n_cells)) / n_cells)
+    boot_means.sort()
+    net_advantage_aggregate = {
+        "mean": statistics.fmean(cell_means),
+        "lo": boot_means[int(0.025 * BOOTSTRAP_RESAMPLES)],
+        "hi": boot_means[int(0.975 * BOOTSTRAP_RESAMPLES)],
+        "n": n_cells,
+        "note": "aggregated across redundancy-rate cells by bootstrap on cell means",
+    }
 
     return {
         "schema_version": "rakl.tcsq.sq3.net_cost_advantage.v1",
@@ -821,6 +838,7 @@ def generate_results(
             "the intervention audit never reads the generator's essential/nuisance labels; the "
             "ORACLE_QUOTIENT arm does, which is why it is an upper bound and not a method",
         ],
+        "net_advantage": net_advantage_aggregate,
         "cells": cells,
         "redundancy_crossover": {
             "definition": "smallest redundancy rate whose bootstrap 95% CI for net_vs_best_control excludes zero from above",
@@ -862,7 +880,7 @@ def main() -> int:
         print(
             f"redundancy={cell['redundancy_rate']:<6} "
             f"net_vs_best_control={net['mean']:>10.1f} "
-            f"[{net['ci95_lo']:.1f},{net['ci95_hi']:.1f}] "
+            f"[{net['lo']:.1f},{net['hi']:.1f}] "
             f"neg_frac={net['fraction_replicates_negative']:.2f} "
             f"tcsq_success={cell['arms']['TCSQ_VALIDATED_QUOTIENT']['original_problem_success_mean']:.3f} "
             f"unverified_err={diag['unverified_reuse_error_rate']:.4f}"
