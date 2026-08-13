@@ -18,7 +18,7 @@
   "source_artifacts": {
     "promotion_gate": {
       "path": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
-      "sha256_prefix": "5d9f868baa5fb532"
+      "sha256_prefix": "93cdb22e739233eb"
     },
     "closure_ledger": {
       "path": "research/unified_problem_solving_v1/results/CLOSURE_LEDGER.json",
@@ -66,7 +66,27 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "DECISIVE: with reachability-grounded landmarks (exact backward BFS from the goal condition) and 100 repeated queries, build cost (mean 37.09) exceeds cumulative saving (mean -37.38); crossover fraction 0.0. Method is valid; economics negative. Lane #520 closed.",
       "open": false,
-      "artifact_sha256_prefix": "f2316eeb6e016def"
+      "artifact_sha256_prefix": "f2316eeb6e016def",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "construction_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "status": "COMPLETE"
+      }
     },
     {
       "claim_id": "EMP-FIELDABILITY-GIVEN",
@@ -92,7 +112,23 @@
       "terminal_state": "SUPPORTED",
       "terminal_scope": "Given-metric field only (net +0.7247, CI [0.712,0.7375], n=400); construction cost not applicable (field supplied by domain). Does NOT support the construction claim, which is NEGATIVE (see EMP-FIELDCONST-NETBENEFIT).",
       "open": false,
-      "artifact_sha256_prefix": "1a95fe8cbe7abfc2"
+      "artifact_sha256_prefix": "1a95fe8cbe7abfc2",
+      "telemetry": {
+        "claim_class": "PERFORMANCE",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "COMPLETE"
+      }
     },
     {
       "claim_id": "EMP-IDENTITYREUSE",
@@ -119,7 +155,30 @@
       "terminal_state": "SUPPORTED",
       "terminal_scope": "Constructed benchmark: net +700, CI degenerate (deterministic), n=200, stale-reuse error 0. Real-model/runtime generalization is a SEPARATE unrun claim (EMP-REAL-IDENTITY / #532, SCAFFOLD).",
       "open": false,
-      "artifact_sha256_prefix": "73e1d6dd37133605"
+      "artifact_sha256_prefix": "73e1d6dd37133605",
+      "telemetry": {
+        "claim_class": "CACHE_REUSE",
+        "economic_cost_fields": [
+          "exact_cost",
+          "generic_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "status": "COMPLETE"
+      }
     },
     {
       "claim_id": "EMP-DIAG-HONESTY",
@@ -145,7 +204,21 @@
       "terminal_state": "CANNOT_CHECK",
       "terminal_scope": "CI unavailable at cutoff (rate 0.0, degenerate interval). #523 suspects INVALID_CONTAMINATED: pre-classified signal names feed a deterministic cause table (circular at noise 0). Raw-telemetry redesign in flight.",
       "open": true,
-      "artifact_sha256_prefix": "f40fece4282b3dbe"
+      "artifact_sha256_prefix": "f40fece4282b3dbe",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      }
     },
     {
       "claim_id": "EMP-NAV-NETBENEFIT",
@@ -171,7 +244,24 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "DECISIVE: hard-coded diffusion defect fixed and a fair crossover rerun across graph-size x heuristic-quality x reuse-count; path-integral still loses to A* in every cell (mean -364.4, CI [-538.8,-210.0], n=18). The fix made it MORE negative (the old defect was accidentally helping the method). Method valid; no net-benefit regime found. Lane #519 closed.",
       "open": false,
-      "artifact_sha256_prefix": "986175ce9dd1f4a6"
+      "artifact_sha256_prefix": "986175ce9dd1f4a6",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "PARTIAL"
+      }
     },
     {
       "claim_id": "EMP-PATHQ-NETBENEFIT",
@@ -346,6 +436,26 @@
           ],
           "net_saving_mean": 194.22666666666666
         }
+      },
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "verification_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "status": "COMPLETE"
       }
     },
     {
@@ -368,6 +478,20 @@
       "terminal_scope": "Sign test p=0.03125, count_met (5/5 tested families positive). Modest: n=5 is the minimum for one-sided significance, so UNDERPOWERED for smaller effects. Generalization holds at this resolution only.",
       "open": false,
       "artifact_sha256_prefix": "fdbc72f8e881ff2d",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      },
       "underpowered": true
     },
     {
@@ -395,7 +519,27 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "Strongly negative in tested regime (mean -4074, CI [-5333,-2879], n=6 cells). Root-cause in flight (#521): stage-cost decomposition plus an oracle-quotient test to separate quotient semantics from verification/bookkeeping overhead.",
       "open": true,
-      "artifact_sha256_prefix": "a345ccf3dbf06c04"
+      "artifact_sha256_prefix": "a345ccf3dbf06c04",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      }
     },
     {
       "claim_id": "IMPL-DIRECTIONAL_STRUCTURAL_WITNESS",

@@ -218,12 +218,208 @@ CANONICAL_FIELDS: Dict[str, TelemetryField] = {
 }
 
 
+# =========================================================================== #
+# #544: claim-class-conditional telemetry requirements + completeness status.
+# =========================================================================== #
+# The canonical schema above marks every performance/cost field OPTIONAL, so an
+# artifact carrying only the envelope (schema_version + grants_scientific_authority)
+# plus a hand-written net metric passes schema-valid with ZERO performance
+# evidence. #544 makes the required fields CONDITIONAL on the claim class the
+# experiment makes, and exposes a machine-readable completeness status the
+# promotion gate uses to refuse an UNCONDITIONAL positive efficiency verdict
+# built on incomplete telemetry. Historical gaps are preserved + caveated
+# (CANNOT_CHECK), never silently zeroed or defaulted.
+
+
+class ClaimClass:
+    """The kind of claim an experiment artifact supports. Drives which telemetry
+    fields are REQUIRED (vs merely nice-to-have) for that artifact to certify a
+    promotion of its class."""
+    CONFORMANCE = "CONFORMANCE"      # protocol/structural compliance; no perf telemetry
+    CORRECTNESS = "CORRECTNESS"      # does-it-work: graded on an outcome/rate, not cost
+    PERFORMANCE = "PERFORMANCE"      # how-fast: needs a measured quantity (time or count)
+    EFFICIENCY = "EFFICIENCY"        # net-of-cost advantage: measured quantity + charged cost
+    LLM_RUNTIME = "LLM_RUNTIME"      # model-invoking run: PERFORMANCE + model/provider/tokens
+    GPU_TRAINING = "GPU_TRAINING"    # GPU run: PERFORMANCE + gpu time/vram
+    CACHE_REUSE = "CACHE_REUSE"      # reuse vs recompute: EFFICIENCY + reuse-error-rate
+
+
+# A logical requirement maps to one or more concrete field names (aliases). The
+# requirement is SATISFIED for an artifact if ANY alias is present (recursively).
+# Aliases are grounded in the real field names emitted by the live experiment
+# artifacts (validated against research/.../results/*.json, not guessed).
+FIELD_ALIASES: Dict[str, List[str]] = {
+    "sample": [
+        "n", "n_completed", "n_instances", "n_instances_per_cell", "n_queries",
+        "n_tasks", "n_scenarios_per_replicate", "n_tasks_per_replicate",
+        "replicates", "replicates_per_cell", "sample_size", "worlds", "graphs_made",
+    ],
+    "seed": ["seed", "seeds"],
+    "measured_quantity": [
+        # wall time OR a primitive work counter -- one measured quantity suffices
+        "wall_time_s", "wall_time", "elapsed_s", "runtime_s", "duration_s",
+        "states_expanded", "n_expanded", "expansions", "nodes_expanded",
+        "bfs_expanded", "field_expanded", "baseline_expanded", "astar_expanded",
+        "calls", "n_calls", "model_calls", "function_calls",
+        "tokens", "token_count", "total_tokens",
+        "witnesses_registered", "mean_witnesses_registered", "n_witnesses",
+        "cache_hits", "mean_cache_hits",
+        "iterations", "n_iterations",
+    ],
+    "outcome": [
+        # a correctness/honesty result: the thing the claim is graded on
+        "verified_success", "success_rate", "outcome", "correct_rate",
+        "forced_wrong_rate", "false_accept_rate", "sign_test_p", "signs_positive",
+        "all_six_positive", "n_positive",
+    ],
+    "model": ["model", "model_name"],
+    "provider": ["provider", "api_provider"],
+    "tokens_count": ["tokens", "token_count", "total_tokens", "tokens_in"],
+    "gpu_time_s": ["gpu_time_s", "gpu_time", "gputime"],
+    "vram_peak_mb": ["vram_peak_mb", "vram", "peak_vram_mb"],
+    "reuse_error_rate": [
+        "reuse_error_rate", "stale_reuse_error_rate", "exact_error_rate",
+        "unverified_reuse_error_rate",
+    ],
+    "construction_cost": ["construction_cost", "build_cost"],
+    "verification_cost": [
+        "verification_cost", "witness_cost", "certification_cost", "verify_cost",
+        "mean_witnesses_registered", "witnesses_registered", "n_witnesses",
+    ],
+    "exact_cost": ["exact_cost"],
+    "generic_cost": ["generic_cost"],
+    "cost_model": ["cost_model", "cost_decomposition", "stage_costs", "total_cost"],
+}
+
+
+# Per-claim-class REQUIRED logical fields. Every listed group must be satisfiable
+# from the artifact for the telemetry to be COMPLETE for that class. Economic
+# (cost-charged) claims ADD their declared cost components via required_fields_for.
+CLAIM_CLASS_REQUIREMENTS: Dict[str, List[str]] = {
+    ClaimClass.CONFORMANCE:  ["sample"],
+    ClaimClass.CORRECTNESS:  ["sample", "outcome"],            # may be deterministic -> no seed
+    ClaimClass.PERFORMANCE:  ["sample", "seed", "measured_quantity"],
+    ClaimClass.EFFICIENCY:   ["sample", "seed", "measured_quantity"],
+    ClaimClass.LLM_RUNTIME:  ["sample", "seed", "measured_quantity",
+                              "model", "provider", "tokens_count"],
+    ClaimClass.GPU_TRAINING: ["sample", "seed", "measured_quantity",
+                              "gpu_time_s", "vram_peak_mb"],
+    ClaimClass.CACHE_REUSE:  ["sample", "seed", "reuse_error_rate"],
+}
+
+# Claim classes whose promotion is an EFFICIENCY/cost claim: a positive verdict
+# here is blockable by the telemetry gate (issue #544 acceptance).
+EFFICIENCY_CLAIM_CLASSES = frozenset({
+    ClaimClass.PERFORMANCE, ClaimClass.EFFICIENCY, ClaimClass.LLM_RUNTIME,
+    ClaimClass.GPU_TRAINING, ClaimClass.CACHE_REUSE,
+})
+
+
+def required_fields_for(
+    claim_class: str, *, economic_cost_fields: Optional[List[str]] = None
+) -> List[Dict[str, Any]]:
+    """Return the structured required-field list for a claim class.
+
+    Each element is ``{"requirement": <logical name>, "aliases": [...]}``.
+    Economic (cost-charged) claims add their declared cost components: the net
+    metric is only "net" if those cost fields are actually present in the
+    artifact, so the gate can VERIFY a charged cost rather than trust a flag.
+    """
+    logical = list(CLAIM_CLASS_REQUIREMENTS.get(claim_class, []))
+    if economic_cost_fields:
+        for cf in economic_cost_fields:
+            if cf not in logical:
+                logical.append(cf)
+    return [{"requirement": r, "aliases": list(FIELD_ALIASES.get(r, [r]))} for r in logical]
+
+
+def _alias_present(obj: Any, aliases: List[str]) -> bool:
+    """True if any alias key appears (recursively) anywhere in the artifact."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k in aliases:
+                return True
+            if _alias_present(v, aliases):
+                return True
+    elif isinstance(obj, list):
+        for it in obj:
+            if _alias_present(it, aliases):
+                return True
+    return False
+
+
+def telemetry_completeness_status(
+    artifact: Any,
+    claim_class: str,
+    *,
+    economic_cost_fields: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """Compute machine-readable telemetry completeness for an artifact + claim class.
+
+    Returns a dict::
+
+        {"status": "COMPLETE"|"PARTIAL"|"CANNOT_CHECK"|"INVALID_PROSPECTIVE",
+         "claim_class": ..., "economic_cost_fields": [...],
+         "required": [...], "present": [...], "missing": [...]}
+
+    Status semantics:
+      COMPLETE            - every required field for the class is present.
+      INVALID_PROSPECTIVE - a PROSPECTIVE run (artifact declares ``prospective``
+                            or a #531 reproducibility-package marker) is missing
+                            required collectors. A defect: the run should have
+                            measured them; the promotion gate blocks the verdict.
+      CANNOT_CHECK        - a HISTORICAL run explicitly marks the missing data
+                            unrecoverable (``telemetry_unrecoverable``); the gap
+                            is real but cannot be filled retroactively.
+      PARTIAL             - some required present, some missing, with no marker
+                            (the default historical gap: data not recorded).
+
+    Missing data is reported explicitly; it is NEVER silently defaulted to zero.
+    """
+    required = required_fields_for(claim_class, economic_cost_fields=economic_cost_fields)
+    present: List[str] = []
+    missing: List[str] = []
+    for req in required:
+        (present if _alias_present(artifact, req["aliases"]) else missing).append(req["requirement"])
+
+    if not missing:
+        status = "COMPLETE"
+    else:
+        prospective = (
+            _alias_present(artifact, ["prospective", "is_prospective"])
+            or _alias_present(artifact, ["reproducibility_package", "reproducibility_package_v1"])
+        )
+        unrecoverable = _alias_present(artifact, ["telemetry_unrecoverable"])
+        if prospective:
+            status = "INVALID_PROSPECTIVE"
+        elif unrecoverable:
+            status = "CANNOT_CHECK"
+        else:
+            status = "PARTIAL"
+    return {
+        "status": status,
+        "claim_class": claim_class,
+        "economic_cost_fields": economic_cost_fields or [],
+        "required": [r["requirement"] for r in required],
+        "present": present,
+        "missing": missing,
+    }
+
+
+
 def get_schema_dict() -> Dict[str, Any]:
     """Export schema as dictionary for JSON serialization."""
     return {
         "schema_version": "orion-telemetry-v1",
         "grants_scientific_authority": False,
-        "fields": {k: v.to_dict() for k, v in CANONICAL_FIELDS.items()}
+        "fields": {k: v.to_dict() for k, v in CANONICAL_FIELDS.items()},
+        "#544_claim_class_requirements": {
+            cls: reqs for cls, reqs in CLAIM_CLASS_REQUIREMENTS.items()
+        },
+        "#544_field_aliases": {
+            req: aliases for req, aliases in FIELD_ALIASES.items()
+        },
+        "#544_efficiency_claim_classes": sorted(EFFICIENCY_CLAIM_CLASSES),
     }
 
 

@@ -36,6 +36,10 @@ ROOT = Path(__file__).resolve().parents[1]
 # the gate shares one applicability contract with the registry + controller (#543)
 sys.path.insert(0, str(ROOT / "src"))
 from rakl.applicability import build_applicability_contract  # noqa: E402
+sys.path.insert(0, str(ROOT / "tools"))
+from telemetry_schema import (  # noqa: E402  (#544)
+    ClaimClass, telemetry_completeness_status, EFFICIENCY_CLAIM_CLASSES,
+)
 
 R = ROOT / "research"
 
@@ -45,42 +49,56 @@ CANDIDATES = {
         "artifact": R / "unified_problem_solving_v1/results/field_hypothesis.json",
         "net_keys": ["search_reduction_vs_bfs"],
         "cost_charged": True,   # construction cost is zero: the field is GIVEN (declared)
+        "claim_class": ClaimClass.PERFORMANCE,
+        "cost_fields": None,
         "note": "given-metric field; construction cost not applicable (field supplied by domain)",
     },
     "field_construction": {
         "artifact": R / "unified_problem_solving_v1/results/field_construction.json",
         "net_keys": ["net_search_saving", "net_saving", "search_reduction_net"],
         "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["construction_cost"],
         "note": "constructor must pay for its own construction cost",
     },
     "navigation_dynamics": {
         "artifact": R / "unified_problem_solving_v1/results/navigation_dynamics.json",
         "net_keys": ["net_vs_astar", "advantage_vs_control", "net_expansions_vs_astar"],
         "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": None,
         "note": "must beat the STRONG control (A*) with its own iteration cost charged",
     },
     "path_equivalence_quotient": {
         "artifact": R / "unified_problem_solving_v1/results/path_quotient_savings.json",
         "net_keys": ["net_saving_mean"], "ci_keys": ["net_saving_ci95"],
         "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["verification_cost"],
         "note": "witness/certification cost charged; known negative regime at low commutation",
     },
     "mechanic_diagnosis": {
         "artifact": R / "unified_problem_solving_v1/results/diagnosis_accuracy.json",
         "net_keys": ["forced_wrong_rate", "forced_wrong"], "honesty_metric": True,
         "cost_charged": True,
+        "claim_class": ClaimClass.CORRECTNESS,
+        "cost_fields": None,
         "note": "graded on verdict honesty (degrade to ambiguity, not confident error)",
     },
     "tcsq_sq3": {
         "artifact": R / "tcsq_sq3_v1/results/sq3.json",
         "net_keys": ["net_advantage", "net_cost_advantage"],
         "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["cost_model"],
         "note": "quotient construction cost charged; crossover in redundancy rate expected",
     },
     "identity_reuse": {
         "artifact": R / "identity_reuse_v1/results/identity_reuse.json",
         "net_keys": ["net_advantage", "reuse_advantage"],
         "cost_charged": True,
+        "claim_class": ClaimClass.CACHE_REUSE,
+        "cost_fields": ["exact_cost", "generic_cost"],
         "note": "exact reuse vs re-derivation; stale-reuse error rate is a hard constraint",
     },
     "six_family_law": {
@@ -93,6 +111,8 @@ CANDIDATES = {
             "required_count": 6,
         },
         "cost_charged": True,
+        "claim_class": ClaimClass.CORRECTNESS,
+        "cost_fields": None,
         "note": "cross-family generalization; sign test across >=6 families",
     },
 }
@@ -175,6 +195,73 @@ def _verdict_for_sign_test(spec: dict, data: dict, art: Path) -> dict:
             "artifact": str(art.relative_to(ROOT))}
 
 
+def _verdict_for_net_metric(spec: dict, data: dict, art: Path) -> dict:
+    """Net-advantage evaluator: CI-excludes-null on the registered net metric,
+    cost charged, with #543 regime-crossover handling consumed first."""
+    net = _find(data, spec["net_keys"])
+    ci = _find(data, spec.get("ci_keys", [])) if spec.get("ci_keys") else None
+    if net is None:
+        return {"verdict": "CANNOT_CHECK", "reason": f"no_net_metric_among:{spec['net_keys']}",
+                "note": spec["note"], "artifact": str(art.relative_to(ROOT))}
+
+    # --- #543: consume registered regime evidence BEFORE the pooled mean.
+    contract = build_applicability_contract(data.get("regime_analysis"))
+    if contract is not None:
+        if contract["positive_regime_significant"]:
+            v = "PROMOTE_CONDITIONALLY"
+            why = "regime_crossover_positive_subregime_ci_excludes_null"
+        else:
+            v = "KEEP_PROPOSAL_ONLY"
+            why = "regime_crossover_no_clean_positive_subregime"
+        return {"verdict": v, "reason": why, "net": net,
+                "applicability": contract, "note": spec["note"],
+                "artifact": str(art.relative_to(ROOT))}
+
+    excl = _ci_excludes_null(net, ci=ci)
+    mean = net.get("mean") if isinstance(net, dict) else net
+    if excl is True and isinstance(mean, (int, float)) and mean > 0:
+        v, why = "PROMOTE_TO_MECHANIC", "positive_net_with_ci_excluding_null_cost_charged"
+    elif excl is True and isinstance(mean, (int, float)) and mean < 0:
+        v, why = "KEEP_PROPOSAL_ONLY", "net_negative_in_tested_regime"
+    elif excl is False:
+        v, why = "KEEP_PROPOSAL_ONLY", "ci_includes_null_no_distinguishable_advantage"
+    else:
+        v, why = "KEEP_PROPOSAL_ONLY", "net_metric_present_but_interval_unavailable"
+    return {"verdict": v, "reason": why, "net": net, "note": spec["note"],
+            "artifact": str(art.relative_to(ROOT))}
+
+
+def _apply_telemetry_gate(spec: dict, data: dict, art: Path, base: dict) -> dict:
+    """#544: attach claim-class telemetry completeness; fail closed on an
+    UNCONDITIONAL positive efficiency verdict whose required telemetry is incomplete.
+
+    The gate may NOT emit an unconditional positive efficiency verdict
+    (PROMOTE_TO_MECHANIC) from an artifact whose required telemetry for that
+    claim class is incomplete. Conditional / already-non-promoting verdicts
+    carry the telemetry status as a caveat but are not re-blocked. Historical
+    gaps are reported explicitly (CANNOT_CHECK / PARTIAL), never zeroed.
+    """
+    claim_class = spec.get("claim_class")
+    out = dict(base)
+    if not claim_class:           # backward compat: unclassified candidate
+        return out
+    tel = telemetry_completeness_status(
+        data, claim_class, economic_cost_fields=spec.get("cost_fields"))
+    out["telemetry"] = tel
+    if (claim_class in EFFICIENCY_CLAIM_CLASSES
+            and base.get("verdict") == "PROMOTE_TO_MECHANIC"
+            and tel["status"] != "COMPLETE"):
+        if tel["status"] == "INVALID_PROSPECTIVE":
+            out["verdict"] = "KEEP_PROPOSAL_ONLY"
+            out["reason"] = "telemetry_invalid_prospective_collectors_unconfigured"
+        else:  # PARTIAL or CANNOT_CHECK: historical / unrecoverable gap
+            out["verdict"] = "CANNOT_CHECK"
+            out["reason"] = "telemetry_incomplete_for_claim_class"
+        out["blocked_promotion"] = tel["missing"]
+        out["pre_telemetry_verdict"] = base.get("verdict")
+    return out
+
+
 def verdict_for(name: str, spec: dict) -> dict:
     art = spec["artifact"]
     if not art.is_file():
@@ -186,11 +273,10 @@ def verdict_for(name: str, spec: dict) -> dict:
     if data.get("grants_scientific_authority") is not False:
         return {"verdict": "CANNOT_CHECK", "reason": "artifact_does_not_disclaim_authority"}
     if "sign_test" in spec:
-        return _verdict_for_sign_test(spec, data, art)
-    net = _find(data, spec["net_keys"])
-    ci = _find(data, spec.get("ci_keys", [])) if spec.get("ci_keys") else None
-    if net is None:
-        return {"verdict": "CANNOT_CHECK", "reason": f"no_net_metric_among:{spec['net_keys']}"}
+        base = _verdict_for_sign_test(spec, data, art)
+    else:
+        base = _verdict_for_net_metric(spec, data, art)
+    return _apply_telemetry_gate(spec, data, art, base)
 
     # --- #543: consume registered regime evidence BEFORE the pooled mean.
     # An artifact whose regime_analysis has statistically-separated opposing-sign
