@@ -403,6 +403,81 @@ def run_experiment(n_domains=100, n_queries=100, n_propositions=12, n_rules=15,
           for d in domains_out]
     hh_ci = bootstrap_ci(hh, seed + 50000)
 
+    # --- #538 revival: honest per-query-count re-slice of the gate headline.
+    # net_advantage_over_strongest_parent (pooled) is the q=100 per-query point.
+    # This slices it across the amortization horizon, charging BOTH candidates'
+    # construction (head-to-head vs strongest parent -- NOT vs the no-field BFS).
+    head_to_head_by_query_count = []
+    for _i, _q in enumerate(QUERY_COUNTS):
+        _hh_cum = [d[SUCC_KEY]["amortization"][_i]["cumulative_net"]
+                   - d[strongest_parent]["amortization"][_i]["cumulative_net"]
+                   for d in domains_out]
+        _ci = bootstrap_ci(_hh_cum, seed + 51000 + _q)
+        head_to_head_by_query_count.append({
+            "query_count": _q, "n": completed,
+            "cumulative_net_advantage_ci": _ci,
+            "net_per_query_advantage_ci": {"lo": round(_ci["lo"] / _q, 4),
+                "hi": round(_ci["hi"] / _q, 4), "mean": round(_ci["mean"] / _q, 4),
+                "n": completed},
+        })
+    # mechanistic amortization breakeven: q* = mean(build premium) / mean(per-query
+    # guidance advantage over strongest parent). q* is where the one-time
+    # construction premium is repaid; using it as the threshold is mechanistic
+    # (not outcome-defined). If per-query guidance advantage <= 0 there is NO
+    # crossover -- the successor never repays its premium vs the best parent.
+    _cc_s = [d[SUCC_KEY]["construction_cost_node_equiv"] for d in domains_out]
+    _cc_p = [d[strongest_parent]["construction_cost_node_equiv"] for d in domains_out]
+    def _msavings(cid):
+        return [sum(d[cid]["savings_per_query"]) / len(d[cid]["savings_per_query"])
+                for d in domains_out]
+    _g_adv = [a - b for a, b in zip(_msavings(SUCC_KEY), _msavings(strongest_parent))]
+    _mean_delta_cc = sum(cs - cp for cs, cp in zip(_cc_s, _cc_p)) / len(_cc_s)
+    _mean_g_adv = sum(_g_adv) / len(_g_adv)
+    if _mean_g_adv > 1e-9:
+        amortization_breakeven_query = round(_mean_delta_cc / _mean_g_adv, 1)
+        _breakeven_note = ("per-query guidance advantage over strongest parent > 0; "
+                           "crossover at q* (may lie beyond tested horizon [1,100])")
+    else:
+        amortization_breakeven_query = None
+        _breakeven_note = ("per-query guidance advantage over strongest parent <= 0; "
+                           "no crossover -- successor never repays its build premium")
+    _hh100 = [d[SUCC_KEY]["amortization"][-1]["cumulative_net"]
+              - d[strongest_parent]["amortization"][-1]["cumulative_net"]
+              for d in domains_out]
+    _frac_beat = round(sum(1 for v in _hh100 if v > 0) / len(_hh100), 4)
+    # regime_analysis: query-horizon crossover. The gate RE-DERIVES significance
+    # from the subset CIs, so this block can only promote conditionally if the
+    # high-amortization head-to-head CI genuinely excludes zero from above.
+    _pos_qs = [_q for _q in QUERY_COUNTS
+               if amortization_breakeven_query is not None
+               and _q >= amortization_breakeven_query]
+    _neg_qs = [_q for _q in QUERY_COUNTS
+               if amortization_breakeven_query is None or _q < amortization_breakeven_query]
+
+    def _subset_ci(qs):
+        if not qs:
+            return None
+        _i = QUERY_COUNTS.index(max(qs))
+        _vals = [d[SUCC_KEY]["amortization"][_i]["cumulative_net"]
+                 - d[strongest_parent]["amortization"][_i]["cumulative_net"]
+                 for d in domains_out]
+        _c = bootstrap_ci(_vals, seed + 52000 + max(qs))
+        return {"cells": [{"query_count": _q} for _q in sorted(qs)],
+                "net_saving_ci95": [round(_c["lo"], 4), round(_c["hi"], 4)],
+                "mean": round(_c["mean"], 4), "n": completed}
+
+    regime_analysis = {
+        "axis": ("query_count (amortization horizon; head-to-head vs strongest "
+                 "parent, both construction costs charged)"),
+        "amortization_breakeven_query": amortization_breakeven_query,
+        "per_query_guidance_advantage_mean": round(_mean_g_adv, 4),
+        "construction_premium_mean": round(_mean_delta_cc, 4),
+        "fraction_domains_beating_parent_at_q100": _frac_beat,
+        "positive_subset": _subset_ci(_pos_qs),
+        "negative_subset": _subset_ci(_neg_qs),
+        "note": _breakeven_note,
+    }
+
     correctness_gate = cand_summary[SUCC_KEY]["found_agrees_with_baseline_all_domains"]
     hh_positive = (hh_ci["lo"] > 0 and correctness_gate)
     beats_strongest_parent = (hh_ci["mean"] > 0)
@@ -443,6 +518,9 @@ def run_experiment(n_domains=100, n_queries=100, n_propositions=12, n_rules=15,
         "successor_mean_crossover_query": cand_summary[SUCC_KEY]["mean_crossover_query"],
         "successor_mean_rank_correlation": cand_summary[SUCC_KEY]["mean_rank_correlation"],
         "successor_mean_false_descent_rate": cand_summary[SUCC_KEY]["mean_false_descent_rate"],
+        "head_to_head_by_query_count": head_to_head_by_query_count,
+        "amortization_breakeven_query": amortization_breakeven_query,
+        "regime_analysis": regime_analysis,
     }
 
 
@@ -498,6 +576,9 @@ def main() -> int:
         "successor_mean_rank_correlation": deep["successor_mean_rank_correlation"],
         "successor_mean_false_descent_rate": deep["successor_mean_false_descent_rate"],
         "successor_crossover_fraction": deep["successor_crossover_fraction"],
+        "head_to_head_by_query_count": deep["head_to_head_by_query_count"],
+        "amortization_breakeven_query": deep["amortization_breakeven_query"],
+        "regime_analysis": deep["regime_analysis"],
         "successor_mean_crossover_query": deep["successor_mean_crossover_query"],
         "applicable_regime": deep,
         "applicability_boundary_regime": shallow,

@@ -16,7 +16,7 @@
     50,
     100
   ],
-  "wall_time_s": 11.211,
+  "wall_time_s": 11.069,
   "claim_class": "EFFICIENCY",
   "measured_quantity": "net_search_saving_per_query (states-expanded units)",
   "claim_boundary": "development known-world evidence; #538 field-construction successor; goal-set reachability-grounded exact field vs uniform/symdiff/single-target/PDB(naive+target-aware)/CEGAR parents + bounded-landmark + hybrid; amortized net search saving over deep-search chain-distractor regime (applicable); shallow random-monotone regime reported as applicability boundary; grants no scientific authority",
@@ -40,8 +40,8 @@
   },
   "construction_cost": {
     "mean": 230.0732,
-    "lo": 177.0,
-    "hi": 287.1463,
+    "lo": 176.9024,
+    "hi": 287.9512,
     "n": 41
   },
   "successor_strategy": "goalset_exact_successor",
@@ -53,8 +53,8 @@
   "strongest_parent": "symdiff_proxy_parent",
   "strongest_parent_net": {
     "mean": 2.4034,
-    "lo": 1.442,
-    "hi": 3.5402,
+    "lo": 1.4285,
+    "hi": 3.5451,
     "n": 41
   },
   "successor_mean_net_per_query": 0.5988,
@@ -62,6 +62,161 @@
   "successor_mean_rank_correlation": 1.0,
   "successor_mean_false_descent_rate": 0.0,
   "successor_crossover_fraction": 0.5854,
+  "head_to_head_by_query_count": [
+    {
+      "query_count": 1,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -246.2195,
+        "hi": -117.5366,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -246.2195,
+        "hi": -117.5366,
+        "mean": -180.4634,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 2,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -246.561,
+        "hi": -119.0732,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -123.2805,
+        "hi": -59.5366,
+        "mean": -90.2317,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 5,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -243.9268,
+        "hi": -117.6098,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -48.7854,
+        "hi": -23.522,
+        "mean": -36.0927,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 10,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -247.9268,
+        "hi": -117.8049,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -24.7927,
+        "hi": -11.7805,
+        "mean": -18.0463,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 20,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -245.439,
+        "hi": -117.9024,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -12.272,
+        "hi": -5.8951,
+        "mean": -9.0232,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 50,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -249.9268,
+        "hi": -118.122,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -4.9985,
+        "hi": -2.3624,
+        "mean": -3.6093,
+        "n": 41
+      }
+    },
+    {
+      "query_count": 100,
+      "n": 41,
+      "cumulative_net_advantage_ci": {
+        "mean": -180.4634,
+        "lo": -247.0488,
+        "hi": -116.5854,
+        "n": 41
+      },
+      "net_per_query_advantage_ci": {
+        "lo": -2.4705,
+        "hi": -1.1659,
+        "mean": -1.8046,
+        "n": 41
+      }
+    }
+  ],
+  "amortization_breakeven_query": null,
+  "regime_analysis": {
+    "axis": "query_count (amortization horizon; head-to-head vs strongest parent, both construction costs charged)",
+    "amortization_breakeven_query": null,
+    "per_query_guidance_advantage_mean": 0.0,
+    "construction_premium_mean": 180.4634,
+    "fraction_domains_beating_parent_at_q100": 0.2195,
+    "positive_subset": null,
+    "negative_subset": {
+      "cells": [
+        {
+          "query_count": 1
+        },
+        {
+          "query_count": 2
+        },
+        {
+          "query_count": 5
+        },
+        {
+          "query_count": 10
+        },
+        {
+          "query_count": 20
+        },
+        {
+          "query_count": 50
+        },
+        {
+          "query_count": 100
+        }
+      ],
+      "net_saving_ci95": [
+        -248.3171,
+        -117.4146
+      ],
+      "mean": -180.4634,
+      "n": 41
+    },
+    "note": "per-query guidance advantage over strongest parent <= 0; no crossover -- successor never repays its build premium"
+  },
   "successor_mean_crossover_query": 9.6,
   "applicable_regime": {
     "regime": "deep",
@@ -97,20 +252,20 @@
       "symdiff_proxy_parent": {
         "net_per_query_ci": {
           "mean": 2.4034,
-          "lo": 1.442,
-          "hi": 3.5402,
+          "lo": 1.4285,
+          "hi": 3.5451,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 240.3415,
-          "lo": 142.0244,
-          "hi": 360.4634,
+          "lo": 139.8293,
+          "hi": 359.2439,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 49.6098,
-          "lo": 38.878,
-          "hi": 59.9756,
+          "lo": 39.0488,
+          "hi": 59.6341,
           "n": 41
         },
         "fraction_crossover": 0.8049,
@@ -122,20 +277,20 @@
       "single_target_parent": {
         "net_per_query_ci": {
           "mean": -3.9856,
-          "lo": -4.4768,
-          "hi": -3.4707,
+          "lo": -4.4793,
+          "hi": -3.5159,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": -398.561,
-          "lo": -449.0732,
-          "hi": -349.0976,
+          "lo": -447.7805,
+          "hi": -350.9756,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 387.1463,
-          "lo": 350.9512,
-          "hi": 423.2195,
+          "lo": 350.7805,
+          "hi": 423.439,
           "n": 41
         },
         "fraction_crossover": 0.0,
@@ -172,14 +327,14 @@
       "pdb_target_aware_parent": {
         "net_per_query_ci": {
           "mean": 1.0578,
-          "lo": 0.731,
-          "hi": 1.461,
+          "lo": 0.7141,
+          "hi": 1.4461,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 105.7805,
-          "lo": 71.8537,
-          "hi": 145.3415,
+          "lo": 72.3902,
+          "hi": 146.0,
           "n": 41
         },
         "construction_cost_ci": {
@@ -197,20 +352,20 @@
       "cegar_parent": {
         "net_per_query_ci": {
           "mean": 2.039,
-          "lo": 1.1766,
-          "hi": 3.1183,
+          "lo": 1.1456,
+          "hi": 3.0946,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 203.9024,
-          "lo": 117.5122,
-          "hi": 313.2195,
+          "lo": 116.0732,
+          "hi": 312.2927,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 22.3659,
           "lo": 21.2195,
-          "hi": 23.7317,
+          "hi": 23.6829,
           "n": 41
         },
         "fraction_crossover": 0.9512,
@@ -222,20 +377,20 @@
       "goalset_landmark_successor": {
         "net_per_query_ci": {
           "mean": 1.1327,
-          "lo": 0.5817,
-          "hi": 1.7893,
+          "lo": 0.6041,
+          "hi": 1.8117,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 113.2683,
-          "lo": 59.2683,
-          "hi": 179.122,
+          "lo": 58.439,
+          "hi": 179.2439,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 118.6341,
-          "lo": 106.3902,
-          "hi": 130.5366,
+          "lo": 106.6341,
+          "hi": 130.4878,
           "n": 41
         },
         "fraction_crossover": 0.6585,
@@ -247,20 +402,20 @@
       "goalset_exact_successor": {
         "net_per_query_ci": {
           "mean": 0.5988,
-          "lo": -0.1734,
-          "hi": 1.4702,
+          "lo": -0.1671,
+          "hi": 1.4651,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 59.878,
-          "lo": -16.4146,
-          "hi": 145.8049,
+          "lo": -16.0244,
+          "hi": 143.5122,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 230.0732,
-          "lo": 177.0,
-          "hi": 287.1463,
+          "lo": 176.9024,
+          "hi": 287.9512,
           "n": 41
         },
         "fraction_crossover": 0.5854,
@@ -272,20 +427,20 @@
       "hybrid_goalset_pdb_successor": {
         "net_per_query_ci": {
           "mean": 0.5488,
-          "lo": -0.188,
-          "hi": 1.4129,
+          "lo": -0.2112,
+          "hi": 1.4444,
           "n": 41
         },
         "cumulative_net_ci": {
           "mean": 54.878,
-          "lo": -19.439,
-          "hi": 139.1951,
+          "lo": -19.6829,
+          "hi": 142.2927,
           "n": 41
         },
         "construction_cost_ci": {
           "mean": 235.0732,
-          "lo": 181.7805,
-          "hi": 293.1707,
+          "lo": 181.561,
+          "hi": 292.7317,
           "n": 41
         },
         "fraction_crossover": 0.5854,
@@ -298,8 +453,8 @@
     "strongest_parent": "symdiff_proxy_parent",
     "strongest_parent_net": {
       "mean": 2.4034,
-      "lo": 1.442,
-      "hi": 3.5402,
+      "lo": 1.4285,
+      "hi": 3.5451,
       "n": 41
     },
     "net_advantage_over_strongest_parent": {
@@ -322,8 +477,8 @@
     },
     "construction_cost": {
       "mean": 230.0732,
-      "lo": 177.0,
-      "hi": 287.1463,
+      "lo": 176.9024,
+      "hi": 287.9512,
       "n": 41
     },
     "verdict": "KEEP_PROPOSAL_ONLY",
@@ -335,7 +490,162 @@
     "successor_crossover_fraction": 0.5854,
     "successor_mean_crossover_query": 9.6,
     "successor_mean_rank_correlation": 1.0,
-    "successor_mean_false_descent_rate": 0.0
+    "successor_mean_false_descent_rate": 0.0,
+    "head_to_head_by_query_count": [
+      {
+        "query_count": 1,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -246.2195,
+          "hi": -117.5366,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -246.2195,
+          "hi": -117.5366,
+          "mean": -180.4634,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 2,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -246.561,
+          "hi": -119.0732,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -123.2805,
+          "hi": -59.5366,
+          "mean": -90.2317,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 5,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -243.9268,
+          "hi": -117.6098,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -48.7854,
+          "hi": -23.522,
+          "mean": -36.0927,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 10,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -247.9268,
+          "hi": -117.8049,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -24.7927,
+          "hi": -11.7805,
+          "mean": -18.0463,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 20,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -245.439,
+          "hi": -117.9024,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -12.272,
+          "hi": -5.8951,
+          "mean": -9.0232,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 50,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -249.9268,
+          "hi": -118.122,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -4.9985,
+          "hi": -2.3624,
+          "mean": -3.6093,
+          "n": 41
+        }
+      },
+      {
+        "query_count": 100,
+        "n": 41,
+        "cumulative_net_advantage_ci": {
+          "mean": -180.4634,
+          "lo": -247.0488,
+          "hi": -116.5854,
+          "n": 41
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -2.4705,
+          "hi": -1.1659,
+          "mean": -1.8046,
+          "n": 41
+        }
+      }
+    ],
+    "amortization_breakeven_query": null,
+    "regime_analysis": {
+      "axis": "query_count (amortization horizon; head-to-head vs strongest parent, both construction costs charged)",
+      "amortization_breakeven_query": null,
+      "per_query_guidance_advantage_mean": 0.0,
+      "construction_premium_mean": 180.4634,
+      "fraction_domains_beating_parent_at_q100": 0.2195,
+      "positive_subset": null,
+      "negative_subset": {
+        "cells": [
+          {
+            "query_count": 1
+          },
+          {
+            "query_count": 2
+          },
+          {
+            "query_count": 5
+          },
+          {
+            "query_count": 10
+          },
+          {
+            "query_count": 20
+          },
+          {
+            "query_count": 50
+          },
+          {
+            "query_count": 100
+          }
+        ],
+        "net_saving_ci95": [
+          -248.3171,
+          -117.4146
+        ],
+        "mean": -180.4634,
+        "n": 41
+      },
+      "note": "per-query guidance advantage over strongest parent <= 0; no crossover -- successor never repays its build premium"
+    }
   },
   "applicability_boundary_regime": {
     "regime": "shallow",
@@ -371,20 +681,20 @@
       "symdiff_proxy_parent": {
         "net_per_query_ci": {
           "mean": -0.2408,
-          "lo": -0.2802,
-          "hi": -0.198,
+          "lo": -0.2782,
+          "hi": -0.1985,
           "n": 40
         },
         "cumulative_net_ci": {
           "mean": -24.075,
-          "lo": -27.9,
-          "hi": -20.05,
+          "lo": -28.025,
+          "hi": -19.725,
           "n": 40
         },
         "construction_cost_ci": {
           "mean": 37.75,
-          "lo": 34.975,
-          "hi": 40.475,
+          "lo": 35.025,
+          "hi": 40.45,
           "n": 40
         },
         "fraction_crossover": 0.075,
@@ -408,8 +718,8 @@
         },
         "construction_cost_ci": {
           "mean": 0.775,
-          "lo": 0.475,
-          "hi": 1.125,
+          "lo": 0.45,
+          "hi": 1.1,
           "n": 40
         },
         "fraction_crossover": 0.0,
@@ -471,20 +781,20 @@
       "cegar_parent": {
         "net_per_query_ci": {
           "mean": -0.0823,
-          "lo": -0.0917,
-          "hi": -0.0728,
+          "lo": -0.0915,
+          "hi": -0.0733,
           "n": 40
         },
         "cumulative_net_ci": {
           "mean": -8.225,
-          "lo": -9.2,
-          "hi": -7.3,
+          "lo": -9.15,
+          "hi": -7.325,
           "n": 40
         },
         "construction_cost_ci": {
           "mean": 8.6,
-          "lo": 7.575,
-          "hi": 9.625,
+          "lo": 7.55,
+          "hi": 9.65,
           "n": 40
         },
         "fraction_crossover": 0.0,
@@ -496,20 +806,20 @@
       "goalset_landmark_successor": {
         "net_per_query_ci": {
           "mean": -1.4072,
-          "lo": -1.435,
-          "hi": -1.3755,
+          "lo": -1.4347,
+          "hi": -1.3758,
           "n": 40
         },
         "cumulative_net_ci": {
           "mean": -140.725,
-          "lo": -143.5,
-          "hi": -137.575,
+          "lo": -143.525,
+          "hi": -137.625,
           "n": 40
         },
         "construction_cost_ci": {
           "mean": 150.75,
           "lo": 150.5,
-          "hi": 151.025,
+          "hi": 151.0,
           "n": 40
         },
         "fraction_crossover": 0.0,
@@ -521,20 +831,20 @@
       "goalset_exact_successor": {
         "net_per_query_ci": {
           "mean": -2.717,
-          "lo": -2.967,
-          "hi": -2.479,
+          "lo": -2.9668,
+          "hi": -2.4897,
           "n": 40
         },
         "cumulative_net_ci": {
           "mean": -271.7,
-          "lo": -296.425,
-          "hi": -248.75,
+          "lo": -295.725,
+          "hi": -248.025,
           "n": 40
         },
         "construction_cost_ci": {
           "mean": 287.7,
-          "lo": 261.225,
-          "hi": 315.575,
+          "lo": 261.925,
+          "hi": 316.2,
           "n": 40
         },
         "fraction_crossover": 0.0,
@@ -546,20 +856,20 @@
       "hybrid_goalset_pdb_successor": {
         "net_per_query_ci": {
           "mean": -2.7325,
-          "lo": -2.9878,
-          "hi": -2.4903,
+          "lo": -2.9787,
+          "hi": -2.4918,
           "n": 40
         },
         "cumulative_net_ci": {
           "mean": -273.25,
-          "lo": -297.975,
-          "hi": -249.575,
+          "lo": -298.125,
+          "hi": -249.7,
           "n": 40
         },
         "construction_cost_ci": {
           "mean": 289.25,
-          "lo": 262.55,
-          "hi": 317.825,
+          "lo": 261.525,
+          "hi": 318.0,
           "n": 40
         },
         "fraction_crossover": 0.0,
@@ -596,8 +906,8 @@
     },
     "construction_cost": {
       "mean": 287.7,
-      "lo": 261.225,
-      "hi": 315.575,
+      "lo": 261.925,
+      "hi": 316.2,
       "n": 40
     },
     "verdict": "KEEP_PROPOSAL_ONLY",
@@ -609,7 +919,162 @@
     "successor_crossover_fraction": 0.0,
     "successor_mean_crossover_query": null,
     "successor_mean_rank_correlation": 0.875,
-    "successor_mean_false_descent_rate": 0.0
+    "successor_mean_false_descent_rate": 0.0,
+    "head_to_head_by_query_count": [
+      {
+        "query_count": 1,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -287.35,
+          "lo": -315.05,
+          "hi": -260.9,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -315.05,
+          "hi": -260.9,
+          "mean": -287.35,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 2,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -287.15,
+          "lo": -315.25,
+          "hi": -260.8,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -157.625,
+          "hi": -130.4,
+          "mean": -143.575,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 5,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -286.45,
+          "lo": -314.475,
+          "hi": -260.45,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -62.895,
+          "hi": -52.09,
+          "mean": -57.29,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 10,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -285.625,
+          "lo": -313.125,
+          "hi": -258.2,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -31.3125,
+          "hi": -25.82,
+          "mean": -28.5625,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 20,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -284.15,
+          "lo": -312.375,
+          "hi": -258.475,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -15.6188,
+          "hi": -12.9238,
+          "mean": -14.2075,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 50,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -279.775,
+          "lo": -306.325,
+          "hi": -254.45,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -6.1265,
+          "hi": -5.089,
+          "mean": -5.5955,
+          "n": 40
+        }
+      },
+      {
+        "query_count": 100,
+        "n": 40,
+        "cumulative_net_advantage_ci": {
+          "mean": -271.7,
+          "lo": -296.975,
+          "hi": -248.575,
+          "n": 40
+        },
+        "net_per_query_advantage_ci": {
+          "lo": -2.9698,
+          "hi": -2.4857,
+          "mean": -2.717,
+          "n": 40
+        }
+      }
+    ],
+    "amortization_breakeven_query": 1798.1,
+    "regime_analysis": {
+      "axis": "query_count (amortization horizon; head-to-head vs strongest parent, both construction costs charged)",
+      "amortization_breakeven_query": 1798.1,
+      "per_query_guidance_advantage_mean": 0.16,
+      "construction_premium_mean": 287.7,
+      "fraction_domains_beating_parent_at_q100": 0.0,
+      "positive_subset": null,
+      "negative_subset": {
+        "cells": [
+          {
+            "query_count": 1
+          },
+          {
+            "query_count": 2
+          },
+          {
+            "query_count": 5
+          },
+          {
+            "query_count": 10
+          },
+          {
+            "query_count": 20
+          },
+          {
+            "query_count": 50
+          },
+          {
+            "query_count": 100
+          }
+        ],
+        "net_saving_ci95": [
+          -297.65,
+          -248.5
+        ],
+        "mean": -271.7,
+        "n": 40
+      },
+      "note": "per-query guidance advantage over strongest parent > 0; crossover at q* (may lie beyond tested horizon [1,100])"
+    }
   },
   "before_historical": {
     "source": "results/field_construction.json (preserved unchanged)",
