@@ -80,7 +80,7 @@ NETBEN.update({
    "baseline": "unquotiented search",
    "falsifier": "no certification-cost x commutation cell has a net-saving CI excluding 0 in the quotient's favor.",
    "terminal_state": "PARTIAL", "open": False, "owner_issue": "#522",
-   "terminal_scope": "GENUINE CROSSOVER: quotient WINS for k=5,6 with moderate-high commutation (positive subset net +194.2, CI [+57.9,+357.0]) and LOSES for k=3,4 where certification cost dominates; overall net +70.2 CI [+4.7,+145.1]. Full phase diagram published, no hidden cells. Lane #522 closed. Gate reads the top-level net and PROMOTEs on the overall mean, but the honest scientific state is regime-conditional PARTIAL, not a uniform win.",
+   "terminal_scope": "GENUINE CROSSOVER: quotient WINS for k=5,6 with moderate-high commutation (positive subset net +194.2, CI [+57.9,+357.0]) and LOSES for k=3,4 where certification cost dominates; overall net +70.2 CI [+4.7,+145.1]. Full phase diagram published, no hidden cells. Lane #522 closed. #543: the promotion gate no longer collapses to the pooled mean - it detects the opposing-sign subsets and emits PROMOTE_CONDITIONALLY with a machine-readable applicability contract (carried in this record's 'applicability' field). The mechanic routes to quotient ONLY on a supported cell (k>=5 AND p>=0.3 within the tested grid) and fails closed to baseline otherwise; honest scientific state is regime-conditional PARTIAL, not a uniform win.",
    "code": ["src/rakl/structural_types.py", "research/unified_problem_solving_v1/path_quotient_experiment.py"]},
  "six_family_law": {
    "claim_id": "EMP-SIXFAMILY-GENERALIZATION",
@@ -207,6 +207,10 @@ for key, cand in gate["candidates"].items():
     if cand.get("artifact"):
         p = REPO / cand["artifact"]
         rec["artifact_sha256_prefix"] = sha_prefix(p) if p.exists() else "MISSING"
+    if cand.get("applicability"):
+        # #543: carry the regime-crossover applicability contract so the registry,
+        # promotion gate, and controller (#535) consume one consistent predicate.
+        rec["applicability"] = cand["applicability"]
     if meta.get("underpowered"):
         rec["underpowered"] = True
     claims.append(rec)

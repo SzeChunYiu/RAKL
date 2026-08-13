@@ -61,11 +61,165 @@
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "path_equivalence_quotient": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "k",
+            "tested_values": [
+              3,
+              4,
+              5,
+              6
+            ],
+            "type": "int"
+          },
+          {
+            "name": "p",
+            "tested_values": [
+              0.0,
+              0.3,
+              0.6,
+              1.0
+            ],
+            "type": "float"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "k": [
+              3.0,
+              6.0
+            ],
+            "p": [
+              0.0,
+              1.0
+            ]
+          },
+          "overlap": {
+            "k": [
+              5.0,
+              6.0
+            ],
+            "p": [
+              0.3,
+              1.0
+            ]
+          },
+          "positive": {
+            "k": [
+              5.0,
+              6.0
+            ],
+            "p": [
+              0.3,
+              1.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "k": 3,
+              "p": 0.0
+            },
+            {
+              "k": 3,
+              "p": 0.3
+            },
+            {
+              "k": 3,
+              "p": 0.6
+            },
+            {
+              "k": 3,
+              "p": 1.0
+            },
+            {
+              "k": 4,
+              "p": 0.0
+            },
+            {
+              "k": 4,
+              "p": 0.3
+            },
+            {
+              "k": 4,
+              "p": 0.6
+            },
+            {
+              "k": 4,
+              "p": 1.0
+            },
+            {
+              "k": 5,
+              "p": 0.0
+            },
+            {
+              "k": 6,
+              "p": 0.0
+            }
+          ],
+          "n": 10,
+          "net_saving_ci95": [
+            -7.286,
+            -1.790300000000001
+          ],
+          "net_saving_mean": -4.239
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "k": 5,
+              "p": 0.3
+            },
+            {
+              "k": 5,
+              "p": 0.6
+            },
+            {
+              "k": 5,
+              "p": 1.0
+            },
+            {
+              "k": 6,
+              "p": 0.3
+            },
+            {
+              "k": 6,
+              "p": 0.6
+            },
+            {
+              "k": 6,
+              "p": 1.0
+            }
+          ],
+          "n": 6,
+          "net_saving_ci95": [
+            57.87245833333334,
+            356.9916666666666
+          ],
+          "net_saving_mean": 194.22666666666666
+        }
+      },
       "artifact": "research/unified_problem_solving_v1/results/path_quotient_savings.json",
       "net": 70.18562499999999,
       "note": "witness/certification cost charged; known negative regime at low commutation",
-      "reason": "positive_net_with_ci_excluding_null_cost_charged",
-      "verdict": "PROMOTE_TO_MECHANIC"
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "verdict": "PROMOTE_CONDITIONALLY"
     },
     "six_family_law": {
       "alpha": 0.05,
@@ -91,12 +245,14 @@
     }
   },
   "cannot_check": [],
+  "conditionally_promoted": [
+    "path_equivalence_quotient"
+  ],
   "grants_scientific_authority": false,
   "policy": "promotion is routing/engineering status, never scientific authority",
   "promoted": [
     "fieldability_given_field",
     "identity_reuse",
-    "path_equivalence_quotient",
     "six_family_law"
   ],
   "proposal_only": [
