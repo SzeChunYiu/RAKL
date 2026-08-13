@@ -5,16 +5,23 @@ on:
     paths:
       - 'src/rakl/operational_map.py'
       - 'src/rakl/path_equivalence.py'
+      - 'src/rakl/navigation_quotient.py'
       - 'src/rakl/path_cost.py'
       - 'src/rakl/fieldability.py'
+      - 'src/rakl/vtg_hardening.py'
+      - 'src/rakl/framework_closure.py'
       - 'src/rakl/mechanic_diagnosis.py'
       - 'src/rakl/solver_compilation.py'
       - 'src/rakl/solution_assembly.py'
       - 'src/rakl/unified_solver_registry.py'
       - 'tests/test_unified_solver_*.py'
+      - 'tests/test_vtg_*.py'
       - 'research/unified_problem_solving_v1/**'
       - 'scripts/audit_unified_framework.py'
+      - 'scripts/audit_vtg_closure_ledger.py'
       - 'scripts/repair_paper4_generator_defect.py'
+      - 'docs/VTG_*.md'
+      - 'docs/NATURE_SKILLS_INTEGRATION.md'
       - 'paper/generate_demo_figures.py'
       - 'paper/generate_unified_solver_figures.py'
       - 'publication/PUBLICATION_SERIES_V2.md'
@@ -31,15 +38,19 @@ permissions:
 jobs:
   harden-and-render:
     runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Bind exact evaluated subject
         run: |
           set -euo pipefail
-          echo "UNIFIED_FRAMEWORK_SHA=${GITHUB_SHA}" | tee unified_framework_subject.txt
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "UNIFIED_FRAMEWORK_SHA=${EXPECTED_SHA}" | tee unified_framework_subject.txt
+          echo "RAKL_SUBJECT_SHA=${EXPECTED_SHA}" >> "$GITHUB_ENV"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
@@ -51,9 +62,16 @@ jobs:
       - name: Run unified framework tests
         run: |
           set -euo pipefail
-          pytest -q tests/test_unified_solver_framework.py tests/test_unified_solver_registry.py | tee unified_framework_tests.txt
+          pytest -q \
+            tests/test_unified_solver_framework.py \
+            tests/test_unified_solver_registry.py \
+            tests/test_vtg_closure_contracts.py \
+            tests/test_vtg_hardening_contracts.py \
+            | tee unified_framework_tests.txt
       - name: Audit canonical ownership and claim boundary
         run: python scripts/audit_unified_framework.py | tee unified_framework_audit.txt
+      - name: Audit provenance-bound VTG closure ledger
+        run: python scripts/audit_vtg_closure_ledger.py | tee vtg_closure_audit.txt
       - name: Recompute deterministic known-world stress receipt
         run: python research/unified_problem_solving_v1/run_known_world_stress.py
       - name: Regenerate receipt-bound publication figures
@@ -68,6 +86,7 @@ jobs:
           done
           test -s paper/figures/generated/unified_solver_known_world.source.json
           test -s research/unified_problem_solving_v1/results/known_world_stress.json
+          test -s research/unified_problem_solving_v1/results/vtg_closure_audit.json
       - name: Repair Paper IV invalid v1 interpretation
         run: |
           set -euo pipefail
@@ -76,6 +95,16 @@ jobs:
           ! grep -F 'returns a supported negative' publication/papers/paper-04-structural-learning-mechanics/main.tex
           ! grep -F 'obstruction located at the instrument' publication/papers/paper-04-structural-learning-mechanics/main.tex
           grep -F 'generator defect' publication/papers/paper-04-structural-learning-mechanics/main.tex
+      - name: Stage Paper VI with canonical legacy figures
+        run: |
+          set -euo pipefail
+          rm -rf build/publication/paper-06
+          mkdir -p build/publication
+          cp -a publication/papers/paper-06-rakl-scientific-research-engine/source build/publication/paper-06
+          for fig in fig5_demo_growth.pdf fig6_demo_context.pdf; do
+            test -s "paper/figures/generated/$fig"
+            cp -f "paper/figures/generated/$fig" "build/publication/paper-06/$fig"
+          done
       - name: Install manuscript tools
         run: |
           sudo apt-get update -qq
@@ -88,8 +117,8 @@ jobs:
       - name: Compile Paper V
         working-directory: publication/papers/paper-05-verified-discovery-in-mathematics
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
-      - name: Compile Paper VI
-        working-directory: publication/papers/paper-06-rakl-scientific-research-engine/source
+      - name: Compile Paper VI staged canonical source
+        working-directory: build/publication/paper-06
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
       - name: Preflight and render updated papers
         shell: bash
@@ -115,21 +144,26 @@ jobs:
           }
           check_one publication/papers/paper-04-structural-learning-mechanics 'Paper IV'
           check_one publication/papers/paper-05-verified-discovery-in-mathematics 'Paper V'
-          check_one publication/papers/paper-06-rakl-scientific-research-engine/source 'Paper VI'
+          check_one build/publication/paper-06 'Paper VI'
           grep -F 'Verified transformation geometry' publication/papers/paper-05-verified-discovery-in-mathematics/unified_main.txt
-          grep -F 'Unified problem-solving substrate' publication/papers/paper-06-rakl-scientific-research-engine/source/unified_main.txt
+          grep -F 'Unified problem-solving substrate' build/publication/paper-06/unified_main.txt
           grep -F 'generator defect' publication/papers/paper-04-structural-learning-mechanics/unified_main.txt
       - name: Upload hardening evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unified-framework-hardening-${{ github.sha }}
+          name: unified-framework-hardening-${{ env.EXPECTED_SHA }}
           path: |
             unified_framework_subject.txt
             unified_framework_tests.txt
             unified_framework_audit.txt
+            vtg_closure_audit.txt
             docs/ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md
+            docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md
+            docs/VTG_TEN_ROUND_ADVERSARIAL_AUDIT.md
             research/unified_problem_solving_v1/VERIFICATION_LEDGER.json
+            research/unified_problem_solving_v1/VTG_CLOSURE_LEDGER.json
             research/unified_problem_solving_v1/results/known_world_stress.json
+            research/unified_problem_solving_v1/results/vtg_closure_audit.json
             research/unified_problem_solving_v1/PAPER4_PATCHED_MAIN.tex
             paper/figures/generated/unified_*.pdf
             paper/figures/generated/unified_*.svg
@@ -145,9 +179,9 @@ jobs:
             publication/papers/paper-05-verified-discovery-in-mathematics/unified_main.txt
             publication/papers/paper-05-verified-discovery-in-mathematics/unified_pdfinfo.txt
             publication/papers/paper-05-verified-discovery-in-mathematics/unified_renders/*.png
-            publication/papers/paper-06-rakl-scientific-research-engine/source/main.pdf
-            publication/papers/paper-06-rakl-scientific-research-engine/source/main.log
-            publication/papers/paper-06-rakl-scientific-research-engine/source/unified_main.txt
-            publication/papers/paper-06-rakl-scientific-research-engine/source/unified_pdfinfo.txt
-            publication/papers/paper-06-rakl-scientific-research-engine/source/unified_renders/*.png
+            build/publication/paper-06/main.pdf
+            build/publication/paper-06/main.log
+            build/publication/paper-06/unified_main.txt
+            build/publication/paper-06/unified_pdfinfo.txt
+            build/publication/paper-06/unified_renders/*.png
           if-no-files-found: error
