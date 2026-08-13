@@ -1,0 +1,76 @@
+{
+  "candidates": {
+    "field_construction": {
+      "artifact": "research/unified_problem_solving_v1/results/field_construction.json",
+      "reason": "evidence_artifact_missing",
+      "verdict": "CANNOT_CHECK"
+    },
+    "fieldability_given_field": {
+      "artifact": "research/unified_problem_solving_v1/results/field_hypothesis.json",
+      "net": {
+        "hi": 0.7375,
+        "lo": 0.712,
+        "mean": 0.7247,
+        "n": 400
+      },
+      "note": "given-metric field; construction cost not applicable (field supplied by domain)",
+      "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "verdict": "PROMOTE_TO_MECHANIC"
+    },
+    "identity_reuse": {
+      "artifact": "research/identity_reuse_v1/results/identity_reuse.json",
+      "reason": "evidence_artifact_missing",
+      "verdict": "CANNOT_CHECK"
+    },
+    "mechanic_diagnosis": {
+      "artifact": "research/unified_problem_solving_v1/results/diagnosis_accuracy.json",
+      "net": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "n": 300,
+        "rate": 0.0
+      },
+      "note": "graded on verdict honesty (degrade to ambiguity, not confident error)",
+      "reason": "net_metric_present_but_interval_unavailable",
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "navigation_dynamics": {
+      "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics.json",
+      "reason": "evidence_artifact_missing",
+      "verdict": "CANNOT_CHECK"
+    },
+    "path_equivalence_quotient": {
+      "reason": "no_net_metric_among:['net_saving_mean']",
+      "verdict": "CANNOT_CHECK"
+    },
+    "six_family_law": {
+      "artifact": "research/six_family_extension_v1/results/six_family.json",
+      "reason": "evidence_artifact_missing",
+      "verdict": "CANNOT_CHECK"
+    },
+    "tcsq_sq3": {
+      "artifact": "research/tcsq_sq3_v1/results/sq3.json",
+      "reason": "evidence_artifact_missing",
+      "verdict": "CANNOT_CHECK"
+    }
+  },
+  "cannot_check": [
+    "field_construction",
+    "identity_reuse",
+    "navigation_dynamics",
+    "path_equivalence_quotient",
+    "six_family_law",
+    "tcsq_sq3"
+  ],
+  "grants_scientific_authority": false,
+  "policy": "promotion is routing/engineering status, never scientific authority",
+  "promoted": [
+    "fieldability_given_field"
+  ],
+  "proposal_only": [
+    "mechanic_diagnosis"
+  ],
+  "schema_version": "orion-promotion-gate-v1"
+}
