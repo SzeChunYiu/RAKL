@@ -348,18 +348,28 @@ _STRICTLY_WEAKER: Mapping[AuthorityAxis, AuthorityAxis] = {
 }
 
 
-def _terminal_evidence(
+def _lineage_root(
     evidence_id: str, registered: Mapping[str, ScientificEvidenceBinding]
-) -> str:
+) -> tuple[str | None, str | None]:
+    """Resolve a lineage root, failing closed on cycles or unresolved parents.
+
+    The previous helper returned the repeated node on a cycle and the unknown
+    parent on an incomplete lineage. That could make nodes in one malformed
+    provenance component appear to have independent roots.
+    """
     seen: set[str] = set()
     current = evidence_id
-    while current in registered and current not in seen:
+    while True:
+        if current in seen:
+            return None, f"scientific_evidence_lineage_cycle:{current}"
+        item = registered.get(current)
+        if item is None:
+            return None, f"scientific_evidence_lineage_unresolved:{current}"
         seen.add(current)
-        upstream = registered[current].upstream_evidence_id
+        upstream = item.upstream_evidence_id
         if upstream is None:
-            return current
+            return current, None
         current = upstream
-    return current
 
 
 def _check_evidence_contract(
@@ -387,11 +397,19 @@ def _check_evidence_contract(
             + ",".join(sorted(item.evidence_id for item in experience))
         )
 
-    if len(evidence_ids) > 1:
-        terminal = {_terminal_evidence(item, registered) for item in evidence_ids}
-        if len(terminal) < len(evidence_ids):
+    roots: list[str] = []
+    for evidence_id in evidence_ids:
+        root, lineage_error = _lineage_root(evidence_id, registered)
+        if lineage_error is not None:
+            reasons.append(lineage_error)
+        elif root is not None:
+            roots.append(root)
+
+    if len(evidence_ids) > 1 and len(roots) == len(evidence_ids):
+        independent_roots = set(roots)
+        if len(independent_roots) < len(evidence_ids):
             reasons.append(
-                f"claimed_evidence_collapses_to_{len(terminal)}_independent_lineage_roots"
+                f"claimed_evidence_collapses_to_{len(independent_roots)}_independent_lineage_roots"
             )
 
     supported = {axis_ for item in scientific for axis_ in item.supports_axes}

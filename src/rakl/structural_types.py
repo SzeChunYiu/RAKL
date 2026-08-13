@@ -70,10 +70,18 @@ class StructuralObject:
         for relation in self.relations:
             if relation.source_role not in known or relation.target_role not in known:
                 raise ValueError("relation refers to unknown role")
+        relation_signatures = [relation.signature for relation in self.relations]
+        if len(relation_signatures) != len(set(relation_signatures)):
+            raise ValueError("structural relation signatures must be unique")
         if any(not item.strip() for item in self.invariants):
             raise ValueError("invariants cannot be empty strings")
+        boundary_keys = [item.key for item in self.boundaries]
+        if len(boundary_keys) != len(set(boundary_keys)):
+            raise ValueError("structural boundary keys must be unique")
         if not self.evidence_ids or any(not item.strip() for item in self.evidence_ids):
             raise ValueError("structural object requires evidence identities")
+        if len(self.evidence_ids) != len(set(self.evidence_ids)):
+            raise ValueError("structural object evidence identities must be unique")
 
     @property
     def role_ids(self) -> frozenset[str]:
@@ -116,10 +124,19 @@ class StructuralWitness:
             raise ValueError("witness and endpoint identities are required")
         src = [a for a, _ in self.role_mapping]
         dst = [b for _, b in self.role_mapping]
+        if any(not a.strip() or not b.strip() for a, b in self.role_mapping):
+            raise ValueError("witness role mappings cannot contain blank role identities")
         if len(src) != len(set(src)) or len(dst) != len(set(dst)):
             raise ValueError("role mapping must be one-to-one within a witness")
-        if not self.evidence_ids:
-            raise ValueError("structural witness requires evidence")
+        if any(not item.strip() for item in self.preserved_invariants | self.non_preserved_properties):
+            raise ValueError("witness invariant/property names cannot be blank")
+        boundary_keys = [item.key for item in self.required_target_boundaries]
+        if len(boundary_keys) != len(set(boundary_keys)):
+            raise ValueError("witness target-boundary keys must be unique")
+        if not self.evidence_ids or any(not item.strip() for item in self.evidence_ids):
+            raise ValueError("structural witness requires nonblank evidence identities")
+        if len(self.evidence_ids) != len(set(self.evidence_ids)):
+            raise ValueError("structural witness evidence identities must be unique")
 
 
 @dataclass(frozen=True)
@@ -188,10 +205,14 @@ class ChartTransitionWitness:
             raise ValueError("chart transition witness requires witness and chart identities")
         src = [a for a, _ in self.role_mapping]
         dst = [b for _, b in self.role_mapping]
+        if any(not a.strip() or not b.strip() for a, b in self.role_mapping):
+            raise ValueError("chart transition role mappings cannot contain blank role identities")
         if len(src) != len(set(src)) or len(dst) != len(set(dst)):
             raise ValueError("chart transition role mapping must be one-to-one (a partial injection)")
-        if not self.evidence_ids:
-            raise ValueError("chart transition witness requires evidence")
+        if not self.evidence_ids or any(not item.strip() for item in self.evidence_ids):
+            raise ValueError("chart transition witness requires nonblank evidence identities")
+        if len(self.evidence_ids) != len(set(self.evidence_ids)):
+            raise ValueError("chart transition evidence identities must be unique")
 
     @property
     def mapping(self) -> dict[str, str]:

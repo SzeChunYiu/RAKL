@@ -4,6 +4,7 @@ from dataclasses import dataclass, replace
 from enum import Enum
 from hashlib import sha256
 import json
+from math import isfinite
 from typing import Any, Mapping, Sequence, Tuple
 
 
@@ -219,8 +220,10 @@ class QuotientValidationReport:
         )
         if overlap:
             raise ValueError(f"validation obligation status overlap: {sorted(overlap)}")
-        if self.approximation_tolerance is not None and self.approximation_tolerance < 0:
-            raise ValueError("approximation_tolerance must be non-negative")
+        if self.approximation_tolerance is not None and (
+            not isfinite(self.approximation_tolerance) or self.approximation_tolerance < 0
+        ):
+            raise ValueError("approximation_tolerance must be finite and non-negative")
 
     def canonical_payload(self) -> dict[str, object]:
         return {
@@ -394,7 +397,9 @@ def validate_proposal_contract(
         reasons.append("sufficiency_obligations_missing")
     if not proposal.falsifiers:
         reasons.append("falsifiers_missing")
-    if set(proposal.forbidden_losses) & set(proposal.erased_coordinates):
+    if set(proposal.forbidden_losses) & (
+        set(proposal.erased_coordinates) | set(proposal.conditionally_erased_coordinates)
+    ):
         reasons.append("forbidden_loss_erased")
 
     return tuple(dict.fromkeys(reasons))
