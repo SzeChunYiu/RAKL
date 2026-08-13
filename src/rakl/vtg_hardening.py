@@ -2,8 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from hashlib import sha256
+import json
 from math import inf
 from typing import Tuple
+
+from .math_research_assurance import AssuranceVerdict, ProofReceipt, audit_proof_receipt
+
+
+def _hash(payload: object) -> str:
+    return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
 class GeometryConstructibilityClass(str, Enum):
@@ -23,6 +31,12 @@ class OperationalEdgeAssuranceClass(str, Enum):
     CANDIDATE_OPERATIONAL_EDGE = "CANDIDATE_OPERATIONAL_EDGE"
 
 
+class ReplayVerdict(str, Enum):
+    PASS = "PASS"
+    FAIL = "FAIL"
+    CANNOT_CHECK = "CANNOT_CHECK"
+
+
 class ReachabilityQuantifier(str, Enum):
     EXISTS_PATH = "EXISTS_PATH"
     POLICY_CONTROLLABLE = "POLICY_CONTROLLABLE"
@@ -37,6 +51,107 @@ class NavigationAbstractionKind(str, Enum):
     EXACT_QUOTIENT = "EXACT_QUOTIENT"
     SOUND_OVERAPPROXIMATION = "SOUND_OVERAPPROXIMATION"
     EMPIRICAL_COMPRESSION = "EMPIRICAL_COMPRESSION"
+
+
+@dataclass(frozen=True)
+class OperationalStateIdentity:
+    """Future-relevant state identity for a frozen VTG operational subject."""
+
+    state_id: str
+    specification_hash: str
+    root_qoi: str
+    environment_hash: str
+    verifier_subject_hash: str
+    local_context_hash: str
+    goals_hash: str
+    metavariable_state_hash: str
+    options_hash: str
+    operator_basis_version: str
+    chart_id: str
+    toolchain_hash: str
+
+    def __post_init__(self) -> None:
+        if not all(
+            (
+                self.state_id,
+                self.specification_hash,
+                self.root_qoi,
+                self.environment_hash,
+                self.verifier_subject_hash,
+                self.local_context_hash,
+                self.goals_hash,
+                self.metavariable_state_hash,
+                self.options_hash,
+                self.operator_basis_version,
+                self.chart_id,
+                self.toolchain_hash,
+            )
+        ):
+            raise ValueError("operational state identity requires all future-relevant subject coordinates")
+
+    @property
+    def content_hash(self) -> str:
+        return _hash(
+            {
+                "schema": "orion.vtg.operational-state.v1",
+                "state_id": self.state_id,
+                "specification_hash": self.specification_hash,
+                "root_qoi": self.root_qoi,
+                "environment_hash": self.environment_hash,
+                "verifier_subject_hash": self.verifier_subject_hash,
+                "local_context_hash": self.local_context_hash,
+                "goals_hash": self.goals_hash,
+                "metavariable_state_hash": self.metavariable_state_hash,
+                "options_hash": self.options_hash,
+                "operator_basis_version": self.operator_basis_version,
+                "chart_id": self.chart_id,
+                "toolchain_hash": self.toolchain_hash,
+            }
+        )
+
+    def same_frozen_subject_as(self, other: "OperationalStateIdentity") -> bool:
+        return (
+            self.specification_hash == other.specification_hash
+            and self.root_qoi == other.root_qoi
+            and self.environment_hash == other.environment_hash
+            and self.verifier_subject_hash == other.verifier_subject_hash
+            and self.options_hash == other.options_hash
+            and self.operator_basis_version == other.operator_basis_version
+            and self.chart_id == other.chart_id
+            and self.toolchain_hash == other.toolchain_hash
+        )
+
+
+@dataclass(frozen=True)
+class OperationalReplayEvidence:
+    replay_id: str
+    edge_id: str
+    source_state_hash: str
+    target_state_hash: str
+    action_hash: str
+    replay_engine: str
+    replay_engine_version: str
+    result_artifact_hash: str
+    verdict: ReplayVerdict
+
+    def __post_init__(self) -> None:
+        if not all(
+            (
+                self.replay_id,
+                self.edge_id,
+                self.source_state_hash,
+                self.target_state_hash,
+                self.action_hash,
+                self.replay_engine,
+                self.replay_engine_version,
+                self.result_artifact_hash,
+            )
+        ):
+            raise ValueError("operational replay evidence requires exact subject/action/artifact identity")
+
+    @property
+    def passed(self) -> bool:
+        return self.verdict is ReplayVerdict.PASS
 
 
 @dataclass(frozen=True)
@@ -119,21 +234,50 @@ class OperationalEdgeAssuranceReceipt:
     receipt_id: str
     edge_id: str
     assurance_class: OperationalEdgeAssuranceClass
+    source_state: OperationalStateIdentity
+    target_state: OperationalStateIdentity
     verifier_subject_hash: str
-    operational_snapshot_hash: str | None = None
-    tool_version_hash: str | None = None
-    proof_receipt_id: str | None = None
-    replay_receipt_id: str | None = None
+    derivation_statement_hash: str | None = None
+    proof_receipt: ProofReceipt | None = None
+    replay_evidence: OperationalReplayEvidence | None = None
 
     def __post_init__(self) -> None:
         if not self.receipt_id or not self.edge_id or not self.verifier_subject_hash:
             raise ValueError("edge assurance requires receipt/edge/verifier identity")
+        if self.source_state.state_id == self.target_state.state_id:
+            raise ValueError("assurance-bound state transition requires distinct source and target state ids")
+        if not self.source_state.same_frozen_subject_as(self.target_state):
+            raise ValueError("edge assurance source/target states must share the frozen operational subject")
+        if self.source_state.verifier_subject_hash != self.verifier_subject_hash:
+            raise ValueError("edge assurance verifier subject does not match operational state subject")
         if self.assurance_class is OperationalEdgeAssuranceClass.KERNEL_DERIVATION_EDGE:
-            if not self.proof_receipt_id:
-                raise ValueError("kernel derivation edge requires proof receipt")
+            if self.proof_receipt is None or not self.derivation_statement_hash:
+                raise ValueError("kernel derivation edge requires bound proof receipt and derivation statement")
+            if self.replay_evidence is not None:
+                raise ValueError("kernel derivation edge cannot use replay evidence as its assurance basis")
+            if self.proof_receipt.theorem_id != self.edge_id:
+                raise ValueError("kernel derivation proof receipt theorem id must match edge id")
+            if self.proof_receipt.theorem_statement_hash != self.derivation_statement_hash:
+                raise ValueError("kernel derivation statement hash does not match proof receipt")
+            report = audit_proof_receipt(self.proof_receipt, require_independent_recheck=False)
+            if report.verdict is not AssuranceVerdict.PASS:
+                raise ValueError("kernel derivation edge proof receipt did not pass proof audit")
         elif self.assurance_class is OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE:
-            if not all((self.operational_snapshot_hash, self.tool_version_hash, self.replay_receipt_id)):
-                raise ValueError("replay-validated operational edge requires snapshot/tool/replay binding")
+            if self.replay_evidence is None:
+                raise ValueError("replay-validated operational edge requires replay evidence object")
+            if self.proof_receipt is not None or self.derivation_statement_hash is not None:
+                raise ValueError("replay-validated operational edge cannot masquerade as local proof derivation")
+            if self.replay_evidence.edge_id != self.edge_id:
+                raise ValueError("replay evidence edge id does not match assurance receipt")
+            if self.replay_evidence.source_state_hash != self.source_state.content_hash:
+                raise ValueError("replay evidence source state does not match assurance receipt")
+            if self.replay_evidence.target_state_hash != self.target_state.content_hash:
+                raise ValueError("replay evidence target state does not match assurance receipt")
+            if not self.replay_evidence.passed:
+                raise ValueError("replay-validated operational edge requires passing replay evidence")
+        else:
+            if self.proof_receipt is not None or self.replay_evidence is not None:
+                raise ValueError("candidate operational edge cannot carry verified assurance evidence")
 
     @property
     def supports_operational_reachability(self) -> bool:
