@@ -3,10 +3,10 @@
     "field_construction": {
       "artifact": "research/unified_problem_solving_v1/results/field_construction.json",
       "net": {
-        "hi": -0.8417,
-        "lo": -1.8667,
-        "mean": -1.3333,
-        "n": 120
+        "hi": -0.3549,
+        "lo": -0.3919,
+        "mean": -0.3738,
+        "n": 100
       },
       "note": "constructor must pay for its own construction cost",
       "reason": "net_negative_in_tested_regime",
@@ -53,18 +53,21 @@
     "navigation_dynamics": {
       "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics.json",
       "net": {
-        "hi": -95.250667,
-        "lo": -96.064,
-        "mean": -95.662667,
-        "n": 150
+        "hi": -209.963889,
+        "lo": -538.825,
+        "mean": -364.383333,
+        "n": 18
       },
       "note": "must beat the STRONG control (A*) with its own iteration cost charged",
       "reason": "net_negative_in_tested_regime",
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "path_equivalence_quotient": {
-      "reason": "no_net_metric_among:['net_saving_mean']",
-      "verdict": "CANNOT_CHECK"
+      "artifact": "research/unified_problem_solving_v1/results/path_quotient_savings.json",
+      "net": 70.18562499999999,
+      "note": "witness/certification cost charged; known negative regime at low commutation",
+      "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "verdict": "PROMOTE_TO_MECHANIC"
     },
     "six_family_law": {
       "alpha": 0.05,
@@ -89,14 +92,13 @@
       "verdict": "KEEP_PROPOSAL_ONLY"
     }
   },
-  "cannot_check": [
-    "path_equivalence_quotient"
-  ],
+  "cannot_check": [],
   "grants_scientific_authority": false,
   "policy": "promotion is routing/engineering status, never scientific authority",
   "promoted": [
     "fieldability_given_field",
     "identity_reuse",
+    "path_equivalence_quotient",
     "six_family_law"
   ],
   "proposal_only": [
