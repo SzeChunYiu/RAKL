@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
 
+from .formal_contracts import METHOD_SURFACES
+
 
 class ClosureDisposition(str, Enum):
     CLOSED_CODE_TEST = "CLOSED_CODE_TEST"
@@ -33,6 +35,8 @@ class ClosureIssue:
         out = []
         if not all((self.issue_id, self.title, self.owner_surface, self.severity, self.subject_hash)):
             out.append("missing_required_identity")
+        if self.owner_surface and self.owner_surface not in METHOD_SURFACES:
+            out.append("owner_surface_not_canonical")
         if self.disposition in {
             ClosureDisposition.CLOSED_CODE_TEST,
             ClosureDisposition.CLOSED_THEOREM_OR_PROOF_OBLIGATION,
