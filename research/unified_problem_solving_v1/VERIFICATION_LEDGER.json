@@ -1,5 +1,5 @@
 {
-  "schema_version": "orion-unified-solver-verification-ledger-v1",
+  "schema_version": "orion-unified-solver-verification-ledger-v2",
   "status": "PROPOSAL_ONLY_FRAMEWORK_HARDENING",
   "claim_boundary": {
     "global_no_bug_proof": false,
@@ -15,7 +15,13 @@
       "implementation": "src/rakl/operational_map.py",
       "tests": ["tests/test_unified_solver_framework.py"],
       "verification": ["UNIT_TESTED", "ADVERSARIAL_KNOWN_WORLD"],
-      "load_bearing_invariants": ["UNKNOWN_NE_BLOCKED", "VERIFIED_ROUTE_USES_VERIFIED_EDGES", "MAP_DOES_NOT_GRANT_AUTHORITY"],
+      "load_bearing_invariants": [
+        "UNKNOWN_NE_BLOCKED",
+        "VERIFIED_APPLICABILITY_NE_VERIFIED_TRANSITION",
+        "VERIFIED_ROUTE_USES_REPLAY_VERIFIED_TRANSITIONS",
+        "COMPLETE_REGISTERED_MAP_NE_MATHEMATICAL_IMPOSSIBILITY",
+        "MAP_DOES_NOT_GRANT_AUTHORITY"
+      ],
       "empirical_status": "REAL_PARTIAL_MAP_NAVIGATION_OPEN"
     },
     {
@@ -23,23 +29,52 @@
       "implementation": "src/rakl/path_equivalence.py",
       "tests": ["tests/test_unified_solver_framework.py"],
       "verification": ["UNIT_TESTED", "COMBINATORIAL_SANITY_TESTED"],
-      "load_bearing_invariants": ["NONTRIVIAL_EQUIVALENCE_REQUIRES_WITNESS", "RAW_CHRONOLOGY_NOT_AUTHORITY_REPLACED"],
+      "load_bearing_invariants": [
+        "NONTRIVIAL_EQUIVALENCE_REQUIRES_WITNESS",
+        "REORDERING_REQUIRES_CERTIFIED_INDEPENDENCE",
+        "MISSING_DEPENDENCY_NE_INDEPENDENCE",
+        "PATH_EQUIVALENCE_NO_PROOF_AUTHORITY"
+      ],
       "empirical_status": "REAL_PROOF_SEARCH_REDUCTION_OPEN"
+    },
+    {
+      "id": "navigation_quotient_validation",
+      "implementation": "src/rakl/navigation_quotient.py",
+      "tests": ["tests/test_vtg_closure_contracts.py"],
+      "verification": ["UNIT_TESTED_CONTRACT"],
+      "load_bearing_invariants": [
+        "SEMANTIC_QOI_SUFFICIENCY_NE_NAVIGATION_EQUIVALENCE",
+        "EXACT_NAVIGATION_REQUIRES_TARGET_FORWARD_LIFTING_AND_COST_WITNESSES",
+        "FORWARD_ONLY_ABSTRACTION_REQUIRES_CONCRETE_ROUTE_LIFTING",
+        "ABSTRACT_ROUTE_OR_NO_ROUTE_NO_AUTHORITY"
+      ],
+      "empirical_status": "REAL_QUOTIENT_SEARCH_ACCELERATION_OPEN"
     },
     {
       "id": "path_cost_algebra",
       "implementation": "src/rakl/path_cost.py",
-      "tests": ["tests/test_unified_solver_framework.py"],
-      "verification": ["UNIT_TESTED", "ADVERSARIAL_KNOWN_WORLD"],
-      "load_bearing_invariants": ["HARD_VALIDITY_BEFORE_COST", "INCOMPARABLE_ROUTES_PRESERVED"],
-      "empirical_status": "TASK_SPECIFIC_COST_CALIBRATION_OPEN"
+      "tests": ["tests/test_unified_solver_framework.py", "tests/test_vtg_closure_contracts.py"],
+      "verification": ["UNIT_TESTED", "ADVERSARIAL_KNOWN_WORLD", "TYPED_COMPOSITION_CONTRACT"],
+      "load_bearing_invariants": [
+        "HARD_VALIDITY_BEFORE_COST",
+        "INCOMPARABLE_ROUTES_PRESERVED",
+        "NUMERIC_VECTOR_IS_DEVELOPMENT_PROJECTION_ONLY",
+        "THEOREM_LEVEL_COST_COMPOSITION_IS_REGISTERED_PER_COORDINATE"
+      ],
+      "empirical_status": "TASK_VALID_COST_ALGEBRA_AND_CALIBRATION_OPEN"
     },
     {
       "id": "fieldability_and_geometry_lifecycle",
       "implementation": "src/rakl/fieldability.py",
       "tests": ["tests/test_unified_solver_framework.py"],
       "verification": ["UNIT_TESTED", "ANALYTIC_AMORTIZATION", "DEVELOPMENT_KNOWN_WORLD"],
-      "load_bearing_invariants": ["LOCAL_ALIGNMENT_NOT_SUFFICIENT", "GEOMETRY_BOUND_TO_MAP_OPERATOR_CHART_SPEC", "ROUTING_DOES_NOT_GRANT_AUTHORITY"],
+      "load_bearing_invariants": [
+        "LOCAL_ALIGNMENT_NOT_SUFFICIENT",
+        "GEOMETRY_BOUND_TO_SPEC_QOI_MAP_OPERATOR_CHART_VERIFIER_COST_CONSTRUCTION",
+        "GEOMETRY_CERTIFICATION_CLASS_EXPLICIT",
+        "BUDGET_IS_CONTROL_NOT_INTRINSIC_GEOMETRY_IDENTITY",
+        "ROUTING_DOES_NOT_GRANT_AUTHORITY"
+      ],
       "empirical_status": "HELD_OUT_FORMAL_REACHABILITY_GEOMETRY_OPEN"
     },
     {
@@ -55,15 +90,25 @@
       "implementation": "src/rakl/solver_compilation.py",
       "tests": ["tests/test_unified_solver_framework.py"],
       "verification": ["UNIT_TESTED", "ANALYTIC_COST_ACCOUNTING"],
-      "load_bearing_invariants": ["ROUTING_VALIDATION_REQUIRES_PRESERVATION_RECEIPT", "BUILD_DECODE_VERIFY_COST_INCLUDED", "COMPILATION_NO_AUTHORITY"],
+      "load_bearing_invariants": [
+        "ROUTING_VALIDATION_REQUIRES_BOUND_PASSING_PRESERVATION_RECEIPT",
+        "BUILD_DECODE_VERIFY_COST_INCLUDED",
+        "COMPILATION_NO_AUTHORITY"
+      ],
       "empirical_status": "JOINT_REPRESENTATION_SOLVER_SELECTION_UTILITY_OPEN"
     },
     {
       "id": "trajectory_to_certificate_assembly",
       "implementation": "src/rakl/solution_assembly.py",
       "tests": ["tests/test_unified_solver_framework.py"],
-      "verification": ["UNIT_TESTED", "HASH_DEPENDENCY_VERIFIER_GATED"],
-      "load_bearing_invariants": ["TRAJECTORY_NE_CERTIFICATE", "ROOT_DEPENDENCY_CLOSURE_REQUIRED", "ASSEMBLY_ONLY_READY_FOR_EXTERNAL_GATE"],
+      "verification": ["UNIT_TESTED", "HASH_DEPENDENCY_PROOF_RECEIPT_GATED"],
+      "load_bearing_invariants": [
+        "TRAJECTORY_NE_CERTIFICATE",
+        "ROOT_DEPENDENCY_CLOSURE_REQUIRED",
+        "PROOF_RECEIPT_BOUND_TO_ROOT_STATEMENT_AND_CERTIFICATE_ARTIFACT",
+        "ORDINARY_PROOF_TRUST_AUDIT_REUSED",
+        "ASSEMBLY_ONLY_READY_FOR_EXTERNAL_GATE"
+      ],
       "empirical_status": "REAL_LONG_HORIZON_ASSEMBLY_OPEN"
     }
   ],
@@ -73,6 +118,11 @@
       "implementation": "src/rakl/unified_solver_registry.py",
       "tests": ["tests/test_unified_solver_registry.py"],
       "status": "UNIT_TESTED"
+    },
+    {
+      "id": "mathematical_closure_audit",
+      "implementation": "docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md",
+      "status": "BOUNDED_AXIOMATIC_AUDIT"
     },
     {
       "id": "full_repository_regression",
@@ -87,10 +137,13 @@
   ],
   "remaining_cannot_prove": [
     "absence of all undiscovered software defects",
+    "absolute completeness of the mathematical axiom set for every future extension",
     "global completeness of the solver mechanic taxonomy",
     "existence of a generally useful locally navigable mathematical reachability geometry",
     "empirical superiority of MDD, VSC, multiscale control, field dynamics, or path quotienting on real research tasks",
     "semantic fidelity of every future human-to-formal specification without a separately passed alignment gate",
-    "soundness of external verifier implementations beyond their registered trust assumptions"
+    "soundness of external verifier implementations beyond their registered trust assumptions",
+    "categorical fibration structure for the architectural term problem fibre unless separately formalized",
+    "geodesic existence or metric separation in infinite or zero-cost-cycle state spaces without additional assumptions"
   ]
 }
