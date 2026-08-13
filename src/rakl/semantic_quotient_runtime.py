@@ -102,3 +102,47 @@ def compile_problem_fibre_with_quotient_fallback(
         quotient_view_hash=quotient_view.content_hash,
         detail="VALIDATED_QUOTIENT",
     )
+
+
+def assured_compile_problem_fibre_with_quotient(
+    source_atom: Any,
+    source_representation: Any,
+    *,
+    proposal: Any,
+    report: Any,
+    validation_receipt: Any,
+    resolved_receipt_ids: Any,
+    desired_effects: tuple[str, ...] = (),
+    fallback_reason: str | None = None,
+    estimated_net_benefit: float | None = None,
+    **compile_kwargs: object,
+) -> QuotientRuntimeResult:
+    """Production quotient-consumption path gated by a resolved validation receipt.
+
+    This wires the TCSQ assurance sidecar into the solver runtime: a
+    production/authority-sensitive consumer must materialize the validated
+    quotient view through ``assured_materialize_validated_quotient`` (which
+    requires the report to be bound to a resolved verifier/replay receipt) and
+    only then hand the view to the compile-with-fallback runtime.  A caller-made
+    VALID_* report is not self-authenticating at this entry point.
+
+    Grants no scientific authority; it is a trust/resolution gate on
+    materialization.
+    """
+    from .semantic_quotient_assurance import assured_materialize_validated_quotient
+
+    view = assured_materialize_validated_quotient(
+        source_representation,
+        proposal,
+        report,
+        validation_receipt=validation_receipt,
+        resolved_receipt_ids=resolved_receipt_ids,
+        desired_effects=desired_effects,
+    )
+    return compile_problem_fibre_with_quotient_fallback(
+        source_atom,
+        quotient_view=view,
+        fallback_reason=fallback_reason,
+        estimated_net_benefit=estimated_net_benefit,
+        **compile_kwargs,
+    )

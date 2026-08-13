@@ -29,6 +29,10 @@ from math import isfinite
 from typing import Mapping, Sequence, Tuple
 
 from .structural_types import StructuralObject
+from .training_projection_binding import (
+    IntervalEstimate,
+    build_training_projection_assurance,
+)
 
 __all__ = [
     "MasteryCoordinate",
@@ -438,3 +442,74 @@ def assess_training_projection(snapshot: TrainingProjectionSnapshot) -> Projecti
         ProjectionVerdict.READY_FOR_EXPERIMENTAL_ALLOCATION,
         ("identity_chronology_and_candidate_mastery_contract_complete; no efficacy claim implied",),
     )
+
+
+@dataclass(frozen=True)
+class AssuredTrainingProjection:
+    """A training projection paired with its canonical assurance sidecar.
+
+    The snapshot remains proposal-only experimental allocation view; the assurance
+    binds the canonical (non-repr) snapshot/catalog digests and the frozen split
+    identities without minting scientific or training-efficacy authority.
+    """
+
+    snapshot: TrainingProjectionSnapshot
+    assurance: object
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+    @property
+    def claims_adaptive_training_works(self) -> bool:
+        return False
+
+
+def attach_canonical_training_assurance(
+    snapshot: TrainingProjectionSnapshot,
+    structural_objects: Sequence[StructuralObject],
+    *,
+    assurance_id: str,
+    code_commit_hash: str,
+    tokenizer_hash: str,
+    optimizer_config_hash: str,
+    sampling_policy_hash: str,
+    train_split_hash: str,
+    probe_split_hash: str,
+    fresh_assurance_split_hash: str,
+    effect_intervals: Mapping[str, tuple[float, float, float]] | None = None,
+    target_leak_detected: bool = False,
+    posthoc_selection_detected: bool = False,
+) -> AssuredTrainingProjection:
+    """Attach the canonical training assurance to a learner-experiment projection.
+
+    This is the production wiring point for the canonical training assurance
+    sidecar: learner experiments that consume a projection for a downstream
+    allocation decision should carry this assurance rather than trusting the
+    legacy repr-based snapshot hash alone.  The legacy hash is preserved on the
+    snapshot; the assurance dual-writes the canonical digest.
+    """
+    interval_objects = (
+        None
+        if effect_intervals is None
+        else {
+            name: IntervalEstimate(estimate=est, lower=lo, upper=hi)
+            for name, (est, lo, hi) in effect_intervals.items()
+        }
+    )
+    assurance = build_training_projection_assurance(
+        snapshot,
+        structural_objects,
+        assurance_id=assurance_id,
+        code_commit_hash=code_commit_hash,
+        tokenizer_hash=tokenizer_hash,
+        optimizer_config_hash=optimizer_config_hash,
+        sampling_policy_hash=sampling_policy_hash,
+        train_split_hash=train_split_hash,
+        probe_split_hash=probe_split_hash,
+        fresh_assurance_split_hash=fresh_assurance_split_hash,
+        effect_intervals=interval_objects,
+        target_leak_detected=target_leak_detected,
+        posthoc_selection_detected=posthoc_selection_detected,
+    )
+    return AssuredTrainingProjection(snapshot=snapshot, assurance=assurance)

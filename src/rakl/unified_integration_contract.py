@@ -150,3 +150,48 @@ def assess_unified_integration(
     else:
         verdict = IntegrationReadiness.READY_FOR_INTEGRATION_TEST
     return UnifiedIntegrationReport(verdict, tuple(reasons), manifest.digest)
+
+
+def build_unified_mechanics_manifest(
+    *,
+    manifest_id: str,
+    base_commit_hash: str,
+    state_commitment_digest: str,
+    structural_identity_digest: str,
+    operational_subject_digest: str | None = None,
+    geometry_id: str | None = None,
+    geometry_learning_receipt_id: str | None = None,
+    quotient_validation_receipt_id: str | None = None,
+    structural_transfer_use_receipt_id: str | None = None,
+    training_assurance_id: str | None = None,
+    shared_identity_reuse_receipt_id: str | None = None,
+    compilation_proposal_id: str | None = None,
+    fresh_compilation_assurance_id: str | None = None,
+    exact_base_guard_receipt_id: str | None = None,
+) -> UnifiedMechanicsManifest:
+    """Assemble one integration-epoch manifest from its component identities/receipts.
+
+    This is the composition surface for a single experiment/integration epoch:
+    it binds the exact base commit, the canonical state commitment digest, the
+    structural identity digest and every resolved component receipt that
+    participates in the epoch.  It does NOT flatten the component authority
+    domains; ``assess_unified_integration`` reports ``READY_FOR_INTEGRATION_TEST``
+    only when identities/receipts are sufficiently bound to *run* the next
+    experiment, never a capability or authority claim.
+    """
+    return UnifiedMechanicsManifest(
+        manifest_id=manifest_id,
+        base_commit_hash=base_commit_hash,
+        state_commitment_digest=state_commitment_digest,
+        structural_identity_digest=structural_identity_digest,
+        operational_subject_digest=operational_subject_digest,
+        geometry_id=geometry_id,
+        geometry_learning_receipt_id=geometry_learning_receipt_id,
+        quotient_validation_receipt_id=quotient_validation_receipt_id,
+        structural_transfer_use_receipt_id=structural_transfer_use_receipt_id,
+        training_assurance_id=training_assurance_id,
+        shared_identity_reuse_receipt_id=shared_identity_reuse_receipt_id,
+        compilation_proposal_id=compilation_proposal_id,
+        fresh_compilation_assurance_id=fresh_compilation_assurance_id,
+        exact_base_guard_receipt_id=exact_base_guard_receipt_id,
+    )
