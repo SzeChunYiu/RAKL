@@ -69,6 +69,14 @@ CANDIDATES = {
         "cost_fields": None,
         "note": "must beat the STRONG control (A*) with its own iteration cost charged",
     },
+    "navigation_dynamics_successor": {
+        "artifact": R / "unified_problem_solving_v1/results/navigation_dynamics_successor.json",
+        "net_keys": ["net_vs_strong_parent", "net_vs_astar"],
+        "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["cost_model"],
+        "note": "successor (#537): must beat the strongest amortized parent (exact reverse-Dijkstra field + incremental SPT repair) with ALL build+update+query costs charged",
+    },
     "path_equivalence_quotient": {
         "artifact": R / "unified_problem_solving_v1/results/path_quotient_savings.json",
         "net_keys": ["net_saving_mean"], "ci_keys": ["net_saving_ci95"],
