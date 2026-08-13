@@ -7,7 +7,7 @@ import json
 from typing import Tuple
 
 from .math_research_assurance import AssuranceVerdict, ProofReceipt, audit_proof_receipt
-from .proof_dag import ProofDAG, ProofNodeStatus, all_dependencies_verified, dependency_closure, validate_proof_dag
+from .proof_dag import ProofDAG, ProofNodeStatus, ProofRelation, all_dependencies_verified, dependency_closure, validate_proof_dag
 
 
 def proof_dag_content_hash(dag: ProofDAG) -> str:
@@ -72,6 +72,27 @@ def validate_solution_assembly(dag: ProofDAG, receipt: SolutionAssemblyReceipt) 
     if set(receipt.selected_node_ids) - set(node_map):
         return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("selected_node_missing",))
     required = set(dependency_closure(dag, receipt.root_node_id)) | {receipt.root_node_id}
+    # Conflict-freeness integrity constraint (audit U5a): no node inside the
+    # certificate scope (root, its dependency closure, or the selected set) may
+    # be VERIFIED while a VERIFIED node REFUTES it. A certificate asserting both
+    # |-P and |-not-P is internally inconsistent and must fail closed before the
+    # positive checks can report READY.
+    conflict_scope = required | set(receipt.selected_node_ids)
+    for edge in dag.edges:
+        if edge.relation is not ProofRelation.REFUTES or edge.target not in conflict_scope:
+            continue
+        refuter = node_map.get(edge.source)
+        refuted = node_map.get(edge.target)
+        if (
+            refuter is not None
+            and refuted is not None
+            and refuter.status is ProofNodeStatus.VERIFIED
+            and refuted.status is ProofNodeStatus.VERIFIED
+        ):
+            return SolutionAssemblyReport(
+                AssemblyVerdict.REJECT,
+                ("verified_refutation_conflict", f"refutes_edge:{edge.source}->{edge.target}"),
+            )
     if not required.issubset(set(receipt.selected_node_ids)):
         return SolutionAssemblyReport(AssemblyVerdict.INCOMPLETE, ("selected_nodes_do_not_cover_root_dependency_closure",))
     if not all_dependencies_verified(dag, node_id=receipt.root_node_id):

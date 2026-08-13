@@ -177,10 +177,19 @@ class SolverCompilationCandidate:
 
 
 def compilation_break_even_uses(candidate: SolverCompilationCandidate, *, baseline_per_use_cost: float) -> float:
+    """Renewal-reward break-even consistent with the candidate's own hazard model (audit U6).
+
+    Uses the candidate's declared ``invalidation_hazard_per_use`` (0 when
+    undeclared): long-run per-use advantage is
+    ``baseline - (execution + decode + verification) - hazard * build``, i.e.
+    ``baseline - stability_adjusted_per_use_cost``. When the advantage is not
+    positive the compilation never amortizes.
+    """
     if baseline_per_use_cost < 0:
         raise ValueError("baseline cost must be nonnegative")
     per_use = candidate.execution_cost + candidate.decode_cost + candidate.verification_cost
-    advantage = baseline_per_use_cost - per_use
+    hazard = 0.0 if candidate.invalidation_hazard_per_use is None else candidate.invalidation_hazard_per_use
+    advantage = baseline_per_use_cost - per_use - hazard * candidate.build_cost
     if advantage <= 0:
         return inf
     return candidate.build_cost / advantage

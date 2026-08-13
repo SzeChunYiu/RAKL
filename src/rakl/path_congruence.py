@@ -48,19 +48,43 @@ def _normalize_independence(pairs: Iterable[Pair]) -> FrozenSet[Pair]:
 
 @dataclass(frozen=True)
 class TraceMonoid:
-    """Free partially commutative monoid over ``alphabet`` with independence ``independent``."""
+    """Free partially commutative monoid over ``alphabet`` with independence ``independent``.
+
+    SOUNDNESS PRECONDITION (audit finding U1): trace equivalence over a *static*
+    independence relation is sound for real transformation histories only when
+    independence is GLOBAL — each pair commutes in every reachable state. The
+    runtime witnesses (``path_equivalence.TransitionIndependenceWitness``) are
+    context-bound, certifying commutation in one state only. Therefore:
+
+    - ``global_independence_certified`` records that an external, machine-checked
+      certificate establishes global independence for every declared pair.
+    - ``history_equivalent`` (the entry point for quotienting real histories)
+      fails closed unless that flag is set.
+    - The bare algebra methods (``equivalent``, ``foata_normal_form``, law
+      checks) remain available for the abstract monoid: they state facts about
+      words over the declared relation, not about verified runtime histories.
+
+    For context-bound witnesses without a global certificate, use the
+    state-indexed check in ``path_equivalence`` instead.
+    """
 
     alphabet: FrozenSet[str]
     independent: FrozenSet[Pair]
+    global_independence_certified: bool = False
 
     @staticmethod
-    def build(alphabet: Iterable[str], commuting_pairs: Iterable[Pair]) -> "TraceMonoid":
+    def build(
+        alphabet: Iterable[str],
+        commuting_pairs: Iterable[Pair],
+        *,
+        global_independence_certified: bool = False,
+    ) -> "TraceMonoid":
         alpha = frozenset(alphabet)
         indep = _normalize_independence(commuting_pairs)
         for a, b in indep:
             if a not in alpha or b not in alpha:
                 raise ValueError(f"independence pair ({a},{b}) outside alphabet")
-        return TraceMonoid(alpha, indep)
+        return TraceMonoid(alpha, indep, global_independence_certified)
 
     def _check_word(self, word: Sequence[str]) -> Tuple[str, ...]:
         w = tuple(word)
@@ -101,8 +125,30 @@ class TraceMonoid:
         return tuple(tuple(sorted(s)) for s in steps)
 
     def equivalent(self, left: Sequence[str], right: Sequence[str]) -> bool:
-        """Trace equivalence: total on A* (defined for EVERY pair of words)."""
+        """Trace equivalence: total on A* (defined for EVERY pair of words).
+
+        Abstract-monoid statement only; see ``history_equivalent`` for the
+        fail-closed entry point that quotients real transformation histories.
+        """
         return self.foata_normal_form(left) == self.foata_normal_form(right)
+
+    def history_equivalent(self, left: Sequence[str], right: Sequence[str]) -> bool:
+        """Trace-quotient REAL transformation histories (fail-closed, audit U1).
+
+        Context-bound independence witnesses do not license swaps at arbitrary
+        positions: a swap at position k happens in the state reached after the
+        length-k prefix, a context where commutation may never have been
+        certified. Quotienting real histories through this static monoid is
+        sound only under a global-independence certificate.
+        """
+        if not self.global_independence_certified:
+            raise ValueError(
+                "uncertified independence: quotienting real histories through a "
+                "context-free TraceMonoid requires global_independence_certified=True "
+                "(context-bound witnesses only license state-indexed swaps; use "
+                "path_equivalence.equivalent_under_declared_partial_order instead)"
+            )
+        return self.equivalent(left, right)
 
     def compose(self, *words: Sequence[str]) -> Tuple[str, ...]:
         out: list[str] = []
@@ -144,14 +190,21 @@ def congruence_certificate(
     commuting_pairs: Iterable[Pair],
     sample_words: Sequence[Sequence[str]],
     sample_contexts: Sequence[Tuple[Sequence[str], Sequence[str]]],
+    *,
+    global_independence_certified: bool = False,
 ) -> dict:
     """Machine-checked certificate that the declared quotient obeys (E) and (C).
 
     This is what ``path_equivalence`` consumers should demand before substituting
     equivalence classes inside larger structures. It grants no proof authority; it
-    certifies only the algebra of the bookkeeping relation.
+    certifies only the algebra of the bookkeeping relation. It does NOT certify
+    that the independence relation is globally valid for real histories; that is
+    the separate ``global_independence_certified`` precondition (audit U1), and
+    ``licenses_real_history_quotient`` below reports whether it was supplied.
     """
-    monoid = TraceMonoid.build(alphabet, commuting_pairs)
+    monoid = TraceMonoid.build(
+        alphabet, commuting_pairs, global_independence_certified=global_independence_certified
+    )
     laws = monoid.check_equivalence_laws(sample_words)
     cong = all(
         monoid.check_congruence(u, v, sample_contexts)
@@ -163,5 +216,7 @@ def congruence_certificate(
         "equivalence_laws": laws,
         "congruence_under_composition": cong,
         "total_on_domain": True,  # foata_normal_form is defined for every word over A
+        "global_independence_certified": monoid.global_independence_certified,
+        "licenses_real_history_quotient": monoid.global_independence_certified,
         "grants_proof_authority": False,
     }

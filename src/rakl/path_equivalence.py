@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from hashlib import sha256
 import json
-from typing import Iterable, Tuple
+from typing import Callable, Iterable, Tuple
 
 
 def _hash(payload: object) -> str:
@@ -120,14 +120,33 @@ def equivalent_under_declared_partial_order(
     *,
     independence_witnesses: Iterable[TransitionIndependenceWitness] = (),
     context_hash: str | None = None,
+    prefix_context_resolver: Callable[[Tuple[str, ...]], str | None] | None = None,
+    global_independence_certified: bool = False,
 ) -> bool:
     """Return true only when histories differ by certified independent swaps.
 
     Merely being two linear extensions of the same incomplete dependency list is
     not enough: absence of a declared dependency is not evidence of commutation.
-    The implementation realizes a Mazurkiewicz-style trace check by transforming
-    one history into the other through adjacent swaps, each backed by a
-    verifier-bound independence witness in the requested context.
+    The implementation realizes a trace check by transforming one history into
+    the other through adjacent swaps.
+
+    Independence witnesses are CONTEXT-BOUND (audit finding U1): a witness whose
+    ``context_hash`` is ``s`` certifies commutation only in the state ``s``, so
+    it may license a swap only at a position whose prefix state is ``s``
+    (asynchronous-transition-system style, state-indexed independence).
+
+    - ``context_hash`` names the state in which the histories START. By default
+      a witness therefore licenses swaps only at the head of the history (empty
+      prefix), where the state is the declared start context.
+    - ``prefix_context_resolver`` optionally maps an executed transition prefix
+      (relative to the start context) to the state hash it reaches, extending
+      licensing to interior positions whose prefix state can be named. Unknown
+      prefixes must return ``None``; such swaps fail closed.
+    - ``global_independence_certified=True`` restores the context-free
+      (Mazurkiewicz global independence) reading: the caller asserts a
+      machine-checked external certificate that every supplied witness pair
+      commutes in EVERY reachable state. Without that certificate the
+      context-free reading over-quotients and is unsound.
     """
 
     left = tuple(left_history)
@@ -148,13 +167,28 @@ def equivalent_under_declared_partial_order(
         return True
 
     transition_set = set(left)
-    certified_pairs: set[tuple[str, str]] = set()
+    witnessed_contexts: dict[tuple[str, str], set[str]] = {}
+    certified_global_pairs: set[tuple[str, str]] = set()
     for witness in independence_witnesses:
         if witness.left_transition_id not in transition_set or witness.right_transition_id not in transition_set:
             raise ValueError("independence witness references unknown transition")
-        if context_hash is not None and witness.context_hash != context_hash:
-            continue
-        certified_pairs.add(witness.pair)
+        witnessed_contexts.setdefault(witness.pair, set()).add(witness.context_hash)
+        if context_hash is None or witness.context_hash == context_hash:
+            certified_global_pairs.add(witness.pair)
+
+    if prefix_context_resolver is None:
+        def prefix_context_resolver(prefix: Tuple[str, ...]) -> str | None:
+            return context_hash if not prefix else None
+
+    def swap_licensed(pair: tuple[str, str], prefix: Tuple[str, ...]) -> bool:
+        if global_independence_certified:
+            # Context-free reading; sound only under the caller-asserted global
+            # independence certificate documented above.
+            return pair in certified_global_pairs
+        swap_context = prefix_context_resolver(prefix)
+        if swap_context is None:
+            return False  # fail closed: swap occurs in a state no witness names
+        return swap_context in witnessed_contexts.get(pair, ())
 
     current = list(left)
     for target_index, desired in enumerate(right):
@@ -164,7 +198,8 @@ def equivalent_under_declared_partial_order(
             return False
         while current_index > target_index:
             neighbour = current[current_index - 1]
-            if _unordered_pair(desired, neighbour) not in certified_pairs:
+            prefix = tuple(current[: current_index - 1])
+            if not swap_licensed(_unordered_pair(desired, neighbour), prefix):
                 return False
             current[current_index - 1], current[current_index] = current[current_index], current[current_index - 1]
             current_index -= 1

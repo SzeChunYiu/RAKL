@@ -20,6 +20,7 @@ from rakl.operational_map import (
     OperationalEdge,
     CoverageCompletenessCertificate,
     OperationalMapReceipt,
+    canonical_edge_set_hash,
     verified_reachability,
 )
 from rakl.path_cost import PathAdmissibility, PathCostVector, PathOption, admissible_pareto_frontier, explicit_lexicographic_select
@@ -62,7 +63,9 @@ def test_verified_operational_route_uses_verified_edges_only():
 
 
 def test_complete_map_no_route_is_only_registered_basis_nonreachability():
-    coverage = CoverageCompletenessCertificate("cover", "p", "ops", "chart", "enumerated-map-v1", "closure-checker")
+    # Audit U4: the certificate must bind the canonical hash of the exact edge
+    # enumeration it certifies (here: the empty enumeration).
+    coverage = CoverageCompletenessCertificate("cover", "p", "ops", "chart", canonical_edge_set_hash(()), "closure-checker")
     receipt = OperationalMapReceipt("m", "p", "ops", "chart", coverage_coordinates=("all_registered_states",), coverage_certificate=coverage)
     report = verified_reachability(receipt, start_state_id="s", target_state_id="g")
     assert report.verdict is MapReachabilityVerdict.NO_VERIFIED_ROUTE_COVERAGE_COMPLETE
@@ -189,7 +192,9 @@ def test_solver_compilation_accounts_for_build_decode_verify_and_never_mints_aut
     assert candidate.one_shot_cost == 110
     assert candidate.amortized_per_use_cost(10) == 20
     assert candidate.stability_adjusted_per_use_cost == 20
-    assert compilation_break_even_uses(candidate, baseline_per_use_cost=30) == 5
+    # Audit U6: break-even prices the declared invalidation hazard consistently
+    # with stability_adjusted_per_use_cost: advantage 30 - 10 - 0.1*100 = 10.
+    assert compilation_break_even_uses(candidate, baseline_per_use_cost=30) == 10
     assert candidate.grants_target_authority is False
 
 

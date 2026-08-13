@@ -123,10 +123,28 @@ class FieldabilityProfile:
         return False
 
 
-def amortization_break_even_queries(*, build_cost: float, extraction_per_query_cost: float, baseline_per_query_cost: float) -> float:
+def amortization_break_even_queries(
+    *,
+    build_cost: float,
+    extraction_per_query_cost: float,
+    baseline_per_query_cost: float,
+    invalidation_hazard_per_query: float = 0.0,
+) -> float:
+    """Renewal-reward break-even under the module's Bernoulli rebuild model (audit U6).
+
+    The long-run per-query advantage of the field is
+    ``baseline - extraction - hazard * build`` (the hazard term prices expected
+    rebuilds, matching ``stability_adjusted_per_query_cost``); the field pays
+    off only when that advantage is positive, in which case break-even is
+    ``build / advantage``. ``invalidation_hazard_per_query=0`` recovers the
+    hazard-free special case. Assumes stationary, commensurable scalar costs;
+    this is a registered development proxy, not the VTG path-cost algebra.
+    """
     if min(build_cost, extraction_per_query_cost, baseline_per_query_cost) < 0:
         raise ValueError("costs must be nonnegative")
-    advantage = baseline_per_query_cost - extraction_per_query_cost
+    if not 0.0 <= invalidation_hazard_per_query <= 1.0:
+        raise ValueError("invalidation hazard must be in [0,1]")
+    advantage = baseline_per_query_cost - extraction_per_query_cost - invalidation_hazard_per_query * build_cost
     if advantage <= 0:
         return inf
     return build_cost / advantage

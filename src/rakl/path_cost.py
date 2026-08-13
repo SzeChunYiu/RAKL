@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from math import isfinite
 from typing import Iterable, Tuple
 
 _COST_FIELDS = ("compute", "verification", "representation", "evidence", "risk", "trust", "new_assumptions")
@@ -85,8 +86,14 @@ class PathCostVector:
     new_assumptions: float = 0.0
 
     def __post_init__(self) -> None:
-        if any(getattr(self, name) < 0 for name in _COST_FIELDS):
-            raise ValueError("path cost coordinates must be nonnegative")
+        # Finiteness axiom (audit I1): the carrier is [0, inf)^7 with the
+        # standard total order per coordinate. NaN is incomparable with
+        # everything (dominance stops being a strict order; lexicographic
+        # min becomes input-order-dependent), so it must never construct.
+        for name in _COST_FIELDS:
+            value = getattr(self, name)
+            if not isfinite(value) or value < 0:
+                raise ValueError("path cost coordinates must be finite and nonnegative")
 
     def add(self, other: "PathCostVector") -> "PathCostVector":
         """All-additive development projection, not theorem-level composition."""
@@ -137,7 +144,19 @@ def dominates(left: PathCostVector, right: PathCostVector) -> bool:
     return all(a <= b for a, b in zip(l, r)) and any(a < b for a, b in zip(l, r))
 
 
+def _require_unique_path_ids(options: Tuple[PathOption, ...]) -> None:
+    # Identity axiom (audit I2): both algorithms treat path_id as a key into
+    # the option set (dominance self-exemption; lexicographic tie-break).
+    # Duplicate ids disable pruning between distinct options and break the
+    # total tie-break order, so they fail closed.
+    ids = [option.path_id for option in options]
+    if len(ids) != len(set(ids)):
+        raise ValueError("path_id must be unique across options")
+
+
 def admissible_pareto_frontier(options: Iterable[PathOption]) -> Tuple[PathOption, ...]:
+    options = tuple(options)
+    _require_unique_path_ids(options)
     admissible = tuple(option for option in options if option.admissibility.admissible)
     frontier = []
     for candidate in admissible:
@@ -152,7 +171,12 @@ def explicit_lexicographic_select(options: Iterable[PathOption], *, coordinate_o
         raise ValueError("coordinate_order must be nonempty and unique")
     if any(name not in _COST_FIELDS for name in coordinate_order):
         raise ValueError("unregistered path cost coordinate")
+    options = tuple(options)
+    _require_unique_path_ids(options)
     admissible = tuple(option for option in options if option.admissibility.admissible)
     if not admissible:
         return None
+    for option in admissible:
+        if any(not isfinite(getattr(option.cost, name)) for name in coordinate_order):
+            raise ValueError("lexicographic selection requires finite cost coordinates")
     return min(admissible, key=lambda item: tuple(getattr(item.cost, name) for name in coordinate_order) + (item.path_id,))

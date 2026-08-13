@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 from enum import Enum
 from hashlib import sha256
 import json
-from typing import Tuple
+from typing import Iterable, Tuple
 
 
 def _hash(payload: object) -> str:
@@ -79,6 +79,15 @@ class CoverageCompletenessCertificate:
 
 @dataclass(frozen=True)
 class OperationalEdge:
+    """One statused transition instance.
+
+    ``operator_id`` names the transformation coordinate of the paper's
+    Sigma_Theta(x, T, y) relation (audit U3). It is optional for backward
+    compatibility, but anonymous edges cannot be distinguished by operator, so
+    conflicting epistemic statuses on the same (source, target, scope) key with
+    anonymous operators fail closed at receipt validation.
+    """
+
     edge_id: str
     source_state_id: str
     target_state_id: str
@@ -87,6 +96,7 @@ class OperationalEdge:
     verification_id: str | None = None
     failure_id: str | None = None
     representation_id: str | None = None
+    operator_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.edge_id or not self.source_state_id or not self.target_state_id or not self.scope:
@@ -95,6 +105,39 @@ class OperationalEdge:
             raise ValueError("verified applicability/transition status requires verification_id")
         if self.status is MapEdgeStatus.REFUTED_IN_SCOPE and not self.failure_id:
             raise ValueError("refuted edge requires failure/evidence identity")
+
+    @property
+    def transition_instance_key(self) -> tuple[str, str, str, str | None]:
+        return (self.source_state_id, self.target_state_id, self.scope, self.operator_id)
+
+
+def canonical_edge_set_hash(edges: Iterable[OperationalEdge]) -> str:
+    """Canonical multiset hash of an edge enumeration (certificate excluded).
+
+    This is the exact subject a ``CoverageCompletenessCertificate`` must bind:
+    coverage completeness is a Moore-closure property of the enumeration, so the
+    certificate's ``closure_subject_hash`` must equal this value (audit U4).
+    """
+    rows = sorted(
+        json.dumps(
+            {
+                "edge_id": e.edge_id,
+                "source": e.source_state_id,
+                "target": e.target_state_id,
+                "status": e.status.value,
+                "scope": e.scope,
+                "verification_id": e.verification_id,
+                "failure_id": e.failure_id,
+                "representation_id": e.representation_id,
+                "operator_id": e.operator_id,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        for e in edges
+    )
+    return _hash({"schema": "orion.operational_map.edge_set.v1", "edges": rows})
 
 
 @dataclass(frozen=True)
@@ -114,6 +157,22 @@ class OperationalMapReceipt:
         ids = [edge.edge_id for edge in self.edges]
         if len(ids) != len(set(ids)):
             raise ValueError("operational edge ids must be unique")
+        # Consistency integrity constraint (audit U3): at most one epistemic
+        # polarity per transition-instance key (source, target, scope,
+        # operator). Anonymous operators cannot disambiguate a contradiction
+        # from a multi-operator reading, so they fail closed too.
+        statuses_by_key: dict[tuple[str, str, str, str | None], set[MapEdgeStatus]] = {}
+        for edge in self.edges:
+            statuses_by_key.setdefault(edge.transition_instance_key, set()).add(edge.status)
+        verified_statuses = {MapEdgeStatus.VERIFIED_TRANSITION, MapEdgeStatus.VERIFIED_APPLICABLE}
+        for key, statuses in statuses_by_key.items():
+            if MapEdgeStatus.REFUTED_IN_SCOPE in statuses and statuses & verified_statuses:
+                raise ValueError(
+                    "contradictory epistemic statuses for transition instance "
+                    f"(source={key[0]!r}, target={key[1]!r}, scope={key[2]!r}, operator={key[3]!r}): "
+                    "verified and refuted-in-scope cannot coexist; name distinct operator_ids "
+                    "if these are different operators"
+                )
         if len(set(self.coverage_coordinates)) != len(self.coverage_coordinates):
             raise ValueError("coverage coordinates must be unique")
         if len(set(self.unknown_coordinates)) != len(self.unknown_coordinates):
@@ -127,6 +186,13 @@ class OperationalMapReceipt:
                 chart_id=self.chart_id,
             ):
                 raise ValueError("coverage certificate subject does not match operational map")
+            # Moore-closure binding (audit U4): the certificate must certify
+            # exactly this edge enumeration, not merely this subject triple.
+            if self.coverage_certificate.closure_subject_hash != canonical_edge_set_hash(self.edges):
+                raise ValueError(
+                    "coverage certificate closure_subject_hash is not the canonical hash "
+                    "of this map's edge enumeration"
+                )
 
     @property
     def coverage_complete(self) -> bool:
@@ -135,7 +201,7 @@ class OperationalMapReceipt:
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v2",
+            "schema": "orion.operational_map.v3",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
             "operator_basis_version": self.operator_basis_version,
@@ -150,6 +216,7 @@ class OperationalMapReceipt:
                     "verification_id": e.verification_id,
                     "failure_id": e.failure_id,
                     "representation_id": e.representation_id,
+                    "operator_id": e.operator_id,
                 }
                 for e in self.edges
             ],
@@ -186,9 +253,16 @@ class MapReachabilityReport:
 
 
 def add_edge(receipt: OperationalMapReceipt, edge: OperationalEdge) -> OperationalMapReceipt:
+    """Return a new receipt with ``edge`` appended.
+
+    Any coverage-completeness certificate is DROPPED (audit U4): completeness is
+    a closure property of the exact edge enumeration, so a mutated enumeration
+    is uncertified until the closure checker re-issues a certificate bound to
+    the new canonical edge-set hash.
+    """
     if edge.edge_id in {item.edge_id for item in receipt.edges}:
         raise ValueError(f"duplicate operational edge id: {edge.edge_id}")
-    return replace(receipt, edges=receipt.edges + (edge,))
+    return replace(receipt, edges=receipt.edges + (edge,), coverage_certificate=None)
 
 
 def verified_reachability(
@@ -202,30 +276,37 @@ def verified_reachability(
     if start_state_id == target_state_id:
         return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, reasons=("start_equals_target",))
 
-    adjacency: dict[str, list[OperationalEdge]] = {}
+    # Scope-uniform composition only (audit U2): each edge is verified relative
+    # to its scope, and a route is a composite claim verified only in the meet
+    # of its edge scopes. Scopes carry no registered meet-semilattice here, so
+    # the only nonempty meet the model can name is scope equality; routes are
+    # therefore searched within one scope at a time. A mixed-scope path is not
+    # a verified route in any scope.
+    adjacency_by_scope: dict[str, dict[str, list[OperationalEdge]]] = {}
     for edge in receipt.edges:
         if edge.status in VERIFIED_TRAVERSABLE:
-            adjacency.setdefault(edge.source_state_id, []).append(edge)
+            adjacency_by_scope.setdefault(edge.scope, {}).setdefault(edge.source_state_id, []).append(edge)
 
-    queue = deque([start_state_id])
-    parent: dict[str, tuple[str, str]] = {}
-    seen = {start_state_id}
-    found = False
-    while queue:
-        current = queue.popleft()
-        for edge in adjacency.get(current, ()):
-            nxt = edge.target_state_id
-            if nxt in seen:
-                continue
-            seen.add(nxt)
-            parent[nxt] = (current, edge.edge_id)
-            if nxt == target_state_id:
-                found = True
-                queue.clear()
-                break
-            queue.append(nxt)
-
-    if found:
+    def _scope_route(adjacency: dict[str, list[OperationalEdge]]) -> tuple[str, ...] | None:
+        queue = deque([start_state_id])
+        parent: dict[str, tuple[str, str]] = {}
+        seen = {start_state_id}
+        found = False
+        while queue:
+            current = queue.popleft()
+            for edge in adjacency.get(current, ()):
+                nxt = edge.target_state_id
+                if nxt in seen:
+                    continue
+                seen.add(nxt)
+                parent[nxt] = (current, edge.edge_id)
+                if nxt == target_state_id:
+                    found = True
+                    queue.clear()
+                    break
+                queue.append(nxt)
+        if not found:
+            return None
         route: list[str] = []
         node = target_state_id
         while node != start_state_id:
@@ -233,7 +314,16 @@ def verified_reachability(
             route.append(edge_id)
             node = prev
         route.reverse()
-        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_verified_transition_edges_only",))
+        return tuple(route)
+
+    for scope in sorted(adjacency_by_scope):
+        route = _scope_route(adjacency_by_scope[scope])
+        if route is not None:
+            return MapReachabilityReport(
+                MapReachabilityVerdict.VERIFIED_ROUTE_FOUND,
+                route,
+                ("route_uses_verified_transition_edges_only", f"route_scope_uniform:{scope}"),
+            )
 
     incomplete = {
         MapEdgeStatus.CANDIDATE_UNVERIFIED,

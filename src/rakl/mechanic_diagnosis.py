@@ -62,6 +62,14 @@ class MechanicDiagnosisReceipt:
             raise ValueError("chosen discriminator must be registered in discriminator_ids")
         if self.verdict is MechanicDiagnosisVerdict.MECHANIC_GAP_IDENTIFIED and len(self.candidate_causes) != 1:
             raise ValueError("identified mechanic gap requires exactly one surviving cause")
+        if (
+            self.verdict is MechanicDiagnosisVerdict.MECHANIC_GAP_IDENTIFIED
+            and MechanicCause.UNKNOWN in self.candidate_causes
+        ):
+            # Audit I3(a): UNKNOWN is the bottom of the information order, not
+            # an element of the fault ontology; "the identified gap is UNKNOWN"
+            # is a lattice confusion and must fail closed (use CANNOT_CHECK).
+            raise ValueError("UNKNOWN is an epistemic bottom, not an identifiable mechanic cause")
 
     @property
     def grants_scientific_authority(self) -> bool:

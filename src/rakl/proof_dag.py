@@ -39,6 +39,21 @@ DEPENDENCY_RELATIONS = frozenset(
     {ProofRelation.REQUIRES, ProofRelation.IMPLIES, ProofRelation.REDUCES_TO}
 )
 
+# Per-relation premise orientation (audit U5b). For REQUIRES and IMPLIES the
+# edge source is the premise of the target ("A IMPLIES B": A is input to B).
+# For REDUCES_TO the direction inverts: "X REDUCES_TO Y" means establishing Y
+# suffices for X, so Y (the target) is the premise of X (the source).
+_PREMISE_IS_TARGET = frozenset({ProofRelation.REDUCES_TO})
+
+
+def dependency_premise_conclusion(edge: "ProofEdge") -> tuple[str, str] | None:
+    """Return (premise, conclusion) for a dependency edge, else None."""
+    if edge.relation not in DEPENDENCY_RELATIONS:
+        return None
+    if edge.relation in _PREMISE_IS_TARGET:
+        return edge.target, edge.source
+    return edge.source, edge.target
+
 
 @dataclass(frozen=True)
 class ProofNode:
@@ -92,12 +107,12 @@ def validate_proof_dag(dag: ProofDAG) -> ProofDAGReport:
 
     adjacency: dict[str, list[str]] = {node_id: [] for node_id in node_map}
     for edge in dag.edges:
-        if (
-            edge.relation in DEPENDENCY_RELATIONS
-            and edge.source in node_map
-            and edge.target in node_map
-        ):
-            adjacency[edge.source].append(edge.target)
+        oriented = dependency_premise_conclusion(edge)
+        if oriented is None:
+            continue
+        premise, conclusion = oriented
+        if premise in node_map and conclusion in node_map:
+            adjacency[premise].append(conclusion)
 
     visiting: set[str] = set()
     visited: set[str] = set()
@@ -191,10 +206,13 @@ def dependency_closure(dag: ProofDAG, node_id: str) -> Tuple[str, ...]:
         raise ValueError(f"unknown proof node {node_id!r}")
     reverse: dict[str, list[str]] = {item: [] for item in node_map}
     for edge in dag.edges:
-        if edge.relation in DEPENDENCY_RELATIONS:
-            # source is a premise/input for target under the convention used by
-            # the runtime, so traverse backwards from conclusion to premises.
-            reverse[edge.target].append(edge.source)
+        oriented = dependency_premise_conclusion(edge)
+        if oriented is None:
+            continue
+        # Traverse backwards from conclusion to premises; the premise
+        # orientation is per-relation (REDUCES_TO premises are edge targets).
+        premise, conclusion = oriented
+        reverse[conclusion].append(premise)
     found: set[str] = set()
     stack = list(reverse[node_id])
     while stack:
