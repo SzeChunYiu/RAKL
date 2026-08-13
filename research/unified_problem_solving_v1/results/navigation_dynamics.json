@@ -3,7 +3,7 @@
   "seed": 461,
   "graphs_per_cell": 2,
   "graphs_made": 18,
-  "claim_boundary": "PREREGISTERED crossover grid (n \u00d7 heuristic \u00d7 reuse \u00d7 dynamics) on random geometric graphs; honest test of goal-field amortization vs A*; grants no scientific authority",
+  "claim_boundary": "PREREGISTERED crossover grid (n × heuristic × reuse × dynamics) on random geometric graphs; honest test of goal-field amortization vs A*; grants no scientific authority",
   "grants_scientific_authority": false,
   "crossover_grid": {
     "graph_sizes": [
@@ -245,5 +245,15 @@
     "hi": 0.81181,
     "n": 18
   },
-  "status": "NEGATIVE"
+  "status": "NEGATIVE",
+  "heuristic_contract_audit": {
+    "audit_issue": "#541",
+    "control": "AStarWithGivenHeuristic is the STRONG_CONTROL baseline (net_vs_astar).",
+    "committed_cells": "every regime cell in this artifact uses the 'good' (Euclidean) heuristic; zero 'poor' cells are present.",
+    "consistency_proof": "h(u)=||u-goal||; edge cost(u,v)=base*(1+r)>=base=||u-v|| (r in [0,1)); by the triangle inequality h(u)=||u-goal|| <= ||u-v||+||v-goal|| = base+h(v) <= cost(u,v)+h(v). Hence h is CONSISTENT, so the A* control is a valid optimal baseline for every committed cell.",
+    "repair_effect": "The #541 reopen fix (reopen a settled node when a strictly cheaper g is found) is required only for admissible-but-INCONSISTENT heuristics; for a consistent heuristic the reopen branch is never taken. Therefore the fix is a no-op on every committed cell and this NEGATIVE result is unchanged.",
+    "poor_regime": "crossover_grid declares heuristic_quality 'poor' (h=rng.random(), NON-admissible), but it yields no cells in this artifact. A* under a non-admissible heuristic is not a valid optimal control regardless of reopening, so such a regime could not support an optimality comparison; it is out-of-contract and correctly absent from the committed evidence.",
+    "verdict": "No heuristic-contract violation in the committed artifact; no cell required rerun for contract reasons. Status remains NEGATIVE on valid (consistent-heuristic) evidence.",
+    "follow_up": "Experiment harness is non-reproducible (rerun at seed=461,graphs_per_cell=30 yields 3 regime cells vs 10 committed, both NEGATIVE). Tracked separately from the A* contract repair."
+  }
 }
