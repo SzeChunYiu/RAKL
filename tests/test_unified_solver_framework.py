@@ -36,20 +36,32 @@ from rakl.vtg_hardening import (
 )
 
 
+MAP_SUBJECT = dict(
+    problem_state_hash="p",
+    specification_hash="spec",
+    root_qoi="prove theorem",
+    environment_hash="lean-env-hash",
+    verifier_subject_hash="lean-verifier-subject",
+    operator_basis_version="ops",
+    chart_id="chart",
+    toolchain_hash="lean-toolchain",
+)
+
+
 def _state(state_id: str) -> OperationalStateIdentity:
     return OperationalStateIdentity(
         state_id=state_id,
-        specification_hash="spec",
-        root_qoi="prove theorem",
-        environment_hash="lean-env-hash",
-        verifier_subject_hash="lean-verifier-subject",
+        specification_hash=MAP_SUBJECT["specification_hash"],
+        root_qoi=MAP_SUBJECT["root_qoi"],
+        environment_hash=MAP_SUBJECT["environment_hash"],
+        verifier_subject_hash=MAP_SUBJECT["verifier_subject_hash"],
         local_context_hash=f"ctx-{state_id}",
         goals_hash=f"goals-{state_id}",
         metavariable_state_hash=f"mvars-{state_id}",
         options_hash="lean-options",
-        operator_basis_version="ops",
-        chart_id="chart",
-        toolchain_hash="lean-toolchain",
+        operator_basis_version=MAP_SUBJECT["operator_basis_version"],
+        chart_id=MAP_SUBJECT["chart_id"],
+        toolchain_hash=MAP_SUBJECT["toolchain_hash"],
     )
 
 
@@ -73,7 +85,7 @@ def _replay_assurance(edge_id: str, source: str, target: str) -> OperationalEdge
         assurance_class=OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
         source_state=source_state,
         target_state=target_state,
-        verifier_subject_hash="lean-verifier-subject",
+        verifier_subject_hash=MAP_SUBJECT["verifier_subject_hash"],
         replay_evidence=replay,
     )
 
@@ -94,9 +106,32 @@ def _edge(edge_id, source, target, status, *, verification_id=None, failure_id=N
     )
 
 
+def _map(*, edges=(), coverage_coordinates=(), unknown_coordinates=(), coverage_certificate=None, **overrides):
+    values = dict(MAP_SUBJECT)
+    values.update(overrides)
+    return OperationalMapReceipt(
+        map_id="m",
+        edges=tuple(edges),
+        coverage_coordinates=tuple(coverage_coordinates),
+        unknown_coordinates=tuple(unknown_coordinates),
+        coverage_certificate=coverage_certificate,
+        **values,
+    )
+
+
+def _coverage(**overrides):
+    values = dict(MAP_SUBJECT)
+    values.update(overrides)
+    return CoverageCompletenessCertificate(
+        certificate_id="cover",
+        closure_subject_hash="enumerated-map-v1",
+        closure_verifier_id="closure-checker",
+        **values,
+    )
+
+
 def test_unknown_map_content_never_becomes_impossibility():
-    receipt = OperationalMapReceipt(
-        "m", "p", "ops", "chart",
+    receipt = _map(
         edges=(
             _edge("sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, verification_id="v1"),
             _edge("ag?", "a", "g", MapEdgeStatus.UNKNOWN),
@@ -110,8 +145,7 @@ def test_unknown_map_content_never_becomes_impossibility():
 
 
 def test_verified_operational_route_uses_verified_edges_only():
-    receipt = OperationalMapReceipt(
-        "m", "p", "ops", "chart",
+    receipt = _map(
         edges=(
             _edge("sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, verification_id="v1"),
             _edge("ag", "a", "g", MapEdgeStatus.VERIFIED_TRANSITION, verification_id="v2"),
@@ -135,9 +169,36 @@ def test_edge_endpoints_must_match_assurance_states():
         )
 
 
+def test_operational_map_rejects_assured_edge_from_different_frozen_subject():
+    source = _state("s")
+    target = OperationalStateIdentity(
+        state_id="g",
+        specification_hash="different-spec",
+        root_qoi=MAP_SUBJECT["root_qoi"],
+        environment_hash=MAP_SUBJECT["environment_hash"],
+        verifier_subject_hash=MAP_SUBJECT["verifier_subject_hash"],
+        local_context_hash="ctx-g",
+        goals_hash="goals-g",
+        metavariable_state_hash="mvars-g",
+        options_hash="lean-options",
+        operator_basis_version=MAP_SUBJECT["operator_basis_version"],
+        chart_id=MAP_SUBJECT["chart_id"],
+        toolchain_hash=MAP_SUBJECT["toolchain_hash"],
+    )
+    replay = OperationalReplayEvidence(
+        "replay-sg", "sg", source.content_hash, target.content_hash, "action-sg",
+        "lean-tactic-replay", "4.x", "result-sg", ReplayVerdict.PASS,
+    )
+    with pytest.raises(ValueError, match="frozen operational subject"):
+        OperationalEdgeAssuranceReceipt(
+            "assurance-sg", "sg", OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
+            source, target, MAP_SUBJECT["verifier_subject_hash"], replay_evidence=replay,
+        )
+
+
 def test_complete_map_no_route_is_only_registered_basis_nonreachability():
-    coverage = CoverageCompletenessCertificate("cover", "p", "ops", "chart", "enumerated-map-v1", "closure-checker")
-    receipt = OperationalMapReceipt("m", "p", "ops", "chart", coverage_coordinates=("all_registered_states",), coverage_certificate=coverage)
+    coverage = _coverage()
+    receipt = _map(coverage_coordinates=("all_registered_states",), coverage_certificate=coverage)
     report = verified_reachability(receipt, start_state_id="s", target_state_id="g")
     assert report.verdict is MapReachabilityVerdict.NO_VERIFIED_ROUTE_COVERAGE_COMPLETE
     assert report.establishes_no_route_under_registered_map is True
@@ -146,14 +207,19 @@ def test_complete_map_no_route_is_only_registered_basis_nonreachability():
     assert receipt.grants_scientific_authority is False
 
 
+def test_mismatched_coverage_certificate_is_rejected():
+    coverage = _coverage(specification_hash="different-spec")
+    with pytest.raises(ValueError, match="coverage certificate subject"):
+        _map(coverage_certificate=coverage)
+
+
 def test_naked_coverage_claim_is_not_constructible():
     with pytest.raises(TypeError):
-        OperationalMapReceipt("m", "p", "ops", "chart", coverage_complete=True)
+        OperationalMapReceipt(map_id="m", coverage_complete=True, **MAP_SUBJECT)
 
 
 def test_verified_applicability_is_not_a_verified_transition_edge():
-    receipt = OperationalMapReceipt(
-        "m", "p", "ops", "chart",
+    receipt = _map(
         edges=(_edge("sg", "s", "g", MapEdgeStatus.VERIFIED_APPLICABLE, verification_id="precondition-check"),),
     )
     report = verified_reachability(receipt, start_state_id="s", target_state_id="g")
