@@ -1,0 +1,230 @@
+{
+  "schema": "orion.vtg.terminology-ledger.v1",
+  "ledger_id": "VTG-TERMINOLOGY-20260813",
+  "entries": [
+    {
+      "concept_id": "TRANSFORMATION_SEMANTICS",
+      "canonical_term": "transformation semantics",
+      "owner_surface": "routing",
+      "synonyms": ["legal transition relation"],
+      "must_not_conflate_with": ["operational map", "solvability geometry"],
+      "distinction": "Defines which transitions are legal under the frozen subject; it is not the set currently discovered nor a learned routing estimate."
+    },
+    {
+      "concept_id": "OPERATIONAL_MAP",
+      "canonical_term": "operational map belief",
+      "owner_surface": "routing",
+      "synonyms": ["partial operational map"],
+      "must_not_conflate_with": ["transformation semantics", "registered map closure", "solvability geometry"],
+      "distinction": "Records verified, refuted, candidate, stale and unknown roads known at the current map revision."
+    },
+    {
+      "concept_id": "VERIFIED_APPLICABILITY",
+      "canonical_term": "verified applicability",
+      "owner_surface": "routing",
+      "synonyms": ["precondition verified"],
+      "must_not_conflate_with": ["verified transition", "kernel derivation edge"],
+      "distinction": "Checks that an action may apply; it does not witness a realized source-to-target state transition."
+    },
+    {
+      "concept_id": "VERIFIED_TRANSITION",
+      "canonical_term": "verified transition",
+      "owner_surface": "routing",
+      "synonyms": ["assurance-bound operational transition"],
+      "must_not_conflate_with": ["verified applicability", "kernel derivation edge"],
+      "distinction": "A materialized transition carrying a provenance-bearing kernel or replay assurance receipt."
+    },
+    {
+      "concept_id": "KERNEL_DERIVATION_EDGE",
+      "canonical_term": "kernel derivation edge",
+      "owner_surface": "authority_promotion",
+      "synonyms": ["locally proof-carrying derivation edge"],
+      "must_not_conflate_with": ["replay-validated operational edge", "root theorem authority"],
+      "distinction": "Carries an audited local proof receipt; root theorem authority still belongs to final proof/certificate assurance."
+    },
+    {
+      "concept_id": "REPLAY_OPERATIONAL_EDGE",
+      "canonical_term": "replay-validated operational edge",
+      "owner_surface": "routing",
+      "synonyms": ["tactic replay edge"],
+      "must_not_conflate_with": ["kernel derivation edge", "root theorem authority"],
+      "distinction": "Reproducible search-state transition bound to exact before/after state and tool subject; proposal/search authority only."
+    },
+    {
+      "concept_id": "SEMANTIC_QOI_QUOTIENT",
+      "canonical_term": "semantic QoI quotient",
+      "owner_surface": "equivalence_similarity",
+      "synonyms": ["task-conditioned semantic quotient"],
+      "must_not_conflate_with": ["exact navigation quotient", "sound over-approximating abstraction"],
+      "distinction": "Preserves target-relevant semantic information; solver reachability preservation is a separate obligation."
+    },
+    {
+      "concept_id": "EXACT_NAVIGATION_QUOTIENT",
+      "canonical_term": "exact navigation quotient",
+      "owner_surface": "equivalence_similarity",
+      "synonyms": ["reachability-preserving solver quotient"],
+      "must_not_conflate_with": ["semantic QoI quotient", "sound over-approximating abstraction"],
+      "distinction": "Requires target preservation plus two-way transition/lifting obligations for the scoped exact reachability claim."
+    },
+    {
+      "concept_id": "OVERAPPROX_ABSTRACTION",
+      "canonical_term": "sound over-approximating abstraction",
+      "owner_surface": "equivalence_similarity",
+      "synonyms": ["refinable navigation abstraction"],
+      "must_not_conflate_with": ["exact navigation quotient"],
+      "distinction": "May contain spurious abstract routes; concrete lifting/replay or refinement is required."
+    },
+    {
+      "concept_id": "INTRINSIC_GEOMETRY",
+      "canonical_term": "intrinsic path geometry",
+      "owner_surface": "routing",
+      "synonyms": ["operator-relative intrinsic path value"],
+      "must_not_conflate_with": ["budget-conditioned value", "navigation dynamics"],
+      "distinction": "Defined from admissible path semantics/cost algebra without silently truncating by a resource budget."
+    },
+    {
+      "concept_id": "BUDGET_VALUE",
+      "canonical_term": "budget-conditioned value",
+      "owner_surface": "routing",
+      "synonyms": ["budget-feasible control value"],
+      "must_not_conflate_with": ["intrinsic path geometry"],
+      "distinction": "Control/policy object conditioned on available resources, not automatically a metric or quasimetric."
+    },
+    {
+      "concept_id": "EMPIRICAL_RANKER",
+      "canonical_term": "empirical geometry ranker",
+      "owner_surface": "routing",
+      "synonyms": ["learned progress ranker"],
+      "must_not_conflate_with": ["admissible heuristic", "consistent heuristic", "exact cost-to-go"],
+      "distinction": "May order candidate actions empirically but inherits no optimality/completeness theorem rights."
+    },
+    {
+      "concept_id": "SEARCH_TRAJECTORY",
+      "canonical_term": "search trajectory",
+      "owner_surface": "synthesis",
+      "synonyms": ["discovery chronology"],
+      "must_not_conflate_with": ["solution certificate", "proof DAG"],
+      "distinction": "Chronological exploration record, including failed branches; not the final mathematical dependency object."
+    },
+    {
+      "concept_id": "SOLUTION_CERTIFICATE",
+      "canonical_term": "solution certificate",
+      "owner_surface": "authority_promotion",
+      "synonyms": ["final proof object"],
+      "must_not_conflate_with": ["search trajectory"],
+      "distinction": "Dependency-complete artifact checked in original semantics and bound to the root target."
+    },
+    {
+      "concept_id": "LOCAL_COMPATIBILITY",
+      "canonical_term": "local section compatibility",
+      "owner_surface": "contextual_theory_gluing",
+      "synonyms": ["pairwise local compatibility"],
+      "must_not_conflate_with": ["global amalgamation"],
+      "distinction": "Local consistency is necessary but not sufficient for a globally valid parent object."
+    },
+    {
+      "concept_id": "GLOBAL_AMALGAMATION",
+      "canonical_term": "global amalgamation",
+      "owner_surface": "synthesis",
+      "synonyms": ["parent solution assembly"],
+      "must_not_conflate_with": ["local section compatibility"],
+      "distinction": "Requires overlap/substitution consistency, assumption discharge, parent invariants and final parent verification."
+    },
+    {
+      "concept_id": "GEOMETRY_UTILITY",
+      "canonical_term": "geometry routing utility",
+      "owner_surface": "routing",
+      "synonyms": ["fieldability utility"],
+      "must_not_conflate_with": ["mathematical authority", "scientific authority"],
+      "distinction": "Search efficiency/reliability property; never evidence that a theorem or scientific claim is true."
+    },
+    {
+      "concept_id": "PROBLEM_FIBRE",
+      "canonical_term": "problem fibre",
+      "owner_surface": "prompting_context_policy",
+      "synonyms": ["problem-indexed local research fibre"],
+      "must_not_conflate_with": ["Grothendieck fibration"],
+      "distinction": "Architectural indexing metaphor unless categorical reindexing/lifting laws are explicitly defined."
+    },
+    {
+      "concept_id": "GEOMETRY_EXISTENCE",
+      "canonical_term": "geometry existence",
+      "owner_surface": "routing",
+      "synonyms": ["existence of a local descent representation"],
+      "must_not_conflate_with": ["nontrivial geometry improvement"],
+      "distinction": "Can be trivialized by precomputing exact target distance; no improvement claim follows from existence alone."
+    },
+    {
+      "concept_id": "NONTRIVIAL_GEOMETRY",
+      "canonical_term": "nontrivial geometry improvement",
+      "owner_surface": "routing",
+      "synonyms": ["cost-effective constructible geometry"],
+      "must_not_conflate_with": ["geometry existence", "oracle geometry"],
+      "distinction": "Requires constructibility, succinctness, leakage control, reuse/staleness accounting and net verified search-cost benefit."
+    },
+    {
+      "concept_id": "REGISTERED_MAP_CLOSURE",
+      "canonical_term": "registered map closure",
+      "owner_surface": "routing",
+      "synonyms": ["operator-basis-scoped map completeness"],
+      "must_not_conflate_with": ["theorem falsity", "proof-system unprovability"],
+      "distinction": "No route under one frozen materialized substrate is weaker than mathematical impossibility or unprovability."
+    },
+    {
+      "concept_id": "STATE_EQUIVALENCE",
+      "canonical_term": "state equivalence",
+      "owner_surface": "equivalence_similarity",
+      "synonyms": ["canonical state equivalence"],
+      "must_not_conflate_with": ["path equivalence"],
+      "distinction": "Identifies states; it does not by itself identify different histories or their costs."
+    },
+    {
+      "concept_id": "PATH_EQUIVALENCE",
+      "canonical_term": "path equivalence",
+      "owner_surface": "equivalence_similarity",
+      "synonyms": ["history equivalence"],
+      "must_not_conflate_with": ["state equivalence"],
+      "distinction": "Endpoint-preserving congruence generated only by certified commutation/joinability/proof-equivalence witnesses."
+    },
+    {
+      "concept_id": "EXACT_PORTAL",
+      "canonical_term": "exact representation portal",
+      "owner_surface": "mathematical_context_translation",
+      "synonyms": ["invertible representation change"],
+      "must_not_conflate_with": ["one-way reduction", "relaxation"],
+      "distinction": "Reversible/exact transform; one-way reductions and relaxations belong to the broader transformation network but are not charts."
+    },
+    {
+      "concept_id": "MDD_DIAGNOSIS",
+      "canonical_term": "mechanic differential diagnosis",
+      "owner_surface": "gap_discovery",
+      "synonyms": ["solver mechanic diagnosis"],
+      "must_not_conflate_with": ["evidence", "proof", "root truth"],
+      "distinction": "Proposal-level causal hypothesis about why solving stalled; discriminators and downstream outcomes must test it."
+    },
+    {
+      "concept_id": "VSC_ROUTING_VALIDATION",
+      "canonical_term": "routing-validated solver compilation",
+      "owner_surface": "capability_shaping",
+      "synonyms": ["VSC routing validation"],
+      "must_not_conflate_with": ["mathematical authority", "scientific authority", "method promotion"],
+      "distinction": "Preservation-bound permission to use a compiled representation/solver for routing; authority remains external."
+    },
+    {
+      "concept_id": "LOCAL_NAVIGABILITY",
+      "canonical_term": "local navigability",
+      "owner_surface": "routing",
+      "synonyms": ["navigation-basin local solvability"],
+      "must_not_conflate_with": ["global navigability"],
+      "distinction": "A geometry/policy can be certified or useful only on a registered basin without a global claim."
+    },
+    {
+      "concept_id": "LEARNED_SUPPORT",
+      "canonical_term": "learned geometry support",
+      "owner_surface": "capability_shaping",
+      "synonyms": ["geometry training coverage"],
+      "must_not_conflate_with": ["exact global geometry"],
+      "distinction": "Behavior-policy and sampling support define what the learned geometry can empirically claim; unseen regions remain unresolved."
+    }
+  ]
+}
