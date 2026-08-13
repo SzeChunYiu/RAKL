@@ -55,13 +55,22 @@ UNIFIED_SOLVER_MECHANICS: Tuple[UnifiedSolverMechanicSpec, ...] = (
         ("formal-proof search reduction from path/interleaving quotienting",),
     ),
     UnifiedSolverMechanicSpec(
+        "navigation_quotient_validation",
+        "src/rakl/navigation_quotient.py",
+        "equivalence_similarity",
+        ("tests/test_vtg_closure_contracts.py",),
+        AuthorityEffect.PROPOSAL_ONLY,
+        "Separate target/QoI quotient sufficiency from solver reachability, route-lifting, and cost-distortion obligations.",
+        ("safe quotient acceleration on real theorem-search state spaces",),
+    ),
+    UnifiedSolverMechanicSpec(
         "path_cost_algebra",
         "src/rakl/path_cost.py",
         "routing",
-        ("tests/test_unified_solver_framework.py",),
+        ("tests/test_unified_solver_framework.py", "tests/test_vtg_closure_contracts.py"),
         AuthorityEffect.PROPOSAL_ONLY,
-        "Apply noncompensatory admissibility before Pareto or explicitly registered path-cost comparisons.",
-        ("task-calibrated multiobjective path-cost utility",),
+        "Apply noncompensatory admissibility before a registered typed path-cost algebra, Pareto frontier, or explicitly scoped numeric development projection.",
+        ("task-valid path-cost composition semantics and multiobjective utility",),
     ),
     UnifiedSolverMechanicSpec(
         "fieldability_and_geometry_lifecycle",
@@ -69,7 +78,7 @@ UNIFIED_SOLVER_MECHANICS: Tuple[UnifiedSolverMechanicSpec, ...] = (
         "routing",
         ("tests/test_unified_solver_framework.py",),
         AuthorityEffect.PROPOSAL_ONLY,
-        "Measure local/global navigability, construction/reuse economics, and geometry invalidation without treating distance as truth.",
+        "Measure local/global navigability, geometry certification class, construction/reuse economics, and invalidation without treating distance as truth.",
         ("held-out formal reachability geometry and cross-family local navigation",),
     ),
     UnifiedSolverMechanicSpec(
@@ -96,7 +105,7 @@ UNIFIED_SOLVER_MECHANICS: Tuple[UnifiedSolverMechanicSpec, ...] = (
         "synthesis",
         ("tests/test_unified_solver_framework.py",),
         AuthorityEffect.PROPOSAL_ONLY,
-        "Separate chronological discovery trajectories from dependency-complete verified solution/proof certificates.",
+        "Separate chronological discovery trajectories from dependency-complete proof certificates bound to the ordinary audited proof receipt.",
         ("real long-horizon certificate assembly and verifier scheduling",),
     ),
 )
