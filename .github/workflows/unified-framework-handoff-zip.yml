@@ -12,11 +12,20 @@ permissions:
 jobs:
   package-handoff:
     runs-on: ubuntu-24.04
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Bind exact packaged subject
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          echo "RAKL_SUBJECT_SHA=$EXPECTED_SHA" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -35,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           HEAD_SHA="$(git rev-parse HEAD)"
-          test "$HEAD_SHA" = "$GITHUB_SHA"
+          test "$HEAD_SHA" = "$EXPECTED_SHA"
 
           rm -rf handoff_bundle
           mkdir -p handoff_bundle/source handoff_bundle/generated
@@ -45,16 +54,29 @@ jobs:
 
           printf 'repository=SzeChunYiu/RAKL\nbranch=orion/unified-problem-solving-v1\nbase_sha=%s\nhead_sha=%s\n' \
             "$BASE_SHA" "$HEAD_SHA" > handoff_bundle/HANDOFF_SUBJECT.txt
+          printf 'base_sha=%s\nhead_sha=%s\ncomparison=merge-base-three-dot\n' \
+            "$BASE_SHA" "$HEAD_SHA" > handoff_bundle/HANDOFF_PATCH_SUBJECT.txt
           git log --oneline --decorate "$BASE_SHA"..HEAD > handoff_bundle/COMMITS.txt
           git diff --stat "$BASE_SHA"...HEAD > handoff_bundle/DIFF_STAT.txt
           git diff --binary "$BASE_SHA"...HEAD > handoff_bundle/orion-unified-problem-solving-v1.diff
 
-          # Recompute the development evidence and publication visuals.
+          # Exact-head targeted assurance and Nature-Skills-style consistency sweeps.
+          pytest -q \
+            tests/test_unified_solver_framework.py \
+            tests/test_unified_solver_registry.py \
+            tests/test_vtg_closure_contracts.py \
+            tests/test_vtg_hardening_contracts.py \
+            tests/test_vtg_terminology_ledger.py \
+            | tee handoff_bundle/generated/unified_framework_tests.txt
           python scripts/audit_unified_framework.py | tee handoff_bundle/generated/unified_framework_audit.txt
+          python scripts/audit_vtg_terminology.py | tee handoff_bundle/generated/vtg_terminology_audit.txt
+          python scripts/audit_vtg_closure_ledger.py | tee handoff_bundle/generated/vtg_closure_audit.txt
           python research/unified_problem_solving_v1/run_known_world_stress.py | tee handoff_bundle/generated/known_world_stress_stdout.txt
           python paper/generate_demo_figures.py
 
           cp research/unified_problem_solving_v1/results/known_world_stress.json handoff_bundle/generated/
+          cp research/unified_problem_solving_v1/results/vtg_closure_audit.json handoff_bundle/generated/
+          cp research/unified_problem_solving_v1/results/vtg_terminology_audit.json handoff_bundle/generated/
           cp paper/figures/generated/unified_solver_known_world.source.json handoff_bundle/generated/
           for stem in \
             unified_solver_architecture \
@@ -67,14 +89,19 @@ jobs:
             cp "paper/figures/generated/${stem}.png" handoff_bundle/generated/
           done
 
-          # Preserve both the tracked Paper IV source and the corrected build copy.
+          # Preserve both tracked Paper IV source and the corrected build copy.
           cp publication/papers/paper-04-structural-learning-mechanics/main.tex handoff_bundle/generated/PAPER4_TRACKED_MAIN.tex
           python scripts/repair_paper4_generator_defect.py | tee handoff_bundle/generated/paper4_repair_stdout.txt
           cp publication/papers/paper-04-structural-learning-mechanics/main.tex handoff_bundle/generated/PAPER4_PATCHED_MAIN.tex
 
           cp HANDOFF_UNIFIED_FRAMEWORK.md handoff_bundle/HANDOFF_UNIFIED_FRAMEWORK.md
           cp docs/ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md handoff_bundle/ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md
+          cp docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md handoff_bundle/VTG_MATHEMATICAL_CLOSURE_AUDIT.md
+          cp docs/VTG_TEN_ROUND_ADVERSARIAL_AUDIT.md handoff_bundle/VTG_TEN_ROUND_ADVERSARIAL_AUDIT.md
+          cp docs/NATURE_SKILLS_INTEGRATION.md handoff_bundle/NATURE_SKILLS_INTEGRATION.md
           cp research/unified_problem_solving_v1/VERIFICATION_LEDGER.json handoff_bundle/VERIFICATION_LEDGER.json
+          cp research/unified_problem_solving_v1/VTG_CLOSURE_LEDGER.json handoff_bundle/VTG_CLOSURE_LEDGER.json
+          cp research/unified_problem_solving_v1/VTG_TERMINOLOGY_LEDGER.json handoff_bundle/VTG_TERMINOLOGY_LEDGER.json
 
           find handoff_bundle -type f -print0 | sort -z | xargs -0 sha256sum > handoff_bundle/CHECKSUMS.sha256
           zip -qr "orion-unified-framework-handoff-${HEAD_SHA}.zip" handoff_bundle
@@ -84,9 +111,9 @@ jobs:
       - name: Upload complete handoff ZIP
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: orion-unified-framework-handoff-${{ github.sha }}
+          name: orion-unified-framework-handoff-${{ env.EXPECTED_SHA }}
           path: |
-            orion-unified-framework-handoff-${{ github.sha }}.zip
+            orion-unified-framework-handoff-${{ env.EXPECTED_SHA }}.zip
             handoff_zip.sha256
           if-no-files-found: error
           retention-days: 90
