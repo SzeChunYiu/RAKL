@@ -22,6 +22,7 @@ true. `grants_scientific_authority` is False everywhere.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +75,12 @@ CANDIDATES = {
     "six_family_law": {
         "artifact": R / "six_family_extension_v1/results/six_family.json",
         "net_keys": ["sign_test_p", "signs_positive"],
+        "sign_test": {
+            "p_keys": ["sign_test_p", "sign_test_p_two_sided"],
+            "count_keys": ["all_six_positive", "n_positive"],
+            "alpha": 0.05,
+            "required_count": 6,
+        },
         "cost_charged": True,
         "note": "cross-family generalization; sign test across >=6 families",
     },
@@ -105,6 +112,58 @@ def _ci_excludes_null(value, null=0.0, ci=None):
     return lo > null or hi < null
 
 
+def _is_real_number(x) -> bool:
+    """True for a finite int/float; a bool statistic is malformed and rejected."""
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+
+
+def _verdict_for_sign_test(spec: dict, data: dict, art: Path) -> dict:
+    """Sign-test evaluator for candidates whose registered evidence is a binomial
+    sign test (a p-value plus a count of positive signs), not a net-metric CI.
+
+    count-met AND p<alpha => PROMOTE_TO_MECHANIC. Evidence present but not
+    significant => KEEP_PROPOSAL_ONLY (honest weak evidence, not a contradiction).
+    p or count unreadable => CANNOT_CHECK. Never REJECT: a non-significant sign
+    test does not refute the proposal, it merely fails to elevate it.
+    """
+    st = spec["sign_test"]
+    alpha = st.get("alpha", 0.05)
+    required = st.get("required_count", 0)
+    # p-value: first present key that is a finite real number.
+    p = None
+    for pk in st.get("p_keys", []):
+        pv = _find(data, [pk])
+        if _is_real_number(pv):
+            p = pv
+            break
+    # count: any registered source indicating the threshold is met. A bool True
+    # means count met; an int/float means compare >= required_count.
+    count_read = False
+    count_met = False
+    for ck in st.get("count_keys", []):
+        cv = _find(data, [ck])
+        if cv is None:
+            continue
+        count_read = True
+        if cv is True:
+            count_met = True
+            break
+        if _is_real_number(cv) and cv >= required:
+            count_met = True
+            break
+    if p is None or not count_read:
+        return {"verdict": "CANNOT_CHECK",
+                "reason": f"sign_test_unreadable:p_found={p is not None}_count_read={count_read}",
+                "note": spec["note"], "artifact": str(art.relative_to(ROOT))}
+    if count_met and p < alpha:
+        v, why = "PROMOTE_TO_MECHANIC", "sign_test_significant_count_met"
+    else:
+        v, why = "KEEP_PROPOSAL_ONLY", "sign_test_evidence_insufficient"
+    return {"verdict": v, "reason": why, "p": p, "alpha": alpha,
+            "count_met": count_met, "note": spec["note"],
+            "artifact": str(art.relative_to(ROOT))}
+
+
 def verdict_for(name: str, spec: dict) -> dict:
     art = spec["artifact"]
     if not art.is_file():
@@ -115,6 +174,8 @@ def verdict_for(name: str, spec: dict) -> dict:
         return {"verdict": "CANNOT_CHECK", "reason": f"unreadable:{type(exc).__name__}"}
     if data.get("grants_scientific_authority") is not False:
         return {"verdict": "CANNOT_CHECK", "reason": "artifact_does_not_disclaim_authority"}
+    if "sign_test" in spec:
+        return _verdict_for_sign_test(spec, data, art)
     net = _find(data, spec["net_keys"])
     ci = _find(data, spec.get("ci_keys", [])) if spec.get("ci_keys") else None
     if net is None:
