@@ -7,10 +7,12 @@ import pytest
 from rakl.fieldability import (
     FieldabilityProfile,
     GeometryArtifactIdentity,
+    GeometryCertificationClass,
     amortization_break_even_queries,
     profile_supports_routing_claim,
     stability_adjusted_per_query_cost,
 )
+from rakl.math_research_assurance import ProofReceipt
 from rakl.mechanic_diagnosis import MechanicCause, MechanicDiagnosisVerdict, diagnose_mechanic_signals
 from rakl.operational_map import (
     MapEdgeStatus,
@@ -130,13 +132,18 @@ def test_path_cost_keeps_incomparable_pareto_routes():
 
 
 def _geometry_identity():
-    return GeometryArtifactIdentity("g", "spec", "prove theorem", "ops", "map", "chart", "lean-env", "cost-v1", "geom-v1")
+    return GeometryArtifactIdentity(
+        "g", "spec", "prove theorem", "ops", "map", "chart", "lean-env", "cost-v1", "geom-v1",
+        GeometryCertificationClass.EMPIRICAL_RANKER,
+    )
 
 
 def test_fieldability_requires_closed_loop_evidence_not_local_alignment_only():
     profile = FieldabilityProfile(identity=_geometry_identity(), build_cost=1, local_alignment=0.99)
     assert not profile_supports_routing_claim(profile, min_bounded_branch_success=0.8, max_false_descent_rate=0.1)
     assert profile.grants_scientific_authority is False
+    assert profile.identity.certification_class is GeometryCertificationClass.EMPIRICAL_RANKER
+    assert profile.identity.supports_exact_cost_claim is False
 
 
 def test_field_amortization_and_staleness_are_explicit():
@@ -217,11 +224,29 @@ def _verified_dag():
     )
 
 
+def _proof_receipt(**kwargs):
+    values = dict(
+        theorem_id="root",
+        theorem_statement_hash="h2",
+        checker="lean-kernel",
+        checker_version="4.x",
+        accepted=True,
+        axioms=(),
+        independent_checker="lean-isolated",
+        independent_checker_version="4.x",
+        independent_accepted=True,
+        isolated_recheck=True,
+        source_hash="artifact",
+    )
+    values.update(kwargs)
+    return ProofReceipt(**values)
+
+
 def test_search_trajectory_and_final_certificate_are_separate():
     dag = _verified_dag()
     receipt = SolutionAssemblyReceipt(
         "assembly", "root", ("episode-dead", "episode-success"), ("lemma", "root"), ("dead-branch",),
-        proof_dag_content_hash(dag), "artifact", "lean-kernel", True,
+        proof_dag_content_hash(dag), "artifact", _proof_receipt(),
     )
     report = validate_solution_assembly(dag, receipt)
     assert report.verdict is AssemblyVerdict.READY_FOR_EXTERNAL_AUTHORITY_GATE
@@ -229,7 +254,17 @@ def test_search_trajectory_and_final_certificate_are_separate():
     assert receipt.grants_solution_authority is False
 
 
+def test_solution_assembly_requires_receipt_bound_to_root_and_artifact():
+    dag = _verified_dag()
+    missing = SolutionAssemblyReceipt("assembly", "root", (), ("lemma", "root"), (), proof_dag_content_hash(dag), "artifact", None)
+    assert validate_solution_assembly(dag, missing).verdict is AssemblyVerdict.CANNOT_CHECK
+    wrong_statement = SolutionAssemblyReceipt("assembly", "root", (), ("lemma", "root"), (), proof_dag_content_hash(dag), "artifact", _proof_receipt(theorem_statement_hash="other"))
+    assert validate_solution_assembly(dag, wrong_statement).verdict is AssemblyVerdict.REJECT
+    wrong_artifact = SolutionAssemblyReceipt("assembly", "root", (), ("lemma", "root"), (), proof_dag_content_hash(dag), "artifact", _proof_receipt(source_hash="other"))
+    assert validate_solution_assembly(dag, wrong_artifact).verdict is AssemblyVerdict.REJECT
+
+
 def test_solution_assembly_hash_mismatch_rejects():
     dag = _verified_dag()
-    receipt = SolutionAssemblyReceipt("assembly", "root", (), ("lemma", "root"), (), "wrong", "artifact", "lean-kernel", True)
+    receipt = SolutionAssemblyReceipt("assembly", "root", (), ("lemma", "root"), (), "wrong", "artifact", _proof_receipt())
     assert validate_solution_assembly(dag, receipt).verdict is AssemblyVerdict.REJECT
