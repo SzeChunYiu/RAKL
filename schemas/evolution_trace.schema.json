@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/evolution_trace.schema.json",
+  "title": "EvolutionTrace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["trace_id", "evaluation_epoch_id", "parent", "challenger", "triggering_episode_ids", "root_cause_receipt_ids", "changed_surfaces", "prediction_metric_ids", "development_metric_ids", "assurance_metric_ids", "attribution_metric_ids", "decision_receipt_id", "tournament_decision", "archive_status", "final_incumbent_id", "rollback_variant_id", "metric_receipt_ids"],
+  "properties": {
+    "trace_id": {"type": "string", "minLength": 1},
+    "evaluation_epoch_id": {"type": "string", "minLength": 1},
+    "parent": {"$ref": "genome_snapshot.schema.json"},
+    "challenger": {"$ref": "genome_snapshot.schema.json"},
+    "triggering_episode_ids": {"type": "array", "items": {"type": "string"}},
+    "root_cause_receipt_ids": {"type": "array", "items": {"type": "string"}},
+    "changed_surfaces": {"type": "array", "items": {"type": "string"}},
+    "prediction_metric_ids": {"type": "array", "items": {"type": "string"}},
+    "development_metric_ids": {"type": "array", "items": {"type": "string"}},
+    "assurance_metric_ids": {"type": "array", "items": {"type": "string"}},
+    "attribution_metric_ids": {"type": "array", "items": {"type": "string"}},
+    "decision_receipt_id": {"type": "string", "minLength": 1},
+    "tournament_decision": {"type": "string", "minLength": 1},
+    "archive_status": {"type": "string", "minLength": 1},
+    "final_incumbent_id": {"type": "string"},
+    "rollback_variant_id": {"type": "string", "minLength": 1},
+    "metric_receipt_ids": {"type": "array", "items": {"type": "string"}}
+  }
+}
