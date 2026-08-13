@@ -27,15 +27,61 @@ from rakl.path_equivalence import PathEquivalenceKind, PathEquivalenceWitness, T
 from rakl.proof_dag import ProofDAG, ProofEdge, ProofNode, ProofNodeKind, ProofNodeStatus, ProofRelation
 from rakl.solution_assembly import AssemblyVerdict, SolutionAssemblyReceipt, proof_dag_content_hash, validate_solution_assembly
 from rakl.solver_compilation import CompilationStatus, PreservationValidationReceipt, SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
-from rakl.vtg_hardening import OperationalEdgeAssuranceClass
+from rakl.vtg_hardening import (
+    OperationalEdgeAssuranceClass,
+    OperationalEdgeAssuranceReceipt,
+    OperationalReplayEvidence,
+    OperationalStateIdentity,
+    ReplayVerdict,
+)
+
+
+def _state(state_id: str) -> OperationalStateIdentity:
+    return OperationalStateIdentity(
+        state_id=state_id,
+        specification_hash="spec",
+        root_qoi="prove theorem",
+        environment_hash="lean-env-hash",
+        verifier_subject_hash="lean-verifier-subject",
+        local_context_hash=f"ctx-{state_id}",
+        goals_hash=f"goals-{state_id}",
+        metavariable_state_hash=f"mvars-{state_id}",
+        options_hash="lean-options",
+        operator_basis_version="ops",
+        chart_id="chart",
+        toolchain_hash="lean-toolchain",
+    )
+
+
+def _replay_assurance(edge_id: str, source: str, target: str) -> OperationalEdgeAssuranceReceipt:
+    source_state = _state(source)
+    target_state = _state(target)
+    replay = OperationalReplayEvidence(
+        replay_id=f"replay-{edge_id}",
+        edge_id=edge_id,
+        source_state_hash=source_state.content_hash,
+        target_state_hash=target_state.content_hash,
+        action_hash=f"action-{edge_id}",
+        replay_engine="lean-tactic-replay",
+        replay_engine_version="4.x",
+        result_artifact_hash=f"result-{edge_id}",
+        verdict=ReplayVerdict.PASS,
+    )
+    return OperationalEdgeAssuranceReceipt(
+        receipt_id=f"assurance-{edge_id}",
+        edge_id=edge_id,
+        assurance_class=OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
+        source_state=source_state,
+        target_state=target_state,
+        verifier_subject_hash="lean-verifier-subject",
+        replay_evidence=replay,
+    )
 
 
 def _edge(edge_id, source, target, status, *, verification_id=None, failure_id=None):
-    assurance_class = None
-    assurance_receipt_id = None
+    assurance = None
     if status is MapEdgeStatus.VERIFIED_TRANSITION:
-        assurance_class = OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE
-        assurance_receipt_id = f"assurance-{edge_id}"
+        assurance = _replay_assurance(edge_id, source, target)
     return OperationalEdge(
         edge_id,
         source,
@@ -44,8 +90,7 @@ def _edge(edge_id, source, target, status, *, verification_id=None, failure_id=N
         "fixed theorem",
         verification_id,
         failure_id,
-        assurance_class=assurance_class,
-        assurance_receipt_id=assurance_receipt_id,
+        assurance_receipt=assurance,
     )
 
 
@@ -77,9 +122,17 @@ def test_verified_operational_route_uses_verified_edges_only():
     assert report.route_edge_ids == ("sa", "ag")
 
 
-def test_verified_transition_requires_assurance_class_and_receipt():
-    with pytest.raises(ValueError, match="assurance"):
+def test_verified_transition_requires_provenance_bearing_assurance_receipt():
+    with pytest.raises(ValueError, match="provenance-bearing"):
         OperationalEdge("sg", "s", "g", MapEdgeStatus.VERIFIED_TRANSITION, "scope", verification_id="v")
+
+
+def test_edge_endpoints_must_match_assurance_states():
+    assurance = _replay_assurance("sg", "s", "other")
+    with pytest.raises(ValueError, match="endpoints"):
+        OperationalEdge(
+            "sg", "s", "g", MapEdgeStatus.VERIFIED_TRANSITION, "scope", verification_id="v", assurance_receipt=assurance
+        )
 
 
 def test_complete_map_no_route_is_only_registered_basis_nonreachability():
