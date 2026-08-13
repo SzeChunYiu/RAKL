@@ -38,12 +38,15 @@ class MapReachabilityVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class CoverageCompletenessCertificate:
-    """Scoped closure of an operational map, never mathematical impossibility."""
-
     certificate_id: str
     problem_state_hash: str
+    specification_hash: str
+    root_qoi: str
+    environment_hash: str
+    verifier_subject_hash: str
     operator_basis_version: str
     chart_id: str
+    toolchain_hash: str
     closure_subject_hash: str
     closure_verifier_id: str
 
@@ -52,19 +55,40 @@ class CoverageCompletenessCertificate:
             (
                 self.certificate_id,
                 self.problem_state_hash,
+                self.specification_hash,
+                self.root_qoi,
+                self.environment_hash,
+                self.verifier_subject_hash,
                 self.operator_basis_version,
                 self.chart_id,
+                self.toolchain_hash,
                 self.closure_subject_hash,
                 self.closure_verifier_id,
             )
         ):
-            raise ValueError("coverage completeness certificate requires bound subject and verifier identities")
+            raise ValueError("coverage completeness certificate requires exact frozen subject and verifier identities")
 
-    def matches(self, *, problem_state_hash: str, operator_basis_version: str, chart_id: str) -> bool:
+    def matches(
+        self,
+        *,
+        problem_state_hash: str,
+        specification_hash: str,
+        root_qoi: str,
+        environment_hash: str,
+        verifier_subject_hash: str,
+        operator_basis_version: str,
+        chart_id: str,
+        toolchain_hash: str,
+    ) -> bool:
         return (
             self.problem_state_hash == problem_state_hash
+            and self.specification_hash == specification_hash
+            and self.root_qoi == root_qoi
+            and self.environment_hash == environment_hash
+            and self.verifier_subject_hash == verifier_subject_hash
             and self.operator_basis_version == operator_basis_version
             and self.chart_id == chart_id
+            and self.toolchain_hash == toolchain_hash
         )
 
     @property
@@ -93,6 +117,8 @@ class OperationalEdge:
             receipt = self.assurance_receipt
             if receipt is None:
                 raise ValueError("verified transition requires provenance-bearing assurance receipt")
+            if not isinstance(receipt, OperationalEdgeAssuranceReceipt):
+                raise ValueError("verified transition assurance must be an OperationalEdgeAssuranceReceipt object")
             if not receipt.supports_operational_reachability:
                 raise ValueError("verified transition assurance does not support operational reachability")
             if receipt.edge_id != self.edge_id:
@@ -125,16 +151,33 @@ class OperationalEdge:
 class OperationalMapReceipt:
     map_id: str
     problem_state_hash: str
+    specification_hash: str
+    root_qoi: str
+    environment_hash: str
+    verifier_subject_hash: str
     operator_basis_version: str
     chart_id: str
+    toolchain_hash: str
     edges: Tuple[OperationalEdge, ...] = ()
     coverage_coordinates: Tuple[str, ...] = ()
     unknown_coordinates: Tuple[str, ...] = ()
     coverage_certificate: CoverageCompletenessCertificate | None = None
 
     def __post_init__(self) -> None:
-        if not self.map_id or not self.problem_state_hash or not self.operator_basis_version or not self.chart_id:
-            raise ValueError("operational map requires map/problem/operator-basis/chart identity")
+        if not all(
+            (
+                self.map_id,
+                self.problem_state_hash,
+                self.specification_hash,
+                self.root_qoi,
+                self.environment_hash,
+                self.verifier_subject_hash,
+                self.operator_basis_version,
+                self.chart_id,
+                self.toolchain_hash,
+            )
+        ):
+            raise ValueError("operational map requires exact frozen problem/specification/environment/operator/chart/toolchain identity")
         ids = [edge.edge_id for edge in self.edges]
         if len(ids) != len(set(ids)):
             raise ValueError("operational edge ids must be unique")
@@ -142,13 +185,32 @@ class OperationalMapReceipt:
             raise ValueError("coverage coordinates must be unique")
         if len(set(self.unknown_coordinates)) != len(self.unknown_coordinates):
             raise ValueError("unknown coordinates must be unique")
+        for edge in self.edges:
+            if edge.assurance_receipt is None:
+                continue
+            for state in (edge.assurance_receipt.source_state, edge.assurance_receipt.target_state):
+                if (
+                    state.specification_hash != self.specification_hash
+                    or state.root_qoi != self.root_qoi
+                    or state.environment_hash != self.environment_hash
+                    or state.verifier_subject_hash != self.verifier_subject_hash
+                    or state.operator_basis_version != self.operator_basis_version
+                    or state.chart_id != self.chart_id
+                    or state.toolchain_hash != self.toolchain_hash
+                ):
+                    raise ValueError("assurance-bound edge state does not match operational map frozen subject")
         if self.coverage_certificate is not None:
             if self.unknown_coordinates:
                 raise ValueError("coverage certificate is incompatible with declared unknown coordinates")
             if not self.coverage_certificate.matches(
                 problem_state_hash=self.problem_state_hash,
+                specification_hash=self.specification_hash,
+                root_qoi=self.root_qoi,
+                environment_hash=self.environment_hash,
+                verifier_subject_hash=self.verifier_subject_hash,
                 operator_basis_version=self.operator_basis_version,
                 chart_id=self.chart_id,
+                toolchain_hash=self.toolchain_hash,
             ):
                 raise ValueError("coverage certificate subject does not match operational map")
 
@@ -159,11 +221,16 @@ class OperationalMapReceipt:
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v4",
+            "schema": "orion.operational_map.v5",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
+            "specification_hash": self.specification_hash,
+            "root_qoi": self.root_qoi,
+            "environment_hash": self.environment_hash,
+            "verifier_subject_hash": self.verifier_subject_hash,
             "operator_basis_version": self.operator_basis_version,
             "chart_id": self.chart_id,
+            "toolchain_hash": self.toolchain_hash,
             "edges": [
                 {
                     "edge_id": e.edge_id,
