@@ -33,13 +33,13 @@
     "total_claims": 33,
     "by_terminal": {
       "NEGATIVE": 3,
-      "SUPPORTED": 6,
+      "SUPPORTED": 5,
       "CANNOT_CHECK": 1,
-      "PARTIAL": 2,
+      "PARTIAL": 3,
       "ARCHITECTURE_ONLY": 13,
       "SCAFFOLD": 8
     },
-    "open": 24
+    "open": 25
   },
   "claims": [
     {
@@ -520,8 +520,8 @@
       "mechanic": "canonical_commitment",
       "paper_owner": "paper-02-structural-mechanics",
       "experiment_owner_issue": "#530",
-      "open": false,
-      "claim": "Typed canonical encoding is deterministic and context-independent (exact Decimal, exact binary64 bit preservation, cycle/unsupported-type rejection, domain separation).",
+      "open": true,
+      "claim": "Typed canonical encoding is deterministic and context-independent; the canonical map is injective modulo the profile equivalence relation (exact Decimal, exact binary64 bit preservation, cycle/unsupported-type rejection, domain separation).",
       "falsifier": "A finite input with two distinct canonical encodings, or a binary64 value whose bits are not preserved across the round trip.",
       "code": [
         "src/rakl/canonical_commitment.py",
@@ -529,17 +529,21 @@
       ],
       "artifact": "research/unified_problem_solving_v1/results/MATHEMATICS_CLOSURE.json",
       "result": {
-        "statements": [
-          "canonical-commitment-deterministic-encoding",
-          "sha256-domain-binding"
+        "supported_facets": [
+          "canonical-encoding-determinism (EXECUTABLE_INVARIANT_BY_CONSTRUCTION)",
+          "sha256-domain-binding (CRYPTOGRAPHIC_ASSUMPTION_BOUND)"
+        ],
+        "open_facets": [
+          "canonical-injectivity-modulo-profile (UNPROVED; bounded-falsified n<=6 only)"
         ],
         "counterexamples": 0,
-        "method": "finite falsification, PASS-with-bound"
+        "method": "evidence-axis audit (#542)"
       },
-      "terminal_state": "SUPPORTED",
-      "terminal_scope": "Finite falsification over n<=6 universes + binary64 round-trips: 0 counterexamples (load-bearing). Small-scope testing is decisive for determinism / domain-binding properties. Lean mechanization NOT attempted (tooling unavailable) - a deferred strengthening, not a scientific block. See MATHEMATICS_CLOSURE.json.",
+      "proof_status": "UNPROVED",
+      "terminal_state": "PARTIAL",
+      "terminal_scope": "#542 audit: determinism is EXECUTABLE_INVARIANT_BY_CONSTRUCTION (sorted keys, type tags, no NaN/infinity enforced in code) and SHA256-domain-binding is CRYPTOGRAPHIC_ASSUMPTION_BOUND (SUPPORTED as an assumption-bound claim). BUT canonical injectivity-modulo-profile is a UNIVERSAL statement only bounded-falsified over n<=6 - bounded testing of a strict subdomain cannot close a universal, so the bundled claim is PARTIAL/open until a proof or whole-domain argument lands. The #530 'small-scope testing is decisive for injectivity' framing is withdrawn as logically insufficient. See MATHEMATICS_CLOSURE.json (schema v2).",
       "baseline": "",
-      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
+      "artifact_sha256_prefix": "ff8c017275ef9814"
     },
     {
       "claim_id": "MATH-TCSQ-SOUNDNESS",
@@ -562,12 +566,13 @@
           "approximation-max-composition-monotonicity"
         ],
         "counterexamples": 0,
-        "method": "finite falsification, PASS-with-bound"
+        "method": "evidence-axis audit (#542)"
       },
+      "proof_status": "EXECUTABLE_INVARIANT_BY_CONSTRUCTION",
       "terminal_state": "SUPPORTED",
-      "terminal_scope": "Projection / reconstruction / preservation soundness finite-checked (coordinate partition, protected-coordinate invariant, approximation composition + max bounds): 0 counterexamples (load-bearing). This is the SOUNDNESS theorem ONLY; the separate empirical SQ-3 net-benefit question is claim #521 (in progress). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json.",
+      "terminal_scope": "#542 audit: coordinate-partition disjointness + protected-coordinate preservation are EXECUTABLE_INVARIANT_BY_CONSTRUCTION (validate_proposal_contract rejects any violating proposal, so 'valid => invariant' holds by construction over the whole domain); approximation additive/max composition bounds are ALGEBRAIC_PROOF (elementary real-arithmetic identities). The finite searches corroborate; they are NOT what closes the universal. No rollback - not a bounded-falsification-only closure. SOUNDNESS theorem ONLY; empirical SQ-3 net-benefit is separate claim #521. Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json (schema v2).",
       "baseline": "",
-      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
+      "artifact_sha256_prefix": "ff8c017275ef9814"
     },
     {
       "claim_id": "MATH-VTG-CONTRACTS",
@@ -590,9 +595,9 @@
         "counterexamples": 0
       },
       "terminal_state": "PARTIAL",
-      "terminal_scope": "Subject-identity facet finite-checked (tree-content equivalence, PASS-with-bound). The VTG abstraction-soundness facet (NavigationAbstractionContract EXACT_QUOTIENT) could NOT be finite-checked to a decidable bound -> ARCHITECTURE_ONLY / UNDERPOWERED there: undecidable-with-current-method, NOT negatively settled, so this claim stays open. The separate local-geometry UTILITY claim is #528 (unexecuted). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json.",
+      "terminal_scope": "#542 audit: subject-identity facet is CRYPTOGRAPHIC_ASSUMPTION_BOUND ('same git tree SHA => same content' holds conditional on git's content-addressing hash being collision-resistant - an assumption, not an injectivity theorem; SUPPORTED as assumption-bound). The VTG abstraction-soundness facet (NavigationAbstractionContract EXACT_QUOTIENT) is UNPROVED / ARCHITECTURE_ONLY: declared contract shape, finite-checked to no decidable bound -> undecidable-with-current-method, NOT negatively settled, so the claim stays open. The separate local-geometry UTILITY claim is #528 (unexecuted). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json (schema v2).",
       "baseline": "",
-      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
+      "artifact_sha256_prefix": "ff8c017275ef9814"
     },
     {
       "claim_id": "ML-STRUCTURAL-RESIDUAL",
