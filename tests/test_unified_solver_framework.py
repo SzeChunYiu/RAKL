@@ -27,10 +27,26 @@ from rakl.path_equivalence import PathEquivalenceKind, PathEquivalenceWitness, T
 from rakl.proof_dag import ProofDAG, ProofEdge, ProofNode, ProofNodeKind, ProofNodeStatus, ProofRelation
 from rakl.solution_assembly import AssemblyVerdict, SolutionAssemblyReceipt, proof_dag_content_hash, validate_solution_assembly
 from rakl.solver_compilation import CompilationStatus, PreservationValidationReceipt, SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
+from rakl.vtg_hardening import OperationalEdgeAssuranceClass
 
 
 def _edge(edge_id, source, target, status, *, verification_id=None, failure_id=None):
-    return OperationalEdge(edge_id, source, target, status, "fixed theorem", verification_id, failure_id)
+    assurance_class = None
+    assurance_receipt_id = None
+    if status is MapEdgeStatus.VERIFIED_TRANSITION:
+        assurance_class = OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE
+        assurance_receipt_id = f"assurance-{edge_id}"
+    return OperationalEdge(
+        edge_id,
+        source,
+        target,
+        status,
+        "fixed theorem",
+        verification_id,
+        failure_id,
+        assurance_class=assurance_class,
+        assurance_receipt_id=assurance_receipt_id,
+    )
 
 
 def test_unknown_map_content_never_becomes_impossibility():
@@ -59,6 +75,11 @@ def test_verified_operational_route_uses_verified_edges_only():
     report = verified_reachability(receipt, start_state_id="s", target_state_id="g")
     assert report.verdict is MapReachabilityVerdict.VERIFIED_ROUTE_FOUND
     assert report.route_edge_ids == ("sa", "ag")
+
+
+def test_verified_transition_requires_assurance_class_and_receipt():
+    with pytest.raises(ValueError, match="assurance"):
+        OperationalEdge("sg", "s", "g", MapEdgeStatus.VERIFIED_TRANSITION, "scope", verification_id="v")
 
 
 def test_complete_map_no_route_is_only_registered_basis_nonreachability():
