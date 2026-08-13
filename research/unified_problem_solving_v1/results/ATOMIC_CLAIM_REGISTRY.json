@@ -18,7 +18,7 @@
   "source_artifacts": {
     "promotion_gate": {
       "path": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
-      "sha256_prefix": "382eec45a69aa310"
+      "sha256_prefix": "63cea082e4c52f8a"
     },
     "closure_ledger": {
       "path": "research/unified_problem_solving_v1/results/CLOSURE_LEDGER.json",
@@ -136,18 +136,16 @@
       "falsifier": "forced-wrong rate CI includes the confident-error baseline, or signal-name lookup reconstructs the cause table (circularity).",
       "promotion_verdict": "KEEP_PROPOSAL_ONLY",
       "result": {
-        "ci95": [
-          0.0,
-          0.0
-        ],
-        "n": 300,
-        "rate": 0.0
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0,
+        "n": 2400
       },
       "artifact": "research/unified_problem_solving_v1/results/diagnosis_accuracy.json",
       "terminal_state": "CANNOT_CHECK",
       "terminal_scope": "CI unavailable at cutoff (rate 0.0, degenerate interval). #523 suspects INVALID_CONTAMINATED: pre-classified signal names feed a deterministic cause table (circular at noise 0). Raw-telemetry redesign in flight.",
       "open": true,
-      "artifact_sha256_prefix": "3faa2166ae8826e8"
+      "artifact_sha256_prefix": "f40fece4282b3dbe"
     },
     {
       "claim_id": "EMP-NAV-NETBENEFIT",
@@ -173,7 +171,7 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "DECISIVE: hard-coded diffusion defect fixed and a fair crossover rerun across graph-size x heuristic-quality x reuse-count; path-integral still loses to A* in every cell (mean -364.4, CI [-538.8,-210.0], n=18). The fix made it MORE negative (the old defect was accidentally helping the method). Method valid; no net-benefit regime found. Lane #519 closed.",
       "open": false,
-      "artifact_sha256_prefix": "e95a2a51c34d1d8a"
+      "artifact_sha256_prefix": "986175ce9dd1f4a6"
     },
     {
       "claim_id": "EMP-PATHQ-NETBENEFIT",
@@ -234,7 +232,7 @@
       "promotion_verdict": "KEEP_PROPOSAL_ONLY",
       "result": {
         "hi": -2878.7916666666665,
-        "lo": -5332.799999999999,
+        "lo": -5332.8,
         "mean": -4074.3416666666667,
         "n": 6,
         "note": "aggregated across redundancy-rate cells by bootstrap on cell means"
@@ -243,7 +241,7 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "Strongly negative in tested regime (mean -4074, CI [-5333,-2879], n=6 cells). Root-cause in flight (#521): stage-cost decomposition plus an oracle-quotient test to separate quotient semantics from verification/bookkeeping overhead.",
       "open": true,
-      "artifact_sha256_prefix": "a85cc999ce1d7645"
+      "artifact_sha256_prefix": "a345ccf3dbf06c04"
     },
     {
       "claim_id": "IMPL-DIRECTIONAL_STRUCTURAL_WITNESS",
@@ -541,7 +539,7 @@
       "terminal_state": "SUPPORTED",
       "terminal_scope": "Finite falsification over n<=6 universes + binary64 round-trips: 0 counterexamples (load-bearing). Small-scope testing is decisive for determinism / domain-binding properties. Lean mechanization NOT attempted (tooling unavailable) - a deferred strengthening, not a scientific block. See MATHEMATICS_CLOSURE.json.",
       "baseline": "",
-      "artifact_sha256_prefix": "aa5857a3be94850a"
+      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
     },
     {
       "claim_id": "MATH-TCSQ-SOUNDNESS",
@@ -569,7 +567,7 @@
       "terminal_state": "SUPPORTED",
       "terminal_scope": "Projection / reconstruction / preservation soundness finite-checked (coordinate partition, protected-coordinate invariant, approximation composition + max bounds): 0 counterexamples (load-bearing). This is the SOUNDNESS theorem ONLY; the separate empirical SQ-3 net-benefit question is claim #521 (in progress). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json.",
       "baseline": "",
-      "artifact_sha256_prefix": "aa5857a3be94850a"
+      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
     },
     {
       "claim_id": "MATH-VTG-CONTRACTS",
@@ -594,7 +592,7 @@
       "terminal_state": "PARTIAL",
       "terminal_scope": "Subject-identity facet finite-checked (tree-content equivalence, PASS-with-bound). The VTG abstraction-soundness facet (NavigationAbstractionContract EXACT_QUOTIENT) could NOT be finite-checked to a decidable bound -> ARCHITECTURE_ONLY / UNDERPOWERED there: undecidable-with-current-method, NOT negatively settled, so this claim stays open. The separate local-geometry UTILITY claim is #528 (unexecuted). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json.",
       "baseline": "",
-      "artifact_sha256_prefix": "aa5857a3be94850a"
+      "artifact_sha256_prefix": "b5dd1e00bbfe69c6"
     },
     {
       "claim_id": "ML-STRUCTURAL-RESIDUAL",

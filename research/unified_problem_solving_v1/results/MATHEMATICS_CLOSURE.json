@@ -17,7 +17,7 @@
       ],
       "finite_check": {
         "method": "exhaustive enumeration over small finite universes",
-        "bound": "n \u2264 6 elements for collections; values from {None, bool, int 0..5, simple strings, empty containers}",
+        "bound": "n ≤ 6 elements for collections; values from {None, bool, int 0..5, simple strings, empty containers}",
         "result": "PASS-with-bound",
         "counterexample": null
       },
@@ -51,11 +51,11 @@
       "precise_statement": "For any QuotientProposal q and ProblemRepresentation s: if q is valid (validate_proposal_contract returns empty tuple), then the sets preserved_coordinates, erased_coordinates, and conditionally_erased_coordinates are pairwise disjoint, and their union is a subset of source.coordinates. Protected fields are a subset of preserved_coordinates.",
       "assumptions": [
         "All coordinate tuples contain unique nonempty values",
-        "protected_fields \u2286 source.coordinates"
+        "protected_fields ⊆ source.coordinates"
       ],
       "finite_check": {
         "method": "exhaustive search over all partitions of small coordinate sets",
-        "bound": "source coordinates of size n \u2264 5, all 3^n possible preserved/erased/conditional assignments",
+        "bound": "source coordinates of size n ≤ 5, all 3^n possible preserved/erased/conditional assignments",
         "result": "PASS-with-bound",
         "counterexample": null
       },
@@ -67,13 +67,13 @@
     {
       "statement_id": "protected-coordinate-preservation-invariant",
       "location": "src/rakl/semantic_quotient.py:validate_proposal_contract",
-      "precise_statement": "For any valid QuotientProposal q: protected_fields \u2286 preserved_coordinates. Equivalently: protected_coordinates - preserved_coordinates = \u2205. No protected coordinate may be erased or conditionally erased.",
+      "precise_statement": "For any valid QuotientProposal q: protected_fields ⊆ preserved_coordinates. Equivalently: protected_coordinates - preserved_coordinates = ∅. No protected coordinate may be erased or conditionally erased.",
       "assumptions": [
         "protected_fields are a subset of source.coordinates",
-        "protected_coordinates = source.protected_fields \u222a proposal.protected_coordinates"
+        "protected_coordinates = source.protected_fields ∪ proposal.protected_coordinates"
       ],
       "finite_check": {
-        "method": "exhaustive verification over all proposals with n \u2264 5 coordinates",
+        "method": "exhaustive verification over all proposals with n ≤ 5 coordinates",
         "bound": "all subsets of coordinates as protected_fields, all partition assignments",
         "result": "PASS-with-bound",
         "counterexample": null
@@ -86,7 +86,7 @@
     {
       "statement_id": "approximation-composition-additive-bounds",
       "location": "src/rakl/approximation_budget.py:assess_composed_approximation",
-      "precise_statement": "For any ApproximationBudget b with ErrorComposition.ADDITIVE and steps s1..sk: if each step i has certified_error_bound \u2264 b.max_error, then accumulated_error_bound = \u03a3 certified_error_bound_i \u2264 k * b.max_error. The WITHIN_BUDGET verdict requires \u03a3 certified_error_bound_i \u2264 b.max_error (single budget applies to sum, not per-step).",
+      "precise_statement": "For any ApproximationBudget b with ErrorComposition.ADDITIVE and steps s1..sk: if each step i has certified_error_bound ≤ b.max_error, then accumulated_error_bound = Σ certified_error_bound_i ≤ k * b.max_error. The WITHIN_BUDGET verdict requires Σ certified_error_bound_i ≤ b.max_error (single budget applies to sum, not per-step).",
       "assumptions": [
         "All steps share the same scope_hash and metric_id as the budget",
         "Error bounds are finite and non-negative",
@@ -94,19 +94,19 @@
       ],
       "finite_check": {
         "method": "exhaustive search over small budget/step combinations",
-        "bound": "k \u2264 5 steps, each error_bound \u2208 {0, 0.25, 0.5, 1.0} * max_error",
+        "bound": "k ≤ 5 steps, each error_bound ∈ {0, 0.25, 0.5, 1.0} * max_error",
         "result": "PASS-with-bound",
         "counterexample": null
       },
       "load_bearing": true,
       "lean_status": "not_attempted",
       "terminal": "SUPPORTED",
-      "notes": "Additive composition is exact: sum of bounds is the bound. The check \u03a3 \u2264 budget is correct. This is a basic property of real numbers, not a deep theorem."
+      "notes": "Additive composition is exact: sum of bounds is the bound. The check Σ ≤ budget is correct. This is a basic property of real numbers, not a deep theorem."
     },
     {
       "statement_id": "diagnosis-cannotcheck-no-unique-concrete",
       "location": "src/rakl/diagnosis_state_machine.py:_validate_shape",
-      "precise_statement": "For any DiagnosisState s with verdict = CANNOT_CHECK: it is NOT the case that (|candidate_causes| = 1 AND candidate_causes[0] \u2260 'UNKNOWN'). A CANNOT_CHECK verdict cannot hide a single identified concrete cause.",
+      "precise_statement": "For any DiagnosisState s with verdict = CANNOT_CHECK: it is NOT the case that (|candidate_causes| = 1 AND candidate_causes[0] ≠ 'UNKNOWN'). A CANNOT_CHECK verdict cannot hide a single identified concrete cause.",
       "assumptions": [
         "candidate_causes contains unique values",
         "concrete causes are non-UNKNOWN strings"
@@ -125,7 +125,7 @@
     {
       "statement_id": "diagnosis-state-disjoint-sets",
       "location": "src/rakl/diagnosis_state_machine.py:DiagnosisState.__post_init__",
-      "precise_statement": "For any valid DiagnosisState s: candidate_causes \u2229 ruled_out_causes = \u2205. A cause cannot be both candidate and ruled out simultaneously.",
+      "precise_statement": "For any valid DiagnosisState s: candidate_causes ∩ ruled_out_causes = ∅. A cause cannot be both candidate and ruled out simultaneously.",
       "assumptions": [
         "Both tuples contain unique values"
       ],
@@ -143,7 +143,7 @@
     {
       "statement_id": "astar-optimality-theorem",
       "location": "src/rakl/navigation_dynamics.py:AStarWithGivenHeuristic",
-      "precise_statement": "For any weighted graph G = (V, E, w: E \u2192 R+), start s, goal g, and heuristic h: V \u2192 R+: if h is admissible (\u2200v \u2208 V: h(v) \u2264 true_dist(v, g)), then A* with heuristic h returns a minimum-cost path from s to g. The algorithm terminates when the goal is popped from the priority queue, and the returned path cost is optimal.",
+      "precise_statement": "For any weighted graph G = (V, E, w: E → R+), start s, goal g, and heuristic h: V → R+: if h is admissible (∀v ∈ V: h(v) ≤ true_dist(v, g)), then A* with heuristic h returns a minimum-cost path from s to g. The algorithm terminates when the goal is popped from the priority queue, and the returned path cost is optimal.",
       "assumptions": [
         "Graph is finite",
         "Edge weights are positive",
@@ -151,15 +151,16 @@
         "Goal is reachable from start"
       ],
       "finite_check": {
-        "method": "exhaustive verification over all small graphs",
-        "bound": "graphs with |V| \u2264 6, integer weights \u2208 {1, 2, 3}, all admissible heuristics (h(v) \u2208 {0, 1, true_dist(v,g)})",
+        "method": "differential testing vs Dijkstra oracle (exact_shortest_route)",
+        "bound": "exhaustive: every directed graph on 3 nodes x every admissible heuristic (h(v) in {0..floor(dist(v,g))}, inconsistent included by construction) -> 0 mismatches; randomized: 400 trials per n in {4..8}, admissible generically-inconsistent h -> 0 mismatches; exact #541 4-node admissible-inconsistent regression locked (optimum 5, route s->b->a->g)",
         "result": "PASS-with-bound",
-        "counterexample": null
+        "counterexample": null,
+        "receipt": "tests/test_astar_optimality.py"
       },
       "load_bearing": true,
       "lean_status": "not_attempted",
       "terminal": "SUPPORTED",
-      "notes": "This is the classical A* optimality theorem (Hart, Nilsson, Raphael 1968). Our implementation respects the standard algorithm. The finite verification confirms correct behavior on all small instances."
+      "notes": "Classical A* optimality WITH REOPENING under admissibility (Hart-Nilsson-Raphael 1968): a settled node must be reopened whenever a strictly cheaper g is discovered; reopening is required for optimal behavior under admissible-but-inconsistent heuristics and is never triggered when h is consistent. Implementation repaired in #541 to honour the ADMISSIBLE contract (not merely the consistent one), unifying theorem, implementation, and tests. The finite_check is now an EXECUTED differential (receipt tests/test_astar_optimality.py): the prior record claimed an exhaustive |V|<=6 check that was never run, and whose heuristic sweep {0,1,true_dist} excluded the intermediate inconsistent values that exposed the bug. #542 assigns the formal proof_status / evidence_kind."
     },
     {
       "statement_id": "path-admissibility-preservation",
@@ -171,7 +172,7 @@
       ],
       "finite_check": {
         "method": "exhaustive enumeration over small paths",
-        "bound": "paths of length k \u2264 5, each edge either admissible or not (2^k possibilities)",
+        "bound": "paths of length k ≤ 5, each edge either admissible or not (2^k possibilities)",
         "result": "PASS-with-bound",
         "counterexample": null
       },
@@ -221,13 +222,13 @@
     {
       "statement_id": "approximation-max-composition-monotonicity",
       "location": "src/rakl/approximation_budget.py:assess_composed_approximation",
-      "precise_statement": "For ErrorComposition.MAX: accumulated_error_bound = max(certified_error_bounds). If any step has error \u2264 E, then max \u2264 E. This is monotone: adding more steps cannot decrease the max bound.",
+      "precise_statement": "For ErrorComposition.MAX: accumulated_error_bound = max(certified_error_bounds). If any step has error ≤ E, then max ≤ E. This is monotone: adding more steps cannot decrease the max bound.",
       "assumptions": [
         "All error bounds are finite and non-negative"
       ],
       "finite_check": {
         "method": "exhaustive search over small step collections",
-        "bound": "k \u2264 5 steps, error_bounds \u2208 {0, 0.5, 1.0, 2.0}",
+        "bound": "k ≤ 5 steps, error_bounds ∈ {0, 0.5, 1.0, 2.0}",
         "result": "PASS-with-bound",
         "counterexample": null
       },
