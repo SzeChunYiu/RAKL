@@ -32,14 +32,14 @@
   "summary": {
     "total_claims": 34,
     "by_terminal": {
-      "NEGATIVE": 3,
-      "CANNOT_CHECK": 2,
+      "NEGATIVE": 4,
       "SUPPORTED": 5,
+      "CANNOT_CHECK": 1,
       "PARTIAL": 3,
       "ARCHITECTURE_ONLY": 13,
       "SCAFFOLD": 8
     },
-    "open": 26
+    "open": 25
   },
   "claims": [
     {
@@ -89,15 +89,18 @@
       }
     },
     {
-      "claim_id": "EMP-FIELD_CONSTRUCTION_SUCCESSOR",
+      "claim_id": "EMP-FIELDCONST-SUCCESSOR",
       "mechanic": "field_construction_successor",
-      "paper_owner": "unassigned",
-      "claim": "[unmapped candidate - add judgement]",
+      "paper_owner": "paper-06-rakl-scientific-research-engine",
+      "claim": "A goal-set reachability-grounded EXACT field (true backward-induction transition distances; goal CONDITION target-in-s) beats the strongest available parent (symdiff proxy / target-aware PDB / CEGAR) on fully-costed amortized search savings over repeated queries.",
       "claim_type": "empirical_net_benefit",
-      "code": [],
-      "experiment_owner_issue": "",
-      "baseline": "",
-      "falsifier": "",
+      "code": [
+        "src/rakl/field_successor.py",
+        "research/unified_problem_solving_v1/run_field_successor.py"
+      ],
+      "experiment_owner_issue": "#538",
+      "baseline": "strongest parent field (symdiff proxy / target-aware PDB), both one-time construction costs charged",
+      "falsifier": "The head-to-head net advantage over the strongest parent has a CI including 0 or lying below 0: a cheaper parent captures ~all of the exact oracle's rank information (rho) at a fraction of the build cost, so perfect guidance does not amortize.",
       "promotion_verdict": "KEEP_PROPOSAL_ONLY",
       "result": {
         "hi": -1.1661,
@@ -106,9 +109,9 @@
         "n": 41
       },
       "artifact": "research/unified_problem_solving_v1/results/field_construction_successor.json",
-      "terminal_state": "CANNOT_CHECK",
-      "terminal_scope": "",
-      "open": true,
+      "terminal_state": "NEGATIVE",
+      "terminal_scope": "HONEST DECISIVE: the exact goal-set field is a CORRECT oracle (rho~1.000, false-descent 0, correctness hard gate passes, does save search vs BFS) but is DOMINATED by cheaper parents -- symdiff_proxy achieves rho 0.994 at ~1/5 the build cost (49.6 vs 230.1 node-equiv); pdb_target_aware rho~0.97 at build cost 5.0. Head-to-head net advantage over strongest parent mean -1.8046, CI [-2.4502,-1.1661], n=41 (entirely below 0). Boundary (shallow random) regime likewise dominated mean -2.717 n=40. Mechanic is valid, registered and available but does not earn default-on routing. Lane #538 honest KEEP_PROPOSAL_ONLY; historical field_construction.json NEGATIVE preserved unchanged.",
+      "open": false,
       "artifact_sha256_prefix": "5a243795a262800c",
       "telemetry": {
         "claim_class": "EFFICIENCY",
