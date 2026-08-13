@@ -14,13 +14,13 @@ No new top-level Orion architecture plane was required. The remaining gaps were 
 4. **Transition semantics versus discovered map.** `UNKNOWN != BLOCKED`, and failed search is not refutation.
 5. **Registered-map closure versus impossibility.** A closure certificate establishes only no route under the bound problem/operator-basis/chart/closure subject. It does not establish theorem falsity or unprovability without a separate completeness result.
 6. **Representation category, not universal manifold atlas.** Exact reversible representation changes form the atlas/groupoid-like part. One-way reductions, quotients and relaxations remain non-invertible certified arrows.
-7. **Navigation quotient contract.** QoI-preserving semantic quotienting is not automatically reachability preserving. Exact navigation claims need target preservation and two-way transition/route-lifting conditions; over-approximations require spurious-route detection/refinement.
+7. **Navigation quotient contract.** QoI-preserving semantic quotienting is not automatically reachability preserving. Exact navigation claims need target preservation, forward simulation, route lifting and a cost relation; over-approximations require concrete route revalidation/refinement.
 8. **Hard admissibility before path cost.** Invalid portals, unlicensed assumptions, wrong specification and failed trust gates cannot be compensated by cheap compute.
 9. **Typed path-cost algebra.** Different cost coordinates have different composition laws. Use a registered ordered algebra/quantale where justified, or retain a Pareto/set-valued frontier.
 10. **Intrinsic geometry before budget.** Budget defines feasible reachability/control; a budget-truncated distance can violate triangle inequality and should not be called a metric by default.
-11. **Geometry certification classes.** Distinguish exact cost-to-go, admissible lower bound, consistent heuristic, empirical ranker and uncertified geometry. Theorem rights differ.
+11. **Geometry certification classes.** Distinguish exact cost-to-go, verified upper bound, admissible lower bound, consistent heuristic, empirical ranker and uncertified geometry. Theorem rights differ.
 12. **Certified local navigability.** For a registered class, a local policy with verifier-valid successors and a strictly decreasing well-founded rank reaches a goal finitely. This is the theorem-level version of the “gravity toward solution” intuition.
-13. **Trajectory/certificate separation.** Search chronology is not the final proof DAG/term; authority attaches only through the final original-semantics proof/specification/trust gate.
+13. **Trajectory/certificate separation.** Search chronology is not the final proof DAG/term; the final assembly is bound to Orion's ordinary audited `ProofReceipt`, exact root statement and certificate artifact before it can become ready for the external authority gate.
 14. **Deterministic/stochastic boundary.** Phase-0/1 VTG is deterministic. Stochastic actions require kernels/MDP/game semantics rather than silent reuse of deterministic edge geometry.
 15. **Infinite-space boundary.** Infima may not be attained and geodesics may not exist. Metric/quasimetric/geodesic/manifold claims require explicit axioms.
 
@@ -31,14 +31,28 @@ No new top-level Orion architecture plane was required. The remaining gaps were 
 - No complete-map result can set `establishes_mathematical_impossibility=True`.
 - Reordered histories require `TransitionIndependenceWitness`; an empty dependency list no longer identifies arbitrary permutations.
 - A routing-validated solver compilation requires a passing preservation receipt bound to the exact source/specification/QoI/representation/transform.
-- Geometry identity now binds root QoI, verifier/environment subject, cost algebra and construction version in addition to operator basis/map/chart.
+- Geometry identity now binds root QoI, verifier/environment subject, cost algebra, construction version and explicit geometry-certification class in addition to operator basis/map/chart.
+- `SolutionAssemblyReceipt` now requires the ordinary audited `ProofReceipt`; the proof receipt must match the root theorem statement and exact certificate artifact hash.
+- `PathCostAlgebra` now records coordinate-specific composition/comparison semantics; the old all-numeric `PathCostVector` is explicitly a development projection rather than the universal VTG cost algebra.
+- `NavigationQuotientValidation` now separates semantic/QoI quotient sufficiency from exact reachability, route lifting and cost-distortion obligations.
+- The unified registry and verification ledger include all eight proposal-only mechanics and fail closed on authority/completeness claims.
 
-## Still recommended implementation hardening
+## Exact-head executable check
 
-1. Replace the naked `verifier_passed: bool` in `solution_assembly.py` with an audited proof/verifier receipt bound to the final certificate artifact hash.
-2. Replace the development-only additive `PathCostVector` semantics with a registered typed coordinate algebra before making theorem-level multiobjective-distance claims.
-3. Add a `NavigationQuotientValidation` object distinct from the existing TCSQ/QoI sufficiency validation.
-4. Add explicit geometry certification class and admissibility/consistency tests where a heuristic wants A*-style theorem rights.
+On exact branch snapshot `660dd526bbb1c0a307e71cb6e470c50811ebf7d1`:
+
+```text
+26 targeted closure/registry tests passed
+UNIFIED_FRAMEWORK_AUDIT=PASS
+REGISTERED_MECHANICS=8
+GLOBAL_COMPLETENESS_CLAIMED=false
+SCIENTIFIC_AUTHORITY_GRANTED=false
+known-world stress runner completed
+AUTHORITY_GRANTED=false
+METHOD_PROMOTION_GRANTED=false
+```
+
+This is scoped software/contract assurance, not a proof that the entire repository or theory is bug-free.
 
 ## Core theorem obligations
 
@@ -52,7 +66,7 @@ Under a frozen subject, adding verified edges cannot invalidate an old verified 
 If `Omega subset Omega'` and old operator semantics remain fixed, the reachable set under `Omega'` contains that under `Omega`. Therefore current-basis nonreachability is not future mathematical impossibility.
 
 ### Navigation quotient
-Exact reachability preservation requires target-label preservation and suitable two-way simulation/lifting. One-way abstraction supports only one-way claims.
+Exact reachability preservation requires target-label preservation and suitable two-way simulation/lifting. One-way abstraction supports only one-way claims and must concretize/revalidate abstract routes.
 
 ### Local descent
 A policy mapping every non-goal solvable state to a verified successor with strictly lower rank in a well-founded order terminates at a goal if all reachable minima are goals.
@@ -72,6 +86,15 @@ These are not mathematical gaps to hide; they are the actual research programme:
 - Does VSC beat simpler solver selection after compilation cost?
 - Do flow/diffusion/conductance dynamics add value over best-first search on the same geometry?
 
+## Optional next mathematical hardening
+
+These are extensions, not currently identified logical holes in the finite deterministic Phase-0 theory:
+
+1. Mechanize the small core propositions in Lean: path-quotient reachability, map/operator monotonicity, well-founded descent termination, and noninterference typing.
+2. If stochastic operators are introduced, define the corresponding Markov-kernel/MDP/game theory explicitly.
+3. If infinite-state/geodesic results are claimed, state compactness/properness/separation assumptions and prove existence as needed.
+4. Use the term `problem fibre` architecturally unless a genuine Grothendieck-fibration structure and lifting laws are defined.
+
 ## Claim boundary
 
 Use:
@@ -81,6 +104,7 @@ VTG_FORMAL_CORE_SPECIFIED
 LOCAL_NAVIGABLE_GEOMETRY_EXISTENCE_UNRESOLVED
 GLOBAL_METRIC_GEODESIC_OR_MANIFOLD_STRUCTURE_NOT_CLAIMED
 NO_ROUTE_UNDER_REGISTERED_SUBSTRATE != MATHEMATICAL_IMPOSSIBILITY
+BOUNDED_MATHEMATICAL_CLOSURE_AUDIT_COMPLETE
 ```
 
-Do not use `MATHEMATICAL_THEORY_COMPLETE` in the absolute sense. The defensible status is that the current formal gaps have been exposed and turned into explicit axioms, certificates, propositions or empirical falsifiers; additional hidden errors remain possible and should be sought by independent review and mechanization.
+Do not use `MATHEMATICAL_THEORY_COMPLETE` in the absolute sense. The defensible status is that the currently identified formal gaps have been exposed and turned into explicit axioms, certificates, propositions, regression tests or empirical falsifiers; additional hidden errors remain possible and should be sought by independent review and mechanization.
