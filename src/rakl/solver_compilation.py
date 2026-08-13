@@ -2,8 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from hashlib import sha256
+import json
 from math import inf
 from typing import Tuple
+
+from .vtg_hardening import ValidationEvidence, ValidationVerdict
+
+
+def _hash(payload: object) -> str:
+    return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
 class TransformationEffect(str, Enum):
@@ -11,8 +19,6 @@ class TransformationEffect(str, Enum):
     CHANGE_METRIC = "CHANGE_METRIC"
     CONTINUATION = "CONTINUATION"
     PARAMETER_HOMOTOPY = "PARAMETER_HOMOTOPY"
-    # Compatibility alias. New theory reserves bare path homotopy for
-    # equivalence of transformation histories/higher cells.
     HOMOTOPY = "HOMOTOPY"
     LIFT = "LIFT"
     AUGMENT_STATE = "AUGMENT_STATE"
@@ -49,16 +55,13 @@ class CompilationStatus(str, Enum):
 
 @dataclass(frozen=True)
 class PreservationValidationReceipt:
-    """Bound validation of a representation/transform preservation claim."""
-
     report_id: str
     source_problem_hash: str
     specification_hash: str
     root_qoi: str
     representation_id: str
     transform_id: str
-    verifier_id: str
-    passed: bool
+    validation_evidence: ValidationEvidence
 
     def __post_init__(self) -> None:
         if not all(
@@ -69,10 +72,30 @@ class PreservationValidationReceipt:
                 self.root_qoi,
                 self.representation_id,
                 self.transform_id,
-                self.verifier_id,
             )
         ):
-            raise ValueError("preservation validation receipt requires bound subject and verifier identities")
+            raise ValueError("preservation validation receipt requires bound subject identities")
+        if self.validation_evidence.subject_hash != self.subject_hash:
+            raise ValueError("preservation validation evidence subject mismatch")
+        if self.validation_evidence.claim_kind != "VSC_PRESERVATION":
+            raise ValueError("preservation validation evidence claim kind mismatch")
+
+    @property
+    def subject_hash(self) -> str:
+        return _hash(
+            {
+                "schema": "orion.vsc.preservation-subject.v1",
+                "source_problem_hash": self.source_problem_hash,
+                "specification_hash": self.specification_hash,
+                "root_qoi": self.root_qoi,
+                "representation_id": self.representation_id,
+                "transform_id": self.transform_id,
+            }
+        )
+
+    @property
+    def passed(self) -> bool:
+        return self.validation_evidence.verdict is ValidationVerdict.PASS
 
     def matches(
         self,
@@ -148,8 +171,6 @@ class SolverCompilationCandidate:
 
     @property
     def one_shot_cost(self) -> float:
-        # Explicit additive resource-accounting projection only. It is not the
-        # general mathematical path-cost algebra used by VTG.
         return self.build_cost + self.execution_cost + self.decode_cost + self.verification_cost
 
     def amortized_per_use_cost(self, uses: int) -> float:
