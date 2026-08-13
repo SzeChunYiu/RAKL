@@ -7,7 +7,7 @@ from hashlib import sha256
 import json
 from typing import Tuple
 
-from .vtg_hardening import OperationalEdgeAssuranceClass
+from .vtg_hardening import OperationalEdgeAssuranceClass, OperationalEdgeAssuranceReceipt
 
 
 def _hash(payload: object) -> str:
@@ -26,9 +26,6 @@ class MapEdgeStatus(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-# Applicability is not the same statement as a verified state transition. Only
-# materialized transitions with an explicit operational/logical assurance class
-# may witness operational reachability.
 VERIFIED_TRAVERSABLE = frozenset({MapEdgeStatus.VERIFIED_TRANSITION})
 
 
@@ -41,12 +38,7 @@ class MapReachabilityVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class CoverageCompletenessCertificate:
-    """Certificate that a registered operational map is closed in scope.
-
-    This is deliberately weaker than a proof of mathematical impossibility or
-    theorem unprovability. It only binds an enumerated map to a frozen
-    problem/operator/chart subject and an external closure checker.
-    """
+    """Scoped closure of an operational map, never mathematical impossibility."""
 
     certificate_id: str
     problem_state_hash: str
@@ -90,8 +82,7 @@ class OperationalEdge:
     verification_id: str | None = None
     failure_id: str | None = None
     representation_id: str | None = None
-    assurance_class: OperationalEdgeAssuranceClass | None = None
-    assurance_receipt_id: str | None = None
+    assurance_receipt: OperationalEdgeAssuranceReceipt | None = None
 
     def __post_init__(self) -> None:
         if not self.edge_id or not self.source_state_id or not self.target_state_id or not self.scope:
@@ -99,19 +90,35 @@ class OperationalEdge:
         if self.status in {MapEdgeStatus.VERIFIED_APPLICABLE, MapEdgeStatus.VERIFIED_TRANSITION} and not self.verification_id:
             raise ValueError("verified applicability/transition status requires verification_id")
         if self.status is MapEdgeStatus.VERIFIED_TRANSITION:
-            if self.assurance_class not in {
-                OperationalEdgeAssuranceClass.KERNEL_DERIVATION_EDGE,
-                OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
-            }:
-                raise ValueError("verified transition requires kernel or replay-validated assurance class")
-            if not self.assurance_receipt_id:
-                raise ValueError("verified transition requires assurance receipt identity")
+            receipt = self.assurance_receipt
+            if receipt is None:
+                raise ValueError("verified transition requires provenance-bearing assurance receipt")
+            if not receipt.supports_operational_reachability:
+                raise ValueError("verified transition assurance does not support operational reachability")
+            if receipt.edge_id != self.edge_id:
+                raise ValueError("operational edge id does not match assurance receipt")
+            if receipt.source_state.state_id != self.source_state_id or receipt.target_state.state_id != self.target_state_id:
+                raise ValueError("operational edge endpoints do not match assurance receipt states")
+        elif self.assurance_receipt is not None:
+            raise ValueError("only VERIFIED_TRANSITION may carry transition assurance receipt")
         if self.status is MapEdgeStatus.REFUTED_IN_SCOPE and not self.failure_id:
             raise ValueError("refuted edge requires failure/evidence identity")
 
     @property
+    def assurance_class(self) -> OperationalEdgeAssuranceClass | None:
+        return None if self.assurance_receipt is None else self.assurance_receipt.assurance_class
+
+    @property
+    def assurance_receipt_id(self) -> str | None:
+        return None if self.assurance_receipt is None else self.assurance_receipt.receipt_id
+
+    @property
     def is_locally_kernel_certified(self) -> bool:
-        return self.status is MapEdgeStatus.VERIFIED_TRANSITION and self.assurance_class is OperationalEdgeAssuranceClass.KERNEL_DERIVATION_EDGE
+        return (
+            self.status is MapEdgeStatus.VERIFIED_TRANSITION
+            and self.assurance_receipt is not None
+            and self.assurance_receipt.supports_local_logical_derivation_claim
+        )
 
 
 @dataclass(frozen=True)
@@ -152,7 +159,7 @@ class OperationalMapReceipt:
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v3",
+            "schema": "orion.operational_map.v4",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
             "operator_basis_version": self.operator_basis_version,
@@ -169,6 +176,8 @@ class OperationalMapReceipt:
                     "representation_id": e.representation_id,
                     "assurance_class": None if e.assurance_class is None else e.assurance_class.value,
                     "assurance_receipt_id": e.assurance_receipt_id,
+                    "assurance_source_state_hash": None if e.assurance_receipt is None else e.assurance_receipt.source_state.content_hash,
+                    "assurance_target_state_hash": None if e.assurance_receipt is None else e.assurance_receipt.target_state.content_hash,
                 }
                 for e in self.edges
             ],
@@ -249,7 +258,11 @@ def verified_reachability(
             route.append(edge_id)
             node = prev
         route.reverse()
-        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_assurance_bound_verified_transition_edges_only",))
+        return MapReachabilityReport(
+            MapReachabilityVerdict.VERIFIED_ROUTE_FOUND,
+            tuple(route),
+            ("route_uses_provenance_bound_verified_transition_edges_only",),
+        )
 
     incomplete = {
         MapEdgeStatus.CANDIDATE_UNVERIFIED,
