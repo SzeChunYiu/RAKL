@@ -228,11 +228,11 @@ Qwen2.5-7B & \texttt{NO\_STATE\_DEPENDENT\_RESIDUAL} & learned \texttt{state\_re
 \paragraph{Defect 2 --- no training signal reached the answer.} The trainer built the sequence as the string \texttt{prompt + " " + gold} and masked the loss up to the tokenised length of \texttt{prompt + " "}. Byte-pair encoding merges the separating space into the answer token (\texttt{" VALID"} and \texttt{" INVALID"} are each a single token), so the masking boundary fell \emph{after} the gold token: the answer token was masked out and the loss saw no answer signal. No gradient ever reached the VALID/INVALID decision; every reported outcome was the untrained base model's prior, not a trained checkpoint. This defect alone voids the entire ladder independently of Defect~1.
 
 \paragraph{Consequence.} With no answer gradient and only two inputs per family, the v1 run cannot identify structural rule learning, a state-dependent residual, repetition value, or a model capability floor. The correct reading is
-\[
-\texttt{V1\_PHASE1}=\texttt{INSTRUMENT\_GENERATOR\_DEFECT},\quad
-\texttt{MECHANISM\_SIGNAL}=\texttt{CANNOT\_CHECK},\quad
+\begin{gather*}
+\texttt{V1\_PHASE1}=\texttt{INSTRUMENT\_GENERATOR\_DEFECT},\\
+\texttt{MECHANISM\_SIGNAL}=\texttt{CANNOT\_CHECK},\qquad
 \texttt{PHASE2}=\texttt{NOT\_OPEN}.
-\]
+\end{gather*}
 The residual hypothesis is \emph{unresolved}; it was neither supported nor refuted.
 
 \paragraph{The corrected instrument.} A v2 instrument fixes both defects: the trainer concatenates prompt and answer \emph{token ids} so the gold token is trained (and exactly matches the token compared at scoring time), and the generator draws \emph{varied} instances per family (dozens of unique inputs, magnitude/graph variation, valid and invalid \emph{length-matched}, with train and probe drawn from disjoint instances so success requires generalising the rule, not memorising a string). A learnability positive-control gate is added: a ``no residual'' verdict is admissible only for a model that first clears the base task. Held-out validation confirms the corrected instrument produces real, non-constant, generalising learning where the v1 instrument produced only constants: on a trivial control (integer parity) accuracy moves from a constant $0.5$ to $1.0$, and on varied \texttt{state\_reachability} a small model reaches $0.75$ on \emph{unseen} graphs. The full v2 ladder re-run is the pending prerequisite to any Phase-2 decision; until it is executed the mechanism remains unresolved.
