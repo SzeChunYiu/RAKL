@@ -5,12 +5,18 @@ Orion applied to Orion. Every candidate mechanic starts PROPOSAL_ONLY. This gate
 the candidate's *own experiment artifact* and issues a typed verdict from registered,
 pre-declared criteria:
 
-  PROMOTE_TO_MECHANIC  - effect present with a CI excluding the null, net advantage
-                         POSITIVE after its own construction/witness cost is charged,
-                         and no fail-closed violation in its regression tests.
-  KEEP_PROPOSAL_ONLY   - implemented and tested, but the net advantage is absent,
-                         negative, or regime-dependent; it stays available and
-                         registered, but is not a default-on mechanic.
+  PROMOTE_TO_MECHANIC       - effect present with a CI excluding the null, net advantage
+                              POSITIVE after its own construction/witness cost is charged,
+                              and no fail-closed violation in its regression tests; AND no
+                              statistically-separated opposing-sign regime subsets.
+  PROMOTE_CONDITIONALLY    - a positive net advantage exists but ONLY inside a registered
+                              regime subset; the artifact also contains a net-negative subset
+                              (a regime crossover). The verdict carries a machine-readable
+                              applicability contract; the mechanic routes to baseline outside
+                              / unknown to the supported regime (#543). Never unconditional.
+  KEEP_PROPOSAL_ONLY       - implemented and tested, but the net advantage is absent,
+                              negative, or regime-dependent; it stays available and
+                              registered, but is not a default-on mechanic.
   REJECT               - the idea is refuted in its own known world (harmful or broken).
   CANNOT_CHECK         - the evidence artifact is missing/unreadable, or the experiment
                          did not charge its own cost (an uncharged win is not a win).
@@ -23,9 +29,14 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# the gate shares one applicability contract with the registry + controller (#543)
+sys.path.insert(0, str(ROOT / "src"))
+from rakl.applicability import build_applicability_contract  # noqa: E402
+
 R = ROOT / "research"
 
 # candidate -> (evidence artifact, key of the net/advantage metric, key of the CI dict)
@@ -180,6 +191,26 @@ def verdict_for(name: str, spec: dict) -> dict:
     ci = _find(data, spec.get("ci_keys", [])) if spec.get("ci_keys") else None
     if net is None:
         return {"verdict": "CANNOT_CHECK", "reason": f"no_net_metric_among:{spec['net_keys']}"}
+
+    # --- #543: consume registered regime evidence BEFORE the pooled mean.
+    # An artifact whose regime_analysis has statistically-separated opposing-sign
+    # subsets describes a crossover. An unconditional PROMOTE on the pooled mean is
+    # semantically stronger than the evidence (it averages the positive and negative
+    # regimes), so emit a conditional verdict carrying an applicability predicate.
+    # The contract is built only when the subset CIs genuinely exclude zero on
+    # opposite sides (labels are not trusted).
+    contract = build_applicability_contract(data.get("regime_analysis"))
+    if contract is not None:
+        if contract["positive_regime_significant"]:
+            v = "PROMOTE_CONDITIONALLY"
+            why = "regime_crossover_positive_subregime_ci_excludes_null"
+        else:
+            v = "KEEP_PROPOSAL_ONLY"
+            why = "regime_crossover_no_clean_positive_subregime"
+        return {"verdict": v, "reason": why, "net": net,
+                "applicability": contract, "note": spec["note"],
+                "artifact": str(art.relative_to(ROOT))}
+
     excl = _ci_excludes_null(net, ci=ci)
     mean = net.get("mean") if isinstance(net, dict) else net
     if excl is True and isinstance(mean, (int, float)) and mean > 0:
@@ -202,6 +233,8 @@ def main() -> int:
         "grants_scientific_authority": False,
         "candidates": rows,
         "promoted": sorted(n for n, r in rows.items() if r["verdict"] == "PROMOTE_TO_MECHANIC"),
+        "conditionally_promoted": sorted(
+            n for n, r in rows.items() if r["verdict"] == "PROMOTE_CONDITIONALLY"),
         "proposal_only": sorted(n for n, r in rows.items() if r["verdict"] == "KEEP_PROPOSAL_ONLY"),
         "cannot_check": sorted(n for n, r in rows.items() if r["verdict"] == "CANNOT_CHECK"),
     }
@@ -210,7 +243,7 @@ def main() -> int:
     dest.write_text(json.dumps(out, indent=2, sort_keys=True))
     for name, r in sorted(rows.items()):
         print(f"  {r['verdict']:20s} {name}  ({r['reason']})")
-    print(f"PROMOTED={len(out['promoted'])} PROPOSAL_ONLY={len(out['proposal_only'])} CANNOT_CHECK={len(out['cannot_check'])}")
+    print(f"PROMOTED={len(out['promoted'])} CONDITIONAL={len(out['conditionally_promoted'])} PROPOSAL_ONLY={len(out['proposal_only'])} CANNOT_CHECK={len(out['cannot_check'])}")
     print("SCIENTIFIC_AUTHORITY_GRANTED=false")
     return 0
 
