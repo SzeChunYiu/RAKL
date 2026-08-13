@@ -2,8 +2,15 @@
   "candidates": {
     "field_construction": {
       "artifact": "research/unified_problem_solving_v1/results/field_construction.json",
-      "reason": "evidence_artifact_missing",
-      "verdict": "CANNOT_CHECK"
+      "net": {
+        "hi": -0.8417,
+        "lo": -1.8667,
+        "mean": -1.3333,
+        "n": 120
+      },
+      "note": "constructor must pay for its own construction cost",
+      "reason": "net_negative_in_tested_regime",
+      "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "fieldability_given_field": {
       "artifact": "research/unified_problem_solving_v1/results/field_hypothesis.json",
@@ -19,8 +26,15 @@
     },
     "identity_reuse": {
       "artifact": "research/identity_reuse_v1/results/identity_reuse.json",
-      "reason": "evidence_artifact_missing",
-      "verdict": "CANNOT_CHECK"
+      "net": {
+        "hi": 700.0,
+        "lo": 700.0,
+        "mean": 700.0,
+        "n": 200
+      },
+      "note": "exact reuse vs re-derivation; stale-reuse error rate is a hard constraint",
+      "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "verdict": "PROMOTE_TO_MECHANIC"
     },
     "mechanic_diagnosis": {
       "artifact": "research/unified_problem_solving_v1/results/diagnosis_accuracy.json",
@@ -53,31 +67,43 @@
       "verdict": "CANNOT_CHECK"
     },
     "six_family_law": {
+      "alpha": 0.05,
       "artifact": "research/six_family_extension_v1/results/six_family.json",
-      "reason": "evidence_artifact_missing",
-      "verdict": "CANNOT_CHECK"
+      "count_met": true,
+      "note": "cross-family generalization; sign test across >=6 families",
+      "p": 0.03125,
+      "reason": "sign_test_significant_count_met",
+      "verdict": "PROMOTE_TO_MECHANIC"
     },
     "tcsq_sq3": {
       "artifact": "research/tcsq_sq3_v1/results/sq3.json",
-      "reason": "evidence_artifact_missing",
-      "verdict": "CANNOT_CHECK"
+      "net": {
+        "hi": -2878.7916666666665,
+        "lo": -5332.799999999999,
+        "mean": -4074.3416666666667,
+        "n": 6,
+        "note": "aggregated across redundancy-rate cells by bootstrap on cell means"
+      },
+      "note": "quotient construction cost charged; crossover in redundancy rate expected",
+      "reason": "net_negative_in_tested_regime",
+      "verdict": "KEEP_PROPOSAL_ONLY"
     }
   },
   "cannot_check": [
-    "field_construction",
-    "identity_reuse",
-    "path_equivalence_quotient",
-    "six_family_law",
-    "tcsq_sq3"
+    "path_equivalence_quotient"
   ],
   "grants_scientific_authority": false,
   "policy": "promotion is routing/engineering status, never scientific authority",
   "promoted": [
-    "fieldability_given_field"
+    "fieldability_given_field",
+    "identity_reuse",
+    "six_family_law"
   ],
   "proposal_only": [
+    "field_construction",
     "mechanic_diagnosis",
-    "navigation_dynamics"
+    "navigation_dynamics",
+    "tcsq_sq3"
   ],
   "schema_version": "orion-promotion-gate-v1"
 }
