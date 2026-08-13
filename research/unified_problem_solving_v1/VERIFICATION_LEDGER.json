@@ -1,0 +1,96 @@
+{
+  "schema_version": "orion-unified-solver-verification-ledger-v1",
+  "status": "PROPOSAL_ONLY_FRAMEWORK_HARDENING",
+  "claim_boundary": {
+    "global_no_bug_proof": false,
+    "global_logic_completeness_proof": false,
+    "global_bibliographic_completeness": false,
+    "scientific_authority_granted": false,
+    "method_promotion_granted": false,
+    "software_claim": "registered invariants and known-world mechanisms are executable and externally CI-testable; remaining empirical coordinates stay open"
+  },
+  "mechanics": [
+    {
+      "id": "operational_map_belief",
+      "implementation": "src/rakl/operational_map.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "ADVERSARIAL_KNOWN_WORLD"],
+      "load_bearing_invariants": ["UNKNOWN_NE_BLOCKED", "VERIFIED_ROUTE_USES_VERIFIED_EDGES", "MAP_DOES_NOT_GRANT_AUTHORITY"],
+      "empirical_status": "REAL_PARTIAL_MAP_NAVIGATION_OPEN"
+    },
+    {
+      "id": "path_equivalence_concurrency",
+      "implementation": "src/rakl/path_equivalence.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "COMBINATORIAL_SANITY_TESTED"],
+      "load_bearing_invariants": ["NONTRIVIAL_EQUIVALENCE_REQUIRES_WITNESS", "RAW_CHRONOLOGY_NOT_AUTHORITY_REPLACED"],
+      "empirical_status": "REAL_PROOF_SEARCH_REDUCTION_OPEN"
+    },
+    {
+      "id": "path_cost_algebra",
+      "implementation": "src/rakl/path_cost.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "ADVERSARIAL_KNOWN_WORLD"],
+      "load_bearing_invariants": ["HARD_VALIDITY_BEFORE_COST", "INCOMPARABLE_ROUTES_PRESERVED"],
+      "empirical_status": "TASK_SPECIFIC_COST_CALIBRATION_OPEN"
+    },
+    {
+      "id": "fieldability_and_geometry_lifecycle",
+      "implementation": "src/rakl/fieldability.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "ANALYTIC_AMORTIZATION", "DEVELOPMENT_KNOWN_WORLD"],
+      "load_bearing_invariants": ["LOCAL_ALIGNMENT_NOT_SUFFICIENT", "GEOMETRY_BOUND_TO_MAP_OPERATOR_CHART_SPEC", "ROUTING_DOES_NOT_GRANT_AUTHORITY"],
+      "empirical_status": "HELD_OUT_FORMAL_REACHABILITY_GEOMETRY_OPEN"
+    },
+    {
+      "id": "mechanic_differential_diagnosis",
+      "implementation": "src/rakl/mechanic_diagnosis.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "FAIL_CLOSED_UNKNOWN_SIGNAL"],
+      "load_bearing_invariants": ["AMBIGUITY_PRESERVED", "DISCRIMINATOR_REQUIRED_WHEN_NEEDED", "DIAGNOSIS_NO_AUTHORITY"],
+      "empirical_status": "HIDDEN_CAUSE_DIAGNOSTIC_UTILITY_OPEN"
+    },
+    {
+      "id": "verified_solver_compilation",
+      "implementation": "src/rakl/solver_compilation.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "ANALYTIC_COST_ACCOUNTING"],
+      "load_bearing_invariants": ["ROUTING_VALIDATION_REQUIRES_PRESERVATION_RECEIPT", "BUILD_DECODE_VERIFY_COST_INCLUDED", "COMPILATION_NO_AUTHORITY"],
+      "empirical_status": "JOINT_REPRESENTATION_SOLVER_SELECTION_UTILITY_OPEN"
+    },
+    {
+      "id": "trajectory_to_certificate_assembly",
+      "implementation": "src/rakl/solution_assembly.py",
+      "tests": ["tests/test_unified_solver_framework.py"],
+      "verification": ["UNIT_TESTED", "HASH_DEPENDENCY_VERIFIER_GATED"],
+      "load_bearing_invariants": ["TRAJECTORY_NE_CERTIFICATE", "ROOT_DEPENDENCY_CLOSURE_REQUIRED", "ASSEMBLY_ONLY_READY_FOR_EXTERNAL_GATE"],
+      "empirical_status": "REAL_LONG_HORIZON_ASSEMBLY_OPEN"
+    }
+  ],
+  "cross_cutting": [
+    {
+      "id": "canonical_method_ownership",
+      "implementation": "src/rakl/unified_solver_registry.py",
+      "tests": ["tests/test_unified_solver_registry.py"],
+      "status": "UNIT_TESTED"
+    },
+    {
+      "id": "full_repository_regression",
+      "status": "EXTERNAL_CI_REQUIRED",
+      "evidence_location": "GitHub Actions PR #514 exact-head runs"
+    },
+    {
+      "id": "publication_rendering",
+      "status": "EXTERNAL_CI_REQUIRED",
+      "evidence_location": "GitHub Actions PR #514 PDF/render artifacts"
+    }
+  ],
+  "remaining_cannot_prove": [
+    "absence of all undiscovered software defects",
+    "global completeness of the solver mechanic taxonomy",
+    "existence of a generally useful locally navigable mathematical reachability geometry",
+    "empirical superiority of MDD, VSC, multiscale control, field dynamics, or path quotienting on real research tasks",
+    "semantic fidelity of every future human-to-formal specification without a separately passed alignment gate",
+    "soundness of external verifier implementations beyond their registered trust assumptions"
+  ]
+}
