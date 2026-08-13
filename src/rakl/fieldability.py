@@ -1,7 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from math import inf
+
+
+class GeometryCertificationClass(str, Enum):
+    EXACT_COST_TO_GO = "EXACT_COST_TO_GO"
+    VERIFIED_ROUTE_UPPER_BOUND = "VERIFIED_ROUTE_UPPER_BOUND"
+    ADMISSIBLE_LOWER_BOUND = "ADMISSIBLE_LOWER_BOUND"
+    CONSISTENT_HEURISTIC = "CONSISTENT_HEURISTIC"
+    EMPIRICAL_RANKER = "EMPIRICAL_RANKER"
+    UNCERTIFIED = "UNCERTIFIED"
 
 
 @dataclass(frozen=True)
@@ -12,6 +22,10 @@ class GeometryArtifactIdentity:
     belongs to feasible reachability/control. Geometry is instead bound to the
     subject, operator basis, map revision, representation, verifier semantics,
     cost algebra, and construction version from which its path values are defined.
+
+    ``certification_class`` records the strongest geometry property actually
+    established. It does not itself prove an A*/optimality theorem; downstream
+    algorithms must still satisfy their own assumptions.
     """
 
     geometry_id: str
@@ -23,6 +37,7 @@ class GeometryArtifactIdentity:
     verifier_subject_hash: str
     cost_algebra_id: str
     construction_version: str
+    certification_class: GeometryCertificationClass = GeometryCertificationClass.UNCERTIFIED
 
     def __post_init__(self) -> None:
         if not all(
@@ -39,6 +54,18 @@ class GeometryArtifactIdentity:
             )
         ):
             raise ValueError("geometry artifact identity fields are required")
+
+    @property
+    def supports_exact_cost_claim(self) -> bool:
+        return self.certification_class is GeometryCertificationClass.EXACT_COST_TO_GO
+
+    @property
+    def is_theorem_certified_heuristic_class(self) -> bool:
+        return self.certification_class in {
+            GeometryCertificationClass.EXACT_COST_TO_GO,
+            GeometryCertificationClass.ADMISSIBLE_LOWER_BOUND,
+            GeometryCertificationClass.CONSISTENT_HEURISTIC,
+        }
 
     def matches(
         self,
