@@ -1,0 +1,96 @@
+{
+  "schema": "orion.vtg.formalization-ledger.v1",
+  "ledger_id": "VTG-FORMALIZATION-20260813",
+  "default_target": "Lean4",
+  "global_claim_boundary": "A prose proof or Python regression test does not count as Lean mechanization. OPEN_FORMALIZATION is an owned assurance task, not a hidden defect.",
+  "obligations": [
+    {
+      "obligation_id": "VTG-FORMAL-001",
+      "title": "Path quotient preserves verified endpoint reachability",
+      "owner_surface": "equivalence_similarity",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "If ~ is an endpoint-preserving equivalence congruence on verified finite paths, existence of a quotient morphism from x to y is equivalent to existence of a verified representative path from x to y.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize verified path category", "formalize endpoint-preserving congruence"],
+      "required_completion_artifact": "formal/vtg/PathQuotient.lean",
+      "next_epistemic_cut": "Lean compiles the theorem without sorry/admit/axiom escape hatches"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-002",
+      "title": "Verified-map expansion monotonicity",
+      "owner_surface": "routing",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "Under frozen edge semantics and costs, adding verified transitions cannot invalidate an existing verified route; for a minimization cost algebra the best known route value cannot worsen.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize finite verified map", "choose scoped cost algebra theorem variant"],
+      "required_completion_artifact": "formal/vtg/MapMonotonicity.lean",
+      "next_epistemic_cut": "Lean checks route-existence monotonicity and the registered scalar/Pareto specialization claimed in the paper"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-003",
+      "title": "Operator-basis expansion monotonicity",
+      "owner_surface": "routing",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "If Omega is a subset of Omega' and all old transition semantics remain unchanged, every state reachable under Omega is reachable under Omega'.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize operator-indexed transition relation"],
+      "required_completion_artifact": "formal/vtg/OperatorMonotonicity.lean",
+      "next_epistemic_cut": "Lean checks the inclusion theorem under explicit frozen-semantics assumptions"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-004",
+      "title": "Well-founded local descent terminates inside a certified basin",
+      "owner_surface": "routing",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "If every non-goal solvable state in a registered basin has a verified legal successor with strictly smaller rank in a well-founded order and every reachable minimal-rank state is a goal, repeated policy application terminates at a goal.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize basin", "formalize deterministic local policy", "well-founded rank"],
+      "required_completion_artifact": "formal/vtg/LocalDescent.lean",
+      "next_epistemic_cut": "Lean checks finite termination and goal reachability without assuming the desired conclusion"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-005",
+      "title": "Map/geometry/search noninterference with theorem authority",
+      "owner_surface": "authority_promotion",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "If routing updates have no constructor/write path into authority-bearing theorem state and authority changes only through the registered proof/specification/trust gate, then map, quotient, geometry and navigation updates cannot promote or refute a theorem.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize proposal/search state", "formalize authority state", "formalize gated transition type"],
+      "required_completion_artifact": "formal/vtg/Noninterference.lean",
+      "next_epistemic_cut": "Lean type/model proves routing-only transitions preserve mathematical authority projection"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-006",
+      "title": "Exact navigation quotient preserves target reachability under two-way simulation/lifting",
+      "owner_surface": "equivalence_similarity",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "Under target-label preservation plus the registered two-way simulation/route-lifting assumptions, concrete target reachability is equivalent to abstract target reachability.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["formalize concrete/abstract transition systems", "formalize quotient/lifting relation"],
+      "required_completion_artifact": "formal/vtg/NavigationQuotient.lean",
+      "next_epistemic_cut": "Lean checks both reachability directions under exactly the assumptions advertised"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-007",
+      "title": "Oracle-distance trivialization of existence-only local geometry",
+      "owner_surface": "routing",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "For every finite connected unweighted graph and fixed target, exact graph distance is a natural-number-valued local descent function: every non-target vertex has a neighbor at distance one smaller, so greedy descent reaches the target.",
+      "statement_sources": ["docs/VTG_TEN_ROUND_ADVERSARIAL_AUDIT.md", "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex"],
+      "dependencies": ["finite connected graph shortest-path facts"],
+      "required_completion_artifact": "formal/vtg/OracleDistance.lean",
+      "next_epistemic_cut": "Lean checks the trivialization theorem, supporting the non-vacuity boundary in Paper V"
+    },
+    {
+      "obligation_id": "VTG-FORMAL-008",
+      "title": "Budget truncation need not preserve triangle inequality",
+      "owner_surface": "routing",
+      "status": "OPEN_FORMALIZATION",
+      "statement": "There exists a three-state finite path-cost system and budget B such that independently truncating distances above B to infinity violates triangle inequality, so budget-feasible control is not automatically an intrinsic metric.",
+      "statement_sources": ["docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md"],
+      "dependencies": ["extended nonnegative cost example"],
+      "required_completion_artifact": "formal/vtg/BudgetCounterexample.lean",
+      "next_epistemic_cut": "Lean checks the explicit counterexample used to justify separating intrinsic geometry from budget"
+    }
+  ]
+}
