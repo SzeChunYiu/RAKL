@@ -140,6 +140,47 @@ def canonical_edge_set_hash(edges: Iterable[OperationalEdge]) -> str:
     return _hash({"schema": "orion.operational_map.edge_set.v1", "edges": rows})
 
 
+_VERIFIED_POLARITY = frozenset({MapEdgeStatus.VERIFIED_TRANSITION, MapEdgeStatus.VERIFIED_APPLICABLE})
+
+
+def _contradiction_error(key: tuple[str, str, str, str | None]) -> ValueError:
+    return ValueError(
+        "contradictory epistemic statuses for transition instance "
+        f"(source={key[0]!r}, target={key[1]!r}, scope={key[2]!r}, operator={key[3]!r}): "
+        "verified and refuted-in-scope cannot coexist; name distinct operator_ids "
+        "if these are different operators"
+    )
+
+
+class _EdgeIndex:
+    """Incremental validation index for one linear ``add_edge`` chain.
+
+    Rebuilding the duplicate-id set and per-key status map on every
+    ``add_edge`` made incremental map construction quadratic (engineering
+    audit P1: 8k edges = 2.36 s). The index is shared along a single
+    ``add_edge`` chain and extended in O(1) per edge; ``length`` records how
+    many edges it currently covers, so a receipt whose edge count disagrees
+    (e.g. a second branch grown from the same parent) rebuilds instead of
+    trusting entries that belong to another branch.
+    """
+
+    __slots__ = ("length", "edge_ids", "statuses_by_key")
+
+    def __init__(self, edges: Tuple[OperationalEdge, ...]) -> None:
+        self.edge_ids: set[str] = set()
+        self.statuses_by_key: dict[tuple[str, str, str, str | None], set[MapEdgeStatus]] = {}
+        for edge in edges:
+            self.edge_ids.add(edge.edge_id)
+            self.statuses_by_key.setdefault(edge.transition_instance_key, set()).add(edge.status)
+        self.length = len(edges)
+
+
+# Handshake between add_edge (which validates the appended edge incrementally)
+# and OperationalMapReceipt.__post_init__ (which may then skip the O(n)
+# re-scan for that exact, already-validated edge tuple). Identity-checked.
+_PREVALIDATED_EDGE_TUPLES: list[Tuple[OperationalEdge, ...]] = []
+
+
 @dataclass(frozen=True)
 class OperationalMapReceipt:
     map_id: str
@@ -154,25 +195,25 @@ class OperationalMapReceipt:
     def __post_init__(self) -> None:
         if not self.map_id or not self.problem_state_hash or not self.operator_basis_version or not self.chart_id:
             raise ValueError("operational map requires map/problem/operator-basis/chart identity")
-        ids = [edge.edge_id for edge in self.edges]
-        if len(ids) != len(set(ids)):
-            raise ValueError("operational edge ids must be unique")
-        # Consistency integrity constraint (audit U3): at most one epistemic
-        # polarity per transition-instance key (source, target, scope,
-        # operator). Anonymous operators cannot disambiguate a contradiction
-        # from a multi-operator reading, so they fail closed too.
-        statuses_by_key: dict[tuple[str, str, str, str | None], set[MapEdgeStatus]] = {}
-        for edge in self.edges:
-            statuses_by_key.setdefault(edge.transition_instance_key, set()).add(edge.status)
-        verified_statuses = {MapEdgeStatus.VERIFIED_TRANSITION, MapEdgeStatus.VERIFIED_APPLICABLE}
-        for key, statuses in statuses_by_key.items():
-            if MapEdgeStatus.REFUTED_IN_SCOPE in statuses and statuses & verified_statuses:
-                raise ValueError(
-                    "contradictory epistemic statuses for transition instance "
-                    f"(source={key[0]!r}, target={key[1]!r}, scope={key[2]!r}, operator={key[3]!r}): "
-                    "verified and refuted-in-scope cannot coexist; name distinct operator_ids "
-                    "if these are different operators"
-                )
+        prevalidated = (
+            bool(_PREVALIDATED_EDGE_TUPLES)
+            and _PREVALIDATED_EDGE_TUPLES[-1] is self.edges
+            and self.coverage_certificate is None
+        )
+        if not prevalidated:
+            ids = [edge.edge_id for edge in self.edges]
+            if len(ids) != len(set(ids)):
+                raise ValueError("operational edge ids must be unique")
+            # Consistency integrity constraint (audit U3): at most one epistemic
+            # polarity per transition-instance key (source, target, scope,
+            # operator). Anonymous operators cannot disambiguate a contradiction
+            # from a multi-operator reading, so they fail closed too.
+            statuses_by_key: dict[tuple[str, str, str, str | None], set[MapEdgeStatus]] = {}
+            for edge in self.edges:
+                statuses_by_key.setdefault(edge.transition_instance_key, set()).add(edge.status)
+            for key, statuses in statuses_by_key.items():
+                if MapEdgeStatus.REFUTED_IN_SCOPE in statuses and statuses & _VERIFIED_POLARITY:
+                    raise _contradiction_error(key)
         if len(set(self.coverage_coordinates)) != len(self.coverage_coordinates):
             raise ValueError("coverage coordinates must be unique")
         if len(set(self.unknown_coordinates)) != len(self.unknown_coordinates):
@@ -252,6 +293,15 @@ class MapReachabilityReport:
         return self.verdict is MapReachabilityVerdict.NO_VERIFIED_ROUTE_COVERAGE_COMPLETE
 
 
+def _edge_index_for(receipt: OperationalMapReceipt) -> _EdgeIndex:
+    index: _EdgeIndex | None = getattr(receipt, "_edge_index", None)
+    if index is not None and index.length == len(receipt.edges):
+        return index
+    index = _EdgeIndex(receipt.edges)
+    object.__setattr__(receipt, "_edge_index", index)
+    return index
+
+
 def add_edge(receipt: OperationalMapReceipt, edge: OperationalEdge) -> OperationalMapReceipt:
     """Return a new receipt with ``edge`` appended.
 
@@ -259,10 +309,33 @@ def add_edge(receipt: OperationalMapReceipt, edge: OperationalEdge) -> Operation
     a closure property of the exact edge enumeration, so a mutated enumeration
     is uncertified until the closure checker re-issues a certificate bound to
     the new canonical edge-set hash.
+
+    Validation semantics are identical to full receipt construction (unique
+    edge ids; audit-U3 polarity consistency per transition-instance key), but
+    checked incrementally against a shared per-chain index so building a map
+    edge-by-edge is linear, not quadratic (engineering audit P1).
     """
-    if edge.edge_id in {item.edge_id for item in receipt.edges}:
+    index = _edge_index_for(receipt)
+    if edge.edge_id in index.edge_ids:
         raise ValueError(f"duplicate operational edge id: {edge.edge_id}")
-    return replace(receipt, edges=receipt.edges + (edge,), coverage_certificate=None)
+    key = edge.transition_instance_key
+    existing = index.statuses_by_key.get(key)
+    if existing is not None:
+        merged = existing | {edge.status}
+        if MapEdgeStatus.REFUTED_IN_SCOPE in merged and merged & _VERIFIED_POLARITY:
+            raise _contradiction_error(key)
+    new_edges = receipt.edges + (edge,)
+    _PREVALIDATED_EDGE_TUPLES.append(new_edges)
+    try:
+        new_receipt = replace(receipt, edges=new_edges, coverage_certificate=None)
+    finally:
+        _PREVALIDATED_EDGE_TUPLES.pop()
+    # Extend the shared chain index and hand it to the new receipt.
+    index.edge_ids.add(edge.edge_id)
+    index.statuses_by_key.setdefault(key, set()).add(edge.status)
+    index.length += 1
+    object.__setattr__(new_receipt, "_edge_index", index)
+    return new_receipt
 
 
 def verified_reachability(

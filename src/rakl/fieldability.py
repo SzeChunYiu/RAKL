@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from hashlib import sha256
+import json
 from math import inf
 
 
@@ -14,6 +16,66 @@ class GeometryCertificationClass(str, Enum):
     UNCERTIFIED = "UNCERTIFIED"
 
 
+def geometry_certification_subject_hash(
+    *,
+    geometry_id: str,
+    specification_hash: str,
+    root_qoi: str,
+    operator_basis_version: str,
+    map_revision_hash: str,
+    chart_id: str,
+    verifier_subject_hash: str,
+    cost_algebra_id: str,
+    construction_version: str,
+) -> str:
+    """Canonical hash of the geometry subject a certification witness binds.
+
+    The certification class is a theorem about the function named by exactly
+    these coordinates (audit I5); the class itself is what is being certified,
+    so it is not part of the subject.
+    """
+    payload = {
+        "schema": "orion.fieldability.certification_subject.v1",
+        "geometry_id": geometry_id,
+        "specification_hash": specification_hash,
+        "root_qoi": root_qoi,
+        "operator_basis_version": operator_basis_version,
+        "map_revision_hash": map_revision_hash,
+        "chart_id": chart_id,
+        "verifier_subject_hash": verifier_subject_hash,
+        "cost_algebra_id": cost_algebra_id,
+        "construction_version": construction_version,
+    }
+    return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class CertificationWitness:
+    """Verifier-bound witness for a geometry certification class (audit I5).
+
+    ``EXACT_COST_TO_GO`` / ``ADMISSIBLE_LOWER_BOUND`` / ``CONSISTENT_HEURISTIC``
+    are theorems about a function relative to a cost algebra and map revision.
+    Without a witness naming the checker and the exact subject it checked, a
+    ``certification_class`` is a self-declaration and licenses nothing
+    (the same closure pattern as the coverage-completeness certificate, U4).
+    """
+
+    witness_id: str
+    verifier_id: str
+    subject_hash: str
+    certified_class: GeometryCertificationClass
+
+    def __post_init__(self) -> None:
+        if not all((self.witness_id, self.verifier_id, self.subject_hash)):
+            raise ValueError("certification witness requires witness/verifier/subject identities")
+        if self.certified_class is GeometryCertificationClass.UNCERTIFIED:
+            raise ValueError("a certification witness for UNCERTIFIED is meaningless; omit the witness instead")
+
+    @property
+    def grants_target_authority(self) -> bool:
+        return False
+
+
 @dataclass(frozen=True)
 class GeometryArtifactIdentity:
     """Version binding for a routing geometry.
@@ -23,8 +85,12 @@ class GeometryArtifactIdentity:
     subject, operator basis, map revision, representation, verifier semantics,
     cost algebra, and construction version from which its path values are defined.
 
-    ``certification_class`` records the strongest geometry property actually
-    established. It does not itself prove an A*/optimality theorem; downstream
+    ``certification_class`` records the DECLARED strongest geometry property.
+    Claim-bearing properties (``supports_exact_cost_claim``,
+    ``is_theorem_certified_heuristic_class``) read the WITNESSED class
+    (audit I5): without a ``certification_witness`` bound to this identity's
+    subject hash the effective class is UNCERTIFIED, and the properties fail
+    closed. It does not itself prove an A*/optimality theorem; downstream
     algorithms must still satisfy their own assumptions.
     """
 
@@ -38,6 +104,7 @@ class GeometryArtifactIdentity:
     cost_algebra_id: str
     construction_version: str
     certification_class: GeometryCertificationClass = GeometryCertificationClass.UNCERTIFIED
+    certification_witness: CertificationWitness | None = None
 
     def __post_init__(self) -> None:
         if not all(
@@ -54,14 +121,46 @@ class GeometryArtifactIdentity:
             )
         ):
             raise ValueError("geometry artifact identity fields are required")
+        if self.certification_witness is not None:
+            if self.certification_witness.subject_hash != self.certification_subject_hash:
+                raise ValueError(
+                    "certification witness subject_hash does not match this geometry's "
+                    "certification subject hash (audit I5)"
+                )
+            if self.certification_witness.certified_class is not self.certification_class:
+                raise ValueError(
+                    "certification witness certifies a different class than the declared "
+                    "certification_class (audit I5)"
+                )
+
+    @property
+    def certification_subject_hash(self) -> str:
+        return geometry_certification_subject_hash(
+            geometry_id=self.geometry_id,
+            specification_hash=self.specification_hash,
+            root_qoi=self.root_qoi,
+            operator_basis_version=self.operator_basis_version,
+            map_revision_hash=self.map_revision_hash,
+            chart_id=self.chart_id,
+            verifier_subject_hash=self.verifier_subject_hash,
+            cost_algebra_id=self.cost_algebra_id,
+            construction_version=self.construction_version,
+        )
+
+    @property
+    def witnessed_certification_class(self) -> GeometryCertificationClass:
+        """Effective class: the declared class only when a bound witness backs it."""
+        if self.certification_witness is None:
+            return GeometryCertificationClass.UNCERTIFIED
+        return self.certification_class
 
     @property
     def supports_exact_cost_claim(self) -> bool:
-        return self.certification_class is GeometryCertificationClass.EXACT_COST_TO_GO
+        return self.witnessed_certification_class is GeometryCertificationClass.EXACT_COST_TO_GO
 
     @property
     def is_theorem_certified_heuristic_class(self) -> bool:
-        return self.certification_class in {
+        return self.witnessed_certification_class in {
             GeometryCertificationClass.EXACT_COST_TO_GO,
             GeometryCertificationClass.ADMISSIBLE_LOWER_BOUND,
             GeometryCertificationClass.CONSISTENT_HEURISTIC,

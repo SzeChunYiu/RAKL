@@ -92,3 +92,86 @@ class NavigationQuotientValidation:
     @property
     def supports_exact_navigation_geometry_claim(self) -> bool:
         return self.verdict is NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING
+
+
+@dataclass(frozen=True)
+class CompositeNavigationQuotientValidation:
+    """Derived validation for a CHAIN of navigation quotients (audit I4).
+
+    Forward simulations and route liftings compose, so the safe composite
+    theorem is: all components EXACT_REACHABILITY_PRESERVING => the composite
+    is EXACT_REACHABILITY_PRESERVING; all components at least sound
+    overapproximations => the composite is a sound overapproximation that
+    still requires lifting. Anything weaker fails closed. The chain is bound
+    by subject hashes: each component must abstract exactly the subject the
+    previous component produced. Composites are derived, never self-declared.
+    """
+
+    composite_id: str
+    components: Tuple[NavigationQuotientValidation, ...]
+
+    def __post_init__(self) -> None:
+        if not self.composite_id:
+            raise ValueError("composite navigation quotient validation requires an identity")
+        if len(self.components) < 2:
+            raise ValueError("composite navigation quotient validation requires at least two components")
+        for first, second in zip(self.components, self.components[1:]):
+            if first.abstract_subject_hash != second.source_subject_hash:
+                raise ValueError(
+                    "subject hash mismatch in navigation quotient chain: "
+                    f"{first.validation_id!r} abstracts to {first.abstract_subject_hash!r} but "
+                    f"{second.validation_id!r} quotients {second.source_subject_hash!r} (audit I4)"
+                )
+
+    @property
+    def source_subject_hash(self) -> str:
+        return self.components[0].source_subject_hash
+
+    @property
+    def abstract_subject_hash(self) -> str:
+        return self.components[-1].abstract_subject_hash
+
+    @property
+    def verdict(self) -> NavigationQuotientVerdict:
+        verdicts = tuple(component.verdict for component in self.components)
+        if any(v is NavigationQuotientVerdict.REJECT for v in verdicts):
+            return NavigationQuotientVerdict.REJECT
+        if all(v is NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING for v in verdicts):
+            return NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING
+        sound = {
+            NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING,
+            NavigationQuotientVerdict.SOUND_OVERAPPROX_REQUIRES_LIFTING,
+        }
+        if all(v in sound for v in verdicts):
+            return NavigationQuotientVerdict.SOUND_OVERAPPROX_REQUIRES_LIFTING
+        # EMPIRICAL_ROUTING_ONLY or CANNOT_CHECK anywhere in the chain: no
+        # composite soundness theorem applies; fail closed.
+        return NavigationQuotientVerdict.CANNOT_CHECK
+
+    @property
+    def abstract_route_can_mint_solution_authority(self) -> bool:
+        return False
+
+    @property
+    def abstract_no_route_can_mint_impossibility_authority(self) -> bool:
+        return False
+
+    @property
+    def requires_concrete_route_revalidation(self) -> bool:
+        return self.verdict is not NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING
+
+    @property
+    def supports_exact_navigation_geometry_claim(self) -> bool:
+        return self.verdict is NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING
+
+
+def compose_navigation_quotient_validations(
+    first: NavigationQuotientValidation | CompositeNavigationQuotientValidation,
+    second: NavigationQuotientValidation | CompositeNavigationQuotientValidation,
+    *,
+    composite_id: str,
+) -> CompositeNavigationQuotientValidation:
+    """Compose two (possibly already composite) quotient validations (audit I4)."""
+    left = first.components if isinstance(first, CompositeNavigationQuotientValidation) else (first,)
+    right = second.components if isinstance(second, CompositeNavigationQuotientValidation) else (second,)
+    return CompositeNavigationQuotientValidation(composite_id, left + right)

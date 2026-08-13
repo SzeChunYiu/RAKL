@@ -40,7 +40,35 @@ from rakl.solution_assembly import (
     proof_dag_content_hash,
     validate_solution_assembly,
 )
-from rakl.solver_compilation import SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
+from rakl.fieldability import (
+    CertificationWitness,
+    GeometryArtifactIdentity,
+    GeometryCertificationClass,
+    geometry_certification_subject_hash,
+)
+from rakl.navigation_quotient import (
+    CompositeNavigationQuotientValidation,
+    NavigationQuotientValidation,
+    NavigationQuotientVerdict,
+    compose_navigation_quotient_validations,
+)
+from rakl.solver_compilation import (
+    CompositePreservationReceipt,
+    PreservationValidationReceipt,
+    SolverCompilationCandidate,
+    TransformationEffect,
+    compilation_break_even_uses,
+    compose_preservation_receipts,
+    conflicting_claimed_effects,
+)
+from rakl.structural_transfer import assess_transfer
+from rakl.structural_types import (
+    AtlasCocycleCheck,
+    ChartTransitionWitness,
+    TransferAssessment,
+    TransferDecision,
+    compose_chart_transitions,
+)
 
 
 def test_u1_context_bound_witness_does_not_license_swaps_in_other_contexts():
@@ -305,3 +333,207 @@ def test_i3_unknown_is_not_an_identifiable_mechanic_cause():
         verdict=MechanicDiagnosisVerdict.CANNOT_CHECK,
     )
     assert receipt.grants_scientific_authority is False
+
+
+def test_eng_p1_add_edge_incremental_index_keeps_validation_semantics():
+    """Engineering audit P1: add_edge was O(n) per call (quadratic chains).
+    The incremental chain index must preserve ALL validation semantics —
+    duplicate ids and U3 polarity contradictions still fail closed, including
+    on branches grown from a shared parent — and a chained receipt must be
+    field-identical (content_hash) to direct construction."""
+    edges = tuple(
+        OperationalEdge(f"e{i}", f"s{i}", f"s{i+1}", MapEdgeStatus.VERIFIED_TRANSITION, scope="S", verification_id=f"v{i}")
+        for i in range(64)
+    )
+    direct = OperationalMapReceipt("m", "psh", "obv1", "chart0", edges=edges)
+    chained = OperationalMapReceipt("m", "psh", "obv1", "chart0")
+    for edge in edges:
+        chained = add_edge(chained, edge)
+    assert chained == direct
+    assert chained.content_hash == direct.content_hash
+    assert canonical_edge_set_hash(chained.edges) == canonical_edge_set_hash(direct.edges)
+    # Duplicate ids still fail closed on the chain.
+    with pytest.raises(ValueError, match="duplicate operational edge id"):
+        add_edge(chained, OperationalEdge("e0", "x", "y", MapEdgeStatus.UNKNOWN, scope="S"))
+    # U3 polarity contradiction still fails closed on the chain.
+    with pytest.raises(ValueError, match="contradictory epistemic statuses"):
+        add_edge(chained, OperationalEdge("r0", "s0", "s1", MapEdgeStatus.REFUTED_IN_SCOPE, scope="S", failure_id="f0"))
+    # Branching from one parent: sibling branches must not see each other's edges.
+    parent = OperationalMapReceipt("mb", "psh", "obv1", "chart0")
+    branch_a = add_edge(parent, OperationalEdge("x", "s", "t", MapEdgeStatus.UNKNOWN, scope="S"))
+    branch_b = add_edge(parent, OperationalEdge("y", "s", "t", MapEdgeStatus.UNKNOWN, scope="S"))
+    # "x" is free in branch_b (only branch_a used it) ...
+    branch_b2 = add_edge(branch_b, OperationalEdge("x", "u", "v", MapEdgeStatus.UNKNOWN, scope="S"))
+    assert [e.edge_id for e in branch_a.edges] == ["x"]
+    assert [e.edge_id for e in branch_b2.edges] == ["y", "x"]
+    # ... but duplicates within a branch still fail closed.
+    with pytest.raises(ValueError, match="duplicate operational edge id"):
+        add_edge(branch_b2, OperationalEdge("y", "q", "w", MapEdgeStatus.UNKNOWN, scope="S"))
+
+
+def _preservation_receipt(report_id: str, source: str, target: str | None, *, passed: bool = True) -> PreservationValidationReceipt:
+    return PreservationValidationReceipt(
+        report_id, source, "spec", "qoi", f"rep_{report_id}", f"tr_{report_id}", "verif1",
+        passed=passed, target_problem_hash=target,
+    )
+
+
+def test_i4_effect_conflicts_and_composite_receipts():
+    """Audit I4 (check G10): (a) claimed_effects is no longer a free word — a
+    compilation simultaneously claiming a sound RELAX and a sound TIGHTEN of
+    the same problem fails closed; (b) preservation receipts compose only
+    through matching interface hashes with all components passing; (c) two
+    EXACT navigation-quotient validations compose to a derived EXACT composite,
+    anything weaker fails closed."""
+    # (a) declared effect-conflict relation.
+    with pytest.raises(ValueError, match="conflicting effect pairs"):
+        SolverCompilationCandidate(
+            "c1", "ph", "sh", "qoi", "rep", "tr", "sol", None, "ver",
+            claimed_effects=(TransformationEffect.RELAX, TransformationEffect.TIGHTEN),
+        )
+    assert conflicting_claimed_effects((TransformationEffect.RELAX, TransformationEffect.QUOTIENT)) == ()
+    # (b) composite preservation receipts: subcategory law over interface hashes.
+    r1 = _preservation_receipt("r1", "P0", "P1")
+    r2 = _preservation_receipt("r2", "P1", "P2")
+    composite = compose_preservation_receipts(r1, r2, composite_id="comp1")
+    assert composite.source_problem_hash == "P0"
+    assert composite.target_problem_hash == "P2"
+    assert composite.transform_chain == ("tr_r1", "tr_r2")
+    assert composite.passed is True
+    assert composite.grants_target_authority is False
+    # Associativity of derivation: composites compose further.
+    r3 = _preservation_receipt("r3", "P2", "P3")
+    assert compose_preservation_receipts(composite, r3, composite_id="comp2").transform_chain == ("tr_r1", "tr_r2", "tr_r3")
+    # Interface mismatch fails closed.
+    with pytest.raises(ValueError, match="interface hash mismatch"):
+        compose_preservation_receipts(r1, _preservation_receipt("rx", "P9", "P10"), composite_id="bad")
+    # Legacy receipts without a certified output interface cannot compose.
+    with pytest.raises(ValueError, match="no target_problem_hash"):
+        compose_preservation_receipts(_preservation_receipt("r0", "P0", None), r2, composite_id="bad2")
+    # A failed component never yields a composite.
+    with pytest.raises(ValueError, match="did not pass"):
+        CompositePreservationReceipt("bad3", (_preservation_receipt("rf", "P0", "P1", passed=False), r2))
+    # (c) navigation quotient composition.
+    def _nav(vid: str, src: str, abstract: str, *, exact: bool = True, verifiers: tuple = ("verif1",)) -> NavigationQuotientValidation:
+        return NavigationQuotientValidation(
+            vid, f"q_{vid}", f"sem_{vid}", src, abstract,
+            target_labels_preserved=True, forward_simulation_verified=True,
+            route_lifting_verified=exact, cost_relation_verified=exact,
+            verifier_ids=verifiers,
+        )
+    exact_chain = compose_navigation_quotient_validations(_nav("n1", "S0", "S1"), _nav("n2", "S1", "S2"), composite_id="nav1")
+    assert exact_chain.verdict is NavigationQuotientVerdict.EXACT_REACHABILITY_PRESERVING
+    assert exact_chain.source_subject_hash == "S0" and exact_chain.abstract_subject_hash == "S2"
+    assert exact_chain.requires_concrete_route_revalidation is False
+    assert exact_chain.abstract_route_can_mint_solution_authority is False
+    # One merely-sound overapproximation degrades the whole chain to requires-lifting.
+    mixed = compose_navigation_quotient_validations(_nav("n3", "S0", "S1"), _nav("n4", "S1", "S2", exact=None), composite_id="nav2")
+    assert mixed.verdict is NavigationQuotientVerdict.SOUND_OVERAPPROX_REQUIRES_LIFTING
+    assert mixed.requires_concrete_route_revalidation is True
+    # Chain binding: composing quotients of different subjects fails closed.
+    with pytest.raises(ValueError, match="subject hash mismatch"):
+        compose_navigation_quotient_validations(_nav("n5", "S0", "S1"), _nav("n6", "SX", "S2"), composite_id="nav3")
+
+
+def test_i5_certification_class_requires_bound_witness():
+    """Audit I5 (check G15): the geometry certification class was a bare
+    self-declared enum field; claim-bearing properties must fail closed to
+    UNCERTIFIED unless a CertificationWitness (verifier id + subject hash +
+    class) is bound to the geometry's own identity coordinates."""
+    coords = dict(
+        geometry_id="g1", specification_hash="spec", root_qoi="qoi",
+        operator_basis_version="obv1", map_revision_hash="mrh", chart_id="chart0",
+        verifier_subject_hash="vsh", cost_algebra_id="alg", construction_version="v1",
+    )
+    # The audited counterexample: self-declared EXACT_COST_TO_GO, no witness.
+    unwitnessed = GeometryArtifactIdentity(**coords, certification_class=GeometryCertificationClass.EXACT_COST_TO_GO)
+    assert unwitnessed.witnessed_certification_class is GeometryCertificationClass.UNCERTIFIED
+    assert unwitnessed.supports_exact_cost_claim is False
+    assert unwitnessed.is_theorem_certified_heuristic_class is False
+    # A witness bound to the exact subject coordinates restores the claim.
+    witness = CertificationWitness(
+        "w1", "geometry_checker_1",
+        geometry_certification_subject_hash(**coords),
+        GeometryCertificationClass.EXACT_COST_TO_GO,
+    )
+    witnessed = GeometryArtifactIdentity(
+        **coords, certification_class=GeometryCertificationClass.EXACT_COST_TO_GO,
+        certification_witness=witness,
+    )
+    assert witnessed.supports_exact_cost_claim is True
+    assert witnessed.is_theorem_certified_heuristic_class is True
+    assert witness.grants_target_authority is False
+    # A witness for a DIFFERENT subject must not construct.
+    with pytest.raises(ValueError, match="subject_hash does not match"):
+        GeometryArtifactIdentity(
+            **{**coords, "map_revision_hash": "mrh_other"},
+            certification_class=GeometryCertificationClass.EXACT_COST_TO_GO,
+            certification_witness=witness,
+        )
+    # A witness certifying a different class than declared must not construct.
+    with pytest.raises(ValueError, match="different class"):
+        GeometryArtifactIdentity(
+            **coords, certification_class=GeometryCertificationClass.ADMISSIBLE_LOWER_BOUND,
+            certification_witness=witness,
+        )
+    # Witnessing "UNCERTIFIED" is meaningless and fails closed.
+    with pytest.raises(ValueError, match="UNCERTIFIED"):
+        CertificationWitness("w2", "geometry_checker_1", "any", GeometryCertificationClass.UNCERTIFIED)
+
+
+def test_i6_completeness_is_set_inclusion_and_atlas_needs_cocycle():
+    """Audit I6 (check G14): (a) TransferAssessment completeness must be set
+    inclusion — counts alone (the audited 3,3,2,2 counterexample) can no longer
+    state completeness and fail closed; (b) chart transitions compose as partial
+    injections and triple overlaps carry an explicit cocycle check."""
+    # (a) the audited counterexample: equal counts, no certified sets -> False.
+    counts_only = TransferAssessment(TransferDecision.LICENSED, (), 3, 3, 2, 2)
+    assert counts_only.structurally_complete is False
+    assert counts_only.cardinality_complete is True  # reporting only
+    # The wrong 3 of the required 3: equal cardinality, inclusion fails.
+    wrong_three = TransferAssessment(
+        TransferDecision.LICENSED, (), 3, 3, 2, 2,
+        required_relations=frozenset({"r1", "r2", "r3"}),
+        preserved_relations=frozenset({"r1", "r2", "r4"}),
+        required_invariants=frozenset({"i1", "i2"}),
+        preserved_invariants=frozenset({"i1", "i2"}),
+    )
+    assert wrong_three.structurally_complete is False
+    right_three = TransferAssessment(
+        TransferDecision.LICENSED, (), 3, 3, 2, 2,
+        required_relations=frozenset({"r1", "r2", "r3"}),
+        preserved_relations=frozenset({"r1", "r2", "r3"}),
+        required_invariants=frozenset({"i1", "i2"}),
+        preserved_invariants=frozenset({"i1", "i2"}),
+    )
+    assert right_three.structurally_complete is True
+    # assess_transfer populates the certified sets (round-trip stays complete).
+    from rakl.structural_benchmark import SimilarityQuadrant, make_quadrant_cases
+    q2 = next(c for c in make_quadrant_cases() if c.quadrant is SimilarityQuadrant.Q2_LOW_SEM_HIGH_STRUCT)
+    assessment = assess_transfer(q2.source, q2.target, q2.witness)
+    assert assessment.required_relations is not None and assessment.preserved_relations is not None
+    assert assessment.structurally_complete is True
+    # (b) chart transition composition + cocycle condition.
+    ij = ChartTransitionWitness("w_ij", "chart_i", "chart_j", (("a", "a1"), ("b", "b1")), ("ev1",))
+    jk = ChartTransitionWitness("w_jk", "chart_j", "chart_k", (("a1", "a2"), ("b1", "b2")), ("ev2",))
+    ik_good = ChartTransitionWitness("w_ik", "chart_i", "chart_k", (("a", "a2"), ("b", "b2")), ("ev3",))
+    composed = compose_chart_transitions(ij, jk, witness_id="w_comp")
+    assert composed.mapping == {"a": "a2", "b": "b2"}
+    check = AtlasCocycleCheck("cc1", ij, jk, ik_good)
+    assert check.passed is True
+    assert check.mismatched_roles == ()
+    assert check.grants_global_geometry_authority is False
+    # Incoherent atlas: phi_ik disagrees with phi_jk o phi_ij on role "b".
+    ik_bad = ChartTransitionWitness("w_ik_bad", "chart_i", "chart_k", (("a", "a2"), ("b", "WRONG")), ("ev3",))
+    bad = AtlasCocycleCheck("cc2", ij, jk, ik_bad)
+    assert bad.passed is False
+    assert "b" in bad.mismatched_roles
+    # A role reached by the composite but absent from the direct transition
+    # (or vice versa) is a coherence failure, not a vacuous pass.
+    ik_partial = ChartTransitionWitness("w_ik_p", "chart_i", "chart_k", (("a", "a2"),), ("ev3",))
+    assert AtlasCocycleCheck("cc3", ij, jk, ik_partial).passed is False
+    # Endpoint mismatch in composition fails closed.
+    with pytest.raises(ValueError, match="endpoint mismatch"):
+        compose_chart_transitions(ij, ChartTransitionWitness("w_xk", "chart_x", "chart_k", (("a1", "a2"),), ("ev",)), witness_id="bad")
+    with pytest.raises(ValueError, match="chart chain mismatch"):
+        AtlasCocycleCheck("cc4", ij, jk, ChartTransitionWitness("w_bad", "chart_OTHER", "chart_k", (("a", "a2"),), ("ev",)))

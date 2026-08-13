@@ -58,10 +58,17 @@ def assess_transfer(
 
     target_relations = {relation.signature for relation in target.relations}
     preserved_relations = 0
+    required_relation_set: set[str] = set()
+    preserved_relation_set: set[str] = set()
     for relation in source.relations:
+        relation_key = (
+            f"{relation.source_role}:{relation.relation_type}:{relation.target_role}:{int(relation.directed)}"
+        )
+        required_relation_set.add(relation_key)
         mapped = _mapped_relation(relation, role_map)
         if mapped is not None and mapped in target_relations:
             preserved_relations += 1
+            preserved_relation_set.add(relation_key)
         else:
             reasons.append(
                 "relation_not_preserved:"
@@ -74,7 +81,8 @@ def assess_transfer(
         reasons.append("witness_claims_unknown_source_invariant")
     if not declared_preserved.issubset(target.invariants):
         reasons.append("declared_invariant_missing_in_target")
-    preserved_invariants = len(required_invariants.intersection(declared_preserved).intersection(target.invariants))
+    preserved_invariant_set = required_invariants.intersection(declared_preserved).intersection(target.invariants)
+    preserved_invariants = len(preserved_invariant_set)
     if preserved_invariants != len(required_invariants):
         reasons.append("source_invariants_not_fully_preserved")
 
@@ -94,6 +102,12 @@ def assess_transfer(
         required_relation_count=len(source.relations),
         preserved_invariant_count=preserved_invariants,
         required_invariant_count=len(required_invariants),
+        # Audit I6: completeness is decided by set inclusion over the certified
+        # sets, never by count equality.
+        required_relations=frozenset(required_relation_set),
+        preserved_relations=frozenset(preserved_relation_set),
+        required_invariants=frozenset(required_invariants),
+        preserved_invariants=frozenset(preserved_invariant_set),
     )
 
 

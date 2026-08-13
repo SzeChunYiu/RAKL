@@ -47,9 +47,38 @@ class CompilationStatus(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
+# Declared incompatibility relation on transformation effects (audit I4):
+# ``claimed_effects`` is otherwise a word in the free monoid over
+# TransformationEffect, so mutually contradictory claims (a sound relaxation
+# that is simultaneously a sound tightening of the same problem) would
+# validate. Symmetric; minimal by design — extend only with pairs that are
+# contradictory as simultaneous claims about ONE compilation step.
+EFFECT_CONFLICTS: frozenset[frozenset[TransformationEffect]] = frozenset(
+    {
+        frozenset({TransformationEffect.RELAX, TransformationEffect.TIGHTEN}),
+    }
+)
+
+
+def conflicting_claimed_effects(
+    effects: Tuple[TransformationEffect, ...],
+) -> tuple[frozenset[TransformationEffect], ...]:
+    """Return the declared conflict pairs jointly present in ``effects``."""
+    present = frozenset(effects)
+    return tuple(sorted((pair for pair in EFFECT_CONFLICTS if pair <= present), key=lambda p: sorted(e.value for e in p)))
+
+
 @dataclass(frozen=True)
 class PreservationValidationReceipt:
-    """Bound validation of a representation/transform preservation claim."""
+    """Bound validation of a representation/transform preservation claim.
+
+    ``target_problem_hash`` (optional, additive) names the transformed
+    problem this step produces. It is the interface hash that makes receipts
+    COMPOSABLE (audit I4): ``compose_preservation_receipts`` derives a
+    composite receipt only when each step's certified output interface equals
+    the next step's input. Receipts without it cannot participate in a
+    composite (fail closed).
+    """
 
     report_id: str
     source_problem_hash: str
@@ -59,6 +88,7 @@ class PreservationValidationReceipt:
     transform_id: str
     verifier_id: str
     passed: bool
+    target_problem_hash: str | None = None
 
     def __post_init__(self) -> None:
         if not all(
@@ -122,6 +152,12 @@ class SolverCompilationCandidate:
             raise ValueError("solver compilation candidate requires bound identities")
         if not self.claimed_effects:
             raise ValueError("solver compilation candidate requires claimed transformation effects")
+        conflicts = conflicting_claimed_effects(self.claimed_effects)
+        if conflicts:
+            rendered = "; ".join(",".join(sorted(e.value for e in pair)) for pair in conflicts)
+            raise ValueError(
+                f"claimed_effects contain declared conflicting effect pairs (audit I4): {rendered}"
+            )
         if min(self.build_cost, self.execution_cost, self.decode_cost, self.verification_cost) < 0:
             raise ValueError("compilation costs must be nonnegative")
         if self.expected_reuse is not None and self.expected_reuse < 0:
@@ -174,6 +210,86 @@ class SolverCompilationCandidate:
     @property
     def grants_method_promotion_authority(self) -> bool:
         return False
+
+
+@dataclass(frozen=True)
+class CompositePreservationReceipt:
+    """Derived receipt for a COMPOSED transform chain (audit I4).
+
+    Validated-ness must be closed under composition to license pipelines:
+    a composite receipt exists exactly when every component receipt passed
+    and each step's certified output interface (``target_problem_hash``)
+    equals the next step's input (``source_problem_hash``), with one shared
+    root QoI. This is the subcategory law: components are the morphism data,
+    the composite is derived, never self-declared. Fail-closed: legacy
+    receipts without ``target_problem_hash`` cannot compose.
+    """
+
+    composite_id: str
+    components: Tuple[PreservationValidationReceipt, ...]
+
+    def __post_init__(self) -> None:
+        if not self.composite_id:
+            raise ValueError("composite preservation receipt requires an identity")
+        if len(self.components) < 2:
+            raise ValueError("composite preservation receipt requires at least two component receipts")
+        root_qoi = self.components[0].root_qoi
+        for receipt in self.components:
+            if not receipt.passed:
+                raise ValueError(
+                    f"component receipt {receipt.report_id!r} did not pass; a composite is not derivable (audit I4)"
+                )
+            if receipt.root_qoi != root_qoi:
+                raise ValueError("composite preservation receipt requires one shared root QoI")
+        for first, second in zip(self.components, self.components[1:]):
+            if first.target_problem_hash is None:
+                raise ValueError(
+                    f"component receipt {first.report_id!r} declares no target_problem_hash; "
+                    "its output interface is unnamed and cannot compose (audit I4)"
+                )
+            if first.target_problem_hash != second.source_problem_hash:
+                raise ValueError(
+                    "interface hash mismatch in composite preservation receipt: "
+                    f"{first.report_id!r} certifies output {first.target_problem_hash!r} but "
+                    f"{second.report_id!r} validates input {second.source_problem_hash!r} (audit I4)"
+                )
+
+    @property
+    def source_problem_hash(self) -> str:
+        return self.components[0].source_problem_hash
+
+    @property
+    def target_problem_hash(self) -> str | None:
+        return self.components[-1].target_problem_hash
+
+    @property
+    def root_qoi(self) -> str:
+        return self.components[0].root_qoi
+
+    @property
+    def transform_chain(self) -> Tuple[str, ...]:
+        return tuple(receipt.transform_id for receipt in self.components)
+
+    @property
+    def passed(self) -> bool:
+        # Derivable only from all-passing components (enforced in __post_init__).
+        return True
+
+    @property
+    def grants_target_authority(self) -> bool:
+        return False
+
+
+def compose_preservation_receipts(
+    first: PreservationValidationReceipt | CompositePreservationReceipt,
+    second: PreservationValidationReceipt | CompositePreservationReceipt,
+    *,
+    composite_id: str,
+) -> CompositePreservationReceipt:
+    """Compose two (possibly already composite) preservation receipts (audit I4)."""
+    left = first.components if isinstance(first, CompositePreservationReceipt) else (first,)
+    right = second.components if isinstance(second, CompositePreservationReceipt) else (second,)
+    return CompositePreservationReceipt(composite_id, left + right)
 
 
 def compilation_break_even_uses(candidate: SolverCompilationCandidate, *, baseline_per_use_cost: float) -> float:

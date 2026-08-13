@@ -121,7 +121,18 @@ def run(*, model_id, families, exposure_counts, out_dir, device, seed, epochs, l
     packet, packet_hash = load_frozen_packet(packet_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     started = _now()
-    git_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(HERE)).decode().strip()
+    # Provenance only. Deployments from git-archive zips / Docker COPY / SLURM
+    # scratch have no .git; fall back to "UNKNOWN" instead of crashing (audit A5).
+    try:
+        git_sha = (
+            subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=str(HERE), stderr=subprocess.DEVNULL
+            )
+            .decode()
+            .strip()
+        )
+    except (subprocess.CalledProcessError, OSError):
+        git_sha = "UNKNOWN"
     rows, family_terminals = [], {}
     for family in families:
         pool, probes = build_v2_pool_and_probes(family, seed=seed, max_exposure=max(exposure_counts))

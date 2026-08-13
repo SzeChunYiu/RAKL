@@ -1,5 +1,7 @@
 {
   "api_notes": [
+    "TransitionIndependenceWitness is context-bound (audit U1): its context_hash certifies commutation only in that state, so one witness is registered per (pair, reachable context)",
+    "equivalent_under_declared_partial_order licenses interior swaps only via a prefix-context resolver or an explicit global_independence_certified assertion; this experiment earns the latter by exhaustive per-context execution",
     "PathEquivalenceWitness enforces conditions + verifier_ids for COMMUTES_WITH_WITNESS and exposes grants_proof_authority=False",
     "canonical_partial_order_trace provides the canonical class signature used to collapse orderings",
     "equivalent_under_declared_partial_order is reflexive only on dependency-respecting histories; histories violating the declared partial order are equivalent to nothing, including themselves, so dependencies must be induced from the candidate history's own orientation of verified conflict pairs"
@@ -12,9 +14,12 @@
       "classes_mean": 6.0,
       "classes_min": 6.0,
       "commute_probability": 0.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 3,
       "k": 3,
+      "mean_independence_witnesses_registered": 0.0,
       "mean_witnesses_registered": 0.0,
       "n_instances": 200,
       "naive_executions": 6,
@@ -26,12 +31,15 @@
       "net_saving_max": -3.0,
       "net_saving_mean": -3.0,
       "net_saving_min": -3.0,
+      "reachable_states_mean": 16.0,
       "reduction_ratio_ci95": [
         1.0,
         1.0
       ],
       "reduction_ratio_mean": 1.0,
-      "witness_checks_per_instance": 3
+      "witness_checks_max": 3.0,
+      "witness_checks_mean": 3.0,
+      "witness_checks_min": 3.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -39,26 +47,32 @@
       "classes_mean": 4.285,
       "classes_min": 1.0,
       "commute_probability": 0.3,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 3,
       "k": 3,
+      "mean_independence_witnesses_registered": 1.73,
       "mean_witnesses_registered": 0.865,
       "n_instances": 200,
       "naive_executions": 6,
-      "negative_net_fraction": 0.79,
+      "negative_net_fraction": 1.0,
       "net_saving_ci95": [
-        -1.5,
-        -1.07
+        -2.255,
+        -2.045
       ],
-      "net_saving_max": 2.0,
-      "net_saving_mean": -1.285,
+      "net_saving_max": -1.0,
+      "net_saving_mean": -2.15,
       "net_saving_min": -3.0,
+      "reachable_states_mean": 13.42,
       "reduction_ratio_ci95": [
         1.5625,
         1.8025
       ],
       "reduction_ratio_mean": 1.68,
-      "witness_checks_per_instance": 3
+      "witness_checks_max": 6.0,
+      "witness_checks_mean": 3.865,
+      "witness_checks_min": 3.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -66,26 +80,32 @@
       "classes_mean": 2.575,
       "classes_min": 1.0,
       "commute_probability": 0.6,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 3,
       "k": 3,
+      "mean_independence_witnesses_registered": 3.62,
       "mean_witnesses_registered": 1.81,
       "n_instances": 200,
       "naive_executions": 6,
-      "negative_net_fraction": 0.345,
+      "negative_net_fraction": 1.0,
       "net_saving_ci95": [
-        0.249875,
-        0.605
+        -1.46,
+        -1.31
       ],
-      "net_saving_max": 2.0,
-      "net_saving_mean": 0.425,
+      "net_saving_max": -1.0,
+      "net_saving_mean": -1.385,
       "net_saving_min": -3.0,
+      "reachable_states_mean": 10.765,
       "reduction_ratio_ci95": [
         2.8198749999999997,
         3.2900625
       ],
       "reduction_ratio_mean": 3.0475,
-      "witness_checks_per_instance": 3
+      "witness_checks_max": 6.0,
+      "witness_checks_mean": 4.81,
+      "witness_checks_min": 3.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -93,26 +113,32 @@
       "classes_mean": 1.0,
       "classes_min": 1.0,
       "commute_probability": 1.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 3,
       "k": 3,
+      "mean_independence_witnesses_registered": 6.0,
       "mean_witnesses_registered": 3.0,
       "n_instances": 200,
       "naive_executions": 6,
-      "negative_net_fraction": 0.0,
+      "negative_net_fraction": 1.0,
       "net_saving_ci95": [
-        2.0,
-        2.0
+        -1.0,
+        -1.0
       ],
-      "net_saving_max": 2.0,
-      "net_saving_mean": 2.0,
-      "net_saving_min": 2.0,
+      "net_saving_max": -1.0,
+      "net_saving_mean": -1.0,
+      "net_saving_min": -1.0,
+      "reachable_states_mean": 8.0,
       "reduction_ratio_ci95": [
         6.0,
         6.0
       ],
       "reduction_ratio_mean": 6.0,
-      "witness_checks_per_instance": 3
+      "witness_checks_max": 6.0,
+      "witness_checks_mean": 6.0,
+      "witness_checks_min": 6.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -120,9 +146,12 @@
       "classes_mean": 24.0,
       "classes_min": 24.0,
       "commute_probability": 0.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 6,
       "k": 4,
+      "mean_independence_witnesses_registered": 0.0,
       "mean_witnesses_registered": 0.0,
       "n_instances": 200,
       "naive_executions": 24,
@@ -134,12 +163,15 @@
       "net_saving_max": -6.0,
       "net_saving_mean": -6.0,
       "net_saving_min": -6.0,
+      "reachable_states_mean": 65.0,
       "reduction_ratio_ci95": [
         1.0,
         1.0
       ],
       "reduction_ratio_mean": 1.0,
-      "witness_checks_per_instance": 6
+      "witness_checks_max": 6.0,
+      "witness_checks_mean": 6.0,
+      "witness_checks_min": 6.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -147,26 +179,32 @@
       "classes_mean": 13.525,
       "classes_min": 1.0,
       "commute_probability": 0.3,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 6,
       "k": 4,
+      "mean_independence_witnesses_registered": 8.83,
       "mean_witnesses_registered": 1.88,
       "n_instances": 200,
       "naive_executions": 24,
-      "negative_net_fraction": 0.09,
+      "negative_net_fraction": 0.775,
       "net_saving_ci95": [
-        3.715,
-        5.2601249999999995
+        -2.73,
+        -2.2148750000000006
       ],
-      "net_saving_max": 17.0,
-      "net_saving_mean": 4.475,
+      "net_saving_max": 2.0,
+      "net_saving_mean": -2.475,
       "net_saving_min": -6.0,
+      "reachable_states_mean": 45.245,
       "reduction_ratio_ci95": [
         2.1228273809523808,
         2.7619285714285713
       ],
       "reduction_ratio_mean": 2.4026190476190474,
-      "witness_checks_per_instance": 6
+      "witness_checks_max": 24.0,
+      "witness_checks_mean": 12.95,
+      "witness_checks_min": 6.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -174,26 +212,32 @@
       "classes_mean": 6.05,
       "classes_min": 1.0,
       "commute_probability": 0.6,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 6,
       "k": 4,
+      "mean_independence_witnesses_registered": 15.94,
       "mean_witnesses_registered": 3.61,
       "n_instances": 200,
       "naive_executions": 24,
-      "negative_net_fraction": 0.0,
+      "negative_net_fraction": 0.265,
       "net_saving_ci95": [
-        11.37,
-        12.495
+        -0.5451250000000001,
+        -0.22
       ],
-      "net_saving_max": 17.0,
-      "net_saving_mean": 11.95,
-      "net_saving_min": 0.0,
+      "net_saving_max": 2.0,
+      "net_saving_mean": -0.38,
+      "net_saving_min": -4.0,
+      "reachable_states_mean": 29.82,
       "reduction_ratio_ci95": [
         5.639690476190476,
         6.961428571428571
       ],
       "reduction_ratio_mean": 6.286190476190477,
-      "witness_checks_per_instance": 6
+      "witness_checks_max": 24.0,
+      "witness_checks_mean": 18.33,
+      "witness_checks_min": 10.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -201,26 +245,32 @@
       "classes_mean": 1.0,
       "classes_min": 1.0,
       "commute_probability": 1.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 6,
       "k": 4,
+      "mean_independence_witnesses_registered": 24.0,
       "mean_witnesses_registered": 6.0,
       "n_instances": 200,
       "naive_executions": 24,
-      "negative_net_fraction": 0.0,
+      "negative_net_fraction": 1.0,
       "net_saving_ci95": [
-        17.0,
-        17.0
+        -1.0,
+        -1.0
       ],
-      "net_saving_max": 17.0,
-      "net_saving_mean": 17.0,
-      "net_saving_min": 17.0,
+      "net_saving_max": -1.0,
+      "net_saving_mean": -1.0,
+      "net_saving_min": -1.0,
+      "reachable_states_mean": 16.0,
       "reduction_ratio_ci95": [
         24.0,
         24.0
       ],
       "reduction_ratio_mean": 24.0,
-      "witness_checks_per_instance": 6
+      "witness_checks_max": 24.0,
+      "witness_checks_mean": 24.0,
+      "witness_checks_min": 24.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -228,9 +278,12 @@
       "classes_mean": 120.0,
       "classes_min": 120.0,
       "commute_probability": 0.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 10,
       "k": 5,
+      "mean_independence_witnesses_registered": 0.0,
       "mean_witnesses_registered": 0.0,
       "n_instances": 200,
       "naive_executions": 120,
@@ -242,12 +295,15 @@
       "net_saving_max": -10.0,
       "net_saving_mean": -10.0,
       "net_saving_min": -10.0,
+      "reachable_states_mean": 326.0,
       "reduction_ratio_ci95": [
         1.0,
         1.0
       ],
       "reduction_ratio_mean": 1.0,
-      "witness_checks_per_instance": 10
+      "witness_checks_max": 10.0,
+      "witness_checks_mean": 10.0,
+      "witness_checks_min": 10.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -255,26 +311,32 @@
       "classes_mean": 57.2,
       "classes_min": 6.0,
       "commute_probability": 0.3,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 10,
       "k": 5,
+      "mean_independence_witnesses_registered": 39.9,
       "mean_witnesses_registered": 3.04,
       "n_instances": 200,
       "naive_executions": 120,
-      "negative_net_fraction": 0.02,
+      "negative_net_fraction": 0.165,
       "net_saving_ci95": [
-        49.26925000000001,
-        56.31025
+        14.32475,
+        17.52
       ],
-      "net_saving_max": 104.0,
-      "net_saving_mean": 52.8,
+      "net_saving_max": 39.0,
+      "net_saving_mean": 15.94,
       "net_saving_min": -10.0,
+      "reachable_states_mean": 191.39,
       "reduction_ratio_ci95": [
         2.528186439918777,
         3.1378899655598023
       ],
       "reduction_ratio_mean": 2.822737099856665,
-      "witness_checks_per_instance": 10
+      "witness_checks_max": 79.0,
+      "witness_checks_mean": 46.86,
+      "witness_checks_min": 10.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -282,26 +344,32 @@
       "classes_mean": 17.445,
       "classes_min": 1.0,
       "commute_probability": 0.6,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 10,
       "k": 5,
+      "mean_independence_witnesses_registered": 65.795,
       "mean_witnesses_registered": 6.09,
       "n_instances": 200,
       "naive_executions": 120,
       "negative_net_fraction": 0.0,
       "net_saving_ci95": [
-        90.53,
-        94.505
+        31.899874999999998,
+        33.855124999999994
       ],
-      "net_saving_max": 109.0,
-      "net_saving_mean": 92.555,
-      "net_saving_min": 38.0,
+      "net_saving_max": 44.0,
+      "net_saving_mean": 32.85,
+      "net_saving_min": 8.0,
+      "reachable_states_mean": 93.415,
       "reduction_ratio_ci95": [
         12.307362189440994,
         16.490120341614908
       ],
       "reduction_ratio_mean": 14.266523464458245,
-      "witness_checks_per_instance": 10
+      "witness_checks_max": 82.0,
+      "witness_checks_mean": 69.705,
+      "witness_checks_min": 40.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -309,26 +377,32 @@
       "classes_mean": 1.0,
       "classes_min": 1.0,
       "commute_probability": 1.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 10,
       "k": 5,
+      "mean_independence_witnesses_registered": 80.0,
       "mean_witnesses_registered": 10.0,
       "n_instances": 200,
       "naive_executions": 120,
       "negative_net_fraction": 0.0,
       "net_saving_ci95": [
-        109.0,
-        109.0
+        39.0,
+        39.0
       ],
-      "net_saving_max": 109.0,
-      "net_saving_mean": 109.0,
-      "net_saving_min": 109.0,
+      "net_saving_max": 39.0,
+      "net_saving_mean": 39.0,
+      "net_saving_min": 39.0,
+      "reachable_states_mean": 32.0,
       "reduction_ratio_ci95": [
         120.0,
         120.0
       ],
       "reduction_ratio_mean": 120.0,
-      "witness_checks_per_instance": 10
+      "witness_checks_max": 80.0,
+      "witness_checks_mean": 80.0,
+      "witness_checks_min": 80.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -336,9 +410,12 @@
       "classes_mean": 720.0,
       "classes_min": 720.0,
       "commute_probability": 0.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 15,
       "k": 6,
+      "mean_independence_witnesses_registered": 0.0,
       "mean_witnesses_registered": 0.0,
       "n_instances": 200,
       "naive_executions": 720,
@@ -350,12 +427,15 @@
       "net_saving_max": -15.0,
       "net_saving_mean": -15.0,
       "net_saving_min": -15.0,
+      "reachable_states_mean": 1957.0,
       "reduction_ratio_ci95": [
         1.0,
         1.0
       ],
       "reduction_ratio_mean": 1.0,
-      "witness_checks_per_instance": 15
+      "witness_checks_max": 15.0,
+      "witness_checks_mean": 15.0,
+      "witness_checks_min": 15.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -363,26 +443,32 @@
       "classes_mean": 285.95,
       "classes_min": 48.0,
       "commute_probability": 0.3,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 15,
       "k": 6,
+      "mean_independence_witnesses_registered": 206.615,
       "mean_witnesses_registered": 4.485,
       "n_instances": 200,
       "naive_executions": 720,
       "negative_net_fraction": 0.0,
       "net_saving_ci95": [
-        400.24825,
-        437.5125
+        205.04975000000002,
+        228.59525
       ],
-      "net_saving_max": 657.0,
-      "net_saving_mean": 419.05,
-      "net_saving_min": 105.0,
+      "net_saving_max": 389.0,
+      "net_saving_mean": 216.92,
+      "net_saving_min": 41.0,
+      "reachable_states_mean": 959.33,
       "reduction_ratio_ci95": [
         3.098226679356744,
         3.752196287494785
       ],
       "reduction_ratio_mean": 3.4259857876630573,
-      "witness_checks_per_instance": 15
+      "witness_checks_max": 338.0,
+      "witness_checks_mean": 217.13,
+      "witness_checks_min": 79.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -390,26 +476,32 @@
       "classes_mean": 61.515,
       "classes_min": 1.0,
       "commute_probability": 0.6,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 15,
       "k": 6,
+      "mean_independence_witnesses_registered": 270.9,
       "mean_witnesses_registered": 9.065,
       "n_instances": 200,
       "naive_executions": 720,
       "negative_net_fraction": 0.0,
       "net_saving_ci95": [
-        636.557375,
-        650.005875
+        374.68425,
+        388.53024999999997
       ],
-      "net_saving_max": 704.0,
-      "net_saving_mean": 643.485,
-      "net_saving_min": 471.0,
+      "net_saving_max": 479.0,
+      "net_saving_mean": 381.65,
+      "net_saving_min": 235.0,
+      "reachable_states_mean": 341.095,
       "reduction_ratio_ci95": [
         25.698034338452672,
         42.87535112115822
       ],
       "reduction_ratio_mean": 33.43804893466884,
-      "witness_checks_per_instance": 15
+      "witness_checks_max": 335.0,
+      "witness_checks_mean": 276.835,
+      "witness_checks_min": 235.0
     },
     {
       "class_outcome_mismatches": 0,
@@ -417,26 +509,32 @@
       "classes_mean": 1.0,
       "classes_min": 1.0,
       "commute_probability": 1.0,
+      "demoted_pairs_total": 0,
       "equivalence_spot_checks": 1200,
       "equivalence_spot_failures": 0,
+      "initial_pair_checks_per_instance": 15,
       "k": 6,
+      "mean_independence_witnesses_registered": 240.0,
       "mean_witnesses_registered": 15.0,
       "n_instances": 200,
       "naive_executions": 720,
       "negative_net_fraction": 0.0,
       "net_saving_ci95": [
-        704.0,
-        704.0
+        479.0,
+        479.0
       ],
-      "net_saving_max": 704.0,
-      "net_saving_mean": 704.0,
-      "net_saving_min": 704.0,
+      "net_saving_max": 479.0,
+      "net_saving_mean": 479.0,
+      "net_saving_min": 479.0,
+      "reachable_states_mean": 64.0,
       "reduction_ratio_ci95": [
         720.0,
         720.0
       ],
       "reduction_ratio_mean": 720.0,
-      "witness_checks_per_instance": 15
+      "witness_checks_max": 240.0,
+      "witness_checks_mean": 240.0,
+      "witness_checks_min": 240.0
     }
   ],
   "cells_with_negative_net_saving": [
@@ -448,15 +546,21 @@
     },
     {
       "k": 3,
-      "negative_net_fraction": 0.79,
-      "net_saving_mean": -1.285,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -2.15,
       "p": 0.3
     },
     {
       "k": 3,
-      "negative_net_fraction": 0.345,
-      "net_saving_mean": 0.425,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -1.385,
       "p": 0.6
+    },
+    {
+      "k": 3,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -1.0,
+      "p": 1.0
     },
     {
       "k": 4,
@@ -466,9 +570,21 @@
     },
     {
       "k": 4,
-      "negative_net_fraction": 0.09,
-      "net_saving_mean": 4.475,
+      "negative_net_fraction": 0.775,
+      "net_saving_mean": -2.475,
       "p": 0.3
+    },
+    {
+      "k": 4,
+      "negative_net_fraction": 0.265,
+      "net_saving_mean": -0.38,
+      "p": 0.6
+    },
+    {
+      "k": 4,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -1.0,
+      "p": 1.0
     },
     {
       "k": 5,
@@ -478,8 +594,8 @@
     },
     {
       "k": 5,
-      "negative_net_fraction": 0.02,
-      "net_saving_mean": 52.8,
+      "negative_net_fraction": 0.165,
+      "net_saving_mean": 15.94,
       "p": 0.3
     },
     {
@@ -492,15 +608,16 @@
   "claim_boundary": "development known-world evidence; grants no scientific or method-promotion authority",
   "design": {
     "cross_check": "API class count compared against distinct world outcomes computed without the API",
+    "independence_certification": "global_independence_certified=True is asserted only after both orders of every certified pair were executed from every distinct reachable prefix state of the finite world and all final-state hashes agreed; a pair disagreeing in any context is demoted to a conflict (demoted_pairs). Commutation is discovered by execution, never assumed from the generative construction.",
     "naive_searcher": "executes all k! orderings in the world",
-    "net_saving_definition": "naive_executions - (class_executions + witness_checks)",
-    "quotient_searcher": "executes both orders of every pair (witness checks), registers rakl PathEquivalenceWitness objects for verified commuting pairs, then executes one world run per distinct canonical_partial_order_trace signature; signatures spot-checked against equivalent_under_declared_partial_order",
+    "net_saving_definition": "naive_executions - (class_executions + witness_checks); witness_checks counts every two-order comparison in every context, so the full price of certifying global independence is charged against the quotient. State-enumeration bookkeeping is reported separately (enumeration_transitions) in units of single transformation applications, not two-order checks.",
+    "quotient_searcher": "executes both orders of every pair from the initial state AND from every other reachable prefix state where the pair is unapplied (context-bound witness checks, audit U1), registers rakl TransitionIndependenceWitness objects per (pair, context) plus PathEquivalenceWitness records, then executes one world run per distinct canonical_partial_order_trace signature; signatures spot-checked against equivalent_under_declared_partial_order with global_independence_certified=True",
     "world": "k transformations on integer registers; each owns a private register; each conflict pair shares one register; distinct affine maps make shared-register pairs non-commuting"
   },
   "grants_method_promotion": false,
   "grants_scientific_authority": false,
   "n_instances_per_cell": 200,
-  "schema_version": "orion-path-quotient-savings-v1",
+  "schema_version": "orion-path-quotient-savings-v2",
   "seed": 461,
   "status": "DEVELOPMENT_KNOWN_WORLD_MECHANISM_EVIDENCE_ONLY"
 }

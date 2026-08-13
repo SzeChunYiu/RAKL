@@ -17,6 +17,17 @@ Honesty notes (also recorded in the output JSON):
   distinct affine map to its registers; a conflict pair shares a register,
   a commuting pair does not. Commutation is DISCOVERED by executing both
   orders and comparing state hashes, not read off the generative graph.
+- Independence witnesses are CONTEXT-BOUND (math audit U1): a pair that
+  commutes at the initial state is not thereby independent everywhere. The
+  witness phase therefore executes both orders of every provisionally
+  commuting pair from EVERY distinct reachable prefix state of the world
+  and registers one ``TransitionIndependenceWitness`` per (pair, context);
+  only after that exhaustive executed check does the quotient searcher pass
+  ``global_independence_certified=True`` to the rakl API. Those per-context
+  checks are PAID FOR in ``witness_checks``, so the net-saving accounting
+  now prices the full cost of certifying the global-independence axiom the
+  m!-collapse claim needs. Cells where certification costs more than the
+  quotient saves are reported as negative, not hidden.
 - Class counts are cross-checked against distinct world outcomes, which are
   computed independently of the API. Mismatches are reported, not hidden.
 - Net saving = naive_executions - (class_executions + witness_checks) and
@@ -41,6 +52,7 @@ import numpy as np
 from rakl.path_equivalence import (
     PathEquivalenceKind,
     PathEquivalenceWitness,
+    TransitionIndependenceWitness,
     canonical_partial_order_trace,
     equivalent_under_declared_partial_order,
 )
@@ -97,8 +109,12 @@ class KnownWorld:
 
     def execute(self, ordering: tuple[int, ...]) -> str:
         """Run one full ordering in the world; returns final state hash."""
+        return self.execute_from(self.initial_state, ordering)
+
+    def execute_from(self, start_state: dict[str, int], ordering: tuple[int, ...]) -> str:
+        """Run an ordering from an arbitrary start state; returns final hash."""
         self.executions += 1
-        state = dict(self.initial_state)
+        state = dict(start_state)
         for index in ordering:
             self.apply(state, index)
         return _state_hash(state)
@@ -111,42 +127,131 @@ def build_instance(k: int, p: float, rng: random.Random) -> KnownWorld:
     return KnownWorld(k, conflict)
 
 
+def enumerate_reachable_prefix_states(
+    world: KnownWorld,
+) -> tuple[dict[str, tuple[dict[str, int], frozenset[int]]], int]:
+    """All distinct states reachable by executing any ordering prefix.
+
+    Returns (state_hash -> (state, applied transformation set), transition
+    applications spent on the enumeration). Deterministic DFS; state hashes
+    are injective on (applied set, conflict-pair order) because every
+    transformation marks its private register.
+    """
+    initial = dict(world.initial_state)
+    seen: dict[str, tuple[dict[str, int], frozenset[int]]] = {
+        _state_hash(initial): (initial, frozenset())
+    }
+    frontier = [(initial, frozenset())]
+    transitions = 0
+    while frontier:
+        state, applied = frontier.pop()
+        for index in range(world.k):
+            if index in applied:
+                continue
+            nxt = dict(state)
+            world.apply(nxt, index)
+            transitions += 1
+            digest = _state_hash(nxt)
+            if digest not in seen:
+                entry = (nxt, applied | {index})
+                seen[digest] = entry
+                frontier.append(entry)
+    return seen, transitions
+
+
 def witness_phase(
     world: KnownWorld, instance_label: str
-) -> tuple[frozenset[tuple[int, int]], list[PathEquivalenceWitness], int]:
-    """Check every unordered pair by two-order execution; register witnesses.
+) -> dict:
+    """Certify pairwise commutation by execution, per context (audit U1).
 
-    Returns (verified conflict pairs, registered witnesses, check count).
-    The conflict set handed to the quotient searcher comes ONLY from these
-    executed checks, never from the generative graph.
+    Round 1 checks every unordered pair by two-order execution from the
+    initial state. Round 2 re-executes both orders of every provisionally
+    commuting pair from EVERY other reachable prefix state where the pair is
+    still unapplied, registering one context-bound
+    ``TransitionIndependenceWitness`` per (pair, context). A pair that
+    disagrees in ANY context is demoted to a conflict and its witnesses are
+    discarded. Only this exhaustive executed sweep licenses the searcher's
+    later ``global_independence_certified=True``; commutation is never
+    assumed from the generative construction.
+
+    Every two-order comparison (both rounds) counts as one witness check and
+    is charged against the quotient searcher's net saving.
     """
     checks = 0
-    witnesses: list[PathEquivalenceWitness] = []
     conflicts: set[tuple[int, int]] = set()
+    path_witnesses_by_pair: dict[tuple[int, int], PathEquivalenceWitness] = {}
+    independence_by_pair: dict[tuple[int, int], list[TransitionIndependenceWitness]] = {}
     source_hash = _state_hash(world.initial_state)
+
+    def _independence_witness(a: int, b: int, context_hash: str) -> TransitionIndependenceWitness:
+        return TransitionIndependenceWitness(
+            witness_id=f"{instance_label}:indep:t{a}:t{b}:{context_hash[:12]}",
+            left_transition_id=f"t{a}",
+            right_transition_id=f"t{b}",
+            context_hash=context_hash,
+            verifier_ids=("known_world_executor_v1",),
+            conditions=(
+                "both_orders_executed_from_context_state_in_known_world",
+                "final_state_hashes_agree",
+            ),
+        )
+
+    # Round 1: initial-state two-order execution for every unordered pair.
     for a, b in combinations(range(world.k), 2):
         checks += 1
         forward = world.execute((a, b))
         backward = world.execute((b, a))
         if forward == backward:
-            witnesses.append(
-                PathEquivalenceWitness(
-                    witness_id=f"{instance_label}:commute:t{a}:t{b}",
-                    source_state_hash=source_hash,
-                    target_state_hash=forward,
-                    left_transition_ids=(f"t{a}", f"t{b}"),
-                    right_transition_ids=(f"t{b}", f"t{a}"),
-                    kind=PathEquivalenceKind.COMMUTES_WITH_WITNESS,
-                    conditions=(
-                        "both_orders_executed_from_source_state_in_known_world",
-                        "final_state_hashes_agree",
-                    ),
-                    verifier_ids=("known_world_executor_v1",),
-                )
+            path_witnesses_by_pair[(a, b)] = PathEquivalenceWitness(
+                witness_id=f"{instance_label}:commute:t{a}:t{b}",
+                source_state_hash=source_hash,
+                target_state_hash=forward,
+                left_transition_ids=(f"t{a}", f"t{b}"),
+                right_transition_ids=(f"t{b}", f"t{a}"),
+                kind=PathEquivalenceKind.COMMUTES_WITH_WITNESS,
+                conditions=(
+                    "both_orders_executed_from_source_state_in_known_world",
+                    "final_state_hashes_agree",
+                ),
+                verifier_ids=("known_world_executor_v1",),
             )
+            independence_by_pair[(a, b)] = [_independence_witness(a, b, source_hash)]
         else:
             conflicts.add((a, b))
-    return frozenset(conflicts), witnesses, checks
+
+    # Round 2 (audit U1): certify the provisionally commuting pairs in every
+    # other reachable context where a swap could occur.
+    states, enumeration_transitions = enumerate_reachable_prefix_states(world)
+    demoted: set[tuple[int, int]] = set()
+    for pair in list(independence_by_pair):
+        a, b = pair
+        for digest, (state, applied) in states.items():
+            if not applied or a in applied or b in applied:
+                continue  # initial state already checked; pair must be unapplied
+            checks += 1
+            forward = world.execute_from(state, (a, b))
+            backward = world.execute_from(state, (b, a))
+            if forward == backward:
+                independence_by_pair[pair].append(_independence_witness(a, b, digest))
+            else:
+                # Context-dependent conflict: global independence refuted by
+                # execution; demote and discard the pair's witnesses.
+                conflicts.add(pair)
+                demoted.add(pair)
+                del independence_by_pair[pair]
+                del path_witnesses_by_pair[pair]
+                break
+
+    return {
+        "conflicts": frozenset(conflicts),
+        "path_witnesses": list(path_witnesses_by_pair.values()),
+        "independence_witnesses": [w for group in independence_by_pair.values() for w in group],
+        "witness_checks": checks,
+        "reachable_states": len(states),
+        "enumeration_transitions": enumeration_transitions,
+        "demoted_pairs": len(demoted),
+        "source_hash": source_hash,
+    }
 
 
 def induced_dependencies(
@@ -178,8 +283,13 @@ def run_instance(
     distinct_world_outcomes = len(set(naive_outcomes.values()))
 
     # --- quotient-aware searcher ---
-    # Witness phase: pay for every pairwise commutation check up front.
-    conflicts, witnesses, witness_checks = witness_phase(world, label)
+    # Witness phase: pay for every commutation check (per pair, per reachable
+    # context — audit U1) up front.
+    phase = witness_phase(world, label)
+    conflicts = phase["conflicts"]
+    witnesses = phase["path_witnesses"]
+    independence_witnesses = phase["independence_witnesses"]
+    witness_checks = phase["witness_checks"]
 
     # Class phase: canonicalize each candidate history through the rakl API
     # and execute the world only once per new equivalence class.
@@ -197,7 +307,12 @@ def run_instance(
     classes = len(class_signatures)
 
     # Spot-check that signature identity agrees with the API's pairwise
-    # equivalence predicate (both positive and negative directions).
+    # equivalence predicate (both positive and negative directions). The
+    # predicate is called with the registered context-bound independence
+    # witnesses and global_independence_certified=True — honest here because
+    # the witness phase executed both orders of every certified pair from
+    # every reachable prefix state of this finite world (audit U1); the
+    # certificate is the exhaustive executed sweep, never an assumption.
     spot_checks = 0
     spot_failures = 0
     for _ in range(SPOT_CHECK_PAIRS):
@@ -213,7 +328,12 @@ def run_instance(
             ).signature
         )
         api_equal = equivalent_under_declared_partial_order(
-            left_hist, right_hist, left_deps
+            left_hist,
+            right_hist,
+            left_deps,
+            independence_witnesses=independence_witnesses,
+            context_hash=phase["source_hash"],
+            global_independence_certified=True,
         )
         spot_checks += 1
         if sig_equal != api_equal:
@@ -225,6 +345,10 @@ def run_instance(
         "classes": classes,
         "witness_checks": witness_checks,
         "witnesses_registered": len(witnesses),
+        "independence_witnesses_registered": len(independence_witnesses),
+        "reachable_states": phase["reachable_states"],
+        "enumeration_transitions": phase["enumeration_transitions"],
+        "demoted_pairs": phase["demoted_pairs"],
         "quotient_executions": quotient_executions,
         "reduction_ratio": naive_executions / classes,
         "net_saving": net_saving,
@@ -252,6 +376,7 @@ def run_cell(k: int, p: float) -> dict:
     ratios = np.array([row["reduction_ratio"] for row in rows], dtype=float)
     nets = np.array([row["net_saving"] for row in rows], dtype=float)
     classes = np.array([row["classes"] for row in rows], dtype=float)
+    checks = np.array([row["witness_checks"] for row in rows], dtype=float)
 
     boot_rng = np.random.default_rng([SEED, k, int(round(p * 10))])
     ratio_ci = bootstrap_ci(ratios, boot_rng)
@@ -262,7 +387,14 @@ def run_cell(k: int, p: float) -> dict:
         "commute_probability": p,
         "n_instances": N_INSTANCES,
         "naive_executions": factorial(k),
-        "witness_checks_per_instance": k * (k - 1) // 2,
+        "initial_pair_checks_per_instance": k * (k - 1) // 2,
+        "witness_checks_mean": float(checks.mean()),
+        "witness_checks_min": float(checks.min()),
+        "witness_checks_max": float(checks.max()),
+        "reachable_states_mean": float(
+            np.mean([row["reachable_states"] for row in rows])
+        ),
+        "demoted_pairs_total": int(sum(row["demoted_pairs"] for row in rows)),
         "classes_mean": float(classes.mean()),
         "classes_min": float(classes.min()),
         "classes_max": float(classes.max()),
@@ -283,6 +415,9 @@ def run_cell(k: int, p: float) -> dict:
         "mean_witnesses_registered": float(
             np.mean([row["witnesses_registered"] for row in rows])
         ),
+        "mean_independence_witnesses_registered": float(
+            np.mean([row["independence_witnesses_registered"] for row in rows])
+        ),
     }
 
 
@@ -296,7 +431,7 @@ def generate_results() -> dict:
         if cell["negative_net_fraction"] > 0.0
     ]
     return {
-        "schema_version": "orion-path-quotient-savings-v1",
+        "schema_version": "orion-path-quotient-savings-v2",
         "status": "DEVELOPMENT_KNOWN_WORLD_MECHANISM_EVIDENCE_ONLY",
         "seed": SEED,
         "n_instances_per_cell": N_INSTANCES,
@@ -312,14 +447,33 @@ def generate_results() -> dict:
             ),
             "naive_searcher": "executes all k! orderings in the world",
             "quotient_searcher": (
-                "executes both orders of every pair (witness checks), "
-                "registers rakl PathEquivalenceWitness objects for verified "
-                "commuting pairs, then executes one world run per distinct "
+                "executes both orders of every pair from the initial state "
+                "AND from every other reachable prefix state where the pair "
+                "is unapplied (context-bound witness checks, audit U1), "
+                "registers rakl TransitionIndependenceWitness objects per "
+                "(pair, context) plus PathEquivalenceWitness records, then "
+                "executes one world run per distinct "
                 "canonical_partial_order_trace signature; signatures spot-"
-                "checked against equivalent_under_declared_partial_order"
+                "checked against equivalent_under_declared_partial_order "
+                "with global_independence_certified=True"
+            ),
+            "independence_certification": (
+                "global_independence_certified=True is asserted only after "
+                "both orders of every certified pair were executed from "
+                "every distinct reachable prefix state of the finite world "
+                "and all final-state hashes agreed; a pair disagreeing in "
+                "any context is demoted to a conflict (demoted_pairs). "
+                "Commutation is discovered by execution, never assumed from "
+                "the generative construction."
             ),
             "net_saving_definition": (
-                "naive_executions - (class_executions + witness_checks)"
+                "naive_executions - (class_executions + witness_checks); "
+                "witness_checks counts every two-order comparison in every "
+                "context, so the full price of certifying global "
+                "independence is charged against the quotient. State-"
+                "enumeration bookkeeping is reported separately "
+                "(enumeration_transitions) in units of single transformation "
+                "applications, not two-order checks."
             ),
             "cross_check": (
                 "API class count compared against distinct world outcomes "
@@ -327,6 +481,13 @@ def generate_results() -> dict:
             ),
         },
         "api_notes": [
+            "TransitionIndependenceWitness is context-bound (audit U1): its "
+            "context_hash certifies commutation only in that state, so one "
+            "witness is registered per (pair, reachable context)",
+            "equivalent_under_declared_partial_order licenses interior swaps "
+            "only via a prefix-context resolver or an explicit "
+            "global_independence_certified assertion; this experiment earns "
+            "the latter by exhaustive per-context execution",
             "PathEquivalenceWitness enforces conditions + verifier_ids for "
             "COMMUTES_WITH_WITNESS and exposes grants_proof_authority=False",
             "canonical_partial_order_trace provides the canonical class "
@@ -352,10 +513,12 @@ def main() -> int:
     total_spot_failures = sum(
         c["equivalence_spot_failures"] for c in result["cells"]
     )
+    total_demoted = sum(c["demoted_pairs_total"] for c in result["cells"])
     print(f"WROTE={RESULT_FILE.relative_to(ROOT)}")
     print(f"SEED={SEED}")
     print(f"CLASS_OUTCOME_MISMATCHES={total_mismatches}")
     print(f"EQUIVALENCE_SPOT_FAILURES={total_spot_failures}")
+    print(f"DEMOTED_PAIRS={total_demoted}")
     print(
         "NEGATIVE_NET_CELLS="
         + json.dumps(result["cells_with_negative_net_saving"])
