@@ -1,0 +1,506 @@
+{
+  "api_notes": [
+    "PathEquivalenceWitness enforces conditions + verifier_ids for COMMUTES_WITH_WITNESS and exposes grants_proof_authority=False",
+    "canonical_partial_order_trace provides the canonical class signature used to collapse orderings",
+    "equivalent_under_declared_partial_order is reflexive only on dependency-respecting histories; histories violating the declared partial order are equivalent to nothing, including themselves, so dependencies must be induced from the candidate history's own orientation of verified conflict pairs"
+  ],
+  "bootstrap_resamples": 2000,
+  "cells": [
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 6.0,
+      "classes_mean": 6.0,
+      "classes_min": 6.0,
+      "commute_probability": 0.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 3,
+      "mean_witnesses_registered": 0.0,
+      "n_instances": 200,
+      "naive_executions": 6,
+      "negative_net_fraction": 1.0,
+      "net_saving_ci95": [
+        -3.0,
+        -3.0
+      ],
+      "net_saving_max": -3.0,
+      "net_saving_mean": -3.0,
+      "net_saving_min": -3.0,
+      "reduction_ratio_ci95": [
+        1.0,
+        1.0
+      ],
+      "reduction_ratio_mean": 1.0,
+      "witness_checks_per_instance": 3
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 6.0,
+      "classes_mean": 4.285,
+      "classes_min": 1.0,
+      "commute_probability": 0.3,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 3,
+      "mean_witnesses_registered": 0.865,
+      "n_instances": 200,
+      "naive_executions": 6,
+      "negative_net_fraction": 0.79,
+      "net_saving_ci95": [
+        -1.5,
+        -1.07
+      ],
+      "net_saving_max": 2.0,
+      "net_saving_mean": -1.285,
+      "net_saving_min": -3.0,
+      "reduction_ratio_ci95": [
+        1.5625,
+        1.8025
+      ],
+      "reduction_ratio_mean": 1.68,
+      "witness_checks_per_instance": 3
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 6.0,
+      "classes_mean": 2.575,
+      "classes_min": 1.0,
+      "commute_probability": 0.6,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 3,
+      "mean_witnesses_registered": 1.81,
+      "n_instances": 200,
+      "naive_executions": 6,
+      "negative_net_fraction": 0.345,
+      "net_saving_ci95": [
+        0.249875,
+        0.605
+      ],
+      "net_saving_max": 2.0,
+      "net_saving_mean": 0.425,
+      "net_saving_min": -3.0,
+      "reduction_ratio_ci95": [
+        2.8198749999999997,
+        3.2900625
+      ],
+      "reduction_ratio_mean": 3.0475,
+      "witness_checks_per_instance": 3
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 1.0,
+      "classes_mean": 1.0,
+      "classes_min": 1.0,
+      "commute_probability": 1.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 3,
+      "mean_witnesses_registered": 3.0,
+      "n_instances": 200,
+      "naive_executions": 6,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        2.0,
+        2.0
+      ],
+      "net_saving_max": 2.0,
+      "net_saving_mean": 2.0,
+      "net_saving_min": 2.0,
+      "reduction_ratio_ci95": [
+        6.0,
+        6.0
+      ],
+      "reduction_ratio_mean": 6.0,
+      "witness_checks_per_instance": 3
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 24.0,
+      "classes_mean": 24.0,
+      "classes_min": 24.0,
+      "commute_probability": 0.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 4,
+      "mean_witnesses_registered": 0.0,
+      "n_instances": 200,
+      "naive_executions": 24,
+      "negative_net_fraction": 1.0,
+      "net_saving_ci95": [
+        -6.0,
+        -6.0
+      ],
+      "net_saving_max": -6.0,
+      "net_saving_mean": -6.0,
+      "net_saving_min": -6.0,
+      "reduction_ratio_ci95": [
+        1.0,
+        1.0
+      ],
+      "reduction_ratio_mean": 1.0,
+      "witness_checks_per_instance": 6
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 24.0,
+      "classes_mean": 13.525,
+      "classes_min": 1.0,
+      "commute_probability": 0.3,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 4,
+      "mean_witnesses_registered": 1.88,
+      "n_instances": 200,
+      "naive_executions": 24,
+      "negative_net_fraction": 0.09,
+      "net_saving_ci95": [
+        3.715,
+        5.2601249999999995
+      ],
+      "net_saving_max": 17.0,
+      "net_saving_mean": 4.475,
+      "net_saving_min": -6.0,
+      "reduction_ratio_ci95": [
+        2.1228273809523808,
+        2.7619285714285713
+      ],
+      "reduction_ratio_mean": 2.4026190476190474,
+      "witness_checks_per_instance": 6
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 18.0,
+      "classes_mean": 6.05,
+      "classes_min": 1.0,
+      "commute_probability": 0.6,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 4,
+      "mean_witnesses_registered": 3.61,
+      "n_instances": 200,
+      "naive_executions": 24,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        11.37,
+        12.495
+      ],
+      "net_saving_max": 17.0,
+      "net_saving_mean": 11.95,
+      "net_saving_min": 0.0,
+      "reduction_ratio_ci95": [
+        5.639690476190476,
+        6.961428571428571
+      ],
+      "reduction_ratio_mean": 6.286190476190477,
+      "witness_checks_per_instance": 6
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 1.0,
+      "classes_mean": 1.0,
+      "classes_min": 1.0,
+      "commute_probability": 1.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 4,
+      "mean_witnesses_registered": 6.0,
+      "n_instances": 200,
+      "naive_executions": 24,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        17.0,
+        17.0
+      ],
+      "net_saving_max": 17.0,
+      "net_saving_mean": 17.0,
+      "net_saving_min": 17.0,
+      "reduction_ratio_ci95": [
+        24.0,
+        24.0
+      ],
+      "reduction_ratio_mean": 24.0,
+      "witness_checks_per_instance": 6
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 120.0,
+      "classes_mean": 120.0,
+      "classes_min": 120.0,
+      "commute_probability": 0.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 5,
+      "mean_witnesses_registered": 0.0,
+      "n_instances": 200,
+      "naive_executions": 120,
+      "negative_net_fraction": 1.0,
+      "net_saving_ci95": [
+        -10.0,
+        -10.0
+      ],
+      "net_saving_max": -10.0,
+      "net_saving_mean": -10.0,
+      "net_saving_min": -10.0,
+      "reduction_ratio_ci95": [
+        1.0,
+        1.0
+      ],
+      "reduction_ratio_mean": 1.0,
+      "witness_checks_per_instance": 10
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 120.0,
+      "classes_mean": 57.2,
+      "classes_min": 6.0,
+      "commute_probability": 0.3,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 5,
+      "mean_witnesses_registered": 3.04,
+      "n_instances": 200,
+      "naive_executions": 120,
+      "negative_net_fraction": 0.02,
+      "net_saving_ci95": [
+        49.26925000000001,
+        56.31025
+      ],
+      "net_saving_max": 104.0,
+      "net_saving_mean": 52.8,
+      "net_saving_min": -10.0,
+      "reduction_ratio_ci95": [
+        2.528186439918777,
+        3.1378899655598023
+      ],
+      "reduction_ratio_mean": 2.822737099856665,
+      "witness_checks_per_instance": 10
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 72.0,
+      "classes_mean": 17.445,
+      "classes_min": 1.0,
+      "commute_probability": 0.6,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 5,
+      "mean_witnesses_registered": 6.09,
+      "n_instances": 200,
+      "naive_executions": 120,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        90.53,
+        94.505
+      ],
+      "net_saving_max": 109.0,
+      "net_saving_mean": 92.555,
+      "net_saving_min": 38.0,
+      "reduction_ratio_ci95": [
+        12.307362189440994,
+        16.490120341614908
+      ],
+      "reduction_ratio_mean": 14.266523464458245,
+      "witness_checks_per_instance": 10
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 1.0,
+      "classes_mean": 1.0,
+      "classes_min": 1.0,
+      "commute_probability": 1.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 5,
+      "mean_witnesses_registered": 10.0,
+      "n_instances": 200,
+      "naive_executions": 120,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        109.0,
+        109.0
+      ],
+      "net_saving_max": 109.0,
+      "net_saving_mean": 109.0,
+      "net_saving_min": 109.0,
+      "reduction_ratio_ci95": [
+        120.0,
+        120.0
+      ],
+      "reduction_ratio_mean": 120.0,
+      "witness_checks_per_instance": 10
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 720.0,
+      "classes_mean": 720.0,
+      "classes_min": 720.0,
+      "commute_probability": 0.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 6,
+      "mean_witnesses_registered": 0.0,
+      "n_instances": 200,
+      "naive_executions": 720,
+      "negative_net_fraction": 1.0,
+      "net_saving_ci95": [
+        -15.0,
+        -15.0
+      ],
+      "net_saving_max": -15.0,
+      "net_saving_mean": -15.0,
+      "net_saving_min": -15.0,
+      "reduction_ratio_ci95": [
+        1.0,
+        1.0
+      ],
+      "reduction_ratio_mean": 1.0,
+      "witness_checks_per_instance": 15
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 600.0,
+      "classes_mean": 285.95,
+      "classes_min": 48.0,
+      "commute_probability": 0.3,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 6,
+      "mean_witnesses_registered": 4.485,
+      "n_instances": 200,
+      "naive_executions": 720,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        400.24825,
+        437.5125
+      ],
+      "net_saving_max": 657.0,
+      "net_saving_mean": 419.05,
+      "net_saving_min": 105.0,
+      "reduction_ratio_ci95": [
+        3.098226679356744,
+        3.752196287494785
+      ],
+      "reduction_ratio_mean": 3.4259857876630573,
+      "witness_checks_per_instance": 15
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 234.0,
+      "classes_mean": 61.515,
+      "classes_min": 1.0,
+      "commute_probability": 0.6,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 6,
+      "mean_witnesses_registered": 9.065,
+      "n_instances": 200,
+      "naive_executions": 720,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        636.557375,
+        650.005875
+      ],
+      "net_saving_max": 704.0,
+      "net_saving_mean": 643.485,
+      "net_saving_min": 471.0,
+      "reduction_ratio_ci95": [
+        25.698034338452672,
+        42.87535112115822
+      ],
+      "reduction_ratio_mean": 33.43804893466884,
+      "witness_checks_per_instance": 15
+    },
+    {
+      "class_outcome_mismatches": 0,
+      "classes_max": 1.0,
+      "classes_mean": 1.0,
+      "classes_min": 1.0,
+      "commute_probability": 1.0,
+      "equivalence_spot_checks": 1200,
+      "equivalence_spot_failures": 0,
+      "k": 6,
+      "mean_witnesses_registered": 15.0,
+      "n_instances": 200,
+      "naive_executions": 720,
+      "negative_net_fraction": 0.0,
+      "net_saving_ci95": [
+        704.0,
+        704.0
+      ],
+      "net_saving_max": 704.0,
+      "net_saving_mean": 704.0,
+      "net_saving_min": 704.0,
+      "reduction_ratio_ci95": [
+        720.0,
+        720.0
+      ],
+      "reduction_ratio_mean": 720.0,
+      "witness_checks_per_instance": 15
+    }
+  ],
+  "cells_with_negative_net_saving": [
+    {
+      "k": 3,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -3.0,
+      "p": 0.0
+    },
+    {
+      "k": 3,
+      "negative_net_fraction": 0.79,
+      "net_saving_mean": -1.285,
+      "p": 0.3
+    },
+    {
+      "k": 3,
+      "negative_net_fraction": 0.345,
+      "net_saving_mean": 0.425,
+      "p": 0.6
+    },
+    {
+      "k": 4,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -6.0,
+      "p": 0.0
+    },
+    {
+      "k": 4,
+      "negative_net_fraction": 0.09,
+      "net_saving_mean": 4.475,
+      "p": 0.3
+    },
+    {
+      "k": 5,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -10.0,
+      "p": 0.0
+    },
+    {
+      "k": 5,
+      "negative_net_fraction": 0.02,
+      "net_saving_mean": 52.8,
+      "p": 0.3
+    },
+    {
+      "k": 6,
+      "negative_net_fraction": 1.0,
+      "net_saving_mean": -15.0,
+      "p": 0.0
+    }
+  ],
+  "claim_boundary": "development known-world evidence; grants no scientific or method-promotion authority",
+  "design": {
+    "cross_check": "API class count compared against distinct world outcomes computed without the API",
+    "naive_searcher": "executes all k! orderings in the world",
+    "net_saving_definition": "naive_executions - (class_executions + witness_checks)",
+    "quotient_searcher": "executes both orders of every pair (witness checks), registers rakl PathEquivalenceWitness objects for verified commuting pairs, then executes one world run per distinct canonical_partial_order_trace signature; signatures spot-checked against equivalent_under_declared_partial_order",
+    "world": "k transformations on integer registers; each owns a private register; each conflict pair shares one register; distinct affine maps make shared-register pairs non-commuting"
+  },
+  "grants_method_promotion": false,
+  "grants_scientific_authority": false,
+  "n_instances_per_cell": 200,
+  "schema_version": "orion-path-quotient-savings-v1",
+  "seed": 461,
+  "status": "DEVELOPMENT_KNOWN_WORLD_MECHANISM_EVIDENCE_ONLY"
+}
