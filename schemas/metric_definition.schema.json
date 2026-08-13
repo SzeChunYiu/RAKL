@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/metric_definition.schema.json",
+  "title": "MetricDefinition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["metric_name", "version", "unit", "direction", "authority"],
+  "properties": {
+    "metric_name": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "unit": {"type": "string", "minLength": 1},
+    "direction": {"enum": ["MAXIMIZE", "MINIMIZE", "CONSTRAINT"]},
+    "authority": {"enum": ["DESCRIPTIVE", "CONTROL_INPUT", "EVOLUTION_EVIDENCE", "HARD_PROTECTED"]},
+    "control_min": {"type": ["number", "null"]},
+    "control_max": {"type": ["number", "null"]},
+    "description": {"type": "string"}
+  }
+}

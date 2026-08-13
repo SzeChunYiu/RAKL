@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/evaluation_epoch.schema.json",
+  "title": "EvaluationEpoch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "epoch_id",
+    "metric_registry_hash",
+    "evaluator_hash",
+    "benchmark_protocol_hash",
+    "model_tool_harness_hash",
+    "decision_policy_hash",
+    "observatory_instrumentation_hash"
+  ],
+  "properties": {
+    "epoch_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_registry_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "evaluator_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "benchmark_protocol_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "model_tool_harness_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "decision_policy_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "observatory_instrumentation_hash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

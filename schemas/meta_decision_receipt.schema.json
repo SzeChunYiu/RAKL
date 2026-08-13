@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rakl.dev/schemas/meta_decision_receipt.schema.json",
+  "title": "MetaDecisionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision_id", "self_model_hash", "evaluation_epoch_id", "candidate_actions", "status", "selected_action", "components", "total_expected_utility", "runner_up_action", "runner_up_utility", "hard_gate_observations", "metric_receipt_ids", "reasons"],
+  "properties": {
+    "decision_id": {"type": "string", "minLength": 1},
+    "self_model_hash": {"$ref": "#/$defs/sha256"},
+    "evaluation_epoch_id": {"type": "string", "minLength": 1},
+    "candidate_actions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "status": {"enum": ["SELECTED", "ABSTAIN", "BLOCKED"]},
+    "selected_action": {"type": ["string", "null"]},
+    "components": {"type": "array", "items": {"$ref": "#/$defs/component"}},
+    "total_expected_utility": {"type": ["number", "null"]},
+    "runner_up_action": {"type": ["string", "null"]},
+    "runner_up_utility": {"type": ["number", "null"]},
+    "hard_gate_observations": {"type": "array", "items": {"$ref": "hard_gate_observation.schema.json"}},
+    "metric_receipt_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "normalized_desirability", "uncertainty", "weight", "contribution", "normalization_definition_hash", "metric_receipt_ids"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "normalized_desirability": {"type": "number", "minimum": 0, "maximum": 1},
+        "uncertainty": {"type": "number", "minimum": 0},
+        "weight": {"type": "number", "minimum": 0},
+        "contribution": {"type": "number"},
+        "normalization_definition_hash": {"$ref": "#/$defs/sha256"},
+        "metric_receipt_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
