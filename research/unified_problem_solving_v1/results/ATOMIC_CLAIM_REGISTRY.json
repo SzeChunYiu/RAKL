@@ -18,7 +18,7 @@
   "source_artifacts": {
     "promotion_gate": {
       "path": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
-      "sha256_prefix": "93cdb22e739233eb"
+      "sha256_prefix": "798ae00a326aea9f"
     },
     "closure_ledger": {
       "path": "research/unified_problem_solving_v1/results/CLOSURE_LEDGER.json",
@@ -30,16 +30,16 @@
     }
   },
   "summary": {
-    "total_claims": 33,
+    "total_claims": 34,
     "by_terminal": {
       "NEGATIVE": 3,
+      "CANNOT_CHECK": 2,
       "SUPPORTED": 5,
-      "CANNOT_CHECK": 1,
       "PARTIAL": 3,
       "ARCHITECTURE_ONLY": 13,
       "SCAFFOLD": 8
     },
-    "open": 25
+    "open": 26
   },
   "claims": [
     {
@@ -67,6 +67,49 @@
       "terminal_scope": "DECISIVE: with reachability-grounded landmarks (exact backward BFS from the goal condition) and 100 repeated queries, build cost (mean 37.09) exceeds cumulative saving (mean -37.38); crossover fraction 0.0. Method is valid; economics negative. Lane #520 closed.",
       "open": false,
       "artifact_sha256_prefix": "f2316eeb6e016def",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "construction_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "status": "COMPLETE"
+      }
+    },
+    {
+      "claim_id": "EMP-FIELD_CONSTRUCTION_SUCCESSOR",
+      "mechanic": "field_construction_successor",
+      "paper_owner": "unassigned",
+      "claim": "[unmapped candidate - add judgement]",
+      "claim_type": "empirical_net_benefit",
+      "code": [],
+      "experiment_owner_issue": "",
+      "baseline": "",
+      "falsifier": "",
+      "promotion_verdict": "KEEP_PROPOSAL_ONLY",
+      "result": {
+        "hi": -1.1661,
+        "lo": -2.4502,
+        "mean": -1.8046,
+        "n": 41
+      },
+      "artifact": "research/unified_problem_solving_v1/results/field_construction_successor.json",
+      "terminal_state": "CANNOT_CHECK",
+      "terminal_scope": "",
+      "open": true,
+      "artifact_sha256_prefix": "5a243795a262800c",
       "telemetry": {
         "claim_class": "EFFICIENCY",
         "economic_cost_fields": [

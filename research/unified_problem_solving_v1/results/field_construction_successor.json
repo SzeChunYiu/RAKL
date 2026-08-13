@@ -1,0 +1,624 @@
+{
+  "schema_version": "orion-field-construction-successor-v1-issue538",
+  "grants_scientific_authority": false,
+  "seed": 572,
+  "n_completed": 81,
+  "n": 81,
+  "sample": 81,
+  "independent_unit": "domain",
+  "n_queries_per_domain": 100,
+  "query_counts_amortization": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    50,
+    100
+  ],
+  "wall_time_s": 11.211,
+  "claim_class": "EFFICIENCY",
+  "measured_quantity": "net_search_saving_per_query (states-expanded units)",
+  "claim_boundary": "development known-world evidence; #538 field-construction successor; goal-set reachability-grounded exact field vs uniform/symdiff/single-target/PDB(naive+target-aware)/CEGAR parents + bounded-landmark + hybrid; amortized net search saving over deep-search chain-distractor regime (applicable); shallow random-monotone regime reported as applicability boundary; grants no scientific authority",
+  "net_advantage_over_strongest_parent": {
+    "mean": -1.8046,
+    "lo": -2.4502,
+    "hi": -1.1661,
+    "n": 41
+  },
+  "net_vs_baseline_bfs": {
+    "mean": 0.5988,
+    "lo": -0.1432,
+    "hi": 1.4688,
+    "n": 41
+  },
+  "net_search_saving": {
+    "mean": 0.5988,
+    "lo": -0.1432,
+    "hi": 1.4688,
+    "n": 41
+  },
+  "construction_cost": {
+    "mean": 230.0732,
+    "lo": 177.0,
+    "hi": 287.1463,
+    "n": 41
+  },
+  "successor_strategy": "goalset_exact_successor",
+  "oracle_ceiling_strategy": "goalset_exact_successor",
+  "verdict": "KEEP_PROPOSAL_ONLY",
+  "verdict_reason": "dominated by strongest parent (symdiff_proxy_parent); head-to-head total-cost advantage CI below zero - the exact field's perfect guidance does not amortize vs cheaper proxies/abstractions",
+  "correctness_hard_gate_passed": true,
+  "successor_beats_strongest_parent": false,
+  "strongest_parent": "symdiff_proxy_parent",
+  "strongest_parent_net": {
+    "mean": 2.4034,
+    "lo": 1.442,
+    "hi": 3.5402,
+    "n": 41
+  },
+  "successor_mean_net_per_query": 0.5988,
+  "successor_head_to_head_mean": -1.8046,
+  "successor_mean_rank_correlation": 1.0,
+  "successor_mean_false_descent_rate": 0.0,
+  "successor_crossover_fraction": 0.5854,
+  "successor_mean_crossover_query": 9.6,
+  "applicable_regime": {
+    "regime": "deep",
+    "n_completed": 41,
+    "sample": 41,
+    "task_budget": 12000,
+    "candidate_summary": {
+      "uniform_bfs_parent": {
+        "net_per_query_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 41
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "symdiff_proxy_parent": {
+        "net_per_query_ci": {
+          "mean": 2.4034,
+          "lo": 1.442,
+          "hi": 3.5402,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 240.3415,
+          "lo": 142.0244,
+          "hi": 360.4634,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 49.6098,
+          "lo": 38.878,
+          "hi": 59.9756,
+          "n": 41
+        },
+        "fraction_crossover": 0.8049,
+        "mean_crossover_query": 4.1,
+        "mean_rank_correlation": 0.994,
+        "mean_false_descent_rate": 0.001,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "single_target_parent": {
+        "net_per_query_ci": {
+          "mean": -3.9856,
+          "lo": -4.4768,
+          "hi": -3.4707,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": -398.561,
+          "lo": -449.0732,
+          "hi": -349.0976,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 387.1463,
+          "lo": 350.9512,
+          "hi": 423.2195,
+          "n": 41
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0072,
+        "mean_false_descent_rate": 0.0041,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "pdb_naive_parent": {
+        "net_per_query_ci": {
+          "mean": -0.06,
+          "lo": -0.06,
+          "hi": -0.06,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": -6.0,
+          "lo": -6.0,
+          "hi": -6.0,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 6.0,
+          "lo": 6.0,
+          "hi": 6.0,
+          "n": 41
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "pdb_target_aware_parent": {
+        "net_per_query_ci": {
+          "mean": 1.0578,
+          "lo": 0.731,
+          "hi": 1.461,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 105.7805,
+          "lo": 71.8537,
+          "hi": 145.3415,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 5.0,
+          "lo": 5.0,
+          "hi": 5.0,
+          "n": 41
+        },
+        "fraction_crossover": 1.0,
+        "mean_crossover_query": 1.4,
+        "mean_rank_correlation": 0.8134,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "cegar_parent": {
+        "net_per_query_ci": {
+          "mean": 2.039,
+          "lo": 1.1766,
+          "hi": 3.1183,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 203.9024,
+          "lo": 117.5122,
+          "hi": 313.2195,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 22.3659,
+          "lo": 21.2195,
+          "hi": 23.7317,
+          "n": 41
+        },
+        "fraction_crossover": 0.9512,
+        "mean_crossover_query": 3.1,
+        "mean_rank_correlation": 0.8978,
+        "mean_false_descent_rate": 0.0001,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "goalset_landmark_successor": {
+        "net_per_query_ci": {
+          "mean": 1.1327,
+          "lo": 0.5817,
+          "hi": 1.7893,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 113.2683,
+          "lo": 59.2683,
+          "hi": 179.122,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 118.6341,
+          "lo": 106.3902,
+          "hi": 130.5366,
+          "n": 41
+        },
+        "fraction_crossover": 0.6585,
+        "mean_crossover_query": 7.5,
+        "mean_rank_correlation": 0.7702,
+        "mean_false_descent_rate": 0.0076,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "goalset_exact_successor": {
+        "net_per_query_ci": {
+          "mean": 0.5988,
+          "lo": -0.1734,
+          "hi": 1.4702,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 59.878,
+          "lo": -16.4146,
+          "hi": 145.8049,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 230.0732,
+          "lo": 177.0,
+          "hi": 287.1463,
+          "n": 41
+        },
+        "fraction_crossover": 0.5854,
+        "mean_crossover_query": 9.6,
+        "mean_rank_correlation": 1.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "hybrid_goalset_pdb_successor": {
+        "net_per_query_ci": {
+          "mean": 0.5488,
+          "lo": -0.188,
+          "hi": 1.4129,
+          "n": 41
+        },
+        "cumulative_net_ci": {
+          "mean": 54.878,
+          "lo": -19.439,
+          "hi": 139.1951,
+          "n": 41
+        },
+        "construction_cost_ci": {
+          "mean": 235.0732,
+          "lo": 181.7805,
+          "hi": 293.1707,
+          "n": 41
+        },
+        "fraction_crossover": 0.5854,
+        "mean_crossover_query": 10.0,
+        "mean_rank_correlation": 1.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      }
+    },
+    "strongest_parent": "symdiff_proxy_parent",
+    "strongest_parent_net": {
+      "mean": 2.4034,
+      "lo": 1.442,
+      "hi": 3.5402,
+      "n": 41
+    },
+    "net_advantage_over_strongest_parent": {
+      "mean": -1.8046,
+      "lo": -2.4502,
+      "hi": -1.1661,
+      "n": 41
+    },
+    "net_vs_baseline_bfs": {
+      "mean": 0.5988,
+      "lo": -0.1432,
+      "hi": 1.4688,
+      "n": 41
+    },
+    "net_search_saving": {
+      "mean": 0.5988,
+      "lo": -0.1432,
+      "hi": 1.4688,
+      "n": 41
+    },
+    "construction_cost": {
+      "mean": 230.0732,
+      "lo": 177.0,
+      "hi": 287.1463,
+      "n": 41
+    },
+    "verdict": "KEEP_PROPOSAL_ONLY",
+    "verdict_reason": "dominated by strongest parent (symdiff_proxy_parent); head-to-head total-cost advantage CI below zero - the exact field's perfect guidance does not amortize vs cheaper proxies/abstractions",
+    "correctness_hard_gate_passed": true,
+    "successor_beats_strongest_parent": false,
+    "successor_mean_net_per_query": 0.5988,
+    "successor_head_to_head_mean": -1.8046,
+    "successor_crossover_fraction": 0.5854,
+    "successor_mean_crossover_query": 9.6,
+    "successor_mean_rank_correlation": 1.0,
+    "successor_mean_false_descent_rate": 0.0
+  },
+  "applicability_boundary_regime": {
+    "regime": "shallow",
+    "n_completed": 40,
+    "sample": 40,
+    "task_budget": 4000,
+    "candidate_summary": {
+      "uniform_bfs_parent": {
+        "net_per_query_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "symdiff_proxy_parent": {
+        "net_per_query_ci": {
+          "mean": -0.2408,
+          "lo": -0.2802,
+          "hi": -0.198,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -24.075,
+          "lo": -27.9,
+          "hi": -20.05,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 37.75,
+          "lo": 34.975,
+          "hi": 40.475,
+          "n": 40
+        },
+        "fraction_crossover": 0.075,
+        "mean_crossover_query": 100.0,
+        "mean_rank_correlation": 0.1641,
+        "mean_false_descent_rate": 0.1897,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "single_target_parent": {
+        "net_per_query_ci": {
+          "mean": -0.0077,
+          "lo": -0.0112,
+          "hi": -0.0047,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -0.775,
+          "lo": -1.1,
+          "hi": -0.475,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 0.775,
+          "lo": 0.475,
+          "hi": 1.125,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": -0.0006,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "pdb_naive_parent": {
+        "net_per_query_ci": {
+          "mean": -0.01,
+          "lo": -0.01,
+          "hi": -0.01,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -1.0,
+          "lo": -1.0,
+          "hi": -1.0,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "pdb_target_aware_parent": {
+        "net_per_query_ci": {
+          "mean": -0.0112,
+          "lo": -0.0133,
+          "hi": -0.0092,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -1.125,
+          "lo": -1.325,
+          "hi": -0.925,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 1.55,
+          "lo": 1.4,
+          "hi": 1.7,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0322,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "cegar_parent": {
+        "net_per_query_ci": {
+          "mean": -0.0823,
+          "lo": -0.0917,
+          "hi": -0.0728,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -8.225,
+          "lo": -9.2,
+          "hi": -7.3,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 8.6,
+          "lo": 7.575,
+          "hi": 9.625,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.0206,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "goalset_landmark_successor": {
+        "net_per_query_ci": {
+          "mean": -1.4072,
+          "lo": -1.435,
+          "hi": -1.3755,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -140.725,
+          "lo": -143.5,
+          "hi": -137.575,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 150.75,
+          "lo": 150.5,
+          "hi": 151.025,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.5101,
+        "mean_false_descent_rate": 0.0219,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "goalset_exact_successor": {
+        "net_per_query_ci": {
+          "mean": -2.717,
+          "lo": -2.967,
+          "hi": -2.479,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -271.7,
+          "lo": -296.425,
+          "hi": -248.75,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 287.7,
+          "lo": 261.225,
+          "hi": 315.575,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.875,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      },
+      "hybrid_goalset_pdb_successor": {
+        "net_per_query_ci": {
+          "mean": -2.7325,
+          "lo": -2.9878,
+          "hi": -2.4903,
+          "n": 40
+        },
+        "cumulative_net_ci": {
+          "mean": -273.25,
+          "lo": -297.975,
+          "hi": -249.575,
+          "n": 40
+        },
+        "construction_cost_ci": {
+          "mean": 289.25,
+          "lo": 262.55,
+          "hi": 317.825,
+          "n": 40
+        },
+        "fraction_crossover": 0.0,
+        "mean_crossover_query": null,
+        "mean_rank_correlation": 0.875,
+        "mean_false_descent_rate": 0.0,
+        "found_agrees_with_baseline_all_domains": true
+      }
+    },
+    "strongest_parent": "uniform_bfs_parent",
+    "strongest_parent_net": {
+      "mean": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n": 40
+    },
+    "net_advantage_over_strongest_parent": {
+      "mean": -2.717,
+      "lo": -2.967,
+      "hi": -2.4863,
+      "n": 40
+    },
+    "net_vs_baseline_bfs": {
+      "mean": -2.717,
+      "lo": -2.9732,
+      "hi": -2.4775,
+      "n": 40
+    },
+    "net_search_saving": {
+      "mean": -2.717,
+      "lo": -2.9732,
+      "hi": -2.4775,
+      "n": 40
+    },
+    "construction_cost": {
+      "mean": 287.7,
+      "lo": 261.225,
+      "hi": 315.575,
+      "n": 40
+    },
+    "verdict": "KEEP_PROPOSAL_ONLY",
+    "verdict_reason": "dominated by strongest parent (uniform_bfs_parent); head-to-head total-cost advantage CI below zero - the exact field's perfect guidance does not amortize vs cheaper proxies/abstractions",
+    "correctness_hard_gate_passed": true,
+    "successor_beats_strongest_parent": false,
+    "successor_mean_net_per_query": -2.717,
+    "successor_head_to_head_mean": -2.717,
+    "successor_crossover_fraction": 0.0,
+    "successor_mean_crossover_query": null,
+    "successor_mean_rank_correlation": 0.875,
+    "successor_mean_false_descent_rate": 0.0
+  },
+  "before_historical": {
+    "source": "results/field_construction.json (preserved unchanged)",
+    "net_search_saving": {
+      "mean": -0.3738,
+      "lo": -0.3919,
+      "hi": -0.3549,
+      "n": 100
+    },
+    "verdict": "KEEP_PROPOSAL_ONLY"
+  }
+}
