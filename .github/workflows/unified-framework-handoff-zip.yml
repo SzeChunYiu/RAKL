@@ -28,6 +28,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e '.[test]'
+          # Pin matplotlib so regenerated figure bytes are comparable against the
+          # committed self-contained per-paper copies.
+          pip install 'matplotlib==3.11.1'
+
+      - name: Smoke-run the shipped adopter quickstart
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python examples/unified_solver_quickstart.py | tee quickstart_stdout.txt
+          grep -Fx 'QUICKSTART_COMPLETE=true' quickstart_stdout.txt
+          grep -Fx 'AUTHORITY_GRANTED=false' quickstart_stdout.txt
 
       - name: Assemble exact-source and generated-evidence handoff
         env:
@@ -65,7 +75,15 @@ jobs:
             cp "paper/figures/generated/${stem}.pdf" handoff_bundle/generated/
             cp "paper/figures/generated/${stem}.svg" handoff_bundle/generated/
             cp "paper/figures/generated/${stem}.png" handoff_bundle/generated/
+            # The papers are self-contained (they compile from their own
+            # figures/ directories); the bundle must not ship generated figures
+            # that disagree with the committed per-paper copies.
+            cmp "paper/figures/generated/${stem}.pdf" \
+              "publication/papers/paper-05-verified-discovery-in-mathematics/figures/${stem}.pdf"
+            cmp "paper/figures/generated/${stem}.pdf" \
+              "publication/papers/paper-06-rakl-scientific-research-engine/source/figures/${stem}.pdf"
           done
+          cp quickstart_stdout.txt handoff_bundle/generated/
 
           # Preserve both the tracked Paper IV source and the corrected build copy.
           cp publication/papers/paper-04-structural-learning-mechanics/main.tex handoff_bundle/generated/PAPER4_TRACKED_MAIN.tex

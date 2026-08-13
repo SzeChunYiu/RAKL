@@ -58,7 +58,7 @@ Thus equivalence is not merely similarity of traces. For concurrency reduction, 
 \[
 uabv\sim ubav
 \]
-only when a scoped verifier-bound witness establishes that $a$ and $b$ are independent/commuting transformations in the relevant context. Absence of a declared dependency is not evidence of independence. The quotient $\operatorname{Path}(\Theta)/{\sim}$ therefore removes only witnessed redundancy.
+only when a scoped verifier-bound witness establishes that $a$ and $b$ are independent/commuting transformations in the \emph{state reached by the prefix} $u$. Independence witnesses are state-indexed (in the sense of asynchronous transition systems): a witness certifies commutation only at the specific state it names and licenses no exchange at any other position of a history; a swap whose prefix state no witness names fails closed. A context-free (global) independence reading is admitted only under a separate machine-checked certificate that the pair commutes in every reachable state. Absence of a declared dependency is not evidence of independence. The quotient $\operatorname{Path}(\Theta)/{\sim}$ therefore removes only witnessed redundancy.
 
 Path equivalence is semantic, not automatically economic: equivalent paths can have different cache behavior, wall time or verification cost. A search quotient must retain the relevant cost frontier unless cost invariance is separately established.
 
@@ -105,11 +105,11 @@ bound to the specification/QoI, verifier/environment subject, operator basis, re
 \]
 An empirical ranker can prioritize search but cannot inherit optimality/completeness claims that require an admissible or consistent heuristic.
 
-The strongest local-navigation statement can be made theorem-like without assuming Euclidean geometry. Let $W$ be well founded and let $h:X\to W$. A local policy $\pi$ is \emph{descent-complete} on a registered solvable set $S$ when every non-goal $x\in S$ has a verified legal successor $\pi(x)$ with
+The strongest local-navigation statement can be made theorem-like without assuming Euclidean geometry, but it requires an \emph{invariant} as well as a \emph{variant}. Let $W$ be well founded and let $h:X\to W$. A local policy $\pi$ is \emph{descent-complete} on a registered set $S$ when (i) $S$ is $\pi$-closed off goals, $\pi(S\setminus\mathrm{Goals})\subseteq S$, and (ii) every non-goal $x\in S$ has a verified legal successor $\pi(x)$ with
 \[
-h(\pi(x))\prec h(x),
+h(\pi(x))\prec h(x).
 \]
-and every minimal reachable $h$-state in $S$ is a verified goal. Then repeated application of $\pi$ reaches a goal in finitely many steps, because an infinite strictly descending chain in $W$ is impossible. For real-valued scores on infinite spaces, strict descent alone is not sufficient; a well-founded rank, uniform/proper progress condition or another termination certificate is required.
+Then from any start state in $S$, repeated application of $\pi$ reaches a verified goal in finitely many steps: the $\pi$-orbit remains in $S$ by (i), descends strictly in $h$ by (ii), an infinite strictly descending chain in $W$ is impossible, and by (ii) the orbit can halt only at a goal. The closure hypothesis (i) is load-bearing, not decorative: with descent required only \emph{on} $S$, the orbit may leave $S$ after one step and cycle forever outside it (a three-state counterexample exists), so the statement without (i) is false. The pairing of a well-founded variant with a $\pi$-closed invariant is the standard Floyd loop-termination form and is the weakest structure under which the conclusion holds. For real-valued scores on infinite spaces, strict descent alone is not sufficient; a well-founded rank, uniform/proper progress condition or another termination certificate is required.
 
 This separates three progressively stronger notions:
 \begin{enumerate}
@@ -135,6 +135,9 @@ Suppose (i) a route is called verified only when every materialized transition o
 By (i), any route admitted as operationally verified has a concrete verifier-replayable representative. By (ii), missing roads cannot be converted into a negative theorem statement. By (iii), quotient membership or abstract reachability is not accepted as a concrete proof: a spurious route fails lifting/revalidation. Finally, (iv) blocks any direct promotion from routing state. Hence all three failure modes remain inside the search/control projection until an ordinary mathematical assurance gate is satisfied.
 \end{proof}
 
+\paragraph{Premise discharge status.}
+Premises (i)--(iv) are named obligations on the implementation and its callers, not automatic consequences of the code. At the audited revision, (i) is machine-enforced by the operational-map router: routes compose only replay-verified transition edges within a single scope (a mixed-scope path is not reported as a verified route), and receipt validation rejects contradictory epistemic statuses on one transition instance. Premise (ii) is machine-enforced by the reachability report types, whose impossibility-authority projections are constantly false. Premise (iv) is enforced by the authority-projection contract tests. Premise (iii) is only \emph{partially} machine-enforced: navigation-quotient validation objects expose a \texttt{requires\_concrete\_route\_revalidation} obligation, but consuming that obligation is the caller's responsibility; a caller that acts on an abstract route without original-semantics revalidation has left the proposition's hypotheses. Where a premise is discharged by a caller obligation rather than an internal check, the proposition holds only under the assumption that the obligation is met.
+
 \subsection{Fieldability is closed-loop, not local correlation}
 A useful geometry must be evaluated as a policy substrate, not by the correlation of one-step scores alone. The registered \texttt{FieldabilityProfile} therefore separates construction cost, reuse break-even, invalidation/staleness, local action alignment, strict-greedy completion, bounded-branch completion, route stretch, false-descent/trap rate, verifier calls and out-of-distribution failure.
 
@@ -146,11 +149,14 @@ A useful geometry must be evaluated as a policy substrate, not by the correlatio
 \label{fig:vtg_development_stresses}
 \end{figure}
 
-The distinction is necessary because a locally informative score can still induce a globally incomplete greedy policy. Conversely, a geometry that is not greedily navigable may still have substantial value if it sharply reduces a bounded frontier. We therefore propose the local-navigability curve
+The distinction is necessary because a locally informative score can still induce a globally incomplete greedy policy. Conversely, a geometry that is not greedily navigable may still have substantial value if it sharply reduces a bounded frontier. We therefore record a local-navigability evaluation profile
 \[
+\begin{gathered}
+N:\mathbb{N}\times\mathcal{B}\to\{0,1\}\times[1,\infty]\times\mathbb{N}\times[0,\infty),\\
 N(k,B)=\bigl(\text{verified success},\text{route stretch},\text{states expanded},\text{verifier cost}\bigr),
+\end{gathered}
 \]
-where $k$ is the amount of local branching/information permitted and $B$ is the resource ceiling used by the policy evaluation.
+where $k\in\mathbb{N}$ is the amount of local branching/information permitted and $B$ ranges over the registered resource ceilings $\mathcal{B}$ used by the policy evaluation. Profiles are compared componentwise---success is maximized, the remaining coordinates are minimized---and are not aggregated into a scalar objective by convention; $N$ is an evaluation record, not a curve with an assumed ordering.
 
 \subsection{Phase-0/1 falsification experiment}
 The next mathematical epistemic cut is frozen as:

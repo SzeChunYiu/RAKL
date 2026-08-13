@@ -52,11 +52,11 @@ The resulting view is recursive but not assumed literally fractal. A child probl
 \subsection{Development known-world stress tests and their limits}
 The repository includes a deterministic generator \path{research/unified_problem_solving_v1/run_known_world_stress.py} and a publication script \path{paper/generate_unified_solver_figures.py}. These tests are deliberately small mechanism falsifiers. They do not estimate frontier scientific capability and grant no method-promotion authority.
 
-One family makes field construction expensive but repeated extraction cheap. The exact break-even law is
+One family makes field construction expensive but repeated extraction cheap. Under the implemented Bernoulli invalidation model with per-query rebuild hazard $h$ (i.i.d.\ invalidation, rebuild cost $C_{\mathrm{build}}$), and under the stated idealizations of stationary per-query costs on a single commensurable scalar scale, the implemented break-even law is
 \[
-q > \frac{C_{\mathrm{build}}}{C_{\mathrm{baseline}}-C_{\mathrm{extract}}}
+q > \frac{C_{\mathrm{build}}}{\,C_{\mathrm{baseline}}-C_{\mathrm{extract}}-h\,C_{\mathrm{build}}\,},
 \]
-when the denominator is positive; the plotted registered toy uses $C_{\mathrm{build}}=100$, $C_{\mathrm{baseline}}=30$ and $C_{\mathrm{extract}}=10$. Another family constructs a long route whose locally preferred action is correct on most decision points but whose last strict-greedy descent enters a dead end; bounded best-first search over the same heuristic retains an alternative branch and reaches the goal. Thus local geometric congruence is not by itself closed-loop navigability.
+valid only when the denominator is positive; otherwise the field never amortizes. The hazard-free special case $h=0$ recovers $q > C_{\mathrm{build}}/(C_{\mathrm{baseline}}-C_{\mathrm{extract}})$, which is what the plotted registered toy uses ($C_{\mathrm{build}}=100$, $C_{\mathrm{baseline}}=30$, $C_{\mathrm{extract}}=10$, $h=0$). This scalar law is a registered development projection, not the noncompensatory path-cost algebra that governs route admissibility. Another family constructs a long route whose locally preferred action is correct on most decision points but whose last strict-greedy descent enters a dead end; bounded best-first search over the same heuristic retains an alternative branch and reaches the goal. Thus local geometric congruence is not by itself closed-loop navigability.
 
 \begin{figure}[t]
 \centering
@@ -82,7 +82,7 @@ A third exact toy enumerates verification schedules under registered independent
 \includegraphics[width=0.48\linewidth]{figures/unified_verification_pareto.pdf}\hfill
 \includegraphics[width=0.48\linewidth]{figures/unified_path_quotient.pdf}%
 }
-\caption{Two reasons that ``more checking/search'' is not a complete solver policy. \textbf{Left:} exact expectations in a synthetic 15-interface composition place fixed verification schedules on a false-accept/false-reject/cost frontier. \textbf{Right:} $m$ pairwise-independent transformations generate $m!$ sequential orderings but one exact partial-order computation class. The plots motivate, respectively, scale-aware verifier scheduling and verifier-witnessed path quotienting; real-task benefit remains open.}
+\caption{Two reasons that ``more checking/search'' is not a complete solver policy. \textbf{Left:} exact expectations in a synthetic 15-interface composition place fixed verification schedules on a false-accept/false-reject/cost frontier. \textbf{Right:} $m$ pairwise-independent transformations generate $m!$ sequential orderings but one exact partial-order computation class \emph{when independence is actually certified at each swap point}; absent such witnesses, histories are not merged, and witness/certification cost must be charged against the saving. The plots motivate, respectively, scale-aware verifier scheduling and verifier-witnessed path quotienting; real-task benefit remains open.}
 \label{fig:unified_solver_verification_path}
 \end{figure}
 

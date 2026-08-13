@@ -5,13 +5,20 @@ on:
     paths:
       - 'src/rakl/operational_map.py'
       - 'src/rakl/path_equivalence.py'
+      - 'src/rakl/path_congruence.py'
       - 'src/rakl/path_cost.py'
+      - 'src/rakl/cost_geometry.py'
       - 'src/rakl/fieldability.py'
       - 'src/rakl/mechanic_diagnosis.py'
       - 'src/rakl/solver_compilation.py'
       - 'src/rakl/solution_assembly.py'
+      - 'src/rakl/proof_dag.py'
+      - 'src/rakl/navigation_quotient.py'
       - 'src/rakl/unified_solver_registry.py'
       - 'tests/test_unified_solver_*.py'
+      - 'tests/test_vtg_closure_contracts.py'
+      - 'tests/test_audit_regressions.py'
+      - 'examples/unified_solver_quickstart.py'
       - 'research/unified_problem_solving_v1/**'
       - 'scripts/audit_unified_framework.py'
       - 'scripts/repair_paper4_generator_defect.py'
@@ -48,14 +55,48 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e '.[test]'
+          # Pin matplotlib so regenerated figure bytes are comparable against the
+          # committed per-paper copies in the staleness gate below.
+          pip install 'matplotlib==3.11.1'
       - name: Run unified framework tests
         run: |
           set -euo pipefail
-          pytest -q tests/test_unified_solver_framework.py tests/test_unified_solver_registry.py | tee unified_framework_tests.txt
+          pytest -q tests/test_unified_solver_framework.py tests/test_unified_solver_registry.py \
+            tests/test_vtg_closure_contracts.py tests/test_audit_regressions.py | tee unified_framework_tests.txt
+      - name: Run unified quickstart example (adopter surface smoke)
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python examples/unified_solver_quickstart.py | tee unified_quickstart_stdout.txt
+          grep -Fx 'QUICKSTART_COMPLETE=true' unified_quickstart_stdout.txt
+          grep -Fx 'AUTHORITY_GRANTED=false' unified_quickstart_stdout.txt
       - name: Audit canonical ownership and claim boundary
         run: python scripts/audit_unified_framework.py | tee unified_framework_audit.txt
       - name: Recompute deterministic known-world stress receipt
-        run: python research/unified_problem_solving_v1/run_known_world_stress.py
+        run: |
+          set -euo pipefail
+          python research/unified_problem_solving_v1/run_known_world_stress.py
+          # Data staleness gate: the committed receipt must byte-match a fresh
+          # recomputation at this exact commit.
+          git diff --exit-code -- research/unified_problem_solving_v1/results/known_world_stress.json
+      - name: Run unified mechanic experiments (shipped-artifact freshness gate)
+        env:
+          PYTHONHASHSEED: '0'
+        run: |
+          set -euo pipefail
+          python research/unified_problem_solving_v1/path_quotient_experiment.py | tee unified_path_quotient_stdout.txt
+          grep -Fx 'CLASS_OUTCOME_MISMATCHES=0' unified_path_quotient_stdout.txt
+          grep -Fx 'EQUIVALENCE_SPOT_FAILURES=0' unified_path_quotient_stdout.txt
+          python research/unified_problem_solving_v1/field_hypothesis_experiment.py | tee unified_field_hypothesis_stdout.txt
+          grep -Fx 'AUTHORITY_GRANTED=false' unified_field_hypothesis_stdout.txt
+          python research/unified_problem_solving_v1/diagnosis_accuracy_experiment.py | tee unified_diagnosis_stdout.txt
+          grep -Fx 'AUTHORITY_GRANTED=false' unified_diagnosis_stdout.txt
+          # The committed result receipts these papers cite must byte-match a
+          # fresh run against HEAD, or the job fails loudly instead of shipping
+          # stale artifacts.
+          git diff --exit-code -- \
+            research/unified_problem_solving_v1/results/path_quotient_savings.json \
+            research/unified_problem_solving_v1/results/field_hypothesis.json \
+            research/unified_problem_solving_v1/results/diagnosis_accuracy.json
       - name: Regenerate receipt-bound publication figures
         run: python paper/generate_demo_figures.py
       - name: Assert unified figures and sources
@@ -68,6 +109,19 @@ jobs:
           done
           test -s paper/figures/generated/unified_solver_known_world.source.json
           test -s research/unified_problem_solving_v1/results/known_world_stress.json
+      - name: Figure staleness gate (regenerated vs committed per-paper copies)
+        run: |
+          set -euo pipefail
+          # The papers are self-contained and compile from their own figures/
+          # directories. This gate fails when a committed per-paper copy no
+          # longer byte-matches the figure regenerated from code at this commit,
+          # so the shipped PDFs cannot silently embed stale figures.
+          for stem in unified_solver_architecture unified_field_amortization unified_local_vs_closed_loop unified_verification_pareto unified_path_quotient; do
+            cmp "paper/figures/generated/${stem}.pdf" \
+              "publication/papers/paper-05-verified-discovery-in-mathematics/figures/${stem}.pdf"
+            cmp "paper/figures/generated/${stem}.pdf" \
+              "publication/papers/paper-06-rakl-scientific-research-engine/source/figures/${stem}.pdf"
+          done
       - name: Repair Paper IV invalid v1 interpretation
         run: |
           set -euo pipefail
@@ -127,9 +181,16 @@ jobs:
             unified_framework_subject.txt
             unified_framework_tests.txt
             unified_framework_audit.txt
+            unified_quickstart_stdout.txt
+            unified_path_quotient_stdout.txt
+            unified_field_hypothesis_stdout.txt
+            unified_diagnosis_stdout.txt
             docs/ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md
             research/unified_problem_solving_v1/VERIFICATION_LEDGER.json
             research/unified_problem_solving_v1/results/known_world_stress.json
+            research/unified_problem_solving_v1/results/path_quotient_savings.json
+            research/unified_problem_solving_v1/results/field_hypothesis.json
+            research/unified_problem_solving_v1/results/diagnosis_accuracy.json
             research/unified_problem_solving_v1/PAPER4_PATCHED_MAIN.tex
             paper/figures/generated/unified_*.pdf
             paper/figures/generated/unified_*.svg
