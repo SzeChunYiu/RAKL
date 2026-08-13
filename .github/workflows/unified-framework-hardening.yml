@@ -22,6 +22,7 @@ on:
       - 'research/unified_problem_solving_v1/**'
       - 'scripts/audit_unified_framework.py'
       - 'scripts/audit_vtg_closure_ledger.py'
+      - 'scripts/audit_vtg_terminology.py'
       - 'scripts/repair_paper4_generator_defect.py'
       - 'docs/VTG_*.md'
       - 'docs/NATURE_SKILLS_INTEGRATION.md'
@@ -70,9 +71,12 @@ jobs:
             tests/test_unified_solver_registry.py \
             tests/test_vtg_closure_contracts.py \
             tests/test_vtg_hardening_contracts.py \
+            tests/test_vtg_terminology_ledger.py \
             | tee unified_framework_tests.txt
       - name: Audit canonical ownership and claim boundary
         run: python scripts/audit_unified_framework.py | tee unified_framework_audit.txt
+      - name: Audit VTG terminology and false-conflation ledger
+        run: python scripts/audit_vtg_terminology.py | tee vtg_terminology_audit.txt
       - name: Audit provenance-bound VTG closure ledger
         run: python scripts/audit_vtg_closure_ledger.py | tee vtg_closure_audit.txt
       - name: Recompute deterministic known-world stress receipt
@@ -90,6 +94,7 @@ jobs:
           test -s paper/figures/generated/unified_solver_known_world.source.json
           test -s research/unified_problem_solving_v1/results/known_world_stress.json
           test -s research/unified_problem_solving_v1/results/vtg_closure_audit.json
+          test -s research/unified_problem_solving_v1/results/vtg_terminology_audit.json
       - name: Repair Paper IV invalid v1 interpretation
         run: |
           set -euo pipefail
@@ -159,14 +164,17 @@ jobs:
             unified_framework_subject.txt
             unified_framework_tests.txt
             unified_framework_audit.txt
+            vtg_terminology_audit.txt
             vtg_closure_audit.txt
             docs/ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md
             docs/VTG_MATHEMATICAL_CLOSURE_AUDIT.md
             docs/VTG_TEN_ROUND_ADVERSARIAL_AUDIT.md
             research/unified_problem_solving_v1/VERIFICATION_LEDGER.json
             research/unified_problem_solving_v1/VTG_CLOSURE_LEDGER.json
+            research/unified_problem_solving_v1/VTG_TERMINOLOGY_LEDGER.json
             research/unified_problem_solving_v1/results/known_world_stress.json
             research/unified_problem_solving_v1/results/vtg_closure_audit.json
+            research/unified_problem_solving_v1/results/vtg_terminology_audit.json
             research/unified_problem_solving_v1/PAPER4_PATCHED_MAIN.tex
             paper/figures/generated/unified_*.pdf
             paper/figures/generated/unified_*.svg
