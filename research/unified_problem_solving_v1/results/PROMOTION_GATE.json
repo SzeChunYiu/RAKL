@@ -150,6 +150,388 @@
       },
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
+    "navigation_dynamics_parallel": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "N",
+            "tested_values": [
+              16,
+              32,
+              64
+            ],
+            "type": "int"
+          },
+          {
+            "name": "Q",
+            "tested_values": [
+              1,
+              8,
+              32
+            ],
+            "type": "int"
+          },
+          {
+            "name": "U",
+            "tested_values": [
+              0,
+              4,
+              16
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              32.0
+            ],
+            "U": [
+              0.0,
+              16.0
+            ]
+          },
+          "overlap": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          },
+          "positive": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            }
+          ],
+          "n": 42,
+          "net_saving_ci95": [
+            -157.76388888888889,
+            -93.94642857142857
+          ],
+          "net_saving_mean": -124.21428571428571
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            }
+          ],
+          "n": 6,
+          "net_saving_ci95": [
+            5.986111111111111,
+            15.013888888888891
+          ],
+          "net_saving_mean": 10.347222222222223
+        }
+      },
+      "artifact": "research/navigation_dynamics_parallel_v1/results/navigation_dynamics_parallel.json",
+      "net": {
+        "hi": -86.58024691358025,
+        "lo": -114.29166666666667,
+        "mean": -99.91666666666667,
+        "n": 648
+      },
+      "note": "parallel-model revival (#537): SAME mechanic under PARALLEL-ROUND DEPTH cost model (k-sweeps = k rounds, Dijkstra = O(V) rounds); tests whether parallel structural advantage yields crossover",
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "PARTIAL"
+      },
+      "verdict": "PROMOTE_CONDITIONALLY"
+    },
     "navigation_dynamics_successor": {
       "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics_successor.json",
       "net": {
@@ -639,6 +1021,7 @@
   },
   "cannot_check": [],
   "conditionally_promoted": [
+    "navigation_dynamics_parallel",
     "path_equivalence_quotient",
     "tcsq_sq3_successor"
   ],
