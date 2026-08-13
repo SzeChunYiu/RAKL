@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 import matplotlib
@@ -9,6 +10,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
+PAPER_DIR = Path(__file__).resolve().parent
+if str(PAPER_DIR) not in sys.path:
+    sys.path.insert(0, str(PAPER_DIR))
 from generate_unified_solver_figures import render as render_unified_solver_figures
 
 
