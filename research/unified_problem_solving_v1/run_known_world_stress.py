@@ -11,6 +11,7 @@ from rakl.mechanic_diagnosis import diagnose_mechanic_signals
 from rakl.operational_map import MapEdgeStatus, OperationalEdge, OperationalMapReceipt, verified_reachability
 from rakl.path_cost import PathAdmissibility, PathCostVector, PathOption, explicit_lexicographic_select
 from rakl.solver_compilation import PreservationValidationReceipt, SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
+from rakl.vtg_hardening import OperationalEdgeAssuranceClass
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,8 +48,6 @@ def field_amortization() -> dict:
 
 
 def local_navigation_trap() -> dict:
-    # A long locally-correct corridor ends in one misleading downhill trap. The
-    # alternative branch is retained by bounded best-first search.
     graph: dict[str, tuple[str, ...]] = {}
     heuristic: dict[str, int] = {}
     optimal_successor: dict[str, str] = {}
@@ -86,7 +85,6 @@ def local_navigation_trap() -> dict:
         current = chosen
     greedy_success = current == "goal"
 
-    # Best-first over the same heuristic retains alternative branches.
     frontier: list[tuple[int, str, tuple[str, ...]]] = [(heuristic["s0"], "s0", ("s0",))]
     expansions = 0
     best_route: tuple[str, ...] | None = None
@@ -135,7 +133,6 @@ def _pattern_probability(pattern: tuple[bool, ...], valid_probability: float) ->
 
 
 def _sequential_checks(flag_probabilities: list[float], costs: list[float]) -> tuple[float, float]:
-    """Return acceptance probability and expected cost under stop-on-first-flag."""
     survive = 1.0
     expected_cost = 0.0
     for flag_probability, cost in zip(flag_probabilities, costs):
@@ -228,7 +225,12 @@ def map_and_cost_gates() -> dict:
     receipt = OperationalMapReceipt(
         "map", "problem", "ops-v1", "chart",
         edges=(
-            OperationalEdge("sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, "toy", verification_id="v1"),
+            OperationalEdge(
+                "sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, "toy",
+                verification_id="v1",
+                assurance_class=OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
+                assurance_receipt_id="replay-sa",
+            ),
             OperationalEdge("ag?", "a", "g", MapEdgeStatus.UNKNOWN, "toy"),
         ),
         unknown_coordinates=("goal_bridge",),
