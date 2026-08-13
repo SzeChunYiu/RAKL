@@ -64,6 +64,21 @@ UNIFIED_SOLVER_MECHANICS: Tuple[UnifiedSolverMechanicSpec, ...] = (
         ("safe quotient acceleration on real theorem-search state spaces",),
     ),
     UnifiedSolverMechanicSpec(
+        "vtg_cross_cutting_hardening",
+        "src/rakl/vtg_hardening.py",
+        "routing",
+        ("tests/test_vtg_hardening_contracts.py",),
+        AuthorityEffect.PROPOSAL_ONLY,
+        "Bind geometry nontriviality, edge assurance, reachability quantifiers, abstraction/refinement, learning support, scoped navigation basins and global amalgamation.",
+        (
+            "fresh non-oracle geometry utility",
+            "real Lean operational-edge assurance",
+            "stochastic/adversarial reachability semantics",
+            "learned-geometry support and OOD calibration",
+            "local-to-global amalgamation on real proof tasks",
+        ),
+    ),
+    UnifiedSolverMechanicSpec(
         "path_cost_algebra",
         "src/rakl/path_cost.py",
         "routing",
