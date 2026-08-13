@@ -11,7 +11,13 @@ from rakl.mechanic_diagnosis import diagnose_mechanic_signals
 from rakl.operational_map import MapEdgeStatus, OperationalEdge, OperationalMapReceipt, verified_reachability
 from rakl.path_cost import PathAdmissibility, PathCostVector, PathOption, explicit_lexicographic_select
 from rakl.solver_compilation import PreservationValidationReceipt, SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
-from rakl.vtg_hardening import OperationalEdgeAssuranceClass
+from rakl.vtg_hardening import (
+    OperationalEdgeAssuranceClass,
+    OperationalEdgeAssuranceReceipt,
+    OperationalReplayEvidence,
+    OperationalStateIdentity,
+    ReplayVerdict,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -221,6 +227,48 @@ def verification_pareto() -> dict:
     }
 
 
+def _stress_state(state_id: str) -> OperationalStateIdentity:
+    return OperationalStateIdentity(
+        state_id=state_id,
+        specification_hash="toy-spec",
+        root_qoi="reach g",
+        environment_hash="toy-env",
+        verifier_subject_hash="toy-replayer-subject",
+        local_context_hash=f"ctx-{state_id}",
+        goals_hash=f"goal-{state_id}",
+        metavariable_state_hash=f"mvars-{state_id}",
+        options_hash="toy-options",
+        operator_basis_version="ops-v1",
+        chart_id="chart",
+        toolchain_hash="toy-toolchain",
+    )
+
+
+def _stress_replay_assurance(edge_id: str, source: str, target: str) -> OperationalEdgeAssuranceReceipt:
+    source_state = _stress_state(source)
+    target_state = _stress_state(target)
+    replay = OperationalReplayEvidence(
+        replay_id=f"replay-{edge_id}",
+        edge_id=edge_id,
+        source_state_hash=source_state.content_hash,
+        target_state_hash=target_state.content_hash,
+        action_hash=f"action-{edge_id}",
+        replay_engine="toy-deterministic-replayer",
+        replay_engine_version="1",
+        result_artifact_hash=f"result-{edge_id}",
+        verdict=ReplayVerdict.PASS,
+    )
+    return OperationalEdgeAssuranceReceipt(
+        receipt_id=f"assurance-{edge_id}",
+        edge_id=edge_id,
+        assurance_class=OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
+        source_state=source_state,
+        target_state=target_state,
+        verifier_subject_hash="toy-replayer-subject",
+        replay_evidence=replay,
+    )
+
+
 def map_and_cost_gates() -> dict:
     receipt = OperationalMapReceipt(
         "map", "problem", "ops-v1", "chart",
@@ -228,8 +276,7 @@ def map_and_cost_gates() -> dict:
             OperationalEdge(
                 "sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, "toy",
                 verification_id="v1",
-                assurance_class=OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
-                assurance_receipt_id="replay-sa",
+                assurance_receipt=_stress_replay_assurance("sa", "s", "a"),
             ),
             OperationalEdge("ag?", "a", "g", MapEdgeStatus.UNKNOWN, "toy"),
         ),
