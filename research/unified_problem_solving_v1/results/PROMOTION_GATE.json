@@ -386,11 +386,229 @@
         "status": "COMPLETE"
       },
       "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "tcsq_sq3_successor": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "redundancy_rate",
+            "tested_values": [
+              0.0,
+              0.25,
+              0.5,
+              0.75,
+              0.9,
+              0.9583
+            ],
+            "type": "float"
+          },
+          {
+            "name": "solve_cost_scale",
+            "tested_values": [
+              16,
+              48,
+              128,
+              256
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "redundancy_rate": [
+              0.0,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "overlap": {
+            "redundancy_rate": [
+              0.5,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "positive": {
+            "redundancy_rate": [
+              0.5,
+              0.9583
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 9,
+          "net_saving_ci95": [
+            -18487.870370370372,
+            -4468.074074074074
+          ],
+          "net_saving_mean": -10659.620370370372
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 14,
+          "net_saving_ci95": [
+            8404.720238095239,
+            23947.72619047619
+          ],
+          "net_saving_mean": 15770.892857142857
+        }
+      },
+      "artifact": "research/tcsq_sq3_v1/results/sq3_successor.json",
+      "net": {
+        "hi": 13037.28472222222,
+        "lo": -2042.760416666667,
+        "mean": 5311.774305555556,
+        "n": 24,
+        "note": "aggregated across solve_cost_scale x redundancy cells by bootstrap on cell means"
+      },
+      "note": "successor: per-family validation + certificate verification; regime-conditional on solve-cost x redundancy crossover",
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_CONDITIONALLY"
     }
   },
   "cannot_check": [],
   "conditionally_promoted": [
-    "path_equivalence_quotient"
+    "path_equivalence_quotient",
+    "tcsq_sq3_successor"
   ],
   "grants_scientific_authority": false,
   "policy": "promotion is routing/engineering status, never scientific authority",

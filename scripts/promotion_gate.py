@@ -93,6 +93,14 @@ CANDIDATES = {
         "cost_fields": ["cost_model"],
         "note": "quotient construction cost charged; crossover in redundancy rate expected",
     },
+    "tcsq_sq3_successor": {
+        "artifact": R / "tcsq_sq3_v1/results/sq3_successor.json",
+        "net_keys": ["net_advantage"],
+        "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["cost_model"],
+        "note": "successor: per-family validation + certificate verification; regime-conditional on solve-cost x redundancy crossover",
+    },
     "identity_reuse": {
         "artifact": R / "identity_reuse_v1/results/identity_reuse.json",
         "net_keys": ["net_advantage", "reuse_advantage"],
