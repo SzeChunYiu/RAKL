@@ -63,10 +63,20 @@ def build_v2_pool_and_probes(family: str, *, seed: int, max_exposure: int, probe
         ExposureProbeKind.HOSTILE_NEAR_MISS: _to_ex(G.generate(family, probe_n, seed=seed, regime="hostile", tag="probe_hostile")),
     }
     train_ids = {e.case_id for e in pool}
-    for kind, exs in probes.items():
+    train_prompts = {e.prompt for e in pool}
+    for kind, exs in list(probes.items()):
         overlap = train_ids & {e.case_id for e in exs}
         if overlap:
             raise ValueError(f"train/probe leakage {family}/{kind.value}: {sorted(overlap)}")
+        # PROMPT-level disjointness: distinct ids can still render identical prompts
+        # (small sampled ranges). Filter colliding probe items; refuse if too few remain.
+        kept = [e for e in exs if e.prompt not in train_prompts]
+        dropped = len(exs) - len(kept)
+        if dropped:
+            print(f"[disjoint] {family}/{kind.value}: dropped {dropped} probe item(s) with train-identical prompts")
+        if len(kept) < max(4, len(exs) // 2):
+            raise ValueError(f"probe set {family}/{kind.value} too small after prompt-disjoint filter: {len(kept)}")
+        probes[kind] = kept
     return pool, probes
 
 
@@ -176,7 +186,7 @@ def main() -> int:
     fams = [f for f in a.families.split(",") if f]
     counts = [c for c in REGISTERED_EXPOSURE_COUNTS if c <= a.max_exposure]
     if a.smoke:
-        fams, counts, a.device = fams[:1], [1, 2, 4], "cpu"
+        fams, counts = fams[:1], [1, 2, 4]  # device honored as passed (GPU smoke allowed)
     m = run(model_id=a.model, families=fams, exposure_counts=counts, out_dir=Path(a.out),
             device=a.device, seed=FROZEN_SEED, epochs=a.epochs, lr=a.lr,
             packet_dir=Path(a.packet_dir), smoke=a.smoke)

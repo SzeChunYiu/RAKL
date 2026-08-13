@@ -18,6 +18,7 @@ No scientific authority is granted by anything here; this is an instrument.
 """
 from __future__ import annotations
 
+import hashlib
 import random
 from dataclasses import dataclass
 from typing import Callable
@@ -141,7 +142,10 @@ FAMILIES = tuple(_GEN)
 
 def generate(family: str, n: int, *, seed: int, regime: str = "base", style: str = "default", tag: str = "") -> list[V2Case]:
     """Balanced list of n varied cases for a family (deterministic from seed)."""
-    rng = random.Random((seed, family, regime, style, tag).__hash__() & 0xFFFFFFFF)
+    # Stable across processes: sha256 of the parameter string (tuple.__hash__ of strings
+    # is PYTHONHASHSEED-salted -> non-reproducible pools; found in hostile engineering audit).
+    key = f"{seed}|{family}|{regime}|{style}|{tag}".encode("utf-8")
+    rng = random.Random(int.from_bytes(hashlib.sha256(key).digest()[:8], "big"))
     gen = _GEN[family]
     cases = [gen(rng, i, regime=regime, style=style) for i in range(n)]
     # rename ids to be unique per (regime, tag) so train/probe pools never collide
