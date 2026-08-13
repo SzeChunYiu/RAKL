@@ -12,6 +12,7 @@ class ClosureDisposition(str, Enum):
     CLOSED_THEOREM_OR_PROOF_OBLIGATION = "CLOSED_THEOREM_OR_PROOF_OBLIGATION"
     CLOSED_ASSUMPTION_BOUNDARY = "CLOSED_ASSUMPTION_BOUNDARY"
     OUT_OF_SCOPE_GATED = "OUT_OF_SCOPE_GATED"
+    OPEN_FORMALIZATION = "OPEN_FORMALIZATION"
     OPEN_EMPIRICAL = "OPEN_EMPIRICAL"
     OPEN_EXTERNAL_ASSURANCE = "OPEN_EXTERNAL_ASSURANCE"
     REJECTED_AS_INVALID_CLAIM = "REJECTED_AS_INVALID_CLAIM"
@@ -47,6 +48,7 @@ class ClosureIssue:
         if self.disposition is ClosureDisposition.CLOSED_CODE_TEST and not self.test_paths:
             out.append("code_closed_issue_missing_test")
         if self.disposition in {
+            ClosureDisposition.OPEN_FORMALIZATION,
             ClosureDisposition.OPEN_EMPIRICAL,
             ClosureDisposition.OPEN_EXTERNAL_ASSURANCE,
             ClosureDisposition.OUT_OF_SCOPE_GATED,
@@ -55,6 +57,8 @@ class ClosureIssue:
                 out.append("open_or_gated_issue_missing_next_cut")
             if self.disposition is ClosureDisposition.OPEN_EMPIRICAL and not self.falsifier:
                 out.append("open_empirical_issue_missing_falsifier")
+            if self.disposition is ClosureDisposition.OPEN_FORMALIZATION and not self.evidence_ids:
+                out.append("open_formalization_missing_statement_or_specification")
         return tuple(out)
 
 
