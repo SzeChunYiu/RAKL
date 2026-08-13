@@ -14,6 +14,12 @@ def _hash(payload: object) -> str:
     return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
+class ValidationVerdict(str, Enum):
+    PASS = "PASS"
+    FAIL = "FAIL"
+    CANNOT_CHECK = "CANNOT_CHECK"
+
+
 class GeometryConstructibilityClass(str, Enum):
     EXACT_FINITE_ENUMERATION = "EXACT_FINITE_ENUMERATION"
     POLYNOMIAL_REGISTERED_CLASS = "POLYNOMIAL_REGISTERED_CLASS"
@@ -54,9 +60,61 @@ class NavigationAbstractionKind(str, Enum):
 
 
 @dataclass(frozen=True)
-class OperationalStateIdentity:
-    """Future-relevant state identity for a frozen VTG operational subject."""
+class ValidationEvidence:
+    """Generic provenance-bearing validation result.
 
+    It is deliberately not an authority object. It is a typed input to a later
+    assurance decision and prevents a bare identifier/Boolean from acting as a
+    self-certifying release gate.
+    """
+
+    evidence_id: str
+    subject_hash: str
+    claim_kind: str
+    verifier_id: str
+    verifier_version: str
+    artifact_hash: str
+    verdict: ValidationVerdict
+    evidence_lineage_ids: Tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not all(
+            (
+                self.evidence_id,
+                self.subject_hash,
+                self.claim_kind,
+                self.verifier_id,
+                self.verifier_version,
+                self.artifact_hash,
+            )
+        ):
+            raise ValueError("validation evidence requires subject/verifier/artifact identity")
+        if len(set(self.evidence_lineage_ids)) != len(self.evidence_lineage_ids):
+            raise ValueError("validation evidence lineage ids must be unique")
+
+    @property
+    def passed(self) -> bool:
+        return self.verdict is ValidationVerdict.PASS
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+
+def _require_pass(evidence: ValidationEvidence | None, *, subject_hash: str, claim_kind: str, label: str) -> ValidationEvidence:
+    if evidence is None:
+        raise ValueError(f"{label} requires validation evidence")
+    if evidence.subject_hash != subject_hash:
+        raise ValueError(f"{label} evidence subject mismatch")
+    if evidence.claim_kind != claim_kind:
+        raise ValueError(f"{label} evidence claim kind mismatch")
+    if not evidence.passed:
+        raise ValueError(f"{label} requires passing validation evidence")
+    return evidence
+
+
+@dataclass(frozen=True)
+class OperationalStateIdentity:
     state_id: str
     specification_hash: str
     root_qoi: str
@@ -158,6 +216,7 @@ class OperationalReplayEvidence:
 class GeometryNontrivialityContract:
     contract_id: str
     geometry_id: str
+    evaluation_subject_hash: str
     constructibility_class: GeometryConstructibilityClass
     construction_cost: float
     coordinate_bits_per_state: int
@@ -169,12 +228,12 @@ class GeometryNontrivialityContract:
     used_gold_distance: bool
     expected_reuse_queries: float | None
     invalidation_hazard_per_query: float | None
-    fresh_subject_hashes: Tuple[str, ...] = ()
-    leakage_check_ids: Tuple[str, ...] = ()
+    leakage_evidence: Tuple[ValidationEvidence, ...] = ()
+    fresh_evaluation_evidence: Tuple[ValidationEvidence, ...] = ()
 
     def __post_init__(self) -> None:
-        if not self.contract_id or not self.geometry_id:
-            raise ValueError("geometry nontriviality contract requires identity")
+        if not self.contract_id or not self.geometry_id or not self.evaluation_subject_hash:
+            raise ValueError("geometry nontriviality contract requires identity and evaluation subject")
         if min(
             self.construction_cost,
             self.coordinate_bits_per_state,
@@ -187,21 +246,21 @@ class GeometryNontrivialityContract:
             raise ValueError("expected reuse must be nonnegative")
         if self.invalidation_hazard_per_query is not None and not 0.0 <= self.invalidation_hazard_per_query <= 1.0:
             raise ValueError("invalidation hazard must be in [0,1]")
-        if len(set(self.fresh_subject_hashes)) != len(self.fresh_subject_hashes):
-            raise ValueError("fresh subject hashes must be unique")
-        if len(set(self.leakage_check_ids)) != len(self.leakage_check_ids):
-            raise ValueError("leakage check ids must be unique")
+        for evidence in self.leakage_evidence:
+            _require_pass(evidence, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_LEAKAGE_CHECK", label="geometry leakage")
+        for evidence in self.fresh_evaluation_evidence:
+            _require_pass(evidence, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_FRESH_EVALUATION", label="geometry fresh evaluation")
 
     @property
     def is_oracle_contaminated(self) -> bool:
         return self.used_gold_route or self.used_gold_distance or self.constructibility_class is GeometryConstructibilityClass.ORACLE_EVALUATOR_ONLY
 
     @property
-    def supports_fresh_nontriviality_claim(self) -> bool:
+    def nontriviality_evidence_packet_complete(self) -> bool:
         return (
             not self.is_oracle_contaminated
-            and bool(self.fresh_subject_hashes)
-            and bool(self.leakage_check_ids)
+            and bool(self.leakage_evidence)
+            and bool(self.fresh_evaluation_evidence)
             and self.constructibility_class
             not in {
                 GeometryConstructibilityClass.ORACLE_EVALUATOR_ONLY,
@@ -304,7 +363,7 @@ class ReachabilityClaimContract:
     probability_lower_bound: float | None = None
     expected_cost_upper_bound: float | None = None
     adversary_model_id: str | None = None
-    evidence_ids: Tuple[str, ...] = ()
+    evidence: Tuple[ValidationEvidence, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.claim_id or not self.subject_hash:
@@ -328,6 +387,13 @@ class ReachabilityClaimContract:
             raise ValueError("expected-cost reachability claim requires cost bound")
         if self.quantifier is ReachabilityQuantifier.ADVERSARIAL_GAME and not self.adversary_model_id:
             raise ValueError("adversarial reachability claim requires adversary model")
+        for item in self.evidence:
+            if item.subject_hash != self.subject_hash:
+                raise ValueError("reachability evidence subject mismatch")
+
+    @property
+    def evidence_packet_complete(self) -> bool:
+        return bool(self.evidence) and all(item.passed for item in self.evidence)
 
     @property
     def grants_solution_authority(self) -> bool:
@@ -341,39 +407,42 @@ class NavigationAbstractionReceipt:
     abstract_subject_hash: str
     kind: NavigationAbstractionKind
     abstraction_map_id: str
-    concretization_or_lifting_id: str | None
-    transition_soundness_verifier_id: str | None
-    target_preservation_verifier_id: str | None
-    exact_two_way_verifier_id: str | None = None
-    refinement_operator_id: str | None = None
+    validation_subject_hash: str
+    concretization_evidence: ValidationEvidence | None
+    transition_soundness_evidence: ValidationEvidence | None
+    target_preservation_evidence: ValidationEvidence | None
+    exact_two_way_evidence: ValidationEvidence | None = None
+    refinement_evidence: ValidationEvidence | None = None
 
     def __post_init__(self) -> None:
-        if not all((self.abstraction_id, self.source_subject_hash, self.abstract_subject_hash, self.abstraction_map_id)):
+        if not all(
+            (
+                self.abstraction_id,
+                self.source_subject_hash,
+                self.abstract_subject_hash,
+                self.abstraction_map_id,
+                self.validation_subject_hash,
+            )
+        ):
             raise ValueError("navigation abstraction requires bound identities")
         if self.kind is NavigationAbstractionKind.EXACT_QUOTIENT:
-            if not all(
-                (
-                    self.concretization_or_lifting_id,
-                    self.transition_soundness_verifier_id,
-                    self.target_preservation_verifier_id,
-                    self.exact_two_way_verifier_id,
-                )
-            ):
-                raise ValueError("exact navigation quotient requires two-way/lifting and preservation verification")
+            _require_pass(self.concretization_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_CONCRETIZATION", label="exact navigation quotient concretization")
+            _require_pass(self.transition_soundness_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_TRANSITION_SOUNDNESS", label="exact navigation quotient transition soundness")
+            _require_pass(self.target_preservation_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_TARGET_PRESERVATION", label="exact navigation quotient target preservation")
+            _require_pass(self.exact_two_way_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_TWO_WAY_REACHABILITY", label="exact navigation quotient two-way reachability")
         elif self.kind is NavigationAbstractionKind.SOUND_OVERAPPROXIMATION:
-            if not all(
-                (
-                    self.concretization_or_lifting_id,
-                    self.transition_soundness_verifier_id,
-                    self.target_preservation_verifier_id,
-                    self.refinement_operator_id,
-                )
-            ):
-                raise ValueError("overapproximation requires soundness, concretization, target, and refinement bindings")
+            _require_pass(self.concretization_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_CONCRETIZATION", label="overapproximation concretization")
+            _require_pass(self.transition_soundness_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_TRANSITION_SOUNDNESS", label="overapproximation transition soundness")
+            _require_pass(self.target_preservation_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_TARGET_PRESERVATION", label="overapproximation target preservation")
+            _require_pass(self.refinement_evidence, subject_hash=self.validation_subject_hash, claim_kind="ABSTRACTION_REFINEMENT_AVAILABLE", label="overapproximation refinement")
 
     @property
     def abstract_route_requires_concrete_check(self) -> bool:
         return self.kind is not NavigationAbstractionKind.EXACT_QUOTIENT
+
+    @property
+    def validation_packet_complete(self) -> bool:
+        return True
 
     @property
     def abstract_no_route_can_mint_impossibility_authority(self) -> bool:
@@ -387,29 +456,21 @@ class CertifiedNavigationBasin:
     subject_hash: str
     state_selector_id: str
     rank_or_value_id: str
-    rank_well_foundedness_receipt_id: str
-    progress_action_verifier_id: str
-    minima_goal_verifier_id: str
-    boundary_behavior_id: str
+    rank_well_foundedness_evidence: ValidationEvidence
+    progress_action_evidence: ValidationEvidence
+    minima_goal_evidence: ValidationEvidence
+    boundary_behavior_evidence: ValidationEvidence
 
     def __post_init__(self) -> None:
-        if not all(
-            (
-                self.basin_id,
-                self.geometry_id,
-                self.subject_hash,
-                self.state_selector_id,
-                self.rank_or_value_id,
-                self.rank_well_foundedness_receipt_id,
-                self.progress_action_verifier_id,
-                self.minima_goal_verifier_id,
-                self.boundary_behavior_id,
-            )
-        ):
-            raise ValueError("certified navigation basin requires all theorem-bound identities")
+        if not all((self.basin_id, self.geometry_id, self.subject_hash, self.state_selector_id, self.rank_or_value_id)):
+            raise ValueError("certified navigation basin requires bound identity")
+        _require_pass(self.rank_well_foundedness_evidence, subject_hash=self.subject_hash, claim_kind="BASIN_RANK_WELL_FOUNDED", label="navigation basin rank")
+        _require_pass(self.progress_action_evidence, subject_hash=self.subject_hash, claim_kind="BASIN_PROGRESS_ACTION", label="navigation basin progress")
+        _require_pass(self.minima_goal_evidence, subject_hash=self.subject_hash, claim_kind="BASIN_MINIMA_ARE_GOALS", label="navigation basin minima")
+        _require_pass(self.boundary_behavior_evidence, subject_hash=self.subject_hash, claim_kind="BASIN_BOUNDARY_BEHAVIOR", label="navigation basin boundary")
 
     @property
-    def supports_scoped_termination_theorem(self) -> bool:
+    def ready_for_scoped_termination_assurance(self) -> bool:
         return True
 
     @property
@@ -421,6 +482,7 @@ class CertifiedNavigationBasin:
 class GeometryLearningReceipt:
     receipt_id: str
     geometry_id: str
+    evaluation_subject_hash: str
     training_subject_hashes: Tuple[str, ...]
     behavior_policy_id: str
     sampling_process_id: str
@@ -428,14 +490,23 @@ class GeometryLearningReceipt:
     coverage_coordinate_ids: Tuple[str, ...]
     unseen_operator_ids: Tuple[str, ...] = ()
     unseen_chart_ids: Tuple[str, ...] = ()
-    leakage_check_ids: Tuple[str, ...] = ()
-    fresh_test_subject_hashes: Tuple[str, ...] = ()
     structural_assumption_ids: Tuple[str, ...] = ()
-    ood_detector_id: str | None = None
-    staleness_detector_id: str | None = None
+    leakage_evidence: Tuple[ValidationEvidence, ...] = ()
+    fresh_evaluation_evidence: Tuple[ValidationEvidence, ...] = ()
+    ood_evidence: ValidationEvidence | None = None
+    staleness_evidence: ValidationEvidence | None = None
 
     def __post_init__(self) -> None:
-        if not all((self.receipt_id, self.geometry_id, self.behavior_policy_id, self.sampling_process_id, self.label_source_id)):
+        if not all(
+            (
+                self.receipt_id,
+                self.geometry_id,
+                self.evaluation_subject_hash,
+                self.behavior_policy_id,
+                self.sampling_process_id,
+                self.label_source_id,
+            )
+        ):
             raise ValueError("geometry learning receipt requires bound identities")
         if not self.training_subject_hashes:
             raise ValueError("geometry learning receipt requires training subjects")
@@ -446,24 +517,30 @@ class GeometryLearningReceipt:
             self.coverage_coordinate_ids,
             self.unseen_operator_ids,
             self.unseen_chart_ids,
-            self.leakage_check_ids,
-            self.fresh_test_subject_hashes,
             self.structural_assumption_ids,
         ):
             if len(set(values)) != len(values):
                 raise ValueError("geometry learning receipt identifiers must be unique within each coordinate")
+        for item in self.leakage_evidence:
+            _require_pass(item, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_LEAKAGE_CHECK", label="learned geometry leakage")
+        for item in self.fresh_evaluation_evidence:
+            _require_pass(item, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_FRESH_EVALUATION", label="learned geometry fresh evaluation")
+        if self.ood_evidence is not None:
+            _require_pass(self.ood_evidence, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_OOD_VALIDATION", label="learned geometry OOD")
+        if self.staleness_evidence is not None:
+            _require_pass(self.staleness_evidence, subject_hash=self.evaluation_subject_hash, claim_kind="GEOMETRY_STALENESS_VALIDATION", label="learned geometry staleness")
 
     @property
     def has_known_support_gaps(self) -> bool:
         return bool(self.unseen_operator_ids or self.unseen_chart_ids)
 
     @property
-    def supports_fresh_empirical_geometry_claim(self) -> bool:
+    def fresh_empirical_evidence_packet_complete(self) -> bool:
         return bool(
-            self.leakage_check_ids
-            and self.fresh_test_subject_hashes
-            and self.ood_detector_id
-            and self.staleness_detector_id
+            self.leakage_evidence
+            and self.fresh_evaluation_evidence
+            and self.ood_evidence is not None
+            and self.staleness_evidence is not None
         )
 
     @property
@@ -476,34 +553,29 @@ class GlobalAmalgamationReceipt:
     receipt_id: str
     root_subject_hash: str
     child_certificate_hashes: Tuple[str, ...]
-    overlap_consistency_receipt_ids: Tuple[str, ...]
-    assumption_discharge_receipt_ids: Tuple[str, ...]
-    substitution_coherence_receipt_ids: Tuple[str, ...]
-    parent_invariant_receipt_id: str
-    final_verifier_receipt_id: str
+    overlap_consistency_evidence: Tuple[ValidationEvidence, ...]
+    assumption_discharge_evidence: Tuple[ValidationEvidence, ...]
+    substitution_coherence_evidence: Tuple[ValidationEvidence, ...]
+    parent_invariant_evidence: ValidationEvidence
+    final_verifier_evidence: ValidationEvidence
 
     def __post_init__(self) -> None:
         if not self.receipt_id or not self.root_subject_hash:
             raise ValueError("amalgamation receipt requires identity and root subject")
         if not self.child_certificate_hashes:
             raise ValueError("amalgamation requires child certificates")
-        if not all(
-            (
-                self.overlap_consistency_receipt_ids,
-                self.assumption_discharge_receipt_ids,
-                self.parent_invariant_receipt_id,
-                self.final_verifier_receipt_id,
-            )
-        ):
-            raise ValueError("amalgamation requires overlap, assumption, parent invariant and final verifier receipts")
-        for values in (
-            self.child_certificate_hashes,
-            self.overlap_consistency_receipt_ids,
-            self.assumption_discharge_receipt_ids,
-            self.substitution_coherence_receipt_ids,
-        ):
-            if len(set(values)) != len(values):
-                raise ValueError("amalgamation receipt identifiers must be unique within each coordinate")
+        if not self.overlap_consistency_evidence or not self.assumption_discharge_evidence:
+            raise ValueError("amalgamation requires overlap and assumption evidence")
+        if len(set(self.child_certificate_hashes)) != len(self.child_certificate_hashes):
+            raise ValueError("amalgamation child certificate hashes must be unique")
+        for item in self.overlap_consistency_evidence:
+            _require_pass(item, subject_hash=self.root_subject_hash, claim_kind="AMALGAMATION_OVERLAP_CONSISTENCY", label="amalgamation overlap")
+        for item in self.assumption_discharge_evidence:
+            _require_pass(item, subject_hash=self.root_subject_hash, claim_kind="AMALGAMATION_ASSUMPTION_DISCHARGE", label="amalgamation assumption")
+        for item in self.substitution_coherence_evidence:
+            _require_pass(item, subject_hash=self.root_subject_hash, claim_kind="AMALGAMATION_SUBSTITUTION_COHERENCE", label="amalgamation substitution")
+        _require_pass(self.parent_invariant_evidence, subject_hash=self.root_subject_hash, claim_kind="AMALGAMATION_PARENT_INVARIANT", label="amalgamation parent invariant")
+        _require_pass(self.final_verifier_evidence, subject_hash=self.root_subject_hash, claim_kind="AMALGAMATION_FINAL_VERIFIER", label="amalgamation final verifier")
 
     @property
     def ready_for_solution_assembly(self) -> bool:
