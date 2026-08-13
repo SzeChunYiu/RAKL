@@ -104,23 +104,32 @@ NETBEN.update({
 
 SCAFFOLDS = [
  {"claim_id": "MATH-CANONICAL-COMMITMENT", "claim_type": "theorem", "mechanic": "canonical_commitment",
-  "paper_owner": "paper-02-structural-mechanics", "experiment_owner_issue": "#530", "open": True,
+  "paper_owner": "paper-02-structural-mechanics", "experiment_owner_issue": "#530", "open": False,
   "claim": "Typed canonical encoding is deterministic and context-independent (exact Decimal, exact binary64 bit preservation, cycle/unsupported-type rejection, domain separation).",
   "falsifier": "A finite input with two distinct canonical encodings, or a binary64 value whose bits are not preserved across the round trip.",
-  "code": ["src/rakl/semantic_quotient.py"], "terminal_state": "SCAFFOLD",
-  "terminal_scope": "Search tiny finite counterexamples first; mechanize load-bearing results in Lean (#530)."},
+  "code": ["src/rakl/canonical_commitment.py", "src/rakl/semantic_quotient.py"],
+  "artifact": "research/unified_problem_solving_v1/results/MATHEMATICS_CLOSURE.json",
+  "result": {"statements": ["canonical-commitment-deterministic-encoding", "sha256-domain-binding"], "counterexamples": 0, "method": "finite falsification, PASS-with-bound"},
+  "terminal_state": "SUPPORTED",
+  "terminal_scope": "Finite falsification over n<=6 universes + binary64 round-trips: 0 counterexamples (load-bearing). Small-scope testing is decisive for determinism / domain-binding properties. Lean mechanization NOT attempted (tooling unavailable) - a deferred strengthening, not a scientific block. See MATHEMATICS_CLOSURE.json."},
  {"claim_id": "MATH-TCSQ-SOUNDNESS", "claim_type": "theorem", "mechanic": "tcsq",
-  "paper_owner": "paper-04-verified-discovery", "experiment_owner_issue": "#530", "open": True,
+  "paper_owner": "paper-04-verified-discovery", "experiment_owner_issue": "#530", "open": False,
   "claim": "TCSQ projection/reconstruction preserves the solution set (sound); a quotient that drops a valid solution or admits an invalid one falsifies it.",
   "falsifier": "A quotient class that loses a true solution or gains a spurious one under projection/reconstruction.",
-  "code": ["src/rakl/semantic_quotient.py"], "terminal_state": "SCAFFOLD",
-  "terminal_scope": "Mechanize soundness of projection/reconstruction; pair with the resolved-validation gate (#530)."},
+  "code": ["src/rakl/semantic_quotient.py"],
+  "artifact": "research/unified_problem_solving_v1/results/MATHEMATICS_CLOSURE.json",
+  "result": {"statements": ["semantic-quotient-coordinate-partition", "protected-coordinate-preservation-invariant", "approximation-composition-additive-bounds", "approximation-max-composition-monotonicity"], "counterexamples": 0, "method": "finite falsification, PASS-with-bound"},
+  "terminal_state": "SUPPORTED",
+  "terminal_scope": "Projection / reconstruction / preservation soundness finite-checked (coordinate partition, protected-coordinate invariant, approximation composition + max bounds): 0 counterexamples (load-bearing). This is the SOUNDNESS theorem ONLY; the separate empirical SQ-3 net-benefit question is claim #521 (in progress). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json."},
  {"claim_id": "MATH-VTG-CONTRACTS", "claim_type": "theorem", "mechanic": "verified_transformation_geometry",
   "paper_owner": "paper-05-verified-discovery-in-mathematics", "experiment_owner_issue": "#530", "open": True,
   "claim": "Typed VTG abstraction contracts (exact/sound/empirical; operational subject identity; reachability quantifiers) are internally consistent.",
   "falsifier": "A contract pair that contradicts, or a reachability-under-operators result that diverges from intended mathematical possibility.",
-  "code": ["src/rakl/verified_transformation_geometry.py"], "terminal_state": "SCAFFOLD",
-  "terminal_scope": "Audit every theorem-like statement; tiny finite counterexamples first (#530)."},
+  "code": ["src/rakl/verified_transformation_geometry.py"],
+  "artifact": "research/unified_problem_solving_v1/results/MATHEMATICS_CLOSURE.json",
+  "result": {"supported_statements": ["subject-identity-tree-content-equivalence"], "undecidable_statement": "abstraction-soundness-property", "counterexamples": 0},
+  "terminal_state": "PARTIAL",
+  "terminal_scope": "Subject-identity facet finite-checked (tree-content equivalence, PASS-with-bound). The VTG abstraction-soundness facet (NavigationAbstractionContract EXACT_QUOTIENT) could NOT be finite-checked to a decidable bound -> ARCHITECTURE_ONLY / UNDERPOWERED there: undecidable-with-current-method, NOT negatively settled, so this claim stays open. The separate local-geometry UTILITY claim is #528 (unexecuted). Lean mechanization NOT attempted. See MATHEMATICS_CLOSURE.json."},
  {"claim_id": "ML-STRUCTURAL-RESIDUAL", "claim_type": "ml_representation", "mechanic": "neural_structural_bridge",
   "paper_owner": "paper-03-directional-witness", "experiment_owner_issue": "#526", "open": True,
   "claim": "Explicit TCSQ plus directional-witness semantics beats the strongest matched conditional-metric and asymmetric relational/causal parents on fresh domains, QoI flips and hostile boundary near-misses (Cut 2).",
@@ -150,7 +159,7 @@ SCAFFOLDS = [
   "claim": "Typed structural diagnosis then bounded update then disjoint fresh assurance beats generic reflection/distillation, failure-example fine-tuning, textual skill compilation, matched random update and no update (Cut 7).",
   "falsifier": "A generic baseline matches the typed-pipeline residual.",
   "code": [], "terminal_state": "SCAFFOLD",
-  "terminal_scope": "Preregistered, unexecuted. Training cannot move pi_epi; fresh assurance separated from proposal/training."},
+  "terminal_scope": "Preregistered, unexecuted (empirical Cut-7 comparison requires training - out of #530 math-closure scope). #530 DID finite-check the typed-diagnosis SOUNDNESS theorems (diagnosis-state-disjoint-sets, diagnosis-transition-evidence-monotonicity, diagnosis-cannotcheck-no-unique-concrete: 0 counterexamples, PASS-with-bound); the empirical beats-baselines claim here remains unexecuted. Training cannot move pi_epi; fresh assurance separated from proposal/training."},
  {"claim_id": "SYS-CAPSTONE", "claim_type": "systems", "mechanic": "integrated_system",
   "paper_owner": "paper-06-rakl-scientific-research-engine", "experiment_owner_issue": "#525", "open": True,
   "claim": "The integrated RAKL system beats substantially simpler matched agent/research baselines at matched model, evidence cutoff, compute, wall-time and human-review budget (Cut 8).",
@@ -217,9 +226,13 @@ for mkey, m in ledger["mechanics"].items():
 for s in SCAFFOLDS:
     rec = dict(s)
     rec.setdefault("claim_type", "scaffold")
-    rec["baseline"] = rec.get("baseline", "")
-    rec["result"] = {}
-    rec["artifact"] = ""
+    rec.setdefault("baseline", "")
+    rec["result"] = s.get("result", {})
+    if rec.get("artifact"):
+        ap = REPO / rec["artifact"]
+        rec["artifact_sha256_prefix"] = sha_prefix(ap) if ap.exists() else "MISSING"
+    else:
+        rec["artifact"] = ""
     claims.append(rec)
 
 # (D) paper-framework consistency meta-claim.
