@@ -946,14 +946,17 @@ class PathIntegralNavigator(Navigator):
             V = nxt
             sweeps += 1
 
+        # For path integrals, V[goal] = 0 and V[other] < 0 (soft-minimum values).
+        # To go toward the goal, we follow the neighbor with HIGHEST V (closest to 0).
+        # Use edge_score = V[neighbor] and better = max.
         return GoalField(
             strategy_id=self.strategy_id,
             goal=problem.goal,
             build_sweeps=sweeps,
             graph_nodes=len(nodes),
             adjacency=adjacency,
-            edge_score=lambda a, b, cost: (cost + V[b]) if isfinite(V[b]) else inf,
-            better=min,
+            edge_score=lambda a, b, cost: V[b] if isfinite(V[b]) else inf,
+            better=max,
             diagnostics={"temperature": T},
             max_route_steps=self.max_route_steps,
         )
