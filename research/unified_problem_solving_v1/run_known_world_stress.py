@@ -271,7 +271,15 @@ def _stress_replay_assurance(edge_id: str, source: str, target: str) -> Operatio
 
 def map_and_cost_gates() -> dict:
     receipt = OperationalMapReceipt(
-        "map", "problem", "ops-v1", "chart",
+        map_id="map",
+        problem_state_hash="problem",
+        specification_hash="toy-spec",
+        root_qoi="reach g",
+        environment_hash="toy-env",
+        verifier_subject_hash="toy-replayer-subject",
+        operator_basis_version="ops-v1",
+        chart_id="chart",
+        toolchain_hash="toy-toolchain",
         edges=(
             OperationalEdge(
                 "sa", "s", "a", MapEdgeStatus.VERIFIED_TRANSITION, "toy",
