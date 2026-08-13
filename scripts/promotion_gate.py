@@ -85,6 +85,14 @@ CANDIDATES = {
         "cost_fields": None,
         "note": "graded on verdict honesty (degrade to ambiguity, not confident error)",
     },
+    "diagnosis_active_successor": {
+        "artifact": R / "unified_problem_solving_v1/results/diagnosis_active_successor.json",
+        "net_keys": ["correct_rate"],
+        "cost_charged": True,
+        "claim_class": ClaimClass.CORRECTNESS,
+        "cost_fields": ["mean_probe_cost"],
+        "note": "leakage-free active sequential diagnosis; abstention_supported; honest NEGATIVE expected",
+    },
     "tcsq_sq3": {
         "artifact": R / "tcsq_sq3_v1/results/sq3.json",
         "net_keys": ["net_advantage", "net_cost_advantage"],

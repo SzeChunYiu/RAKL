@@ -1,0 +1,127 @@
+{
+  "claim_boundary": "development known-world evidence; leakage-free active sequential diagnosis from raw telemetry through Bayesian inference to bounded repair; grants no scientific or method-promotion authority; preregistered design per issue #539",
+  "schema_version": "rakl.diagnosis-active-successor.v1",
+  "seed": 461,
+  "status": "NEGATIVE",
+  "design": {
+    "architecture": "raw_telemetry -> discretized_symptoms -> bayesian_inference -> posterior_with_abstention",
+    "leakage_free": true,
+    "abstention_supported": true,
+    "parent_controls": [
+      "random_probe",
+      "fixed_battery"
+    ],
+    "preregistered": true
+  },
+  "correct_rate": {
+    "mean": 0.0105,
+    "lo": 0.008,
+    "hi": 0.013,
+    "n": 6000
+  },
+  "abstention_rate": {
+    "mean": 0.9797,
+    "lo": 0.976,
+    "hi": 0.9832,
+    "n": 6000
+  },
+  "mean_probe_cost": {
+    "mean": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "n": 6000
+  },
+  "results_by_noise": {
+    "0.0": {
+      "correct_rate": {
+        "mean": 0.0073,
+        "lo": 0.0033,
+        "hi": 0.012,
+        "n": 1500
+      },
+      "abstention_rate": {
+        "mean": 0.9827,
+        "lo": 0.976,
+        "hi": 0.9893,
+        "n": 1500
+      },
+      "mean_probe_cost": {
+        "mean": 1.0,
+        "lo": 1.0,
+        "hi": 1.0,
+        "n": 1500
+      }
+    },
+    "0.1": {
+      "correct_rate": {
+        "mean": 0.0133,
+        "lo": 0.008,
+        "hi": 0.0193,
+        "n": 1500
+      },
+      "abstention_rate": {
+        "mean": 0.9747,
+        "lo": 0.9667,
+        "hi": 0.982,
+        "n": 1500
+      },
+      "mean_probe_cost": {
+        "mean": 1.0,
+        "lo": 1.0,
+        "hi": 1.0,
+        "n": 1500
+      }
+    },
+    "0.2": {
+      "correct_rate": {
+        "mean": 0.0073,
+        "lo": 0.0033,
+        "hi": 0.012,
+        "n": 1500
+      },
+      "abstention_rate": {
+        "mean": 0.9867,
+        "lo": 0.9807,
+        "hi": 0.992,
+        "n": 1500
+      },
+      "mean_probe_cost": {
+        "mean": 1.0,
+        "lo": 1.0,
+        "hi": 1.0,
+        "n": 1500
+      }
+    },
+    "0.3": {
+      "correct_rate": {
+        "mean": 0.014,
+        "lo": 0.0087,
+        "hi": 0.02,
+        "n": 1500
+      },
+      "abstention_rate": {
+        "mean": 0.9747,
+        "lo": 0.9667,
+        "hi": 0.9827,
+        "n": 1500
+      },
+      "mean_probe_cost": {
+        "mean": 1.0,
+        "lo": 1.0,
+        "hi": 1.0,
+        "n": 1500
+      }
+    }
+  },
+  "calibration": {
+    "ece": 0.0422,
+    "brier_score": 0.2515
+  },
+  "parent_comparison": {
+    "random_correct_rate": 0.15,
+    "fixed_battery_correct_rate": 0.25,
+    "successor_vs_random": false,
+    "successor_vs_fixed_battery": false
+  },
+  "grants_scientific_authority": false
+}
