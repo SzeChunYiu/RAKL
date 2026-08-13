@@ -1,0 +1,90 @@
+\section{Unified problem-solving substrate: exact legality, partial maps and fallible geometry}
+\label{sec:unified_problem_solving}
+
+The preceding sections separate evidence, workspace, experience and semantic-shortcut routing. A complementary question is how Orion should represent the \emph{process of solving} a difficult problem without turning a routing heuristic into scientific authority. The implementation now isolates a proposal-only unified solver substrate whose central separation is
+\[
+\text{legal transformation semantics}
+\;\neq\;
+\text{materialized operational map}
+\;\neq\;
+\text{reachability geometry}
+\;\neq\;
+\text{navigation dynamics}
+\;\neq\;
+\text{epistemic authority}.
+\]
+The first coordinate says which candidate transitions a registered verifier would accept. The second records which transitions have actually been discovered, checked, refuted, left stale or remain unknown. The third is a derived, potentially learned and fallible estimate of goal-relative reachability. The fourth determines which candidate action receives compute. None of these routing objects changes the canonical scientific-authority projection without an ordinary evidence-bearing transition.
+
+\paragraph{Operational map belief and coverage.}
+The new \texttt{OperationalMapReceipt} distinguishes \texttt{VERIFIED\_TRANSITION}, \texttt{CANDIDATE\_UNVERIFIED}, scoped refutation, failed-but-not-refuted attempts, stale edges and \texttt{UNKNOWN}. The load-bearing rule is
+\[
+\texttt{UNKNOWN}\neq\texttt{BLOCKED}.
+\]
+A search failure in an incomplete map therefore cannot establish impossibility. Even a no-route result under declared complete coverage is explicitly scoped to the registered operator basis, chart and coverage contract and grants no scientific or theorem authority. This closes a gap between a verifier's transition semantics and the partial cognitive map available to a research agent.
+
+\paragraph{Paths, partial orders and certificates.}
+Canonicalizing states alone does not eliminate duplicate search when independent transformations commute. Orion therefore admits verifier-witnessed path-equivalence objects and partial-order traces as \emph{derived search views}. Raw TaskEpisode chronology remains immutable. This also sharpens a second distinction:
+\[
+\text{discovery trajectory}\neq\text{solution certificate}.
+\]
+The implemented assembly gate binds the final dependency DAG to an exact content hash, requires the root dependency closure, verified dependencies, a verified root and an assembly-verifier pass, and then returns only \texttt{READY\_FOR\_EXTERNAL\_AUTHORITY\_GATE}. It cannot self-promote the result.
+
+\paragraph{Noncompensatory path cost.}
+Solver paths carry incomparable costs: compute, verification, representation construction, evidence acquisition, risk, trust and new assumptions. Orion therefore applies hard legality, specification, portal, trust and root-scope constraints \emph{before} cost comparison. Only admissible paths enter a Pareto frontier or an explicitly registered consumer-specific ordering. A cheap route cannot compensate for an unlicensed assumption or failed preservation contract.
+
+\paragraph{Mechanic differential diagnosis and verified solver compilation.}
+When progress stalls, the proposal-only Mechanic Differential Diagnosis (MDD) layer represents competing causes---for example map coverage, representation, scale, metric, dynamics, operator basis, verifier, interface, model/tool floor or compilation cost---and remains set-valued when one cause is not identified. A discriminator can be requested before repair. The Verified Solver Compilation (VSC) layer then binds a candidate representation, transformation, solver, decoder and verifier together with claimed transformation effects, preservation evidence, build/execute/decode/verification costs, expected reuse and invalidation risk. A compilation cannot be marked validated even for routing without a separate preservation receipt.
+
+\paragraph{Fibred multiscale Orion.}
+The resulting view is recursive but not assumed literally fractal. A child problem fibre may instantiate its own local map, representation, operators, geometry and verifier while remaining bound to a parent QoI and interface. Coarsening is a task-conditioned quotient, not permission to erase root-relevant distinctions. A child result returns through GLUE and parent verification; all locally verified children can still yield an emergent parent-level composition residual.
+
+\begin{figure}[t]
+\centering
+\IfFileExists{figures/unified_solver_architecture.pdf}{%
+\includegraphics[width=\linewidth]{figures/unified_solver_architecture.pdf}%
+}{%
+\includegraphics[width=\linewidth]{figures/unified_solver_architecture.pdf}%
+}
+\caption{The unified problem-solving projection. Exact transition legality, the discovered operational map, fallible reachability geometry and navigation dynamics are kept separate from canonical epistemic authority. MDD diagnoses a deficient solving coordinate; VSC proposes a representation--solver--decoder--verifier configuration; only original-semantics verification can feed an authority-bearing transition. The diagram is an architectural contract, not an empirical-superiority result.}
+\label{fig:unified_solver_architecture}
+\end{figure}
+
+\subsection{Development known-world stress tests and their limits}
+The repository includes a deterministic generator \path{research/unified_problem_solving_v1/run_known_world_stress.py} and a publication script \path{paper/generate_unified_solver_figures.py}. These tests are deliberately small mechanism falsifiers. They do not estimate frontier scientific capability and grant no method-promotion authority.
+
+One family makes field construction expensive but repeated extraction cheap. The exact break-even law is
+\[
+q > \frac{C_{\mathrm{build}}}{C_{\mathrm{baseline}}-C_{\mathrm{extract}}}
+\]
+when the denominator is positive; the plotted registered toy uses $C_{\mathrm{build}}=100$, $C_{\mathrm{baseline}}=30$ and $C_{\mathrm{extract}}=10$. Another family constructs a long route whose locally preferred action is correct on most decision points but whose last strict-greedy descent enters a dead end; bounded best-first search over the same heuristic retains an alternative branch and reaches the goal. Thus local geometric congruence is not by itself closed-loop navigability.
+
+\begin{figure}[t]
+\centering
+\IfFileExists{figures/unified_field_amortization.pdf}{%
+\includegraphics[width=0.48\linewidth]{figures/unified_field_amortization.pdf}\hfill
+\includegraphics[width=0.48\linewidth]{figures/unified_local_vs_closed_loop.pdf}%
+}{%
+\includegraphics[width=0.48\linewidth]{figures/unified_field_amortization.pdf}\hfill
+\includegraphics[width=0.48\linewidth]{figures/unified_local_vs_closed_loop.pdf}%
+}
+\caption{Development mechanism stresses regenerated from code at build time. \textbf{Left:} a reusable field is initially more expensive because construction cost is included; it becomes cheaper only after sufficient reuse. \textbf{Right:} high local next-action alignment does not guarantee strict-greedy completion; retaining a bounded alternative frontier recovers the constructed route. These are known-world demonstrations of cost and closed-loop failure semantics, not evidence that a learned mathematical reachability geometry already works.}
+\label{fig:unified_solver_development_stress}
+\end{figure}
+
+A third exact toy enumerates verification schedules under registered independent interface/checker-error assumptions. Atomic checking, grouped checking and root checking occupy different false-accept, false-reject and cost tradeoffs; the result motivates a verification scheduler but does not select a universal schedule. A fourth shows factorial duplication of sequential histories for independent operations and the corresponding exact partial-order quotient. Figure~\ref{fig:unified_solver_verification_path} makes both failure surfaces visible.
+
+\begin{figure}[t]
+\centering
+\IfFileExists{figures/unified_verification_pareto.pdf}{%
+\includegraphics[width=0.48\linewidth]{figures/unified_verification_pareto.pdf}\hfill
+\includegraphics[width=0.48\linewidth]{figures/unified_path_quotient.pdf}%
+}{%
+\includegraphics[width=0.48\linewidth]{figures/unified_verification_pareto.pdf}\hfill
+\includegraphics[width=0.48\linewidth]{figures/unified_path_quotient.pdf}%
+}
+\caption{Two reasons that ``more checking/search'' is not a complete solver policy. \textbf{Left:} exact expectations in a synthetic 15-interface composition place fixed verification schedules on a false-accept/false-reject/cost frontier. \textbf{Right:} $m$ pairwise-independent transformations generate $m!$ sequential orderings but one exact partial-order computation class. The plots motivate, respectively, scale-aware verifier scheduling and verifier-witnessed path quotienting; real-task benefit remains open.}
+\label{fig:unified_solver_verification_path}
+\end{figure}
+
+\paragraph{Claim boundary and next cut.}
+The implemented sidecars and tests establish scoped software/architectural invariants; the known-world figures establish only the stated constructed mechanisms. They do \emph{not} establish that formal mathematical reachability has a useful hidden geometry, that MDD diagnoses real research failures accurately, or that VSC outperforms strong algorithm-selection/reformulation parents. For the mathematics lane, the next frozen question is therefore whether verifier-defined reachability admits a nontrivially local navigable geometry on held-out theorem families after geometry-construction cost and hidden-route leakage are accounted for. Paper~V states that preregistration explicitly.

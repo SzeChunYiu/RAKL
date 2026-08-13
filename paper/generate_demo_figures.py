@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+
+PAPER_DIR = Path(__file__).resolve().parent
+if str(PAPER_DIR) not in sys.path:
+    sys.path.insert(0, str(PAPER_DIR))
+from generate_unified_solver_figures import render as render_unified_solver_figures
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,8 +90,6 @@ def figure_source_data() -> dict[str, dict[str, Any]]:
 
 
 def _panel_label(ax: plt.Axes, label: str) -> None:
-    # Use Matplotlib's dedicated left-title slot so the panel label remains
-    # outside the data region and cannot collide with marks or uncertainty.
     ax.set_title(label, loc="left", fontweight="bold", fontsize=7.0, pad=4.0)
 
 
@@ -192,14 +196,8 @@ def wrapper_tex(filename: str, receipts: str) -> str:
 
 def generate() -> dict[str, str]:
     return {
-        "fig5_demo_growth.tex": wrapper_tex(
-            "fig5_demo_growth",
-            "research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json",
-        ),
-        "fig6_demo_context.tex": wrapper_tex(
-            "fig6_demo_context",
-            "research/MINI_RESEARCH_DEMO_043_RECEIPT.json + research/MINI_ARCHIVE_STORAGE_044_RECEIPT.json",
-        ),
+        "fig5_demo_growth.tex": wrapper_tex("fig5_demo_growth", "research/MINI_RESEARCH_METROLOGY_044_RECEIPT.json"),
+        "fig6_demo_context.tex": wrapper_tex("fig6_demo_context", "research/MINI_RESEARCH_DEMO_043_RECEIPT.json + research/MINI_ARCHIVE_STORAGE_044_RECEIPT.json"),
     }
 
 
@@ -216,6 +214,7 @@ def main() -> int:
     for filename, content in generate().items():
         (FIGURES / filename).write_text(content, encoding="utf-8")
     render(GENERATED)
+    render_unified_solver_figures(GENERATED)
     return 0
 
 
