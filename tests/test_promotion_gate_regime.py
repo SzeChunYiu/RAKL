@@ -219,11 +219,18 @@ def test_uniform_positive_artifact_promotes_unconditionally(repo_tmp):
         "grants_scientific_authority": False,
         "net_saving_mean": 70.18,
         "net_saving_ci95": [4.68, 145.13],
-        # NO regime_analysis -> no crossover -> pooled-mean verdict stands
+        # NO regime_analysis -> no crossover -> pooled-mean verdict stands.
+        # #544: include the required EFFICIENCY telemetry (sample, seed, a measured
+        # quantity, and the witness/certification cost the net is net-of) so this
+        # no-alarm guard isolates CROSSOVER detection from the telemetry gate.
+        "n_instances_per_cell": 200,
+        "seed": 461,
+        "mean_witnesses_registered": 1.73,
     }))
     v = verdict_for("path_equivalence_quotient", spec)
     assert v["verdict"] == "PROMOTE_TO_MECHANIC", v
     assert "applicability" not in v
+    assert v["telemetry"]["status"] == "COMPLETE"
 
 
 def test_crossover_with_no_clean_positive_subregime_is_proposal_only(repo_tmp):

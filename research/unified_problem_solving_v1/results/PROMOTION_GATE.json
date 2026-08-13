@@ -10,6 +10,26 @@
       },
       "note": "constructor must pay for its own construction cost",
       "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "construction_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "fieldability_given_field": {
@@ -22,6 +42,22 @@
       },
       "note": "given-metric field; construction cost not applicable (field supplied by domain)",
       "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "telemetry": {
+        "claim_class": "PERFORMANCE",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "PROMOTE_TO_MECHANIC"
     },
     "identity_reuse": {
@@ -34,6 +70,29 @@
       },
       "note": "exact reuse vs re-derivation; stale-reuse error rate is a hard constraint",
       "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "telemetry": {
+        "claim_class": "CACHE_REUSE",
+        "economic_cost_fields": [
+          "exact_cost",
+          "generic_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "PROMOTE_TO_MECHANIC"
     },
     "mechanic_diagnosis": {
@@ -46,6 +105,20 @@
       },
       "note": "graded on verdict honesty (degrade to ambiguity, not confident error)",
       "reason": "ci_includes_null_no_distinguishable_advantage",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "navigation_dynamics": {
@@ -58,6 +131,23 @@
       },
       "note": "must beat the STRONG control (A*) with its own iteration cost charged",
       "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "PARTIAL"
+      },
       "verdict": "KEEP_PROPOSAL_ONLY"
     },
     "path_equivalence_quotient": {
@@ -219,6 +309,26 @@
       "net": 70.18562499999999,
       "note": "witness/certification cost charged; known negative regime at low commutation",
       "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "verification_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "PROMOTE_CONDITIONALLY"
     },
     "six_family_law": {
@@ -228,6 +338,20 @@
       "note": "cross-family generalization; sign test across >=6 families",
       "p": 0.03125,
       "reason": "sign_test_significant_count_met",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "PROMOTE_TO_MECHANIC"
     },
     "tcsq_sq3": {
@@ -241,6 +365,26 @@
       },
       "note": "quotient construction cost charged; crossover in redundancy rate expected",
       "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      },
       "verdict": "KEEP_PROPOSAL_ONLY"
     }
   },

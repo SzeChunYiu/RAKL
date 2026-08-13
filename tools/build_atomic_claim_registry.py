@@ -211,6 +211,12 @@ for key, cand in gate["candidates"].items():
         # #543: carry the regime-crossover applicability contract so the registry,
         # promotion gate, and controller (#535) consume one consistent predicate.
         rec["applicability"] = cand["applicability"]
+    if cand.get("telemetry"):
+        # #544: carry the claim-class telemetry-completeness status so the registry
+        # records whether an efficiency/cost promotion is traceable to COMPLETE
+        # required telemetry or is caveated (PARTIAL/CANNOT_CHECK/INVALID_PROSPECTIVE).
+        # Mirrors the #543 applicability carry.
+        rec["telemetry"] = cand["telemetry"]
     if meta.get("underpowered"):
         rec["underpowered"] = True
     claims.append(rec)
