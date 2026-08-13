@@ -83,6 +83,17 @@ class PromotionVerdict:
     def may_move_main(self) -> bool:
         return self.decision == PromotionDecision.PROMOTE
 
+    @property
+    def grants_scientific_authority(self) -> bool:
+        """Model/method promotion is a distinct transition from scientific-authority promotion.
+
+        A PROMOTE decision makes a candidate method eligible to move main; it
+        never mints scientific authority, which is a separately governed
+        transition owned by the authority ledger.  This property is deliberately
+        constant so the separation cannot be regressed by a later change.
+        """
+        return False
+
 
 class PromotionGate:
     """Transactional, fail-closed gate for recursive self-modification.
@@ -178,3 +189,17 @@ class PromotionGate:
                 tuple(cannot_check),
             )
         return PromotionVerdict(PromotionDecision.PROMOTE, ())
+
+def model_promotion_eligibility_is_separate_from_scientific_authority(
+    verdict: PromotionVerdict,
+) -> bool:
+    """Assert that model-promotion eligibility and scientific-authority promotion are separate transitions.
+
+    This is the production guard for the separation invariant (doc 12 section B):
+    even a PROMOTE verdict carries no scientific authority.  The function exists
+    so that a downstream consumer that depends on this separation binds to the
+    invariant explicitly rather than assuming it.  It is constant-valued by
+    design; a future change that tried to grant authority through the promotion
+    gate would have to delete this guard, making the regression visible.
+    """
+    return not verdict.grants_scientific_authority

@@ -77,6 +77,7 @@ __all__ = [
     "revoke_scientific_authority",
     "state_fingerprint",
     "state_fingerprint_v2",
+    "state_fingerprint_v3",
     "supersede_scientific_authority",
 ]
 
@@ -172,6 +173,24 @@ def state_fingerprint_v2(state: RAKLV3State) -> str:
     """
 
     return sha256(("v2:" + repr(state)).encode("utf-8")).hexdigest()
+
+
+
+def state_fingerprint_v3(state: RAKLV3State, *, sequence: int = 0, previous_digest: str | None = None) -> str:
+    """Return the **v3** canonical commitment digest (dual-write surface).
+
+    This is the context-independent canonical encoding of the full state from
+    :mod:, introduced for migration fingerprinting.  It is
+    additive: v1 (experience-side benchmark identity) and v2 (repr-based
+    authority-aware identity) remain unchanged, so historical benchmark
+    identities still hold.  New cross-runtime replay and migration paths should
+    dual-write this v3 digest alongside v1/v2 rather than re-keying either.
+
+    The commitment grants no scientific authority; it is an integrity digest.
+    """
+    from .v3_commitment import state_commitment_v3
+
+    return state_commitment_v3(state, sequence=sequence, previous_digest=previous_digest).digest
 
 
 def record_task_episode(

@@ -117,6 +117,7 @@ TRANSITION_OWNERSHIP: Mapping[str, frozenset[StateCoordinate]] = {
     "materialize_state_substrate": frozenset(),
     "state_fingerprint": frozenset(),
     "state_fingerprint_v2": frozenset(),
+    "state_fingerprint_v3": frozenset(),  # canonical commitment digest; read-only over the state
     # canonical scientific content, authority-inert
     "register_scientific_claim": frozenset({StateCoordinate.CANONICAL_SCIENTIFIC_CONTENT}),
     "register_scientific_evidence": frozenset({StateCoordinate.CANONICAL_SCIENTIFIC_CONTENT}),

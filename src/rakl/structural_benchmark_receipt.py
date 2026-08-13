@@ -107,3 +107,86 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def build_structural_transfer_use_receipt(
+    *,
+    resolved_witness_evidence_ids: frozenset[str] = frozenset(),
+    resolved_preservation_receipt_ids: frozenset[str] = frozenset(),
+    subject_sha: str | None = None,
+) -> dict[str, Any]:
+    """Build a use-site transfer receipt exercising ``assess_transfer_for_use``.
+
+    The base conformance receipt (``build_receipt``) runs ``assess_transfer``,
+    which licenses a transfer on relation/invariant/boundary preservation but
+    does not make a witness's explicit ``non_preserved_properties`` load-bearing
+    at the consumer.  This builder is the production wiring point for the
+    use-site contract: for every benchmark case whose downstream use depends on
+    the source invariants, the transfer must additionally pass
+    ``assess_transfer_for_use`` with each required property backed by a resolved
+    preservation receipt and each declared loss explicitly acknowledged.
+
+    The caller's assurance layer supplies the resolved witness-evidence and
+    preservation-receipt identity sets; unresolved evidence/receipts fail closed
+    to CANNOT_CHECK.  Grants no scientific authority.
+    """
+    from rakl.structural_transfer_use import (
+        StructuralTransferUseContract,
+        TransferUseVerdict,
+        assess_transfer_for_use,
+    )
+
+    cases = make_multifamily_cases()
+    rows: list[dict[str, Any]] = []
+    for case in cases:
+        required = frozenset(case.source.invariants)
+        accepted_losses = frozenset(case.witness.non_preserved_properties)
+        preservation_receipts = tuple(
+            (prop, f"preservation-receipt:{case.case_id}:{prop}") for prop in sorted(required)
+        )
+        use = StructuralTransferUseContract(
+            use_id=f"{case.case_id}:use",
+            qoi=case.source.qoi,
+            required_properties=required,
+            accepted_non_preserved_properties=accepted_losses,
+            property_preservation_receipts=preservation_receipts,
+        )
+        assessment = assess_transfer_for_use(
+            case.source,
+            case.target,
+            case.witness,
+            use,
+            resolved_witness_evidence_ids=resolved_witness_evidence_ids,
+            resolved_preservation_receipt_ids=resolved_preservation_receipt_ids,
+        )
+        rows.append(
+            {
+                "case_id": case.case_id,
+                "family": case.family,
+                "use_id": use.use_id,
+                "qoi": use.qoi,
+                "required_properties": sorted(use.required_properties),
+                "accepted_non_preserved_properties": sorted(use.accepted_non_preserved_properties),
+                "base_decision": assessment.base_decision.value,
+                "use_verdict": assessment.verdict.value,
+                "reasons": list(assessment.reasons),
+                "witness_id": case.witness.witness_id,
+                "witness_evidence_ids": list(case.witness.evidence_ids),
+            }
+        )
+
+    licensed = sum(1 for row in rows if row["use_verdict"] == TransferUseVerdict.LICENSED_FOR_USE.value)
+    return {
+        "schema_version": "paper3-structural-transfer-use-v1",
+        "subject_sha": subject_sha,
+        "claim_boundary": (
+            "use-site transfer conformance receipt only; the use gate is load-bearing on "
+            "non_preserved_properties and resolved preservation receipts, and grants no "
+            "scientific or cross-domain-generalization authority"
+        ),
+        "case_count": len(rows),
+        "licensed_for_use_count": licensed,
+        "resolved_witness_evidence_count": len(resolved_witness_evidence_ids),
+        "resolved_preservation_receipt_count": len(resolved_preservation_receipt_ids),
+        "cases": rows,
+    }

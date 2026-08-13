@@ -154,3 +154,68 @@ def build_shared_identity_reuse_receipt(
         fresh_inference_examples_hash=sha256_digest(tuple(sorted(fresh_inference_example_ids)), domain="rakl-shared-identity-fresh-examples/v1"),
         any_example_overlap=overlap,
     )
+
+
+def build_epoch_identity_reuse_receipt(
+    *,
+    receipt_id: str,
+    structural_object: object,
+    context_hash: str,
+    boundary_contract: object,
+    external_consumer_artifact_hash: str,
+    training_consumer_artifact_hash: str,
+    training_model_checkpoint_hash: str,
+    inference_consumer_artifact_hash: str,
+    inference_model_checkpoint_hash: str,
+    train_example_ids: tuple[str, ...],
+    fresh_inference_example_ids: tuple[str, ...],
+    quotient_view: object | None = None,
+    witness: object | None = None,
+) -> SharedIdentityReuseReceipt:
+    """Bind one structural object through external/training/inference and receipt the reuse.
+
+    This is the honest wiring point for exact structural-identity reuse across
+    the three consumption stages.  The same canonical bundle (derived from the
+    exact object content, not caller-named hashes) is bound to exactly one
+    external-reasoning, one training and one inference stage, and the train vs
+    fresh-inference example panels are frozen identity-disjoint.  The resulting
+    receipt establishes exact identity reuse only; it grants no scientific
+    authority and does not assert that reuse is mechanistically beneficial.
+    """
+    bundle = build_structural_identity_bundle(
+        structural_object,
+        context_hash=context_hash,
+        boundary_contract=boundary_contract,
+        quotient_view=quotient_view,
+        witness=witness,
+    )
+    bundle_digest = bundle.digest
+    bindings = (
+        StructuralUseBinding(
+            binding_id=f"{receipt_id}:external",
+            stage=StructuralUseStage.EXTERNAL_REASONING,
+            structural_bundle_digest=bundle_digest,
+            consumer_artifact_hash=external_consumer_artifact_hash,
+        ),
+        StructuralUseBinding(
+            binding_id=f"{receipt_id}:training",
+            stage=StructuralUseStage.TRAINING,
+            structural_bundle_digest=bundle_digest,
+            consumer_artifact_hash=training_consumer_artifact_hash,
+            model_checkpoint_hash=training_model_checkpoint_hash,
+        ),
+        StructuralUseBinding(
+            binding_id=f"{receipt_id}:inference",
+            stage=StructuralUseStage.INFERENCE,
+            structural_bundle_digest=bundle_digest,
+            consumer_artifact_hash=inference_consumer_artifact_hash,
+            model_checkpoint_hash=inference_model_checkpoint_hash,
+        ),
+    )
+    return build_shared_identity_reuse_receipt(
+        receipt_id=receipt_id,
+        bundle=bundle,
+        bindings=bindings,
+        train_example_ids=train_example_ids,
+        fresh_inference_example_ids=fresh_inference_example_ids,
+    )

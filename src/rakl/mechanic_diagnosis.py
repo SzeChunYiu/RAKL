@@ -123,3 +123,55 @@ def diagnose_mechanic_signals(*, diagnosis_id: str, problem_state_id: str, atom_
     else:
         verdict = MechanicDiagnosisVerdict.PARTIALLY_IDENTIFIED
     return MechanicDiagnosisReceipt(diagnosis_id, problem_state_id, atom_id, fibre_snapshot_hash, tuple(residual_ids), observed, tuple(causes), discriminator_ids=discriminators, verdict=verdict)
+
+
+def refine_diagnosis_with_discriminator(
+    receipt: MechanicDiagnosisReceipt,
+    *,
+    transition_id: str,
+    discriminator_id: str,
+    surviving_causes: tuple[MechanicCause, ...],
+    evidence_receipt_id: str,
+    next_discriminator_ids: tuple[str, ...] = (),
+) -> tuple["DiagnosisState", "DiagnosisTransitionReceipt"]:
+    """Refine a DISCRIMINATOR_REQUIRED diagnosis and emit an immutable transition receipt.
+
+    This wires the strict diagnosis state machine into the live one-shot
+    diagnosis flow.  A diagnosis that reached DISCRIMINATOR_REQUIRED (multiple
+    candidate causes, at least one registered discriminator) may only be refined
+    by resolving a discriminator against evidence, ruling out the non-surviving
+    candidates.  The returned receipt binds before/after state digests and the
+    evidence identity immutably; it grants no method-promotion authority.
+    """
+    from .diagnosis_state_machine import (
+        DiagnosisState,
+        DiagnosisTransitionReceipt,
+        competing_state,
+        resolve_discriminator_with_receipt,
+    )
+
+    if receipt.verdict is not MechanicDiagnosisVerdict.DISCRIMINATOR_REQUIRED:
+        raise ValueError("only a DISCRIMINATOR_REQUIRED diagnosis can be discriminator-refined")
+    if not surviving_causes:
+        raise ValueError("discriminator refinement requires at least one surviving cause")
+    if MechanicCause.UNKNOWN in surviving_causes:
+        raise ValueError("UNKNOWN cannot survive a discriminator resolution")
+    if not set(surviving_causes) <= set(receipt.candidate_causes):
+        raise ValueError("surviving causes must be a subset of the registered candidates")
+    if discriminator_id not in receipt.discriminator_ids:
+        raise ValueError("discriminator must be registered on the diagnosis receipt")
+
+    state = competing_state(
+        receipt.diagnosis_id,
+        causes=tuple(cause.value for cause in receipt.candidate_causes),
+        discriminator_ids=receipt.discriminator_ids,
+    )
+    surviving_value_ids = tuple(dict.fromkeys(cause.value for cause in surviving_causes))
+    return resolve_discriminator_with_receipt(
+        state,
+        transition_id=transition_id,
+        discriminator_id=discriminator_id,
+        surviving_causes=surviving_value_ids,
+        evidence_receipt_id=evidence_receipt_id,
+        next_discriminator_ids=next_discriminator_ids,
+    )
