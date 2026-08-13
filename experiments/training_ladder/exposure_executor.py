@@ -584,18 +584,26 @@ def lora_finetune(
     optimizer = torch.optim.AdamW((p for p in model.parameters() if p.requires_grad), lr=lr)
 
     # Deterministic ordering: train_examples are already seed-shuffled upstream.
+    #
+    # IMPORTANT (v2 fix): build the sequence by concatenating *token ids*, not by
+    # tokenizing "prompt + ' ' + gold" as one string. BPE merges the separating
+    # space into the answer token (" VALID" is a single token), so masking up to
+    # len(tokenize(prompt + " ")) masked the gold token itself -> the loss saw no
+    # answer signal and training collapsed to a constant predictor. Concatenating
+    # ids keeps the gold token a distinct, UNMASKED target that exactly matches the
+    # token compared at scoring time.
+    eos = torch.tensor([[tokenizer.eos_token_id]], device=device)
     for _ in range(epochs):
         for ex in train_examples:
-            text = ex.prompt + " " + ex.gold + tokenizer.eos_token
-            enc = tokenizer(text, return_tensors="pt")
-            input_ids = enc.input_ids.to(device)
-            attn = enc.attention_mask.to(device)
-            # Mask the prompt so loss only covers the gold label + eos.
-            prompt_len = tokenizer(ex.prompt + " ", return_tensors="pt").input_ids.shape[1]
+            prompt_ids = tokenizer(ex.prompt, return_tensors="pt").input_ids.to(device)
+            gold_ids = tokenizer(
+                " " + ex.gold, add_special_tokens=False, return_tensors="pt"
+            ).input_ids.to(device)
+            input_ids = torch.cat([prompt_ids, gold_ids, eos], dim=1)
             labels = input_ids.clone()
-            labels[:, :prompt_len] = -100
+            labels[:, : prompt_ids.shape[1]] = -100  # mask prompt only; train the gold token(s)
             optimizer.zero_grad()
-            out = model(input_ids=input_ids, attention_mask=attn, labels=labels)
+            out = model(input_ids=input_ids, labels=labels)
             out.loss.backward()
             optimizer.step()
 
@@ -898,8 +906,8 @@ def run(
     device: str,
     smoke: bool,
     seed: int = FROZEN_SEED,
-    epochs: int = 3,
-    lr: float = 1e-4,
+    epochs: int = 12,
+    lr: float = 3e-4,
 ) -> dict:
     """Execute the exposure ladder and emit outcomes + manifest.
 
@@ -1026,8 +1034,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--packet-dir", type=Path, default=DEFAULT_PACKET_DIR)
     parser.add_argument("--out", type=Path, default=ROOT / "experiments" / "training_ladder" / "phase1_out")
     parser.add_argument("--device", default="cpu", help="torch device (cpu, cuda, cuda:0, ...).")
-    parser.add_argument("--epochs", type=int, default=3)
-    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--epochs", type=int, default=12)
+    parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument(
         "--smoke",
         action="store_true",
