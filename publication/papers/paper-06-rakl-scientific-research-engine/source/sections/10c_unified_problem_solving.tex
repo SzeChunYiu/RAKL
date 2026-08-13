@@ -86,5 +86,14 @@ A third exact toy enumerates verification schedules under registered independent
 \label{fig:unified_solver_verification_path}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\linewidth]{figures/unified_field_hypothesis.pdf}
+\caption{Empirical test of the solvability-field hypothesis on $400$ random solvable grid worlds (seed $461$; exact ground truth). The cheap field is obstacle-blind Manhattan distance; the oracle is exact BFS cost-to-go. \textbf{(a)}~Descending the cheap field moves to a state of strictly lower \emph{true} cost-to-go---verified progress---in $0.863\,[0.857,0.870]$ of states, i.e.\ the local field signal $\langle d(a),-\nabla\Phi\rangle>0$ predicts $\mathbb{E}[\Delta R]>0$ about $86\%$ of the time, with a $\sim\!14\%$ false-attractor tail (exactly the regime where pure greedy descent fails and a bounded frontier is required). \textbf{(b)}~A field-guided best-first search expands $0.725\,[0.712,0.738]$ fewer nodes than uninformed breadth-first search, and reduces search in $99.75\%$ of worlds. Development known-world evidence; not an authority or superiority signal.}
+\label{fig:unified_field_hypothesis}
+\end{figure}
+
+The field hypothesis is therefore not merely analytic: on a distribution of known worlds a cheap local field predicts verified global progress often enough (Figure~\ref{fig:unified_field_hypothesis}a) to cut search substantially (Figure~\ref{fig:unified_field_hypothesis}b), and the residual $14\%$ of mispredictions is precisely the false-attractor regime the noncompensatory path-cost algebra and bounded frontier are designed to survive. The boundary is equally explicit: here the cheap field (Manhattan distance) is \emph{given} by the grid metric, so the experiment demonstrates that a useful field can exist and pay for itself, not that Orion can \emph{construct} such a field for an arbitrary problem representation. Whether a cheap field can be constructed and shown to predict verified progress on a non-metric domain---after construction cost and hidden-route leakage---is the open question the mathematics lane preregisters.
+
 \paragraph{Claim boundary and next cut.}
 The implemented sidecars and tests establish scoped software/architectural invariants; the known-world figures establish only the stated constructed mechanisms. They do \emph{not} establish that formal mathematical reachability has a useful hidden geometry, that MDD diagnoses real research failures accurately, or that VSC outperforms strong algorithm-selection/reformulation parents. For the mathematics lane, the next frozen question is therefore whether verifier-defined reachability admits a nontrivially local navigable geometry on held-out theorem families after geometry-construction cost and hidden-route leakage are accounted for. Paper~V states that preregistration explicitly.
