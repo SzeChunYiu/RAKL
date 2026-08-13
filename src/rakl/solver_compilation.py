@@ -10,6 +10,9 @@ class TransformationEffect(str, Enum):
     PRECONDITION = "PRECONDITION"
     CHANGE_METRIC = "CHANGE_METRIC"
     CONTINUATION = "CONTINUATION"
+    PARAMETER_HOMOTOPY = "PARAMETER_HOMOTOPY"
+    # Compatibility alias. New theory reserves bare path homotopy for
+    # equivalence of transformation histories/higher cells.
     HOMOTOPY = "HOMOTOPY"
     LIFT = "LIFT"
     AUGMENT_STATE = "AUGMENT_STATE"
@@ -45,6 +48,55 @@ class CompilationStatus(str, Enum):
 
 
 @dataclass(frozen=True)
+class PreservationValidationReceipt:
+    """Bound validation of a representation/transform preservation claim."""
+
+    report_id: str
+    source_problem_hash: str
+    specification_hash: str
+    root_qoi: str
+    representation_id: str
+    transform_id: str
+    verifier_id: str
+    passed: bool
+
+    def __post_init__(self) -> None:
+        if not all(
+            (
+                self.report_id,
+                self.source_problem_hash,
+                self.specification_hash,
+                self.root_qoi,
+                self.representation_id,
+                self.transform_id,
+                self.verifier_id,
+            )
+        ):
+            raise ValueError("preservation validation receipt requires bound subject and verifier identities")
+
+    def matches(
+        self,
+        *,
+        source_problem_hash: str,
+        specification_hash: str,
+        root_qoi: str,
+        representation_id: str,
+        transform_id: str,
+    ) -> bool:
+        return (
+            self.source_problem_hash == source_problem_hash
+            and self.specification_hash == specification_hash
+            and self.root_qoi == root_qoi
+            and self.representation_id == representation_id
+            and self.transform_id == transform_id
+        )
+
+    @property
+    def grants_target_authority(self) -> bool:
+        return False
+
+
+@dataclass(frozen=True)
 class SolverCompilationCandidate:
     compilation_id: str
     source_problem_hash: str
@@ -56,7 +108,7 @@ class SolverCompilationCandidate:
     decoder_id: str | None
     verifier_id: str
     claimed_effects: Tuple[TransformationEffect, ...]
-    preservation_report_id: str | None = None
+    preservation_receipt: PreservationValidationReceipt | None = None
     build_cost: float = 0.0
     execution_cost: float = 0.0
     decode_cost: float = 0.0
@@ -76,11 +128,28 @@ class SolverCompilationCandidate:
             raise ValueError("expected_reuse must be nonnegative")
         if self.invalidation_hazard_per_use is not None and not 0 <= self.invalidation_hazard_per_use <= 1:
             raise ValueError("invalidation hazard must be in [0,1]")
-        if self.status is CompilationStatus.VALIDATED_FOR_ROUTING and not self.preservation_report_id:
-            raise ValueError("routing-validated compilation requires preservation report")
+        if self.status is CompilationStatus.VALIDATED_FOR_ROUTING:
+            if self.preservation_receipt is None:
+                raise ValueError("routing-validated compilation requires bound preservation receipt")
+            if not self.preservation_receipt.passed:
+                raise ValueError("routing-validated compilation requires passing preservation receipt")
+            if not self.preservation_receipt.matches(
+                source_problem_hash=self.source_problem_hash,
+                specification_hash=self.specification_hash,
+                root_qoi=self.root_qoi,
+                representation_id=self.representation_id,
+                transform_id=self.transform_id,
+            ):
+                raise ValueError("preservation receipt subject does not match compilation candidate")
+
+    @property
+    def preservation_report_id(self) -> str | None:
+        return None if self.preservation_receipt is None else self.preservation_receipt.report_id
 
     @property
     def one_shot_cost(self) -> float:
+        # Explicit additive resource-accounting projection only. It is not the
+        # general mathematical path-cost algebra used by VTG.
         return self.build_cost + self.execution_cost + self.decode_cost + self.verification_cost
 
     def amortized_per_use_cost(self, uses: int) -> float:
