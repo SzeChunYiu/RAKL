@@ -7,6 +7,8 @@ from hashlib import sha256
 import json
 from typing import Tuple
 
+from .vtg_hardening import OperationalEdgeAssuranceClass
+
 
 def _hash(payload: object) -> str:
     return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
@@ -25,7 +27,8 @@ class MapEdgeStatus(str, Enum):
 
 
 # Applicability is not the same statement as a verified state transition. Only
-# materialized/replay-verified transitions may witness operational reachability.
+# materialized transitions with an explicit operational/logical assurance class
+# may witness operational reachability.
 VERIFIED_TRAVERSABLE = frozenset({MapEdgeStatus.VERIFIED_TRANSITION})
 
 
@@ -87,14 +90,28 @@ class OperationalEdge:
     verification_id: str | None = None
     failure_id: str | None = None
     representation_id: str | None = None
+    assurance_class: OperationalEdgeAssuranceClass | None = None
+    assurance_receipt_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.edge_id or not self.source_state_id or not self.target_state_id or not self.scope:
             raise ValueError("operational edge requires id, endpoints, and scope")
         if self.status in {MapEdgeStatus.VERIFIED_APPLICABLE, MapEdgeStatus.VERIFIED_TRANSITION} and not self.verification_id:
             raise ValueError("verified applicability/transition status requires verification_id")
+        if self.status is MapEdgeStatus.VERIFIED_TRANSITION:
+            if self.assurance_class not in {
+                OperationalEdgeAssuranceClass.KERNEL_DERIVATION_EDGE,
+                OperationalEdgeAssuranceClass.REPLAY_VALIDATED_OPERATIONAL_EDGE,
+            }:
+                raise ValueError("verified transition requires kernel or replay-validated assurance class")
+            if not self.assurance_receipt_id:
+                raise ValueError("verified transition requires assurance receipt identity")
         if self.status is MapEdgeStatus.REFUTED_IN_SCOPE and not self.failure_id:
             raise ValueError("refuted edge requires failure/evidence identity")
+
+    @property
+    def is_locally_kernel_certified(self) -> bool:
+        return self.status is MapEdgeStatus.VERIFIED_TRANSITION and self.assurance_class is OperationalEdgeAssuranceClass.KERNEL_DERIVATION_EDGE
 
 
 @dataclass(frozen=True)
@@ -135,7 +152,7 @@ class OperationalMapReceipt:
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v2",
+            "schema": "orion.operational_map.v3",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
             "operator_basis_version": self.operator_basis_version,
@@ -150,6 +167,8 @@ class OperationalMapReceipt:
                     "verification_id": e.verification_id,
                     "failure_id": e.failure_id,
                     "representation_id": e.representation_id,
+                    "assurance_class": None if e.assurance_class is None else e.assurance_class.value,
+                    "assurance_receipt_id": e.assurance_receipt_id,
                 }
                 for e in self.edges
             ],
@@ -175,9 +194,6 @@ class MapReachabilityReport:
 
     @property
     def establishes_mathematical_impossibility(self) -> bool:
-        # Absence of a route in a complete registered operator basis and chart is
-        # not theorem falsity, and is not even proof-system unprovability unless
-        # a separate completeness theorem/certificate licenses that lift.
         return False
 
     @property
@@ -233,7 +249,7 @@ def verified_reachability(
             route.append(edge_id)
             node = prev
         route.reverse()
-        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_verified_transition_edges_only",))
+        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_assurance_bound_verified_transition_edges_only",))
 
     incomplete = {
         MapEdgeStatus.CANDIDATE_UNVERIFIED,
