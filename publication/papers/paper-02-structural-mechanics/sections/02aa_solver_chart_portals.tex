@@ -1,0 +1,12 @@
+\section{Representation charts and solver portals reuse the same preservation discipline}
+\label{sec:solver_portals}
+
+The unified problem-solving projection introduces representation charts only as computational views. A candidate portal
+\[
+F_{ij}:R_i\rightarrow R_j
+\]
+can change which operators are applicable or sharply reduce search cost, but its admissibility is governed by the same directional, QoI- and boundary-scoped preservation logic as an ordinary structural transfer. The portal must state what is preserved, what is not preserved, the target scope, assumptions, reconstruction/round-trip obligations and the verifier used to validate the translation. A representation that makes a problem easy by silently deleting a protected coordinate is therefore a rejected transfer, not a useful ``wormhole.''
+
+This gives the transformation-effect vocabulary---for example \texttt{PRECONDITION}, \texttt{CONTINUATION}, \texttt{QUOTIENT}, \texttt{DUALIZE}, \texttt{LOCALIZE}, \texttt{DECOUPLE} or compilation to a specialist solver---a precise structural role. These labels describe the intended computational effect and are routing metadata; they do not replace the witness. A Verified Solver Compilation candidate can be marked validated even for routing only after a separately bound preservation receipt exists. Multi-chart search then composes through ordinary GLUE/interface obligations, and any unresolved preservation condition returns \texttt{CANNOT\_CHECK} rather than being compensated by a shorter predicted route.
+
+The empirical question is consequently narrower than ``do representation changes help?'' The open residual is whether Orion can diagnose a needed transformation effect, locate or construct a valid portal, and reduce total verified solving cost beyond strong fixed-representation and solver-selection controls. That result is not established by the present structural-contract evidence.
