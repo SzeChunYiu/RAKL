@@ -61,6 +61,20 @@ CANDIDATES = {
         "cost_fields": ["construction_cost"],
         "note": "constructor must pay for its own construction cost",
     },
+    "field_construction_successor": {
+        "artifact": R / "unified_problem_solving_v1/results/field_construction_successor.json",
+        # RSHEA #538: headline = fully-costed successor advantage over its
+        # STRONGEST parent (symdiff proxy / PDB / CEGAR), both sides charging
+        # their own one-time construction cost. PROMOTE only if the successor
+        # statistically beats the best already-available mechanic.
+        "net_keys": ["net_advantage_over_strongest_parent"],
+        "cost_charged": True,
+        "claim_class": ClaimClass.EFFICIENCY,
+        "cost_fields": ["construction_cost"],
+        "note": ("goal-set reachability-grounded exact field successor (#538); "
+                 "fixes goal-representation, true transition distances, amortization; "
+                 "correct oracle (rho~1.0) but dominated by cheaper proxies/abstractions"),
+    },
     "navigation_dynamics": {
         "artifact": R / "unified_problem_solving_v1/results/navigation_dynamics.json",
         "net_keys": ["net_vs_astar", "advantage_vs_control", "net_expansions_vs_astar"],

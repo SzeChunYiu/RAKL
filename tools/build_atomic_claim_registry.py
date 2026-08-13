@@ -43,6 +43,15 @@ NETBEN = {
    "terminal_state": "NEGATIVE", "open": False, "owner_issue": "#520",
    "terminal_scope": "DECISIVE: with reachability-grounded landmarks (exact backward BFS from the goal condition) and 100 repeated queries, build cost (mean 37.09) exceeds cumulative saving (mean -37.38); crossover fraction 0.0. Method is valid; economics negative. Lane #520 closed.",
    "code": ["src/rakl/field_construction.py", "research/unified_problem_solving_v1/run_field_construction.py"]},
+ "field_construction_successor": {
+   "claim_id": "EMP-FIELDCONST-SUCCESSOR",
+   "paper_owner": "paper-06-rakl-scientific-research-engine",
+   "claim": "A goal-set reachability-grounded EXACT field (true backward-induction transition distances; goal CONDITION target-in-s) beats the strongest available parent (symdiff proxy / target-aware PDB / CEGAR) on fully-costed amortized search savings over repeated queries.",
+   "baseline": "strongest parent field (symdiff proxy / target-aware PDB), both one-time construction costs charged",
+   "falsifier": "The head-to-head net advantage over the strongest parent has a CI including 0 or lying below 0: a cheaper parent captures ~all of the exact oracle's rank information (rho) at a fraction of the build cost, so perfect guidance does not amortize.",
+   "terminal_state": "NEGATIVE", "open": False, "owner_issue": "#538",
+   "terminal_scope": "HONEST DECISIVE: the exact goal-set field is a CORRECT oracle (rho~1.000, false-descent 0, correctness hard gate passes, does save search vs BFS) but is DOMINATED by cheaper parents -- symdiff_proxy achieves rho 0.994 at ~1/5 the build cost (49.6 vs 230.1 node-equiv); pdb_target_aware rho~0.97 at build cost 5.0. Head-to-head net advantage over strongest parent mean -1.8046, CI [-2.4502,-1.1661], n=41 (entirely below 0). Boundary (shallow random) regime likewise dominated mean -2.717 n=40. Mechanic is valid, registered and available but does not earn default-on routing. Lane #538 honest KEEP_PROPOSAL_ONLY; historical field_construction.json NEGATIVE preserved unchanged.",
+   "code": ["src/rakl/field_successor.py", "research/unified_problem_solving_v1/run_field_successor.py"]},
  "fieldability_given_field": {
    "claim_id": "EMP-FIELDABILITY-GIVEN",
    "paper_owner": "paper-06-rakl-scientific-research-engine",
