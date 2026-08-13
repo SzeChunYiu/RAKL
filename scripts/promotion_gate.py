@@ -87,7 +87,7 @@ CANDIDATES = {
     },
     "diagnosis_active_successor": {
         "artifact": R / "unified_problem_solving_v1/results/diagnosis_active_successor.json",
-        "net_keys": ["correct_rate"],
+        "net_keys": ["net_advantage"],
         "cost_charged": True,
         "claim_class": ClaimClass.CORRECTNESS,
         "cost_fields": ["mean_probe_cost"],
