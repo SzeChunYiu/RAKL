@@ -6,6 +6,7 @@ from hashlib import sha256
 import json
 from typing import Tuple
 
+from .math_research_assurance import AssuranceVerdict, ProofReceipt, audit_proof_receipt
 from .proof_dag import ProofDAG, ProofNodeStatus, all_dependencies_verified, dependency_closure, validate_proof_dag
 
 
@@ -34,11 +35,10 @@ class SolutionAssemblyReceipt:
     discarded_branch_ids: Tuple[str, ...]
     proof_dag_hash: str
     certificate_artifact_hash: str
-    verifier_id: str
-    verifier_passed: bool | None
+    proof_receipt: ProofReceipt | None
 
     def __post_init__(self) -> None:
-        if not all((self.assembly_id, self.root_node_id, self.proof_dag_hash, self.certificate_artifact_hash, self.verifier_id)):
+        if not all((self.assembly_id, self.root_node_id, self.proof_dag_hash, self.certificate_artifact_hash)):
             raise ValueError("solution assembly requires bound identities")
         if len(set(self.trajectory_episode_ids)) != len(self.trajectory_episode_ids):
             raise ValueError("trajectory episode ids must be unique")
@@ -76,10 +76,32 @@ def validate_solution_assembly(dag: ProofDAG, receipt: SolutionAssemblyReceipt) 
         return SolutionAssemblyReport(AssemblyVerdict.INCOMPLETE, ("selected_nodes_do_not_cover_root_dependency_closure",))
     if not all_dependencies_verified(dag, node_id=receipt.root_node_id):
         return SolutionAssemblyReport(AssemblyVerdict.INCOMPLETE, ("root_dependencies_not_verified",))
-    if node_map[receipt.root_node_id].status is not ProofNodeStatus.VERIFIED:
+    root = node_map[receipt.root_node_id]
+    if root.status is not ProofNodeStatus.VERIFIED:
         return SolutionAssemblyReport(AssemblyVerdict.INCOMPLETE, ("root_node_not_verified",))
-    if receipt.verifier_passed is None:
-        return SolutionAssemblyReport(AssemblyVerdict.CANNOT_CHECK, ("assembly_verifier_result_unknown",))
-    if receipt.verifier_passed is False:
-        return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("assembly_verifier_rejected_certificate",))
-    return SolutionAssemblyReport(AssemblyVerdict.READY_FOR_EXTERNAL_AUTHORITY_GATE, ("proof_dag_valid", "root_dependency_closure_selected", "dependencies_verified", "root_verified", "assembly_verifier_passed", "ordinary_authority_gate_still_required"))
+    if receipt.proof_receipt is None:
+        return SolutionAssemblyReport(AssemblyVerdict.CANNOT_CHECK, ("proof_receipt_missing",))
+    proof = receipt.proof_receipt
+    if proof.theorem_id != receipt.root_node_id:
+        return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("proof_receipt_root_identity_mismatch",))
+    if proof.theorem_statement_hash != root.statement_hash:
+        return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("proof_receipt_statement_hash_mismatch",))
+    if proof.source_hash != receipt.certificate_artifact_hash:
+        return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("proof_receipt_source_hash_not_bound_to_certificate_artifact",))
+    proof_audit = audit_proof_receipt(proof)
+    if proof_audit.verdict is AssuranceVerdict.CANNOT_CHECK:
+        return SolutionAssemblyReport(AssemblyVerdict.CANNOT_CHECK, ("proof_receipt_cannot_check",) + proof_audit.reasons)
+    if proof_audit.verdict is AssuranceVerdict.FAIL:
+        return SolutionAssemblyReport(AssemblyVerdict.REJECT, ("proof_receipt_assurance_failed",) + proof_audit.reasons)
+    return SolutionAssemblyReport(
+        AssemblyVerdict.READY_FOR_EXTERNAL_AUTHORITY_GATE,
+        (
+            "proof_dag_valid",
+            "root_dependency_closure_selected",
+            "dependencies_verified",
+            "root_verified",
+            "proof_receipt_bound_to_root_statement_and_certificate_artifact",
+            "proof_receipt_and_trust_audit_passed",
+            "ordinary_authority_gate_still_required",
+        ),
+    )

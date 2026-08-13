@@ -24,10 +24,9 @@ class MapEdgeStatus(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-VERIFIED_TRAVERSABLE = frozenset({
-    MapEdgeStatus.VERIFIED_APPLICABLE,
-    MapEdgeStatus.VERIFIED_TRANSITION,
-})
+# Applicability is not the same statement as a verified state transition. Only
+# materialized/replay-verified transitions may witness operational reachability.
+VERIFIED_TRAVERSABLE = frozenset({MapEdgeStatus.VERIFIED_TRANSITION})
 
 
 class MapReachabilityVerdict(str, Enum):
@@ -35,6 +34,47 @@ class MapReachabilityVerdict(str, Enum):
     NO_VERIFIED_ROUTE_MAP_INCOMPLETE = "NO_VERIFIED_ROUTE_MAP_INCOMPLETE"
     NO_VERIFIED_ROUTE_COVERAGE_COMPLETE = "NO_VERIFIED_ROUTE_COVERAGE_COMPLETE"
     CANNOT_CHECK = "CANNOT_CHECK"
+
+
+@dataclass(frozen=True)
+class CoverageCompletenessCertificate:
+    """Certificate that a registered operational map is closed in scope.
+
+    This is deliberately weaker than a proof of mathematical impossibility or
+    theorem unprovability. It only binds an enumerated map to a frozen
+    problem/operator/chart subject and an external closure checker.
+    """
+
+    certificate_id: str
+    problem_state_hash: str
+    operator_basis_version: str
+    chart_id: str
+    closure_subject_hash: str
+    closure_verifier_id: str
+
+    def __post_init__(self) -> None:
+        if not all(
+            (
+                self.certificate_id,
+                self.problem_state_hash,
+                self.operator_basis_version,
+                self.chart_id,
+                self.closure_subject_hash,
+                self.closure_verifier_id,
+            )
+        ):
+            raise ValueError("coverage completeness certificate requires bound subject and verifier identities")
+
+    def matches(self, *, problem_state_hash: str, operator_basis_version: str, chart_id: str) -> bool:
+        return (
+            self.problem_state_hash == problem_state_hash
+            and self.operator_basis_version == operator_basis_version
+            and self.chart_id == chart_id
+        )
+
+    @property
+    def grants_mathematical_impossibility_authority(self) -> bool:
+        return False
 
 
 @dataclass(frozen=True)
@@ -51,8 +91,8 @@ class OperationalEdge:
     def __post_init__(self) -> None:
         if not self.edge_id or not self.source_state_id or not self.target_state_id or not self.scope:
             raise ValueError("operational edge requires id, endpoints, and scope")
-        if self.status in VERIFIED_TRAVERSABLE and not self.verification_id:
-            raise ValueError("verified traversable edge requires verification_id")
+        if self.status in {MapEdgeStatus.VERIFIED_APPLICABLE, MapEdgeStatus.VERIFIED_TRANSITION} and not self.verification_id:
+            raise ValueError("verified applicability/transition status requires verification_id")
         if self.status is MapEdgeStatus.REFUTED_IN_SCOPE and not self.failure_id:
             raise ValueError("refuted edge requires failure/evidence identity")
 
@@ -66,7 +106,7 @@ class OperationalMapReceipt:
     edges: Tuple[OperationalEdge, ...] = ()
     coverage_coordinates: Tuple[str, ...] = ()
     unknown_coordinates: Tuple[str, ...] = ()
-    coverage_complete: bool = False
+    coverage_certificate: CoverageCompletenessCertificate | None = None
 
     def __post_init__(self) -> None:
         if not self.map_id or not self.problem_state_hash or not self.operator_basis_version or not self.chart_id:
@@ -78,13 +118,24 @@ class OperationalMapReceipt:
             raise ValueError("coverage coordinates must be unique")
         if len(set(self.unknown_coordinates)) != len(self.unknown_coordinates):
             raise ValueError("unknown coordinates must be unique")
-        if self.coverage_complete and self.unknown_coordinates:
-            raise ValueError("coverage_complete is incompatible with declared unknown coordinates")
+        if self.coverage_certificate is not None:
+            if self.unknown_coordinates:
+                raise ValueError("coverage certificate is incompatible with declared unknown coordinates")
+            if not self.coverage_certificate.matches(
+                problem_state_hash=self.problem_state_hash,
+                operator_basis_version=self.operator_basis_version,
+                chart_id=self.chart_id,
+            ):
+                raise ValueError("coverage certificate subject does not match operational map")
+
+    @property
+    def coverage_complete(self) -> bool:
+        return self.coverage_certificate is not None
 
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v1",
+            "schema": "orion.operational_map.v2",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
             "operator_basis_version": self.operator_basis_version,
@@ -104,7 +155,7 @@ class OperationalMapReceipt:
             ],
             "coverage_coordinates": list(self.coverage_coordinates),
             "unknown_coordinates": list(self.unknown_coordinates),
-            "coverage_complete": self.coverage_complete,
+            "coverage_certificate_id": None if self.coverage_certificate is None else self.coverage_certificate.certificate_id,
         })
 
     @property
@@ -124,6 +175,13 @@ class MapReachabilityReport:
 
     @property
     def establishes_mathematical_impossibility(self) -> bool:
+        # Absence of a route in a complete registered operator basis and chart is
+        # not theorem falsity, and is not even proof-system unprovability unless
+        # a separate completeness theorem/certificate licenses that lift.
+        return False
+
+    @property
+    def establishes_no_route_under_registered_map(self) -> bool:
         return self.verdict is MapReachabilityVerdict.NO_VERIFIED_ROUTE_COVERAGE_COMPLETE
 
 
@@ -175,7 +233,7 @@ def verified_reachability(
             route.append(edge_id)
             node = prev
         route.reverse()
-        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_verified_traversable_edges_only",))
+        return MapReachabilityReport(MapReachabilityVerdict.VERIFIED_ROUTE_FOUND, tuple(route), ("route_uses_verified_transition_edges_only",))
 
     incomplete = {
         MapEdgeStatus.CANDIDATE_UNVERIFIED,
@@ -187,9 +245,13 @@ def verified_reachability(
     if not receipt.coverage_complete or receipt.unknown_coordinates or any(edge.status in incomplete for edge in receipt.edges):
         return MapReachabilityReport(
             MapReachabilityVerdict.NO_VERIFIED_ROUTE_MAP_INCOMPLETE,
-            reasons=("no_route_in_materialized_verified_subcomplex", "unknown_or_candidate_map_content_prevents_impossibility_claim"),
+            reasons=("no_route_in_materialized_verified_subcomplex", "unknown_or_candidate_map_content_prevents_registered-map-closure_claim"),
         )
     return MapReachabilityReport(
         MapReachabilityVerdict.NO_VERIFIED_ROUTE_COVERAGE_COMPLETE,
-        reasons=("no_verified_route_in_declared_complete_map", "verdict_is_scoped_to_registered_operator_basis_chart_and_coverage_contract"),
+        reasons=(
+            "no_verified_route_in_certified_registered_map",
+            "verdict_is_only_about_bound_problem_operator_basis_chart_and_closure_subject",
+            "no_mathematical_impossibility_or_unprovability_authority",
+        ),
     )

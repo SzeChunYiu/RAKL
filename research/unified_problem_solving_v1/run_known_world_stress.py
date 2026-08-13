@@ -10,7 +10,7 @@ from rakl.fieldability import amortization_break_even_queries
 from rakl.mechanic_diagnosis import diagnose_mechanic_signals
 from rakl.operational_map import MapEdgeStatus, OperationalEdge, OperationalMapReceipt, verified_reachability
 from rakl.path_cost import PathAdmissibility, PathCostVector, PathOption, explicit_lexicographic_select
-from rakl.solver_compilation import SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
+from rakl.solver_compilation import PreservationValidationReceipt, SolverCompilationCandidate, TransformationEffect, compilation_break_even_uses
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -165,16 +165,13 @@ def verification_pareto() -> dict:
         invalid_mass = 0.0 if globally_valid else probability
         valid_mass = probability if globally_valid else 0.0
 
-        # ROOT
         root_flag = root_false_positive if globally_valid else root_sensitivity
         root_accept = 1.0 - root_flag
         root_expected_cost = root_cost
 
-        # EDGES
         edge_flags = [edge_false_positive if valid else edge_sensitivity for valid in pattern]
         edge_accept, edge_expected_cost = _sequential_checks(edge_flags, [edge_cost] * interfaces)
 
-        # GROUPS + ROOT
         group_flags: list[float] = []
         for start in range(0, interfaces, group_size):
             group = pattern[start:start + group_size]
@@ -183,7 +180,6 @@ def verification_pareto() -> dict:
         group_root_accept = group_survive * root_accept
         group_root_expected_cost = group_expected_cost + group_survive * root_cost
 
-        # EDGES + ROOT
         edge_root_accept = edge_accept * root_accept
         edge_root_expected_cost = edge_expected_cost + edge_accept * root_cost
 
@@ -274,7 +270,9 @@ def diagnosis_and_compilation() -> dict:
         decoder_id="decode",
         verifier_id="verifier",
         claimed_effects=(TransformationEffect.COMPILE_TO_FIELD,),
-        preservation_report_id="preserve",
+        preservation_receipt=PreservationValidationReceipt(
+            "preserve", "p", "spec", "target", "chart", "identity", "quotient-checker", True
+        ),
         build_cost=100,
         execution_cost=5,
         decode_cost=1,

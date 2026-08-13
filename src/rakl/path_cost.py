@@ -1,13 +1,81 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Iterable, Tuple
 
 _COST_FIELDS = ("compute", "verification", "representation", "evidence", "risk", "trust", "new_assumptions")
 
 
+class CostCompositionKind(str, Enum):
+    SUM = "SUM"
+    MAX = "MAX"
+    SET_UNION = "SET_UNION"
+    WORST_CASE = "WORST_CASE"
+    CUSTOM_VERIFIED = "CUSTOM_VERIFIED"
+
+
+class CostComparisonKind(str, Enum):
+    MINIMIZE = "MINIMIZE"
+    SET_INCLUSION = "SET_INCLUSION"
+    REGISTERED_PARTIAL_ORDER = "REGISTERED_PARTIAL_ORDER"
+    CUSTOM_VERIFIED = "CUSTOM_VERIFIED"
+
+
+@dataclass(frozen=True)
+class PathCostCoordinateRule:
+    coordinate: str
+    composition: CostCompositionKind
+    comparison: CostComparisonKind
+    semantics_id: str
+
+    def __post_init__(self) -> None:
+        if not self.coordinate or not self.semantics_id:
+            raise ValueError("path-cost coordinate rule requires coordinate and semantics identity")
+
+
+@dataclass(frozen=True)
+class PathCostAlgebra:
+    """Registered composition/comparison semantics for theorem-level path cost.
+
+    This object is deliberately metadata-first. ``PathCostVector`` below remains
+    a numeric development projection used by current stress plots. A coordinate
+    such as assumptions or evidence may be declared SET_UNION/partial-order here
+    without being falsely coerced into numeric addition.
+    """
+
+    algebra_id: str
+    coordinate_rules: Tuple[PathCostCoordinateRule, ...]
+    hard_admissibility_profile_id: str
+
+    def __post_init__(self) -> None:
+        if not self.algebra_id or not self.hard_admissibility_profile_id:
+            raise ValueError("path-cost algebra requires identity and admissibility profile")
+        if not self.coordinate_rules:
+            raise ValueError("path-cost algebra requires coordinate rules")
+        names = [rule.coordinate for rule in self.coordinate_rules]
+        if len(names) != len(set(names)):
+            raise ValueError("path-cost algebra coordinate rules must be unique")
+
+    def rule_for(self, coordinate: str) -> PathCostCoordinateRule:
+        for rule in self.coordinate_rules:
+            if rule.coordinate == coordinate:
+                return rule
+        raise KeyError(coordinate)
+
+    @property
+    def is_uniformly_additive_numeric(self) -> bool:
+        return all(
+            rule.composition is CostCompositionKind.SUM
+            and rule.comparison is CostComparisonKind.MINIMIZE
+            for rule in self.coordinate_rules
+        )
+
+
 @dataclass(frozen=True)
 class PathCostVector:
+    """Numeric development projection; not the universal VTG path algebra."""
+
     compute: float = 0.0
     verification: float = 0.0
     representation: float = 0.0
@@ -21,6 +89,7 @@ class PathCostVector:
             raise ValueError("path cost coordinates must be nonnegative")
 
     def add(self, other: "PathCostVector") -> "PathCostVector":
+        """All-additive development projection, not theorem-level composition."""
         return PathCostVector(**{name: getattr(self, name) + getattr(other, name) for name in _COST_FIELDS})
 
     def as_tuple(self) -> Tuple[float, ...]:

@@ -11,10 +11,38 @@ def _hash(payload: object) -> str:
     return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
+def _unordered_pair(left: str, right: str) -> tuple[str, str]:
+    return tuple(sorted((left, right)))
+
+
 class PathEquivalenceKind(str, Enum):
     EXACT_SEQUENCE = "EXACT_SEQUENCE"
     COMMUTES_WITH_WITNESS = "COMMUTES_WITH_WITNESS"
     INDEPENDENT_IN_CONTEXT = "INDEPENDENT_IN_CONTEXT"
+
+
+@dataclass(frozen=True)
+class TransitionIndependenceWitness:
+    """Verifier-bound evidence that two transitions may be swapped in context."""
+
+    witness_id: str
+    left_transition_id: str
+    right_transition_id: str
+    context_hash: str
+    verifier_ids: Tuple[str, ...]
+    conditions: Tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not all((self.witness_id, self.left_transition_id, self.right_transition_id, self.context_hash)):
+            raise ValueError("independence witness requires identity, transitions, and context")
+        if self.left_transition_id == self.right_transition_id:
+            raise ValueError("transition cannot be independent from itself")
+        if not self.verifier_ids:
+            raise ValueError("independence witness requires verifier evidence")
+
+    @property
+    def pair(self) -> tuple[str, str]:
+        return _unordered_pair(self.left_transition_id, self.right_transition_id)
 
 
 @dataclass(frozen=True)
@@ -85,10 +113,28 @@ def canonical_partial_order_trace(transition_ids: Iterable[str], dependencies: I
     return PartialOrderTrace(canonical_transitions, deps, tuple(layers), _hash(payload))
 
 
-def equivalent_under_declared_partial_order(left_history: Iterable[str], right_history: Iterable[str], dependencies: Iterable[tuple[str, str]] = ()) -> bool:
+def equivalent_under_declared_partial_order(
+    left_history: Iterable[str],
+    right_history: Iterable[str],
+    dependencies: Iterable[tuple[str, str]] = (),
+    *,
+    independence_witnesses: Iterable[TransitionIndependenceWitness] = (),
+    context_hash: str | None = None,
+) -> bool:
+    """Return true only when histories differ by certified independent swaps.
+
+    Merely being two linear extensions of the same incomplete dependency list is
+    not enough: absence of a declared dependency is not evidence of commutation.
+    The implementation realizes a Mazurkiewicz-style trace check by transforming
+    one history into the other through adjacent swaps, each backed by a
+    verifier-bound independence witness in the requested context.
+    """
+
     left = tuple(left_history)
     right = tuple(right_history)
     if set(left) != set(right) or len(left) != len(right):
+        return False
+    if len(set(left)) != len(left):
         return False
     trace = canonical_partial_order_trace(left, dependencies)
 
@@ -96,4 +142,30 @@ def equivalent_under_declared_partial_order(left_history: Iterable[str], right_h
         position = {item: index for index, item in enumerate(history)}
         return all(position[a] < position[b] for a, b in trace.dependencies)
 
-    return respects(left) and respects(right)
+    if not respects(left) or not respects(right):
+        return False
+    if left == right:
+        return True
+
+    transition_set = set(left)
+    certified_pairs: set[tuple[str, str]] = set()
+    for witness in independence_witnesses:
+        if witness.left_transition_id not in transition_set or witness.right_transition_id not in transition_set:
+            raise ValueError("independence witness references unknown transition")
+        if context_hash is not None and witness.context_hash != context_hash:
+            continue
+        certified_pairs.add(witness.pair)
+
+    current = list(left)
+    for target_index, desired in enumerate(right):
+        try:
+            current_index = current.index(desired, target_index)
+        except ValueError:
+            return False
+        while current_index > target_index:
+            neighbour = current[current_index - 1]
+            if _unordered_pair(desired, neighbour) not in certified_pairs:
+                return False
+            current[current_index - 1], current[current_index] = current[current_index], current[current_index - 1]
+            current_index -= 1
+    return tuple(current) == right

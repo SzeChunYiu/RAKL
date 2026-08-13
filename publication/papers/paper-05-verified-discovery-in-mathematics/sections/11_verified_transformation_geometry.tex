@@ -1,24 +1,35 @@
 \section{Verified transformation geometry as a proposal-only search projection}
 \label{sec:vtg}
 
-The assurance architecture above determines when a mathematical claim may change durable authority. It intentionally does not identify proof search with theorem truth. This section sharpens that separation for a new, still-unresolved research question: whether verifier-defined mathematical reachability admits a useful \emph{local} geometry at all.
+The assurance architecture above determines when a mathematical claim may change durable authority. It intentionally does not identify proof search with theorem truth. This section sharpens that separation for a new, still-unresolved research question: whether verifier-defined mathematical reachability admits a useful \emph{local} geometry at all. The formulation below distinguishes exact operational semantics, partial knowledge of that semantics, path equivalence, representation change, intrinsic path cost, and budget-conditioned control. Those distinctions are required before geometric language can carry mathematical meaning.
+
+\subsection{Frozen subject and operational-state sufficiency}
+Fix a formal target $P$, assumptions $\Gamma$, a registered logic/checker $L$, an exact environment/version $E$, an operator basis $\Omega$, an active representation $R$, a root quantity of interest $Q$, and a registered admissibility/cost profile $A$. Write the frozen solver subject as
+\[
+\Theta=(P,\Gamma,L,E,\Omega,R,Q,A).
+\]
+Any change to a load-bearing coordinate defines a new subject unless an explicit transport certificate licenses reuse.
+
+A state geometry is well defined only if the operational state records all future-relevant information. Let $h_1$ and $h_2$ be two execution histories that are encoded as the same state $x$. The encoding is \emph{operationally sufficient} when, under frozen $\Theta$, the legal successor relation and transition-cost law from $x$ are independent of whether $x$ was reached through $h_1$ or $h_2$. If proof-state metadata, mutable environment, caches, accumulated assumptions, solver memory or another history-dependent coordinate changes future legal moves, that coordinate must either be included in the operational state or retained in an explicitly separate control/resource state. Without this condition, a purported quantity $d(x,y)$ is history dependent and therefore not a function of states.
 
 \subsection{Exact transition semantics, discovered map and solution region}
-Fix a formal target $P$, assumptions $\Gamma$, a registered logic/checker $L$, an operator basis $\Omega$ and resource budget $B$. Let
+Let
 \[
-\Sigma_{P,\Gamma,L}(x,T,y)\in\{\PASS,\FAIL,\CC\}
+\Sigma_{\Theta}(x,T,y)\in\{\PASS,\FAIL,\CC\}
 \]
-be the exact transition semantics: whether applying the typed transformation $T$ to state $x$ yields $y$ under the registered verifier. This semantic relation is distinct from the finite materialized subcomplex $\mathcal C^+_{P,t}$ containing only states and transitions actually discovered and replay-verified by time $t$.
+be the exact transition semantics: whether applying the typed transformation $T$ to state $x$ yields $y$ under the registered verifier. This semantic relation is distinct from the finite materialized subcomplex $\mathcal C^+_{\Theta,t}$ containing only states and transitions actually discovered and replay-verified by time $t$.
 
 The operational map is therefore a partial-belief object
 \[
-\mathcal B_{P,t}=(K^+_t,K^-_t,K^?_t,U_t,\Gamma_{\mathrm{cov},t}),
+\mathcal B_{\Theta,t}=(K^+_t,K^-_t,K^?_t,U_t,\Gamma_{\mathrm{cov},t}),
 \]
-where $K^+$ are verified transitions, $K^-$ are scoped refutations or blockers, $K^?$ are candidate/unverified transitions, $U$ represents explicitly unknown/unexplored regions and $\Gamma_{\mathrm{cov}}$ records the coverage contract. The binding rule is
+where $K^+$ are materialized verified transitions, $K^-$ are scoped refutations or blockers, $K^?$ are candidate/unverified transitions, $U$ represents explicitly unknown/unexplored regions and $\Gamma_{\mathrm{cov}}$ records the coverage contract. The binding rule is
 \[
 \boxed{\text{unknown transition}\;\neq\;\text{blocked transition}.}
 \]
-Failure to find a route in an incomplete $\mathcal B_{P,t}$ is therefore a search result, not a mathematical impossibility result.
+Failure to find a route in an incomplete $\mathcal B_{\Theta,t}$ is therefore a search result, not a mathematical impossibility result.
+
+Even a certified complete \emph{registered operational map} supports only a scoped statement: no route exists under the bound subject, chart and operator basis. It does not by itself establish theorem falsity, mathematical non-existence, or even proof-system unprovability. Lifting such a result to unprovability would require a separate completeness theorem connecting the registered operator basis to the proof calculus; theorem refutation requires ordinary mathematical evidence such as a proof of negation or countermodel.
 
 The verified solution region is defined independently of any geometry:
 \[
@@ -26,37 +37,102 @@ The verified solution region is defined independently of any geometry:
 \]
 No distance, embedding, field, search frequency or model confidence can put a state into $\mathcal V_P$.
 
-\subsection{Directed higher-order structure and path quotienting}
-Mathematical transformations are generally directed, and proofs are generally not single linear paths. A solver may follow a chronological search trajectory
+\subsection{Verified paths, higher-order proof structure and congruent path quotienting}
+Let $\operatorname{Path}(\Theta)$ denote the free category generated by materialized verified elementary transitions: states are objects, verified finite paths are morphisms, empty paths are identities and path concatenation is composition. This microscopic object is directed and symbolic; no useful geometry is assumed.
+
+Proof discovery and proof certification remain distinct. A solver may follow a chronological trajectory
 \[
 s_0\to s_1\to\cdots\to s_n,
 \]
-while the final proof certificate is a dependency DAG, proof term or typed hypergraph. The implementation now treats these as separate objects: \texttt{TaskEpisode} preserves chronology, while \texttt{SolutionAssemblyReceipt} can become \path{READY_FOR_EXTERNAL_AUTHORITY_GATE} only after exact DAG hashing, root-dependency closure, verified dependencies, a verified root and an assembly-verifier pass. The assembly receipt itself still grants no theorem authority.
+while the final proof certificate is a dependency DAG, proof term or typed hypergraph. \texttt{TaskEpisode} preserves chronology; the proof DAG/certificate preserves the mathematical dependency object. A solution-assembly receipt is proposal/assurance plumbing and cannot itself grant theorem authority.
 
-State canonicalization also leaves a second form of redundancy. When two transformations are independently replayable and commute in a registered context, the histories $T_1;T_2$ and $T_2;T_1$ need not be searched as unrelated proofs. Orion therefore admits a verifier-witnessed path-equivalence relation and a partial-order trace as proposal/search views. This is intentionally stronger than merely embedding similar proof traces near one another: a non-trivial path-equivalence witness requires explicit conditions and verifier identities.
-
-\subsection{Goal-relative solvability geometry}
-A candidate solvability geometry is a derived object
+State canonicalization also leaves path redundancy. A path equivalence relation $\sim$ is safe for quotienting only when it is an endpoint-preserving congruence:
 \[
-\mathcal G_{P,t,B}=\operatorname{Geom}(\mathcal B_{P,t},\Omega,R,B,Q),
+\gamma\sim\delta\Longrightarrow s(\gamma)=s(\delta),\quad t(\gamma)=t(\delta),
 \]
-indexed by target/specification, operator basis, representation chart $R$, map revision, budget and quantity of interest. Reachability is normally asymmetric, so the natural primitive is a directed cost-to-go, quasimetric, vector or set-valued bound rather than an assumed Euclidean distance. In particular,
+and, whenever the compositions are defined,
 \[
-d_{\Omega,R,B}(x,\mathcal V_P)=\infty
+\gamma\sim\delta\Longrightarrow \alpha\gamma\beta\sim\alpha\delta\beta.
 \]
-may mean only ``unreachable under the current operator basis/chart/budget''; it is not mathematical non-existence.
+Thus equivalence is not merely similarity of traces. For concurrency reduction, Orion permits an adjacent exchange
+\[
+uabv\sim ubav
+\]
+only when a scoped verifier-bound witness establishes that $a$ and $b$ are independent/commuting transformations in the relevant context. Absence of a declared dependency is not evidence of independence. The quotient $\operatorname{Path}(\Theta)/{\sim}$ therefore removes only witnessed redundancy.
 
-The candidate geometry may influence routing only. Let $\pi_{\mathrm{math}}$ denote the mathematical-authority projection and let $G$ be any update that changes only map estimates, coordinates, distances, field values or navigation conductance. The implementation contract is
+Path equivalence is semantic, not automatically economic: equivalent paths can have different cache behavior, wall time or verification cost. A search quotient must retain the relevant cost frontier unless cost invariance is separately established.
+
+\subsection{Representations, portals and navigation quotients}
+The solver representation system is more general than a differential-geometric atlas. Let $\mathsf{Rep}_P$ be a transformation network/category whose objects are problem representations and whose arrows are certified transformations such as exact equivalences, one-way reductions, quotients, bounded approximations, relaxations and dualities. The exact invertible arrows form the atlas/groupoid-like portion; irreversible reductions should not be called coordinate changes without qualification.
+
+A target-conditioned semantic quotient can preserve the root QoI while still changing reachability. Therefore a quotient used for navigation requires a separate \emph{navigation quotient contract}. For a quotient $q:X\to\bar X$, an exact reachability-preserving claim requires at least target-label preservation and suitable two-way transition conditions. A forward simulation may be sufficient for a sound over-approximation; an abstract path presented as executable requires a route-lifting/backward condition or an explicit spurious-route/refinement outcome. If the quotient is used to estimate route cost, the distortion relation between abstract and concrete costs must also be stated or left unidentified.
+
+\subsection{Hard admissibility and intrinsic path-cost geometry}
+A mathematical route first passes non-compensatory admissibility. Let
+\[
+\Lambda(e)\in\{\PASS,\FAIL,\CC\}
+\]
+encode hard requirements such as specification alignment, licensed assumptions, valid representation portals, trusted verifier semantics and root-scope preservation. Cheap computation cannot compensate for $\Lambda(e)=\FAIL$.
+
+For admissible transitions, path cost lives in a registered algebra $A$ rather than an assumed universal scalar. Different coordinates may compose differently: compute/time may be additive, peak memory may use a maximum, assumptions naturally compose by set union, trust may use a worst-case/meet operation, and evidence carries provenance rather than a generic numeric sum. When the chosen carrier and composition support an enriched/generalized metric construction, define the intrinsic operator/representation-relative path value
+\[
+D_{\Theta}(x,y)=\inf_{\gamma:x\rightsquigarrow y} C_A(\gamma).
+\]
+If the task does not justify one scalar/ordered algebra, Orion retains a Pareto or set-valued reachability frontier and does not promote it to a scalar distance by convention.
+
+Crucially, the resource budget is not part of the intrinsic geometric axioms. Budget $B$ defines feasible reachability/control:
+\[
+x\Rightarrow_B y
+\quad\Longleftrightarrow\quad
+\exists\gamma:x\rightsquigarrow y\text{ with }C_A(\gamma)\preceq B.
+\]
+A budget-truncated distance can violate triangle inequality: two six-unit legs can each be feasible under a ten-unit cutoff while their twelve-unit composition is mapped to infinity. Goal-relative $V_{P,B}$ is therefore a control/value object above the intrinsic path geometry, not automatically a metric.
+
+\subsection{Geometry certification classes and local navigability}
+A candidate routing geometry is a derived, version-bound artifact
+\[
+\mathcal G_{\Theta,t}=\operatorname{Geom}(\mathcal B_{\Theta,t}),
+\]
+bound to the specification/QoI, verifier/environment subject, operator basis, representation, map revision, cost algebra and construction version. It must also declare the strongest certification class actually established, for example:
+\[
+\begin{gathered}
+\texttt{EXACT\_COST\_TO\_GO},\quad
+\texttt{ADMISSIBLE\_LOWER\_BOUND},\quad
+\texttt{CONSISTENT\_HEURISTIC},\\
+\texttt{EMPIRICAL\_RANKER},\quad
+\texttt{UNCERTIFIED}.
+\end{gathered}
+\]
+An empirical ranker can prioritize search but cannot inherit optimality/completeness claims that require an admissible or consistent heuristic.
+
+The strongest local-navigation statement can be made theorem-like without assuming Euclidean geometry. Let $W$ be well founded and let $h:X\to W$. A local policy $\pi$ is \emph{descent-complete} on a registered solvable set $S$ when every non-goal $x\in S$ has a verified legal successor $\pi(x)$ with
+\[
+h(\pi(x))\prec h(x),
+\]
+and every minimal reachable $h$-state in $S$ is a verified goal. Then repeated application of $\pi$ reaches a goal in finitely many steps, because an infinite strictly descending chain in $W$ is impossible. For real-valued scores on infinite spaces, strict descent alone is not sufficient; a well-founded rank, uniform/proper progress condition or another termination certificate is required.
+
+This separates three progressively stronger notions:
+\begin{enumerate}
+    \item \emph{local congruence}: lower score tends to rank useful legal successors higher;
+    \item \emph{closed-loop navigability}: a local/bounded-local policy reaches verified goals on the registered class;
+    \item \emph{certified descent}: a well-founded progress argument proves termination for the registered class.
+\end{enumerate}
+The Phase-0/1 programme initially tests the first two; it does not presume the third exists for general mathematics.
+
+\subsection{Monotonicity and authority noninterference}
+Two simple monotonicity facts delimit what a map failure can mean. Under a frozen subject with unchanged edge semantics/costs, expanding the materialized verified map cannot remove an already verified route or worsen the best known route frontier. Likewise, if $\Omega\subseteq\Omega'$ and old operators retain their semantics, the reachable set under $\Omega'$ contains the reachable set under $\Omega$. Consequently, no-route under the current operator basis cannot imply no-route under a future enlarged basis.
+
+Let $\pi_{\mathrm{math}}$ denote mathematical authority and let $G$ be any update that changes only map estimates, quotient views, geometry, field values, search conductance or route priority. The implementation contract remains
 \[
 \pi_{\mathrm{math}}(G(x))=\pi_{\mathrm{math}}(x).
 \]
 Thus a monotonically decreasing energy, short geometric route or highly reinforced proof path remains proposal-level until the exact proof/specification/trust gates pass.
 
-\begin{proposition}[Unknown-map and geometric noninterference]
-Suppose (i) the operational-map router traverses only verifier-bound $K^+$ edges when reporting a verified route, (ii) any incomplete coverage or candidate/unknown edge prevents a no-route result from being interpreted as scoped complete-map closure, and (iii) geometry/dynamics have no write access to mathematical authority. Then neither an undiscovered valid transition nor an erroneous distance estimate can by itself promote or refute the target theorem.
+\begin{proposition}[Map, geometry and quotient noninterference]
+Suppose (i) a route is called verified only when every materialized transition on it is replay-verified under the frozen subject, (ii) incomplete map coverage cannot produce an impossibility or unprovability conclusion, (iii) path/representation quotients grant no authority and any route lifted from a quotient is revalidated in the original semantics, and (iv) geometry/dynamics have no write access to mathematical authority. Then map incompleteness, erroneous geometry, or a spurious abstract route can increase search cost or cause search failure, but cannot by itself promote or refute the target theorem.
 \end{proposition}
 \begin{proof}
-An undiscovered valid transition lies outside the materialized verified subcomplex, so by (ii) its absence cannot produce the complete-map no-route verdict. A geometry can change only the order in which candidate transitions are inspected; by (iii) it cannot change theorem authority. Any route presented as verified consists only of transitions satisfying (i), and the final theorem still passes the independent solution-assembly and mathematical-authority gates. Hence map incompleteness and geometry error can cause search cost or search failure, but not direct theorem promotion or refutation.
+By (i), any route admitted as operationally verified has a concrete verifier-replayable representative. By (ii), missing roads cannot be converted into a negative theorem statement. By (iii), quotient membership or abstract reachability is not accepted as a concrete proof: a spurious route fails lifting/revalidation. Finally, (iv) blocks any direct promotion from routing state. Hence all three failure modes remain inside the search/control projection until an ordinary mathematical assurance gate is satisfied.
 \end{proof}
 
 \subsection{Fieldability is closed-loop, not local correlation}
@@ -66,7 +142,7 @@ A useful geometry must be evaluated as a policy substrate, not by the correlatio
 \centering
 \includegraphics[width=0.49\linewidth]{figures/unified_local_vs_closed_loop.pdf}\hfill
 \includegraphics[width=0.49\linewidth]{figures/unified_path_quotient.pdf}
-\caption{Development known-world stresses for two different search claims. \textbf{Left:} a constructed heuristic is locally correct on most decision points yet strict greedy descent terminates in a dead end; retaining a bounded frontier finds the valid route. \textbf{Right:} $m$ pairwise-independent transformations have $m!$ sequential histories but one exact partial-order computation class. These figures test failure semantics and search redundancy; they are not evidence that a learned theorem-proving geometry already exists.}
+\caption{Development known-world stresses for two different search claims. \textbf{Left:} a constructed heuristic is locally correct on most decision points yet strict greedy descent terminates in a dead end; retaining a bounded frontier finds the valid route. \textbf{Right:} $m$ pairwise-independent transformations have $m!$ sequential histories but one partial-order computation class \emph{when independence is actually certified}. These figures test failure semantics and search redundancy; they are not evidence that a learned theorem-proving geometry already exists.}
 \label{fig:vtg_development_stresses}
 \end{figure}
 
@@ -74,18 +150,22 @@ The distinction is necessary because a locally informative score can still induc
 \[
 N(k,B)=\bigl(\text{verified success},\text{route stretch},\text{states expanded},\text{verifier cost}\bigr),
 \]
-where $k$ is the amount of local branching/information permitted and $B$ is the resource ceiling.
+where $k$ is the amount of local branching/information permitted and $B$ is the resource ceiling used by the policy evaluation.
 
 \subsection{Phase-0/1 falsification experiment}
 The next mathematical epistemic cut is frozen as:
-\[
-\boxed{\text{Does verifier-defined mathematical reachability admit a nontrivially local navigable geometry?}}
-\]
-The first experiment must not use an LLM as the solver. A finite Lean environment is split into: (a) an evaluator-only gold transition/proof universe; (b) a solver-visible partial map with hidden gold routes and intermediate labels removed; (c) a geometry-construction/training split; and (d) held-out theorem families. Every state and transition is bound to the exact Lean environment, theorem/specification hash, local context and verifier result.
+\begin{center}
+\fbox{\parbox{0.91\linewidth}{\centering
+\textbf{Next mathematical epistemic cut:} Does verifier-defined mathematical reachability admit a nontrivially local navigable geometry?}}
+\end{center}
+The first experiment must not use an LLM as the solver. A finite Lean environment is split into: (a) an evaluator-only gold transition/proof universe; (b) a solver-visible partial map with hidden gold routes and intermediate labels removed; (c) a geometry-construction/training split; and (d) held-out theorem families. Every operational state is required to bind the future-relevant Lean environment/proof-state components needed for the registered transition semantics.
 
-The registered controls are ordinary graph search/best-first, a gold-distance oracle available only to the evaluator, simple structural heuristics and a learned proof-progress baseline where reproducibly available. Candidate geometries are introduced one family at a time---for example directed/quasimetric or reachability representations, followed by multi-chart/quotient-aware forms only if simpler candidates leave a residual. Each geometry is tested under strict greedy, bounded-local branching and geometry-guided best-first policies. Geometry construction and verifier cost are included in the resource account.
+The registered controls are ordinary graph search/best-first, a gold-distance oracle available only to the evaluator, simple structural heuristics and a learned proof-progress baseline where reproducibly available. Candidate geometries are introduced one family at a time---for example directed/quasimetric or reachability representations, followed by multi-representation/quotient-aware forms only if simpler candidates leave a residual. Each geometry is tested under strict greedy, bounded-local branching and geometry-guided best-first policies. Geometry construction, abstraction/refinement, independence checking and verifier cost are included in the resource account.
 
-The lane is declared unsupported in the registered scope if, after hidden-route leakage controls and total construction cost, no candidate geometry improves verified proof success or search cost over strong controls on held-out theorem families. A narrower positive outcome is allowed: for example, \path{LOCALLY_INFORMATIVE_NOT_GREEDILY_NAVIGABLE} or \path{ATLAS_NAVIGABILITY_SUPPORTED_GLOBAL_GEOMETRY_UNSUPPORTED}. Only after a positive Phase-1 signal would flow, diffusion, path-integral or conductance dynamics become justified experiments.
+A semantic quotient used for acceleration must separately report whether it is an exact navigation quotient or an over-approximation requiring route lifting/refinement. Gold routes, gold distance labels and future map edges remain evaluator-only. The lane is declared unsupported in the registered scope if, after hidden-route leakage controls and total construction cost, no candidate geometry improves verified proof success or search cost over strong controls on held-out theorem families. Narrower outcomes are allowed, for example \path{LOCALLY_INFORMATIVE_NOT_GREEDILY_NAVIGABLE}, \path{ATLAS_NAVIGABILITY_SUPPORTED_GLOBAL_GEOMETRY_UNSUPPORTED}, or \path{NO_SAFE_NAVIGATION_QUOTIENT_AT_TESTED_SCALE}. Only after a positive Phase-1 signal would flow, diffusion, path-integral or conductance dynamics become justified experiments.
+
+\paragraph{Scope boundary.}
+The Phase-0/1 theory is deterministic. If later operators are stochastic or adversarial, the transition substrate must be upgraded to an appropriate stochastic kernel, MDP or game semantics; a deterministic edge geometry must not silently absorb stochasticity. Likewise, on infinite state spaces an infimum path value need not be attained and a geodesic need not exist. The word \emph{geometry} is therefore used broadly; metric, quasimetric, geodesic, manifold or fibred-category properties are claimed only when their respective axioms are separately established.
 
 \paragraph{Relationship to the broader Orion mechanics.}
-Verified Transformation Geometry is the mathematical instantiation of the broader proposal-only Verified Solver Compilation layer. If navigation fails, Mechanic Differential Diagnosis asks whether the obstruction belongs to specification, map coverage, representation/portal, scale, metric, dynamics, operator basis, verifier, interface, model/tool floor or compilation cost. A representation or method change is then requested by its desired transformation effect and must return through the same specification, preservation and proof-assurance gates described above. This preserves the design goal of aggressive search with conservative authority.
+Verified Transformation Geometry is the mathematical instantiation of the broader proposal-only Verified Solver Compilation layer. If navigation fails, Mechanic Differential Diagnosis asks whether the obstruction belongs to specification, state sufficiency, map coverage, navigation quotient, representation/portal, scale, metric, dynamics, operator basis, verifier, interface, model/tool floor or compilation cost. A representation or method change is then requested by its desired transformation effect and must return through the same specification, preservation and proof-assurance gates described above. This preserves the design goal of aggressive search with conservative authority.
