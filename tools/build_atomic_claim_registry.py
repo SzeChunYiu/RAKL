@@ -241,7 +241,7 @@ registry = {
     "schema_version": "orion-atomic-claim-registry-v1",
     "generated_at_cutoff": CUTOFF, "generated_at_cutoff_time": CUTOFF_TIME,
     "grants_scientific_authority": False, "global_completeness_claimed": False,
-    "policy": "One record per distinct claim; implementation-closure and net-benefit are separate claims. promotion_verdict is engineering routing status ONLY; terminal_state is the scientific state. A decisive NEGATIVE counts as successful scientific closure. Single-writer: maintained centrally; lanes report terminals and the integrator re-runs this.",
+    "policy": "One record per distinct claim; implementation-closure and net-benefit are separate claims. promotion_verdict is engineering routing status ONLY; terminal_state is the scientific state. A decisive NEGATIVE counts as successful scientific closure. Field 'open': true = this claim's scientific status is NOT yet settled (provisional/in-flight/inconclusive, or architecturally closed but scientifically unvalidated); false = scientifically decided at cutoff (decisive SUPPORTED/PARTIAL/NEGATIVE). open=true on an ARCHITECTURE_ONLY record means built-but-not-verified, NOT that the architecture itself is open. Single-writer: maintained centrally; lanes report terminals and the integrator re-runs this.",
     "terminal_vocabulary": ["SUPPORTED", "PARTIAL", "NEGATIVE", "CANNOT_CHECK", "UNDERPOWERED",
                             "INVALID_CONTAMINATED", "ARCHITECTURE_ONLY", "SCAFFOLD"],
     "source_artifacts": {
