@@ -1,13 +1,1043 @@
-  KEEP_PROPOSAL_ONLY   field_construction  (net_negative_in_tested_regime)
-  PROMOTE_TO_MECHANIC  fieldability_given_field  (positive_net_with_ci_excluding_null_cost_charged)
-  PROMOTE_TO_MECHANIC  identity_reuse  (positive_net_with_ci_excluding_null_cost_charged)
-  KEEP_PROPOSAL_ONLY   mechanic_diagnosis  (ci_includes_null_no_distinguishable_advantage)
-  KEEP_PROPOSAL_ONLY   navigation_dynamics  (net_negative_in_tested_regime)
-  PROMOTE_CONDITIONALLY navigation_dynamics_parallel  (regime_crossover_positive_subregime_ci_excludes_null)
-  KEEP_PROPOSAL_ONLY   navigation_dynamics_successor  (net_negative_in_tested_regime)
-  PROMOTE_CONDITIONALLY path_equivalence_quotient  (regime_crossover_positive_subregime_ci_excludes_null)
-  PROMOTE_TO_MECHANIC  six_family_law  (sign_test_significant_count_met)
-  KEEP_PROPOSAL_ONLY   tcsq_sq3  (net_negative_in_tested_regime)
-  PROMOTE_CONDITIONALLY tcsq_sq3_successor  (regime_crossover_positive_subregime_ci_excludes_null)
-PROMOTED=3 CONDITIONAL=3 PROPOSAL_ONLY=5 CANNOT_CHECK=0
-SCIENTIFIC_AUTHORITY_GRANTED=false
+{
+  "candidates": {
+    "field_construction": {
+      "artifact": "research/unified_problem_solving_v1/results/field_construction.json",
+      "net": {
+        "hi": -0.3549,
+        "lo": -0.3919,
+        "mean": -0.3738,
+        "n": 100
+      },
+      "note": "constructor must pay for its own construction cost",
+      "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "construction_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "construction_cost"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "fieldability_given_field": {
+      "artifact": "research/unified_problem_solving_v1/results/field_hypothesis.json",
+      "net": {
+        "hi": 0.7375,
+        "lo": 0.712,
+        "mean": 0.7247,
+        "n": 400
+      },
+      "note": "given-metric field; construction cost not applicable (field supplied by domain)",
+      "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "telemetry": {
+        "claim_class": "PERFORMANCE",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_TO_MECHANIC"
+    },
+    "identity_reuse": {
+      "artifact": "research/identity_reuse_v1/results/identity_reuse.json",
+      "net": {
+        "hi": 700.0,
+        "lo": 700.0,
+        "mean": 700.0,
+        "n": 200
+      },
+      "note": "exact reuse vs re-derivation; stale-reuse error rate is a hard constraint",
+      "reason": "positive_net_with_ci_excluding_null_cost_charged",
+      "telemetry": {
+        "claim_class": "CACHE_REUSE",
+        "economic_cost_fields": [
+          "exact_cost",
+          "generic_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "reuse_error_rate",
+          "exact_cost",
+          "generic_cost"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_TO_MECHANIC"
+    },
+    "mechanic_diagnosis": {
+      "artifact": "research/unified_problem_solving_v1/results/diagnosis_accuracy.json",
+      "net": {
+        "hi": 0.0,
+        "lo": 0.0,
+        "mean": 0.0,
+        "n": 2400
+      },
+      "note": "graded on verdict honesty (degrade to ambiguity, not confident error)",
+      "reason": "ci_includes_null_no_distinguishable_advantage",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "navigation_dynamics": {
+      "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics.json",
+      "net": {
+        "hi": -209.963889,
+        "lo": -538.825,
+        "mean": -364.383333,
+        "n": 18
+      },
+      "note": "must beat the STRONG control (A*) with its own iteration cost charged",
+      "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity"
+        ],
+        "status": "PARTIAL"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "navigation_dynamics_parallel": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "N",
+            "tested_values": [
+              16,
+              32,
+              64
+            ],
+            "type": "int"
+          },
+          {
+            "name": "Q",
+            "tested_values": [
+              1,
+              8,
+              32
+            ],
+            "type": "int"
+          },
+          {
+            "name": "U",
+            "tested_values": [
+              0,
+              4,
+              16
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              32.0
+            ],
+            "U": [
+              0.0,
+              16.0
+            ]
+          },
+          "overlap": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          },
+          "positive": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            }
+          ],
+          "n": 42,
+          "net_saving_ci95": [
+            -157.76388888888889,
+            -93.94642857142857
+          ],
+          "net_saving_mean": -124.21428571428571
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            }
+          ],
+          "n": 6,
+          "net_saving_ci95": [
+            5.986111111111111,
+            15.013888888888891
+          ],
+          "net_saving_mean": 10.347222222222223
+        }
+      },
+      "artifact": "research/navigation_dynamics_parallel_v1/results/navigation_dynamics_parallel.json",
+      "net": {
+        "hi": -86.58024691358025,
+        "lo": -114.29166666666667,
+        "mean": -99.91666666666667,
+        "n": 648
+      },
+      "note": "parallel-model revival (#537): SAME mechanic under PARALLEL-ROUND DEPTH cost model (k-sweeps = k rounds, Dijkstra = O(V) rounds); tests whether parallel structural advantage yields crossover",
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "PARTIAL"
+      },
+      "verdict": "PROMOTE_CONDITIONALLY"
+    },
+    "navigation_dynamics_successor": {
+      "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics_successor.json",
+      "net": {
+        "hi": -262.9212962962963,
+        "lo": -297.1311728395062,
+        "mean": -279.5216049382716,
+        "n": 648
+      },
+      "note": "successor (#537): must beat the strongest amortized parent (exact reverse-Dijkstra field + incremental SPT repair) with ALL build+update+query costs charged",
+      "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "path_equivalence_quotient": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "k",
+            "tested_values": [
+              3,
+              4,
+              5,
+              6
+            ],
+            "type": "int"
+          },
+          {
+            "name": "p",
+            "tested_values": [
+              0.0,
+              0.3,
+              0.6,
+              1.0
+            ],
+            "type": "float"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "k": [
+              3.0,
+              6.0
+            ],
+            "p": [
+              0.0,
+              1.0
+            ]
+          },
+          "overlap": {
+            "k": [
+              5.0,
+              6.0
+            ],
+            "p": [
+              0.3,
+              1.0
+            ]
+          },
+          "positive": {
+            "k": [
+              5.0,
+              6.0
+            ],
+            "p": [
+              0.3,
+              1.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "k": 3,
+              "p": 0.0
+            },
+            {
+              "k": 3,
+              "p": 0.3
+            },
+            {
+              "k": 3,
+              "p": 0.6
+            },
+            {
+              "k": 3,
+              "p": 1.0
+            },
+            {
+              "k": 4,
+              "p": 0.0
+            },
+            {
+              "k": 4,
+              "p": 0.3
+            },
+            {
+              "k": 4,
+              "p": 0.6
+            },
+            {
+              "k": 4,
+              "p": 1.0
+            },
+            {
+              "k": 5,
+              "p": 0.0
+            },
+            {
+              "k": 6,
+              "p": 0.0
+            }
+          ],
+          "n": 10,
+          "net_saving_ci95": [
+            -7.286,
+            -1.790300000000001
+          ],
+          "net_saving_mean": -4.239
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "k": 5,
+              "p": 0.3
+            },
+            {
+              "k": 5,
+              "p": 0.6
+            },
+            {
+              "k": 5,
+              "p": 1.0
+            },
+            {
+              "k": 6,
+              "p": 0.3
+            },
+            {
+              "k": 6,
+              "p": 0.6
+            },
+            {
+              "k": 6,
+              "p": 1.0
+            }
+          ],
+          "n": 6,
+          "net_saving_ci95": [
+            57.87245833333334,
+            356.9916666666666
+          ],
+          "net_saving_mean": 194.22666666666666
+        }
+      },
+      "artifact": "research/unified_problem_solving_v1/results/path_quotient_savings.json",
+      "net": 70.18562499999999,
+      "note": "witness/certification cost charged; known negative regime at low commutation",
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "verification_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "verification_cost"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_CONDITIONALLY"
+    },
+    "six_family_law": {
+      "alpha": 0.05,
+      "artifact": "research/six_family_extension_v1/results/six_family.json",
+      "count_met": true,
+      "note": "cross-family generalization; sign test across >=6 families",
+      "p": 0.03125,
+      "reason": "sign_test_significant_count_met",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome"
+        ],
+        "required": [
+          "sample",
+          "outcome"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_TO_MECHANIC"
+    },
+    "tcsq_sq3": {
+      "artifact": "research/tcsq_sq3_v1/results/sq3.json",
+      "net": {
+        "hi": -2878.7916666666665,
+        "lo": -5332.8,
+        "mean": -4074.3416666666667,
+        "n": 6,
+        "note": "aggregated across redundancy-rate cells by bootstrap on cell means"
+      },
+      "note": "quotient construction cost charged; crossover in redundancy rate expected",
+      "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
+    "tcsq_sq3_successor": {
+      "applicability": {
+        "axes": [
+          {
+            "name": "redundancy_rate",
+            "tested_values": [
+              0.0,
+              0.25,
+              0.5,
+              0.75,
+              0.9,
+              0.9583
+            ],
+            "type": "float"
+          },
+          {
+            "name": "solve_cost_scale",
+            "tested_values": [
+              16,
+              48,
+              128,
+              256
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "redundancy_rate": [
+              0.0,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "overlap": {
+            "redundancy_rate": [
+              0.5,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "positive": {
+            "redundancy_rate": [
+              0.5,
+              0.9583
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 9,
+          "net_saving_ci95": [
+            -18487.870370370372,
+            -4468.074074074074
+          ],
+          "net_saving_mean": -10659.620370370372
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 14,
+          "net_saving_ci95": [
+            8404.720238095239,
+            23947.72619047619
+          ],
+          "net_saving_mean": 15770.892857142857
+        }
+      },
+      "artifact": "research/tcsq_sq3_v1/results/sq3_successor.json",
+      "net": {
+        "hi": 13037.28472222222,
+        "lo": -2042.760416666667,
+        "mean": 5311.774305555556,
+        "n": 24,
+        "note": "aggregated across solve_cost_scale x redundancy cells by bootstrap on cell means"
+      },
+      "note": "successor: per-family validation + certificate verification; regime-conditional on solve-cost x redundancy crossover",
+      "reason": "regime_crossover_positive_subregime_ci_excludes_null",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "PROMOTE_CONDITIONALLY"
+    }
+  },
+  "cannot_check": [],
+  "conditionally_promoted": [
+    "navigation_dynamics_parallel",
+    "path_equivalence_quotient",
+    "tcsq_sq3_successor"
+  ],
+  "grants_scientific_authority": false,
+  "policy": "promotion is routing/engineering status, never scientific authority",
+  "promoted": [
+    "fieldability_given_field",
+    "identity_reuse",
+    "six_family_law"
+  ],
+  "proposal_only": [
+    "field_construction",
+    "mechanic_diagnosis",
+    "navigation_dynamics",
+    "navigation_dynamics_successor",
+    "tcsq_sq3"
+  ],
+  "schema_version": "orion-promotion-gate-v1"
+}
