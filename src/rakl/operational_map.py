@@ -7,7 +7,7 @@ from hashlib import sha256
 import json
 from typing import Tuple
 
-from .vtg_hardening import OperationalEdgeAssuranceClass, OperationalEdgeAssuranceReceipt
+from .vtg_hardening import OperationalEdgeAssuranceClass, OperationalEdgeAssuranceReceipt, ValidationEvidence, ValidationVerdict
 
 
 def _hash(payload: object) -> str:
@@ -48,7 +48,7 @@ class CoverageCompletenessCertificate:
     chart_id: str
     toolchain_hash: str
     closure_subject_hash: str
-    closure_verifier_id: str
+    closure_evidence: ValidationEvidence
 
     def __post_init__(self) -> None:
         if not all(
@@ -63,10 +63,32 @@ class CoverageCompletenessCertificate:
                 self.chart_id,
                 self.toolchain_hash,
                 self.closure_subject_hash,
-                self.closure_verifier_id,
             )
         ):
-            raise ValueError("coverage completeness certificate requires exact frozen subject and verifier identities")
+            raise ValueError("coverage completeness certificate requires exact frozen subject identity")
+        if self.closure_evidence.subject_hash != self.subject_hash:
+            raise ValueError("coverage closure evidence subject mismatch")
+        if self.closure_evidence.claim_kind != "OPERATIONAL_MAP_CLOSURE":
+            raise ValueError("coverage closure evidence claim kind mismatch")
+        if self.closure_evidence.verdict is not ValidationVerdict.PASS:
+            raise ValueError("coverage completeness certificate requires passing closure evidence")
+
+    @property
+    def subject_hash(self) -> str:
+        return _hash(
+            {
+                "schema": "orion.operational-map-closure-subject.v1",
+                "problem_state_hash": self.problem_state_hash,
+                "specification_hash": self.specification_hash,
+                "root_qoi": self.root_qoi,
+                "environment_hash": self.environment_hash,
+                "verifier_subject_hash": self.verifier_subject_hash,
+                "operator_basis_version": self.operator_basis_version,
+                "chart_id": self.chart_id,
+                "toolchain_hash": self.toolchain_hash,
+                "closure_subject_hash": self.closure_subject_hash,
+            }
+        )
 
     def matches(
         self,
@@ -221,7 +243,7 @@ class OperationalMapReceipt:
     @property
     def content_hash(self) -> str:
         return _hash({
-            "schema": "orion.operational_map.v5",
+            "schema": "orion.operational_map.v6",
             "map_id": self.map_id,
             "problem_state_hash": self.problem_state_hash,
             "specification_hash": self.specification_hash,
