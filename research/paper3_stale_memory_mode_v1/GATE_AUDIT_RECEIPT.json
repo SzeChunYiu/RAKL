@@ -1,0 +1,48 @@
+{
+  "schema_version": "rakl-p3-stale-memory-mode-gate-audit-v1",
+  "evidence": "PROBE_ROWS.jsonl",
+  "per_condition": {
+    "G1_coverage": {
+      "verdict": "FALSIFIABLE",
+      "baseline_pass": true,
+      "sensitive_probes": [
+        "drop_half_the_rows",
+        "shuffle_arm",
+        "shuffle_dim"
+      ]
+    },
+    "G2_judge_known_answer": {
+      "verdict": "FALSIFIABLE",
+      "baseline_pass": true,
+      "sensitive_probes": [
+        "flip_half_verdicts",
+        "shuffle_arm",
+        "shuffle_verdict"
+      ]
+    },
+    "G3_primary_contrast_positive": {
+      "verdict": "FALSIFIABLE",
+      "baseline_pass": true,
+      "sensitive_probes": [
+        "drop_half_the_rows",
+        "drop_one_dimension",
+        "flip_half_verdicts",
+        "shuffle_arm",
+        "shuffle_verdict"
+      ]
+    },
+    "G4_no_dimension_regression": {
+      "verdict": "FALSIFIABLE",
+      "baseline_pass": true,
+      "sensitive_probes": [
+        "drop_half_the_rows",
+        "flip_half_verdicts",
+        "shuffle_arm",
+        "shuffle_verdict"
+      ]
+    }
+  },
+  "grants_scientific_authority": false,
+  "non_falsifiable_conditions": [],
+  "gate_audit_pass": true
+}
