@@ -147,6 +147,28 @@
       "diagnosis": "Structural incompatibility between the round schedule and the tracker's requirements, not a property of the corpus. The schedule gave each route context exactly ONE non-independent round, so same_context_flat_count could never reach SAME_CONTEXT_FLAT_REQUIRED = 2 and SATURATED_SCOPED was unreachable by construction.",
       "repair": "Three deepening sweeps per route context instead of one (so a context can go flat within itself), and INDEPENDENT_FLAT_REQUIRED lowered from 2 to 1 — a setting the tracker's own source explicitly sanctions for scoped/cheap benchmarks.",
       "not_tuning": "No outcome was visible when this change was made. The check is a retrieval-only degeneracy test and the repair restores the mechanism's ability to fire at all; it does not select among outcomes."
+    },
+    {
+      "id": "DESIGN-ITERATION-2-REVIVAL",
+      "trigger": "v1 filed NULL at n=112 with only 11 discordant pairs. Attribution: population stage, not mechanism — the arms differ on 99/112 selections with a consistent direction, so the design has contrast but not power.",
+      "lever": "More tasks. The frozen module basis widens from six named modules to four Mathlib top-level areas (Mathlib.Data, Mathlib.Order, Mathlib.Algebra, Mathlib.Logic), sampled at a fixed stride after sorting by name.",
+      "unchanged": [
+        "arms A and B and their definitions",
+        "retrieval routes and round schedule",
+        "premise budget M = 16",
+        "solver effort",
+        "decision rule (exact McNemar two-sided, alpha 0.05)",
+        "falsifier"
+      ],
+      "multiplicity_acknowledged": "This is a second test of the same hypothesis. The v1 NULL stands on its own and is reported regardless of the revival's outcome; the revival is labelled as the doctrine-mandated single revival attempt, not as a replacement for v1.",
+      "defect_found_during_revival": {
+        "id": "REPAIR-2-PROBE-HEADER-MISMATCH",
+        "observed": "First revival build scored only 498 of 4182 candidates (12%) as well-posed, against 89% in v1.",
+        "diagnosis": "The probe file header still imported only the six v1 modules while the extraction now ranged over all of Mathlib. Statements using notation from unimported areas failed to parse and were silently scored as not-well-posed — a false negative in the instrument, not a property of the population.",
+        "repair": "Probe header selectable via ORION_LEAN_HEADER; the revival basis uses `import Mathlib` so the probe elaborates in the same environment the statements were extracted from. v1's header is preserved unchanged so v1 remains reproducible.",
+        "post_repair": "well-posed recovered to 4790/6273 (76%).",
+        "lesson": "A silent filter that scores 'could not elaborate' the same as 'did not hold' is exactly the conflation of CANNOT_CHECK with checked-and-false that the repository rules forbid."
+      }
     }
   ],
   "design_check_frozen": {

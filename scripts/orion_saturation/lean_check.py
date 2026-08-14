@@ -24,16 +24,31 @@ _SORRY_RE = re.compile(
     re.MULTILINE,
 )
 
-HEADER = """import Mathlib.Data.List.Basic
+_OPTS = """
+set_option linter.all false
+set_option maxRecDepth 4000
+"""
+
+#: v1 basis — the six frozen modules of Dump.lean.
+HEADER_V1 = """import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Basic
+""" + _OPTS
 
-set_option linter.all false
-set_option maxRecDepth 4000
-"""
+#: Revival basis — Dump2.lean extracts across all of Mathlib, so the probe file
+#: must elaborate in the same environment. With the v1 header, statements using
+#: notation from unimported areas fail to parse and are silently scored as
+#: not-well-posed: the v3 build lost 88% of candidates to exactly that mismatch.
+HEADER_MATHLIB = "import Mathlib\n" + _OPTS
+
+
+def _header() -> str:
+    import os
+
+    return HEADER_MATHLIB if os.environ.get("ORION_LEAN_HEADER") == "mathlib" else HEADER_V1
 
 
 @dataclass(frozen=True)
@@ -44,7 +59,7 @@ class LeanTask:
 
 
 def _render(tasks: list[LeanTask], max_heartbeats: int) -> tuple[str, dict[str, tuple[int, int]]]:
-    lines = HEADER.split("\n")
+    lines = _header().split("\n")
     spans: dict[str, tuple[int, int]] = {}
     for task in tasks:
         start = len(lines) + 1
