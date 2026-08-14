@@ -34,6 +34,7 @@ from rakl.transfer_impossibility import (
     TargetDeclaration,
     classify_refusal,
     classify_refusal_faithful_import,
+    exists_licensing_role_mapping,
     structural_obstructions,
 )
 
@@ -264,15 +265,6 @@ def build_arms() -> list[dict]:
     # ---- ARM-8: genuinely impossible, closed-world, but budget exhausted ----
     big_src_roles = tuple(f"a{i}" for i in range(6))
     big_tgt_roles = tuple(f"x{i}" for i in range(7))
-    src8 = make_object(
-        "s8",
-        qoi="Q",
-        roles=big_src_roles,
-        relations=tuple(
-            (big_src_roles[i], "causes", big_src_roles[i + 1])
-            for i in range(len(big_src_roles) - 1)
-        ),
-    )
     tgt8 = make_object(
         "t8",
         qoi="Q",
@@ -285,7 +277,7 @@ def build_arms() -> list[dict]:
         )
         + (("x0", "extra", "x1"),),
     )
-    # make it genuinely impossible by requiring a relation type absent in target
+    # genuinely impossible: a source relation type absent from the target
     src8 = make_object(
         "s8",
         qoi="Q",
@@ -455,7 +447,170 @@ def run_proposition_sweep(seed: int = 20260814, n: int = 600) -> dict:
     }
 
 
-def evaluate_gates(arm_results: list[dict], sweep: dict) -> dict:
+def run_planted_known_answer_sweep(seed: int = 20260814, n: int = 200) -> dict:
+    """G4b: planted cases whose ground truth is known BY CONSTRUCTION.
+
+    The randomised sweep in :func:`run_proposition_sweep` compares two
+    implementations against each other. Agreement there is necessary but weak:
+    it cannot distinguish "both correct" from "both wrong the same way", and
+    its input distribution under-samples the one stratum that actually
+    exercises the injective-mapping search -- namely S3 true reachable ONLY via
+    a non-canonical mapping.
+
+    This sweep plants the answer instead of asking an oracle for it:
+
+    * PASS cases embed a known injective phi and build the target as the
+      phi-image of the source relations, so a licensing mapping provably
+      exists. Cases where the canonical sorted-order mapping ALSO works are
+      rejected, so every retained PASS case requires the search to find a
+      non-obvious mapping.
+    * FAIL cases give the source a relation whose type appears nowhere in the
+      target, so no mapping whatsoever can preserve it.
+
+    The FAIL direction is sound but cheap -- the type check settles it without
+    the search. The search-exercising evidence for the negative direction comes
+    from the randomised oracle cross-check, not from here.
+    """
+
+    rng = random.Random(seed + 1)
+    relation_types = ["causes", "correlates", "inhibits", "mediates"]
+    pass_cases = 0
+    pass_failures = []
+    fail_cases = 0
+    fail_failures = []
+    rejected_canonical = 0
+
+    for i in range(n):
+        k = rng.randint(2, 4)
+        m = k + rng.randint(0, 2)
+        src_roles = tuple(f"a{j}" for j in range(k))
+        tgt_roles = tuple(f"x{j}" for j in range(m))
+
+        relations = set()
+        for _ in range(rng.randint(1, 4)):
+            a, b = rng.sample(list(src_roles), 2)
+            relations.add((a, rng.choice(relation_types), b))
+        relations = tuple(sorted(relations))
+
+        image = list(tgt_roles)
+        rng.shuffle(image)
+        phi = dict(zip(src_roles, image[:k]))
+        canonical = dict(zip(sorted(src_roles), sorted(tgt_roles)))
+        if phi == canonical:
+            rejected_canonical += 1
+            continue
+
+        mapped = tuple(
+            sorted({(phi[a], t, phi[b]) for a, t, b in relations})
+        )
+        source = make_object(f"psrc{i}", qoi="Q", roles=src_roles, relations=relations)
+        target = make_object(f"ptgt{i}", qoi="Q", roles=tgt_roles, relations=mapped)
+
+        # Retain only cases where the canonical mapping does NOT work, so the
+        # search has to do real work.
+        canonical_sigs = {
+            (canonical[a], t, canonical[b], True) for a, t, b in relations
+        }
+        target_sigs = {r.signature for r in target.relations}
+        if canonical_sigs <= target_sigs:
+            rejected_canonical += 1
+            continue
+
+        result, _ = exists_licensing_role_mapping(source, target)
+        pass_cases += 1
+        if result is not True:
+            pass_failures.append({"index": i, "got": result, "expected": True})
+
+        # Mutant: a source relation type that appears nowhere in the target.
+        mutant_source = make_object(
+            f"msrc{i}",
+            qoi="Q",
+            roles=src_roles,
+            relations=relations + ((src_roles[0], "planted_absent_type", src_roles[1]),),
+        )
+        mutant_result, _ = exists_licensing_role_mapping(mutant_source, target)
+        fail_cases += 1
+        if mutant_result is not False:
+            fail_failures.append({"index": i, "got": mutant_result, "expected": False})
+
+    return {
+        "seed": seed,
+        "planted_pass_cases": pass_cases,
+        "planted_pass_failures": pass_failures,
+        "planted_fail_cases": fail_cases,
+        "planted_fail_failures": fail_failures,
+        "rejected_because_canonical_mapping_sufficed": rejected_canonical,
+        "agreement": not pass_failures and not fail_failures,
+    }
+
+
+def measure_sweep_strata(seed: int = 20260814, n: int = 600) -> dict:
+    """Coverage audit for the randomised sweep.
+
+    Reports how many generated cases actually exercise S3, and how many fall in
+    the discriminating stratum where S3 is true ONLY via a non-canonical
+    mapping. Recorded so that a reader can see what the 600/600 agreement in
+    :func:`run_proposition_sweep` does and does not cover.
+    """
+
+    rng = random.Random(seed)
+    relation_types = ["causes", "correlates", "inhibits"]
+    invariant_pool = ["energy", "mass", "charge"]
+    with_relations = 0
+    s3_true = 0
+    discriminating = 0
+
+    for i in range(n):
+        n_src = rng.randint(1, 3)
+        n_tgt = rng.randint(1, 4)
+        src_roles = tuple(f"a{k}" for k in range(n_src))
+        tgt_roles = tuple(f"x{k}" for k in range(n_tgt))
+
+        def rand_relations(roles):
+            out = set()
+            for _ in range(rng.randint(0, 3)):
+                if len(roles) < 2:
+                    break
+                a, b = rng.sample(list(roles), 2)
+                out.add((a, rng.choice(relation_types), b))
+            return tuple(sorted(out))
+
+        qoi_src = rng.choice(["Q", "Q2"])
+        qoi_tgt = rng.choice(["Q", "Q2"])
+        source = make_object(
+            f"src{i}", qoi=qoi_src, roles=src_roles, relations=rand_relations(src_roles),
+            invariants=frozenset(rng.sample(invariant_pool, rng.randint(0, 2))),
+        )
+        target = make_object(
+            f"tgt{i}", qoi=qoi_tgt, roles=tgt_roles, relations=rand_relations(tgt_roles),
+            invariants=frozenset(rng.sample(invariant_pool, rng.randint(0, 3))),
+        )
+        if source.relations:
+            with_relations += 1
+        result, _ = exists_licensing_role_mapping(source, target)
+        if result is True and source.relations:
+            s3_true += 1
+            a_roles = sorted(source.role_ids)
+            b_roles = sorted(target.role_ids)
+            target_sigs = {r.signature for r in target.relations}
+            if len(a_roles) <= len(b_roles):
+                canonical = dict(zip(a_roles, b_roles))
+                if not all(
+                    (canonical[r.source_role], r.relation_type, canonical[r.target_role], r.directed)
+                    in target_sigs
+                    for r in source.relations
+                ):
+                    discriminating += 1
+
+    return {
+        "cases": n,
+        "cases_with_source_relations": with_relations,
+        "s3_true_with_relations": s3_true,
+        "discriminating_s3_true_only_via_non_canonical_mapping": discriminating,
+    }
+
+
+def evaluate_gates(arm_results: list[dict], sweep: dict, planted: dict) -> dict:
     run = [r for r in arm_results if r["status"] == "RUN"]
     weak_arms = {
         "ARM-1_REPAIRABLE_ROLE_MAP",
@@ -510,6 +665,15 @@ def evaluate_gates(arm_results: list[dict], sweep: dict) -> dict:
             "disagreements": sweep["disagreements"],
         },
     }
+    gates["G4b_PLANTED_KNOWN_ANSWER"] = {
+        "pass": planted["agreement"]
+        and planted["planted_pass_cases"] > 0
+        and planted["planted_fail_cases"] > 0,
+        "planted_pass_cases": planted["planted_pass_cases"],
+        "planted_fail_cases": planted["planted_fail_cases"],
+        "planted_pass_failures": planted["planted_pass_failures"],
+        "planted_fail_failures": planted["planted_fail_failures"],
+    }
     gates["ALL_PASS"] = all(g["pass"] for g in gates.values() if isinstance(g, dict))
     gates["control_arm_A_false_certificates"] = a_false_certificates
     return gates
@@ -518,7 +682,9 @@ def evaluate_gates(arm_results: list[dict], sweep: dict) -> dict:
 def main() -> int:
     arm_results = run_arms()
     sweep = run_proposition_sweep()
-    gates = evaluate_gates(arm_results, sweep)
+    planted = run_planted_known_answer_sweep()
+    strata = measure_sweep_strata()
+    gates = evaluate_gates(arm_results, sweep, planted)
     receipt = {
         "schema_version": "paper2-typed-refusal-receipt-v1",
         "protocol": "research/paper2_causal_transport_absorption_v1/PROTOCOL.json",
@@ -526,6 +692,8 @@ def main() -> int:
         "grants_promotion_authority": False,
         "arms": arm_results,
         "proposition_sweep": sweep,
+        "proposition_sweep_strata": strata,
+        "planted_known_answer_sweep": planted,
         "hard_gates": gates,
     }
     print(json.dumps(receipt, indent=2, sort_keys=True))
