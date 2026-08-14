@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           ROOT="RAKL_P1_P4_STRICT_ORION_CLOSURE_V2_${GITHUB_SHA:0:12}"
-          mkdir -p "$ROOT/00_CLOSURE" "$ROOT/01_PAPER_I" "$ROOT/02_PAPER_II" "$ROOT/03_PAPER_III" "$ROOT/04_PAPER_IV" "$ROOT/05_RUNTIME"
+          mkdir -p "$ROOT/00_CLOSURE" "$ROOT/01_PAPER_I" "$ROOT/02_PAPER_II" "$ROOT/03_PAPER_III" "$ROOT/04_PAPER_IV" "$ROOT/05_RUNTIME" "$ROOT/06_REPRODUCTION"
           cp -a research/orion_p1_p4_closure_v2/. "$ROOT/00_CLOSURE/"
           cp research/receipts/RAKL_V3_NONINTERFERENCE_INTEGRATION_20260811.json "$ROOT/01_PAPER_I/"
           cp -a research/empirical_10_of_10_v1/PAPER3/OBJECTIVE "$ROOT/02_PAPER_II/OBJECTIVE"
@@ -51,6 +51,8 @@ jobs:
           cp src/rakl/objective_transfer_benchmark.py src/rakl/objective_transfer_benchmark_v2.py "$ROOT/05_RUNTIME/"
           cp src/rakl/semantic_shortcut_router.py src/rakl/semantic_shortcut_router_v2.py src/rakl/semantic_shortcut_router_v3.py src/rakl/semantic_shortcut_consolidation.py "$ROOT/05_RUNTIME/"
           cp src/rakl/training_projection.py src/rakl/training_scheduler.py src/rakl/training_policy_authority.py "$ROOT/05_RUNTIME/"
+          cp experiments/orion_closure/run_p3_structured_experience_action.py "$ROOT/06_REPRODUCTION/"
+          cp experiments/orion_closure/run_p4_adaptive_development_stress.py "$ROOT/06_REPRODUCTION/"
           printf '%s\n' "$GITHUB_SHA" > "$ROOT/EXACT_HEAD_SHA.txt"
           find "$ROOT" -type f -print0 | sort -z | xargs -0 sha256sum > "$ROOT/SHA256SUMS.txt"
           zip -qr "${ROOT}.zip" "$ROOT"
