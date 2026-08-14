@@ -1,0 +1,185 @@
+{
+  "schema_version": "paper2-prose-transfer-instrument-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper II — Structural Mechanics",
+  "base_main_sha": "09c67e4a",
+  "confirmatory_outcomes_accessed": false,
+  "grants_scientific_authority": false,
+  "authority": "same-context analysis; not independent review; promotes nothing on its own",
+
+  "why_this_epoch_exists": {
+    "refuted_predecessors": [
+      {
+        "instrument": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_REGISTRATION_V1.md (six-family robustness)",
+        "audit": "research/paper2_six_family_audit_v1/",
+        "finding": "probe G: scrambling every source_text/target_text leaves gold and all six coordinates unchanged 810/810; the full arm is bound to the gold verifier (loss variance 1.2e-37); 12/12 arbitrary seeds return 6/6; the gate cannot fail"
+      },
+      {
+        "instrument": "research/paper2_controlled_witness_extraction_v1/",
+        "audit": "research/paper2_controlled_witness_extraction_audit_v1/",
+        "finding": "probe G: text inert 2592/2592; extract(render(t)).public == t.public byte-identically 2592/2592; exact_decision=1.0 is serialization fidelity, not extraction"
+      }
+    ],
+    "shared_failure_mechanism": "the answer travelled alongside the text in a pre-parsed sibling field, so no arm ever read the text",
+    "repair_specification": "an instrument is probative for extraction only if destroying the text destroys performance; this must be an acceptance test registered BEFORE outcome access, not an audit discovered afterwards"
+  },
+
+  "object": "a directional structural-transfer decision that must be recovered from natural-language source and target descriptions alone",
+  "qoi": "exact agreement with the text-determined applicability decision in {ACCEPT, REJECT, CANNOT_CHECK}, jointly with valid-transfer retention and invalid false-accept",
+
+  "instrument": {
+    "module": "src/rakl/prose_transfer_instrument_v1.py",
+    "candidate_visible_surface": ["source_text", "target_text", "family", "item_id"],
+    "public_dict_must_be_empty": true,
+    "gold_is_latent": true,
+    "gold_definition": "for each of the six registered coordinates: if its textual realization mode is ELIDED or HEDGED the coordinate is CANNOT_CHECK, otherwise it is the latent boolean the renderer expressed; the item decision is merge(REJECT > CANNOT_CHECK > ACCEPT) over the six",
+    "gold_is_a_function_of_what_the_text_says": true,
+    "no_arm_may_read_the_latent_spec": true,
+    "coordinates": ["qoi", "boundary", "direction", "relation", "precondition", "effect"],
+    "families": [
+      "linear_systems",
+      "pgm_dseparation",
+      "algorithm_invariants",
+      "causal_transport",
+      "optimization",
+      "local_global_gluing"
+    ]
+  },
+
+  "probe_f_repair": {
+    "defect_being_repaired": "in the predecessor, each stratum assigned its discriminating coordinate, so the mechanism-only arm scored exactly 0.000 by construction on two strata carrying 66.7% of the headline gain",
+    "repair": "the violated (or unknown) coordinate is SAMPLED uniformly from the six rather than assigned per stratum",
+    "item_types": [
+      "VALID_TRANSFER",
+      "SINGLE_VIOLATION",
+      "MULTI_VIOLATION",
+      "UNKNOWN_REQUIRED"
+    ],
+    "requirement": "every one of the six coordinates must be the sole discriminator in at least one confirmatory item"
+  },
+
+  "registered_textual_ambiguity_classes": {
+    "purpose": "these are the sources of genuine, attributable extraction error; a benchmark in which every coordinate appears as a regex-recoverable literal is the JSON round trip again with prettier labels",
+    "classes": {
+      "E_LITERAL": "explicit parseable value stated directly",
+      "E_QUALITATIVE": "value given only as a qualitative degree word; a threshold must be inferred",
+      "E_UNIT": "value given in a transformed unit and must be converted before threshold comparison",
+      "E_NEGATION": "polarity inverted, e.g. 'we found no evidence that X fell below the bound'",
+      "E_HEDGE": "epistemic hedge; the correct answer is CANNOT_CHECK for that coordinate",
+      "E_ELISION": "the coordinate is simply not stated; the correct answer is CANNOT_CHECK",
+      "E_DISTRACTOR": "a competing clause states a value for a different quantity or a different role"
+    }
+  },
+
+  "development_confirmatory_separation": {
+    "dev_seed": 20260814001,
+    "confirmatory_seed": 20260814907,
+    "template_bank_split": "the renderer's paraphrase and degree-word banks are partitioned into disjoint DEV and HELDOUT halves; the extractor is developed against DEV only",
+    "heldout_qualitative_lexicon_is_disjoint": true,
+    "why": "a lookup-table extractor written against DEV cannot cover a disjoint HELDOUT degree lexicon; only a general rule can. If the extractor was written as a lookup it will fail on HELDOUT, and that failure is the honest result",
+    "acknowledged_limitation": "renderer and extractor are authored by the same agent, so the DEV/HELDOUT split reduces but does not eliminate template inversion. This is exactly why the upper bound below is registered and why INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION is an available terminal."
+  },
+
+  "arms": {
+    "FULL_PROSE_EXTRACTOR": "reads only source_text and target_text; recovers all six coordinates; merges",
+    "P_KEYWORD_POLARITY": "strongest non-extraction parent: reads the text but parses no structure; decides from the sign of polarity cue counts",
+    "P_LEXICAL": "decides from source/target lexical overlap against a DEV-fitted threshold",
+    "P_PRIOR_MAJORITY": "always predicts the DEV majority gold class",
+    "P_ALWAYS_REJECT": "trivial",
+    "P_ALWAYS_ACCEPT": "trivial",
+    "P_ALWAYS_CANNOT_CHECK": "trivial",
+    "note": "no arm is the gold function; the primary statistic is paired between two arms that both have variance"
+  },
+
+  "primary_statistic": {
+    "name": "paired exact-decision advantage of FULL_PROSE_EXTRACTOR over the strongest non-extraction parent",
+    "pairing": "per item, over the confirmatory set",
+    "test": "exact McNemar on discordant pairs, two-sided",
+    "interval": "item bootstrap 95% on the paired advantage, 2000 resamples"
+  },
+
+  "registered_gates": {
+    "G1_lower_bound": {
+      "requirement": "full_exact - strongest_non_extraction_parent_exact >= 0.10 AND McNemar p < 0.01 AND bootstrap 95% excludes 0",
+      "rationale": "the arm must actually read structure, not just react to surface polarity"
+    },
+    "G2_upper_bound": {
+      "requirement": "full_exact < 1.00 strictly",
+      "rationale": "a perfect score on a self-authored surface is the signature of template inversion, the same signature probe F caught as mechanism exact3 = 0.000"
+    },
+    "G3_error_attribution": {
+      "requirement": "the residual errors must be attributable to the registered ambiguity classes, with at least one error in at least 3 distinct classes",
+      "rationale": "errors must come from textual ambiguity, not from a single implementation bug"
+    },
+    "G4_joint_property": {
+      "requirement": "full arm must jointly attain valid_accept >= 0.80 AND invalid_false_accept <= 0.10, and no trivial arm may attain both",
+      "rationale": "selectivity is not edge; always_reject also attains FA = 0.000"
+    },
+    "G5_paired_variance": {
+      "requirement": "variance of the full arm's per-item 0/1 loss > 0 AND variance of the parent arm's per-item 0/1 loss > 0",
+      "rationale": "closes probe A; a paired statistic with a constant arm is not a comparison"
+    },
+    "G6_seed_spread": {
+      "requirement": ">= 12 seeds executed; the headline paired advantage must take >= 3 distinct values across them",
+      "rationale": "closes probe B; a statistic identical on every seed is a property of the generator, not a measurement"
+    },
+    "G7_falsifier_demonstration": {
+      "requirement": "all three registered negative controls must FAIL G1",
+      "rationale": "a gate is only a gate if a run that should fail does fail; this exhibits such runs inside the confirmatory itself"
+    }
+  },
+
+  "registered_negative_controls": {
+    "NC1_SCRAMBLED_TEXT": {
+      "manipulation": "replace every source_text and target_text with noise of the same token length; gold unchanged",
+      "required_outcome": "full arm exact collapses into the shuffle-equal-n null 95% interval, and G1 FAILS",
+      "status_if_violated": "INSTRUMENT_STILL_NOT_MEASURING_EXTRACTION"
+    },
+    "NC2_SHUFFLED_GOLD": {
+      "manipulation": "permute the gold vector, preserving marginals, destroying only the text<->answer binding",
+      "required_outcome": "G1 FAILS"
+    },
+    "NC3_TRIVIAL_ARMS": {
+      "manipulation": "score always_reject / always_accept / always_cannot_check",
+      "required_outcome": "each FAILS G4"
+    }
+  },
+
+  "shuffle_equal_n_null": {
+    "reps": 500,
+    "construction": "permute gold, preserve marginals, rescore the unchanged prediction vector",
+    "use": "defines the collapse interval for NC1 and the floor for G1"
+  },
+
+  "terminals": {
+    "PROSE_EXTRACTION_INSTRUMENT_PROBATIVE__SCOPED": "all gates pass; the instrument measures recovery of applicability coordinates from synthetic scientific prose, in the registered scope only",
+    "INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION": "G1 passes but G2 or G3 fails; the surface is invertible by construction and the score is not a measurement",
+    "EXTRACTION_NEGATIVE__ARM_DOES_NOT_BEAT_PARENT": "G1 fails on the clean confirmatory set; a perfectly good outcome, recorded as-is",
+    "GATE_NOT_FALSIFIABLE": "G6 or G7 fails; the apparatus is defective again and no substantive reading is licensed",
+    "BLOCKED": "execution could not be completed; recorded rather than guessed"
+  },
+
+  "no_post_result_rescue": {
+    "thresholds_are_final": true,
+    "note": "0.10 MDE, p<0.01, the strict < 1.00 ceiling, the >= 3 error classes, the >= 12 seeds and the >= 3 distinct values are fixed at freeze time and are not adjustable after outcome access. A negative or not-probative terminal is a first-class result and must not be tuned away."
+  },
+
+  "nonclaims": [
+    "arbitrary scientific prose extraction solved",
+    "real primary-source span extraction solved",
+    "natural-domain transfer validated",
+    "frontier LLM structural extraction measured",
+    "independent human or scientific authority",
+    "any Paper II generalization beyond synthetic prose"
+  ],
+
+  "residual_left_open": {
+    "binding_constraint": "a natural-domain packet at n~48 with EXTERNAL labels",
+    "current_state": "prose-extraction natural-domain items sit at n=16 with internally authored coordinates (see #608)",
+    "explicitly_not_addressed_by_this_epoch": "a synthetic-prose instrument cannot discharge the natural-domain external-label residual, and probe-G collapse on a self-authored renderer must not be read as natural-language extraction capability",
+    "issue_608_boundary_preserved": "INSTRUMENT_ONLY__NO_EMPIRICAL_EXTRACTION_CLAIM"
+  },
+
+  "execution_host": "laptop billy, ~/rakl-verify, .venv/bin/python 3.11",
+  "freeze_discipline": "this file is committed before any instrument, extractor or runner code exists in this branch; commit ordering is the evidence of freeze"
+}
