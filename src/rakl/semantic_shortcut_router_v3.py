@@ -586,6 +586,8 @@ def resolve_obstruction_transformation_route_with_composition_rejections(
     )
     if base.selected_mode is not ShortcutMode.CANNOT_CHECK:
         return _wrap(base)
+    if validate_transformation_memory(transformation_memory):
+        return _wrap(base)
 
     working = _replay_candidate_residual(
         transformation_memory,
