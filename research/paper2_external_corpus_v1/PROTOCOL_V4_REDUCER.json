@@ -1,0 +1,112 @@
+{
+  "schema_version": "paper2-external-corpus-protocol-v4-reducer",
+  "freeze_date": "2026-08-14",
+  "purpose": "Pre-register the ARN v4 relational-correspondence reducer BEFORE touching any confirmatory data. All parameters and thresholds are frozen. Hard falsifier ordering: B3 (shuffled gold) runs FIRST.",
+  "parent_protocol": "research/paper2_external_corpus_v1/PROTOCOL.json",
+  "parent_v3_protocol": "research/paper2_external_corpus_v1/PROTOCOL_V3_REDUCER.json",
+  "parent_v3_result": "research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json",
+  "parent_v3_verdict": "NEGATIVE__CAPABILITY_ABSENT",
+  "parent_v3_attribution": {
+    "stage": "mapping",
+    "deficit": "flat typed-role/relation features insufficient; missing second-order relation-triple structure",
+    "lever": "M1 Progressive Relational Abstraction parent: align RELATION TRIPLES (source relation ↔ target relation with role-type consistency)"
+  },
+  "successor_description": "ARN v4 reducer with relational-correspondence scoring (M1 parent). NO language model, NO network, deterministic rules only. Scoring aligns relation triples with role-type consistency, capturing second-order structure.",
+  "module": "src/rakl/narrative_reducer_v4.py",
+  "callable": "reduce_narrative_v4",
+  "author": "RAKL programme (same-context; LLM-assisted)",
+  "external_label_author": "Sourati, Ilievski, Sommerauer, Jiang (ARN, TACL 2024)",
+  "deterministic": true,
+  "extraction": {
+    "inherit_from": "PROTOCOL_V3_REDUCER.json",
+    "description": "Reuse v3 extraction verbatim: typed roles, typed relations, negation scope. All v3 extraction parameters preserved.",
+    "max_roles": 12,
+    "co_occurrence_window": 4,
+    "negation_markers": ["no", "not", "never", "cannot", "cannot", "neither", "nothing", "none", "without", "fails", "lacks", "nowhere", "nor", "hardly", "scarcely", "barely", "differs"]
+  },
+  "mapping": {
+    "method": "relational_correspondence_with_m1_parent",
+    "description": "Second-order relation-triple alignment. Each query relation forms a triple (source-role-type, relation-type, target-role-type) and matches to candidate relation triples. This captures structural correspondence beyond flat token/type matching.",
+    "parent_assimilation": {
+      "m1_progressive_relational_abstraction": "research/mechanic_research_packets_v1 (task #87, merged via #689)",
+      "assimilation_principle": "Align RELATION TRIPLES (source relation ↔ target relation with role-type consistency), not flat typed-role/relation features.",
+      "second_order_structure": "Relation triples capture the pattern of how relations connect typed roles, which is the analogical structure missing in v3."
+    },
+    "relation_triple": {
+      "definition": "(source_role_type: RoleType, relation_type: RelationType, target_role_type: RoleType)",
+      "example": "(SUBJ, CAUSAL, OBJ) represents 'subject CAUSES object' structure"
+    },
+    "triple_correspondence": {
+      "exact_match": "1.0 — all three components match exactly (source_role_type == source_role_type AND relation_type == relation_type AND target_role_type == target_role_type)",
+      "partial_match": "0.5 — relation_type matches AND at least one role_type matches (capturing shared relational structure)",
+      "no_match": "0.0 — no structural correspondence"
+    },
+    "scoring_formula": {
+      "triple_score": "(sum over query triples of best-match correspondence) / |query_triples|",
+      "role_boost": "0.1 * (exact token matches between query and candidate roles) / |query_roles| — additive boost for lexical overlap on top of structural triple score",
+      "combined": "score = 0.8 * triple_score + 0.2 * role_boost (weighted toward structural correspondence, lexical signal as secondary)"
+    },
+    "instance_paired_preservation": {
+      "description": "Every score term consumes the joint (query-triple, candidate-triple) assignment. Shuffling candidate labels breaks triple alignments and collapses advantage BY CONSTRUCTION.",
+      "verification": "For any triple correspondence score s, there exists no way to compute s from query alone or candidate alone — requires the joint matching."
+    },
+    "theta_w_fit": "DEV grid 0.05..0.95 step 0.05, maximize decidable exact accuracy (same as parent)",
+    "acceptance_rule": "ACCEPT iff score >= theta_w, else REJECT"
+  },
+  "abstention": {
+    "CANNOT_CHECK_conditions": [
+      {
+        "condition": "insufficient_extraction_evidence",
+        "rule": "query has < 2 relations OR candidate has < 2 relations (v4 focuses on relation triples)"
+      },
+      {
+        "condition": "degenerate_relation_coverage",
+        "rule": "fraction of typed relations (relation_type != PLAIN) in query < 0.1"
+      },
+      {
+        "condition": "zero_triple_correspondence",
+        "rule": "triple_score == 0 (no relation triple matched)"
+      }
+    ],
+    "rationale": "Abstention when relation extraction is too sparse or no structural correspondence found."
+  },
+  "admission": {
+    "gate": "src/rakl/reduction_validation.py::admit_reducer",
+    "sample_sources": "the query texts of the first 8 groups in frozen split order (same as parent)",
+    "seed": 20260814,
+    "required_verdict": "ADMITTED at CertificateKind.EXTERNAL_LABEL"
+  },
+  "baseline_to_beat": {
+    "band_control_confirmatory_exact": 0.506,
+    "parent_v3_confirmatory_exact": 0.495,
+    "parent_v3_B3_shuffled_gold_advantage": 0.0044,
+    "target": "beat band_control 0.506 confirmatory exact accuracy, AND B3_shuffled_gold advantage CI must contain 0"
+  },
+  "revival_strategy": {
+    "primary_lever": "relational-correspondence with M1 Progressive Relational Abstraction parent",
+    "hypothesis": "Second-order relation-triple alignment (capturing how relations connect typed roles) will capture analogical structure that flat typed-role/relation features miss, leading to higher confirmatory accuracy while preserving the v3 property that B3 advantage ~0."
+  },
+  "hard_falsifier_ordering": {
+    "description": "B3 (shuffled-gold negative control) runs FIRST. If B3 fails again (advantage CI does not contain 0), STOP at NEGATIVE__BATTERY_FAILED with measured artifact. Never run confirmatory gates with a failed battery.",
+    "ordering": ["B3_shuffled_gold", "B2_text_destruction", "B1_gold_arm_distinctness", "B4_trivial_arm_floor", "B5_paired_variance"],
+    "stop_condition": "If B3_shuffled_gold g1_fails_as_required == false, TERMINAL at NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE"
+  },
+  "evaluation": {
+    "same_evaluator_as_parent": true,
+    "runner": "scripts/paper2_external_corpus_confirmatory_v4.py",
+    "scoring": "same Brier scoring, same bootstrap CI (10,000 resamples, seed 20260814), same G1/G2/G3 gates as parent protocol",
+    "artifact_path": "research/paper2_external_corpus_v1/results_v4_reducer/RESULT.json"
+  },
+  "terminals": [
+    "POSITIVE_SCOPED__EXTERNAL_LABEL (beats band_control 0.506 AND B3 passes)",
+    "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE (B3 fails; stop here, no confirmatory)",
+    "NEGATIVE__CAPABILITY_ABSENT (B3 passes but fails to beat band_control)",
+    "INDETERMINATE__CI_STRADDLES_MDE (confirmatory CI straddles MDE 0.05)"
+  ],
+  "nonclaims": [
+    "universal cross-domain transfer law",
+    "frontier LLM structural extraction",
+    "independent review (same-context analysis over third-party labels)",
+    "scientific authority"
+  ]
+}
