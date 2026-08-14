@@ -1,0 +1,75 @@
+name: p3-independent-oracle-current-main-integration
+
+on:
+  push:
+    branches:
+      - automation/p3-independent-oracle-current-main-v2-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  current-main-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify exact audited source blobs and receipt
+        run: |
+          test "$(git hash-object .github/workflows/p3-independent-oracle-action.yml)" = d26b1175d23d21c85dc46edb54fade0caf23dec2
+          test "$(git hash-object experiments/paper3/independent_action_oracle_v1.py)" = 2945d70c855cc11bd1e9644b5b28bc137bcff76a
+          test "$(git hash-object experiments/paper3/run_independent_oracle_action_v1.py)" = 41caed06d6e8f307027a72f602ba8ba1d7802fdf
+          test "$(git hash-object research/paper3_independent_oracle_action_v1/PROTOCOL.json)" = e48284664e26c37d50e2671162ecd58db3398eb1
+          test "$(git hash-object research/paper3_independent_oracle_action_v1/FINAL_RECEIPT.json)" = 84eeeb2bba67e19aaa3e5028be45ebfafda23bf5
+      - name: Preserve historical candidate and narrowing lineage
+        run: |
+          git diff --exit-code 8fa768f62444cca5fec99cf0673dc16d57b55722 -- \
+            research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json \
+            research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json \
+            experiments/orion_closure/run_p3_structured_experience_action.py
+      - name: Re-execute frozen independent-oracle gate on current composition
+        run: |
+          rm -rf /tmp/p3-independent-oracle-current-main
+          python experiments/paper3/run_independent_oracle_action_v1.py \
+            --protocol research/paper3_independent_oracle_action_v1/PROTOCOL.json \
+            --outdir /tmp/p3-independent-oracle-current-main
+      - name: Enforce terminal and claim frontier
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('/tmp/p3-independent-oracle-current-main/FINAL_RECEIPT.json').read_text())
+          archived = json.loads(Path('research/paper3_independent_oracle_action_v1/FINAL_RECEIPT.json').read_text())
+          frontier = json.loads(Path('research/orion_claim_frontier_v1/CLAIM_FRONTIER.json').read_text())
+          transport = json.loads(Path('research/paper3_independent_oracle_action_v1/INTEGRATION_TRANSPORT.json').read_text())
+          assert receipt['all_gates_pass'] is True
+          assert receipt['terminal'] == archived['terminal'] == 'PROMOTE_CONDITIONALLY_STRUCTURED_EXPERIENCE_ACTION_CONFORMANCE_INDEPENDENT_ORACLE_V1'
+          assert receipt['candidate_metrics']['exact_action_accuracy'] == 1.0
+          assert receipt['candidate_metrics']['unsafe_apply_rate'] == 0.0
+          assert receipt['candidate_metrics']['cannot_check_recall'] == 1.0
+          assert receipt['candidate_metrics']['legitimate_apply_recall'] == 1.0
+          assert receipt['composite_simple_parent_information_ceiling'] == archived['fresh_result']['composite_simple_parent_information_ceiling']
+          assert receipt['grants_scientific_authority'] is False
+          assert receipt['grants_model_level_efficacy'] is False
+          p3 = frontier['papers']['P3']
+          assert p3['next_target'] == 'FRESH_MODEL_INTERFACE_QUALIFICATION_THEN_RAW_TRAJECTORY_CAUSAL_LIFT'
+          assert frontier['grants_scientific_authority'] is False
+          assert transport['grants_scientific_authority'] is False
+          print('P3 current-main independent-oracle integration: PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p3-independent-oracle-current-main-v2
+          path: /tmp/p3-independent-oracle-current-main/
+          if-no-files-found: error
