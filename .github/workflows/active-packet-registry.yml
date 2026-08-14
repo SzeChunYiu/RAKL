@@ -19,6 +19,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
+      - name: Fetch live target branch for drift comparison
+        run: git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -29,7 +32,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e '.[test]'
 
-      - name: Fail closed on post-registry knowledge-basis drift
+      - name: Fail closed on candidate or live-target knowledge-basis drift
+        env:
+          ACTIVE_PACKET_REGISTRY_TARGET_REF: origin/main
         run: python scripts/active_packet_registry_drift.py
 
       - name: Validate frozen active set
