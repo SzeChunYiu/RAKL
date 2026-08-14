@@ -44,7 +44,7 @@ def test_train_selection_and_assurance_are_case_and_prompt_disjoint():
     assurance_prompts = {x.prompt for rows in assurance.values() for x in rows}
     assert not train_prompts & selection_prompts
     assert not train_prompts & assurance_prompts
-    assert not selection_prompts & assure_prompts
+    assert not selection_prompts & assurance_prompts
 
 
 def test_static_arm_is_exact_equal_structural_mix():
