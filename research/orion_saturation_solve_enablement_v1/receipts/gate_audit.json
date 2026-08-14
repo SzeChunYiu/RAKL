@@ -1,0 +1,44 @@
+{
+  "gate_id": "LEAN-SOLVE-GATE-V1",
+  "baseline_pass": true,
+  "verdict": "FALSIFIABLE",
+  "sensitive_probes": [
+    "corrupt_premises",
+    "drop_premises",
+    "false_goal"
+  ],
+  "supports_confirmatory_use": true,
+  "reasons": [],
+  "probes": [
+    {
+      "probe_id": "corrupt_premises",
+      "outcome": "SENSITIVE",
+      "trials": 2,
+      "flips": 2,
+      "detail": "verdict moved in 2/2 trials"
+    },
+    {
+      "probe_id": "drop_premises",
+      "outcome": "SENSITIVE",
+      "trials": 2,
+      "flips": 2,
+      "detail": "verdict moved in 2/2 trials"
+    },
+    {
+      "probe_id": "false_goal",
+      "outcome": "SENSITIVE",
+      "trials": 2,
+      "flips": 2,
+      "detail": "verdict moved in 2/2 trials"
+    },
+    {
+      "probe_id": "shuffle_premises",
+      "outcome": "INSENSITIVE",
+      "trials": 2,
+      "flips": 0,
+      "detail": "verdict unchanged in all 2 trials \u2014 the gate does not depend on what 'shuffle_premises' perturbs"
+    }
+  ],
+  "control_asserted_first": true,
+  "n_evidence": 40
+}

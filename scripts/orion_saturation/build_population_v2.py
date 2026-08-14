@@ -54,6 +54,12 @@ def main() -> None:
     for a in ("raw", "corpus", "mathlib", "work", "out"):
         ap.add_argument(f"--{a}", required=True)
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument(
+        "--stride", type=int, default=1,
+        help="Deterministic subsample: keep every Nth candidate after sorting by "
+             "name. Sorting first makes the choice independent of extraction order, "
+             "and the stride is fixed before any outcome is seen.",
+    )
     args = ap.parse_args()
 
     corpus_names = {json.loads(l)["name"]
@@ -69,7 +75,10 @@ def main() -> None:
         if not (MIN_GOLD <= len(gold) <= MAX_GOLD):
             continue
         cands.append({"name": r["name"], "module": r["module"], "stmt": stmt, "gold": gold})
-    print(f"raw={len(raw)} cheap={len(cands)}", flush=True)
+    cands.sort(key=lambda c: c["name"])
+    if args.stride > 1:
+        cands = cands[:: args.stride]
+    print(f"raw={len(raw)} cheap={len(cands)} stride={args.stride}", flush=True)
 
     ids = {c["name"]: f"T{i}" for i, c in enumerate(cands)}
     mathlib, work = Path(args.mathlib), Path(args.work)
