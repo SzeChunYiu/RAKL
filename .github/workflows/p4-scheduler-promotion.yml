@@ -49,6 +49,6 @@ jobs:
       - name: Dry-run frozen Phase-2 data and leakage manifest
         run: |
           rm -rf /tmp/p4-phase2-dry
-          python experiments/training_ladder/phase2_adaptive_v1.py --outdir /tmp/p4-phase2-dry --dry-run
+          python -m experiments.training_ladder.phase2_adaptive_v1 --outdir /tmp/p4-phase2-dry --dry-run
           test -s /tmp/p4-phase2-dry/DATA_MANIFEST.json
           test ! -e /tmp/p4-phase2-dry/FINAL_RECEIPT.json
