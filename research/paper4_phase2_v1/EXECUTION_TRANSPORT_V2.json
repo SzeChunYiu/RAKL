@@ -1,0 +1,93 @@
+{
+  "schema_version": "rakl-paper4-phase2-execution-transport-v2",
+  "date": "2026-08-14",
+  "owner_issue": 592,
+  "phase2_issue": 466,
+  "paper4_gate_issue": 462,
+  "base_main_sha": "9f2c4327f9672cc1780290ddc4d2333b00b2e1ec",
+  "outcomes_accessed_before_v2_freeze": false,
+  "evidence_for_no_outcome": "research/paper4_phase2_v1 contains no FINAL_RECEIPT.json at freeze; repository search found no admitted ADAPTIVE_RESIDUAL_SUPPORTED outcome bundle",
+  "predecessor_transport": {
+    "submit": "experiments/training_ladder/submit_phase2_v1_lunarc.sh",
+    "sbatch": "experiments/training_ladder/run_phase2_v1_lunarc.sbatch",
+    "retained_value": "exact staged 7B offline-cache route on gpua100 and repository-head submission receipt",
+    "defects": [
+      "submission binds HEAD but not a clean tracked checkout or frozen scientific blob set",
+      "compute wrapper may create a new venv and install floating torch/transformers/huggingface_hub/peft/accelerate versions before the first outcome-bearing run",
+      "a valid scientific negative can be converted into scheduler failure by set -e when the parent runner exits nonzero after writing a receipt",
+      "the parent raw receipt sets paper4_standalone_authorized true after a positive single-model Phase-2 terminal even though issue #462 still requires fresh-family and multi-checkpoint/model-regime generalization"
+    ]
+  },
+  "scientific_settings_changed_from_protocol_v3": false,
+  "frozen_scientific_blobs": {
+    "research/paper4_phase2_v1/PROTOCOL_V3.json": "0ca5aa15dc078ec92e82ab4aff94e5ffcf16b0af",
+    "research/paper4_phase2_v1/INFERENCE_PLAN.json": "2d31897ea6441d280519276e0f1fb3323bf03f99",
+    "research/paper4_phase1_results_v2/7b/run_manifest_v2.json": "45506cd26a84b3302ff548c8be8643894f072157",
+    "experiments/training_ladder/phase2_adaptive_v1.py": "5ade3b9fea3fc029870782d1157a867bc4feb700",
+    "experiments/training_ladder/generator_v2.py": "ed6bf5d72896b5524e5f64d5fccf29acc26c9507"
+  },
+  "fixed_scientific_subject": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "arms": ["A_UNIFORM_RANDOM", "B_SEMANTIC_DIVERSITY", "C_STRONGEST_MODEL_AWARE_PARENT", "D_STATIC_RAKL_STRUCTURAL", "E_ADAPTIVE_RAKL_STRUCTURAL"],
+    "final_examples_per_arm": 48,
+    "rounds": 6,
+    "epochs": 12,
+    "learning_rate": 0.0003,
+    "primary_estimand": "E-D fresh balanced accuracy across the six equal fresh-assurance strata",
+    "mde": 0.05,
+    "parent_noninferiority_E_minus_C": -0.02,
+    "hard_harm_boundary_E_minus_D": -0.05,
+    "runtime_partition": "gpua100",
+    "gpu": "a100:1",
+    "wall_time_hours": 12,
+    "model_or_scientific_setting_substitution_allowed": false
+  },
+  "execution_identity_hardening": {
+    "explicit_subject_sha_required": true,
+    "detached_checkout_required": true,
+    "tracked_checkout_must_be_clean": true,
+    "all_frozen_scientific_blobs_must_match_before_sbatch_and_again_on_compute_node": true,
+    "dry_run_data_manifest_must_reproduce_before_sbatch": true,
+    "preexisting_venv_required": true,
+    "compute_node_pip_install_forbidden": true,
+    "environment_fingerprint_frozen_at_submission_before_model_outputs": true,
+    "same_environment_fingerprint_must_reproduce_on_compute_node": true,
+    "environment_change_after_first_model_output_forbidden": true
+  },
+  "scientific_terminal_scheduler_separation": {
+    "principle": "A valid registered FINAL_RECEIPT is a scientific terminal even when the parent runner returns a nonzero code for RESOURCE_BLOCKED or an early adaptive-harm terminal. The SLURM wrapper validates code/terminal consistency and then exits successfully so harvest can interpret the receipt.",
+    "parent_runner_codes": {
+      "0": "normal analyzed terminal including positive/null/parent-win/underpowered and analysis-detected harm",
+      "1": "early adaptive allocation harm/incomplete terminal only",
+      "2": "RESOURCE_BLOCKED"
+    }
+  },
+  "claim_boundary_repair": {
+    "parent_defect": "phase2_adaptive_v1 writes paper4_standalone_authorized=true for ADAPTIVE_RESIDUAL_SUPPORTED or ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST",
+    "v2_rule": "The outcome-exposing v2 wrapper runs the unchanged parent experiment in a private temporary directory, preserves its terminal/metrics, and exposes a final receipt with paper4_standalone_authorized=false plus phase2_policy_result_positive. A positive Phase-2 result remains only one prerequisite for issue #462.",
+    "required_later_gates": ["fresh structural-family generalization", "more than one model/checkpoint regime", "anti-salami/distinct-content boundary under issue #462"],
+    "scientific_metrics_or_terminal_changed": false
+  },
+  "allowed_phase2_terminals": [
+    "ADAPTIVE_RESIDUAL_SUPPORTED",
+    "ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST",
+    "PARENT_MATCHES_OR_BEATS",
+    "STATIC_EQUALS_ADAPTIVE",
+    "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION",
+    "UNDERPOWERED",
+    "RESOURCE_BLOCKED",
+    "INVALID_CONTAMINATED"
+  ],
+  "allowed_terminal_for_this_hardening": "PROMOTE_CONDITIONALLY_PHASE2_EXECUTION_AND_CLAIM_BOUNDARY_HARDENING",
+  "forbidden_claims": [
+    "Adaptive beats Static",
+    "Adaptive beats the strongest model-aware parent",
+    "Paper IV standalone efficacy is authorized",
+    "fresh-family or multi-checkpoint generalization has been demonstrated",
+    "scientific authority is granted"
+  ],
+  "grants_scientific_authority": false,
+  "grants_adaptive_default_authority": false,
+  "grants_paper4_standalone_authorization": false
+}
