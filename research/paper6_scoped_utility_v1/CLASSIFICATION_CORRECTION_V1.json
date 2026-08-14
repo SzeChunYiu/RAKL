@@ -1,0 +1,60 @@
+{
+  "schema_version": "paper6-classification-correction-v1",
+  "correction_id": "SRSU-P6-CLASSIFICATION-CORRECTION-V1",
+  "applies_to": "SRSU-P6-GOVERNED-ACCEPTANCE-V1 / V1.1",
+  "created_utc": "2026-08-14",
+  "direction": "SELF_PENALIZING",
+  "frozen_prereg_edited": false,
+
+  "why_the_frozen_prereg_is_not_edited": "PREREGISTRATION_V1.json is left byte-identical. Its claim_class_split is wrong, and the record of it being wrong is the point. A successor is a new versioned object; silently editing the freeze would destroy the evidence that the misclassification happened.",
+
+  "correction": {
+    "statement": "Two coordinates that PREREGISTRATION_V1.json placed in MEASURED_evidence are in fact determined by construction and belong in CONFORMANCE_not_evidence.",
+    "reclassified": [
+      "arm_A_vs_arm_D_difference",
+      "arm_D_vs_arm_B_difference_at_matched_throughput"
+    ],
+    "direction_note": "This moves coordinates OUT of the supporting class and RETRACTS the packet's original headline finding. It is a self-penalizing correction, not a post-result threshold rescue, whose defining feature is moving evidence IN to make a claim pass."
+  },
+
+  "the_defect": {
+    "original_headline": "Finding 1 - 'executing the gate contract cuts false promotion 3.31x at matched throughput (0.089 vs 0.294)'.",
+    "why_it_fails": "Arm D reads the identical gate observations in which the defect is planted as an explicit FAIL. D therefore admits an unsound candidate exactly when the defect gate's evidence is unavailable. Arm B reads a scalar drawn independently of soundness, so it admits unsound candidates at the base rate. Neither number measures a mechanism; both are closed-form consequences of the defect-injection scheme and the 0.5 base rate.",
+    "closed_form_check": {
+      "predicted_D_false_promotion": "0.5 * mean_gate_unavailability",
+      "predicted_B_false_promotion": "0.5 * acceptance_rate",
+      "n_repro_0": {"D_observed": 0.089, "D_predicted": 0.085, "B_observed": 0.294, "B_predicted": 0.293},
+      "n_repro_6": {"D_observed": 0.202, "D_predicted": 0.198, "B_observed": 0.363, "B_predicted": 0.357},
+      "n_repro_12": {"D_observed": 0.321, "D_predicted": 0.310, "B_observed": 0.397, "B_predicted": 0.405},
+      "conclusion": "Both arms are predicted to within sampling noise across the entire sweep by expressions containing no mechanism term. The 3.31x ratio is jointly determined by the injection scheme and the base rate."
+    },
+    "same_error_one_step_removed": "This is the tautology the packet correctly quarantined for arm A. Arm A's zero false-promotion was labelled CONFORMANCE because the gates are defined to catch these defects; arm D reads the same gate definitions, so its contrast inherits the same status."
+  },
+
+  "what_survives": {
+    "surviving_headline": [
+      "The fail-closed operating-regime constraint (former Finding 2)",
+      "The evidence-availability requirement (former Finding 3)"
+    ],
+    "claim": "Under externally anchored evidence-availability rates, fail-closed governed acceptance carries a throughput tax of 0.897 to 1.000; with a 12-gate contract, per-gate availability must reach 0.9816 for a 20% tax and 0.9913 for a 10% tax.",
+    "epistemic_character": "DERIVED_OPERATING_REGIME_CONSTRAINT, not an empirical estimate. tax = 1 - product(p_i) is analytic; the simulation instantiates and confirms it. Stated as a derivation rather than a measurement.",
+    "why_it_is_not_circular": "It composes ORION's actual fail-closed rule with an EXTERNAL, non-authored input: the verification-gap survey rates (arXiv:2608.05179, PRIMARY_ABSTRACT). Neither factor was chosen to produce the result, and the contract composition was swept 0..12 rather than fixed at a favourable point.",
+    "what_is_authored": "The gate count (12) and the two-class availability structure. The requirement therefore scales with contract size and is not a universal constant.",
+    "rests_on": ["arm A", "the external anchor"],
+    "does_not_rest_on": ["arm B", "arm D"]
+  },
+
+  "chronology_benefit": "Retracting Finding 1 removes the only surviving claim that rested on arm B, which was the post-result repaired control. Every remaining claim rests on arm A and the external anchor alone, both of which retain their pre-result freeze. The packet's chronology position is therefore STRONGER after this correction than before it.",
+
+  "falsifier_status_update": {
+    "F1": "survives - fail-closed tax is 0.897-1.000, not ~0",
+    "F2": "survives, but RECLASSIFIED - the A-vs-D contrast it tests is conformance, so its survival is not evidence",
+    "F3": "survives, but RECLASSIFIED - conformance",
+    "F4": "survives - governance cost ~20x wall time, a genuine measurement",
+    "F5": "survives, but RECLASSIFIED - the contrast it tests is conformance"
+  },
+
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permits_scalar_ranking": false
+}

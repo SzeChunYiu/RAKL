@@ -1,0 +1,131 @@
+{
+  "basis": {
+    "basis_id": "ORION-EXT-AGENT-LANDSCAPE-2026-08",
+    "scope": "External autonomous scientific-research agents and their evaluation suites, as required by issue #588 Phase 0 and Phase 1. Bounded to systems and benchmarks with a retrievable primary anchor (arXiv entry, proceedings entry, or public repository) reachable from open web search as of the freshness cutoff.",
+    "identity_policy_id": "IDP-SYSTEM-OR-SUITE-BY-PRIMARY-ANCHOR-V1",
+    "route_family_version": "RF-EXT-AGENT-V1",
+    "novelty_policy_id": "NOV-NEW-SYSTEM-SUITE-MECHANIC-OR-FAILURE-MODE-V1",
+    "evidence_policy_id": "EVP-PRIMARY-ANCHOR-REQUIRED-SNIPPET-DOWNGRADED-V1"
+  },
+  "required_consecutive_flat_rounds": 2,
+  "required_freshness_cutoff": "2026-08-01",
+  "rounds": [
+    {
+      "round_id": "R1-BENCHMARK-SUITE-ROUTE",
+      "route_family": "benchmark-suite enumeration",
+      "audit_performed": false,
+      "freshness_cutoff": "2026-08-14",
+      "growth": {
+        "mechanisms_added": 6,
+        "novelty_boundary_updates": 1,
+        "discovery_route_updates": 1
+      },
+      "bounded_discovery_closed": false,
+      "route_coverage_stable": false,
+      "omission_audit_passed": false,
+      "nearest_work_audit_passed": false,
+      "blocking_fibers": [
+        "FIB-OPERATOR-ORDER-AUDIT-NOT-PERFORMED",
+        "FIB-PRIMARY-FULL-TEXT-NOT-READ"
+      ],
+      "retained_semantic_ids": [
+        "BM-AUTORESEARCHBENCH",
+        "BM-DEEPRESEARCH_BENCH",
+        "BM-ASTABENCH",
+        "BM-SCIENCEAGENTBENCH",
+        "BM-PHYSCIBENCH",
+        "BM-RESEARCHCLAWBENCH"
+      ],
+      "note": "Confirmed five of the six anchors named in issue #588 and discovered ResearchClawBench, which the issue did not list. Growth is strongly non-flat."
+    },
+    {
+      "round_id": "R2-SELF-IMPROVING-AND-SURVEY-ROUTE",
+      "route_family": "class-D self-improving systems, surveys, reproducibility studies",
+      "audit_performed": false,
+      "freshness_cutoff": "2026-08-14",
+      "growth": {
+        "mechanisms_added": 8,
+        "contradictions_or_counterexamples_added": 1,
+        "negative_results_added": 2,
+        "discovery_route_updates": 1
+      },
+      "bounded_discovery_closed": false,
+      "route_coverage_stable": false,
+      "omission_audit_passed": false,
+      "nearest_work_audit_passed": false,
+      "blocking_fibers": [
+        "FIB-OPERATOR-ORDER-AUDIT-NOT-PERFORMED",
+        "FIB-PRIMARY-FULL-TEXT-NOT-READ"
+      ],
+      "retained_semantic_ids": [
+        "SYS-MIMOSA",
+        "SYS-AI_SCIENTIST_V2",
+        "SYS-INTERNAGENT",
+        "EVID-VERIFICATION-GAP-SURVEY",
+        "EVID-OPEN-ENDED-RESEARCH-CASE-STUDIES",
+        "EVID-EVOSCIENTIST",
+        "EVID-AUTOSCIENTISTS",
+        "EVID-AGON"
+      ],
+      "note": "Located the verification-gap survey and the NeurIPS-2026 shadow-evaluation case study that issue #588 gestured at without identifiers. Both supply negative evidence and named failure modes. Growth non-flat."
+    },
+    {
+      "round_id": "R3-RETRIEVAL-COST-AND-ADVERSARIAL-ROUTE",
+      "route_family": "retrieval/deep-research comparators, cost-controlled evaluation infrastructure, evaluator-validity critique",
+      "audit_performed": false,
+      "freshness_cutoff": "2026-08-14",
+      "growth": {
+        "mechanisms_added": 4,
+        "assumption_scope_updates": 1,
+        "discovery_route_updates": 1
+      },
+      "bounded_discovery_closed": false,
+      "route_coverage_stable": false,
+      "omission_audit_passed": false,
+      "nearest_work_audit_passed": false,
+      "blocking_fibers": [
+        "FIB-OPERATOR-ORDER-AUDIT-NOT-PERFORMED",
+        "FIB-PRIMARY-FULL-TEXT-NOT-READ"
+      ],
+      "retained_semantic_ids": [
+        "SYS-KARPATHY_AUTORESEARCH",
+        "BM-HAL",
+        "BM-AARRI",
+        "EVID-AGENTATLAS"
+      ],
+      "note": "Found the cost-controlled harness infrastructure (HAL) that the issue's Phase 4 matched-arm design needs but did not name. Growth non-flat; the landscape is still producing new instruments on every route."
+    }
+  ],
+  "open_residuals": [
+    {
+      "residual_id": "RES-EXT-001",
+      "type": "evidence-grade gap",
+      "statement": "Only three sources were read at primary-abstract depth (ResearchClawBench, the verification-gap survey, the open-ended-research case studies). Every other registry entry rests on search snippets, so most architecture fields are recorded CANNOT_CHECK.",
+      "closure_action": "Read primary full text for each registered system and upgrade evidence_grade; architecture fields may only be filled from primary sources."
+    },
+    {
+      "residual_id": "RES-EXT-002",
+      "type": "saturation gap",
+      "statement": "Three consecutive rounds all produced substantive growth. No flat round has been observed, so bounded saturation is not established and the registry must not be cited as a complete landscape.",
+      "closure_action": "Continue route-family rounds until two consecutive substantively flat rounds occur under the frozen basis."
+    },
+    {
+      "residual_id": "RES-EXT-003",
+      "type": "audit gap",
+      "statement": "The operator-order perturbation audit, omission audit and nearest-work audit required by the saturation schema have not been performed for any round.",
+      "closure_action": "Run expand-then-consolidate versus consolidate-then-expand on the registry build and record the substantive difference vector."
+    },
+    {
+      "residual_id": "RES-EXT-004",
+      "type": "chronology gap",
+      "statement": "Two anchors carry a flagged disagreement between the arXiv identifier period and the reported submission date, and issue #588 dates ScienceAgentBench to Apr 2026 while its primary anchor is arXiv 2410.05080 (ICLR'25).",
+      "closure_action": "Resolve each flagged anchor against the publisher record before the version freeze is used for any Tier 1 comparison."
+    },
+    {
+      "residual_id": "RES-EXT-005",
+      "type": "same-substrate confound",
+      "statement": "ResearchClawBench's strongest reported agent is Claude Code, which is the harness ORION itself runs on. Any ORION result on that suite is a same-substrate comparison and cannot be reported as an independent architecture arm.",
+      "closure_action": "Record substrate identity on every evaluation receipt and classify such comparisons SYSTEM_LEVEL_ONLY."
+    }
+  ]
+}
