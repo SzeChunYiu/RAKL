@@ -1,0 +1,96 @@
+{
+  "schema_version": "paper5-vtg-reconciliation-v1",
+  "packet_id": "P5-VTG-RECONCILIATION-V1",
+  "paper": "V",
+  "issue_lineage": [528, 530],
+  "created_utc": "2026-08-14",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "creates_new_freeze": false,
+  "purpose": "Paper V already carries three VTG artifacts that were never related to one another. This packet states the relation and records two defects. It deliberately does NOT add a fourth freeze.",
+
+  "artifacts": [
+    {
+      "ref": "A1",
+      "path": "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex",
+      "kind": "MANUSCRIPT_FORMULATION",
+      "contains": "Theory of the operational map, path quotients, navigation quotients, cost algebra, certification classes, the descent-completeness proposition, and a prose 'Phase-0/1 falsification experiment'."
+    },
+    {
+      "ref": "A2",
+      "path": "research/deep_hardening_v1/VTG_PHASE0_1_PREREGISTRATION.md",
+      "kind": "PREREGISTRATION",
+      "status": "FROZEN_PROSE",
+      "question": "Does verifier-defined mathematical reachability admit a nontrivially useful local or bounded-local navigation geometry on held-out theorem families after all construction and verification cost is charged?",
+      "solver_class": "NO_LLM_SOLVING_IN_PHASE_0",
+      "primary_surface": "N(k,B)",
+      "registered_terminals": [
+        "NO_USEFUL_LOCAL_GEOMETRY_IN_REGISTERED_SCOPE",
+        "LOCALLY_INFORMATIVE_NOT_GREEDILY_NAVIGABLE",
+        "ATLAS_NAVIGABILITY_SUPPORTED_GLOBAL_GEOMETRY_UNSUPPORTED",
+        "USEFUL_LOCAL_GEOMETRY_SUPPORTED_IN_REGISTERED_SCOPE"
+      ]
+    },
+    {
+      "ref": "A3",
+      "path": "research/p5_p6_saturation_v1/packets/vtg_lean_geometry_v2.json",
+      "packet_id": "MRP-P5-VTG-LEAN-V2",
+      "kind": "MECHANIC_RESEARCH_PACKET",
+      "status": "FROZEN_MACHINE_READABLE",
+      "packet_content_sha256": "a7035017128ec0af8956a4df9e3daa19745d4a33fa4d40de5b9fe453ddb53911",
+      "question": "Incremental verified-search value of an explicit reachability geometry AFTER separating proof search, premise retrieval, learned proof progress, and recursive proof-plan/harness effects.",
+      "solver_class": "LLM_TACTIC_GENERATOR_IN_THE_LOOP",
+      "strongest_parents": ["scaled_best_first_BFS_Prover", "HTPS_AND_OR_search", "LeanProgress_value_search", "LeanSearch_v2_fixed_prover", "recursive_plan_harness"],
+      "applicability_gate_state": "UNASSESSED",
+      "mechanism_gate_state": "UNASSESSED"
+    }
+  ],
+
+  "relation": {
+    "A1_to_A2": "SAME_EXPERIMENT. A1's 'Phase-0/1 falsification experiment' subsection and A2 describe one object: same root question, same non-LLM solver constraint, same evaluator-only gold universe, same N(k,B) surface. A2 is the canonical registered form; A1 is its manuscript projection.",
+    "A2_to_A3": "DIFFERENT_SCOPE_AND_ORDERED. Not competing freezes.",
+    "ordering": "A2 is UPSTREAM of A3.",
+    "ordering_justification": "A2 asks whether a useful local navigation geometry EXISTS at all, using no LLM solver. A3 asks what an explicit geometry adds INCREMENTALLY inside an LLM-driven prover stack once retrieval, learned progress and recursive planning are controlled. A3 therefore presupposes A2's positive: if A2 terminates at NO_USEFUL_LOCAL_GEOMETRY_IN_REGISTERED_SCOPE, A3's incremental-value question has no object to measure. A3's own applicability_gate_state is UNASSESSED, which is consistent with this reading.",
+    "non_overlap_witness": {
+      "solver_class": "A2 forbids an LLM solver; A3's strongest parents are LLM tactic generators (BFS-Prover, HTPS, LeanProgress).",
+      "qoi": "A2 measures a navigability profile N(k,B) componentwise; A3 measures a paired fully-costed incremental benefit over strongest factorized parents.",
+      "benchmark_universe": "A2 uses an evaluator-only gold transition/proof universe with hidden routes; A3 uses VTG-LEAN-FACTORIAL-DEV-V2 / VTG-LEAN-FACTORIAL-FRESH-V2.",
+      "cost_equation": "A3 charges decode_cost and model/tactic_generation; A2 has no model term."
+    },
+    "status_before_this_packet": "The ordering was stated in NEITHER artifact. A1 line 171 says only that dynamics work follows 'a positive Phase-1 signal'; nothing connects A3 to that gate."
+  },
+
+  "defects_found": [
+    {
+      "defect_id": "P5-VTG-D1",
+      "severity": "REGISTRATION_GAP",
+      "statement": "The manuscript offers an outcome branch that is not a registered terminal. A1 line 171 lists NO_SAFE_NAVIGATION_QUOTIENT_AT_TESTED_SCALE among the allowed narrower outcomes, but A2's terminal list does not contain it, and it appears nowhere else in the repository.",
+      "search_scope_justifying_the_absence_claim": "grep -rn over the whole repository excluding .git; the only hits are the manuscript file itself and identical copies of that file inside .claude/worktrees. The other three terminals resolve to research/deep_hardening_v1/ artifacts.",
+      "consequence": "A Phase-1 run whose honest outcome is 'no safe navigation quotient at the tested scale' has no registered terminal to land in. Under RAKL's no-post-result-threshold-rescue rule, adding the terminal after seeing such a result would be a post-hoc registration.",
+      "repair": "Either register the terminal in A2 BEFORE any Phase-1 execution, or remove it from A1. Not repaired here: A2 is a frozen preregistration and this packet holds no authority to amend it.",
+      "state": "OPEN"
+    },
+    {
+      "defect_id": "P5-VTG-D2",
+      "severity": "SUBSTRATE_BLOCK",
+      "statement": "The registered Phase-0/1 experiment cannot be executed on the available substrate. A2 requires a frozen bounded Lean environment with an evaluator-only complete materialized transition/proof universe and kernel replay receipts.",
+      "evidence": "laptop billy (the only sanctioned compute host) has no Lean toolchain: `which lake lean elan` returns nothing and ~/.elan is absent, checked 2026-08-14.",
+      "state": "BLOCKED",
+      "verdict": "CANNOT_CHECK",
+      "prerequisites_to_unblock": [
+        "elan + Lean 4 + a pinned mathlib revision on laptop billy",
+        "a bounded theorem universe with theorem-family-disjoint C_train / C_dev / C_fresh splits",
+        "evaluator-only gold transition/proof extraction with hidden-route and hidden-intermediate-label removal",
+        "kernel replay receipts per materialized transition",
+        "a leakage audit harness enforcing A2's construction/selection prohibitions"
+      ],
+      "explicitly_not_done": "No synthetic substitute was run and reported as a Phase-0/1 result. On a world whose statistics are authored in-house, a POSITIVE navigability finding would be near-worthless, and presenting one as evidence for A2's question would be substrate substitution. A negative finding on such a world could carry a structural constraint, but that is a different experiment and would need its own freeze."
+    }
+  ],
+
+  "what_must_not_be_promoted": [
+    "This packet is a relation record. It creates no freeze, resolves no terminal, and grants no authority.",
+    "The A2-upstream-of-A3 ordering is a reading of two existing frozen artifacts, not an amendment to either.",
+    "Nothing here is evidence that a useful local navigation geometry does or does not exist."
+  ]
+}
