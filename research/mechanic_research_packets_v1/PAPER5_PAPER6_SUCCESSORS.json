@@ -1,0 +1,1484 @@
+{
+  "schema_version": "p5-p6-mechanic-research-packet-set-v1",
+  "scientific_parent_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+  "packet_contract_merge_sha": "875168cc450a9f10a40be1e899c368f85c4be388",
+  "campaign_issue": "#546",
+  "campaign_freeze_comment_id": "5289648257",
+  "required_variant_ids": [
+    "vtg_lean_geometry_v1",
+    "field_cheapest_useful_selector_v1",
+    "diagnosis_discriminating_intervention_v2",
+    "navigation_lazy_parallel_repair_v2",
+    "path_equivalence_local_certification_v2",
+    "operational_map_belief_v1",
+    "path_cost_algebra_v1",
+    "trajectory_to_certificate_assembly_v1",
+    "navigation_quotient_validation_v1",
+    "verified_solver_compilation_v1",
+    "verification_scheduler_v1",
+    "capstone_integrated_solver_v1"
+  ],
+  "packets": [
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P5-VTG-LEAN-V1",
+      "mechanic_id": "verified_transformation_geometry",
+      "variant_id": "vtg_lean_geometry_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Partial verifier-legal Lean proof-state graph plus a fallible goal-relative reachability representation.",
+      "qoi": "Paired fully-costed reduction in verified proof search versus the strongest fair parent, with theorem success non-inferior.",
+      "scope": [
+        "Lean 4 theorem proving",
+        "frozen Lean/mathlib subject",
+        "matched tactic generator/model/verifier/resources"
+      ],
+      "assumptions": [
+        "kernel acceptance is the legality oracle",
+        "partial operational-map absence is not impossibility",
+        "geometry is routing only"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "scaled_best_first_proof_tree",
+          "implementation_refs": [
+            "primary:arXiv:2502.03438",
+            "adapter:future/vtg_bfs_prover_v1"
+          ],
+          "cost_model_id": "matched-proof-search-v1",
+          "cost_equation": "model+tactic_generation+Lean_verification+expanded_states",
+          "justification": "Modern scalable best-first proof-tree search is a serious simple search parent.",
+          "evidence_pointers": [
+            "issue:#528:comment:5289682990"
+          ]
+        },
+        {
+          "parent_id": "hypertree_proof_search",
+          "implementation_refs": [
+            "primary:arXiv:2205.11491",
+            "adapter:future/vtg_htps_v1"
+          ],
+          "cost_model_id": "matched-proof-search-v1",
+          "cost_equation": "model+tactic_generation+Lean_verification+tree_search",
+          "justification": "AND/OR proof-tree search is a stronger structured parent for theorem proving.",
+          "evidence_pointers": [
+            "issue:#528:comment:5289682990"
+          ]
+        },
+        {
+          "parent_id": "white_box_lean_state_search",
+          "implementation_refs": [
+            "primary:arXiv:2507.14722",
+            "adapter:future/vtg_leantree_v1"
+          ],
+          "cost_model_id": "matched-proof-search-v1",
+          "cost_equation": "state_factorization+model+tactic_generation+Lean_verification",
+          "justification": "White-box/factorized Lean search controls for gains caused by state decomposition.",
+          "evidence_pointers": [
+            "issue:#528:comment:5289682990"
+          ]
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "HTPS AND/OR proof search",
+        "BFS-Prover scalable best-first",
+        "LeanTree factorized state search",
+        "AlphaProof-style policy/value formal search",
+        "equality saturation on equational subfamilies"
+      ],
+      "oracle_or_lower_bound": "Kernel legality is exact; on materialized finite proof graphs exact shortest verified cost-to-go supplies an oracle geometry and lower-bound diagnostic, never a theorem-impossibility oracle.",
+      "minimal_counterexamples": [
+        "locally aligned field greedily enters a dead end",
+        "quotient merges states with different proof obligations",
+        "short geometry path fails to decode to a kernel-valid proof",
+        "geometry construction exceeds saved search",
+        "plain best-first wins despite worse local geometry",
+        "stale geometry after library/state change",
+        "UNKNOWN edge treated as BLOCKED"
+      ],
+      "development_benchmark_id": "VTG-LEAN-DEV-V1",
+      "development_case_ids": [
+        "vtg-dev-family-a",
+        "vtg-dev-family-b",
+        "vtg-dev-hostile-attractors"
+      ],
+      "fresh_assurance_benchmark_id": "VTG-LEAN-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "vtg-fresh-family-c",
+        "vtg-fresh-family-d",
+        "vtg-fresh-out-of-family-e"
+      ],
+      "selection_case_ids": [
+        "vtg-dev-family-a",
+        "vtg-dev-family-b"
+      ],
+      "falsifier": "Strongest fair parent matches or beats VTG on fully-costed verified root outcome, or any kernel/quotient/portal/decode validity gate regresses.",
+      "same_system_ablation": "Same theorem/model/tactic/verifier/resource envelope with the geometry/routing coordinate disabled.",
+      "hard_gate_obligations": [
+        "kernel-valid proof only",
+        "no abstract route mints theorem authority",
+        "quotient/portal preservation clean",
+        "development/fresh family disjointness"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "states_expanded",
+        "kernel_calls",
+        "wall_time",
+        "geometry_build_cost",
+        "decode_cost"
+      ],
+      "total_cost_equation": "candidate_total = model_calls + tactic_generation + geometry_build + geometry_update + search + Lean_kernel_calls + decode + verification",
+      "novelty_residual": "Root-level verified search benefit attributable to reachability geometry beyond strong proof-search parents.",
+      "permitted_publication_claim": "Scoped routing/search-efficiency claim on the frozen Lean benchmark only; no theorem-truth or universal-geometry claim.",
+      "evidence_pointers": [
+        "issue:#528:comment:5289682990",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "9188ebf9610d29f7d46f790f305daf44e26d4fb1cbf31c193608ade0a3149f93",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-FIELD-SELECTOR-V1",
+      "mechanic_id": "fieldability_and_geometry_lifecycle",
+      "variant_id": "field_cheapest_useful_selector_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Frozen portfolio of field constructors plus a proposal-only selector over task, reuse, update and locality regime.",
+      "qoi": "Paired fully-costed search advantage of the selected field policy over the strongest fixed parent with exact solution correctness non-inferior.",
+      "scope": [
+        "finite known-world solver graphs",
+        "registered constructor portfolio",
+        "frozen reuse/update horizons"
+      ],
+      "assumptions": [
+        "all field build/update/extraction costs are charged",
+        "UNKNOWN/off-support regimes fall back",
+        "exact field is an oracle ceiling not presumed winner"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "symdiff_proxy_parent",
+          "implementation_refs": [
+            "src/rakl/field_successor.py",
+            "research/field_construction_successor_v1"
+          ],
+          "cost_model_id": "field-total-cost-v2",
+          "cost_equation": "build+maintenance+q*(extraction+search+verification)",
+          "justification": "Historically strongest cheap field on the deep known-world development regime.",
+          "evidence_pointers": [
+            "issue:#538:comment:5289685443"
+          ]
+        },
+        {
+          "parent_id": "target_aware_pdb",
+          "implementation_refs": [
+            "src/rakl/field_successor.py"
+          ],
+          "cost_model_id": "field-total-cost-v2",
+          "cost_equation": "build+maintenance+q*(extraction+search+verification)",
+          "justification": "Pattern-database abstraction is a cheap structured constructor control.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "no_field_strong_search",
+          "implementation_refs": [
+            "src/rakl/field_successor.py",
+            "src/rakl/navigation_successor.py"
+          ],
+          "cost_model_id": "field-total-cost-v2",
+          "cost_equation": "search+verification",
+          "justification": "Any field policy must beat the strongest direct search when construction does not amortize.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "symmetric-difference proxy field",
+        "pattern database heuristic",
+        "CEGAR abstraction",
+        "exact goal-set cost-to-go oracle",
+        "reuse-aware heuristic selection"
+      ],
+      "oracle_or_lower_bound": "Exact goal-set cost-to-go is the finite-world geometry oracle; useful-field economics require build+maintenance+extraction cost to be below verified search work saved over the registered horizon.",
+      "minimal_counterexamples": [
+        "exact rho=1 field dominated by cheap proxy",
+        "field beats BFS but loses to stronger cheap field",
+        "single query build cost dominates",
+        "high-update cache becomes stale/harmful",
+        "UNKNOWN selector regime must fall back",
+        "proxy misranks hostile goal perturbation"
+      ],
+      "development_benchmark_id": "FIELD-SELECT-DEV-V1",
+      "development_case_ids": [
+        "field-dev-deep",
+        "field-dev-shallow",
+        "field-dev-update-sweep"
+      ],
+      "fresh_assurance_benchmark_id": "FIELD-SELECT-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "field-fresh-topology",
+        "field-fresh-goal",
+        "field-fresh-boundary"
+      ],
+      "selection_case_ids": [
+        "field-dev-deep",
+        "field-dev-update-sweep"
+      ],
+      "falsifier": "Selected policy does not leave a positive fully-costed residual over the strongest fixed parent or violates correctness/staleness gates.",
+      "same_system_ablation": "Frozen strongest fixed constructor and no-field search under the same problem/query/update stream.",
+      "hard_gate_obligations": [
+        "exact solution parity",
+        "stale cache invalidation",
+        "off-support fallback",
+        "no missing cost defaults"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "construction_cost",
+        "maintenance_cost",
+        "extraction_cost",
+        "search_cost",
+        "reuse_count"
+      ],
+      "total_cost_equation": "candidate_total = build + maintenance(updates) + queries*(extraction + search + verification)",
+      "novelty_residual": "Adaptive cheapest-useful constructor selection or lazy construction benefit beyond the strongest fixed cheap field.",
+      "permitted_publication_claim": "Scoped field-selection/search-economics claim only; no claim that exact fields are globally superior.",
+      "evidence_pointers": [
+        "issue:#538:comment:5289685443",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "7fb9c3666cdbc163acaa54c33b5eddf56e9c348e360a65cfe669765919471b46",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-DIAG-INTERVENTION-V2",
+      "mechanic_id": "mechanic_differential_diagnosis",
+      "variant_id": "diagnosis_discriminating_intervention_v2",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Set-valued mechanic-deficiency hypotheses with admissible probe/intervention actions and action-conditioned observation models.",
+      "qoi": "Paired correct bounded repair per total diagnostic+intervention cost versus the strongest active parent, with harmful wrong repair noncompensatory.",
+      "scope": [
+        "known-world injected deficiencies",
+        "frozen intervention library",
+        "unknown-cause cases included"
+      ],
+      "assumptions": [
+        "hidden cause labels never enter observations",
+        "observational equivalence is measured before judging identifiability",
+        "abstention is a valid terminal"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "greedy_information_gain_parent",
+          "implementation_refs": [
+            "research/diagnosis_active_successor_v1",
+            "src/rakl/mechanic_diagnosis.py"
+          ],
+          "cost_model_id": "diagnosis-decision-cost-v2",
+          "cost_equation": "probe_cost+intervention_cost+repair_cost+harm_cost",
+          "justification": "Current leakage-free active sequential information-gain parent.",
+          "evidence_pointers": [
+            "issue:#539:comment:5289688413"
+          ]
+        },
+        {
+          "parent_id": "myopic_value_of_information",
+          "implementation_refs": [
+            "adapter:future/diagnosis_myopic_voi_v1"
+          ],
+          "cost_model_id": "diagnosis-decision-cost-v2",
+          "cost_equation": "probe_cost+intervention_cost+expected_decision_risk",
+          "justification": "Decision-risk reduction is a stronger parent than label-entropy when repairs differ asymmetrically.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "finite_horizon_bayes_oracle",
+          "implementation_refs": [
+            "spec:future/exact_finite_horizon_diagnostic_dp_v1"
+          ],
+          "cost_model_id": "diagnosis-decision-cost-v2",
+          "cost_equation": "exact_policy_compute+probe+intervention+repair+harm",
+          "justification": "Exact small-world finite-horizon policy supplies an oracle ceiling.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "active sequential diagnosis",
+        "Bayesian experimental design/value of information",
+        "identifiability analysis",
+        "set-valued diagnosis with abstention"
+      ],
+      "oracle_or_lower_bound": "Enumerate the observational-equivalence relation induced by all admissible actions; exact finite-horizon Bayes policy on small worlds supplies the decision oracle.",
+      "minimal_counterexamples": [
+        "two causes observationally equivalent under passive probes",
+        "different labels require same safe repair",
+        "one active intervention separates otherwise identical causes",
+        "greedy entropy probe loses decision utility",
+        "unknown cause absent from taxonomy",
+        "catastrophic asymmetric wrong repair",
+        "intervention perturbs original regime"
+      ],
+      "development_benchmark_id": "DIAG-INT-DEV-V2",
+      "development_case_ids": [
+        "diag-dev-identifiable",
+        "diag-dev-unidentifiable",
+        "diag-dev-asymmetric-risk"
+      ],
+      "fresh_assurance_benchmark_id": "DIAG-INT-FRESH-V2",
+      "fresh_assurance_case_ids": [
+        "diag-fresh-cross-subsystem",
+        "diag-fresh-unknown-cause",
+        "diag-fresh-boundary"
+      ],
+      "selection_case_ids": [
+        "diag-dev-identifiable",
+        "diag-dev-asymmetric-risk"
+      ],
+      "falsifier": "Active intervention policy fails to improve repair-level utility over strongest parent, issues false-confident/wrong repairs, or exploits hidden labels.",
+      "same_system_ablation": "Same telemetry and repair policy with adaptive intervention choice disabled in favor of the strongest frozen parent.",
+      "hard_gate_obligations": [
+        "no hidden-label leakage",
+        "wrong-repair hard gate",
+        "false-confidence hard gate",
+        "unknown/unidentifiable fallback"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "repair_success",
+        "wrong_repair_rate",
+        "abstention_rate",
+        "probe_cost",
+        "intervention_cost",
+        "calibration"
+      ],
+      "total_cost_equation": "candidate_total = diagnostic_compute + probes + interventions + repair + verification + registered_harm_cost",
+      "novelty_residual": "Decision-relevant identifiability and active discrimination benefit beyond passive/greedy information-gain diagnosis.",
+      "permitted_publication_claim": "Scoped solver-diagnosis/repair utility only; no scientific causal authority.",
+      "evidence_pointers": [
+        "issue:#539:comment:5289688413",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "d59c7b019f69322aea8ea6efc08f03316898452e0116b0c8758511fe582269b8",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-NAV-LAZY-PARALLEL-V2",
+      "mechanic_id": "fieldability_and_geometry_lifecycle",
+      "variant_id": "navigation_lazy_parallel_repair_v2",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Exact-solution search guided by an admissible approximate field maintained lazily/on-demand under graph updates.",
+      "qoi": "Paired residual versus the strongest applicable dynamic-search parent on a registered cost vector, especially parallel span, with exact route optimality.",
+      "scope": [
+        "dynamic finite weighted graphs",
+        "parallel-round and serial-work meters both recorded",
+        "Q>1 and U>0 fresh regimes"
+      ],
+      "assumptions": [
+        "edge costs nonnegative",
+        "admissibility preserved after repair",
+        "parallel-span win cannot hide work/memory regression"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "incremental_exact_spt",
+          "implementation_refs": [
+            "src/rakl/navigation_successor.py"
+          ],
+          "cost_model_id": "navigation-cost-vector-v2",
+          "cost_equation": "serial_work+parallel_span+memory+query+verification",
+          "justification": "Current exact incremental parent exploits dynamic locality.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "dstar_lite_lpa_family",
+          "implementation_refs": [
+            "primary:Koenig-Likhachev-DStarLite-2002-algorithm",
+            "adapter:future/dstar_lite_v1"
+          ],
+          "cost_model_id": "navigation-cost-vector-v2",
+          "cost_equation": "serial_work+parallel_span+memory+query+verification",
+          "justification": "Classical incremental heuristic-search control required before claiming dynamic-search residual.",
+          "evidence_pointers": [
+            "issue:#537:comment:5289691516"
+          ]
+        },
+        {
+          "parent_id": "parallel_sssp_delta_stepping",
+          "implementation_refs": [
+            "primary:MeyerSanders-delta-stepping-2003-algorithm",
+            "adapter:future/delta_stepping_v1"
+          ],
+          "cost_model_id": "navigation-cost-vector-v2",
+          "cost_equation": "serial_work+parallel_span+memory+query+verification",
+          "justification": "Parallel shortest-path control is required under a parallel-depth consumer.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "A*/Dijkstra",
+        "Lifelong Planning A*/D* Lite",
+        "delta-stepping/parallel SSSP",
+        "admissible approximate value fields"
+      ],
+      "oracle_or_lower_bound": "Exact shortest path and reverse cost-to-go are correctness/oracle controls; exact affected dependency set after update is a locality ceiling diagnostic.",
+      "minimal_counterexamples": [
+        "static Q=1 U=0 positive control",
+        "small irrelevant updates where whole-graph repair wastes work",
+        "remote update lies on true optimal route",
+        "Q>1 expansions erase build savings",
+        "stale admissible field causes pathological expansion",
+        "parallel span improves while serial work or memory explodes"
+      ],
+      "development_benchmark_id": "NAV-LAZY-DEV-V2",
+      "development_case_ids": [
+        "nav-dev-N64",
+        "nav-dev-local-updates",
+        "nav-dev-query-sweep"
+      ],
+      "fresh_assurance_benchmark_id": "NAV-LAZY-FRESH-V2",
+      "fresh_assurance_case_ids": [
+        "nav-fresh-N128",
+        "nav-fresh-nonlocal-updates",
+        "nav-fresh-multiquery"
+      ],
+      "selection_case_ids": [
+        "nav-dev-local-updates",
+        "nav-dev-query-sweep"
+      ],
+      "falsifier": "No newly frozen U>0/Q>1/large-N regime shows a fully-costed residual versus the strongest applicable dynamic parent or optimality/admissibility fails.",
+      "same_system_ablation": "Same dynamic workloads with strongest exact/incremental parent and incumbent whole-graph approximate repair.",
+      "hard_gate_obligations": [
+        "route optimality",
+        "field admissibility",
+        "stale/unknown fallback",
+        "complete serial work/span/memory accounting"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "serial_work",
+        "parallel_span",
+        "memory_peak",
+        "build_cost",
+        "repair_cost",
+        "query_cost",
+        "optimality_violations"
+      ],
+      "total_cost_equation": "candidate_total_vector = {serial_work, parallel_span, measured_wall_time, memory, build, repair, query, verification}",
+      "novelty_residual": "Lazy/on-demand admissible repair extends the current static-single-query parallel-depth positive surface into dynamic or repeated-query regimes.",
+      "permitted_publication_claim": "Only the registered cost consumer/regime may be called faster; generic speed superiority is forbidden.",
+      "evidence_pointers": [
+        "issue:#537:comment:5289691516",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "6d09528ebb03df45e4288187df783fecd413ad9cf3969f99296bd02baf3560c5",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P5P6-PATHQ-CERT-V2",
+      "mechanic_id": "path_equivalence_concurrency",
+      "variant_id": "path_equivalence_local_certification_v2",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Context-sound path/interleaving quotient with lazy local independence certification and exact-identity witness reuse.",
+      "qoi": "Paired fully-costed history/search saving versus strongest quotient/POR parent with zero invalid merges.",
+      "scope": [
+        "finite transition systems",
+        "state-indexed commutation",
+        "registered witness verifier identities"
+      ],
+      "assumptions": [
+        "absence of dependency is not commutation",
+        "context-bound witness cannot be globalized",
+        "stale/unknown witness fails to raw baseline"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "current_contextual_witness_quotient",
+          "implementation_refs": [
+            "src/rakl/path_equivalence.py",
+            "src/rakl/applicability.py"
+          ],
+          "cost_model_id": "path-quotient-cost-v2",
+          "cost_equation": "search+witness_compute+witness_verify+cache+quotient_bookkeeping",
+          "justification": "Incumbent conditionally promoted contextual witness quotient.",
+          "evidence_pointers": [
+            "issue:#522:comment:5289708736"
+          ]
+        },
+        {
+          "parent_id": "raw_sequential_history",
+          "implementation_refs": [
+            "src/rakl/path_equivalence.py"
+          ],
+          "cost_model_id": "path-quotient-cost-v2",
+          "cost_equation": "raw_search+verification",
+          "justification": "No-quotient baseline is strongest in low-commutation/high-certification-cost regimes.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "partial_order_reduction_family",
+          "implementation_refs": [
+            "spec:classical-persistent-ample-stubborn-set-POR",
+            "adapter:future/por_parent_v1"
+          ],
+          "cost_model_id": "path-quotient-cost-v2",
+          "cost_equation": "por_analysis+search+verification",
+          "justification": "Classical POR family controls whether gains are generic partial-order reduction rather than Orion-specific caching.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "Mazurkiewicz traces/Foata normal forms",
+        "persistent/ample/stubborn-set partial-order reduction",
+        "contextual commutation witnesses"
+      ],
+      "oracle_or_lower_bound": "Known-world transition semantics enumerate the true state-indexed independence relation, exact trace classes and oracle zero-overhead quotient ceiling.",
+      "minimal_counterexamples": [
+        "sparse k3/k4 commutation overhead negative",
+        "high k5/k6 current positive surface",
+        "commutes at state s but not after prefix",
+        "stale transition/verifier revision reuses witness",
+        "no dependency but no witness",
+        "cache overhead erases reuse gain",
+        "global cert more costly than saved histories",
+        "invalid abstraction changes final obligations"
+      ],
+      "development_benchmark_id": "PATHQ-CERT-DEV-V2",
+      "development_case_ids": [
+        "pathq-dev-low-density",
+        "pathq-dev-high-density",
+        "pathq-dev-context-shift"
+      ],
+      "fresh_assurance_benchmark_id": "PATHQ-CERT-FRESH-V2",
+      "fresh_assurance_case_ids": [
+        "pathq-fresh-boundary",
+        "pathq-fresh-new-transitions",
+        "pathq-fresh-staleness"
+      ],
+      "selection_case_ids": [
+        "pathq-dev-high-density",
+        "pathq-dev-context-shift"
+      ],
+      "falsifier": "Fully-costed local/reuse certification does not beat the incumbent/strongest POR parent or any invalid merge/certificate corruption occurs.",
+      "same_system_ablation": "Same transition systems using current eager contextual quotient and raw sequential history.",
+      "hard_gate_obligations": [
+        "zero invalid merge",
+        "context exactness",
+        "revision/staleness binding",
+        "raw chronology preserved"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "histories_avoided",
+        "witnesses_computed",
+        "witnesses_reused",
+        "witness_cost",
+        "cache_cost",
+        "invalid_merge_count"
+      ],
+      "total_cost_equation": "candidate_total = search + witness_compute + witness_verify + cache + quotient_bookkeeping + final_verification",
+      "novelty_residual": "Lower witness certification cost while preserving state-indexed soundness, beyond the current conditional quotient.",
+      "permitted_publication_claim": "Scoped search/quotient efficiency only; no proof or scientific authority from trace identity.",
+      "evidence_pointers": [
+        "issue:#522:comment:5289708736",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "f575903b123707d7387b8616cf7e7013d40feda10f449bf5bd03d81bd1982bf9",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-OPMAP-CONFORMANCE-V1",
+      "mechanic_id": "operational_map_belief",
+      "variant_id": "operational_map_belief_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Typed partial operational map separating verified applicability, materialized transitions, failures, stale state and unknown coordinates.",
+      "qoi": "Formal/production conformance: zero violations of map epistemic-status, coverage-certificate and UNKNOWN-not-BLOCKED invariants under hostile/property tests and a production caller.",
+      "scope": [
+        "finite known-world transition systems",
+        "registered operator basis and chart",
+        "external closure verifier for complete-map claims"
+      ],
+      "assumptions": [
+        "verified applicability is not traversability",
+        "coverage is scoped to exact edge enumeration",
+        "no-route cannot mint theorem impossibility"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "exact_known_world_transition_graph",
+          "implementation_refs": [
+            "research/unified_problem_solving_v1/run_known_world_stress.py",
+            "src/rakl/operational_map.py"
+          ],
+          "cost_model_id": "opmap-conformance-v1",
+          "cost_equation": "enumeration+verification",
+          "justification": "Complete explicit known-world transition relation is the conformance oracle.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "legacy_untyped_explored_edge_map",
+          "implementation_refs": [
+            "negative-control:untyped-edge-map-v1"
+          ],
+          "cost_model_id": "opmap-conformance-v1",
+          "cost_equation": "enumeration",
+          "justification": "Negative control catches semantic collapse between unknown, failed, blocked, applicable and traversable.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "three-valued/partial graph belief",
+        "explicit-state reachability",
+        "closure certificates",
+        "provenance-bound transition systems"
+      ],
+      "oracle_or_lower_bound": "Complete known-world transition semantics and canonical edge-set hash provide exact status/coverage oracles inside the frozen operator basis/chart only.",
+      "minimal_counterexamples": [
+        "UNKNOWN treated as BLOCKED",
+        "VERIFIED_APPLICABLE traversed as materialized transition",
+        "verified and refuted same transition instance coexist",
+        "stale closure certificate survives edge mutation",
+        "coverage certificate bound to wrong edge-set hash",
+        "no-route used as theorem impossibility"
+      ],
+      "development_benchmark_id": "OPMAP-CONF-DEV-V1",
+      "development_case_ids": [
+        "opmap-dev-status-model",
+        "opmap-dev-closure-mutation"
+      ],
+      "fresh_assurance_benchmark_id": "OPMAP-CONF-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "opmap-fresh-hostile-status",
+        "opmap-fresh-production-path"
+      ],
+      "selection_case_ids": [
+        "opmap-dev-status-model",
+        "opmap-dev-closure-mutation"
+      ],
+      "falsifier": "Any hostile/property case violates status consistency, exact certificate binding, UNKNOWN semantics, or production path bypasses the typed receipt.",
+      "same_system_ablation": "Same known worlds represented by exact explicit graph and by a deliberately collapsed untyped map negative control.",
+      "hard_gate_obligations": [
+        "UNKNOWN!=BLOCKED",
+        "applicability!=transition",
+        "certificate exact-subject binding",
+        "authority noninterference"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "hostile_case_id",
+        "invariant_result",
+        "production_caller_id"
+      ],
+      "total_cost_equation": "conformance_cost = map_build + status_verification + closure_verification + reachability_query",
+      "novelty_residual": "Production-enforced partial-map semantics beyond a merely documented/test-only sidecar.",
+      "permitted_publication_claim": "Formal/production conformance claim only; no search-performance or impossibility claim.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "0eab1b93c8a9d767c58e223201dae1db1e54837c299452740f79a0bcdfc87b95",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P5P6-PATHCOST-CONFORMANCE-V1",
+      "mechanic_id": "path_cost_algebra",
+      "variant_id": "path_cost_algebra_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Hard admissibility followed by registered typed/noncompensatory path-cost composition and comparison semantics.",
+      "qoi": "Formal/production conformance: exhaustive/property tests show invalid/unknown paths cannot win through cheap compensating coordinates and typed semantics are preserved by consumers.",
+      "scope": [
+        "finite option sets",
+        "registered coordinate semantics",
+        "explicit consumer ordering when total selection is required"
+      ],
+      "assumptions": [
+        "hard validity gates precede cost comparison",
+        "numeric development vector is not universal theorem-level algebra",
+        "no hidden scalar collapse"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "explicit_admissible_pareto_lexicographic",
+          "implementation_refs": [
+            "src/rakl/path_cost.py"
+          ],
+          "cost_model_id": "path-cost-conformance-v1",
+          "cost_equation": "admissibility_check+pareto_or_registered_order",
+          "justification": "Current explicit multiobjective parent is the strongest semantics-preserving control.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "scalar_weighted_sum_negative_control",
+          "implementation_refs": [
+            "negative-control:scalar-weighted-path-cost-v1"
+          ],
+          "cost_model_id": "path-cost-conformance-v1",
+          "cost_equation": "weighted_sum",
+          "justification": "Negative control demonstrates compensation failures when validity is collapsed into a scalar.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "multiobjective/Pareto optimization",
+        "lexicographic orders",
+        "set-inclusion resource semantics",
+        "noncompensatory safety constraints"
+      ],
+      "oracle_or_lower_bound": "Exhaustive enumeration of finite admissible option sets under the frozen coordinate rules gives the exact selection oracle for property tests.",
+      "minimal_counterexamples": [
+        "cheap path has unlicensed assumption",
+        "unknown portal wins by low compute",
+        "SET_UNION coordinate numerically summed",
+        "duplicate path IDs perturb selection",
+        "NaN/inf/negative coordinate admitted",
+        "typed algebra silently replaced by additive numeric vector"
+      ],
+      "development_benchmark_id": "PATHCOST-CONF-DEV-V1",
+      "development_case_ids": [
+        "pathcost-dev-exhaustive-small",
+        "pathcost-dev-type-laws"
+      ],
+      "fresh_assurance_benchmark_id": "PATHCOST-CONF-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "pathcost-fresh-hostile-compensation",
+        "pathcost-fresh-consumer-integration"
+      ],
+      "selection_case_ids": [
+        "pathcost-dev-exhaustive-small",
+        "pathcost-dev-type-laws"
+      ],
+      "falsifier": "Any consumer selects a hard-inadmissible path, collapses typed coordinates without registered semantics, or violates deterministic identity/finiteness laws.",
+      "same_system_ablation": "Same option sets under the explicit admissible Pareto/lexicographic parent and scalar weighted-sum negative control.",
+      "hard_gate_obligations": [
+        "hard admissibility noncompensatory",
+        "coordinate semantics preserved",
+        "finite deterministic numeric projection",
+        "authority noninterference"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "option_set_id",
+        "selected_path_id",
+        "admissibility_result",
+        "consumer_id"
+      ],
+      "total_cost_equation": "conformance_cost = admissibility_checks + typed_comparison + consumer_selection",
+      "novelty_residual": "Production consumers enforce the typed/noncompensatory algebra rather than merely storing metadata.",
+      "permitted_publication_claim": "Formal/production path-cost semantics only; no universal utility-optimality claim.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "06496d7ce5e9d27c7e746677c758cd5ddd05d03382ce35759c88de200322c741",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P5P6-ASSEMBLY-CONFORMANCE-V1",
+      "mechanic_id": "trajectory_to_certificate_assembly",
+      "variant_id": "trajectory_to_certificate_assembly_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Conversion of a chronological discovery trajectory into a dependency-complete, hash-bound certificate that remains subject to the ordinary external authority gate.",
+      "qoi": "Formal/production conformance: exact known DAGs and hostile mutations yield zero false READY receipts and production assembly cannot bypass proof-receipt assurance.",
+      "scope": [
+        "finite ProofDAGs",
+        "registered root statement",
+        "ordinary proof-receipt audit remains sovereign"
+      ],
+      "assumptions": [
+        "trajectory is not certificate",
+        "READY is not theorem authority",
+        "verified conflicts reject"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "direct_verified_proof_dag",
+          "implementation_refs": [
+            "src/rakl/proof_dag.py",
+            "src/rakl/math_research_assurance.py"
+          ],
+          "cost_model_id": "assembly-conformance-v1",
+          "cost_equation": "dag_build+dependency_check+proof_receipt_audit",
+          "justification": "Direct verified DAG plus ordinary proof audit is the strongest semantic parent.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "verify_everything_fixed_schedule",
+          "implementation_refs": [
+            "research/unified_problem_solving_v1/run_known_world_stress.py"
+          ],
+          "cost_model_id": "assembly-conformance-v1",
+          "cost_equation": "all_node_checks+root_check",
+          "justification": "Conservative fixed verification parent controls false-accept behavior.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "proof DAG dependency closure",
+        "proof certificates vs search traces",
+        "content-addressed provenance",
+        "root assurance gates"
+      ],
+      "oracle_or_lower_bound": "Known finite dependency DAG and exact transitive root closure provide the assembly oracle; ordinary proof receipt audit is the authority oracle.",
+      "minimal_counterexamples": [
+        "omit one transitive dependency",
+        "swap certificate artifact hash",
+        "verified REFUTES conflict inside selected scope",
+        "root-only false accept",
+        "stale/mismatched proof receipt",
+        "discarded branch actually required"
+      ],
+      "development_benchmark_id": "ASSEMBLY-CONF-DEV-V1",
+      "development_case_ids": [
+        "assembly-dev-dag-exhaustive",
+        "assembly-dev-hash-mutations"
+      ],
+      "fresh_assurance_benchmark_id": "ASSEMBLY-CONF-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "assembly-fresh-hostile-dags",
+        "assembly-fresh-production-path"
+      ],
+      "selection_case_ids": [
+        "assembly-dev-dag-exhaustive",
+        "assembly-dev-hash-mutations"
+      ],
+      "falsifier": "Any invalid/incomplete/conflicted/mismatched assembly returns READY or any production caller treats READY as final solution authority.",
+      "same_system_ablation": "Direct verified ProofDAG construction and verify-everything schedule on the same root/certificate subject.",
+      "hard_gate_obligations": [
+        "root dependency closure complete",
+        "verified conflict rejection",
+        "hash identity binding",
+        "proof receipt assurance",
+        "external authority still required"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "dag_id",
+        "dependency_count",
+        "selected_node_count",
+        "assembly_verdict",
+        "proof_audit_verdict"
+      ],
+      "total_cost_equation": "conformance_cost = dag_validation + dependency_closure + conflict_check + proof_receipt_audit",
+      "novelty_residual": "Production-safe trajectory-to-certificate materialization beyond chronological trace bookkeeping.",
+      "permitted_publication_claim": "Formal/production certificate-assembly conformance only; no theorem authority or efficiency claim.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "b366ac9e6dcefb319d52f95ded22f76603e24142543045e74088b7474212b07f",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P5P6-NAV-QUOTIENT-V1",
+      "mechanic_id": "navigation_quotient_validation",
+      "variant_id": "navigation_quotient_validation_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Semantic/problem quotient used as a solver navigation space with explicit reachability, route-lifting and cost-distortion obligations.",
+      "qoi": "Paired fully-costed verified search saving versus strongest raw/abstraction parent, with exact navigation claims allowed only under full preservation witnesses.",
+      "scope": [
+        "finite known-world and Lean-like state spaces",
+        "semantic quotient already has a bound validation identity",
+        "concrete revalidation available when exactness is not proven"
+      ],
+      "assumptions": [
+        "QoI sufficiency does not imply route preservation",
+        "abstract route cannot mint solution authority",
+        "abstract no-route cannot mint impossibility"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "raw_concrete_search",
+          "implementation_refs": [
+            "src/rakl/semantic_quotient_runtime.py",
+            "src/rakl/math_research_runtime.py"
+          ],
+          "cost_model_id": "nav-quotient-total-cost-v1",
+          "cost_equation": "concrete_search+verification",
+          "justification": "Raw/concrete search avoids abstraction validation/lift failure and is the fallback.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "tcsq_semantic_quotient_revalidated",
+          "implementation_refs": [
+            "src/rakl/semantic_quotient_runtime.py",
+            "src/rakl/navigation_quotient.py"
+          ],
+          "cost_model_id": "nav-quotient-total-cost-v1",
+          "cost_equation": "quotient_validate+abstract_search+lift+revalidate",
+          "justification": "Current assured semantic quotient with concrete revalidation is the strongest in-repo abstraction parent.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "exact_simulation_bisimulation_oracle",
+          "implementation_refs": [
+            "spec:future/exact-finite-bisimulation-quotient-v1"
+          ],
+          "cost_model_id": "nav-quotient-total-cost-v1",
+          "cost_equation": "relation_compute+abstract_search+lift+verify",
+          "justification": "Exact finite simulation/bisimulation quotient is the preservation oracle/control where computable.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "predicate abstraction/CEGAR",
+        "simulation and bisimulation quotients",
+        "semantic quotient sufficiency",
+        "route lifting"
+      ],
+      "oracle_or_lower_bound": "Concrete transition graph plus exact abstract/concrete reachability and route-lift relation supplies the finite-world preservation oracle.",
+      "minimal_counterexamples": [
+        "QoI-sufficient abstraction destroys route lifting",
+        "sound overapproximation creates spurious abstract path",
+        "abstract no-route while concrete route exists",
+        "cost distortion reverses route preference",
+        "stale quotient after source change",
+        "composed quotients have mismatched subject interface"
+      ],
+      "development_benchmark_id": "NAVQ-DEV-V1",
+      "development_case_ids": [
+        "navq-dev-exact",
+        "navq-dev-overapprox",
+        "navq-dev-spurious"
+      ],
+      "fresh_assurance_benchmark_id": "NAVQ-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "navq-fresh-new-abstraction",
+        "navq-fresh-boundary",
+        "navq-fresh-Lean-like"
+      ],
+      "selection_case_ids": [
+        "navq-dev-exact",
+        "navq-dev-overapprox"
+      ],
+      "falsifier": "Quotient fails to leave fully-costed search residual over strongest parent or any exact/sound/lift/cost claim is made without its required witness.",
+      "same_system_ablation": "Same subjects under raw concrete search and semantic quotient with mandatory concrete revalidation.",
+      "hard_gate_obligations": [
+        "target labels preserved when claimed",
+        "forward simulation",
+        "route lift",
+        "cost relation for geometry claim",
+        "concrete revalidation fallback"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "quotient_validation_cost",
+        "abstract_search_cost",
+        "lift_cost",
+        "revalidation_cost",
+        "invalid_route_count"
+      ],
+      "total_cost_equation": "candidate_total = quotient_validation + abstraction_build + abstract_search + lift + concrete_revalidation + verification",
+      "novelty_residual": "Safe navigation-specific quotient acceleration beyond ordinary semantic sufficiency/revalidation.",
+      "permitted_publication_claim": "Scoped abstraction/search-efficiency claim; exact reachability geometry only where all four preservation obligations are verified.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "80dba1dbc55750ae946242cb9c36df19fc8495171ab457745e1aec8e25ac1f16",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-VSC-V1",
+      "mechanic_id": "verified_solver_compilation",
+      "variant_id": "verified_solver_compilation_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Joint representation-transform-solver-decoder-verifier compilation with preservation, composition, total-cost, reuse and staleness semantics.",
+      "qoi": "Paired verified root-level utility/net cost versus strongest fixed/simple-selection parent after charging build, execution, decode, verification, invalidation and selection.",
+      "scope": [
+        "finite known-world compilation portfolios first",
+        "preservation receipts bound to exact subjects",
+        "all configuration selection costs charged"
+      ],
+      "assumptions": [
+        "routing validation does not grant target authority",
+        "component preservation must compose through exact interfaces",
+        "contradictory effects fail"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "best_fixed_configuration",
+          "implementation_refs": [
+            "src/rakl/solver_compilation.py",
+            "research/unified_problem_solving_v1/run_known_world_stress.py"
+          ],
+          "cost_model_id": "vsc-total-cost-v1",
+          "cost_equation": "selection+build+execute+decode+verify+invalidation",
+          "justification": "Strongest fixed valid configuration selected on development data.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "separate_representation_then_solver_selector",
+          "implementation_refs": [
+            "spec:future/simple-factorized-vsc-parent-v1"
+          ],
+          "cost_model_id": "vsc-total-cost-v1",
+          "cost_equation": "representation_select+solver_select+build+execute+decode+verify",
+          "justification": "Tests whether joint compilation adds value beyond simple factorized selection.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "oracle_best_valid_compilation",
+          "implementation_refs": [
+            "spec:future/exhaustive-known-world-vsc-oracle-v1"
+          ],
+          "cost_model_id": "vsc-total-cost-v1",
+          "cost_equation": "exhaustive_selection+build+execute+decode+verify",
+          "justification": "Known-world oracle best valid configuration provides ceiling/regret.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "algorithm/representation selection",
+        "compiler lowering with validation",
+        "portfolio selection",
+        "amortized compilation/reuse"
+      ],
+      "oracle_or_lower_bound": "Exhaustive finite valid compilation portfolio with exact root outcome and preservation truth gives oracle best configuration and regret.",
+      "minimal_counterexamples": [
+        "invalid transform creates speedup",
+        "build cost never amortizes",
+        "decoder drops root information",
+        "locally passing transforms fail interface composition",
+        "RELAX and TIGHTEN claimed simultaneously",
+        "stale compiled artifact after source/verifier change",
+        "simple factorized selector matches joint method"
+      ],
+      "development_benchmark_id": "VSC-DEV-V1",
+      "development_case_ids": [
+        "vsc-dev-one-shot",
+        "vsc-dev-reuse",
+        "vsc-dev-interface-hostile"
+      ],
+      "fresh_assurance_benchmark_id": "VSC-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "vsc-fresh-new-portfolio",
+        "vsc-fresh-staleness",
+        "vsc-fresh-boundary"
+      ],
+      "selection_case_ids": [
+        "vsc-dev-one-shot",
+        "vsc-dev-reuse"
+      ],
+      "falsifier": "Joint compilation does not beat strongest fixed/factorized parent on fully-costed verified root outcome or preservation/composition hard gate fails.",
+      "same_system_ablation": "Same candidate portfolio with strongest fixed and independent representation-then-solver selection.",
+      "hard_gate_obligations": [
+        "preservation receipt exact binding",
+        "composite interface continuity",
+        "no contradictory effects",
+        "stale artifact invalidation",
+        "root verification"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "selection_cost",
+        "build_cost",
+        "execution_cost",
+        "decode_cost",
+        "verification_cost",
+        "invalidation_cost",
+        "root_success"
+      ],
+      "total_cost_equation": "candidate_total = selector + build + execution + decode + verification + invalidation_rebuild",
+      "novelty_residual": "Joint verified compilation benefit beyond simpler fixed/factorized configuration selection.",
+      "permitted_publication_claim": "Scoped solver-compilation routing/utility claim; no target/scientific/method authority from the compilation receipt.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "839fb547b68a89981ed68fa05ac283b665338e679348335baee469601773aa21",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-VERIFY-SCHED-V1",
+      "mechanic_id": "trajectory_to_certificate_assembly",
+      "variant_id": "verification_scheduler_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Choice of verification scale/schedule over composed solver outputs under registered error/cost assumptions.",
+      "qoi": "Noncompensatory false-accept/false-reject/cost frontier versus strongest fixed schedules, followed by scoped fresh transfer.",
+      "scope": [
+        "known-world composition/error models first",
+        "registered checker/interface assumptions",
+        "validity obligations cannot be traded away"
+      ],
+      "assumptions": [
+        "false-accept safety is a hard gate where registered",
+        "toy independence assumptions do not automatically transfer",
+        "multiobjective vector stays explicit unless consumer is frozen"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "verify_every_atomic_interface",
+          "implementation_refs": [
+            "research/unified_problem_solving_v1/run_known_world_stress.py"
+          ],
+          "cost_model_id": "verify-schedule-vector-v1",
+          "cost_equation": "all_atomic_checks+root_check",
+          "justification": "Conservative fixed schedule is the safety parent.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "fixed_grouped_checkpoints",
+          "implementation_refs": [
+            "research/unified_problem_solving_v1/run_known_world_stress.py"
+          ],
+          "cost_model_id": "verify-schedule-vector-v1",
+          "cost_equation": "group_checks+root_check",
+          "justification": "Grouped fixed schedule controls cost/coverage tradeoff.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "exact_schedule_oracle_small_world",
+          "implementation_refs": [
+            "spec:future/exhaustive-verification-schedule-oracle-v1"
+          ],
+          "cost_model_id": "verify-schedule-vector-v1",
+          "cost_equation": "enumerate_schedules+check_cost+risk",
+          "justification": "Exhaustive small-world schedule oracle supplies frontier ceiling.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "multistage testing/checkpointing",
+        "selective verification",
+        "decision-theoretic inspection",
+        "proof checkpoint scheduling"
+      ],
+      "oracle_or_lower_bound": "Exhaustive schedule enumeration under the frozen finite error model gives exact false-accept/false-reject/cost frontier; real transfer must separately validate model assumptions.",
+      "minimal_counterexamples": [
+        "correlated interface errors break independence model",
+        "root-only misses hidden local failure",
+        "overchecking costs more than solving",
+        "grouped check hides local failure",
+        "cheap schedule violates registered safety bound",
+        "optimizer learns toy error model only"
+      ],
+      "development_benchmark_id": "VER-SCHED-DEV-V1",
+      "development_case_ids": [
+        "vsched-dev-independent",
+        "vsched-dev-correlated-hostile",
+        "vsched-dev-cost-sweep"
+      ],
+      "fresh_assurance_benchmark_id": "VER-SCHED-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "vsched-fresh-new-composition",
+        "vsched-fresh-new-error-structure",
+        "vsched-fresh-boundary"
+      ],
+      "selection_case_ids": [
+        "vsched-dev-independent",
+        "vsched-dev-cost-sweep"
+      ],
+      "falsifier": "No schedule improves the registered consumer frontier over strongest fixed parent without safety regression, or fresh transfer invalidates the assumed error model.",
+      "same_system_ablation": "Same outputs checked by verify-everything and frozen grouped/root schedules.",
+      "hard_gate_obligations": [
+        "registered false-accept bound",
+        "root verifier preserved",
+        "assumption/model identity bound",
+        "no scalar compensation of safety"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "false_accept",
+        "false_reject",
+        "verification_cost",
+        "schedule_id",
+        "assumption_model_id"
+      ],
+      "total_cost_equation": "candidate_total_vector = {verification_cost, false_accept_risk, false_reject_risk, latency}",
+      "novelty_residual": "Adaptive verification scheduling benefit beyond strongest fixed schedules under explicitly validated assumptions.",
+      "permitted_publication_claim": "Scoped verification-scheduling result only; no universal schedule or authority claim.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "a5d19a3db2865eddb5b1f461389f4327b54de3ea2bc723051ffa63ca21ecbe80",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    },
+    {
+      "schema_version": "mechanic-research-packet-v1",
+      "packet_id": "MRP-P6-CAPSTONE-V1",
+      "mechanic_id": "unified_solver_capstone",
+      "variant_id": "capstone_integrated_solver_v1",
+      "parent_method_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+      "object_description": "Integrated Orion scientific/problem-solving system composed only from packet-bound constituent mechanics at their validated applicability scopes.",
+      "qoi": "Paired verified root-task success/quality and cost/latency versus matched strong baselines, plus constituent ablations, without component status laundering.",
+      "scope": [
+        "constituent mechanics packet-bound before execution",
+        "same model/evidence/tools/resource envelope across comparable arms",
+        "fresh task families hidden from integration tuning"
+      ],
+      "assumptions": [
+        "full-system success cannot retroactively promote failed component",
+        "applicability contracts enforced at runtime",
+        "authority gates remain external"
+      ],
+      "strongest_parents": [
+        {
+          "parent_id": "strong_specialized_solver",
+          "implementation_refs": [
+            "benchmark:future/capstone-strong-specialized-v1"
+          ],
+          "cost_model_id": "capstone-matched-resource-v1",
+          "cost_equation": "model+tools+search+verify+wall+human_review",
+          "justification": "Strongest domain-specialized baseline required per task family.",
+          "evidence_pointers": [
+            "issue:#525:comment:5289714258"
+          ]
+        },
+        {
+          "parent_id": "base_model_plus_strong_search",
+          "implementation_refs": [
+            "benchmark:future/capstone-base-search-v1"
+          ],
+          "cost_model_id": "capstone-matched-resource-v1",
+          "cost_equation": "model+retrieval+search+verify+wall",
+          "justification": "Controls gains from generic search/verification rather than Orion mechanics.",
+          "evidence_pointers": []
+        },
+        {
+          "parent_id": "incumbent_orion_ablations",
+          "implementation_refs": [
+            "publication/papers/paper-06-rakl-scientific-research-engine/source/main.tex",
+            "src/rakl/unified_solver_registry.py"
+          ],
+          "cost_model_id": "capstone-matched-resource-v1",
+          "cost_equation": "full_system_resources_minus_one_mechanic",
+          "justification": "One-at-a-time ablations identify whether promoted/conditional mechanics contribute under matched resources.",
+          "evidence_pointers": []
+        }
+      ],
+      "prior_art_equivalence_map": [
+        "research-agent evaluation",
+        "system ablation",
+        "matched-resource agent benchmarking",
+        "specialist-vs-generalist controls"
+      ],
+      "oracle_or_lower_bound": "Per-task exact verifier/ground truth where available plus the strongest matched specialized baseline; no single universal oracle exists, so benchmark-specific lower/upper bounds must be frozen per family.",
+      "minimal_counterexamples": [
+        "full system wins only by extra tokens/tools",
+        "one failed component silently enabled off-support",
+        "ablation shows no contribution",
+        "specialist dominates",
+        "invalid false accepts increase",
+        "same fresh tasks used for integration tuning",
+        "human review effort differs across arms"
+      ],
+      "development_benchmark_id": "CAPSTONE-DEV-V1",
+      "development_case_ids": [
+        "capstone-dev-math",
+        "capstone-dev-science",
+        "capstone-dev-engineering"
+      ],
+      "fresh_assurance_benchmark_id": "CAPSTONE-FRESH-V1",
+      "fresh_assurance_case_ids": [
+        "capstone-fresh-math",
+        "capstone-fresh-science",
+        "capstone-fresh-engineering"
+      ],
+      "selection_case_ids": [
+        "capstone-dev-math",
+        "capstone-dev-science",
+        "capstone-dev-engineering"
+      ],
+      "falsifier": "Integrated system lacks paired verified residual over strongest matched baselines, gains vanish under matched resources/ablations, or validity/authority/applicability hard gates regress.",
+      "same_system_ablation": "Same frozen tasks/model/evidence/tools/resources under base model, CoT/retrieval, strong search, verification-only, strongest specialized solver and one-at-a-time Orion ablations.",
+      "hard_gate_obligations": [
+        "component packet-bound status",
+        "runtime applicability fallback",
+        "invalid false-accept nonregression",
+        "matched resource envelope",
+        "external authority preserved"
+      ],
+      "required_telemetry_fields": [
+        "sample_id",
+        "seed",
+        "measured_quantity",
+        "total_cost",
+        "hard_gate_status",
+        "strongest_parent_id",
+        "verified_root_success",
+        "invalid_false_accept",
+        "model_tokens",
+        "tool_calls",
+        "wall_time",
+        "human_review_time",
+        "memory_peak"
+      ],
+      "total_cost_equation": "candidate_total = model + retrieval + tools + search + verification + mechanic_overheads + wall_time + human_review",
+      "novelty_residual": "Integrated root-level system benefit not reducible to extra resources or one generic strong-search/verification parent.",
+      "permitted_publication_claim": "Scoped capstone system-performance claim only; no universal AGI/scientific autonomy or component-status laundering.",
+      "evidence_pointers": [
+        "issue:#525:comment:5289714258",
+        "issue:#546:comment:5289648257",
+        "merge:#570@875168cc450a9f10a40be1e899c368f85c4be388"
+      ],
+      "mechanism_gate_state": "UNASSESSED",
+      "applicability_gate_state": "UNASSESSED",
+      "frozen_before_implementation": true,
+      "frozen_before_outcome_access": true,
+      "packet_content_sha256": "06e017b2283721c24bfd2e45d4c1f2f1340fe698ba188cceb147189ab4777831",
+      "grants_scientific_authority": false,
+      "grants_promotion_authority": false,
+      "replaces_promotion_gate": false
+    }
+  ],
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "enforces_promotion_gate": false,
+  "notes": [
+    "Fresh successor/revalidation variants only; no retroactive packet is used to legitimize a historical outcome.",
+    "P2 is shadow coverage. P3 may fail-close future promotion on packet validity only after this required universe is complete and protected CI is green.",
+    "Packet validity is preregistration eligibility, not evidence of mechanic benefit."
+  ]
+}
