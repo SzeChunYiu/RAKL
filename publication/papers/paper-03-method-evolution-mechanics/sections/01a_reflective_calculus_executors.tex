@@ -1,0 +1,67 @@
+\section{An executor-independent reflective calculus}\label{sec:reflective-calculus}
+
+The method-evolution problem is more general than LLM self-improvement. A research method can be executed by a human, a deterministic algorithm, a theorem prover, a learned model, or a hybrid workflow. The object that evolves should therefore be the method specification, not the identity of the executor. We use \Framework{} for this executor-independent calculus and Orion for the reference persistent substrate in which many of its mechanics are implemented.
+
+\subsection{Mechanics as typed state transitions}
+
+Let the research configuration at time $t$ be
+\[
+\mathcal S_t=(P_t,J_t,\mathcal M_t,\Pi_t,B_t),
+\]
+where $P_t$ is pursuit state (observations, candidate representations, hypotheses and proposed probes), $J_t$ is justification state (claims, evidence, provenance, negative history and scientific authority), $\mathcal M_t$ is the installed mechanic registry, $\Pi_t$ is the strategy that selects mechanics/actions, and $B_t$ is a resource budget. A mechanic package is a typed object
+\[
+M=(\tau_{in},\tau_{out},P,T,\varepsilon,I,G,C,F,V),
+\]
+containing preconditions $P$, transition semantics $T$, declared effects $\varepsilon$, invariants $I$, a scoped guarantee $G$, cost $C$, falsifiers $F$, and a version/provenance binding $V$.
+
+This representation is deliberately compatible with several formal-computing traditions rather than claimed as their replacement. Rewriting logic makes theories and strategies representable at a meta-level \cite{clavel1996reflection}; the K framework gives executable configuration-and-rewrite semantics with explicit read/write structure \cite{rosu2010k}; Lean combines an extensible metaprogramming/tactic layer with kernel checking of proof terms \cite{demoura2021lean}; and proof-carrying code separates untrusted code production from host-side validation against a safety policy \cite{necula1997pcc}. These are strong parents for reflection, executable semantics and certified extension. The RAKL-specific problem is the scientific one: how such extensibility interacts with evidence provenance, immutable negative history, typed refusal and scientific authority.
+
+\subsection{The executor is provenance, not authority}
+
+For one abstract mechanic $M$, implementations may differ:
+\[
+M_{\rm human},\quad M_{\rm symbolic},\quad M_{\rm prover},\quad M_{\rm LLM},\quad M_{\rm hybrid}.
+\]
+The executor identity, model revision, prompt, toolchain and human role belong in provenance and cost accounting. They do not by themselves change the authority projection. This gives a general non-sovereignty condition: any trace composed only of pursuit or meta-mechanics whose effect signatures exclude a certified scientific-authority transition leaves the canonical scientific-authority state unchanged.
+
+LLMs therefore occupy three useful but non-exclusive roles. They can act as \emph{adapters}, translating prose or other unstructured material into candidate structures. They can act as \emph{proposal generators}, suggesting hypotheses, analogies, experiments or code. They can act as \emph{search controllers}, choosing among tools or queries. Tool-using scientific agents show why these roles matter in practice \cite{boiko2023coscientist,bran2024chemcrow,gottweis2026coscientist,ghareeb2026multiagent}. None of these roles makes the LLM an authority oracle. A human suggestion and an LLM suggestion enter the same proposal surface; a deterministic proof checker can then dominate both on questions it can decide.
+
+\subsection{A non-LLM reference lane}\label{sec:rakl0}
+
+This separation makes an LLM-free reference implementation a first-class research objective. Call it \textsc{RAKL-0}. Its purpose is not to imitate human language use. It is to execute as much of the calculus as possible with explicit algorithms once the relevant objects are formalized. Candidate components include graph and hypergraph navigation, assumption-based truth maintenance, abstract argumentation, anti-unification, constraint solving, SAT/SMT, theorem proving, causal or algebraic morphism checkers, counterexample-guided refinement, active experimental design and certificate ledgers \cite{dekleer1986,dung1995,clarke2000cegar,blackwell1953,hay2014computations}.
+
+The current Orion solver already provides a narrow existence proof for this design philosophy: on a formally represented theorem-dependency problem, reduction, finite accumulation, saturation, retrieval, AND-hypergraph derivation, certificate checking and residual localization can be executed mechanically without an LLM in the loop. That result does not establish a general scientific reasoner. It shows that learned generation should not be inserted where a deterministic mechanic is sufficient.
+
+This also yields a stronger experimental baseline for future LLM claims. For any mechanic $M$, compare an LLM implementation against the strongest symbolic or human implementation under equal information and explicit cost:
+\[
+\Delta_M=V(M_{\rm LLM})-V(M_{\rm best\ nonLLM}),
+\]
+where $V$ remains vector-valued (validity, refusal, cost, coverage, auditability) rather than collapsed to one score. If the LLM contributes no residual, the deterministic implementation is preferable on that scope. If it does, the experiment localizes the contribution to representation acquisition, search, hypothesis generation or another named coordinate.
+
+\subsection{Counterexamples refine mechanics rather than erase failures}
+
+Reflective method evolution should also be constructive about failure. Counterexample-guided abstraction refinement (CEGAR) begins from a coarse abstraction and refines it when a counterexample reveals a spurious behavior \cite{clarke2000cegar}. RAKL adopts the same pattern as a meta-mechanic: preserve the failed epoch, identify the load-bearing failure cut, and propose a new representation or mechanic that removes the witnessed failure while retaining protected positive controls. The old negative never becomes positive. A successor earns a new result.
+
+This is particularly important for representation failures. If an abstraction $\alpha_k$ maps two worlds requiring different registered actions to the same state,
+\[
+\alpha_k(x)=\alpha_k(y),\qquad a^*(x)\ne a^*(y),
+\]
+then the Paper-I projection-collision theorem supplies a refinement witness. A successor abstraction $\alpha_{k+1}$ should separate the collision while admitting a recovery map to the coarser representation where appropriate. Development counterexamples may design the refinement; fresh counterexamples must test it.
+
+\subsection{Reflective installation and its limits}
+
+A proposed mechanic is not installed merely because the system generated it. The safe architectural parent is proof-carrying extension: an untrusted producer supplies an object plus evidence that a trusted checker can validate \cite{necula1997pcc}. In RAKL the certificate may be heterogeneous: a machine proof for a formal invariant, deterministic conformance tests, fresh empirical assurance, strongest-parent equivalence or residual evidence, and an authority-effect audit. Installation changes available computation, not scientific truth.
+
+This boundary also avoids a stronger self-reference claim that the evidence cannot support. G\"odel-machine research studies proof-governed self-rewrite under a fixed axiomatization of utility, hardware and environment \cite{schmidhuber2007godel}. RAKL has no complete axiomatization of the scientific world and deliberately does not scalarize every objective. Moreover, formal work on self-referential agents shows that naive same-level self-trust encounters L\"obian and related obstacles \cite{fallenstein2014selfref}. We therefore make no claim of globally optimal or self-certified recursive improvement. The admissible claim is local and scoped: a challenger may be installed when it satisfies the registered evidence and invariant contract on a declared domain and budget.
+
+\subsection{Search policy and statistical persistence}
+
+Once mechanics themselves become objects, the policy that chooses research actions also becomes inspectable. Metareasoning work formalizes the selection of computations by expected improvement in decision quality relative to cost \cite{hay2014computations}. RAKL uses this as a parent for active fibre discrimination and value-of-information stopping, while retaining set-valued or ordinal alternatives when a numerical probability model is unjustified.
+
+Persistent research also creates a programme-level statistical hazard. Repeatedly launching preregistered successors until one passes a conventional fixed-horizon test can inflate the error rate for the broad claim family. Anytime-valid inference, including e-processes and confidence sequences, provides a principled way to allow optional continuation while retaining a declared evidence guarantee \cite{ramdas2023}. This requirement does not apply to exact machine proofs or deterministic conformance checks; it applies when successive empirical epochs continue to test the same statistical claim.
+
+\subsection{What closure means}
+
+The reflective framework remains open to new mechanics. Closure therefore cannot mean that no future paper will add an operation. A versioned RAKL core is closed when new operations can be represented as ordinary mechanic packages without inventing a new protected primitive. New representations, histories and tools should normally enter as plugin-local state, append-only ledgers or governed capabilities. A genuinely new kind of protected authority/kernel mutation is a typed reason to reopen the core.
+
+This definition is compatible with the programme's saturation evidence. Broad search may continue to find useful mechanisms. What should flatten is the protected meta-ontology: the categories needed to represent, challenge, certify and install those mechanisms. The open RSHEA saturation programme is relevant evidence here because later alternate-vocabulary rounds increasingly map new literature to existing surfaces/operators, while still refusing a global literature-completeness claim.
