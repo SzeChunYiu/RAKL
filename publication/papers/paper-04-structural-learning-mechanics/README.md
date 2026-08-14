@@ -1,5 +1,27 @@
 # Paper IV — Structural Learning Mechanics (conditional research lane)
 
+## 2026-08-14 rescope: negative-results / metrology claims object
+
+`main.tex` is now a **negative-results and metrology report**, built only on preserved
+receipts. Primary contribution: the oracle-ceiling instrument-admissibility method
+(`research/paper4_instrument_admissibility_v1/`) — an equal-budget allocation comparison
+is uninformative when its achievable ceiling sits below its own registered MDE, a defect
+invisible to conventional power analysis (CIs ≈0.0016 wide looked healthy while the
+rigorous ceiling upper bound was 0.0246 against a 0.05 gate). Empirical core: the
+preserved adaptive-v1 development negative with its frozen attribution, including the
+falsified pre-registered prediction P1. Closing demonstration: the licensed successor
+instrument and the marginal-gain challenger (`research/paper4_marginal_gain_challenger_v1/`),
+including the falsified prediction P6 (the v1 policy also wins in a licensed instrument —
+the parent negative was policy×instrument-conditional).
+
+**This rescope does not reverse #462.** The original standalone positive-claims paper was
+rejected there and stays rejected; the rescoped manuscript is a different claims object and
+asserts nothing that gate governs. No training-policy authority moves; every preserved
+negative stays verbatim. The remainder of this README describes the conditional research
+lane, which continues unchanged below.
+
+---
+
 Paper IV remains a **conditional publication slot**, not yet an authorized standalone positive paper.
 The historical Phase-0/1 v1 blanket negative is preserved as an **instrument artifact** (degenerate
 generator) and is not the current evidence state. Under the strict ORION closure rule, a failed
