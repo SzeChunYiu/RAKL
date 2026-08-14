@@ -3,7 +3,7 @@
   "packet_id": "p4-allocator-attribution-v1-oracle-ceiling-calibration-gate-v1",
   "mechanic_id": "allocation_comparison_instrument_admissibility",
   "variant_id": "oracle_ceiling_calibration_gate_v1",
-  "parent_method_sha": "60654878bf69ade0e585a6cf087094a917ba50a9",
+  "parent_method_sha": "321f3f72c82e33c8129dddc51bca926ec306f0b8",
   "object_description": "A frozen equal-budget allocation-comparison instrument (worlds/dynamics/arms/metric/budget) used to decide whether a learner-conditioned adaptive allocation policy beats a static structural parent. The object under study is the INSTRUMENT, not any allocator.",
   "qoi": "ADMISSIBLE / INADMISSIBLE / CANNOT_CHECK: can this instrument, under its own equal-budget constraint, produce an arm separation at or above its own registered minimum detectable effect for ANY state-aware allocation policy, including an omniscient one?",
   "scope": [
@@ -61,7 +61,8 @@
     "DEGENERATE_ZERO_HEADROOM: an instrument in which every arm is structurally forced to the identical allocation. Oracle ceiling is exactly 0. The gate must return INADMISSIBLE for any positive registered MDE.",
     "GENUINE_HEADROOM: an instrument whose worlds differ in INITIAL learner state so that state information is decision-relevant, with oracle ceiling well above the registered MDE. The gate must return ADMISSIBLE.",
     "UNCOMPUTABLE_ORACLE: a real-model instrument whose generative parameters are unknown. The gate must return CANNOT_CHECK and must NOT return ADMISSIBLE.",
-    "TIGHT_CI_LOW_CEILING: an instrument with very tight bootstrap confidence intervals but an oracle ceiling below the MDE. Classical power analysis returns 'amply powered'; the gate must still return INADMISSIBLE. This is the case actually observed in research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json.",
+    "TIGHT_CI_LOW_CEILING: an instrument with very tight bootstrap confidence intervals but a rigorous upper bound below the MDE. Classical power analysis returns 'amply powered'; the gate must still return INADMISSIBLE. This is the case actually observed in research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json, where bootstrap CIs are about 0.0016 wide while the tier-3 upper bound is 0.02457 against a 0.05 gate.",
+    "LOOSE_BOUND_NARROW_MARGIN: a relaxation whose upper bound clears the MDE by less than the frozen kappa, or whose tier-2/tier-3 spread is wide enough that the true optimum is poorly localized. The gate must report the margin and the looseness rather than presenting the verdict as exact; the reference instrument sits here, at a 2.03x margin with a 5.5x tier-2/tier-3 spread.",
     "CEILING_JUST_ABOVE_MDE: oracle ceiling above the MDE but below kappa times the MDE. The gate must return INADMISSIBLE under the frozen kappa and must not be rescued by lowering kappa after the ceiling is seen."
   ],
   "development_benchmark_id": "P4_ADAPTIVE_DEVELOPMENT_STRESS_SIX_WORLDS_SEED_202608140601",
@@ -133,7 +134,7 @@
   "applicability_gate_state": "UNASSESSED",
   "frozen_before_implementation": true,
   "frozen_before_outcome_access": true,
-  "packet_content_sha256": "12749141761a22cd1eedd54e613e7f3de4c15d457bd975e0adad70ee0252f427",
+  "packet_content_sha256": "d318363d93721c0fe2900916e04324110ac365f327c8ad85094fae71dd50103b",
   "grants_scientific_authority": false,
   "grants_promotion_authority": false,
   "replaces_promotion_gate": false

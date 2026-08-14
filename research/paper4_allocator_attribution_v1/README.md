@@ -64,7 +64,7 @@ Frozen predictions, read from data:
 | | prediction | outcome |
 |---|---|---|
 | P1 | principle cap closes ≥60% of the gap (Δ ≥ 0.010) | **FALSIFIED** — Δ = +0.00580, 35% of the gap |
-| P2 | deconcentration changes the gap by < 0.005 | **HELD** — deconcentration makes it *worse* by 0.00389 |
+| P2 | deconcentration changes the gap by < 0.005 | **HELD numerically** (Δ = −0.00389) but the arm is confounded — see below; treat as uninformative |
 | P3 | oracle ceiling < the frozen 0.05 hard gate | **HELD** — +0.00148, **33.8× below the gate** |
 | P4 | E's allocation is world-invariant, PRINCIPLE = 13 | **HELD** — identical counts in 5 of 6 worlds |
 
@@ -92,13 +92,21 @@ was moved after outcome access.
 **The receipt's stated root cause is superseded as an interpretation.** It reads
 "commits all non-repetition slots to one weakest coordinate … concentration-induced erosion".
 The realized counts refute the budget-level reading: over 6 rounds v1's argmin walk visits each of
-the 5 non-principle coordinates once and lands at ≈7 each — *near-uniform*. And deconcentrating
-(`X2`) made the result **worse**, not better. The receipt file itself is immutable and unedited;
-only its interpretation is corrected.
+the 5 non-principle coordinates once and lands at ≈7 each — *near-uniform*. The receipt file itself
+is immutable and unedited; only its interpretation is corrected.
 
-Honest limitation of this diagnostic: `X2` is a **confounded lever** — spreading the 7 slots also
-distorted budget share (L1 16.00, RETENTION 11). It cleanly shows deconcentration is not a fix, but
-it does not cleanly isolate concentration. An unconfounded concentration lever needs a fresh design.
+**`X2` is uninformative and is not used as evidence.** It was designed to isolate concentration and
+failed to: spreading the 7 slots via `(2,2,1,1,1)` over ascending-mastery order re-selects the argmin
+every round, and RETENTION keeps re-entering that order as it decays — so `X2`'s budget deviation
+*rose* from L1 10.33 to 16.00 (RETENTION 8.17→11, COMP/BOUN/REPR each stripped ~1–3). At the fitted
+cross-arm slope of −0.001172 per unit L1, that ΔL1 = +5.67 alone predicts −0.00665, which is *larger*
+than the observed `X2 − E = −0.00389`. The arm's deficit is therefore fully accounted for by budget
+distortion, and it can speak to concentration in **neither** direction. An unconfounded concentration
+lever — same budget vector, different within-round ordering — needs a fresh design.
+
+The refutation of the receipt's concentration story rests solely on the realized-counts observation
+above, which does not depend on `X2`. The evidence that within-round concentration costs *something*
+rests solely on `X1` (near-uniform budget at L1 1.31, still −0.0108).
 
 Transfer to production: `src/rakl/training_scheduler.py::choose_adaptive_training_batch` fills every
 non-repetition slot from `target_ranked` — one coordinate — and `_target_coordinate` (lines 99–122)
@@ -129,6 +137,13 @@ instrument's own registered 0.05 gate — with a factor-2 margin, not a factor-3
 qualitative conclusion survives on a stronger footing; the headline magnitude was wrong and is
 retracted. The greedy oracle also *harms* safety (`hard_safety_min −D = −0.00966` against a frozen
 ceiling of −0.01).
+
+**Tightness caveat.** Tier 3 is loose by construction — the relaxation drops *every* harm term,
+including the ones that make `RETENTION_SENSITIVE` hard. Tier 2 and tier 3 differ by ≈5.5×, so the
+true optimum is only localized to a wide interval whose upper end sits 2.03× under the gate. The
+verdict is supported; it is not airtight, and a tighter relaxation would strengthen it. Given that
+this document also records a previous "proof" that was off by 3.6×, the margin is stated rather
+than rounded away.
 
 Bootstrap CIs on the primary contrast are ≈0.0016 wide — by conventional power analysis amply
 powered — which is precisely why the defect was invisible. Three structural causes, all verifiable

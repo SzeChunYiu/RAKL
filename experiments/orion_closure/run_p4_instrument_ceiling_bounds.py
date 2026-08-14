@@ -131,9 +131,17 @@ def execute(protocol, greedy_mean, greedy_counts):
             "(0.00148 versus 0.00446 mean). The load-bearing claim is carried by tier 3."
         ),
         "conclusion": (
-            "Even a rigorous upper bound on ANY equal-budget allocation policy's mean advantage "
-            "over the static parent lies below the instrument's own frozen promotion gate. "
-            "INSTRUMENT_CANNOT_DISCRIMINATE stands on an upper bound, not on a myopic policy."
+            "A rigorous upper bound on ANY equal-budget allocation policy's mean advantage over "
+            "the static parent lies below the instrument's own frozen promotion gate, so the "
+            "instrument cannot reach its own registered gate and INSTRUMENT_CANNOT_DISCRIMINATE "
+            "stands on an upper bound rather than on a myopic policy."
+        ),
+        "bound_tightness_caveat": (
+            "Tier 3 is LOOSE by construction: the relaxation drops every harm term, including the "
+            "terms that make RETENTION_SENSITIVE hard. Tier 2 and tier 3 differ by about 5.5x, so "
+            "the true optimum sits in a wide interval whose upper end is only 2.03x under the gate. "
+            "The verdict is supported, but the margin is a factor of two on a loose bound and "
+            "should not be described as airtight. A tighter relaxation would strengthen it."
         ),
         "grants_scientific_authority": False,
     }
