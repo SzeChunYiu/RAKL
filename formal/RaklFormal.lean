@@ -191,4 +191,119 @@ theorem stabilized_is_least
     Iter F K₀ n ⊑ Y :=
   iter_below_prefixed F mono K₀ Y hY h₀ n
 
+/-! ## The non-escalation family
+
+Paper I proves four separate propositions by the same argument:
+
+* Proposal non-sovereignty (`01_introduction_foundations_state.tex:173`)
+* Experience-routing non-escalation (`02b_v3_epistemic_projection.tex:25`)
+* Derived-view authority non-escalation (`02bb_task_conditioned_erasure.tex:18`)
+* Training-update non-sovereignty (`02c_training_time_projection.tex:30`)
+
+Each says: operators of some class have codomain outside canonical scientific
+state, so no composition of them moves the canonical projection until a
+separately certified update occurs. Rather than mechanize four near-duplicates,
+the shared principle is proved once and each proposition is an instantiation.
+
+This also **repairs a defect**. The derived-view proof argues "by construction it
+can inherit but cannot mint authority certificates", which restates its hypothesis
+instead of deriving the claim — a definition presented as a theorem. Here that
+hypothesis is `uncertified_preserves`: an explicit field that must be discharged
+at every instantiation. What was prose becomes an obligation the type checker
+enforces. -/
+
+section NonEscalation
+
+variable {S : Type u} {K : Type v}
+
+/-- An operator that leaves the canonical projection untouched. -/
+def PreservesCanon (canon : S → K) (op : S → S) : Prop := ∀ s, canon (op s) = canon s
+
+/-- Sequential composition of operators, applied left to right. -/
+def runAll : List (S → S) → S → S
+  | [], s => s
+  | op :: rest, s => runAll rest (op s)
+
+/-- Any finite composition of canon-preserving operators preserves the canonical
+projection. This is the induction the four paper proofs perform informally. -/
+theorem runAll_preserves_canon (canon : S → K) :
+    ∀ (ops : List (S → S)), (∀ op ∈ ops, PreservesCanon canon op) →
+      ∀ s, canon (runAll ops s) = canon s := by
+  intro ops
+  induction ops with
+  | nil => intro _ s; rfl
+  | cons op rest ih =>
+    intro h s
+    have hop : PreservesCanon canon op := h op (List.Mem.head _)
+    have hrest : ∀ o ∈ rest, PreservesCanon canon o := fun o ho => h o (List.Mem.tail _ ho)
+    show canon (runAll rest (op s)) = canon s
+    rw [ih hrest (op s), hop s]
+
+/-- An operator class carrying the authority contract.
+
+`uncertified_preserves` is the hypothesis Paper I's derived-view proof leaves
+implicit. Making it a field means no instantiation can quietly skip it. -/
+structure OperatorClass (S : Type u) (K : Type v) where
+  canon : S → K
+  Certified : (S → S) → Prop
+  uncertified_preserves : ∀ op, ¬ Certified op → PreservesCanon canon op
+
+/-- **Non-escalation.** A composition containing no certified update leaves the
+canonical scientific projection invariant.
+
+Instantiating `S` as proposal state gives proposal non-sovereignty; as episode
+ledger and routing policy, experience-routing non-escalation; as a derived
+task-conditioned view, derived-view non-escalation; as model weights,
+training-update non-sovereignty. -/
+theorem no_uncertified_composition_changes_canon
+    (C : OperatorClass S K) (ops : List (S → S))
+    (h : ∀ op ∈ ops, ¬ C.Certified op) :
+    ∀ s, C.canon (runAll ops s) = C.canon s :=
+  runAll_preserves_canon C.canon ops fun op ho => C.uncertified_preserves op (h op ho)
+
+/-- The guarantee is not vacuous: a certified operator genuinely can move
+canonical state.
+
+Without this, non-escalation would also be satisfied by a system that never
+updates anything at all, which would make the result worthless rather than
+strong. Stating it rules out the degenerate reading. -/
+theorem certified_operator_may_change_canon :
+    ∃ (C : OperatorClass Nat Nat) (op : Nat → Nat) (s : Nat),
+      C.Certified op ∧ C.canon (op s) ≠ C.canon s :=
+  ⟨{ canon := id
+     Certified := fun _ => True
+     uncertified_preserves := fun _ hop => absurd trivial hop },
+   (· + 1), 0, trivial, by decide⟩
+
+end NonEscalation
+
+/-! ## Proposition: Negative-history monotonicity
+
+Paper I, `01_introduction_foundations_state.tex:191`. Append-only archival keeps
+negative history monotone. Load-bearing for saturation: without it a research
+process could become "saturated" precisely by discarding the refutations that
+narrow its theory space. -/
+section NegativeHistory
+
+variable {A : Type u}
+
+/-- An update that never removes a recorded negative result. -/
+def Extensive (upd : Sub A → Sub A) : Prop := ∀ X, X ⊑ upd X
+
+/-- Finite compositions of append-only updates never lose negative history. -/
+theorem negative_history_monotone :
+    ∀ (upds : List (Sub A → Sub A)), (∀ u ∈ upds, Extensive u) →
+      ∀ H, H ⊑ runAll upds H := by
+  intro upds
+  induction upds with
+  | nil => intro _ H; exact Incl.refl H
+  | cons u rest ih =>
+    intro h H
+    have hu : Extensive u := h u (List.Mem.head _)
+    have hrest : ∀ v ∈ rest, Extensive v := fun v hv => h v (List.Mem.tail _ hv)
+    show H ⊑ runAll rest (u H)
+    exact Incl.trans (hu H) (ih hrest (u H))
+
+end NegativeHistory
+
 end RaklFormal

@@ -66,9 +66,13 @@ jobs:
           #print axioms RaklFormal.cl_iUnion_least
           #print axioms RaklFormal.stabilized_is_fixed
           #print axioms RaklFormal.stabilized_is_least
+          #print axioms RaklFormal.runAll_preserves_canon
+          #print axioms RaklFormal.no_uncertified_composition_changes_canon
+          #print axioms RaklFormal.certified_operator_may_change_canon
+          #print axioms RaklFormal.negative_history_monotone
           EOF
           LEAN_PATH=/tmp lean /tmp/ax.lean | tee /tmp/ax.out
-          expected=8
+          expected=12
           total=$(grep -c . /tmp/ax.out)
           clean=$(grep -c 'does not depend on any axioms' /tmp/ax.out)
           echo "reported=$total axiom-free=$clean expected=$expected"
