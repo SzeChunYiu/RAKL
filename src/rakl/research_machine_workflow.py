@@ -127,14 +127,15 @@ class KnowledgeAcquisitionRound:
         return self.cost / self.semantic_novelty_count
 
     def as_novelty_round(self) -> NoveltyRound:
-        residual_axes = (SaturationAxis.KNOWLEDGE,) if self.residual_ids else ()
+        # ``residual_ids`` records what motivated this historical search round.
+        # Only the *currently active* residual argument to
+        # ``assess_knowledge_saturation`` may reopen the fiber. Otherwise a
+        # resolved historical residual would poison flatness forever.
         return NoveltyRound(
             round_id=self.round_id,
             route_family=self.route_family,
             independent_route=self.independent_route,
             retained_novelty=((SaturationAxis.KNOWLEDGE, self.semantic_novelty_count),),
-            residual_axes=residual_axes,
-            residual_signature=self.residual_ids,
         )
 
 
@@ -196,8 +197,34 @@ def assess_knowledge_saturation(
     items = tuple(rounds)
     source_count = sum(item.source_count for item in items)
     relevant_source_count = sum(len(item.relevant_source_ids) for item in items)
-    retained_semantic_count = sum(item.semantic_novelty_count for item in items)
+    all_semantic_ids = tuple(
+        semantic_id
+        for item in items
+        for semantic_id in item.retained_semantic_ids
+    )
+    repeated_semantic_ids = tuple(sorted({
+        semantic_id
+        for semantic_id in all_semantic_ids
+        if all_semantic_ids.count(semantic_id) > 1
+    }))
+    retained_semantic_count = len(set(all_semantic_ids))
     total_cost = sum(item.cost for item in items)
+
+    if repeated_semantic_ids:
+        return KnowledgeSaturationAssessment(
+            decision=KnowledgeDecision.CANNOT_CHECK,
+            reasons=(
+                "semantic_novelty_identity_repeated_across_rounds:"
+                + ",".join(repeated_semantic_ids),
+            ),
+            saturation_report=None,
+            covered_route_families=tuple(sorted({item.route_family for item in items})),
+            missing_route_families=(),
+            source_count=source_count,
+            relevant_source_count=relevant_source_count,
+            retained_semantic_count=retained_semantic_count,
+            total_cost=total_cost,
+        )
 
     if active_knowledge_residual_ids:
         return KnowledgeSaturationAssessment(
