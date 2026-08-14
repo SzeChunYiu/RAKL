@@ -1,0 +1,81 @@
+{
+  "schema_version": "rakl-p3-interpretation-narrowing-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "authority": "GOVERNANCE_AUDIT_NARROWING_ONLY",
+  "licensed_by": "research/orion_claim_frontier_v1/CLAIM_FRONTIER.json :: global_stop_rule — 'a later governance audit may narrow a historical positive interpretation without deleting the original receipt'",
+  "narrowed_receipt": "research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json",
+  "narrowed_receipt_status": "PRESERVED_VERBATIM_NOT_DELETED_NOT_EDITED",
+  "audit_evidence": "research/paper3_gate_falsifiability_audit_v1/GATE_FALSIFIABILITY_AUDIT.json",
+
+  "defect": {
+    "id": "P3_TYPED_ARM_SELF_IDENTITY",
+    "location": "experiments/orion_closure/run_p3_structured_experience_action.py",
+    "mechanism": "execute() assigns gold at line 190 as gold_action = strict_action(c), then computes the candidate prediction at line 201 as strict_action(c) — the same pure function on the same argument. strict_action reads only the boolean decision coordinates and never the rng-derived confidence, so the two calls are identical by construction.",
+    "consequence": "exact_action_accuracy = mean(f(c) == f(c)) is identically 1.0; unsafe_apply_rate identically 0.0; cannot_check_recall and legitimate_apply_recall identically 1.0. Four of the six registered hard-gate conditions cannot fail for any case set the generator can emit.",
+    "class": "SELF_GRADING_CANDIDATE_ARM",
+    "sibling_finding": "Paper II six-family gate (PR #612) — same class, different mechanism (gold-bound arm rather than literal self-identity)."
+  },
+
+  "verdicts": {
+    "typed_exact": "NON_FALSIFIABLE",
+    "typed_unsafe": "NON_FALSIFIABLE",
+    "typed_cannot_check": "NON_FALSIFIABLE",
+    "typed_legitimate_apply": "NON_FALSIFIABLE",
+    "composite_residual": "FALSIFIABLE",
+    "all_mutations_caught": "FALSIFIABLE"
+  },
+
+  "controls_asserted_before_probing": {
+    "baseline_reproduces_recorded_pass": true,
+    "baseline_reproduces_recorded_metrics_exactly": true,
+    "live_probe_witness": ["composite_residual", "all_mutations_caught"],
+    "why_this_matters": "The two live conditions move under the identical perturbation set, so the four INSENSITIVE verdicts are not a broken-probe artifact. A battery that returned NON_FALSIFIABLE for everything would catch this and be useless; one that returned FALSIFIABLE for everything would be worse, because it would read as reassurance.",
+    "independent_historical_corroboration": "research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json :: parent_v1_terminal = INSTRUMENT_DEFECT_TWO_MUTATIONS_NOT_EXERCISED — the mutation arm has a recorded real-world failure, which is stronger evidence of liveness than any probe."
+  },
+
+  "quantitative_witness": {
+    "n_perturbed_case_sets": 72,
+    "typed_exact_always_exactly_1.0": true,
+    "zero_variance_arms": [
+      "exact_action_accuracy",
+      "unsafe_apply_rate",
+      "cannot_check_recall",
+      "legitimate_apply_recall"
+    ],
+    "composite_ceiling_range_under_same_perturbations": [0.6666666666666666, 0.9955357142857143],
+    "n_mutations_caught_range_under_same_perturbations": [7.0, 10.0]
+  },
+
+  "what_the_receipt_still_supports": {
+    "retained_claim": "On a generated 14-family / 1792-case structured-state benchmark, the registered typed experience coordinates are information-sufficient to determine the governed action, while five named simpler projections provably are not: COMPOSITE_SIMPLE_PARENT reaches a deterministic information ceiling of 0.714 with unsafe_apply_rate 0.286 and cannot_check_recall 0.0.",
+    "claim_type": "INFORMATION_SUFFICIENCY_AND_PROJECTION_LOSSINESS",
+    "why_this_survives": "The parent information ceilings are computed by grouping cases on each parent's visible field subset and taking the majority gold label. That is a correctly-computed property of the projection, not a score attributed to a candidate. It is falsifiable — it moves from 0.667 to 0.996 under perturbation — and the 0.286 unsafe rate and 0.0 CANNOT_CHECK recall of the composite parent are real measurements of what those projections erase.",
+    "role_of_the_1.0": "The typed arm's 1.0 is the correct reference ceiling for a deterministic function of the full coordinate set. It is not evidence of candidate skill and must never be reported as accuracy."
+  },
+
+  "what_the_receipt_does_not_support": [
+    "any accuracy, safety-rate, recall or fidelity claim about the typed router as a measured candidate",
+    "'the typed router achieved 100% exact action accuracy' or any equivalent phrasing",
+    "'unsafe apply rate was 0.0' as an empirical safety result",
+    "'CANNOT_CHECK recall was 1.0' as a measured competence",
+    "any comparison in which the typed arm's 1.0 is treated as an outcome rather than a definition"
+  ],
+
+  "repair_proposed_not_executed": {
+    "reason": "Repairing the harness would create a new gate requiring a fresh freeze and a fresh confirmatory budget. Executing it here and presenting new numbers would breach the freeze-before-outcome-access rule. The repair is proposed; it is deliberately not run.",
+    "minimum_repair": "The gold label must not be produced by the candidate. Either (a) assign gold from the generator's construction intent as an independent field written by make_pair, and then verify that strict_action's disagreement with it is a measurable quantity; or (b) drop the four typed metrics from the hard gate entirely and register the benchmark as what it validly is — a projection-lossiness / information-sufficiency instrument whose gate is composite_residual plus all_mutations_caught.",
+    "preferred": "(b) is honest immediately and requires no new generator; (a) is required before any accuracy-shaped claim.",
+    "warning_on_(a)": "Writing gold from the perturbation identity is itself disqualifying under research/paper3/PAPER3_TRACK_A_REGISTRATION_V1.md §2.1. An independent verifier, not the generator's intent, must assign the label."
+  },
+
+  "scope_of_this_narrowing": {
+    "applies_to": "the structured experience-to-action leg of the Paper III promotion-grade claim",
+    "does_not_apply_to": [
+      "the SEARCH/JUMP/GLUE/LIFT production route resolver unit/integration tests (tests/test_semantic_shortcut_router_v3.py and siblings), which are conformance tests and were not audited here",
+      "the 21-family 2688-case publication-validation v2 result, whose harness is absent from the repository — see UNREPRODUCIBLE_V2_RESULT.json"
+    ]
+  },
+
+  "grants_scientific_authority": false
+}
