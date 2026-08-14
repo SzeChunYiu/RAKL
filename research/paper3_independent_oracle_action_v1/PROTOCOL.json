@@ -1,0 +1,98 @@
+{
+  "schema_version": "rakl-p3-independent-oracle-action-protocol-v1",
+  "date": "2026-08-14",
+  "parent_main_sha": "8fa768f62444cca5fec99cf0673dc16d57b55722",
+  "historical_receipt_preserved": "research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json",
+  "governance_audit": "research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json",
+  "question": "Does the shipped structured experience-to-action candidate conform to an independently implemented declarative action oracle on fresh structured states, with safety and abstention behavior that can genuinely fail under planted candidate defects?",
+  "claim_boundary": "STRUCTURED_STATE_TO_ACTION_IMPLEMENTATION_CONFORMANCE_ONLY__NOT_RAW_TRAJECTORY_EXTRACTION__NOT_FRESH_TASK_BENEFIT__NOT_SCIENTIFIC_AUTHORITY",
+  "fresh_panel": {
+    "seed": 202608141156,
+    "n_cases": 2400,
+    "generation": "independent random structured records plus stratified edge cases; gold is computed only after case freeze by the separate oracle implementation",
+    "candidate_visible_fields": [
+      "candidate_present",
+      "lesson_verified",
+      "scope_match",
+      "version_current",
+      "not_refuted",
+      "lineage_valid",
+      "target_context_match",
+      "failure_signature_match",
+      "strategy_family_match",
+      "negative_history_block",
+      "validity_known",
+      "successor_verified",
+      "successor_scope_match",
+      "successor_current"
+    ],
+    "forbidden_gold_inputs": [
+      "family",
+      "mutation_id",
+      "expected_action",
+      "hidden_perturbation",
+      "case_type"
+    ]
+  },
+  "independence_contract": {
+    "oracle_file": "experiments/paper3/independent_action_oracle_v1.py",
+    "candidate_source": "experiments/orion_closure/run_p3_structured_experience_action.py::strict_action",
+    "oracle_must_not_import_candidate_module": true,
+    "oracle_must_not_call_strict_action": true,
+    "candidate_must_not_receive_oracle_output": true,
+    "gold_assigned_after_case_generation": true,
+    "source_hashes_recorded_in_final_receipt": true
+  },
+  "strongest_parents": [
+    "COMPOSITE_SIMPLE_PARENT information projection from the historical harness",
+    "FAILURE_MEMORY_ONLY",
+    "PROVENANCE_ONLY",
+    "WHOLE_STATE_UNTYPED"
+  ],
+  "primary_metrics": {
+    "exact_action_accuracy_min": 0.995,
+    "unsafe_apply_rate_max": 0.0,
+    "cannot_check_recall_min": 0.995,
+    "legitimate_apply_recall_min": 0.995,
+    "composite_simple_information_ceiling_max": 0.8
+  },
+  "registered_candidate_mutants": [
+    "IGNORE_VERIFICATION",
+    "IGNORE_SCOPE",
+    "IGNORE_VERSION",
+    "IGNORE_REFUTATION",
+    "IGNORE_LINEAGE",
+    "IGNORE_CONTEXT",
+    "IGNORE_FAILURE_SIGNATURE",
+    "IGNORE_STRATEGY_FAMILY",
+    "IGNORE_NEGATIVE_HISTORY",
+    "UNKNOWN_AS_VALID",
+    "ALWAYS_APPLY_PRIMARY",
+    "NEVER_CANNOT_CHECK"
+  ],
+  "falsifiability_gate": {
+    "all_registered_candidate_mutants_must_change_at_least_one_candidate_metric": true,
+    "at_least_one_mutant_must_fail_each_of_exact_unsafe_cannot_check_legitimate_apply": true,
+    "baseline_candidate_metrics_must_have_nonzero_outcome_class_support": true,
+    "oracle_candidate_identity_test_forbidden": true
+  },
+  "hard_gates": [
+    "oracle/candidate source independence contract passes static audit",
+    "fresh panel contains APPLY_VERIFIED_LESSON, APPLY_SUCCESSOR, FALLBACK_SEARCH and CANNOT_CHECK gold outcomes",
+    "candidate exact_action_accuracy >= 0.995",
+    "candidate unsafe_apply_rate == 0",
+    "candidate cannot_check_recall >= 0.995",
+    "candidate legitimate_apply_recall >= 0.995",
+    "COMPOSITE_SIMPLE_PARENT information ceiling <= 0.80",
+    "all 12 registered candidate mutants are caught",
+    "each of the four candidate outcome metrics is demonstrated falsifiable by at least one planted mutant",
+    "historical receipt and narrowing artifacts remain byte-unchanged"
+  ],
+  "allowed_positive_terminal": "PROMOTE_CONDITIONALLY_STRUCTURED_EXPERIENCE_ACTION_CONFORMANCE_INDEPENDENT_ORACLE_V1",
+  "negative_terminal": "STRUCTURED_EXPERIENCE_ACTION_CONFORMANCE_FAILED__RSHEA_SUCCESSOR_REQUIRED",
+  "instrument_terminal": "INSTRUMENT_DEFECT__DO_NOT_INTERPRET_CANDIDATE_METRICS",
+  "next_on_positive": "retain structured-state conformance as a runtime mechanic; continue #447 model/interface qualification and then freeze a power-sized raw-trajectory/verified-lesson/fresh-task causal experiment",
+  "next_on_negative": "localize the first independent-oracle disagreement and create a versioned candidate repair without changing this frozen panel or oracle",
+  "grants_scientific_authority": false,
+  "grants_model_level_efficacy": false
+}
