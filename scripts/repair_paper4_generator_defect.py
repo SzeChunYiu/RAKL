@@ -56,6 +56,15 @@ STALE_PHRASES = (
 
 
 def repair(text: str) -> str:
+    # The repair exists to strip over-claim language from the retracted
+    # Paper IV v1 narrative. If no over-claim phrase remains, the paper is
+    # already honest and the repair is a no-op -- it must not error just
+    # because surrounding prose has since been re-worded past the original
+    # target strings (the retraction framing evolved after these targets
+    # were written). Key on the honesty condition (stale-phrase absence),
+    # not on exact prose match.
+    if all(stale not in text for stale in STALE_PHRASES):
+        return text
     updated = text
     for old, new in REPLACEMENTS:
         if old not in updated:
