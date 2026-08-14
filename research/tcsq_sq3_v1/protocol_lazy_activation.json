@@ -1,0 +1,44 @@
+{
+  "protocol_id": "tcsq_sq3_lazy_activation_v1",
+  "parent_issue": "#53",
+  "parent_pr": "#551",
+  "regime_target": "low-redundancy (redundancy_rate <= 0.5)",
+  "mechanism_hypothesis": "In low-redundancy regimes, the fixed construction cost (intervention audit + family validation) dominates the benefit from certificate replay because cache hits are rare. By deferring construction until we observe enough cache pressure, we avoid the overhead when reuse is unlikely and pay it only when justified by observed hit rate.",
+  "mechanic": "LAZY_FAMILY_CERTIFICATE_QUOTIENT",
+  "mechanic_description": "Adaptive lazy construction: observe the first N tasks with simple structure-keyed caching, compute the observed hit rate, and only trigger the intervention audit + family validation if the hit rate exceeds a threshold that makes the construction cost worth paying. Below threshold, continue with raw solving.",
+  "arms": [
+    "RAW_NO_QUOTIENT",
+    "SURFACE_HASH_DEDUP",
+    "STRUCTURE_NO_ERASURE",
+    "FAMILY_CERTIFICATE_QUOTIENT",
+    "LAZY_FAMILY_CERTIFICATE_QUOTIENT"
+  ],
+  "parameters": {
+    "observation_window": 48,
+    "activation_threshold": 0.35
+  },
+  "parameters_justification": "observation_window=48 (20% of 240 tasks) provides a stable estimate of hit rate while leaving enough runway for construction payoff. activation_threshold=0.35 means we trigger construction if observed hits exceed 35% of the window, indicating enough redundancy to amortize the fixed cost.",
+  "evaluation_gates": {
+    "primary": "net_advantage_vs_best_control in low-redundancy cells (redundancy_rate <= 0.5)",
+    "secondary": "aggregate_net_advantage across all cells",
+    "honesty": "charge full cost of observation period, threshold check, and construction (even if degradation to raw occurs)",
+    "completeness": "must evaluate against same parent controls as sq3_successor (RAW, SURFACE_HASH, STRUCTURE, FAMILY_CERTIFICATE)",
+    "cost_accounting": "all stage costs (observe, threshold_check, construction, solve, verify) must be charged to meter"
+  },
+  "success_criteria": {
+    "primary_cell_positive": "net_advantage CI excludes zero from above in at least 3 low-redundancy cells (scale x redundancy where redundancy <= 0.5)",
+    "aggregate_positive": "aggregate net_advantage CI excludes zero from above OR straddles zero with positive mean",
+    "no_regression": "must not lose net_advantage in any high-redundancy cell where FAMILY_CERTIFICATE_QUOTIENT was positive",
+    "honest_terminal": "if gates not met, report EXTENDED_REGIME with next lever (never falsify data)"
+  },
+  "next_levers_if_terminal": [
+    "partial_certificate_composition: compose fragments of prior certificates to cover novel queries",
+    "certificate_generalization: lift certificate to query family with soundness proof obligation",
+    "verify_order_adaptation: defer verification until confident about certificate validity"
+  ],
+  "seed": 462,
+  "n_tasks": 240,
+  "replicates": 12,
+  "solve_cost_scales": [16, 48, 128, 256],
+  "distinct_fractions": [1.0, 0.75, 0.5, 0.25, 0.1, 0.04]
+}
