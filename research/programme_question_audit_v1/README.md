@@ -39,8 +39,13 @@ non-compensatory — no scalar ranking of candidates anywhere.
   only jointly with an admissible capable reducer).
 - `metric_open_problem/EVALUATOR_STAGE_A.py` — deterministic stdlib evaluator
   (sha256 in the protocol), self-testing, exit codes 0/2/3.
-- `metric_open_problem/results_stage_a/` — Stage A execution receipts (added in
-  a separate commit after the protocol freeze).
+- `metric_open_problem/results_stage_a/` — Stage A execution receipts (separate
+  commit after the freeze; laptop billy, fresh clone). Typed outcome:
+  `NEGATIVE_AT_FROZEN_GATE` — no candidate passes the frozen Spearman ≥ 0.80
+  gate (exact GED lands 0.7975; no threshold rescue). Strongest measured
+  positive: WL-3 separates 20/20 signature-equal non-isomorphic decoys that
+  the incumbent exact signature cannot. Instrument-attributed residual and a
+  versioned Stage A v2 revival are registered in the run receipt.
 - `../../docs/REASONING_LOCATION.md` — where the reasoning lives (three sites,
   amortization-thesis falsifiability, honestly marked nearest work).
 
