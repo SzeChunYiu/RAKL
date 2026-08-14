@@ -3,14 +3,17 @@
 Status: DEV-split only (648 pairs). CONFIRM (1542 pairs) untouched.
 Proposal-only. Grants no scientific authority. No terminal is filed by this file.
 
-## F0. The v3 receipt was never committed, but the run reproduces exactly
+## F0. RETRACTED as stated — the receipts were present; the run reproduces exactly
 
-PR #703 and #707 state that `results_v3_reducer/RESULT.json` and
-`results_v4_reducer/RESULT.json` are committed. Neither path exists on
-`arn/v3-instance-paired-reducer` or `arn/v4-relational-reducer`
-(`git ls-tree -r <branch> -- research/paper2_external_corpus_v1/`), and neither is
-gitignored. The numbers are nonetheless real: re-executing the committed v3 runner
-against the committed corpus reproduces the PR's figures.
+**Retracted.** This section originally claimed the v3/v4 receipts were missing
+from their branches. That check was run against stale local refs; against
+`refs/pull/703/head` and `refs/pull/707/head` both receipts are present, and all
+of `results_v2_reducer/`, `results_v3_reducer/` and `results_v4_reducer/` are on
+`main`. See `../paper2_external_corpus_v1/RETRACTION_01.md`.
+
+What stands is the reproduction: re-executing the committed v3 runner against the
+committed corpus reproduces the PR's figures, and the resulting RESULT.json is
+byte-identical to the one on `main`.
 
 | quantity | PR #703 body | re-execution |
 |---|---|---|
@@ -20,8 +23,8 @@ against the committed corpus reproduces the PR's figures.
 | band control confirm exact | 0.506 | 0.506485 |
 | terminal | NEGATIVE__CAPABILITY_ABSENT | NEGATIVE__CAPABILITY_ABSENT |
 
-Defect class: missing receipt, not fabricated numbers. Fix = commit the
-reproduced receipt.
+Reading: an independent reproduction of the v3 epoch, on a different host and
+install from the one that produced the original.
 
 ## F1. The fitted operating point is the all-reject corner
 

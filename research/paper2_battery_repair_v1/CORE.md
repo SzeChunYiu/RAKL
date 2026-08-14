@@ -3,6 +3,12 @@
 Read-first. Detail in this directory; raw receipt in `KNOWN_ANSWER_RECEIPT.json`.
 Proposal-only. Grants no scientific authority.
 
+> **Correction.** An earlier version of this package claimed the v3/v4 receipts
+> were missing from their branches. That was a false positive from reading stale
+> local refs; the receipts were present on the pull-request heads and are on
+> `main`. See `../paper2_external_corpus_v1/RETRACTION_01.md`. The re-executions
+> stand as an independent reproduction — byte-identical to the committed receipts.
+
 ## The finding
 
 The registered B3 probe shuffles gold and re-runs the primary paired statistic;
