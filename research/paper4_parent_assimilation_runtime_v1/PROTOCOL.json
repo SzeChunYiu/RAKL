@@ -7,6 +7,7 @@
   "frozen_existing_subject_blobs": {
     "src/rakl/training_projection.py": "b619f3111c232065e080e1bc5eb1ef91bd68defb",
     "src/rakl/training_scheduler.py": "e791f350c954572546df804bba6e5f70af56dae0",
+    "src/rakl/training_policy_authority.py": "021514aa383031d147943acd7eb993d84a27cf4b",
     "research/paper4_parent_assimilation_v1/PROTOCOL.json": "4eb63312a8e16016aba7456607b4680026df48f0"
   },
   "negative_history": [
@@ -50,7 +51,7 @@
     "tests_frozen_before_implementation": [
       "SAFE_PARENT_FIDELITY: safe candidates are selected in exact descending parent-score order",
       "STRUCTURAL_VETO: highest-score candidate with forgetting or negative-transfer risk above the frozen bound is rejected and cannot be compensated by its parent score",
-      "LEAK_VETO: confirmatory-target-leak candidate is rejected regardless of parent score",
+      "LEAK_VETO: confirmatory-target-leak candidate invalidates selection regardless of parent score",
       "STALE_CHECKPOINT: parent score bundle bound to a different model checkpoint returns CANNOT_CHECK",
       "COVERAGE_FAIL_CLOSED: missing/extra/duplicate candidate score identity returns CANNOT_CHECK",
       "TAMPER_FAIL_CLOSED: score-bundle content hash mismatch returns INVALID",
