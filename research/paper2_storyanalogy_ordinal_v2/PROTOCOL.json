@@ -1,0 +1,64 @@
+{
+  "schema_version": "rakl-paper2-storyanalogy-ordinal-v2",
+  "date": "2026-08-14",
+  "owner_issue": 592,
+  "parent_v1_result_commit": "2ec0cb244a85edfb5ac92efe1323186e7620075b",
+  "predecessor_terminal": "DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD",
+  "predecessor_negative_preserved": true,
+  "root_cause": "Binary REL_HIGH/ENT_LOW targets are not sufficient statistics for the registered tri-state gold because they alias MID ambiguity with decisive LOW/HIGH rejection zones. v2 changes representation to explicit LOW/MID/HIGH heads; it does not tune v1 thresholds.",
+  "chronology": {
+    "source_bytes_acquired": true,
+    "source_sha256": "a74f1799ec6eec32a1d82aea5e036ac70c39feb298554c05da8382bf1d80319c",
+    "viewer_rows_0_99_quarantined": true,
+    "v1_dev_and_calibration_accessed": true,
+    "confirmatory_labels_scored_or_used_before_v2_freeze": false,
+    "confirmatory_partition_n_from_text_only_split": 4941
+  },
+  "unchanged_contracts": {
+    "external_dataset": "JoeyCheng/story_analogy / StoryAnalogy.csv",
+    "gold": {"ACCEPT":"entity<=1 AND relation>=2","REJECT":"entity>=2 OR relation<=1","CANNOT_CHECK":"otherwise"},
+    "split": "same exact-story connected-component DEV/CALIBRATION/CONFIRMATORY split as v1 after permanent quarantine of raw rows 0..99",
+    "features": "same DEV-only FeatureUnion word 1-2 / char_wb 3-5 TF-IDF, min_df=2, sublinear_tf, max_features=120000 per channel",
+    "strongest_parent": "P1_DIRECT_TEXT from the v1 parent family; refit deterministically on the same DEV and calibrate only on the same CALIBRATION partition before confirmatory labels are parsed",
+    "bootstrap": "10000 paired row bootstraps, seed 20260814991",
+    "confirmatory_gate": "candidate-parent exact3 >=0.02 with 95% CI lower>0; candidate valid_accept>=0.65; invalid_false_accept<=0.15; CANNOT_CHECK recall>=0.40; n>=1000; all three gold classes; all falsifiability probes pass"
+  },
+  "candidate": {
+    "id": "E2_ORDINAL_FACTORISED_STRUCTURAL",
+    "relation_zones": {"LOW":"relation<=1.0","MID":"1.0<relation<2.0","HIGH":"relation>=2.0"},
+    "entity_zones": {"LOW":"entity<=1.0","MID":"1.0<entity<2.0","HIGH":"entity>=2.0"},
+    "relation_head": "SGDClassifier(loss=log_loss,alpha=1e-5,max_iter=2000,tol=1e-4,random_state=20260816,class_weight=balanced) three-class",
+    "entity_head": "SGDClassifier(loss=log_loss,alpha=1e-5,max_iter=2000,tol=1e-4,random_state=20260817,class_weight=balanced) three-class",
+    "confidence_grid_each_head": [0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90],
+    "decision": "ACCEPT iff relation argmax=HIGH with confidence>=tau_rel AND entity argmax=LOW with confidence>=tau_ent. REJECT iff relation argmax=LOW with confidence>=tau_rel OR entity argmax=HIGH with confidence>=tau_ent. Otherwise CANNOT_CHECK. ACCEPT precedence is evaluated first.",
+    "calibration": "Among threshold pairs with invalid_false_accept<=0.15 and valid_accept>=0.50, maximize CALIBRATION exact3; ties lower false accept, higher valid accept, lexicographically smaller thresholds. If none, DEVELOPMENT_NEGATIVE_ORDINAL_NO_SAFE_THRESHOLD and do not parse confirmatory labels."
+  },
+  "parent": {
+    "id": "P1_DIRECT_TEXT",
+    "classifier": "same v1 SGDClassifier three-way parent and same confidence grid 0.50..0.90",
+    "reason": "It was the strongest reproducible v1 calibration parent (exact3 0.584664 vs lexical 0.532983)."
+  },
+  "preconfirmatory_falsifiability": {
+    "TEXT_DESTRUCTION": "same independent-story permutation seed 2026081401; candidate CALIBRATION exact3 drop>=0.10",
+    "RELATION_ZONE_SHUFFLE": "permute relation-head row probabilities seed 2026081602; >=0.05 of decisions change",
+    "ENTITY_ZONE_SHUFFLE": "permute entity-head row probabilities seed 2026081603; >=0.05 change",
+    "RELATION_MID_COLLAPSE_TO_LOW": "map predicted relation MID to LOW at its original max confidence; >=0.05 decisions change OR exact3 drops>=0.05",
+    "ENTITY_MID_COLLAPSE_TO_HIGH": "map predicted entity MID to HIGH at its original max confidence; >=0.05 decisions change OR exact3 drops>=0.05",
+    "HEAD_SWAP": "swap relation/entity zone probability matrices with the zone names unchanged; >=0.05 decisions change",
+    "GOLD_SHUFFLE": "seed 2026081604; candidate-parent CALIBRATION exact3 advantage under shuffled gold<0.02",
+    "TRIVIAL_CONTROLS": "no constant arm jointly satisfies valid_accept>=0.65 and invalid_false_accept<=0.15"
+  },
+  "positive_terminal": "PROMOTE_CONDITIONALLY_EXTERNAL_HUMAN_ORDINAL_STRUCTURAL_ANALOGY_FACTORISATION_V2",
+  "negative_terminals": [
+    "DEVELOPMENT_NEGATIVE_ORDINAL_NO_SAFE_THRESHOLD",
+    "INSTRUMENT_NOT_FALSIFIABLE_ORDINAL_V2",
+    "NEGATIVE_ORDINAL_NO_RESIDUAL_OVER_DIRECT_TEXT_PARENT",
+    "NEGATIVE_ORDINAL_UNSAFE_FALSE_ACCEPT",
+    "NEGATIVE_ORDINAL_OVERREFUSES_VALID_ANALOGIES",
+    "RESOURCE_BLOCKED"
+  ],
+  "claim_boundary": "Positive means explicit learned LOW/MID/HIGH relation/entity factorization improves externally human-annotated StoryAnalogy tri-state discrimination over the frozen direct-text parent. It is not source-span witness extraction, natural-science transfer, universal analogy, end-to-end ORION utility or scientific authority.",
+  "next_if_positive": "Freeze source-span-localized structured extraction using the independently qualified #447 interface on realistic scientific material, with v2 as an external-human representation prior/parent.",
+  "next_if_negative": "Preserve the result and move to capable-model structured extraction or a scientific-analogy corpus; do not tune StoryAnalogy confirmatory outcomes.",
+  "grants_scientific_authority": false
+}
