@@ -45,26 +45,32 @@ jobs:
           tests/test_rakl_v3_experience_substrate.py
           tests/test_episode_admission_runtime_wiring.py
           tests/test_rakl_v3_authority_hardening.py
-      - name: Enforce closeout dependency and negative-history boundary
+      - name: Enforce closeout dependency, terminal and negative-history boundary
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           protocol=json.loads(Path('research/paper3_publication_closeout_v2/PROTOCOL.json').read_text())
           matrix=json.loads(Path('research/paper3_publication_closeout_v2/MECHANIC_PROMOTION_MATRIX.json').read_text())
-          receipt=json.loads(Path('research/paper3_publication_closeout_v2/CANDIDATE_RECEIPT.json').read_text())
+          candidate=json.loads(Path('research/paper3_publication_closeout_v2/CANDIDATE_RECEIPT.json').read_text())
+          final=json.loads(Path('research/paper3_publication_closeout_v2/FINAL_RECEIPT.json').read_text())
           assert protocol['promotion_if_all_gates_green']=='PROMOTE_CONDITIONALLY_PAPER3_PUBLICATION_CLOSEOUT'
           assert matrix['added_coordinate']['terminal']=='PROMOTE_CONDITIONALLY_PRODUCTION_TARGET_VALIDATION_CONSOLIDATION'
           assert matrix['added_coordinate']['source_subject']['head_sha']=='e8e01805c05a1e9dd75238381288fa8ffd15f506'
           assert matrix['added_coordinate']['source_subject']['dedicated_ci']=='SUCCESS'
           assert matrix['open_proposal_only_coordinates']==[]
           assert matrix['all_known_paper3_framework_coordinates_promotion_grade_closed'] is True
-          assert receipt['status']=='CANNOT_CHECK_PENDING_INTEGRATED_CLOSEOUT_CI'
-          assert '#401 CANNOT_EXECUTE_MATCHED_EVAL' in receipt['preserved_negatives']
-          assert 'CAPABILITY_LIMITED_CAUSAL_CANNOT_IDENTIFY' in receipt['preserved_negatives']
-          assert receipt['grants_scientific_authority'] is False
-          assert receipt['grants_research_tool_promotion'] is False
-          print('P3 closeout dependency-integrity boundary: PASS')
+          assert candidate['status']=='CANNOT_CHECK_PENDING_INTEGRATED_CLOSEOUT_CI'
+          assert final['terminal']=='PROMOTE_CONDITIONALLY_PAPER3_PUBLICATION_CLOSEOUT'
+          assert final['evidence_subject']['head_sha']=='50886835aae3355080b64f3ef14ddefa0b416eaf'
+          assert final['evidence_subject']['workflow_run']==31774015616
+          assert final['evidence_subject']['conclusion']=='SUCCESS'
+          for receipt in (candidate, final):
+              assert '#401 CANNOT_EXECUTE_MATCHED_EVAL' in receipt['preserved_negatives']
+              assert 'CAPABILITY_LIMITED_CAUSAL_CANNOT_IDENTIFY' in receipt['preserved_negatives']
+              assert receipt['grants_scientific_authority'] is False
+              assert receipt['grants_research_tool_promotion'] is False
+          print('P3 closeout dependency-integrity and final-terminal boundary: PASS')
           PY
       - name: Install TeX
         run: |
@@ -80,6 +86,7 @@ jobs:
           ! grep -E 'Overfull \\[hv]box|Undefined control sequence|LaTeX Warning: Citation .* undefined|LaTeX Warning: Reference .* undefined' main.log
           grep -F 'Method-Evolution Mechanics' main.tex
           grep -F 'PROMOTE_CONDITIONALLY_PRODUCTION_TARGET_VALIDATION_CONSOLIDATION' ../../../research/paper3_publication_closeout_v2/MECHANIC_PROMOTION_MATRIX.json
+          grep -F 'PROMOTE_CONDITIONALLY_PAPER3_PUBLICATION_CLOSEOUT' ../../../research/paper3_publication_closeout_v2/FINAL_RECEIPT.json
       - name: Hash release subject
         working-directory: publication/papers/paper-03-method-evolution-mechanics
         run: sha256sum main.tex main.pdf > paper3-release-sha256.txt
@@ -93,5 +100,6 @@ jobs:
             research/paper3_publication_closeout_v2/PROTOCOL.json
             research/paper3_publication_closeout_v2/MECHANIC_PROMOTION_MATRIX.json
             research/paper3_publication_closeout_v2/CANDIDATE_RECEIPT.json
+            research/paper3_publication_closeout_v2/FINAL_RECEIPT.json
           if-no-files-found: error
           retention-days: 30
