@@ -33,7 +33,7 @@ ladder (`research/benefit_L0_fcr_v1`, `benefit_L1_composition_v1`,
 `benefit_L2_gluing_v1`, and successors) fail to beat naive arms on known-answer
 corpora, the compiled-reasoning claim loses its payoff column. Cost accounting
 for the compile/retrieve/verify split is the non-hidden `CostBreakdown` of
-`src/rakl/amortization.py`. The ladder receipts to date (L0–L2 typed PROMOTE,
+`src/rakl/amortization.py`. The ladder structure defines L0-L7 (framework_ladder/ladder.json); benefit receipts to date cover L0-L2 typed PROMOTE,
 mechanical arms, synthetic corpora) are evidence at that scope and no further.
 
 ### Site 2 — governed interfaces (reasoning-at-the-boundary)
