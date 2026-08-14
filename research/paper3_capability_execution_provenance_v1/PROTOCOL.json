@@ -1,0 +1,47 @@
+{
+  "schema_version": "paper3-capability-execution-provenance-v1",
+  "date": "2026-08-14",
+  "base_main_sha": "13b7b3bedec8111b2401dd5ffbc286da0f0e2479",
+  "owner_issue": 447,
+  "purpose": "Make the already-frozen Stage 3-5 capability qualification externally executable and harvestable without changing its model, interface, panel, thresholds or scientific decision rule.",
+  "expert_cell": [
+    {"role": "capability_experiment_methodology", "obligation": "keep model/interface qualification independent of any RAKL treatment outcome"},
+    {"role": "HPC_execution_and_reproducibility", "obligation": "bind exact repository subject, staged model revision, runtime module and output directory before sbatch"},
+    {"role": "evidence_lineage_and_authority", "obligation": "submission and harvest receipts are provenance only and cannot mint capability/scientific authority"},
+    {"role": "adversarial_statistics", "obligation": "no partial-run success, panel substitution, threshold change, model substitution or post-hoc repair may pass harvest"}
+  ],
+  "frozen_scientific_parent": {
+    "freeze": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json",
+    "freeze_git_blob": "29c3a5afbfbf199b5ac80f02f1f8b04b716b3094",
+    "panel_manifest": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/FRESH_TASK_MANIFEST_V1.json",
+    "panel_manifest_git_blob": "1542c8cb13173b361b6a5037dc0e029d140a0da3",
+    "runner": "experiments/paper3/run_capability_stage4_v1.py",
+    "sbatch": "experiments/paper3/run_capability_stage4_v1_lunarc.sbatch",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "transformers_version": "4.55.0",
+    "panel_n": 132
+  },
+  "submission_contract": [
+    "repository HEAD must equal exported SUBJECT_SHA",
+    "Stage3-5 freeze and panel-manifest git blobs must match the frozen identities above",
+    "sbatch must run the unchanged Stage-4 runner and exact staged model revision",
+    "submission receipt is written before outcome access and records job id, exact subject and frozen file hashes",
+    "no model substitution, network model download, interface repair or panel edit"
+  ],
+  "harvest_contract": [
+    "submission receipt subject must match the harvested job lineage",
+    "FINAL_CAPABILITY_RECEIPT must use the frozen model revision and panel SHA",
+    "all_132_cases_completed must be true for scientific capability/failure interpretation except typed RESOURCE_BLOCKED",
+    "model_substitution_performed must be false",
+    "receipt grants_scientific_authority must be false",
+    "only the Stage-5 runner decides CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 versus registered failure/resource terminals"
+  ],
+  "current_terminal": "EXECUTION_PROVENANCE_READY__NO_MODEL_OUTCOME",
+  "forbidden_claims": [
+    "capable model has been authorized",
+    "RAKL improves research performance",
+    "submission or harvest provenance grants scientific authority"
+  ],
+  "grants_scientific_authority": false
+}
