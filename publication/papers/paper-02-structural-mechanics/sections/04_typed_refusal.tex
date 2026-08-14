@@ -1,0 +1,51 @@
+\section{Typed refusal: absorbing the parent's strongest property by adaptation}
+\label{sec:typed-refusal}
+
+The strongest property of the transportability parent is what its refusal \emph{means}. When \textit{sID} fails, completeness upgrades the failure from ``this derivation did not succeed'' to ``no derivation over the declared inputs can succeed,'' and the returned obstruction witnesses that impossibility \cite{bareinboim2012completeness,bareinboim2013general}. This section reports a measured method transfer of that property into the witness setting: a frozen source-mechanism analysis, a faithful-import control built to fail, an adapted mechanism built to the source's actual preconditions, and a known-world execution in which the contrast between them is the experiment. All artifacts are preserved under \path{research/paper2_causal_transport_absorption_v1/}; the adapted mechanism is implemented in \path{src/rakl/transfer_impossibility.py}.
+
+\subsection{What makes the parent's refusal a certificate}
+
+The source analysis, frozen before implementation, identifies three load-bearing preconditions behind refusal-as-impossibility. First, a \emph{complete declaration} of the objects the verdict ranges over: \textit{sID} requires the selection diagram as a hard input, and the authors place the case of unavailable knowledge outside the formalism entirely. Second, a \emph{complete underlying calculus}: refusal upgrades from ``search failed'' to ``nothing exists'' only because do-calculus plus standard probability manipulations are complete for the class. Third, a \emph{decidable exhaustion} of the derivation space, so that ``no derivation succeeded'' is established rather than assumed. The impossibility itself is proved by an indistinguishability construction---two models agreeing on every declared input yet disagreeing on the QoI---so the certificate derives from properties invariant under every admissible presentation of the query, not from the failure of one presentation. The claimed benefit is correspondingly scoped: non-existence is relative to the fixed input tuple, not absolute; enlarging the declared inputs can flip a refusal into a transport formula.
+
+\subsection{The gap in the witness gate, and the adapted mechanism}
+
+Orion's applicability gate evaluates exactly one supplied witness. Its \texttt{REJECTED} therefore quantifies over nothing: it reports that \emph{this} witness failed and cannot distinguish ``no witness can license this transfer'' from ``this particular witness is defective.'' Importing the parent's verdict form without its preconditions would manufacture false impossibility certificates---relabelling a refusal caused by a repairable defect in the supplied presentation as proof that no presentation can work. That is precisely the surface-analogy forcing this research programme forbids.
+
+The adapted mechanism splits the negative verdict:
+\[
+\texttt{REJECTED}\;\longrightarrow\;
+\{\texttt{MERELY\_UNLICENSED},\;\texttt{CERTIFIABLY\_IMPOSSIBLE}\}.
+\]
+\texttt{CERTIFIABLY\_IMPOSSIBLE} may be emitted only when (i) the target carries an explicit closed-world completeness declaration---the honest analogue of the fully specified selection diagram; (ii) a bounded exhaustion over the witness presentation space actually completes; and (iii) the obstruction is witness-independent (a QoI mismatch, a declared invariant absent from the target, or a relation type no admissible role mapping can preserve). Budget exhaustion, an open-world target, or any witness-local defect yields \texttt{MERELY\_UNLICENSED}. The strong verdict carries a certificate naming the failed criterion, the unmatchable relation types or missing invariants, and any role-cardinality obstruction. The cost asymmetry is inherited honestly: quantifying over role mappings is exponential in the worst case, which is why an unfinished exhaustion must produce the weak verdict, never the strong one.
+
+\subsection{Frozen falsifiers and the eight-arm execution}
+
+Three falsifiers were frozen with the candidate, any one of which kills the transfer: (a) the adapted gate emits a single false impossibility certificate on a case where a licensing witness demonstrably exists; (b) it never fires \texttt{CERTIFIABLY\_IMPOSSIBLE} on cases genuinely impossible under a closed-world declaration, making it vacuous; (c) it never differs from the faithful import, making the distinction empty. The faithful import (challenger~A) relabels every \texttt{REJECTED} as \texttt{CERTIFIABLY\_IMPOSSIBLE} with assumptions unchecked; the adapted gate is challenger~B.
+
+\begin{table}[t]
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lYccc@{}}
+\toprule
+Arm & Ground truth & A & B & B certificate \\
+\midrule
+1 repairable role map & \texttt{MERELY\_UNLICENSED} & false cert. & correct & --- \\
+2 repairable evidence & (constructor rejects) & \multicolumn{3}{l}{\texttt{CANNOT\_CONSTRUCT}: evidence-free witness inadmissible} \\
+3 repairable boundary & \texttt{MERELY\_UNLICENSED} & false cert. & correct & --- \\
+4 structural relation & \texttt{CERTIFIABLY\_IMPOSSIBLE} & correct & correct & S3: unmatchable \texttt{causes} \\
+5 structural QoI & \texttt{CERTIFIABLY\_IMPOSSIBLE} & correct & correct & S1: QoI mismatch \\
+6 structural invariant & \texttt{CERTIFIABLY\_IMPOSSIBLE} & correct & correct & S2: missing \texttt{energy} \\
+7 open-world target & \texttt{MERELY\_UNLICENSED} & false cert. & correct & --- \\
+8 budget exhaustion & \texttt{MERELY\_UNLICENSED} & false cert. & correct & --- \\
+\bottomrule
+\end{tabularx}
+\caption{The eight frozen arms. The faithful import (A) emits a false impossibility certificate on every repairable, open-world and budget-limited arm; the adapted gate (B) is correct on every runnable arm and emits certificates only on the three witness-independent structural obstructions. Arm~2 is preserved as \texttt{CANNOT\_CONSTRUCT}: the public constructor rejects an evidence-free witness, so that branch is unreachable and is reported as unreachable rather than counted as a pass.}
+\label{tab:eight-arms}
+\end{table}
+
+Table~\ref{tab:eight-arms} summarizes the executed receipt. The faithful import produced false impossibility certificates on all four repairable/open-world/budget arms---the registered refutation of the import. The adapted gate emitted no false certificate (falsifier~(a) did not fire), fired the strong verdict on exactly the three structural arms (falsifier~(b) did not fire), and differed from the import on four arms (falsifier~(c) did not fire). Beyond the constructed arms, two sweeps executed under hard gates: a 600-case randomized proposition sweep checking the adapted gate's verdicts against an oracle criterion, with zero disagreements, of which 288 cases carried source relations and 18 discriminated via a non-canonical role mapping; and a planted known-answer sweep of 178 planted-pass and 178 planted-fail cases with zero failures (seed 20260814). All five hard gates passed: no false certificate, non-vacuity, separation, proposition agreement, and planted known-answer agreement.
+
+\subsection{What this does and does not establish}
+
+\emph{Establishes.} In the known-world setting, refusal semantics cannot be imported from the completeness parent by surface analogy---the faithful import is refuted by construction on every arm where the refusal cause is witness-local---and the adapted typed refusal, which re-derives the strong verdict from the parent's actual preconditions, is exact on the registered design. This absorbs the parent's strongest property at the level of its quantification structure, never at the level of its causal machinery: Orion has no causal diagram and its QoI is not a probabilistic causal quantity, which is precisely why the adaptation, not the import, is the transferable object.
+
+\emph{Does not establish.} These are constructed known-answer worlds evaluated in the same research context that built the mechanism; the execution grants no scientific or promotion authority, and no independent reproduction of the transfer exists. The source theorem is peer-reviewed; the transfer is not. Nothing here bears on natural-domain recovery of witnesses (Section~\ref{sec:natural-domain}), and the exponential presentation-space cost means the bounded-exhaustion path must be measured, not assumed, in any deployment claim.

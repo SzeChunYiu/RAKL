@@ -1,0 +1,57 @@
+\section{Parents, the acknowledged formal parent, and the surviving residual}
+\label{sec:parents}
+
+Earlier drafts of this manuscript presented the contract's conjunction---directional, QoI-bound, precondition-accounting, invariant-preserving, boundary-demarcated, evidence-bearing, fail-closed---as residual novelty. A systematic nearest-work audit showed that this conjunction will not survive review, because nearly every conjunct is occupied by one parent formalism. This section records that comparison explicitly and narrows the claim to what survives. The audit artifacts, including primary-source verification for every entry, are preserved in the repository (\path{research/paper2_nearest_work_2026/}).
+
+\subsection{Causal transportability is the acknowledged formal parent}
+
+The transportability theory of Bareinboim and Pearl \cite{pearl2011transportability,bareinboim2012completeness,pearl2014external,bareinboim2016fusion} asks when a causal effect learned in a source population $\Pi$ can be transferred to a target population $\Pi^\ast$, given a selection diagram $D$ demarcating where the two populations may differ. The \textit{sID} algorithm decides this question, is provably complete for its class \cite{bareinboim2012completeness,bareinboim2013general}, extends to multiple source domains \cite{bareinboim2013meta}, and on failure returns a structural object witnessing the obstruction. Partial transportability yields bounds when point transport fails \cite{jalaldoust2024partial}. Pearl and Bareinboim describe transportability as a licence to transfer causal effects learned in experimental studies to a new population---the same word this paper uses.
+
+Table~\ref{tab:conjuncts} records the conjunct-by-conjunct comparison. Read plainly: directionality, QoI binding, source-precondition accounting, invariance declaration, target demarcation, evidence-bearing output and fail-closed refusal are all already present in the \textit{sID} signature, and on refusal the parent is strictly \emph{stronger} than fail-closed---completeness turns refusal into a certificate of impossibility, whereas a fail-closed gate merely declines. Any causal-inference reviewer would read the earlier residual sentence as the transport formula with different nouns. We therefore cite transportability as the acknowledged formal parent of the applicability contract, not as related work.
+
+\begin{table}[t]
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lYl@{}}
+\toprule
+Contract conjunct & Transportability counterpart & Status \\
+\midrule
+directional & $\Pi\to\Pi^{\ast}$, asymmetric by construction & occupied \\
+binds QoI & $P^{\ast}_{x}(y)$ is an explicit formal argument & occupied \\
+source preconditions & the available-distribution inputs $\langle P,I,P^{\ast}\rangle$ & occupied \\
+preserved invariants & absence of an $S$-node \emph{is} declared mechanism invariance & occupied \\
+target boundaries & the selection diagram $D$ demarcates what differs & occupied \\
+evidence-bearing & returns a transport formula naming which datasets to fuse & occupied \\
+fail-closed & $\mathrm{FAIL}$ with an $s$-hedge: refusal is a proof of impossibility & occupied, strictly stronger \\
+not similarity-based & do-calculus derivation, zero similarity scoring & occupied \\
+uncertainty at target & partial transportability yields bounds & largely occupied \\
+\bottomrule
+\end{tabularx}
+\caption{Conjunct-by-conjunct comparison of the applicability contract against the \textit{sID} signature of causal transportability. Every conjunct of the earlier residual-novelty sentence is occupied by the parent; the surviving residuals are the four listed in Section~\ref{sec:surviving}.}
+\label{tab:conjuncts}
+\end{table}
+
+\subsection{Neighbouring families occupying single conjuncts}
+
+\paragraph{Structure mapping.} Structure-Mapping Theory and its computational lineage---SME and MAC/FAC \cite{gentner1983structure,falkenhainer1989sme,forbus1995macfac}---own the role/relation-mapping conjunct outright, with systematicity as a principled invariant-selection rule. The output differs: SME produces ranked candidate mappings, not a licence. The contract may not present role mapping itself as novel, and does not.
+
+\paragraph{Selective prediction and deferral.} Learning with rejection, selective classification, learning-to-defer and conformal prediction under shift \cite{cortes2016rejection,geifman2017selective,madras2018defer,wang2025conformal} own the abstain channel, including abstention mounted directly on transfer settings with target-domain coverage guarantees. The trigger differs: abstention there is threshold-triggered on a scalar confidence signal, whereas \texttt{CANNOT\_CHECK} is structure-triggered by a named unverifiable obligation. That difference is a claim only insofar as it is tested against a matched-coverage selective-prediction baseline (Section~\ref{sec:open-programme}).
+
+\paragraph{Case-based reasoning.} Adaptability-guided retrieval \cite{leake1997adaptability}, within the classical CBR frame \cite{aamodt1994cbr}, is the ancestor of precondition-bound reuse: it replaces semantic similarity with estimated adaptability as the retrieval criterion. It produces a real-valued estimate feeding ranked retrieval, not a directional contract, and has no abstention verdict.
+
+\paragraph{Contemporary reusable-experience governance.} SKILL.nb \cite{elhattami2026skillnb} is the nearest live contemporary: evidence-calibrated lifecycle policies for reusable agent workflows, gate-conditioned execution and fallback on drift---the same problem statement and the same fail-closed instinct. It differs in the decision object: binary runtime step validation, no declared QoI, no role mapping, no forbidden-loss enumeration and no third verdict. More broadly, shared experience substrates and dependency-aware skill retrieval are established parents rather than contributions of this paper: ReX supplies reusable latent experiences composed into lightweight adapters \cite{ling2026rex}; SkillGraph-style systems supply dependency, prerequisite and precondition--effect graphs that inform retrieval, composition and execution \cite{wu2026skillgraph,li2026skillgraphrl,xia2026grasp,sun2026agentgl}; and SkillSight shows that shared descriptive boilerplate inflates semantic relevance scores, which is why any semantic control used against the contract must be calibrated against shared-background bias \cite{xiao2026skillsight}.
+
+\paragraph{Analogy evaluation.} The analogy/transfer benchmark literature \cite{sourati2024arn,stevenson2026children,li2026retre,petersen2026modelling,das2025relational,liu2026crossdomain,chen2026analogical} measures whether transfer succeeds or ranks candidate analogies by similarity; AbstentionBench \cite{kirichenko2025abstentionbench} abstains on answerability rather than on transfer. None of these issues a per-transfer licence, and none is a threat to the narrowed claim; they are cited as the evaluation context the open programme must engage. Empirically, controlled asymmetry in structural transfer between natural-language and biological foundation models \cite{wang2026asymmetry} is a direct counterexample to the assumption that shared structural regularity implies symmetric representational transfer, which is why the witness defaults to a directed edge and why direction reversal is a mandatory perturbation in every instrument of Section~\ref{sec:falsifiability}.
+
+\subsection{The four surviving residuals}
+\label{sec:surviving}
+
+After the comparison above, the contract's residual claim is exactly the following four conjuncts, and nothing broader.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{A returned third verdict.} Transportability is complete \emph{conditional on a fully specified selection diagram}; it has no output value meaning ``I cannot evaluate this.'' The data-fusion synthesis states plainly that if knowledge about commonalities and disparities is unavailable, transport cannot be justified---and discharges that case to the user, outside the formalism \cite{bareinboim2016fusion}. A contract that \emph{returns} \texttt{CANNOT\_CHECK} when its own preconditions are unverifiable is outside the parent formalism.
+\item \textbf{Cross-vocabulary role/relation mapping under a licence.} Transportability presumes shared variable identity---the selection diagram overlays two causal diagrams over the same variable set. SME maps across vocabularies but does not license. The contract must \emph{establish} the correspondence transportability assumes for free, then license across it. No parent found does both; this is the strongest residual.
+\item \textbf{Applicability without a causal graph, over non-causal research artifacts.} $D$ is a hard input to \textit{sID}, and its QoI is a probabilistic causal quantity. Reusable research experience---episodes, lessons, operators---is neither.
+\item \textbf{Explicit forbidden-loss enumeration.} A first-class record of properties whose loss invalidates reuse, checked non-compensatorily. No counterpart was found in any of the five searched families.
+\end{enumerate}
+
+Each residual is a specification-level claim about what the contract expresses, not an empirical superiority claim. The measured contribution built directly on this comparison---absorbing the parent's refusal semantics by adaptation rather than by faithful import---is Section~\ref{sec:typed-refusal}.

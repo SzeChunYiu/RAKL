@@ -1,6 +1,14 @@
 # 2 structural mechanics
 
-Self-contained paper package.
+Self-contained paper package, rescoped 2026-08-14 to its earned claims: the
+applicability contract as a specification, the typed-refusal absorption of the
+causal-transportability parent (measured), and the instrument-falsifiability
+battery with its three preserved negative case studies. No transfer/generality
+claim is made; the external-label natural-domain coordinate (n≈48) is stated as
+open. Evidence pointers: `research/paper2_six_family_audit_v1/`,
+`research/paper2_causal_transport_absorption_v1/`,
+`research/paper2_nearest_work_2026/`, `research/paper2_prose_transfer_v1/`,
+`research/paper2_controlled_witness_extraction_v1/`.
 
 ```
 main.tex            # entry point — build with: pdflatex main && bibtex main && pdflatex main x2
