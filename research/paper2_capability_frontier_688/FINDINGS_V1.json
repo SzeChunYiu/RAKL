@@ -1,0 +1,217 @@
+{
+  "schema_version": "paper2-capability-frontier-findings-v1",
+  "date": "2026-08-14",
+  "owner_issue": 688,
+  "program_items": [
+    {
+      "item": 1,
+      "description": "Complete #447 (capability qualification V3)",
+      "status": "BLOCKED_ON_EXECUTION",
+      "summary": "#447 Stages 0-2 complete; Stages 3-5 frozen but NOT executed. No CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 exists. Requires LUNARC A100 execution of frozen packet.",
+      "artifacts": {
+        "GOLD_AUDIT": {
+          "path": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/GOLD_AUDIT.json",
+          "verdict": "INSTRUMENT_DEFECT_EVIDENCE_ROLE_UNDEFINED",
+          "note": "Stage 0 audit found instruction surface lacked evidence-role semantics. This is why Stage 2 was required."
+        },
+        "BOTTLENECK_RECEIPT": {
+          "path": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/BOTTLENECK_RECEIPT.json",
+          "verdict": "BENCHMARK_CONSTRUCT_DEFECT",
+          "note": "Stage 1 diagnostic showed denominator-evasion defect (v1)."
+        },
+        "STAGE2_RECEIPT": {
+          "path": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE2_INTERFACE_CHALLENGER_RECEIPT.json",
+          "verdict": "STAGED_INTERFACE_DEVELOPMENT_PROMISING",
+          "note": "LICENSES_VERDICT role semantics frozen."
+        },
+        "STAGE3_5_FREEZE": {
+          "path": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json",
+          "verdict": "FROZEN_NO_EXECUTION",
+          "model": "Qwen/Qwen2.5-7B-Instruct@a09a3545",
+          "panel_n": 132,
+          "vector_gate": "parse>=0.98, joint>=0.85, recall>=0.90, context_err<=0.05, CC>=0.90"
+        },
+        "SCORING_V2": {
+          "path": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_SCORING_HARDENING_V2.json",
+          "verdict": "PRE_OUTCOME_REPAIRED",
+          "note": "Denominator-evasion defect fixed; v2 ready for execution."
+        },
+        "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3": {
+          "verdict": "DOES_NOT_EXIST",
+          "note": "No fresh qualification outputs accessed. #447 remains OPEN."
+        }
+      },
+      "blocking_items": [
+        2,
+        3,
+        5
+      ],
+      "next_action": "Execute frozen Stage 4 on LUNARC A100 using experiments/paper3/run_capability_stage4_v2_lunarc.sbatch with exact model/panel/interface from STAGE3_5_FREEZE_V1.json. This is external execution only; no protocol changes."
+    },
+    {
+      "item": 2,
+      "description": "Execute #661 exactly (SCAR + ProPara matched-model gate)",
+      "status": "CANNOT_EXECUTE_NO_QUALIFIED_MODEL",
+      "summary": "#661 is hard-dependent on #447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 for its model subject. Without a qualified model, #661 cannot run.",
+      "dependency": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+      "artifacts": {
+        "PROTOCOL": {
+          "path": "research/paper2_scientific_analogy_external_v1/PROTOCOL.json",
+          "status": "FROZEN_PRE_OUTCOME"
+        },
+        "ACQUISITION": {
+          "verdict": "NOT_EXECUTED",
+          "note": "External SCAR/ProPara blobs not acquired because no qualified model exists."
+        },
+        "PROMPTS": {
+          "P1_LEXICAL": "frozen deterministic baseline",
+          "P0_LEXICAL": "frozen deterministic baseline (per PROTOCOL.json arms section)",
+          "P1_DIRECT_MODEL": "same qualified model, direct decision/mapping prompt",
+          "P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION": "same qualified model, infer structure before decision",
+          "C1_GROUNDED_STRUCTURAL_WITNESS": "ORION-style applicability witness with exact spans"
+        }
+      },
+      "blocking_items": [
+        1
+      ],
+      "next_action": "WAIT for #447 completion, then acquire SCAR/ProPara blobs via scripts/paper2_external_scientific_analogy_acquire.py and execute P1/P2/C1 with exact qualified model."
+    },
+    {
+      "item": 3,
+      "description": "Multi-level abstraction parent - check if covered by #661",
+      "status": "NOT_COVERED_SEPARATE_SUCCESSOR_NEEDED",
+      "summary": "#661 prompts (P1, P2, C1) do NOT include multi-level abstraction. P2 does single-level structure abduction; C1 does single-level structural witness. No hierarchical abstraction across different granularities.",
+      "analysis": {
+        "P1_DIRECT_MODEL": {
+          "has_structure": false,
+          "abstraction_levels": 0,
+          "quote": "Decide whether the source and target support a useful analogy... mappings: list of [source_term, target_term] pairs"
+        },
+        "P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION": {
+          "has_structure": true,
+          "abstraction_levels": 1,
+          "quote": "First infer the relational or process structure of each system... inferred_structure: a short list of relational/process statements",
+          "note": "Single-level structure extraction, not hierarchical multi-level abstraction."
+        },
+        "C1_GROUNDED_STRUCTURAL_WITNESS": {
+          "has_structure": true,
+          "abstraction_levels": 1,
+          "quote": "Construct a directional structural applicability witness... preserved_relations: list of concise relational/process correspondences",
+          "note": "Single-level applicability witness; no abstraction hierarchy."
+        }
+      },
+      "multi_level_abstraction_gap": "None of the #661 arms explicitly perform multi-level abstraction (e.g., abstracting at different granularities, mapping between abstraction levels, or hierarchical structure construction).",
+      "requires_separate_successor": true,
+      "successor_description": "A fresh multi-level abstraction parent would: (1) extract hierarchical structures at multiple granularities from source/target; (2) map correspondences across abstraction levels; (3) license transfer based on cross-level structural correspondence, not just single-level similarity.",
+      "blocking_items": [
+        1
+      ],
+      "next_action": "After #447/#661, design a separate multi-level abstraction successor. This is a NEW experiment arm, not a modification to frozen #661 prompts."
+    },
+    {
+      "item": 4,
+      "description": "ARN stage attribution",
+      "status": "ANALYZED_FROM_EXISTING_ARTIFACTS",
+      "summary": "ARN NEGATIVE__CAPABILITY_ABSENT attributed to extraction (sparse) and abstraction (none) stages. Mapping failed (worse than band control 0.489 vs 0.506). Typed licence and abstention mechanisms absent.",
+      "source_artifacts": {
+        "PROTOCOL": "research/paper2_external_corpus_v1/PROTOCOL.json",
+        "RESULT": "research/paper2_external_corpus_v1/results/RESULT.json",
+        "REDUCER": "src/rakl/narrative_reducer.py"
+      },
+      "witness_metrics": {
+        "advantage": -0.0162,
+        "ci_95": [-0.0498, 0.0162],
+        "valid_accept": 0.0233,
+        "invalid_false_accept": 0.0441
+      },
+      "stage_attribution": {
+        "extraction": {
+          "verdict": "TOO_SPARSE",
+          "mechanism": "Stopword-filtered content tokens (top 12 by frequency) as roles; within-sentence co-occurrence (window<=4) as relations",
+          "deficit": "Flat bag-of-words style extraction misses semantic structure, negation scope, and role hierarchy. No dependency parsing, no entity recognition, no relation typing."
+        },
+        "abstraction": {
+          "verdict": "NONE",
+          "mechanism": "No abstraction stage - reducer outputs flat SupportStructure with atoms+edges",
+          "deficit": "No hierarchical abstraction levels, no intermediate concepts, no causal/process abstraction. Structure is purely surface lexical co-occurrence."
+        },
+        "mapping": {
+          "verdict": "FAILED",
+          "mechanism": "Coverage_ratio = (covered_roles + 2*covered_relations) / (required_roles + 2*required_relations); ACCEPT if >= theta_w (0.1)",
+          "result": "Worse than band control (0.489 vs 0.506 confirmatory exact)",
+          "deficit": "Simple coverage ratio insufficient for structural analogy. No role typing, no relation semantics, no partial mapping credit, no cross-level mapping."
+        },
+        "typed_licence": {
+          "verdict": "NOT_APPLICABLE",
+          "mechanism": "No applicability mechanism, no boundary/QoI statement, no preserved/non-preserved relation classification",
+          "deficit": "ARN reducer cannot express applicability conditions, scope restrictions, or boundary/QoI. Cannot abstain on insufficient evidence (CANNOT_CHECK only if <2 roles or 0 relations)"
+        },
+        "abstention": {
+          "verdict": "NOT_USED",
+          "mechanism": "CANNOT_CHECK only when insufficient extraction evidence (<2 roles or 0 relations)",
+          "result": "CANNOT_CHECK rate 0.0 on confirmatory (no abstention despite poor performance)",
+          "deficit": "No principled abstention on uncertain mappings, missing decisive evidence, or scope violations. System is forced to ACCEPT/REJECT even when analogy is unclear."
+        }
+      },
+      "root_cause_summary": "ARN reducer is a deterministic surface lexical matching system with no deep semantic extraction, no abstraction hierarchy, and no applicability reasoning. The negative confirms that shallow bag-of-features extraction is insufficient for scientific analogy decisions.",
+      "blocking_items": [],
+      "next_action": "Analysis complete. Stage attribution recorded. This informs successor design (item 5)."
+    },
+    {
+      "item": 5,
+      "description": "Successors after capability authorization",
+      "status": "DOCUMENTED_IN_THIS_FILE",
+      "summary": "Four successors documented as experiment matrix. Implementation pending #447 completion.",
+      "successors": [
+        {
+          "id": "S1_ONE_SHOT_DIRECT_MODEL",
+          "description": "Direct model prompt for analogy decision without intermediate structure. Similar to #661 P1.",
+          "depends_on": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+          "covered_by_661": "P1_DIRECT_MODEL",
+          "implementation_status": "ALREADY_FROZEN_IN_661"
+        },
+        {
+          "id": "S2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION",
+          "description": "Published-style CoT structure inference before decision. Similar to #661 P2.",
+          "depends_on": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+          "covered_by_661": "P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION",
+          "implementation_status": "ALREADY_FROZEN_IN_661"
+        },
+        {
+          "id": "S3_MULTI_LEVEL_ABSTRACTION_PARENT",
+          "description": "Fresh successor with hierarchical abstraction: extract multi-level structures from source/target, map correspondences across abstraction levels, license based on cross-level structural correspondence.",
+          "depends_on": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+          "covered_by_661": false,
+          "implementation_status": "PROTOCOL_ONLY",
+          "protocol_placeholder": "To be designed after #661 execution. Key features: (a) multi-granularity structure extraction; (b) abstraction-level mapping; (c) cross-level correspondence scoring; (d) hierarchical applicability witness."
+        },
+        {
+          "id": "S4_RAKL_PRA_TYPED_MORPHISM_FAIL_CLOSED",
+          "description": "RAKL PRA (Probabilistic Relational Abstraction) + typed morphism + fail-closed gate. Full ORION-style applicability reasoning with typed licences, boundary/QoI, abstention controls.",
+          "depends_on": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+          "covered_by_661": "PARTIAL (C1 has typed morphism and fail-closed, but lacks multi-level abstraction)",
+          "implementation_status": "ALREADY_FROZEN_IN_661_AS_C1",
+          "note": "#661 C1_GROUNDED_STRUCTURAL_WITNESS is the ORION-style arm with exact spans, preserved_relations, boundary_qoi, and CANNOT_CHECK for insufficient evidence. Multi-level abstraction (S3) is the gap."
+        }
+      ],
+      "blocking_items": [
+        1
+      ],
+      "next_action": "After #447 completion and #661 execution, assess whether S3 (multi-level abstraction) requires a separate experiment or can be integrated into the framework. S4 (RAKL PRA) is already represented by C1 in #661."
+    }
+  ],
+  "overall_status": "BLOCKED_ON_447_EXECUTION",
+  "critical_path": [
+    "1. Execute #447 Stage 4 on LUNARC A100 (frozen packet, no changes)",
+    "2. If #447 passes: acquire CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "3. Execute #661 with qualified model (SCAR + ProPara)",
+    "4. Assess #661 results and determine if S3 multi-level abstraction successor is needed",
+    "5. Document final successor plan"
+  ],
+  "cannot_complete_in_window": {
+    "reason": "#447 requires LUNARC A100 execution which is external compute. Cannot be completed in this session.",
+    "items_blocked": [1, 2, 3, 5],
+    "can_complete": [4]
+  },
+  "authority_statement": "This findings file is analysis of existing artifacts and frozen protocols. It grants no scientific authority. No model outputs were accessed or generated for this analysis."
+}

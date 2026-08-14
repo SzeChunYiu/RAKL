@@ -1,0 +1,98 @@
+{
+  "schema_version": "paper2-successor-plan-v1",
+  "date": "2026-08-14",
+  "owner_issue": 688,
+  "title": "Paper 2 Capability Frontier: Successor Plan After Authorization",
+  "precondition": "#447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 must exist (LUNARC A100 execution of frozen Stage 3-5 packet)",
+  "successors": [
+    {
+      "id": "S1",
+      "name": "one_shot_direct_model",
+      "description": "Direct model prompt for analogy decision without intermediate structure. Model receives two scientific excerpts and returns LICENSED/REJECTED/CANNOT_CHECK decision plus term mappings.",
+      "status": "ALREADY_FROZEN_IN_661",
+      "location": "research/paper2_scientific_analogy_external_v1/prompts/P1_DIRECT_MODEL.txt",
+      "covered_by_661": true,
+      "implementation_required": false,
+      "notes": "This is the P1 arm in #661. Will be executed when #447 passes and #661 runs."
+    },
+    {
+      "id": "S2",
+      "name": "published_style_structure_abduction",
+      "description": "Published-style CoT structure inference: model first infers relational/process structure of each system, then decides analogy and maps concepts. Single-level abstraction (list of statements), not hierarchical.",
+      "status": "ALREADY_FROZEN_IN_661",
+      "location": "research/paper2_scientific_analogy_external_v1/prompts/P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION.txt",
+      "covered_by_661": true,
+      "implementation_required": false,
+      "notes": "This is the P2 arm in #661. Will be executed when #447 passes and #661 runs. P2 is the 'strongest parent' that C1 must beat."
+    },
+    {
+      "id": "S3",
+      "name": "strong_multi_level_abstraction_parent",
+      "description": "Fresh successor with hierarchical abstraction: (1) extract multi-granularity structures from source/target (e.g., entities, relations, processes, causal chains); (2) construct abstraction hierarchy (low-level entities -> mid-level mechanisms -> high-level principles); (3) map correspondences across abstraction levels (entity-level, mechanism-level, principle-level); (4) license transfer based on cross-level structural correspondence with applicability conditions.",
+      "status": "PROTOCOL_ONLY",
+      "covered_by_661": false,
+      "implementation_required": true,
+      "protocol_placeholder": {
+        "extraction_stage": "Multi-level: (a) entity extraction with typing; (b) relation extraction with semantics (causal, temporal, hierarchical); (c) process abstraction (events, states, transitions); (d) causal chain construction",
+        "abstraction_stage": "Hierarchical: (a) low-level: specific entities and relations; (b) mid-level: mechanisms and processes; (c) high-level: principles and invariants",
+        "mapping_stage": "Cross-level: (a) entity-level mapping; (b) mechanism-level mapping; (c) principle-level mapping; (d) consistency across levels",
+        "licence_stage": "Typed applicability: (a) boundary conditions (when does analogy apply?); (b) scope restrictions (what transfers?); (c) QoI statement (what property is being compared?); (d) preserved/non-preserved relations",
+        "abstention_stage": "Principled: CANNOT_CHECK when (a) missing decisive evidence; (b) scope violation; (c) cross-level inconsistency; (d) uncertain applicability"
+      },
+      "next_action": "After #661 execution, design S3 protocol and prompt. This is a NEW experiment arm, not a modification to frozen #661 prompts.",
+      "research_questions": [
+        "Does multi-level abstraction improve analogy mapping over single-level?",
+        "Which abstraction level (entity/mechanism/principle) contributes most to correct decisions?",
+        "Does cross-level consistency checking reduce false accepts?",
+        "Is hierarchical abstraction worth the additional complexity?"
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "RAKL_PRA_typed_morphism_fail_closed_gate",
+      "description": "Full ORION-style applicability reasoning: (1) Probabilistic Relational Abstraction (PRA) for extraction; (2) Typed morphism for mapping (type-preserving structure maps); (3) Fail-closed gate for abstention (CANNOT_CHECK when unlicensed). This is the C1_GROUNDED_STRUCTURAL_WITNESS arm in #661.",
+      "status": "ALREADY_FROZEN_IN_661",
+      "location": "research/paper2_scientific_analogy_external_v1/prompts/C1_GROUNDED_STRUCTURAL_WITNESS.txt",
+      "covered_by_661": true,
+      "implementation_required": false,
+      "notes": "This is the C1 arm in #661. Includes exact source_span/target_span, preserved_relations, non_preserved_or_unknown, boundary_qoi, and CANNOT_CHECK for insufficient evidence. S3 (multi-level abstraction) is the gap beyond C1."
+    }
+  ],
+  "execution_plan": {
+    "phase_1": {
+      "name": "Capability Qualification",
+      "action": "Execute #447 Stage 4 on LUNARC A100 (frozen packet, no changes)",
+      "output": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 (if pass)",
+      "blocks": "Everything else"
+    },
+    "phase_2": {
+      "name": "SCAR + ProPara Execution",
+      "action": "Execute #661 with qualified model (P0, P1, P2, C1 arms)",
+      "output": "Scientific analogy results on external corpora",
+      "depends_on": "Phase 1 pass"
+    },
+    "phase_3": {
+      "name": "Assess Multi-Level Gap",
+      "action": "Analyze #661 results to determine if S3 (multi-level abstraction) is needed",
+      "criteria": [
+        "If C1 beats max(P1,P2) on registered gates: S3 is optional (nice-to-have)",
+        "If C1 fails or P2 beats C1: S3 is critical (multi-level abstraction may be the missing piece)",
+        "If all arms fail: ARN negative pattern may apply (extraction/abstraction gap)"
+      ],
+      "depends_on": "Phase 2 completion"
+    },
+    "phase_4": {
+      "name": "S3 Implementation (if needed)",
+      "action": "Design and implement S3 multi-level abstraction protocol",
+      "output": "New experiment protocol + prompt + execution",
+      "depends_on": "Phase 3 assessment indicating S3 is needed"
+    }
+  },
+  "gap_analysis": {
+    "current_coverage": "S1 (P1), S2 (P2), S4 (C1) are frozen in #661",
+    "missing_piece": "S3 (multi-level abstraction) is NOT covered by #661",
+    "priority": "S3 is a LOWER-PRIORITY successor because (a) C1 already has typed licence and abstention, (b) single-level structure abduction (P2) may be sufficient, (c) multi-level abstraction is complex and may not yield incremental benefit",
+    "decision_criteria": "Implement S3 only if #661 shows a clear multi-level gap (e.g., C1 fails due to insufficient abstraction, or P2 outperforms C1 on structural reasoning cases)"
+  },
+  "authority_statement": "This successor plan is proposal-only. It grants no scientific authority. No model outputs were accessed or generated for this plan. Execution requires #447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3."
+}
