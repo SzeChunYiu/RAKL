@@ -1,0 +1,49 @@
+{
+  "protocol_id": "tcsq_sq3_on_demand_v1",
+  "parent_issue": "#53",
+  "parent_lazy_pr": "#700",
+  "parent_lazy_verdict": "EXTENDED_REGIME",
+  "lazy_failure_attribution": "Binary activation gate (35% threshold on 48-task window) never crossed; early tasks have lower hit rate than overall redundancy; 0/24 cells activated.",
+  "regime_target": "ALL redundancy levels (0.0 to 1.0) -- threshold-free by construction",
+  "mechanism_hypothesis": "By constructing a family certificate at the FIRST OBSERVED REPEAT (second occurrence of a structure key) and replaying on third+, we eliminate the binary activation gate. Cost structure: first = solve + key hash; second = construction + replay; third+ = replay only. This adapts to ANY redundancy level without a threshold.",
+  "mechanic": "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT",
+  "mechanic_description": "On-demand certificate construction at first repeat. For each structure key: track occurrence count. First occurrence: solve + cache with empty certificate. Second occurrence: construct certificate (intervention audit + family validation) + immediate replay. Third+ occurrence: replay from certificate only. No observation window, no activation threshold, no binary gate.",
+  "arms": [
+    "RAW_NO_QUOTIENT",
+    "SURFACE_HASH_DEDUP",
+    "STRUCTURE_NO_ERASURE",
+    "FAMILY_CERTIFICATE_QUOTIENT",
+    "LAZY_FAMILY_CERTIFICATE_QUOTIENT",
+    "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT"
+  ],
+  "pre_registered_predictions": {
+    "a_zero_repeat": "Zero-repeat streams (redundancy=0.0) cost ≈ control + key-hashing overhead (near 0 net vs control). Every key occurs once, so construction never triggers; only key-hashing overhead paid.",
+    "b_break_even": "Break-even at exactly 3 occurrences of a key. First = solve cost, second = solve + construction cost, third = replay only. Amortized construction across 3+ occurrences yields net benefit.",
+    "c_high_recovery": "High-redundancy cells (redundancy >= 0.75) recover ≥ the #551 parent positive. The on-demand mechanic never blocks activation, so high-redundancy cells get the same or better certificate reuse benefit.",
+    "d_low_stay_near_zero": "Low-redundancy cells (redundancy <= 0.25) stay ≈ 0 instead of -958 (lazy result). Construction only triggers on rare repeats; most tasks are first occurrences."
+  },
+  "evaluation_gates": {
+    "primary": "All 24 cells >= control CI-touching-zero (net CI lower bound >= -control_margin or excludes zero from above)",
+    "secondary": "High-redundancy cells (>=0.75) retain #551 parent positive (net CI excludes zero from above)",
+    "low_redundancy": "Low-redundancy cells (<=0.25) improve over lazy (net > -958)",
+    "honesty": "Charge full cost of key-hashing, construction, solve, and verify. All stage costs reported.",
+    "completeness": "Three-way comparison: vs control, vs #551 FAMILY_CERTIFICATE_QUOTIENT, vs lazy #700 LAZY_FAMILY_CERTIFICATE_QUOTIENT"
+  },
+  "success_criteria": {
+    "primary_achieved": "All 24 cells >= control CI-touching-zero",
+    "high_redundancy_positive": "High-redundancy cells retain #551 parent positive (net CI excludes zero from above)",
+    "low_redundancy_improved": "Low-redundancy cells improve over lazy (net > -958)",
+    "global_recovery": "Aggregate net CI excludes zero from above OR straddles zero with positive mean (trend toward global)"
+  },
+  "honest_terminal_conditions": {
+    "GLOBAL_POSITIVE": "All gates met -- mechanic achieved global recovery",
+    "EXTENDED_REGIME": "Partial success -- high-redundancy positive but low-redundancy still negative OR aggregate negative but improved",
+    "STILL_CONDITIONAL": "Mechanic still regime-conditional -- no improvement over parent conditional verdict",
+    "FAILED": "No improvement over lazy or regression"
+  },
+  "seed": 462,
+  "n_tasks": 240,
+  "replicates": 12,
+  "solve_cost_scales": [16, 48, 128, 256],
+  "distinct_fractions": [1.0, 0.75, 0.5, 0.25, 0.1, 0.04]
+}
