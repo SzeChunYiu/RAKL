@@ -37,4 +37,14 @@ jobs:
           grep -F 'P3_STRUCTURED_METHOD_GOVERNANCE_VALIDATED_FOR_SCOPED_PREPRINT' ../../../research/paper3_publication_closeout_v1/FINAL_RECEIPT.json
       - name: Hash release subject
         working-directory: publication/papers/paper-03-method-evolution-mechanics
-        run: sha256sum main.tex main.pdf
+        run: sha256sum main.tex main.pdf > paper3-release-sha256.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper3-publication-closeout-exact-head
+          path: |
+            publication/papers/paper-03-method-evolution-mechanics/main.pdf
+            publication/papers/paper-03-method-evolution-mechanics/main.tex
+            publication/papers/paper-03-method-evolution-mechanics/paper3-release-sha256.txt
+            research/paper3_publication_closeout_v1/FINAL_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 30
