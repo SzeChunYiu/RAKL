@@ -1,0 +1,60 @@
+name: active-packet-registry
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  packet-eligibility:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact subject with history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install package and tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[test]'
+
+      - name: Fail closed on post-registry knowledge-basis drift
+        run: python scripts/active_packet_registry_drift.py
+
+      - name: Validate frozen active set
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_current_active_set_matches_frozen_challenger_expectation
+
+      - name: Superseded packet must fail closed
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_superseded_packet_stays_valid_history_but_is_not_eligible
+
+      - name: Basis-expanded packet must fail closed
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_structurally_valid_packet_is_blocked_when_basis_expanded
+
+      - name: Active packet remains eligible only for ordinary scorer
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_active_replacement_packet_is_eligible_for_ordinary_gate_only
+
+      - name: Capstone dependency block is load-bearing
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_capstone_is_blocked_by_inactive_load_bearing_dependencies
+
+      - name: Unknown packet fails closed
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_unknown_variant_fails_closed
+
+      - name: Future candidate preflight rejects stale packets
+        run: pytest -q tests/test_active_packet_preflight.py
+
+      - name: Live post-contract registrations are clean
+        run: python scripts/active_packet_preflight.py
+
+      - name: Validate registry content hashes and links
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_active_registry_is_content_valid_and_non_authoritative
