@@ -1,0 +1,236 @@
+{
+  "arms": [
+    {
+      "A_correct": false,
+      "B_certificate": null,
+      "B_correct": true,
+      "B_reasons": [
+        "refusal_is_witness_local_only",
+        "relation_not_preserved:a:causes:b"
+      ],
+      "B_search_completed": true,
+      "B_search_nodes": 2,
+      "arm": "ARM-1_REPAIRABLE_ROLE_MAP",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "relation_not_preserved:a:causes:b"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "MERELY_UNLICENSED",
+      "criterion_licensable_full_budget": true,
+      "ground_truth": "MERELY_UNLICENSED",
+      "oracle_licensable": true,
+      "status": "RUN"
+    },
+    {
+      "arm": "ARM-2_REPAIRABLE_EVIDENCE",
+      "detail": "StructuralWitness.__post_init__ rejects empty evidence_ids, so an evidence-free witness is not an admissible presentation and the 'missing_witness_evidence' branch of assess_transfer is unreachable through the public constructor. Constructor error: structural witness requires nonblank evidence identities",
+      "status": "CANNOT_CONSTRUCT"
+    },
+    {
+      "A_correct": false,
+      "B_certificate": null,
+      "B_correct": true,
+      "B_reasons": [
+        "refusal_is_witness_local_only",
+        "boundary_mismatch:regime"
+      ],
+      "B_search_completed": true,
+      "B_search_nodes": 1,
+      "arm": "ARM-3_REPAIRABLE_BOUNDARY",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "boundary_mismatch:regime"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "MERELY_UNLICENSED",
+      "criterion_licensable_full_budget": true,
+      "ground_truth": "MERELY_UNLICENSED",
+      "oracle_licensable": true,
+      "status": "RUN"
+    },
+    {
+      "A_correct": true,
+      "B_certificate": {
+        "failed_criteria": [
+          "S3_RELATIONS"
+        ],
+        "missing_invariants": [],
+        "role_cardinality_obstruction": false,
+        "unmatchable_relation_types": [
+          "causes:1"
+        ]
+      },
+      "B_correct": true,
+      "B_reasons": [
+        "S3_RELATIONS"
+      ],
+      "B_search_completed": true,
+      "B_search_nodes": 4,
+      "arm": "ARM-4_STRUCTURAL_RELATION",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "relation_not_preserved:a:causes:b"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "CERTIFIABLY_IMPOSSIBLE",
+      "criterion_licensable_full_budget": false,
+      "ground_truth": "CERTIFIABLY_IMPOSSIBLE",
+      "oracle_licensable": false,
+      "status": "RUN"
+    },
+    {
+      "A_correct": true,
+      "B_certificate": {
+        "failed_criteria": [
+          "S1_QOI"
+        ],
+        "missing_invariants": [],
+        "role_cardinality_obstruction": false,
+        "unmatchable_relation_types": []
+      },
+      "B_correct": true,
+      "B_reasons": [
+        "S1_QOI"
+      ],
+      "B_search_completed": true,
+      "B_search_nodes": 1,
+      "arm": "ARM-5_STRUCTURAL_QOI",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "qoi_mismatch"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "CERTIFIABLY_IMPOSSIBLE",
+      "criterion_licensable_full_budget": false,
+      "ground_truth": "CERTIFIABLY_IMPOSSIBLE",
+      "oracle_licensable": false,
+      "status": "RUN"
+    },
+    {
+      "A_correct": true,
+      "B_certificate": {
+        "failed_criteria": [
+          "S2_INVARIANTS"
+        ],
+        "missing_invariants": [
+          "energy"
+        ],
+        "role_cardinality_obstruction": false,
+        "unmatchable_relation_types": []
+      },
+      "B_correct": true,
+      "B_reasons": [
+        "S2_INVARIANTS"
+      ],
+      "B_search_completed": true,
+      "B_search_nodes": 1,
+      "arm": "ARM-6_STRUCTURAL_INVARIANT",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "declared_invariant_missing_in_target",
+        "source_invariants_not_fully_preserved"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "CERTIFIABLY_IMPOSSIBLE",
+      "criterion_licensable_full_budget": false,
+      "ground_truth": "CERTIFIABLY_IMPOSSIBLE",
+      "oracle_licensable": false,
+      "status": "RUN"
+    },
+    {
+      "A_correct": false,
+      "B_certificate": null,
+      "B_correct": true,
+      "B_reasons": [
+        "target_not_declared_closed_world"
+      ],
+      "B_search_completed": false,
+      "B_search_nodes": 0,
+      "arm": "ARM-7_OPEN_WORLD",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "relation_not_preserved:a:causes:b"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "MERELY_UNLICENSED",
+      "criterion_licensable_full_budget": false,
+      "ground_truth": "MERELY_UNLICENSED",
+      "oracle_licensable": false,
+      "status": "RUN"
+    },
+    {
+      "A_correct": false,
+      "B_certificate": null,
+      "B_correct": true,
+      "B_reasons": [
+        "presentation_space_exhaustion_incomplete"
+      ],
+      "B_search_completed": false,
+      "B_search_nodes": 6,
+      "arm": "ARM-8_BUDGET_EXHAUSTION",
+      "base_decision": "REJECTED",
+      "base_reasons": [
+        "relation_not_preserved:a0:absent_type:a5"
+      ],
+      "challenger_A": "CERTIFIABLY_IMPOSSIBLE",
+      "challenger_B": "MERELY_UNLICENSED",
+      "criterion_licensable_full_budget": false,
+      "ground_truth": "MERELY_UNLICENSED",
+      "oracle_licensable": false,
+      "status": "RUN"
+    }
+  ],
+  "grants_promotion_authority": false,
+  "grants_scientific_authority": false,
+  "hard_gates": {
+    "ALL_PASS": true,
+    "G1_NO_FALSE_CERTIFICATE": {
+      "false_certificate_arms": [],
+      "pass": true
+    },
+    "G2_NOT_VACUOUS": {
+      "expected": [
+        "ARM-4_STRUCTURAL_RELATION",
+        "ARM-5_STRUCTURAL_QOI",
+        "ARM-6_STRUCTURAL_INVARIANT"
+      ],
+      "fired": [
+        "ARM-4_STRUCTURAL_RELATION",
+        "ARM-5_STRUCTURAL_QOI",
+        "ARM-6_STRUCTURAL_INVARIANT"
+      ],
+      "pass": true
+    },
+    "G3_SEPARATION": {
+      "pass": true,
+      "separating_arms": [
+        "ARM-1_REPAIRABLE_ROLE_MAP",
+        "ARM-3_REPAIRABLE_BOUNDARY",
+        "ARM-7_OPEN_WORLD",
+        "ARM-8_BUDGET_EXHAUSTION"
+      ]
+    },
+    "G4_PROPOSITION_HOLDS": {
+      "cases_checked": 600,
+      "disagreements": [],
+      "pass": true
+    },
+    "control_arm_A_false_certificates": [
+      "ARM-1_REPAIRABLE_ROLE_MAP",
+      "ARM-3_REPAIRABLE_BOUNDARY",
+      "ARM-7_OPEN_WORLD",
+      "ARM-8_BUDGET_EXHAUSTION"
+    ]
+  },
+  "proposition_sweep": {
+    "agreement": true,
+    "cases_checked": 600,
+    "cases_generated": 600,
+    "cases_skipped_cannot_check": 0,
+    "disagreements": [],
+    "seed": 20260814
+  },
+  "protocol": "research/paper2_causal_transport_absorption_v1/PROTOCOL.json",
+  "schema_version": "paper2-typed-refusal-receipt-v1"
+}
