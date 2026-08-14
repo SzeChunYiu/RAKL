@@ -82,9 +82,12 @@ construction. 66.7% of the headline advantage comes from strata built so the
 control arm cannot see the discriminating coordinate. Family-level gains are
 quantized at exactly `0.48` and `0.24`, the same signature.
 
-## 4. What the run does legitimately establish
+## 4. Diagnostics that rule out specific failure modes
 
-Two findings survive the above and are defensible.
+> **Read §5b first.** Probe G shows the benchmark's gold labels are *read* from
+> pre-parsed public fields, not inferred. That downgrades everything in this
+> section from scientific findings to apparatus diagnostics. They rule out
+> particular degeneracies; they do not establish a claim about transfer.
 
 ### 4.1 The benchmark is not degenerate (probe D — equal-n null)
 
@@ -99,9 +102,12 @@ task↔coordinate binding.
 | valid_accept | 0.443 | [0.406, 0.475] | 1.000 |
 | invalid_false_accept | 0.445 | [0.414, 0.489] | 0.000 |
 
-Observed lies far outside the null. The coordinates carry task-specific
-information; the gate is not merely conservative. This rules out one failure
-mode. It does not touch §3.
+Observed lies far outside the null, so the generator does produce varying,
+task-specific labels rather than a constant or a REJECT-dominated distribution.
+
+That is all it shows. Once probe G establishes that the labels are *read* from
+public fields rather than inferred, this null is uninformative about transfer:
+it confirms the generator varies its inputs, nothing more.
 
 ### 4.2 Selectivity is not edge (probe C — clean trivial baseline)
 
@@ -122,7 +128,7 @@ false-accept alone is worthless as a claim. The defensible quantity is the
 Any Paper II sentence reporting false-accept reduction without the paired
 retention number should be treated as unsupported.
 
-## 5. New finding: one contract coordinate is near-inert (probe E)
+## 5. Generator stratum map: one coordinate never discriminates alone (probe E)
 
 Leave-one-coordinate-out on the six-coordinate contract:
 
@@ -138,11 +144,15 @@ Leave-one-coordinate-out on the six-coordinate contract:
 Dropping `relation` costs 0.010 exact3 and zero false-accept on this benchmark:
 it is nearly redundant here. `precondition` is the most load-bearing coordinate.
 
-This is a genuine, non-tautological result about the contract's internal
-structure, because it varies the candidate while holding the gold fixed. It
-narrows the defensible claim from "six coordinates are necessary" to "five
-coordinates carry the fail-closed behaviour on these six families; `relation`
-is not separately load-bearing here."
+**This is a fact about the generator, not about transfer.** Given probe G, the
+correct reading is: the generator never made `relation` the sole discriminator
+in any stratum. It does not follow that relation mapping is inert in transfer
+problems, and this must not be reported as a scientific finding about the
+contract. It is a map of which strata the frozen generator happens to contain.
+
+Recorded here because it constrains the design of a successor epoch — a
+probative benchmark must include strata where each coordinate is independently
+the sole discriminator — not because it supports any Paper II claim.
 
 ## 5b. The benchmark contains no extraction problem (probe G)
 
