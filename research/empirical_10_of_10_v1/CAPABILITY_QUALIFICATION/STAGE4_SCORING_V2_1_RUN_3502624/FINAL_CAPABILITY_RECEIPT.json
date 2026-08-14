@@ -1,0 +1,84 @@
+{
+  "schema_version": "rakl-capability-qualification-stage5-result-v2",
+  "terminal": "DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+  "model": {
+    "order": 1,
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "staged_model_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-model-qwen25-7b-v1/model/Qwen--Qwen2.5-7B-Instruct/a09a35458c702b33eeacc393d103063234e8bc28",
+    "access": "LUNARC staged exact revision / offline local weights",
+    "precision": "bfloat16",
+    "device": "cuda",
+    "selection_reason": "smallest exactly staged open-weight candidate compatible with the repaired Stage-2 interface",
+    "authorization_eligible": true
+  },
+  "interface": {
+    "system_prompt": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/SYSTEM_PROMPT.txt",
+    "runner_instruction": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/RUNNER_INSTRUCTION_BLOCK.txt",
+    "evidence_role_semantics": "LICENSES_VERDICT",
+    "repair_passes": 0,
+    "chat_template": "model_native_if_available_else_system_plus_user_plaintext",
+    "decoding": "greedy",
+    "temperature": 0.0,
+    "max_new_tokens": 256,
+    "batch_size": 1
+  },
+  "panel_sha256": "0ab994fb0f8f3523014023ff703151afe4c66e86a8f030435f509d141055cc0e",
+  "metrics": {
+    "n": 132,
+    "raw_json_schema_parse_validity": 0.8636363636363636,
+    "parse_validity": 0.8257575757575758,
+    "parse_validity_ci95": [
+      0.7520962774682791,
+      0.8809946856780821
+    ],
+    "exact_joint_verdict_and_binding": 0.5454545454545454,
+    "exact_joint_ci95": [
+      0.4604256517486356,
+      0.6279126221787636
+    ],
+    "support_id_recall": 0.4635416666666667,
+    "reject_id_recall": 0.9880952380952381,
+    "context_qoi_error_rate": 0.75,
+    "cannot_check_recall": 0.5,
+    "cannot_check_precision": 0.35294117647058826,
+    "family_exact": {
+      "CONFLICTING_EVIDENCE": 0.0,
+      "CONTEXT_QOI_NEAR_MISS": 0.0,
+      "CORRECT_VERDICT_WRONG_EVIDENCE_ID_TRAP": 0.9166666666666666,
+      "INDEPENDENT_CORROBORATION": 0.9166666666666666,
+      "MISSING_DECISIVE_EVIDENCE_CANNOT_CHECK": 0.0,
+      "REFUTATION_WITH_IRRELEVANT_DISTRACTORS": 0.08333333333333333,
+      "SAME_ROOT_PSEUDO_CORROBORATION": 0.08333333333333333,
+      "SCOPE_RESTRICTION": 1.0,
+      "STRAIGHT_REFUTATION": 1.0,
+      "STRAIGHT_SUPPORT": 1.0,
+      "SUPPORT_WITH_IRRELEVANT_DISTRACTORS": 1.0
+    },
+    "scoring_contract": "STAGE3_5_SCORING_HARDENING_V2",
+    "all_vector_gates_pass": false,
+    "shortcut_audit_clean": true
+  },
+  "shortcut_audit": {
+    "responders": {
+      "ALWAYS_SUPPORT": false,
+      "ALWAYS_REFUTE": false,
+      "ALWAYS_CANNOT_CHECK": false,
+      "ALWAYS_CONTEXT_MISALIGNED": false
+    },
+    "clean": true
+  },
+  "wall_seconds": 152.27901214221492,
+  "all_132_cases_completed": true,
+  "model_substitution_performed": false,
+  "unlocks_treatment_result": false,
+  "grants_scientific_authority": false,
+  "scoring_hardening": {
+    "spec": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_SCORING_HARDENING_V2.json",
+    "spec_sha256": "32c85e91766122f15657629a325a0133aee35a033d9a029bb81fe582cc4ab96e",
+    "contract": "malformed evidence partitions cannot escape hard-metric denominators",
+    "thresholds_changed_from_v1": false,
+    "panel_changed_from_v1": false,
+    "model_or_interface_changed_from_v1": false
+  }
+}
