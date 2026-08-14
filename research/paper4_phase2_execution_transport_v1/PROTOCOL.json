@@ -1,0 +1,105 @@
+{
+  "schema_version": "paper4-phase2-execution-transport-v1",
+  "date": "2026-08-14",
+  "owner_issue": 466,
+  "gate_issue": 462,
+  "base_main_sha": "37e86f8a9c3e868381e36edad7d8628e88ec0624",
+  "chronology": {
+    "phase2_model_outputs_accessed_before_freeze": false,
+    "phase2_final_receipt_present_on_base_main": false,
+    "scientific_protocol_or_threshold_changed": false,
+    "purpose": "Close execution-subject, scheduler-terminal, harvest and publication-authority provenance before the first outcome-bearing Paper-IV Phase-2 A100 job."
+  },
+  "root_cause": {
+    "current_submission_surface": "experiments/training_ladder/submit_phase2_v1_lunarc.sh",
+    "gaps": [
+      "submission records the current HEAD but does not detach to an explicit requested subject, require a clean tracked checkout, or verify the frozen Phase-2 protocol/runner/generator/admission blobs before sbatch",
+      "there is no scheduler-observed harvest path that binds the completed job, exact subject and raw result bundle before canonical admission",
+      "the existing sbatch wrapper uses set -e around a runner whose return code 1 can represent a complete registered scientific harm terminal, so a valid scientific negative can be conflated with scheduler/infrastructure failure",
+      "the raw runner field paper4_standalone_authorized can become true after a Phase-2 efficacy terminal even though standalone Paper-IV authorization still requires issue #462 plus fresh shared-substrate/generalization evidence; this raw field is therefore non-authoritative and must not propagate through harvest"
+    ]
+  },
+  "scientific_subject_unchanged": {
+    "protocol": "research/paper4_phase2_v1/PROTOCOL_V3.json",
+    "inference_plan": "research/paper4_phase2_v1/INFERENCE_PLAN.json",
+    "runner": "experiments/training_ladder/phase2_adaptive_v1.py",
+    "generator": "experiments/training_ladder/generator_v2.py",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "arms": [
+      "A_UNIFORM_RANDOM",
+      "B_SEMANTIC_DIVERSITY",
+      "C_STRONGEST_MODEL_AWARE_PARENT",
+      "D_STATIC_RAKL_STRUCTURAL",
+      "E_ADAPTIVE_RAKL_STRUCTURAL"
+    ],
+    "primary_contrast": "E-D",
+    "strongest_parent_contrast": "E-C",
+    "mde": 0.05,
+    "parent_noninferiority": -0.02,
+    "hard_harm_boundary": -0.05,
+    "scientific_settings_changed": false
+  },
+  "frozen_git_blobs": {
+    "research/paper4_phase2_v1/PROTOCOL_V3.json": "0ca5aa15dc078ec92e82ab4aff94e5ffcf16b0af",
+    "research/paper4_phase2_v1/INFERENCE_PLAN.json": "2d31897ea6441d280519276e0f1fb3323bf03f99",
+    "experiments/training_ladder/generator_v2.py": "ed6bf5d72896b5524e5f64d5fccf29acc26c9507",
+    "experiments/training_ladder/phase2_adaptive_v1.py": "5ade3b9fea3fc029870782d1157a867bc4feb700",
+    "experiments/training_ladder/run_phase2_v1_lunarc.sbatch": "2515153fa8e4f85ae30d5e164c330580e6d35621",
+    "src/rakl/phase2_adaptive_receipt_admission.py": "9f7ab272ee69d920608c1c15c7205db7932fe4ba",
+    "src/rakl/training_policy_authority.py": "021514aa383031d147943acd7eb993d84a27cf4b"
+  },
+  "submission_contract": {
+    "explicit_subject_sha_required": true,
+    "exact_detached_checkout_required": true,
+    "tracked_checkout_must_be_clean": true,
+    "all_frozen_blobs_verified_before_sbatch": true,
+    "phase2_dry_run_manifest_generation_required": true,
+    "exact_staged_model_revision_forced": true,
+    "submission_receipt_binds_subject_job_and_frozen_blobs": true
+  },
+  "runner_terminal_contract": {
+    "return_code_0": [
+      "ADAPTIVE_RESIDUAL_SUPPORTED",
+      "ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST",
+      "PARENT_MATCHES_OR_BEATS",
+      "STATIC_EQUALS_ADAPTIVE",
+      "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION",
+      "UNDERPOWERED"
+    ],
+    "return_code_1": [
+      "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION"
+    ],
+    "return_code_2": [
+      "RESOURCE_BLOCKED"
+    ],
+    "rule": "A complete FINAL_RECEIPT.json with a registered terminal and compatible local runner code is a completed scientific execution even when the local runner code is nonzero. The sbatch transport validates the pair and exits scheduler-success only after that validation. A crash or code/terminal mismatch remains infrastructure failure."
+  },
+  "harvest_contract": {
+    "scheduler_state_must_be_COMPLETED": true,
+    "submission_subject_and_job_must_match": true,
+    "raw_final_receipt_sha256_bound": true,
+    "raw_data_manifest_sha256_bound": true,
+    "full_nonresource_terminals_require_all_five_assurance_jsonl_files": true,
+    "ordinary_positive_requires_canonical_phase2_admission": true,
+    "high_cost_positive_requires_recomputed_positive_efficacy_plus_E_over_D_gpu_ratio_gt_2": true,
+    "nonpositive_full_terminals_require_independent_recomputation_match": true,
+    "resource_or_early_harm_terminals_are_preserved_without_positive_admission": true,
+    "raw_paper4_standalone_authorized_is_ignored": true,
+    "harvested_standalone_paper4_authorized": false
+  },
+  "publication_and_authority_boundary": {
+    "phase2_positive_can_authorize": "training-policy consideration only through the canonical raw-bundle admission and cost gate",
+    "phase2_positive_cannot_authorize": [
+      "scientific authority",
+      "standalone Paper-IV publication",
+      "fresh-family generalization",
+      "multi-checkpoint generalization",
+      "shared train/inference substrate"
+    ],
+    "standalone_gate_remains": "issue #462; #467/#468 remain fresh downstream experiments and may not be inferred from Phase-2 metadata",
+    "grants_scientific_authority": false
+  },
+  "allowed_transport_terminal_if_ci_green": "PROMOTE_CONDITIONALLY_P4_PHASE2_EXECUTION_PROVENANCE",
+  "grants_scientific_authority": false
+}
