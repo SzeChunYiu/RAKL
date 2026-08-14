@@ -1,0 +1,161 @@
+{
+  "schema_version": "external-agent-mechanics-v1",
+  "freeze_date": "2026-08-14",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "note": "Compiled from the registry per issue #588 Phase 1. A MechanicCandidate here is a transfer *obligation*, not a validated improvement. None of these has been implemented, evaluated or promoted. 'independent_evidence' is NONE for every entry in v1 because no reproduction has been attempted.",
+  "mechanics": [
+    {
+      "mechanic_id": "MEC-TREE_SEARCH_EXPERIMENT_MANAGER",
+      "source_system_ids": ["SYS-AI_SCIENTIST_V2"],
+      "process_surface": "experiment planning and execution",
+      "preconditions": "A cheap, automatable experiment whose outcome is machine-scoreable, so a search tree can be expanded without human adjudication at each node.",
+      "mechanism": "Progressive agentic tree search over experiment branches, arbitrated by a dedicated experiment-manager agent that decides which branch to expand next.",
+      "claimed_benefit": "Removes dependence on human-authored code templates and generalizes across ML domains.",
+      "cost": "Branch expansion multiplies compute; the branching factor is the dominant cost term. CANNOT_CHECK for exact figures.",
+      "failure_modes": [
+        "Node scoring becomes the de facto objective, so a weak node scorer silently redirects the whole search.",
+        "Reported weakness at generating genuinely novel high-impact hypotheses persists despite the search."
+      ],
+      "scope": "Machine-learning experimentation; transfer to non-executable scientific domains is unestablished.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "ORION branch/candidate selection. RAKL already forbids treating a search score as evidence, so the transferable part is the manager's *allocation* policy, not its scoring authority.",
+      "candidate_transfer_obligation": "Build a challenger that adopts branch-allocation-under-budget while keeping RAKL's evidence gate; falsifier is that allocation gain vanishes once node scores are stripped of authority."
+    },
+    {
+      "mechanic_id": "MEC-GREEDY_ACCEPT_ON_HELD_OUT_SCALAR",
+      "source_system_ids": ["SYS-KARPATHY_AUTORESEARCH"],
+      "process_surface": "self-improvement acceptance rule",
+      "preconditions": "A single cheap held-out scalar that is a faithful proxy for the goal, and experiments short enough that many can run sequentially.",
+      "mechanism": "Propose a modification, run a short evaluation, keep it only if the held-out scalar improves, otherwise discard; repeat indefinitely.",
+      "claimed_benefit": "Reported 700 experiments in 2 days yielding 20 additive optimizations and an 11% training-time reduction, from ~630 lines of code.",
+      "cost": "One short training run per proposal; trivially parallel but strictly sequential in the reference implementation.",
+      "failure_modes": [
+        "Single-scalar acceptance is structurally incapable of representing non-compensatory objectives - the exact failure RAKL's hard gates exist to prevent.",
+        "Additive-only accumulation cannot escape a local optimum that requires a temporarily worse intermediate.",
+        "No provenance or assurance separation whatsoever."
+      ],
+      "scope": "Narrow: ML pretraining with a fast reliable validation signal. Issue #588 explicitly declines to treat this as a general scientific-agent baseline.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "The ungoverned limit case of Self-RAKL mechanic evolution. Its value to ORION is as a control arm, not a mechanic to adopt.",
+      "candidate_transfer_obligation": "Register as the ungoverned control arm for Phase 4. The transfer question is inverted: does RAKL governance cost throughput relative to this loop on a task where the loop's preconditions actually hold?"
+    },
+    {
+      "mechanic_id": "MEC-DARWINIAN_WORKFLOW_EVOLUTION",
+      "source_system_ids": ["SYS-MIMOSA"],
+      "process_surface": "method/workflow self-modification",
+      "preconditions": "Workflows are first-class editable objects and a fitness signal exists over their outputs.",
+      "mechanism": "The system writes, runs and mutates its own multi-agent workflows, selecting survivors by LLM-judge scores in a learning mode.",
+      "claimed_benefit": "Reported end-to-end autonomous reproduction of a 2018 molecular network analysis from raw instrument files in one command.",
+      "cost": "Population-scale workflow execution; CANNOT_CHECK for figures.",
+      "failure_modes": [
+        "The fitness function is an LLM judge, which is precisely the routing-signal-as-evidence error RAKL's design constitution C1 forbids.",
+        "Darwinian selection over a judge signal is a direct path to evaluator gaming and meta-overfit."
+      ],
+      "scope": "Bioinformatics/omics pipelines in the reported case.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "Self-RAKL mechanic evolution. This is the closest external system to ORION's own recursive layer and therefore the most informative comparator in the registry.",
+      "candidate_transfer_obligation": "Faithful-transfer challenger: workflow-level mutation with an LLM-judge fitness, run to see whether it gains or gates-fails. Repaired challenger: same mutation operator with the fitness replaced by a RAKL evidence gate. The contrast between the two is the actual experiment."
+    },
+    {
+      "mechanic_id": "MEC-MCP_TOOL_AUTODISCOVERY",
+      "source_system_ids": ["SYS-MIMOSA"],
+      "process_surface": "tool acquisition",
+      "preconditions": "Tools are exposed as discoverable services with machine-readable interfaces.",
+      "mechanism": "Scientific tools are published as MCP services and discovered at run time rather than being wired in ahead of time.",
+      "claimed_benefit": "The agent's tool set is not fixed at design time.",
+      "cost": "Discovery overhead per run; CANNOT_CHECK.",
+      "failure_modes": [
+        "An expanding tool surface widens the authority boundary that must be audited.",
+        "Tool descriptions are author-controlled text and are an injection surface."
+      ],
+      "scope": "Any MCP-exposed tool ecosystem.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "ORION's operator basis. Run-time tool discovery is a way to grow the operator basis without a code change, which interacts directly with operator-basis-exhaustion claims.",
+      "candidate_transfer_obligation": "Determine whether operator-basis exhaustion claims survive a run-time-extensible basis, or whether exhaustion is only ever definable relative to a frozen basis."
+    },
+    {
+      "mechanic_id": "MEC-DOMAIN_GROUNDED_REFLECTION",
+      "source_system_ids": ["SYS-DELVEAGENT"],
+      "process_surface": "verification / self-checking",
+      "preconditions": "A domain with checkable consistency laws (dimensional analysis, conservation, stoichiometry) that a checker can apply without solving the problem.",
+      "mechanism": "Hierarchical reflection checks intermediate and final outputs against physics-grounded consistency rather than against a generic self-critique prompt.",
+      "claimed_benefit": "Up to +7.5 percentage points over the strongest baseline at about one third of Gemini Deep Research's inference cost.",
+      "cost": "Reported to *reduce* net cost by avoiding wasted downstream work.",
+      "failure_modes": [
+        "Self-paired benchmark/system release - the gain is not independently replicated.",
+        "Only applies where domain laws are cheap to check; degenerates to generic self-critique elsewhere."
+      ],
+      "scope": "Physics and chemistry as reported.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "RAKL falsifier-bearing verification. This is the strongest positive-transfer candidate in v1: a cheap domain-law checker is evidence-bearing in a way an LLM judge is not.",
+      "candidate_transfer_obligation": "Highest-priority assimilation candidate. Transfer as a cheap invariant-checker stage; falsifier is that the gain disappears once RAKL's existing gates already catch the same errors."
+    },
+    {
+      "mechanic_id": "MEC-DUAL_GRANULARITY_MEMORY",
+      "source_system_ids": ["SYS-DELVEAGENT"],
+      "process_surface": "memory / persistent learning",
+      "preconditions": "Tasks recur with shared domain structure but differing specifics.",
+      "mechanism": "Two memory granularities held separately - reusable task experience and reusable domain knowledge - rather than one undifferentiated store.",
+      "claimed_benefit": "Supports reuse across tasks.",
+      "cost": "CANNOT_CHECK.",
+      "failure_modes": [
+        "Cross-task memory is a contamination route: experience from an evaluation task can leak into a later evaluation.",
+        "Granularity boundary is a design choice with no stated selection rule."
+      ],
+      "scope": "CANNOT_CHECK.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "RAKL fiber/experience reuse and the RAKL_RESET / RAKL_SHAM_MEMORY arms.",
+      "candidate_transfer_obligation": "Test whether splitting ORION memory by granularity beats the undifferentiated store under a matched budget, with the contamination check run first."
+    },
+    {
+      "mechanic_id": "MEC-ADAPTIVE_REPLANNING",
+      "source_system_ids": ["SYS-DELVEAGENT"],
+      "process_surface": "planning",
+      "preconditions": "Intermediate outcomes are observable before the task ends.",
+      "mechanism": "Replan after each intermediate outcome instead of committing to an initial plan.",
+      "claimed_benefit": "Component of the reported DelveAgent gain; not separately ablated in the material read.",
+      "cost": "One planning call per intermediate outcome.",
+      "failure_modes": [
+        "Not separately ablated, so its individual contribution is unknown.",
+        "Frequent replanning is a known route to instruction drift, one of the five failure modes named in the open-ended-research case studies."
+      ],
+      "scope": "CANNOT_CHECK.",
+      "independent_evidence": "NONE - no reproduction attempted.",
+      "rakl_analogue": "ORION route-switch latency and residual-driven re-planning.",
+      "candidate_transfer_obligation": "Requires an ablation before it can be treated as a distinct mechanic at all; currently confounded with MEC-DOMAIN_GROUNDED_REFLECTION."
+    },
+    {
+      "mechanic_id": "MEC-CONTROLLED_RETRIEVAL_ENVIRONMENT",
+      "source_system_ids": ["SYS-ASTA_V0"],
+      "process_surface": "evaluation contract / retrieval",
+      "preconditions": "A fixed literature corpus and search tool that every compared agent uses identically.",
+      "mechanism": "An agent environment that pins the retrieval corpus and search tooling, so retrieval quality stops being a hidden confounder between systems.",
+      "claimed_benefit": "Reproducible evaluation in which architectural differences are not confounded by corpus access.",
+      "cost": "Requires adapting ORION's retrieval path to the environment's interface.",
+      "failure_modes": [
+        "Pinning the corpus removes exactly the capability difference that a retrieval-strong system would otherwise demonstrate; it measures reasoning-given-retrieval, not research capability."
+      ],
+      "scope": "Literature-route comparisons.",
+      "independent_evidence": "NONE - not yet adopted.",
+      "rakl_analogue": "The matched-resource contract required by issue #588 Phase 4.",
+      "candidate_transfer_obligation": "This is the single highest-value *infrastructure* adoption in v1: it is what makes an ARCHITECTURE_CAUSAL_ELIGIBLE arm actually causal on the literature route. Adopt before any Tier 1 literature comparison is claimed."
+    },
+    {
+      "mechanic_id": "MEC-COST_AWARE_LEADERBOARD",
+      "source_system_ids": ["SYS-ASTA_V0"],
+      "process_surface": "evaluation reporting",
+      "preconditions": "Per-call cost is instrumented for every compared system.",
+      "mechanism": "Report capability against inference cost as a frontier rather than as a single ranked score; HAL implements the same idea with a shared scaffold and API-level cost tracking.",
+      "claimed_benefit": "Prevents a ranking that is really a budget difference in disguise.",
+      "cost": "Instrumentation overhead only.",
+      "failure_modes": [
+        "Cost parity is not capability parity; equal spend across systems with different unit economics is still not a matched contract."
+      ],
+      "scope": "All comparisons.",
+      "independent_evidence": "NONE - not yet adopted.",
+      "rakl_analogue": "Issue #588 Phase 5 efficiency QoIs and the Phase 8 Pareto frontier criterion; this mechanic is effectively already mandated by the issue's no-scalar-ranking rule.",
+      "candidate_transfer_obligation": "Adopt as the reporting format for every ORION-versus-external result. This is a reporting obligation, not a research candidate."
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/external-research-agent-registry-v1.schema.json",
+  "title": "External Research-Agent Registry",
+  "description": "Versioned registry of external autonomous-research systems and benchmark suites used as baselines and as knowledge projections for issue #588. Proposal-only: registry membership grants no scientific, method, or promotion authority, and no entry may be scalarized into a single ORION_SCORE.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "registry_id",
+    "registry_version",
+    "freeze_date",
+    "basis_fingerprint",
+    "saturation_status",
+    "grants_scientific_authority",
+    "grants_promotion_authority",
+    "permits_scalar_ranking",
+    "systems",
+    "benchmarks"
+  ],
+  "properties": {
+    "schema_version": {"const": "external-research-agent-registry-v1"},
+    "registry_id": {"type": "string", "minLength": 1},
+    "registry_version": {"type": "string", "pattern": "^v[0-9]+$"},
+    "freeze_date": {"type": "string", "format": "date"},
+    "basis_fingerprint": {"type": "string", "minLength": 64, "maxLength": 64},
+    "saturation_status": {
+      "description": "Must mirror the epistemic-saturation report. A registry frozen while its landscape pass is OPEN may not be used to support a completeness claim.",
+      "enum": ["OPEN", "BOUNDED_SATURATED", "INVALID_BASIS"]
+    },
+    "grants_scientific_authority": {"const": false},
+    "grants_promotion_authority": {"const": false},
+    "permits_scalar_ranking": {"const": false},
+    "systems": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/system"}
+    },
+    "benchmarks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/benchmark"}
+    }
+  },
+  "$defs": {
+    "evidence_grade": {
+      "description": "How the recorded facts were obtained. SEARCH_SNIPPET is explicitly weaker than PRIMARY_ABSTRACT and may not be cited as a measured capability.",
+      "enum": ["PRIMARY_FULL_TEXT", "PRIMARY_ABSTRACT", "PRIMARY_REPO", "SEARCH_SNIPPET", "UNVERIFIED"]
+    },
+    "field_value": {
+      "description": "Any descriptive registry field. The sentinel CANNOT_CHECK is required rather than a guess when the source was not read at sufficient depth.",
+      "type": "string",
+      "minLength": 1
+    },
+    "source_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anchor_id", "url", "anchor_kind", "retrieved_on"],
+      "properties": {
+        "anchor_id": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "format": "uri"},
+        "anchor_kind": {"enum": ["ARXIV_ABS", "ARXIV_PDF", "REPO", "PROJECT_PAGE", "PROCEEDINGS", "BLOG", "THIRD_PARTY"]},
+        "retrieved_on": {"type": "string", "format": "date"},
+        "identifier": {"type": "string"},
+        "reported_submission_date": {"type": "string"},
+        "date_consistency": {
+          "description": "FLAGGED when the identifier's encoded period disagrees with the reported submission date; the disagreement is preserved rather than silently resolved.",
+          "enum": ["CONSISTENT", "FLAGGED", "NOT_APPLICABLE"]
+        }
+      }
+    },
+    "reported_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["benchmark_id", "metric", "value", "reported_by", "evidence_grade"],
+      "properties": {
+        "benchmark_id": {"type": "string", "minLength": 1},
+        "metric": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1},
+        "system_configuration": {"type": "string"},
+        "reported_by": {
+          "description": "SELF_REPORTED results carry a conflict of interest and may not be compared against THIRD_PARTY results without noting it.",
+          "enum": ["SELF_REPORTED", "THIRD_PARTY", "BENCHMARK_AUTHORS"]
+        },
+        "evidence_grade": {"$ref": "#/$defs/evidence_grade"},
+        "anchor_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_id",
+        "name",
+        "classes",
+        "availability",
+        "comparator_class",
+        "evidence_grade",
+        "version_freeze",
+        "architecture",
+        "known_failure_modes",
+        "reproduction_status",
+        "source_anchors"
+      ],
+      "properties": {
+        "system_id": {"type": "string", "pattern": "^SYS-[A-Z0-9_]+$"},
+        "name": {"type": "string", "minLength": 1},
+        "classes": {
+          "description": "A = literature/deep-research; B = scientific-execution; C = end-to-end AI-scientist; D = self-improving/autonomous. A system may hold several.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["A", "B", "C", "D"]}
+        },
+        "availability": {"enum": ["OPEN_SOURCE", "PROPRIETARY", "MIXED", "CANNOT_CHECK"]},
+        "comparator_class": {
+          "description": "ARCHITECTURE_CAUSAL_ELIGIBLE requires that model, tools and budget can be matched. Everything else is SYSTEM_LEVEL_ONLY and may never license an 'ORION architecture > X architecture' claim.",
+          "enum": ["ARCHITECTURE_CAUSAL_ELIGIBLE", "SYSTEM_LEVEL_ONLY", "UNDETERMINED"]
+        },
+        "evidence_grade": {"$ref": "#/$defs/evidence_grade"},
+        "version_freeze": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evaluated_version", "evaluated_date", "commit"],
+          "properties": {
+            "evaluated_version": {"$ref": "#/$defs/field_value"},
+            "evaluated_date": {"$ref": "#/$defs/field_value"},
+            "commit": {"$ref": "#/$defs/field_value"},
+            "license": {"$ref": "#/$defs/field_value"}
+          }
+        },
+        "architecture": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "models",
+            "tool_retrieval_stack",
+            "planning_architecture",
+            "reading_extraction_method",
+            "memory",
+            "multi_agent_topology",
+            "tool_code_execution",
+            "experiment_design",
+            "verification_self_checking",
+            "stopping_saturation",
+            "provenance_citation_handling",
+            "resource_allocation",
+            "persistent_learning",
+            "self_modification"
+          ],
+          "properties": {
+            "models": {"$ref": "#/$defs/field_value"},
+            "tool_retrieval_stack": {"$ref": "#/$defs/field_value"},
+            "planning_architecture": {"$ref": "#/$defs/field_value"},
+            "reading_extraction_method": {"$ref": "#/$defs/field_value"},
+            "memory": {"$ref": "#/$defs/field_value"},
+            "multi_agent_topology": {"$ref": "#/$defs/field_value"},
+            "tool_code_execution": {"$ref": "#/$defs/field_value"},
+            "experiment_design": {"$ref": "#/$defs/field_value"},
+            "verification_self_checking": {"$ref": "#/$defs/field_value"},
+            "stopping_saturation": {"$ref": "#/$defs/field_value"},
+            "provenance_citation_handling": {"$ref": "#/$defs/field_value"},
+            "resource_allocation": {"$ref": "#/$defs/field_value"},
+            "persistent_learning": {"$ref": "#/$defs/field_value"},
+            "self_modification": {"$ref": "#/$defs/field_value"}
+          }
+        },
+        "reported_results": {"type": "array", "items": {"$ref": "#/$defs/reported_result"}},
+        "known_failure_modes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "reproduction_status": {
+          "enum": ["NOT_ATTEMPTED", "IN_PROGRESS", "REPRODUCED", "REPRODUCTION_FAILED", "NOT_REPRODUCIBLE_PROPRIETARY"]
+        },
+        "rakl_analogue": {"$ref": "#/$defs/field_value"},
+        "candidate_mechanic_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "source_anchors": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source_anchor"}}
+      }
+    },
+    "benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benchmark_id",
+        "name",
+        "measures_class",
+        "task_count",
+        "distinct_capability_measured",
+        "evaluation_protocol",
+        "evaluator_type",
+        "orion_adapter_status",
+        "evidence_grade",
+        "source_anchors"
+      ],
+      "properties": {
+        "benchmark_id": {"type": "string", "pattern": "^BM-[A-Z0-9_]+$"},
+        "name": {"type": "string", "minLength": 1},
+        "measures_class": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["A", "B", "C", "D"]}},
+        "task_count": {"$ref": "#/$defs/field_value"},
+        "domains": {"$ref": "#/$defs/field_value"},
+        "distinct_capability_measured": {
+          "description": "Required by Phase 3: a suite may not be added without documenting what distinct capability it measures.",
+          "type": "string",
+          "minLength": 1
+        },
+        "evaluation_protocol": {"$ref": "#/$defs/field_value"},
+        "evaluator_type": {"enum": ["EXECUTABLE", "LLM_JUDGE", "EXPERT_RUBRIC", "HYBRID", "CANNOT_CHECK"]},
+        "cost_tracking": {"enum": ["YES", "NO", "CANNOT_CHECK"]},
+        "reported_ceiling": {"$ref": "#/$defs/field_value"},
+        "orion_adapter_status": {
+          "enum": ["NOT_STARTED", "SPECIFIED", "IMPLEMENTED", "RUN", "INFEASIBLE"]
+        },
+        "leakage_risk_notes": {"type": "string"},
+        "evidence_grade": {"$ref": "#/$defs/evidence_grade"},
+        "source_anchors": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source_anchor"}}
+      }
+    }
+  }
+}
