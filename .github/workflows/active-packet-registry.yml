@@ -26,9 +26,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e '.[test]'
 
-      - name: Validate registry content and hashes
-        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_active_registry_is_content_valid_and_non_authoritative
-
       - name: Validate frozen active set
         run: pytest -q tests/test_active_mechanic_packet_registry.py::test_current_active_set_matches_frozen_challenger_expectation
 
@@ -52,3 +49,6 @@ jobs:
 
       - name: Live post-contract registrations are clean
         run: python scripts/active_packet_preflight.py
+
+      - name: Validate registry content hashes and links
+        run: pytest -q tests/test_active_mechanic_packet_registry.py::test_active_registry_is_content_valid_and_non_authoritative
