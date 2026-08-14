@@ -72,7 +72,15 @@ def test_frozen_routing_cases() -> None:
 
 def test_frozen_pareto_cases_do_not_scalarize_tradeoffs() -> None:
     for case in _benchmark()["pareto_cases"]:
-        frontier = pareto_frontier(CandidateDelta(**candidate) for candidate in case["candidates"])
+        # The frozen benchmark records the candidate key as "id"; CandidateDelta's
+        # field is candidate_id. The frozen artifact stays untouched — adapt here.
+        frontier = pareto_frontier(
+            CandidateDelta(
+                candidate_id=candidate["id"],
+                **{key: value for key, value in candidate.items() if key != "id"},
+            )
+            for candidate in case["candidates"]
+        )
         assert [candidate.candidate_id for candidate in frontier] == case["expected_frontier"], case["id"]
 
 
