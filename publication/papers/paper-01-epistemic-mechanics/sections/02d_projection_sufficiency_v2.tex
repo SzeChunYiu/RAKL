@@ -1,0 +1,73 @@
+\section{Projection sufficiency: coherent authority decisions and minimal registered state}
+
+A scientific-governance interface is useful only if its represented state retains the distinctions needed by the canonical update rule. Let $S$ be a set of scientific worlds, $\pi:S\to Z$ the state exposed to an update policy, and $a^*:S\to\mathcal A$ the registered correct governance decision.
+
+\begin{proposition}[Projection-collision impossibility]
+If there exist $x,y\in S$ with $\pi(x)=\pi(y)$ but $a^*(x)\neq a^*(y)$, then no deterministic policy $f:Z\to\mathcal A$ can be correct on both worlds.
+\end{proposition}
+\begin{proof}
+Both worlds produce the same represented state $z$, so $f$ must emit the same decision on both. One decision cannot equal two distinct registered decisions.
+\end{proof}
+
+The proposition is model-independent. It is a statement about an information interface, not about whether a sufficiently capable model could recover the missing coordinate from additional observations.
+
+\subsection{Why the first minimal-twin instrument was retired}
+
+The first development instrument used fifteen named failure families and exposed a field called \texttt{transition\_type} to every comparator. The value of that field was the family identifier. A later RAKL-on-RAKL audit removed this identifier and found that some otherwise identical substantive states carried different gold actions: the common ``safe'' state was interpreted as promotion in most families but as hold or scope restriction in others, and an otherwise identical superseded state was assigned different revocation/supersession actions in two families. The first panel therefore did not define one coherent function $a^*$ over the scientific state unless family identity was treated as answer-semantic input. Its numerical separation result is retained as development history but is not used as flagship evidence here.
+
+The repair separates a non-answer-bearing \emph{transition request} from the \emph{governance decision}. Requests include promotion of a claim, mechanism, identification or novelty; reactivation; supersession; and contradiction resolution. Decisions are \textsc{allow}, \textsc{deny}, \textsc{restrict} and \textsc{cannot-check}. Family and case identifiers are hidden metadata and are not visible to a candidate policy.
+
+\subsection{V2 registered panel}
+
+The repaired development panel contains 28 cases across 14 families. It separates three kinds of test:
+\begin{enumerate}[leftmargin=*]
+\item \emph{non-authority invariance}: changing retrieval count, workspace status or experience status cannot itself change scientific authority;
+\item \emph{decision twins}: one registered authority coordinate changes under the same explicit request and the correct governance decision changes;
+\item \emph{legitimate-update controls}: the system must permit a properly evidenced supersession rather than obtain safety by refusing every update.
+\end{enumerate}
+
+An executable collision audit verifies that no two cases with identical substantive state and request have conflicting gold decisions, and that family, case and answer labels are absent from every candidate-visible projection.
+
+The registered authority basis is
+\[
+B=\{E,G,C,I_e,M,I_c,N,U,H,S\},
+\]
+where the coordinates denote evidence support, global gluing, context match, evidence independence, mechanism support, identification support, novelty check, cannot-check state, negative-history retention and superseding evidence.
+
+\begin{proposition}[Registered-basis minimality]
+On the V2 panel, $B$ is sufficient for the registered governance decision together with the explicit transition request, and every coordinate of $B$ is individually necessary.
+\end{proposition}
+\begin{proof}
+Sufficiency is checked exhaustively by grouping all 28 cases by the projection onto $B$ plus the request: every resulting bucket contains a single governance decision. For each $b\in B$, the panel contains a registered decision twin whose two members have the same request and agree on every coordinate of $B\setminus\{b\}$ but require different governance decisions. Removing $b$ therefore creates a projection collision, and the projection-collision proposition makes simultaneous correctness impossible on that twin.
+\end{proof}
+
+The executable development result is summarized in Table~\ref{tab:projection-sufficiency-v2}. The simple projections are retained as diagnostic lower-capacity controls. A richer ATMS+provenance+revision abstraction is included to show that context, provenance and revision machinery explains part of the gap.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\begin{tabular}{p{0.42\linewidth} >{\centering\arraybackslash}p{0.22\linewidth} >{\centering\arraybackslash}p{0.22\linewidth}}
+\toprule
+Projection & Identifiable accuracy upper bound & Unavoidable error lower bound\\
+\midrule
+Text-memory only & 0.571 & 0.429\\
+Provenance only & 0.571 & 0.429\\
+Scalar confidence & 0.571 & 0.429\\
+Pairwise compatibility only & 0.571 & 0.429\\
+Reviewer-vote state & 0.571 & 0.429\\
+Simple transactional state & 0.571 & 0.429\\
+ATMS+PROV+revision diagnostic abstraction & 0.679 & 0.321\\
+Typed registered authority state & 1.000 & 0.000\\
+\bottomrule
+\end{tabular}
+\caption{Development representation bounds on the coherent V2 panel (28 cases, 14 families). They are information bounds induced by frozen projections, not measured language-model accuracies.}
+\label{tab:projection-sufficiency-v2}
+\end{table}
+
+\subsection{Nearest-work and claim boundary}
+
+The richer parent row is deliberately not interpreted as an expressiveness victory over general truth-maintenance, provenance, belief-revision or argumentation systems. An assumption-based truth-maintenance system can manipulate arbitrary assumptions and contexts; provenance languages can be specialized with application-specific predicates; belief-revision and argumentation formalisms can encode rich update policies. A sufficiently configured general rule system can therefore represent the registered scientific coordinates as propositions and implement the same decision law.
+
+The residual claim is narrower. Orion makes the scientific authority coordinates, their noncompensatory transition semantics, provenance/negative-history obligations and proposal-to-canonical noninterference part of the research-agent contract rather than leaving them as application-specific rules to be reconstructed ad hoc. The V2 audit establishes that every registered coordinate is load-bearing on at least one adversarial decision twin and that the full registered projection is sufficient on this panel. It does not establish that Orion is more expressive than a general logic engine.
+
+The next causal mechanism test therefore uses ablations rather than an artificial representational handicap: remove one authority coordinate, collapse the product authority to a scalar, replace higher-order gluing by pairwise compatibility, permit workspace/experience/proposal channels to write authority, remove negative-history retention, or coerce \textsc{cannot-check}. The full system succeeds only if it preserves every legitimate update while each load-bearing ablation exposes its preregistered failure class. Behavioural natural-language evaluation and independent external review remain separate validity coordinates.
