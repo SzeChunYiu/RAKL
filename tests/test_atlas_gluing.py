@@ -1,4 +1,4 @@
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 
 import pytest
 
@@ -290,3 +290,79 @@ def test_unknown_transition_freeze_chronology_is_cannot_check():
         chart_ids=("A", "B"),
     )
     assert report.verdict is TransitionVerdict.CANNOT_CHECK
+
+
+# Declared-topology trust repair (P0.2 falsifiability sweep finding 2, branch
+# solver/gate-falsifiability-sweep-v1 @ 928495eb, reproduce_insensitive_findings.py):
+# declared cover_connected / cover_has_cycles / cycle_basis_complete / cycle
+# witnesses must be recomputed from the transition set, never trusted blindly.
+
+
+def test_single_transition_keep_ab_contradicts_declared_topology():
+    report = evaluate_atlas_gluing(_trial(transitions=(_transition("A", "B"),)))
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_mismatch:cover_connected" in report.reasons
+
+
+def test_single_transition_keep_bc_contradicts_declared_topology():
+    report = evaluate_atlas_gluing(_trial(transitions=(_transition("B", "C"),)))
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_mismatch:cover_connected" in report.reasons
+
+
+def test_consistent_declarations_still_glue_without_topology_alarm():
+    report = evaluate_atlas_gluing(_trial())
+    assert report.verdict is AtlasGluingVerdict.GLUED_GLOBAL_PORTRAIT_PROPOSAL_ONLY
+    assert not any(reason.startswith("declared_topology") for reason in report.reasons)
+
+
+def test_declared_acyclic_cover_with_actual_cycles_is_cannot_check():
+    report = evaluate_atlas_gluing(
+        _trial(cover_has_cycles=False, cycle_basis_complete=None, cycle_witnesses=())
+    )
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_mismatch:cover_has_cycles" in report.reasons
+
+
+def test_cycle_witness_path_outside_transition_graph_is_cannot_check():
+    open_path_witness = CycleConsistencyWitness(
+        cycle_id="cycle-open",
+        chart_path=("A", "B", "C"),
+        composition_consistent=True,
+        evidence_ids=("cycle-evidence",),
+    )
+    report = evaluate_atlas_gluing(_trial(cycle_witnesses=(open_path_witness,)))
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_mismatch:cycle_witnesses" in report.reasons
+
+
+def test_declared_complete_cycle_basis_that_does_not_span_is_cannot_check():
+    charts = (_chart("A"), _chart("B"), _chart("C"), _chart("D"))
+    transitions = (
+        _transition("A", "B"),
+        _transition("B", "C"),
+        _transition("C", "A"),
+        _transition("B", "D"),
+        _transition("D", "C"),
+    )
+    report = evaluate_atlas_gluing(
+        _trial(charts=charts, transitions=transitions, cycle_witnesses=(_cycle(),))
+    )
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_mismatch:cycle_basis_complete" in report.reasons
+
+
+def test_parallel_overlap_edges_leave_cycle_basis_declaration_untrusted():
+    parallel_overlap = replace(
+        _transition("A", "B", transition_id="A-B-alt"),
+        overlap_id="overlap-A-B-alt",
+    )
+    transitions = (
+        _transition("A", "B"),
+        parallel_overlap,
+        _transition("B", "C"),
+        _transition("C", "A"),
+    )
+    report = evaluate_atlas_gluing(_trial(transitions=transitions))
+    assert report.verdict is AtlasGluingVerdict.CANNOT_CHECK
+    assert "declared_topology_untrusted:cycle_basis_complete" in report.reasons
