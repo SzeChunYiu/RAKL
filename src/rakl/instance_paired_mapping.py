@@ -118,15 +118,16 @@ def compute_instance_paired_score(query: TypedReducedStructure,
     Returns:
         (score, role_score, relation_score) where score in [0, 1]
     """
-    query_roles = query.typed_roles
-    candidate_roles = candidate.typed_roles
+    # typed_roles is dict[str, TypedRole], convert to list of TypedRole objects
+    query_roles_list = list(query.typed_roles.values())
+    candidate_roles_list = list(candidate.typed_roles.values())
     query_relations = query.typed_relations
     candidate_relations = candidate.typed_relations
 
     # Role matching
-    role_matches = greedy_match(query_roles, candidate_roles, role_correspondence)
+    role_matches = greedy_match(query_roles_list, candidate_roles_list, role_correspondence)
     role_corr_sum = sum(corr for _, _, corr in role_matches)
-    role_score = role_corr_sum / len(query_roles) if query_roles else 0.0
+    role_score = role_corr_sum / len(query_roles_list) if query_roles_list else 0.0
 
     # Relation matching
     rel_matches = greedy_match(query_relations, candidate_relations, relation_correspondence)
