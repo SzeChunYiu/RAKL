@@ -1,0 +1,105 @@
+{
+  "schema_version": "orion-p4-allocator-attribution-diagnostic-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "issue_refs": [461, 466, 462, 468],
+  "kind": "FAILURE_ATTRIBUTION_DIAGNOSTIC",
+  "authority_boundary": {
+    "grants_scientific_authority": false,
+    "can_promote_a_mechanic": false,
+    "can_emit_ADAPTIVE_RESIDUAL_SUPPORTED": false,
+    "changes_7b_phase2_evaluator": false,
+    "modifies_any_existing_freeze_or_receipt": false,
+    "note": "This is a decomposition of an already-preserved negative. It may only classify WHY adaptive-v1 lost and whether the model-free stress instrument is capable of discriminating the estimand. It may not promote, revive, or reverse any terminal."
+  },
+
+  "parent_negative_under_attribution": {
+    "artifact": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+    "terminal": "DEVELOPMENT_NEGATIVE_ADAPTIVE_OVERCONCENTRATES__STATIC_PARENT_RETAINS_DEFAULT",
+    "E_minus_D_balanced_mastery_mean": -0.016608417018047765,
+    "stated_root_cause": "The v1 adaptive batch commits all non-repetition slots to one weakest coordinate for an entire round. In saturation/forgetting worlds this creates concentration-induced principle/retention erosion while the static parent preserves structural coverage.",
+    "stated_root_cause_status_at_freeze": "UNVERIFIED_HYPOTHESIS_UNDER_TEST",
+    "preserved_immutable": true
+  },
+
+  "reproduction_precondition": {
+    "runner": "experiments/orion_closure/run_p4_adaptive_development_stress.py",
+    "protocol": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+    "protocol_sha256": "46cc8ca5112ac28675a0ded3d64332f44b41050031dd82d5e594282313628e40",
+    "expected_protocol_sha256_from_freeze_manifest": "46cc8ca5112ac28675a0ded3d64332f44b41050031dd82d5e594282313628e40",
+    "reproduction_status": "PASS_EXACT_NUMERIC",
+    "reproduction_host": "laptop billy (~/rakl-verify, .venv/bin/python 3.11.14)",
+    "reproduced_values_identical_to_preserved_negative": true,
+    "original_receipt_sha256_claim": {
+      "claimed_in": "research/orion_p1_p4_closure_v2/RUNNER_REPRODUCTION_PROVENANCE.json",
+      "claimed_value": "c5c84ba1803673d06cd852950f4c43ed4bbbcc6924770ac7a177e3b1c76e6fff",
+      "verification_status": "CANNOT_CHECK",
+      "reason": "The raw runner output FINAL_DEVELOPMENT_RECEIPT.json was never harvested into the repository; only a curated subset (P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json) is present. Byte-level receipt-hash equality therefore cannot be checked from repository bytes. Numeric equality of every reported statistic IS verified."
+    }
+  },
+
+  "design": {
+    "world_dynamics_source": "imported unchanged from experiments/orion_closure/run_p4_adaptive_development_stress.py (world_rates, apply_batch, mean_ci)",
+    "no_dynamics_modification": true,
+    "protocol_parameters_source": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json, unchanged",
+    "seed": 202608140601,
+    "seed_rationale": "Identical to the parent freeze so D_STATIC_STRUCTURAL and E_VECTOR_ADAPTIVE reproduce byte-exactly and every contrast is paired against the exact preserved negative. This is a decomposition, not a fresh confirmatory test; a fresh estimand requires a separate protocol with disjoint seeds.",
+    "replicates_per_world": 64,
+    "worlds": ["EARLY_PRINCIPLE_SATURATION", "COMPOSITION_LAG", "BOUNDARY_LAG", "REPRESENTATION_LAG", "TRANSFER_LAG", "RETENTION_SENSITIVE"],
+    "rounds": 6,
+    "batch_size": 8,
+    "budget": 48,
+    "equal_budget_enforced_for_every_arm": true
+  },
+
+  "arms": {
+    "D_STATIC_STRUCTURAL": "Unchanged frozen parent: exact equal structural mix, 8 examples per coordinate.",
+    "E_VECTOR_ADAPTIVE_V1": "Unchanged frozen adaptive-v1: one PRINCIPLE floor slot per round; then RETENTION if below 0.80, else PRINCIPLE if below 0.90, else argmin measured mastery level over the five non-principle-only candidates; remaining 7 slots all committed to that one target.",
+    "X1_GUARDRAIL_AS_CONSTRAINT": "Identical to E_VECTOR_ADAPTIVE_V1 in target functional (argmin measured mastery level) and in batch concentration (7 slots to one target), but PRINCIPLE is treated as a hard CONSTRAINT rather than a budget-consuming TARGET: cumulative PRINCIPLE examples are capped at 8 (exactly D's share). Once the cap is reached, any slot that v1 would have given to PRINCIPLE (floor slot or principle-until-mastered target) is reallocated to the current argmin non-principle coordinate. Isolates guard-rail budget capture.",
+    "X2_DECONCENTRATE": "Identical to E_VECTOR_ADAPTIVE_V1 in guard-rail rules (PRINCIPLE floor slot, retention repair, principle-until-mastered) and in target functional (argmin measured mastery level), but the 7 non-floor slots are SPREAD over the five non-principle coordinates in ascending-mastery order using the deterministic distribution (2,2,1,1,1) instead of committing all 7 to one coordinate. When the guard-rail selects RETENTION or PRINCIPLE as a repair target, all 7 slots go to that repair exactly as in v1. Isolates batch concentration.",
+    "X3_BOTH_LEVERS": "X1 and X2 applied together.",
+    "ORACLE_GREEDY_CEILING": "Not an implementable policy. At every one of the 48 example slots, choose the coordinate maximizing the exact immediate change in balanced_mastery under the true world rates and the true harm terms, using the same deterministic tie order. Equal budget enforced. This measures the instrument's achievable ceiling for ANY state-aware allocator."
+  },
+
+  "metrics": {
+    "primary": "balanced_mastery = mean of the six final mastery coordinates",
+    "safety": "hard_safety_min = min(PRINCIPLE, BOUNDARY, RETENTION) final mastery",
+    "budget": "realized example count per coordinate",
+    "uncertainty": "paired bootstrap, 10000 resamples, seed 202608140699, identical to the parent runner"
+  },
+
+  "frozen_predictions_before_outcome_access": {
+    "P1_budget_capture_is_dominant": {
+      "statement": "X1_GUARDRAIL_AS_CONSTRAINT closes at least 60% of the parent gap: (X1 - D) - (E - D) >= 0.010.",
+      "falsifier": "(X1 - D) - (E - D) < 0.010"
+    },
+    "P2_concentration_is_not_dominant": {
+      "statement": "Deconcentration alone changes the parent gap by less than 0.005: |(X2 - D) - (E - D)| < 0.005.",
+      "falsifier": "|(X2 - D) - (E - D)| >= 0.005"
+    },
+    "P3_instrument_ceiling_below_its_own_gate": {
+      "statement": "ORACLE_GREEDY_CEILING - D < 0.05, i.e. below the frozen hard gate E_minus_D_balanced_mean_min of the parent freeze. If true, NO state-aware allocator can pass this instrument's own promotion gate and the instrument cannot discriminate the adaptive-vs-static estimand.",
+      "falsifier": "ORACLE_GREEDY_CEILING - D >= 0.05"
+    },
+    "P4_world_invariant_allocation": {
+      "statement": "E_VECTOR_ADAPTIVE_V1 realized coordinate counts are identical in at least 5 of the 6 worlds, and PRINCIPLE count is 13 in every world versus D's 8.",
+      "falsifier": "counts differ across more than one world, or PRINCIPLE count is not 13"
+    }
+  },
+
+  "decision_branches": {
+    "ATTRIBUTION_GUARDRAIL_BUDGET_CAPTURE": "P1 holds and P2 holds. Single-stage attribution: allocation policy, guard-rail-as-target sub-lever. The preserved receipt's concentration explanation is superseded as an INTERPRETATION (the receipt itself remains immutable).",
+    "ATTRIBUTION_CONCENTRATION": "P2 fails and P1 fails. The preserved receipt's stated root cause is confirmed.",
+    "ATTRIBUTION_MIXED": "Both levers individually material. Attribution is not single-stage; report as such rather than forcing one.",
+    "INSTRUMENT_CANNOT_DISCRIMINATE": "P3 holds. Independently of which attribution branch fires, the model-free stress instrument cannot support any adaptive-vs-static conclusion in either direction, and the parent negative is scoped to 'this v1 policy in this instrument' only.",
+    "CANNOT_CHECK": "Reproduction precondition fails."
+  },
+
+  "what_this_run_may_never_do": [
+    "reverse, weaken or rewrite P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+    "restore adaptive scheduling as the active default training policy",
+    "substitute for the frozen 7B five-arm Phase-2 protocol PROTOCOL_V3.json",
+    "consume the RESOURCE_BLOCKED or any other PROTOCOL_V3 terminal",
+    "promote a successor allocator (a successor requires its own fresh frozen protocol and instrument)"
+  ]
+}
