@@ -19,18 +19,23 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - name: Bind exact subject
         run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - run: python -m pip install -e '.[test]'
+      - name: Install exact repository build/test prerequisites
+        run: |
+          python -m pip install --upgrade pip 'setuptools>=68' wheel
+          python -m pip install -e '.[test]'
       - name: Full repository tests
         run: pytest -q
       - name: Re-run frontier deterministic preflights
         run: |
           python experiments/paper2/run_controlled_witness_extraction_v1.py --out /tmp/p2-frontier
           python experiments/paper3/run_capability_stage4_v1.py --outdir /tmp/p3-frontier --dry-run
+          python experiments/paper2/run_real_source_descriptor_v1.py --outdir /tmp/p2-real-source --dry-run
           bash -n experiments/paper3/run_capability_stage4_v1_lunarc.sbatch
           bash -n experiments/training_ladder/run_phase2_v1_lunarc.sbatch
       - name: Enforce no frontier artifact grants scientific authority
