@@ -1,0 +1,97 @@
+{
+  "schema_version": "rakl-paper4-phase2-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "issue": 466,
+  "gate_issue": 462,
+  "expert_review_roles": [
+    {"role":"experimental-statistics reviewer","responsibility":"Freeze estimands, MDE, task unit, harm bounds, inference and stopping before outcomes."},
+    {"role":"learner-computation reviewer","responsibility":"Bind the exact 7B operating point, training algorithm, token/compute budget and fresh data partitions."},
+    {"role":"scientific-validity reviewer","responsibility":"Protect structural-OOD, retention, hostile near-miss and leakage controls; reject scalar wins that violate hard harms."},
+    {"role":"RSHEA adversary","responsibility":"Compare static RAKL and strongest learner-aware parents; preserve null/harm terminals and forbid outcome-conditioned model or task shopping."}
+  ],
+  "authorizing_phase1": {
+    "artifact": "research/paper4_phase1_results_v2/7b/run_manifest_v2.json",
+    "model_family": "Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "protocol_subject_hash": "fce2bb17f4b436b76ca2cca318c3c0e29648ada1dbe8b9a3317ce92c36278eb0",
+    "family": "state_reachability",
+    "terminal": "MECHANISM_SIGNAL_PRESENT",
+    "principle_mastered_at_exposure": 2,
+    "same_structure_late_gain": 0.0,
+    "unsaturated_coord_late_gain": 0.25,
+    "v1_generator_negative_preserved": true
+  },
+  "model": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "precision": "4bit-NF4 base + LoRA adapter where runtime supports it",
+    "selection_rule": "exact Phase-1 in-ladder model that produced the pre-frozen mechanism signal; no outcome-conditioned scale shopping",
+    "training_seed": 46601,
+    "generation_temperature": 0.0
+  },
+  "fresh_data": {
+    "generator": "experiments/training_ladder/generator_v2.py semantics, versioned Phase-2 wrapper",
+    "family": "state_reachability",
+    "development_seed": 4661001,
+    "selection_probe_seed": 4661002,
+    "fresh_assurance_seed": 4661003,
+    "exposure_types": ["SAME_STRUCTURE","NEW_COMPOSITION","NEW_BOUNDARY","NEW_REPRESENTATION","NEW_DOMAIN","HOSTILE_NEAR_MISS"],
+    "batch_size_per_allocation": 8,
+    "allocation_rounds": 6,
+    "training_examples_per_arm": 48,
+    "selection_probe_n_per_coordinate": 16,
+    "fresh_assurance_n_per_coordinate": 64,
+    "no_item_or_prompt_overlap": true
+  },
+  "arms": {
+    "A_UNIFORM_RANDOM": "uniform random exposure-type allocation under the same 48-example training budget",
+    "B_SEMANTIC_DIVERSITY": "diversity-maximizing exposure allocation using surface/token similarity only; no mastery state",
+    "C_STRONGEST_MODEL_AWARE_PARENT": "loss/probe-driven learner-aware policy with access to the same selection probes and cadence but no registered structural mastery vector; primary implementation is highest probe cross-entropy with a gradient-alignment diagnostic where feasible",
+    "D_STATIC_RAKL_STRUCTURAL": "pre-frozen equal structural mix with a nonzero SAME_STRUCTURE repetition floor and identical structural identities",
+    "E_ADAPTIVE_RAKL_STRUCTURAL": "learner-conditioned six-coordinate mastery vector; after principle mastery, allocate to the lowest unsaturated safe coordinate, retain a nonzero repetition floor, and treat retention/hostile safety as hard constraints"
+  },
+  "matched_conditions": {
+    "same_base_model_revision": true,
+    "same_initialization": true,
+    "same_optimizer_and_lr": true,
+    "same_training_example_budget": 48,
+    "same_max_output_tokens": true,
+    "same_selection_probe_cadence_for_C_D_E": true,
+    "fresh_assurance_hidden_from_allocation": true,
+    "no_cross_arm_state": true,
+    "arm_specific_selection_overhead_reported": true
+  },
+  "primary_estimand": "E_ADAPTIVE_RAKL_STRUCTURAL minus D_STATIC_RAKL_STRUCTURAL on fresh balanced structural-OOD accuracy after charging selection/probe overhead",
+  "secondary_estimands": [
+    "E minus C strongest learner-aware parent",
+    "D minus B semantic diversity",
+    "E minus A uniform random"
+  ],
+  "outcomes": {
+    "capability": ["fresh_balanced_accuracy","fresh_domain_transfer_accuracy","fresh_composition_accuracy"],
+    "hard_safety": ["boundary_accuracy","hostile_near_miss_accuracy","same_structure_retention_accuracy"],
+    "cost": ["training_tokens","probe_tokens","model_calls","wall_time","gpu_seconds","peak_memory"]
+  },
+  "statistics": {
+    "independent_unit": "fresh assurance task/case; training seed is fixed by protocol and not counted as an independent replicate",
+    "mde_primary_accuracy": 0.05,
+    "confidence": 0.95,
+    "paired_bootstrap_repetitions": 10000,
+    "multiplicity": "Holm over E-D primary plus E-C and D-B confirmatory contrasts",
+    "success": "E-D point estimate >= 0.05 and paired 95% CI lower bound > 0 after full overhead, E-C not negative beyond -0.02, and no hard safety harm",
+    "hard_harm_boundary_vs_D": -0.05,
+    "missing_invalid_policy": "fail closed; missing arm output is no success and is retained in cost/safety accounting",
+    "stopping": "fixed 6 allocation rounds; no outcome-dependent extension"
+  },
+  "decision_tree": {
+    "ADAPTIVE_RESIDUAL_SUPPORTED": "primary gate passes, strongest parent does not explain the result, and all hard harms pass",
+    "PARENT_MATCHES_OR_BEATS": "C matches/beats E within the registered material boundary",
+    "STATIC_EQUALS_ADAPTIVE": "E-D CI includes zero and excludes the +0.05 MDE with adequate precision",
+    "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION": "any hard safety coordinate crosses -0.05 versus D",
+    "UNDERPOWERED": "registered precision is not achieved",
+    "RESOURCE_BLOCKED": "exact 7B Phase-2 execution cannot be run under the frozen resource envelope; do not substitute a smaller model",
+    "INVALID_CONTAMINATED": "leakage, post-outcome policy change, or evaluation contamination is detected"
+  },
+  "authority_boundary": "training-allocation research only; no scientific/theorem authority and no Paper-IV standalone authorization until issue #462 is evaluated from the frozen result"
+}
