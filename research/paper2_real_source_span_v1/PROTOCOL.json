@@ -1,0 +1,123 @@
+{
+  "schema_version": "paper2-real-source-span-instrument-v1",
+  "date": "2026-08-14",
+  "base_main_sha": "944aa7ff14dab704733bddd940faf60e47e53d9e",
+  "paper": "Paper II — Structural Mechanics",
+  "expert_cell": [
+    {"role": "structural_transfer_and_scientific_source_grounding", "responsibility": "separate textual extraction from downstream applicability verification and preserve exact source-span provenance"},
+    {"role": "causal_transportability_and_formal_parent_review", "responsibility": "treat established transportability/selection-diagram methods as strongest parents where causal transfer is the target; isolate only ORION residual"},
+    {"role": "benchmark_statistics_and_leakage", "responsibility": "prevent candidate-visible gold fields, circular source labels, same-item development/confirmation reuse and non-failable gates"},
+    {"role": "adversarial_reproducibility", "responsibility": "bind exact source bytes/locators and reject missing, changed, inaccessible or license-incompatible evidence rather than reconstructing it"}
+  ],
+  "parent_source_set": {
+    "path": "research/paper3/annotation/SOURCE_ITEM_SET_V2_1_20260810.json",
+    "file_sha256": "e865a1767ddedeac86da84fcae9bdd6c11659706edf3e76a00653761e6c5da68",
+    "canonical_sha256": "ba4cdb4acbc695599f6ce5c9148e8e68d6fcf5cb9f6f5b06b8f2f6dd3511b556",
+    "item_count": 16,
+    "status": "development/source-acquisition pool only; not fresh confirmatory evidence",
+    "reason": "candidate invariant/boundary/dependency fields were already authored in this source set, so they may diagnose extraction but cannot serve as independent confirmatory gold"
+  },
+  "strongest_parents": [
+    "P2 controlled-text -> exact typed witness bridge (upper-bound interface parent)",
+    "frozen semantic/dense reranker control where available",
+    "causal transportability/selection-diagram algorithms for causal-domain transport licensing",
+    "relation/structure-mapping and lexical/metadata controls",
+    "fail-closed abstention/selective-prediction parent for missing evidence"
+  ],
+  "atomic_gap": "The current natural-domain pool stores bibliographic references and internally proposed structural coordinates, but no candidate-visible packet contains exact primary-source text spans whose bytes are independently bound. Therefore a model could not yet be credited with discovering a structural witness from real scientific material.",
+  "phase_0_blind_acquisition_manifest": {
+    "input": "parent source set only",
+    "candidate_visible_fields": [
+      "opaque_item_id",
+      "source_reference",
+      "target_reference",
+      "transfer_question"
+    ],
+    "forbidden_candidate_visible_fields": [
+      "source_item_id",
+      "family",
+      "candidate_load_bearing_boundary",
+      "candidate_load_bearing_invariant",
+      "source_dependencies",
+      "target_dependencies",
+      "source_skill_tags",
+      "target_skill_tags",
+      "source_surface_terms",
+      "target_surface_terms"
+    ],
+    "opaque_id_rule": "sha256('P2-REAL-SOURCE-V1:' + source_item_id) first 16 hex; linkage retained in hidden development manifest only",
+    "references_must_preserve": ["DOI or exact primary-source locator", "title", "source/target role"],
+    "no_source_text_is_fabricated": true
+  },
+  "phase_1_exact_source_acquisition": {
+    "required_per_source": [
+      "primary-source locator",
+      "retrieval timestamp",
+      "content MIME/type",
+      "exact retrieved byte SHA-256",
+      "license/access class",
+      "exact candidate-visible span start/end or stable structural locator",
+      "span SHA-256",
+      "span text only when redistribution is permitted",
+      "otherwise a reproducible retrieval recipe and hash-bound local span"
+    ],
+    "fail_closed_states": [
+      "SOURCE_INACCESSIBLE",
+      "SOURCE_IDENTITY_AMBIGUOUS",
+      "CONTENT_CHANGED_FROM_FROZEN_HASH",
+      "NO_REDISTRIBUTION_PERMISSION",
+      "SPAN_LOCATOR_NOT_REPRODUCIBLE"
+    ],
+    "forbidden": [
+      "substituting secondary summaries for the registered primary source without a versioned protocol",
+      "using the internally proposed invariant/boundary text as candidate input",
+      "copying target labels into the source span",
+      "silent OCR or paraphrase replacement"
+    ]
+  },
+  "phase_2_candidate_extraction": {
+    "input": "only transfer question plus exact/hash-bound source and target spans",
+    "output_schema": [
+      "context_and_qoi",
+      "role_mapping",
+      "preserved_relations_or_invariants",
+      "non_preserved_properties",
+      "source_preconditions",
+      "target_boundaries",
+      "uncertainty_or_missing_evidence",
+      "source_span_bindings",
+      "target_span_bindings",
+      "proposed_transfer_decision"
+    ],
+    "required_decisions": ["LICENSED", "REJECTED", "CANNOT_CHECK"],
+    "candidate_must_not_call_downstream_gold_verifier": true,
+    "candidate_must_not_read_hidden_linkage_or_internal_candidate_fields": true
+  },
+  "development_only_gate": {
+    "purpose": "instrument diagnosis before any fresh confirmatory source set is frozen",
+    "allowed_outcome": [
+      "REAL_SOURCE_INSTRUMENT_READY_FOR_FRESH_EPOCH",
+      "SOURCE_ACQUISITION_BLOCKED",
+      "EXTRACTION_SCHEMA_OR_BINDING_DEFECT",
+      "MODEL_OR_INTERFACE_EXTRACTION_FLOOR"
+    ],
+    "not_a_promotion_of": [
+      "natural-language witness extraction",
+      "broad natural-domain transfer",
+      "independent human validation",
+      "end-to-end research utility"
+    ]
+  },
+  "fresh_confirmatory_successor_requirements": [
+    "new source items not used to design the extractor",
+    "primary-source spans frozen before candidate outputs",
+    "candidate structural extraction distinct from downstream gold/evaluator",
+    "a demonstrably failable gate shown by planted missing/near-miss/role-swap controls before confirmatory execution",
+    "strongest formal parent comparison by applicable family, including causal transportability for causal items",
+    "independent or objective target-world adjudication appropriate to the claim",
+    "invalid false-accept, valid retention and CANNOT_CHECK jointly reported",
+    "fresh-source and family-level uncertainty reported"
+  ],
+  "current_allowed_terminal": "INSTRUMENT_ONLY__NO_EMPIRICAL_EXTRACTION_CLAIM",
+  "grants_scientific_authority": false
+}
