@@ -46,8 +46,15 @@ def role_correspondence(q_role: TypedRole, c_role: TypedRole) -> float:
     return 0.0
 
 
-def relation_correspondence(q_rel: TypedRelation, c_rel: TypedRelation) -> float:
+def relation_correspondence(q_rel: TypedRelation, c_rel: TypedRelation,
+                           query_roles: dict, candidate_roles: dict) -> float:
     """Compute correspondence strength between query and candidate relations.
+
+    Args:
+        q_rel: query relation
+        c_rel: candidate relation
+        query_roles: dict[str, TypedRole] for looking up role types
+        candidate_roles: dict[str, TypedRole] for looking up role types
 
     Returns:
         1.0 if source AND target tokens match exactly
@@ -59,12 +66,22 @@ def relation_correspondence(q_rel: TypedRelation, c_rel: TypedRelation) -> float
         return 1.0
 
     # Partial match: role types and relation type align
-    src_role_match = (q_rel.source_role_type != RoleType.NONE and
-                      c_rel.source_role_type != RoleType.NONE and
-                      q_rel.source_role_type == c_rel.source_role_type)
-    tgt_role_match = (q_rel.target_role_type != RoleType.NONE and
-                      c_rel.target_role_type != RoleType.NONE and
-                      q_rel.target_role_type == c_rel.target_role_type)
+    # Look up role types from the typed_roles dicts
+    q_src_role = query_roles.get(q_rel.source)
+    c_src_role = candidate_roles.get(c_rel.source)
+    q_tgt_role = query_roles.get(q_rel.target)
+    c_tgt_role = candidate_roles.get(c_rel.target)
+
+    # Check if all role types are available and match
+    if not all([q_src_role, c_src_role, q_tgt_role, c_tgt_role]):
+        return 0.0
+
+    src_role_match = (q_src_role.role_type != RoleType.NONE and
+                      c_src_role.role_type != RoleType.NONE and
+                      q_src_role.role_type == c_src_role.role_type)
+    tgt_role_match = (q_tgt_role.role_type != RoleType.NONE and
+                      c_tgt_role.role_type != RoleType.NONE and
+                      q_tgt_role.role_type == c_tgt_role.role_type)
     rel_type_match = (q_rel.relation_type != RelationType.PLAIN and
                      c_rel.relation_type != RelationType.PLAIN and
                      q_rel.relation_type == c_rel.relation_type)
@@ -76,13 +93,14 @@ def relation_correspondence(q_rel: TypedRelation, c_rel: TypedRelation) -> float
 
 
 def greedy_match(query_instances: list, candidate_instances: list,
-                 correspondence_fn: Callable) -> list[tuple]:
+                 correspondence_fn: Callable, *extra_args) -> list[tuple]:
     """Greedy asymmetric matching: each query instance matches at most one candidate.
 
     Args:
         query_instances: list of query-side instances (roles or relations)
         candidate_instances: list of candidate-side instances
         correspondence_fn: function computing correspondence strength
+        *extra_args: additional arguments to pass to correspondence_fn
 
     Returns:
         list of (query_idx, candidate_idx, correspondence_value) tuples
@@ -99,7 +117,7 @@ def greedy_match(query_instances: list, candidate_instances: list,
         for c_idx, c_inst in enumerate(candidate_instances):
             if c_idx in matched_candidates:
                 continue
-            corr = correspondence_fn(q_inst, c_inst)
+            corr = correspondence_fn(q_inst, c_inst, *extra_args)
             if corr > best_corr:
                 best_corr = corr
                 best_c_idx = c_idx
@@ -129,8 +147,9 @@ def compute_instance_paired_score(query: TypedReducedStructure,
     role_corr_sum = sum(corr for _, _, corr in role_matches)
     role_score = role_corr_sum / len(query_roles_list) if query_roles_list else 0.0
 
-    # Relation matching
-    rel_matches = greedy_match(query_relations, candidate_relations, relation_correspondence)
+    # Relation matching (pass role dicts for type lookup)
+    rel_matches = greedy_match(query_relations, candidate_relations,
+                               relation_correspondence, query.typed_roles, candidate.typed_roles)
     rel_corr_sum = sum(corr for _, _, corr in rel_matches)
     relation_score = rel_corr_sum / len(query_relations) if query_relations else 0.0
 
