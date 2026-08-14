@@ -1,0 +1,100 @@
+{
+  "schema_version": "p4-marginal-gain-challenger-protocol-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "lineage": {
+    "parent_negative": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+    "attribution": "research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json",
+    "reference_instrument_verdict": "research/paper4_instrument_admissibility_v1/REFERENCE_INSTRUMENT_ADMISSIBILITY.json",
+    "sealed_packet": "research/paper4_allocator_attribution_v1/PACKET_oracle_ceiling_calibration_gate_v1.json",
+    "packet_content_sha256": "d318363d93721c0fe2900916e04324110ac365f327c8ad85094fae71dd50103b",
+    "prior_adaptive_candidates": [
+      "E_VECTOR_ADAPTIVE (v1, preserved negative)",
+      "ADAPTIVE_V2_DIVERSIFIED_DEFICIT_WITH_HARD_RESERVES (parallel lane, DEVELOPMENT_SUCCESSOR_REQUIRED)",
+      "ADAPTIVE_V3_SPARSE_RESERVE (parallel lane, DEVELOPMENT_ONLY_REJECTED)"
+    ],
+    "this_candidate": "F_MARGINAL_GAIN_V4"
+  },
+  "question": "In an instrument the oracle-ceiling admissibility gate has licensed, does per-slot believed-marginal-gain allocation with guard rails demoted to constraints beat the static structural parent and the strongest fair parent under matched total budget?",
+  "instrument_id": "P4_INSTRUMENT_V2_STATE_DIVERGENT_DEFICIT_PAIRS",
+  "instrument_repair_rationale": [
+    "Repairs exactly the diagnosed blocking cause of the reference instrument: round-0 learner state was world-independent, so state information carried nothing a static arm was not already exploiting.",
+    "Each v2 world assigns a distinct DEFICIENT coordinate pair (initial mastery deficit_m0) with the remaining coordinates near-saturated (complement_m0); which pair is deficient is world-specific and observable only through the learner-state projection, so state-conditioning is decision-relevant by construction.",
+    "PRINCIPLE and RETENTION each appear among the deficient pairs so that neither the v1 guard rails nor their demotion is uniformly favoured by the world set.",
+    "Gain/harm dynamics (apply_batch) are imported byte-identical from the frozen parent runner; total budget, rounds and batch size are unchanged from the reference instrument, so the comparison is matched-total-budget.",
+    "The world-name-keyed harm multipliers of the parent dynamics are inert under v2 world names; harms act at their base magnitudes in every world. Recorded, not hidden."
+  ],
+  "worlds": {
+    "DEFICIT_COMPOSITION_REPRESENTATION": ["COMPOSITION", "REPRESENTATION"],
+    "DEFICIT_BOUNDARY_TRANSFER": ["BOUNDARY", "TRANSFER"],
+    "DEFICIT_PRINCIPLE_COMPOSITION": ["PRINCIPLE", "COMPOSITION"],
+    "DEFICIT_RETENTION_REPRESENTATION": ["RETENTION", "REPRESENTATION"],
+    "DEFICIT_TRANSFER_COMPOSITION": ["TRANSFER", "COMPOSITION"],
+    "DEFICIT_BOUNDARY_RETENTION": ["BOUNDARY", "RETENTION"]
+  },
+  "deficit_m0": 0.10,
+  "complement_m0": 0.94,
+  "initial_noise_halfwidth": 0.01,
+  "rounds": 6,
+  "batch_size": 8,
+  "budget": 48,
+  "replicates_per_world": 64,
+  "forgetting_per_nonprinciple_example": 0.0025,
+  "retention_harm_per_nonretention_example": 0.0015,
+  "mde_primary": 0.05,
+  "seeds": {
+    "develop": 202608141201,
+    "assurance": 202608141301
+  },
+  "seed_disjointness": "both seeds are disjoint from 202608140601 (reference development stress) and 202608141101 (gate fresh assurance); the assurance seed is disjoint from the develop seed and is consumed exactly once",
+  "arms": [
+    "A_UNIFORM_RANDOM",
+    "B_DIVERSITY",
+    "C_SCALAR_LOSS_AWARE",
+    "D_STATIC_STRUCTURAL",
+    "E_VECTOR_ADAPTIVE",
+    "F_MARGINAL_GAIN_V4"
+  ],
+  "arm_notes": {
+    "A_to_E": "imported byte-identical from the frozen parent runner select_batch; E is the preserved v1 policy, kept as a comparator, not revived",
+    "F_MARGINAL_GAIN_V4": "per-slot believed-marginal-gain water-filling: one PRINCIPLE repetition-floor slot per round, then argmax rhat_c*(1-m_c) against a believed state that saturates as slots are spent; rhat estimated online from observed between-round mastery increments (EMA alpha 0.5, init 0.10, clip [0.01,0.5]); NO principle-until-0.90 target, NO whole-batch retention repair — guard rails demoted from budget-consuming targets to the single floor constraint; retention protection must emerge from the gain term or fail the hard-safety gate"
+  },
+  "admissibility_precondition": {
+    "rule": "the comparison is executed only if the admissibility gate under research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json (kappa=1.2) returns ADMISSIBLE for this instrument on the primary F-D contrast (constructive lower bound >= 0.06) BEFORE any arm outcome is accessed",
+    "secondary_gate_licensing_rule": "declared before the ceiling numbers were computed: the F-C material-margin threshold is 0.02 only if the constructive ceiling over the expected C_SCALAR_LOSS_AWARE rollout is >= kappa*0.02 = 0.024; otherwise the F-C gate is registered sign-only (threshold 0.0 with bootstrap CI excluding zero) and the material-margin question is recorded as unresolvable by this instrument",
+    "ceiling_receipt": "INSTRUMENT_V2_CEILING.json",
+    "design_log": "INSTRUMENT_DESIGN_LOG.jsonl"
+  },
+  "hard_gate": {
+    "F_minus_D_balanced_mean_min": 0.05,
+    "F_minus_C_balanced_mean_min": 0.02,
+    "F_minus_strongest_parent_min": 0.0,
+    "F_safety_harm_vs_D_min": -0.01,
+    "all_worlds_F_minus_D_positive": true,
+    "equal_budget": true,
+    "ci_sign_requirement": "P2/P3/P3b additionally require the bootstrap 95% CI lower edge above zero"
+  },
+  "predictions_frozen_before_outcome_access": {
+    "P1": "the v2 instrument's constructive ceiling licenses the primary gate (ADMISSIBLE at kappa=1.2)",
+    "P2": "F - D balanced mastery >= 0.05 on assurance",
+    "P3": "F - C balanced mastery >= registered threshold on assurance",
+    "P3b": "F - strongest parent (argmax balanced mean among A,B,C,D on assurance) > 0 with CI excluding zero",
+    "P4": "F hard-safety-min harm vs D >= -0.01",
+    "P5": "F - D positive in every world",
+    "P6": "E(v1) - D remains negative in the licensed instrument (discriminates 'v1 was wronged by the instrument' from 'v1 policy defect'; if E-D >= 0 here, the attribution of the parent negative to the allocation policy is weakened and must be revisited)"
+  },
+  "terminal_branches_frozen": {
+    "all_of_P2_P3_P3b_P4_P5_green": "DEVELOPMENT_POSITIVE_MARGINAL_GAIN_CHALLENGER_IN_LICENSED_INSTRUMENT",
+    "any_red": "SECOND_DEVELOPMENT_NEGATIVE_MARGINAL_GAIN_CHALLENGER with per-gate attribution",
+    "note": "P6 is a diagnostic prediction, not a pass/fail gate for F"
+  },
+  "development_discipline": "the challenger algorithm and every threshold above are frozen before the develop-phase outcomes are accessed; the develop phase may diagnose but any algorithm change after develop-outcome access would create F_MARGINAL_GAIN_V5 as a new versioned candidate with a fresh assurance seed — v4 results would be preserved either way",
+  "nonclaims": [
+    "no 7B / real-model claim of any kind",
+    "no scientific authority; model-free development stress only",
+    "does not activate training-policy authority (STATIC_STRUCTURAL remains the governed default; activation requires the external ADAPTIVE_RESIDUAL_SUPPORTED path)",
+    "does not reverse, weaken or reinterpret the preserved adaptive-v1 negative",
+    "does not modify the frozen 7B Phase-2 protocol or evaluator"
+  ],
+  "grants_scientific_authority": false
+}
