@@ -1,0 +1,159 @@
+{
+  "schema_version": "paper2-external-corpus-result-v3",
+  "protocol": "research/paper2_external_corpus_v1/PROTOCOL_V3_REDUCER.json",
+  "parent_protocol": "research/paper2_external_corpus_v1/PROTOCOL.json",
+  "grants_scientific_authority": false,
+  "acquisition": {
+    "file": "arn.csv",
+    "sha256": "a866fe5341ce4a29f00f24987a12278303b2b8ad788352f549b0fe051ad4a7a8",
+    "bytes": 1256913,
+    "n_rows": 1095
+  },
+  "mapping": {
+    "mode": "M3",
+    "query": "query_narrative",
+    "first": "first_choice",
+    "second": "second_choice",
+    "answer": "correct_answer",
+    "analogy_band": "analogy_level",
+    "distractor_band": "distractor_similarity",
+    "group": "proverb"
+  },
+  "skipped_rows": 0,
+  "pairs": {
+    "total": 2190,
+    "dev": 648,
+    "confirm": 1542
+  },
+  "admission": {
+    "verdict": "ADMITTED",
+    "admitted_kind": "EXTERNAL_LABEL",
+    "reasons": [],
+    "n_sample_sources": 8
+  },
+  "dev_fit": {
+    "theta_w": 0.45,
+    "theta_l": 0.08,
+    "control_dev_exact": {
+      "lexical": 0.5015432098765432,
+      "band": 0.5462962962962963,
+      "always_accept": 0.5,
+      "always_reject": 0.5,
+      "always_cannot_check": 0.0
+    },
+    "strongest_control": "band"
+  },
+  "battery": {
+    "probe_H": "N/A: no self-authored renderer; third-party surfaces",
+    "B1_gold_arm_distinctness": "pass (arms receive texts/band only by signature)",
+    "B2_text_destruction": {
+      "changed_fraction": 1.0,
+      "scrambled_exact": 0.32944228274967574,
+      "null_upper_975": 0.496757457846952,
+      "pass": true
+    },
+    "B3_shuffled_gold": {
+      "advantage": 0.004395330739299652,
+      "ci": [
+        -0.028600778210116695,
+        0.03801400778210123
+      ],
+      "g1_fails_as_required": true
+    },
+    "B4_trivial_floor": {
+      "always_accept": {
+        "valid_accept": 1.0,
+        "invalid_false_accept": 1.0,
+        "attains_G2": false
+      },
+      "always_reject": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      },
+      "always_cannot_check": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      }
+    },
+    "B4_pass": true,
+    "B5_paired_variance": {
+      "witness_var": 0.2281958555424003,
+      "control_var": 0.23036124089690982,
+      "pass": true
+    }
+  },
+  "gates": {
+    "G1_advantage": {
+      "advantage": -0.0018303501945525769,
+      "ci": [
+        -0.03593463035019456,
+        0.031464591439688716
+      ],
+      "mde": 0.05,
+      "pass": false
+    },
+    "G2_joint": {
+      "valid_accept": 0.0,
+      "invalid_false_accept": 0.0,
+      "pass": false
+    },
+    "G3_abstention": {
+      "cannot_check_rate": 0.01232166018158236,
+      "dominant": false,
+      "breakdown": {
+        "insufficient_extraction_evidence": 0,
+        "degenerate_type_coverage": 10,
+        "zero_correspondence": 9,
+        "total": 0.01232166018158236
+      }
+    },
+    "quadrants": {
+      "far_analogy_Q2_analogue": {
+        "n": 386,
+        "accept_rate": 0.0,
+        "cannot_check_rate": 0.0051813471502590676
+      },
+      "near_analogy": {
+        "n": 385,
+        "accept_rate": 0.0,
+        "cannot_check_rate": 0.025974025974025976
+      },
+      "far_distractor": {
+        "n": 396,
+        "accept_rate": 0.0,
+        "cannot_check_rate": 0.005050505050505051
+      },
+      "near_distractor_Q3_analogue": {
+        "n": 375,
+        "accept_rate": 0.0,
+        "cannot_check_rate": 0.013333333333333334
+      }
+    },
+    "arm_confirm_exact": {
+      "witness": 0.49546044098573283,
+      "lexical": 0.47470817120622566,
+      "band": 0.506485084306096,
+      "always_accept": 0.5,
+      "always_reject": 0.5,
+      "always_cannot_check": 0.0
+    }
+  },
+  "parent_comparison": {
+    "parent_v1": {
+      "witness_exact": 0.4896238651102464,
+      "band_exact": 0.506485084306096,
+      "advantage": -0.016186770428015584,
+      "ci": [
+        -0.049805447470817055,
+        0.016186770428015584
+      ]
+    }
+  },
+  "terminal": "NEGATIVE__CAPABILITY_ABSENT",
+  "negative_reasons": [
+    "G1 CI upper bound below MDE",
+    "G2 joint property failed"
+  ]
+}
