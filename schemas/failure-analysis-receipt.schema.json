@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/failure-analysis-receipt.schema.json",
+  "title": "Failure Analysis Receipt",
+  "description": "Proposal-only content-bound receipt for failure-condition minimization or constraint conflict/correction analysis. It grants no causal, scientific, theorem, solution, or method-promotion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "analysis_id",
+    "kind",
+    "oracle_id",
+    "context_hash",
+    "revision_id",
+    "target_id",
+    "source_condition_ids",
+    "result_sets",
+    "minimality_kind",
+    "oracle_calls",
+    "cannot_check_calls",
+    "notes",
+    "content_hash",
+    "grants_causal_authority",
+    "grants_scientific_authority",
+    "grants_method_promotion_authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "orion.failure-analysis-receipt.v1"},
+    "analysis_id": {"type": "string", "minLength": 1},
+    "kind": {
+      "enum": [
+        "FAILURE_CONDITION_MINIMIZATION",
+        "MINIMAL_CONFLICT",
+        "MINIMAL_CORRECTION",
+        "GLOBAL_MINIMUM_FAILURE_ORACLE",
+        "ALL_MINIMAL_CONFLICTS_ORACLE",
+        "ALL_MINIMAL_CORRECTIONS_ORACLE"
+      ]
+    },
+    "oracle_id": {"type": "string", "minLength": 1},
+    "context_hash": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "target_id": {"type": "string", "minLength": 1},
+    "source_condition_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "result_sets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {"type": "string", "minLength": 1}
+      }
+    },
+    "minimality_kind": {
+      "enum": [
+        "ONE_MINIMAL",
+        "INCLUSION_MINIMAL",
+        "GLOBAL_MINIMUM_CARDINALITY",
+        "COMPLETE_ENUMERATION_OF_INCLUSION_MINIMAL_SETS"
+      ]
+    },
+    "oracle_calls": {"type": "integer", "minimum": 1},
+    "cannot_check_calls": {"type": "integer", "minimum": 0},
+    "notes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "grants_causal_authority": {"const": false},
+    "grants_scientific_authority": {"const": false},
+    "grants_method_promotion_authority": {"const": false}
+  }
+}
