@@ -1,0 +1,14 @@
+{
+  "schema_version": "paper3-trajectory-lesson-induction-instrument-history-v1",
+  "date": "2026-08-14",
+  "v1": {
+    "protocol": "PROTOCOL.json",
+    "runner": "experiments/paper3/run_trajectory_lesson_induction_v1.py",
+    "outcomes_accessed": false,
+    "terminal": "PREEXEC_INSTRUMENT_DEFECT",
+    "defect": "The CONSISTENT_VERIFIED_SUCCESS_INDUCES_CANDIDATE negative twin removed verification_ids by dataclass replacement after the episode content hash had been computed. That makes the negative twin simultaneously missing-verification and stale-identity, so the intended verification coordinate is confounded.",
+    "handling": "Do not execute or interpret v1. Preserve it. Create v2 that natively constructs the unverified episode and computes its exact artifact hash after setting verification_ids=()."
+  },
+  "v2_change_scope": "case construction only; same families, pair count, parents, evaluator, mutations, hard gates, seed and promotion boundary",
+  "grants_scientific_authority": false
+}
