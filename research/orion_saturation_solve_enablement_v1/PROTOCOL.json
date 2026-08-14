@@ -1,0 +1,210 @@
+{
+  "protocol_id": "ORION-SAT-SOLVE-ENABLEMENT-V1",
+  "frozen_on": "2026-08-14",
+  "status": "FROZEN_PRE_OUTCOME",
+  "confirmatory_outcomes_accessed": false,
+  "object": "MECH-BOUNDED-SATURATION (Paper I) — ORION's bounded-saturation stopping rule, as implemented by src/rakl/saturation.py::SaturationTracker, used unmodified.",
+  "claim_under_test": "Stopping search by bounded saturation, rather than at an arbitrary uniform round count of equal total budget, increases downstream problem-solving success.",
+  "primary_qoi": {
+    "name": "solve_rate",
+    "definition": "Fraction of held-out theorem statements closed by `simp only [selected_premises]`, as adjudicated by the Lean 4.14.0 kernel.",
+    "adjudicator": "Lean 4.14.0 kernel (leanprover/lean4:v4.14.0, commit 410fab728470)",
+    "adjudicator_is_self_authored": false,
+    "llm_judge_used": false,
+    "rubric_authored_by_orion": false
+  },
+  "secondary_mediating_qoi": {
+    "name": "gold_premise_coverage",
+    "definition": "|selected premises ∩ premises appearing in the theorem's original Mathlib proof term| / |gold|.",
+    "role": "MEDIATING_ONLY",
+    "promotion_forbidden": "Coverage is the construct bounded-saturation is defined in terms of. It may attribute a solve-rate difference; it may never stand in for one."
+  },
+  "supersessions": [
+    {
+      "id": "SUP-1-IOU-TO-SOLVE-RATE",
+      "superseded_design": "AutoResearchBench Wide Research set-completeness (IoU) as primary QoI",
+      "reason": "Operator sharpened the hypothesis to solve-enablement. IoU measures coverage, which is the same construct the mechanism is defined in terms of — external, but adjacent to the mechanism. Solve rate under an external checker is a genuinely different construct and a stronger escape from the circularity that retracted the Paper VI and Paper II benefit claims.",
+      "note": "No freeze against IoU-as-primary was ever recorded; this is a pre-freeze design change, not a rewrite of a frozen protocol.",
+      "second_reason": "AutoResearchBench execution is independently BLOCKED — see feasibility_verdict."
+    },
+    {
+      "id": "SUP-2-TWO-ARM-TO-THREE-ARM",
+      "superseded_design": "Two-arm ablation (A saturating vs B uniform) only",
+      "reason": "PR #623 adds Paper I §04g, which states the support-structure/navigation loop as a positive claim and explicitly names as an open empirical question: 'Whether the resulting structure is a better object to navigate than the sources it replaces is an empirical question about problem-solving performance, not a corollary of this section, and it is not settled here.' Arm C tests that stated question.",
+      "note": "The two-arm design was written but never committed or frozen and no outcome was accessed. Recorded as superseded rather than rewritten."
+    }
+  ],
+  "instrument_repair_record": {
+    "id": "REPAIR-1-SOLVE-INTERFACE",
+    "refuted_interface": "`simp only [selected]`, with population gated on `simp only [gold]` succeeding",
+    "observed": "The gold-solvability control passed on 4 of 1406 well-posed candidates.",
+    "diagnosis": "A theorem's proof-term constants are not a simp set that reproduces its proof, so `simp only [gold]` is a dead solve interface.",
+    "status": "REFUTED_AND_PRESERVED — not deleted. The control fired before any arm was run, which is what the control is for.",
+    "replacement": "`simp [selected]`, with a two-sided population gate: `simp` alone must FAIL (a real gap exists) and `simp [gold]` must SUCCEED (the gap is closeable).",
+    "why_two_sided": "The floor gate removes tasks the default simp set already solves, so premise selection is load-bearing on every retained task and a ceiling effect cannot manufacture a tie."
+  },
+  "feasibility_verdict": {
+    "external_anchor_assessed": "AutoResearchBench (arXiv:2604.25256)",
+    "anchor_evidence_grade_before": "SEARCH_SNIPPET",
+    "anchor_evidence_grade_after": "PRIMARY_ABSTRACT_AND_ARTIFACT",
+    "anchor_verified": {
+      "title": "AutoResearchBench: Benchmarking AI Agents on Complex Scientific Literature Discovery",
+      "submission_date": "2026-04-28",
+      "dataset_obtained": true,
+      "dataset_license": "Apache-2.0",
+      "records_total": 1000,
+      "records_deep": 600,
+      "records_wide": 400,
+      "wide_gold_mean": 9.24,
+      "wide_gold_min": 2,
+      "wide_gold_max": 34,
+      "wide_gold_total": 3695,
+      "paper_reported_wide_gold_total": 3692,
+      "delta_flagged": "3-paper discrepancy between released bundle (3695) and paper text (3692). Recorded FLAGGED, not smoothed.",
+      "evaluator": "deterministic set IoU over arXiv identifiers; no LLM judge"
+    },
+    "execution_status": "BLOCKED",
+    "blockers": [
+      "DeepXiv retrieval backend endpoint is unpublished: PAPER_SEARCH_API_URL is empty in example.env and defaults to \"\" in tool_deepxivsearch.py. The paper's standard retrieval environment cannot be reproduced.",
+      "No LLM available on the sanctioned compute host: no ollama, no vllm, no llama.cpp, 6 GiB GPU, no OpenAI-compatible endpoint. Any LLM-in-the-loop arm is unrunnable."
+    ],
+    "substitution_declared": "Lean-adjudicated theorem proving on held-out Mathlib theorems. This is Mathlib-level lemma proving, NOT frontier mathematics. The operator's stated target was frontier mathematics; that target is not met and is not claimed.",
+    "minif2f_status": "CANNOT_CHECK at the installed toolchain — yangky11/miniF2F-lean4 main pins leanprover/lean4:v4.24.0 against an installed v4.14.0."
+  },
+  "population": {
+    "source": "Mathlib4 at tag v4.14.0 (lean-toolchain leanprover/lean4:v4.14.0)",
+    "frozen_modules": [
+      "Mathlib.Data.List.Basic",
+      "Mathlib.Data.Nat.Defs",
+      "Mathlib.Data.Set.Basic",
+      "Mathlib.Data.Finset.Basic",
+      "Mathlib.Algebra.Group.Basic",
+      "Mathlib.Logic.Basic"
+    ],
+    "selection_rule_deterministic": true,
+    "filters_in_order": [
+      "theorem constant, non-internal, declared in a frozen module",
+      "pretty-printed statement free of inaccessible names, <= 400 chars",
+      "1 <= |gold premises that are themselves corpus theorems| <= 8",
+      "WELL-POSEDNESS (Lean): `example : <stmt> := by exact <OriginalName>` is accepted",
+      "CONTROL / GOLD-SOLVABILITY (Lean): `simp only [<gold>]` closes the goal"
+    ],
+    "filters_consult_comparison_arms": false,
+    "rationale": "Both Lean filters are control assertions. They establish the solve interface can succeed at all, so a null result cannot be dismissed as a dead harness. Neither filter sees Arm A or Arm B output."
+  },
+  "arms": {
+    "A_saturating": "Saturate over raw sources. Execute the frozen round schedule until SaturationTracker.state is SATURATED_SCOPED, or the schedule is exhausted. Fuse and select M premises.",
+    "B_uniform": "Stop searching arbitrarily at matched total budget. Execute exactly k rounds of the identical schedule, k = round(population mean of Arm A round counts). Fuse and select M premises.",
+    "C_distilled": "Distil to a minimal support structure, saturate over the structure, then navigate it. Construction is obstruction-preserving per the §04g definition — see arm_C_construction.",
+    "C0_obstruction_blind": "NEGATIVE CONTROL, explicitly labelled as such. Identical to C but records only pairwise-satisfiability data and compresses every cover regardless. Paper I §04g Proposition (obstruction-blind distillation is unsound for navigation) already proves this construction unsound; running it measures the size of that unsoundness, and it is never reported as arm C.",
+    "shared": "Identical corpus, identical retrieval routes, identical round schedule, identical fusion rule, identical premise budget M, identical solver effort.",
+    "interface_controls": [
+      "FLOOR: `simp` with no selected premises fails on every retained task, by population construction.",
+      "CEILING: `simp [gold]` succeeds on every retained task, by population construction."
+    ]
+  },
+  "arm_C_construction": {
+    "definition_source": "publication/papers/paper-01-epistemic-mechanics/sections/04g_minimal_support_structure.tex (PR #623), Definition (Obstruction-preserving distillation): 'A distillation is obstruction-preserving for a cover if it retains either the higher-order admissibility certificate for that cover or an explicit obstruction object recording its failure.'",
+    "cover_basis": "Premises in the retrieved pool are partitioned into covers by their highest-IDF (most discriminating) constant. This is a declared, deterministic basis fixed before outcome access.",
+    "why_this_instantiates_the_proposition": "A Lean `simp` set is a genuine instance of the §04g structure: rewrite rules that are pairwise harmless can still fail to admit a global section (the combined set loops or diverges). Pairwise data therefore provably does not decide global realizability here — this is not an analogy imposed on the domain.",
+    "distillation_procedure": [
+      "For each cover, test GLOBAL admissibility with Lean: does `simp [cover]` elaborate on a probe goal without error or heartbeat exhaustion?",
+      "ADMISSIBLE -> retain a higher-order admissibility certificate for the cover and compress it to its top-ranked representative.",
+      "NOT ADMISSIBLE -> retain an explicit obstruction object naming the cover and the failure, and do NOT compress it blindly; the implicated members are carried through uncompressed.",
+      "Navigate the resulting structure: fuse over retained elements and select exactly M premises."
+    ],
+    "retention_record_required": "The run must record, per task, which covers were compressed under a certificate, which were retained under an obstruction object, and the resulting structure size.",
+    "failure_diagnostic_primary": {
+      "name": "dropped_needed_rate",
+      "definition": "Among tasks where arm C fails, the fraction whose gold premise set is not fully contained in the retained distilled structure.",
+      "why_it_matters": "This is what separates 'lossy but fine' from 'lossy in exactly the way that matters'. Reported whichever direction the headline goes."
+    }
+  },
+  "budget_accounting": {
+    "retrieval": "Total rounds are matched at the population level by construction: sum(rounds_B) = k * N and k is the rounded mean of rounds_A. Per-task spend differs between arms; that difference IS the mechanism (adaptive vs uniform allocation), not a confound.",
+    "solve_interface": "Both arms pass exactly M_PREMISES = 16 premises to the tactic. A larger collected pool therefore cannot win by handing the tactic more lemmas — the arms differ only in WHICH premises they select.",
+    "solver_effort": "maxHeartbeats = 400000 for both arms, identical.",
+    "why_this_matters": "Without the fixed premise budget, Arm A's pool is a superset of Arm B's prefix and the solve comparison is a closed-form tautology rather than a measurement. The fixed budget is what makes a loss reachable: over-collection can dilute the fused ranking and push correct premises out of the top 16."
+  },
+  "frozen_parameters": {
+    "K_PER_ROUND": 40,
+    "M_PREMISES": 16,
+    "MAX_HEARTBEATS": 400000,
+    "ROUTES": ["jaccard", "idf", "rarest", "containment", "name_token", "pair", "two_hop"],
+    "REQUIRED_ROUTES": ["jaccard", "idf", "rarest"],
+    "SAME_CONTEXT_FLAT_REQUIRED": 2,
+    "INDEPENDENT_FLAT_REQUIRED": 2,
+    "round_schedule": "per route: a primary sweep over ranks [0,40) marked independent with lineage {route}, then a deepening sweep over ranks [40,80) in the same context marked non-independent. 14 rounds total.",
+    "required_routes_rationale": "The required routes are those keyed on the goal's own constant vocabulary. Saturation may not be declared before that vocabulary has been swept; the extended routes are expansions and are optional."
+  },
+  "measurement_model_coordinates": {
+    "source": "docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md (2026-08-09, status: research-only, not written against this task)",
+    "why_used": "A frozen definition authored before this task and by someone other than this run removes a degree of freedom that a self-designed metric would have to defend.",
+    "adopted": [
+      {
+        "coordinate": "D — discovery capability",
+        "metric": "novel target/path discovery recall",
+        "instantiation": "gold_premise_coverage — the fraction of the premises the original Mathlib proof depended on that the arm recovered. This is a path-discovery recall over the support structure.",
+        "role": "MEDIATING_ONLY"
+      },
+      {
+        "coordinate": "X — explanatory/mechanistic competence",
+        "metric": "compression-reconstruction curve Q_rec(rho)",
+        "instantiation": "rho = size of the retained distilled structure in arm C; Q_rec = Lean-adjudicated solve rate. This is exactly the §04g open question — whether the distilled structure is a better object to navigate than the sources it replaces — and the coordinate was defined before the question was posed to this run.",
+        "role": "PRIMARY_FOR_ARM_C_ATTRIBUTION"
+      },
+      {
+        "coordinate": "C — cost",
+        "metric": "resource accounting",
+        "instantiation": "retrieval rounds per arm and Lean elaboration wall-time, reported per arm; matched by construction across arms.",
+        "role": "BUDGET_MATCHING_EVIDENCE"
+      }
+    ],
+    "rejected": [
+      {
+        "coordinate": "V — epistemic validity (ALR, FCR, FMR)",
+        "reason": "This pipeline performs no authority transitions, contradiction decisions or equivalence/merge decisions. The denominators are all zero. Forcing the metric would manufacture a rate out of an empty base."
+      },
+      {
+        "coordinate": "E — evidence use and revision (EUR, NHR)",
+        "reason": "There are no decisive-counterevidence events and no negative-history corpus inside a single premise-selection episode. Not applicable rather than zero."
+      },
+      {
+        "coordinate": "D — time-cutoff rediscovery rate",
+        "reason": "The coordinator suggested this as a close match. It is rejected here on a specific ground: there is no learned component in this pipeline, so there is no training cutoff relative to which rediscovery could be timed. The construct requires a model with a cutoff; this design deliberately has none. Recorded as an honest non-fit rather than forced."
+      },
+      {
+        "coordinate": "P — experimental planning, G — gap discovery, L — self-evolution",
+        "reason": "Out of scope for a single-episode premise-selection ablation. No experiments are proposed, no hidden gaps are seeded, no method challenger is compared to a parent."
+      }
+    ],
+    "non_compensatory_note": "The model is explicitly non-compensatory. No mediating coordinate may offset a null on the primary, and a favourable coverage number is never a benefit claim."
+  },
+  "falsifier": "Bounded-saturation stopping does not raise Lean-adjudicated solve rate over uniform stopping at matched total budget (McNemar p > 0.05), or lowers it. Symmetrically for arm C against arm A. Either outcome refutes the corresponding benefit claim in this regime and must be filed as such.",
+  "decision_rule": {
+    "primary_test": "Exact McNemar on discordant pairs, two-sided, alpha = 0.05",
+    "benefit_demonstrated_requires": "solve_rate_A > solve_rate_B AND McNemar p <= 0.05 AND total retrieval rounds matched AND premise budget identical",
+    "null_or_loss": "Filed as a first-class negative. Attribute to ONE stage, attempt ONE revival, re-test against the strongest parent, then file.",
+    "tuning_toward_positive_forbidden": true
+  },
+  "contamination_check": {
+    "llm_in_solve_path": false,
+    "llm_in_retrieval_path": false,
+    "retrieval_is_lexical_only": "constant-symbol overlap, IDF, name tokens. No pretrained embedder anywhere.",
+    "conclusion": "Model pretraining contamination cannot reach the outcome, because no pretrained model participates in either the retrieval or the solve path. The gold premise sets are read out of Lean proof terms, not authored.",
+    "residual_risk": "None from pretraining. The residual is that Mathlib theorems and their proofs are public; this is immaterial here because no learned component is involved."
+  },
+  "authority": {
+    "grants_scientific_authority": false,
+    "grants_promotion_authority": false,
+    "note": "A FALSIFIABLE gate verdict means the gate could have failed. It never means a PASS is correct. Same-context analysis is not independent review."
+  },
+  "artifacts": {
+    "extraction": "scripts/orion_saturation/Dump.lean",
+    "adjudicator": "scripts/orion_saturation/lean_check.py",
+    "retrieval": "scripts/orion_saturation/retrieval.py",
+    "population": "scripts/orion_saturation/build_population.py",
+    "study": "scripts/orion_saturation/study.py",
+    "gate_audit": "scripts/orion_saturation/gate_audit.py"
+  }
+}
