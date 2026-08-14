@@ -1,0 +1,40 @@
+{
+  "schema_version": "paper6-scoped-utility-prereg-v1",
+  "packet_id": "SRSU-P6-GOVERNED-ACCEPTANCE-V1.1",
+  "parent_packet_id": "SRSU-P6-GOVERNED-ACCEPTANCE-V1",
+  "paper": "VI",
+  "frozen_utc": "2026-08-14",
+
+  "why_a_successor_exists": {
+    "defect": "In v1, arm B (REIMPLEMENTATION_CONTROL_ARM for MEC-GREEDY_ACCEPT_ON_HELD_OUT_SCALAR) used a running-max incumbent over an i.i.d. candidate stream. That is a monotone ratchet: measured acceptance rate collapsed to 0.014, so arm B accepted almost nothing and its rates were not comparable to any other arm.",
+    "classification": "CONFORMANCE_REPAIR_TO_THE_FROZEN_SPEC, not a threshold rescue. v1's own arms[B].steelman_spec already required a steelman control; the v1 implementation did not realize it. No success threshold, no gate, no QoI definition and no falsifier is weakened here.",
+    "chronology_disclosure": "v1 results WERE seen before this successor was frozen. Therefore: arms A, C and D are byte-identical to v1 and retain their pre-result freeze. Arm B in v1.1 is a post-result repaired control and is labelled as such. Any v1.1 claim that depends on arm B is weaker in chronology than a claim depending only on A/C/D.",
+    "v1_retained": "research/paper6_scoped_utility_v1/RESULTS_V1.json is preserved unmodified as negative process history and is not reinterpreted."
+  },
+
+  "changes_from_v1": [
+    "Arm B acceptance rule replaced: accept iff best-of-k held-out scalar exceeds a threshold tau.",
+    "tau is calibrated on a DISJOINT calibration split (not the evaluation split) so that arm B's acceptance rate matches arm D's acceptance rate at the same n_repro. This makes A/B/D comparable at MATCHED THROUGHPUT rather than at an arbitrary operating point.",
+    "Arms A, C, D: unchanged.",
+    "Population, seeds, gate contract, numeric contract, availability anchor: unchanged."
+  ],
+
+  "scalar_informativeness_model": {
+    "primary": "NEUTRAL - the held-out scalar is drawn independently of ground-truth soundness. Chosen because it is the conservative option: it does not author an advantage for the governed arms.",
+    "sensitivity_not_headline": "LEAKAGE_INFLATED - unsound candidates draw higher held-out scalars, modelling the fact that leakage/threshold-rescue defects inflate exactly the metric an ungoverned scalar rule reads. More realistic, but it stacks the comparison against arm B, so it is reported as a clearly-labelled sensitivity variant and may not carry a headline.",
+    "rule": "Any reported governance benefit must hold under the NEUTRAL model. The sensitivity variant may only strengthen an already-supported statement, never create one."
+  },
+
+  "matched_throughput_contract": {
+    "definition": "At each n_repro, arm B's tau is set so acceptance_rate(B) ~= acceptance_rate(D) on the calibration split.",
+    "why_D_is_the_reference": "D executes the identical gate contract on the identical observations and differs from A only in the fail-closed rule. It is therefore the highest-throughput GOVERNED operating point, and matching B to it isolates 'what does reading the gates buy at equal throughput'.",
+    "calibration_split_disjoint_from_evaluation_split": true
+  },
+
+  "additional_falsifier": "F5: If, at matched throughput and under the NEUTRAL scalar model, arm D's false_promotion_rate is not below arm B's, then executing the gate contract buys nothing at equal throughput and the only remaining governance claim is the fail-closed one.",
+
+  "forbidden_claims_inherited_from_v1": true,
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permits_scalar_ranking": false
+}
