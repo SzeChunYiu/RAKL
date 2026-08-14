@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import argparse
-from collections import Counter, defaultdict
-from dataclasses import dataclass
+from collections import defaultdict
 import hashlib
 import json
 from math import sqrt
 from pathlib import Path
+import sys
 import time
-from typing import Any, Iterable
 
-from experiments.paper3.build_capability_stage4_panel_v1 import build, serialize
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from build_capability_stage4_panel_v1 import build, serialize  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKET = ROOT / "research" / "empirical_10_of_10_v1" / "CAPABILITY_QUALIFICATION"
@@ -64,7 +65,9 @@ def _parse(raw: str) -> tuple[dict | None, list[str]]:
     if value.get("verdict") not in VERDICTS:
         reasons.append("invalid_verdict")
     for key in ("selected_evidence_ids", "rejected_evidence_ids", "rationale_tags"):
-        if not isinstance(value.get(key), list) or any(not isinstance(x, str) for x in value.get(key, [])):
+        if not isinstance(value.get(key), list) or any(
+            not isinstance(item, str) for item in value.get(key, [])
+        ):
             reasons.append(f"invalid_array:{key}")
     if reasons:
         return None, reasons
@@ -126,7 +129,7 @@ def _score(tasks: list[dict], records: list[dict], freeze: dict) -> dict:
                 if task["family"] == "CONTEXT_QOI_NEAR_MISS":
                     context_total += 1
                     context_errors += parsed["verdict"] != "CONTEXT_MISALIGNED"
-        exact_n += exact
+        exact_n += int(exact)
         family_exact[task["family"]].append(int(exact))
         record["joint_exact"] = exact
 
@@ -142,7 +145,9 @@ def _score(tasks: list[dict], records: list[dict], freeze: dict) -> dict:
         "context_qoi_error_rate": context_errors / max(1, context_total),
         "cannot_check_recall": cc_tp / max(1, cc_gold),
         "cannot_check_precision": cc_tp / max(1, cc_pred),
-        "family_exact": {family: sum(rows) / len(rows) for family, rows in sorted(family_exact.items())},
+        "family_exact": {
+            family: sum(rows) / len(rows) for family, rows in sorted(family_exact.items())
+        },
     }
     gate = freeze["vector_gate"]
     metrics["all_vector_gates_pass"] = (
@@ -161,139 +166,185 @@ def _score(tasks: list[dict], records: list[dict], freeze: dict) -> dict:
 def _shortcut_audit(tasks: list[dict], freeze: dict) -> dict:
     responders = {}
     for verdict in ("SUPPORT", "REFUTE", "CANNOT_CHECK", "CONTEXT_MISALIGNED"):
-        records=[]
+        records = []
         for task in tasks:
-            ids=sorted(_evidence_ids(task["prompt"]))
-            parsed={"verdict":verdict,"selected_evidence_ids":ids[:1],"rejected_evidence_ids":ids[1:],"rationale_tags":[]}
-            records.append({"task_id":task["task_id"],"parsed":parsed})
-        responders[f"ALWAYS_{verdict}"]=_score(tasks,records,freeze)["all_vector_gates_pass"]
-    return {
-        "responders": responders,
-        "clean": not any(responders.values()),
-    }
+            ids = sorted(_evidence_ids(task["prompt"]))
+            parsed = {
+                "verdict": verdict,
+                "selected_evidence_ids": ids[:1],
+                "rejected_evidence_ids": ids[1:],
+                "rationale_tags": [],
+            }
+            records.append({"task_id": task["task_id"], "parsed": parsed})
+        responders[f"ALWAYS_{verdict}"] = _score(tasks, records, freeze)[
+            "all_vector_gates_pass"
+        ]
+    return {"responders": responders, "clean": not any(responders.values())}
 
 
 def _resource_blocked(outdir: Path, reason: str, freeze: dict, manifest: dict) -> int:
-    receipt={
-        "schema_version":"rakl-capability-qualification-stage5-result-v1",
-        "terminal":freeze["decision"]["resource"],
-        "reason":reason,
-        "model":freeze["model_candidates"][0],
-        "panel_sha256":manifest["panel_sha256"],
-        "model_substitution_performed":False,
-        "grants_scientific_authority":False,
+    receipt = {
+        "schema_version": "rakl-capability-qualification-stage5-result-v1",
+        "terminal": freeze["decision"]["resource"],
+        "reason": reason,
+        "model": freeze["model_candidates"][0],
+        "panel_sha256": manifest["panel_sha256"],
+        "model_substitution_performed": False,
+        "grants_scientific_authority": False,
     }
-    outdir.mkdir(parents=True,exist_ok=True)
-    (outdir/"FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt,indent=2)+"\n")
-    print(json.dumps(receipt,indent=2))
+    outdir.mkdir(parents=True, exist_ok=True)
+    (outdir / "FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    print(json.dumps(receipt, indent=2))
     return 2
 
 
-def run(outdir: Path, *, model_path: str | None, dry_run: bool=False) -> int:
+def run(outdir: Path, *, model_path: str | None, dry_run: bool = False) -> int:
     try:
         tasks, freeze, manifest = _materialize_and_verify_panel()
     except RuntimeError as exc:
-        outdir.mkdir(parents=True,exist_ok=True)
-        receipt={"schema_version":"rakl-capability-qualification-stage5-result-v1","terminal":"QUALIFICATION_BENCHMARK_DEGENERATE","reason":str(exc),"grants_scientific_authority":False}
-        (outdir/"FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt,indent=2)+"\n")
+        outdir.mkdir(parents=True, exist_ok=True)
+        receipt = {
+            "schema_version": "rakl-capability-qualification-stage5-result-v1",
+            "terminal": "QUALIFICATION_BENCHMARK_DEGENERATE",
+            "reason": str(exc),
+            "grants_scientific_authority": False,
+        }
+        (outdir / "FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
         return 3
 
     outdir.mkdir(parents=True, exist_ok=True)
-    materialized = serialize(tasks)
-    (outdir/"FRESH_TASKS_MATERIALIZED.jsonl").write_bytes(materialized)
+    (outdir / "FRESH_TASKS_MATERIALIZED.jsonl").write_bytes(serialize(tasks))
     shortcut = _shortcut_audit(tasks, freeze)
     if not shortcut["clean"]:
-        receipt={"schema_version":"rakl-capability-qualification-stage5-result-v1","terminal":freeze["decision"]["degenerate"],"shortcut_audit":shortcut,"grants_scientific_authority":False}
-        (outdir/"FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt,indent=2)+"\n")
+        receipt = {
+            "schema_version": "rakl-capability-qualification-stage5-result-v1",
+            "terminal": freeze["decision"]["degenerate"],
+            "shortcut_audit": shortcut,
+            "grants_scientific_authority": False,
+        }
+        (outdir / "FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
         return 3
     if dry_run:
-        print(json.dumps({"dry_run":True,"n":len(tasks),"panel_sha256":manifest["panel_sha256"],"shortcut_audit":shortcut},indent=2))
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "n": len(tasks),
+                    "panel_sha256": manifest["panel_sha256"],
+                    "shortcut_audit": shortcut,
+                },
+                indent=2,
+            )
+        )
         return 0
     if not model_path:
-        return _resource_blocked(outdir,"model_path_missing",freeze,manifest)
+        return _resource_blocked(outdir, "model_path_missing", freeze, manifest)
 
     try:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
     except Exception as exc:
-        return _resource_blocked(outdir,f"required_runtime_import_failed:{type(exc).__name__}:{exc}",freeze,manifest)
+        return _resource_blocked(
+            outdir, f"required_runtime_import_failed:{type(exc).__name__}:{exc}", freeze, manifest
+        )
     if not torch.cuda.is_available():
-        return _resource_blocked(outdir,"cuda_unavailable",freeze,manifest)
+        return _resource_blocked(outdir, "cuda_unavailable", freeze, manifest)
 
-    model_root=Path(model_path)
-    if not (model_root/"config.json").exists():
-        matches=list(model_root.glob("**/config.json"))
-        if len(matches)!=1:
-            return _resource_blocked(outdir,f"exact_model_config_resolution_count:{len(matches)}",freeze,manifest)
-        model_root=matches[0].parent
+    model_root = Path(model_path)
+    if not (model_root / "config.json").exists():
+        matches = list(model_root.glob("**/config.json"))
+        if len(matches) != 1:
+            return _resource_blocked(
+                outdir, f"exact_model_config_resolution_count:{len(matches)}", freeze, manifest
+            )
+        model_root = matches[0].parent
 
-    t0=time.perf_counter()
+    t0 = time.perf_counter()
     try:
-        tokenizer=AutoTokenizer.from_pretrained(str(model_root),local_files_only=True)
-        model=AutoModelForCausalLM.from_pretrained(
+        tokenizer = AutoTokenizer.from_pretrained(str(model_root), local_files_only=True)
+        model = AutoModelForCausalLM.from_pretrained(
             str(model_root), local_files_only=True, torch_dtype=torch.bfloat16
         ).to("cuda").eval()
     except Exception as exc:
-        return _resource_blocked(outdir,f"exact_model_load_failed:{type(exc).__name__}:{exc}",freeze,manifest)
+        return _resource_blocked(
+            outdir, f"exact_model_load_failed:{type(exc).__name__}:{exc}", freeze, manifest
+        )
 
-    system=SYSTEM.read_text()
-    instruction=RUNNER.read_text()
-    records=[]
+    system = SYSTEM.read_text()
+    instruction = RUNNER.read_text()
+    raw_path = outdir / "RAW_OUTPUTS.jsonl"
+    raw_path.unlink(missing_ok=True)
+    records = []
     for task in tasks:
-        user=instruction+"\n\n"+task["prompt"]
-        if getattr(tokenizer,"chat_template",None):
-            input_ids=tokenizer.apply_chat_template(
-                [{"role":"system","content":system},{"role":"user","content":user}],
-                tokenize=True, add_generation_prompt=True, return_tensors="pt"
+        user = instruction + "\n\n" + task["prompt"]
+        if getattr(tokenizer, "chat_template", None):
+            input_ids = tokenizer.apply_chat_template(
+                [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                tokenize=True,
+                add_generation_prompt=True,
+                return_tensors="pt",
             ).to("cuda")
         else:
-            input_ids=tokenizer(system+"\n\n"+user,return_tensors="pt").input_ids.to("cuda")
+            input_ids = tokenizer(
+                system + "\n\n" + user, return_tensors="pt"
+            ).input_ids.to("cuda")
         with torch.no_grad():
-            generated=model.generate(
+            generated = model.generate(
                 input_ids,
                 max_new_tokens=int(freeze["interface"]["max_new_tokens"]),
                 do_sample=False,
                 pad_token_id=tokenizer.eos_token_id,
             )
-        raw=tokenizer.decode(generated[0,input_ids.shape[1]:],skip_special_tokens=True)
-        parsed,reasons=_parse(raw)
-        record={"task_id":task["task_id"],"family":task["family"],"raw":raw,"parsed":parsed,"parse_reasons":reasons}
+        raw = tokenizer.decode(
+            generated[0, input_ids.shape[1] :], skip_special_tokens=True
+        )
+        parsed, reasons = _parse(raw)
+        record = {
+            "task_id": task["task_id"],
+            "family": task["family"],
+            "raw": raw,
+            "parsed": parsed,
+            "parse_reasons": reasons,
+        }
         records.append(record)
-        with (outdir/"RAW_OUTPUTS.jsonl").open("a") as handle:
-            handle.write(json.dumps(record,sort_keys=True)+"\n")
+        with raw_path.open("a") as handle:
+            handle.write(json.dumps(record, sort_keys=True) + "\n")
 
-    metrics=_score(tasks,records,freeze)
-    metrics["shortcut_audit_clean"]=shortcut["clean"]
-    pass_all=metrics["all_vector_gates_pass"] and shortcut["clean"]
-    terminal=freeze["decision"]["pass"] if pass_all else freeze["decision"]["fail"]
-    receipt={
-        "schema_version":"rakl-capability-qualification-stage5-result-v1",
-        "terminal":terminal,
-        "model":freeze["model_candidates"][0],
-        "interface":freeze["interface"],
-        "panel_sha256":manifest["panel_sha256"],
-        "metrics":metrics,
-        "shortcut_audit":shortcut,
-        "wall_seconds":time.perf_counter()-t0,
-        "all_132_cases_completed":len(records)==132,
-        "model_substitution_performed":False,
-        "unlocks_treatment_result":False,
-        "grants_scientific_authority":False,
+    metrics = _score(tasks, records, freeze)
+    metrics["shortcut_audit_clean"] = shortcut["clean"]
+    pass_all = metrics["all_vector_gates_pass"] and shortcut["clean"]
+    terminal = freeze["decision"]["pass"] if pass_all else freeze["decision"]["fail"]
+    receipt = {
+        "schema_version": "rakl-capability-qualification-stage5-result-v1",
+        "terminal": terminal,
+        "model": freeze["model_candidates"][0],
+        "interface": freeze["interface"],
+        "panel_sha256": manifest["panel_sha256"],
+        "metrics": metrics,
+        "shortcut_audit": shortcut,
+        "wall_seconds": time.perf_counter() - t0,
+        "all_132_cases_completed": len(records) == 132,
+        "model_substitution_performed": False,
+        "unlocks_treatment_result": False,
+        "grants_scientific_authority": False,
     }
-    (outdir/"qualification_results.json").write_text(json.dumps(metrics,indent=2)+"\n")
-    (outdir/"FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt,indent=2)+"\n")
-    print(json.dumps(receipt,indent=2))
+    (outdir / "qualification_results.json").write_text(json.dumps(metrics, indent=2) + "\n")
+    (outdir / "FINAL_CAPABILITY_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    print(json.dumps(receipt, indent=2))
     return 0 if pass_all else 1
 
 
 def main() -> None:
-    ap=argparse.ArgumentParser()
-    ap.add_argument("--outdir",type=Path,required=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--outdir", type=Path, required=True)
     ap.add_argument("--model-path")
-    ap.add_argument("--dry-run",action="store_true")
-    args=ap.parse_args()
-    raise SystemExit(run(args.outdir,model_path=args.model_path,dry_run=args.dry_run))
+    ap.add_argument("--dry-run", action="store_true")
+    args = ap.parse_args()
+    raise SystemExit(run(args.outdir, model_path=args.model_path, dry_run=args.dry_run))
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
