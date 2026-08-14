@@ -300,7 +300,19 @@ def _check_production_claims_have_nontest_callers() -> tuple[ConsistencyVerdict,
         callers: set[str] = set()
         for path in _REPO.rglob("*.py"):
             rel = path.relative_to(_REPO).as_posix()
-            if rel.startswith((".git/", ".claude/")) or rel == f"src/rakl/{module}":
+            # Skip VCS/agent scratch and, critically, build or vendored trees: an
+            # editable install leaves a copy of the package under build/, and a
+            # copy of a module is not a caller of it. Counting one silently flips
+            # this check from DIVERGENT to CONSISTENT, which is worse than a
+            # failure because nothing looks wrong.
+            if rel.startswith((".git/", ".claude/")) or any(
+                part in {"build", "dist", ".eggs", ".venv", "venv", "site-packages", "__pycache__"}
+                or part.endswith(".egg-info")
+                for part in rel.split("/")[:-1]
+            ):
+                continue
+            # A copy of the defining module, wherever it sits, is never its own caller.
+            if path.name == module:
                 continue
             try:
                 text = path.read_text(encoding="utf-8")
