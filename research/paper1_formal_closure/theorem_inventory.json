@@ -1,0 +1,269 @@
+{
+  "schema_version": "paper1-theorem-inventory-v1",
+  "paper": "Paper I - Epistemic Mechanics",
+  "source_tree": "publication/papers/paper-01-epistemic-mechanics/sections",
+  "inventory_date": "2026-08-14",
+  "issue": 530,
+  "grants_scientific_authority": false,
+  "review_provenance": {
+    "reviewer": "same-session Claude Code agent",
+    "independent": false,
+    "note": "Per docs/CONSTITUTION.md and the repo rules, same-session critique is NOT independent review. A status of PAPER_PROOF_COMPLETE here means 'read line by line and no gap found by this reviewer', which is evidence that reduces external-reviewer load. It is not an independent formal-proof review and does not close issue #216. Only MECHANIZED status is reviewer-independent, because a machine-checked proof does not rest on this reviewer's judgement."
+  },
+  "status_vocabulary": {
+    "MECHANIZED": "Machine-checked in the Lean development under formal/. Reviewer-independent.",
+    "PAPER_PROOF_COMPLETE": "Proof read line by line; rigorous and gap-free to this reviewer. Not independent.",
+    "PAPER_PROOF_INFORMAL": "The stated 'proof' argues from construction/definition rather than deriving the claim. Not necessarily wrong - but it is not a proof as written.",
+    "PAPER_PROOF_GAP": "A specific gap was identified. Must be repaired before publication.",
+    "UNREVIEWED": "Not yet read at proof depth in this pass. Explicitly NOT 'checked and fine'.",
+    "PARTIALLY_MECHANIZED": "Some but not all of the claim's content is machine-checked. The unmechanized part is named explicitly in not_mechanized."
+  },
+  "claims": [
+    {
+      "id": "P1-T-CLOSURE-LATTICE",
+      "kind": "theorem",
+      "name": "Closure-system lattice",
+      "location": "02_compatibility_authority.tex:92",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic",
+      "notes": "Standard closure-operator result. Meet is intersection, join is closure of union, proved from extensivity/monotonicity/idempotence. Mechanized mathlib-free: rather than asserting a CompleteLattice instance, each half (closedness, bound, extremality) is proved separately, which is exactly the content the paper's proof establishes. The paper is explicit that the contribution is not the theorem but the discipline of requiring its hypotheses before using lattice language - that framing is correct and preserved.",
+      "lean_names": "RaklFormal.iInter_closed, iInter_lower, iInter_greatest, cl_iUnion_closed, cl_iUnion_upper, cl_iUnion_least",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
+    },
+    {
+      "id": "P1-T-NO-SCALARIZATION",
+      "kind": "theorem",
+      "name": "No faithful scalarization of incomparability",
+      "location": "02_compatibility_authority.tex:139",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic",
+      "notes": "Elementary and correct: totality of the reals forces comparability, contradicting an incomparable pair under the biconditional. Mechanizes in a few lines. This is the formal backbone of the no-ORION_SCORE rule enforced elsewhere in the repo (permits_scalar_ranking is pinned false in the external-agent registry).",
+      "lean_names": "RaklFormal.no_faithful_scalarization",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
+    },
+    {
+      "id": "P1-T-PROJECTION-COLLISION",
+      "kind": "proposition",
+      "name": "Projection-collision impossibility",
+      "location": "02d_projection_sufficiency.tex:15",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "noninterference",
+      "notes": "Pigeonhole on a deterministic policy over a collapsed projection. Correct and elementary. The paper is careful to scope it to deterministic policies over the projected interface rather than claiming an omitted fact is uninferable in principle - that scoping is what makes it defensible.",
+      "lean_names": "RaklFormal.projection_collision",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
+    },
+    {
+      "id": "P1-T-OPEN-WORLD-NOT-CERTIFIABLE",
+      "kind": "theorem",
+      "name": "Unrestricted open-world completeness is not finitely certifiable",
+      "location": "04_owmd.tex:95",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "termination/identifiability",
+      "notes": "Two-worlds indistinguishability argument over a finite transcript. Correct. Mechanizing requires modelling transcript, worlds and decision function explicitly; the payoff is that the hypothesis 'no complete membership oracle' becomes visible as a formal assumption. This theorem is why no ABSOLUTELY_COMPLETE state exists in the code, and it is directly mirrored by absolute_complete being pinned false in schemas/epistemic-saturation.schema.json.",
+      "lean_names": "RaklFormal.open_world_not_finitely_certifiable",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
+    },
+    {
+      "id": "P1-T-FINITE-BASIS-SATURATION",
+      "kind": "theorem",
+      "name": "Finite-basis saturation",
+      "location": "04_owmd.tex:162",
+      "status": "PARTIALLY_MECHANIZED",
+      "mechanization": "PARTIAL",
+      "load_bearing_class": "termination",
+      "notes": "Knaster-Tarski-shaped: inflationary + monotone gives a fixed point at the first non-strict step, and the stabilized state is the least fixed point above K0. Both of those halves are mechanized and axiom-free. The paper's additional cardinality bound is separate - see not_mechanized.",
+      "lean_names": "RaklFormal.iter_below_prefixed, stabilized_is_fixed, stabilized_is_least",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "not_mechanized": "The cardinality bound (at most |U|-|K0| strict-growth steps) is NOT mechanized; it requires a finiteness/cardinality development. The least-fixed-point and stabilization halves ARE mechanized."
+    },
+    {
+      "id": "P1-T-DERIVED-VIEW-NON-ESCALATION",
+      "kind": "proposition",
+      "name": "Derived-view authority non-escalation",
+      "location": "02bb_task_conditioned_erasure.tex:18",
+      "status": "PARTIALLY_MECHANIZED",
+      "mechanization": "PARTIAL",
+      "load_bearing_class": "noninterference",
+      "notes": "FINDING: the proof argues 'by construction it can inherit but cannot mint authority certificates' - this is a restatement of the hypothesis, not a derivation. As written it is a definitional consequence presented as a proposition, which is the kind of thing a formal-methods referee flags. It is very likely TRUE once the certificate-inheritance relation is made explicit; mechanizing it would force that relation to be stated and would convert a soft claim into a hard one. Recommend mechanizing this BEFORE submission rather than after review.",
+      "repair_action": "Formalize 'authority certificates of Z are a subset of those reachable from P' as an explicit relation, then derive non-escalation as a monotonicity property of that relation.",
+      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
+      "repair_status": "REPAIRED IN THE FORMALIZATION. The prose proof restated its hypothesis ('can inherit but cannot mint'). That hypothesis is now the explicit OperatorClass field uncertified_preserves, which every instantiation must discharge - the type checker enforces what was previously an assertion. The PAPER TEXT still carries the circular proof and should be updated to cite the general principle; not done here because concurrent sessions are editing the manuscript.",
+      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+    },
+    {
+      "id": "P1-T-PROPOSAL-NON-SOVEREIGNTY",
+      "kind": "proposition",
+      "name": "Proposal non-sovereignty",
+      "location": "01_introduction_foundations_state.tex:173",
+      "status": "PARTIALLY_MECHANIZED",
+      "mechanization": "PARTIAL",
+      "load_bearing_class": "noninterference",
+      "notes": "Same family as the derived-view result; likely to share its informal-proof risk. Priority for the next reading pass.",
+      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
+      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+    },
+    {
+      "id": "P1-T-NEGATIVE-HISTORY-MONOTONICITY",
+      "kind": "proposition",
+      "name": "Negative-history monotonicity under append-only archival policy",
+      "location": "01_introduction_foundations_state.tex:191",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "composition",
+      "lean_names": "RaklFormal.negative_history_monotone",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "notes": "Finite compositions of append-only (extensive) updates never lose negative history. Load-bearing for saturation: without it a process could become 'saturated' precisely by discarding the refutations that narrow its theory space."
+    },
+    {
+      "id": "P1-T-PAIRWISE-NOT-LATTICE",
+      "kind": "proposition",
+      "name": "Pairwise compatibility does not imply an order-theoretic lattice",
+      "location": "02_compatibility_authority.tex:36",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "algebraic",
+      "notes": "Counterexample-shaped; should be cheap to mechanize and cheap to check."
+    },
+    {
+      "id": "P1-T-THREE-CONTEXT-PARITY",
+      "kind": "proposition",
+      "name": "Three-context parity obstruction",
+      "location": "02_compatibility_authority.tex:64",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "algebraic"
+    },
+    {
+      "id": "P1-T-EXPERIENCE-ROUTING-NON-ESCALATION",
+      "kind": "proposition",
+      "name": "Experience-routing non-escalation",
+      "location": "02b_v3_epistemic_projection.tex:25",
+      "status": "PARTIALLY_MECHANIZED",
+      "mechanization": "PARTIAL",
+      "load_bearing_class": "noninterference",
+      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
+      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+    },
+    {
+      "id": "P1-T-TRAINING-UPDATE-NON-SOVEREIGNTY",
+      "kind": "proposition",
+      "name": "Training-update non-sovereignty",
+      "location": "02c_training_time_projection.tex:30",
+      "status": "PARTIALLY_MECHANIZED",
+      "mechanization": "PARTIAL",
+      "load_bearing_class": "noninterference",
+      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
+      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+    },
+    {
+      "id": "P1-T-GREEDY-OPTIMALITY",
+      "kind": "theorem",
+      "name": "Optimality of reservation-first greedy selection",
+      "location": "03_workspace.tex:48",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "algorithmic",
+      "notes": "Greedy-optimality proofs are a classic site of hidden matroid/exchange assumptions. Priority for the next reading pass."
+    },
+    {
+      "id": "P1-T-AUTHORITY-PRESERVATION",
+      "kind": "proposition",
+      "name": "Authority-preservation invariant",
+      "location": "03_workspace.tex:72",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "noninterference"
+    },
+    {
+      "id": "P1-T-COACTIVATION-NOT-COMPATIBILITY",
+      "kind": "proposition",
+      "name": "Coactivation does not imply compatibility",
+      "location": "03_workspace.tex:82",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "algebraic"
+    },
+    {
+      "id": "P1-T-NEW-KNOWLEDGE-REOPENS",
+      "kind": "proposition",
+      "name": "New substantive knowledge reopens saturation",
+      "location": "04_owmd.tex:193",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "termination",
+      "notes": "Directly implemented by audit_bounded_epistemic_saturation in src/rakl/epistemic_saturation.py; mechanizing it would tie the paper claim to the shipped code."
+    },
+    {
+      "id": "P1-T-FRESHNESS-EXPIRY",
+      "kind": "proposition",
+      "name": "Freshness-horizon expiry",
+      "location": "04_owmd.tex:207",
+      "status": "UNREVIEWED",
+      "mechanization": "CANDIDATE",
+      "load_bearing_class": "termination"
+    }
+  ],
+  "summary": {
+    "total_claims": 17,
+    "read_at_proof_depth": 11,
+    "paper_proof_complete": 0,
+    "paper_proof_informal": 0,
+    "paper_proof_gap": 0,
+    "unreviewed": 6,
+    "mechanized": 5,
+    "partially_mechanized": 5
+  },
+  "open_residuals": [
+    {
+      "residual_id": "RES-P1F-001",
+      "statement": "11 of 17 theorem-like claims have not been read at proof depth. Their status is UNREVIEWED, which is not 'checked and fine'.",
+      "closure_action": "Read each proof line by line and assign a status."
+    },
+    {
+      "residual_id": "RES-P1F-002",
+      "statement": "P1-T-DERIVED-VIEW-NON-ESCALATION's circular prose proof is repaired in the formalization but the PAPER TEXT still carries it.",
+      "closure_action": "Update the manuscript to cite the general non-escalation principle and state the certificate-inheritance hypothesis explicitly. Operator decision - concurrent sessions are editing the paper."
+    },
+    {
+      "residual_id": "RES-P1F-004",
+      "statement": "Independent formal-proof review (issue #216) is not addressed by this inventory and cannot be addressed from inside this session.",
+      "closure_action": "External reviewer. Mechanization reduces but does not eliminate this obligation."
+    },
+    {
+      "residual_id": "RES-P1F-003",
+      "statement": "6 claims remain UNREVIEWED; 5 are PARTIAL (4 awaiting per-proposition instantiation, 1 awaiting the finite-basis cardinality bound).",
+      "closure_action": "Instantiate each non-escalation proposition against OperatorClass; add a finiteness development for the counting bound; read and mechanize the remaining 6."
+    }
+  ],
+  "mechanization": {
+    "system": "Lean 4.14.0",
+    "dependencies": "none (mathlib-free by design)",
+    "negative_control": "PASSED - a deliberately false lemma is rejected by the kernel, so the build is capable of failing",
+    "axiom_audit": "All mechanized theorems report 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext",
+    "reviewer_independent": true,
+    "axiom_audited_theorems": 12,
+    "shared_principle_note": "The four non-escalation propositions are proved by one shared principle rather than four near-duplicate mechanizations. Each remains PARTIAL until its own instantiation is discharged."
+  }
+}

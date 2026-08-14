@@ -1,0 +1,141 @@
+{
+  "schema_version": "mechanic-research-packet-v1",
+  "packet_id": "p4-allocator-attribution-v1-oracle-ceiling-calibration-gate-v1",
+  "mechanic_id": "allocation_comparison_instrument_admissibility",
+  "variant_id": "oracle_ceiling_calibration_gate_v1",
+  "parent_method_sha": "321f3f72c82e33c8129dddc51bca926ec306f0b8",
+  "object_description": "A frozen equal-budget allocation-comparison instrument (worlds/dynamics/arms/metric/budget) used to decide whether a learner-conditioned adaptive allocation policy beats a static structural parent. The object under study is the INSTRUMENT, not any allocator.",
+  "qoi": "ADMISSIBLE / INADMISSIBLE / CANNOT_CHECK: can this instrument, under its own equal-budget constraint, produce an arm separation at or above its own registered minimum detectable effect for ANY state-aware allocation policy, including an omniscient one?",
+  "scope": [
+    "equal-budget arm comparisons where every arm spends an identical number of training examples",
+    "instruments whose generative parameters are fully known to the experimenter (simulated / model-free development stress)",
+    "instruments that register a minimum detectable effect or a hard promotion gate on a primary arm contrast",
+    "NOT_IN_SCOPE: real-model experiments whose generative parameters are unknown and whose oracle cannot be computed (these must return CANNOT_CHECK)",
+    "NOT_IN_SCOPE: unequal-budget or cost-traded comparisons"
+  ],
+  "assumptions": [
+    "the instrument's per-example outcome dynamics are computable by the experimenter",
+    "an oracle policy with full generative-parameter access is constructible under the identical budget constraint",
+    "the registered minimum detectable effect is frozen before the ceiling is computed",
+    "the ceiling multiplier kappa is frozen before any instrument is evaluated by the gate",
+    "an INADMISSIBLE verdict is issued only against a genuine UPPER bound on achievable advantage; policy scores (greedy oracles, local search) are lower bounds and may support ADMISSIBLE but never INADMISSIBLE"
+  ],
+  "strongest_parents": [
+    {
+      "parent_id": "CLASSICAL_POWER_ANALYSIS_AND_MDE_PREREGISTRATION",
+      "implementation_refs": [
+        "research/paper4_phase2_v1/PROTOCOL_V3.json#statistics.mde_primary",
+        "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json#hard_gate"
+      ],
+      "cost_model_id": "power_analysis_zero_marginal_compute",
+      "cost_equation": "cost = 0 additional simulation runs; analytic in n and variance",
+      "justification": "Preregistered MDE plus power analysis is the standard and strongest incumbent method for deciding whether a comparison can resolve an effect. It is the correct parent to beat because it is what the frozen Paper IV protocols already use.",
+      "evidence_pointers": [
+        "research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json"
+      ]
+    },
+    {
+      "parent_id": "SKYLINE_OR_ORACLE_BASELINE_REPORTING",
+      "implementation_refs": [
+        "literature: oracle/skyline baselines in information retrieval and recommender evaluation",
+        "literature: regret-versus-oracle formulations in bandit and online-allocation analysis",
+        "literature: ceiling analysis in applied machine-learning pipeline debugging"
+      ],
+      "cost_model_id": "oracle_policy_rollout",
+      "cost_equation": "cost = n_worlds * n_replicates * budget * oracle_replan_cost",
+      "justification": "Oracle/skyline baselines are established prior art for bounding achievable performance. The parent reports the oracle descriptively; it does not convert it into a pre-execution admissibility decision bound to a registered MDE.",
+      "evidence_pointers": [
+        "research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json#gap_decomposition.ORACLE_minus_D"
+      ]
+    }
+  ],
+  "prior_art_equivalence_map": [
+    "classical power analysis == bounds sampling noise for a HYPOTHESIZED effect size; this mechanic bounds the ACHIEVABLE effect size itself and is therefore not reducible to it",
+    "oracle/skyline baseline == same computation, but reported as a descriptive upper reference rather than as a frozen pre-execution admissibility gate against a registered MDE",
+    "ceiling analysis (component-wise upper-bound substitution) == same intuition applied to pipeline components; here applied to an experimental instrument's arm-separation capacity",
+    "regret-versus-oracle == same oracle object; regret evaluates a policy, this gate evaluates the instrument",
+    "assay positive control == structurally the closest analogue: an instrument that cannot register a known-positive signal is inadmissible. This mechanic is the equal-budget allocation instance of that principle, with the positive control supplied by an omniscient policy rather than a spiked sample."
+  ],
+  "oracle_or_lower_bound": "THREE-TIER BOUND, and the direction of each tier is load-bearing. TIER 1 (lower bound) ORACLE_GREEDY_CEILING: at every example slot select the coordinate maximizing the exact expected immediate change in the registered primary metric under the instrument's true generative parameters, under the identical budget. TIER 2 (lower bound) constructive best: local search over allocation vectors under expected dynamics. TIER 3 (UPPER bound) a monotone relaxation of the instrument dynamics whose optimum is computable exactly - for the reference instrument, dropping all non-negative harm terms, which dominates every with-harm trajectory because the gain map m -> m*(1-r)+r is monotone increasing in m, with the relaxed optimum solved exactly by greedy water-filling on a concave separable objective. ONLY TIER 3 MAY LICENSE AN INADMISSIBLE VERDICT; tiers 1 and 2 are policy scores and can only ever show that an instrument HAS headroom, never that it lacks it. If no computable upper-bounding relaxation exists for a given instrument, the gate returns CANNOT_CHECK. Reference implementations: experiments/orion_closure/run_p4_allocator_attribution.py::run_arm arm ORACLE_GREEDY_CEILING (tier 1) and experiments/orion_closure/run_p4_instrument_ceiling_bounds.py (tiers 2 and 3).",
+  "minimal_counterexamples": [
+    "DEGENERATE_ZERO_HEADROOM: an instrument in which every arm is structurally forced to the identical allocation. Oracle ceiling is exactly 0. The gate must return INADMISSIBLE for any positive registered MDE.",
+    "GENUINE_HEADROOM: an instrument whose worlds differ in INITIAL learner state so that state information is decision-relevant, with oracle ceiling well above the registered MDE. The gate must return ADMISSIBLE.",
+    "UNCOMPUTABLE_ORACLE: a real-model instrument whose generative parameters are unknown. The gate must return CANNOT_CHECK and must NOT return ADMISSIBLE.",
+    "TIGHT_CI_LOW_CEILING: an instrument with very tight bootstrap confidence intervals but a rigorous upper bound below the MDE. Classical power analysis returns 'amply powered'; the gate must still return INADMISSIBLE. This is the case actually observed in research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json, where bootstrap CIs are about 0.0016 wide while the tier-3 upper bound is 0.02457 against a 0.05 gate.",
+    "LOOSE_BOUND_NARROW_MARGIN: a relaxation whose upper bound clears the MDE by less than the frozen kappa, or whose tier-2/tier-3 spread is wide enough that the true optimum is poorly localized. The gate must report the margin and the looseness rather than presenting the verdict as exact; the reference instrument sits here, at a 2.03x margin with a 5.5x tier-2/tier-3 spread.",
+    "CEILING_JUST_ABOVE_MDE: oracle ceiling above the MDE but below kappa times the MDE. The gate must return INADMISSIBLE under the frozen kappa and must not be rescued by lowering kappa after the ceiling is seen."
+  ],
+  "development_benchmark_id": "P4_ADAPTIVE_DEVELOPMENT_STRESS_SIX_WORLDS_SEED_202608140601",
+  "development_case_ids": [
+    "EARLY_PRINCIPLE_SATURATION",
+    "COMPOSITION_LAG",
+    "BOUNDARY_LAG",
+    "REPRESENTATION_LAG",
+    "TRANSFER_LAG",
+    "RETENTION_SENSITIVE"
+  ],
+  "fresh_assurance_benchmark_id": "P4_INSTRUMENT_ADMISSIBILITY_FRESH_ASSURANCE_V1_TO_BE_CONSTRUCTED_WITH_DISJOINT_SEEDS",
+  "fresh_assurance_case_ids": [
+    "FRESH_DEGENERATE_ZERO_HEADROOM",
+    "FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM",
+    "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY",
+    "FRESH_UNCOMPUTABLE_ORACLE_STUB",
+    "FRESH_CEILING_MARGINALLY_ABOVE_MDE"
+  ],
+  "selection_case_ids": [
+    "SELECTION_KAPPA_CALIBRATION_WORLD_A",
+    "SELECTION_KAPPA_CALIBRATION_WORLD_B",
+    "SELECTION_ORACLE_GREEDY_VERSUS_EXACT_GAP_PROBE"
+  ],
+  "falsifier": "The gate is refuted if an instrument it classifies INADMISSIBLE nonetheless produces a replicable, distinguishable arm separation at or above its own registered minimum detectable effect under the identical equal-budget constraint by any implementable policy. It is also refuted if the greedy oracle is shown to understate the achievable ceiling by a margin that flips an INADMISSIBLE verdict on any fresh-assurance case.",
+  "same_system_ablation": "Replace the omniscient oracle with the strongest implementable state-aware policy available at freeze time and recompute admissibility on every fresh-assurance case. If verdicts are unchanged across all cases, the oracle component is not carrying the mechanic and the gate reduces to ordinary strongest-parent reporting; the novelty residual would then be withdrawn.",
+  "hard_gate_obligations": [
+    "fail closed: return CANNOT_CHECK, never ADMISSIBLE, when the oracle is not computable under the instrument's own generative model",
+    "kappa and the registered minimum detectable effect are frozen before the ceiling is computed and may never be revised after ceiling access",
+    "an INADMISSIBLE verdict may never be upgraded by access to arm outcomes",
+    "the gate never promotes, revives, or reverses any allocator terminal; it only decides whether a comparison is worth executing",
+    "oracle rollout cost is charged to the comparison's total cost, not hidden",
+    "the greedy-versus-exact status of the oracle bound is reported with every verdict",
+    "an ADMISSIBLE verdict grants no scientific authority and no expectation that any policy will in fact win"
+  ],
+  "required_telemetry_fields": [
+    "instrument_id",
+    "registered_primary_metric",
+    "registered_minimum_detectable_effect",
+    "frozen_kappa",
+    "oracle_bound_kind",
+    "oracle_computability_status",
+    "oracle_ceiling_estimate",
+    "oracle_ceiling_bootstrap_ci",
+    "per_world_oracle_ceiling",
+    "equal_budget_verified",
+    "reference_parent_arm_id",
+    "arm_budget_L1_distance_from_uniform",
+    "admissibility_verdict",
+    "verdict_reasons"
+  ],
+  "total_cost_equation": "total_cost = oracle_rollout_cost + ceiling_bootstrap_cost, where oracle_rollout_cost = n_worlds * n_replicates * budget * per_example_replan_cost and ceiling_bootstrap_cost = bootstrap_repetitions * n_world_replicates. This cost is charged to the comparison it gates and must be reported even when the verdict is ADMISSIBLE.",
+  "novelty_residual": "Classical power analysis and preregistered MDE bound SAMPLING NOISE for an assumed effect size; they are silent on whether the instrument can generate that effect at all. The observed Paper IV development-stress instrument has bootstrap confidence intervals of width approximately 0.0016 on the primary contrast - by conventional standards amply powered - while a RIGOROUS UPPER BOUND on any equal-budget policy's mean advantage over the static parent is +0.02457 against a frozen promotion gate of 0.05, i.e. a factor of 2.03 below the gate. No arrangement of sample size can repair this. The residual claimed here is the conversion of an oracle/skyline computation into a frozen pre-execution admissibility decision bound to the registered MDE, with fail-closed CANNOT_CHECK when the oracle is not computable. CORRECTION RECORD: an earlier unmerged draft of this packet cited the greedy oracle's +0.00148 as the ceiling and stated a 34x margin. That was invalid - a greedy oracle is a policy and therefore only a LOWER bound - and the figure is retracted in favour of the upper bound above. The correction strictly WEAKENS the motivating margin and was made before implementation, merge or any gate assessment.",
+  "permitted_publication_claim": "Method-level only: an equal-budget allocation comparison is uninformative about its registered estimand when its achievable oracle ceiling lies below its registered minimum detectable effect, and this failure mode is invisible to conventional power analysis. Demonstrated on exactly one preserved Paper IV model-free instrument. This claims nothing about learner-conditioned structural allocation efficacy in real models, does not reverse the preserved adaptive-v1 negative, and does not substitute for the frozen 7B Phase-2 protocol.",
+  "evidence_pointers": [
+    "research/paper4_allocator_attribution_v1/ATTRIBUTION_DIAGNOSTIC_PROTOCOL.json",
+    "research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json",
+    "research/paper4_allocator_attribution_v1/ATTRIBUTION_WORLD_RESULTS.jsonl",
+    "research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json",
+    "experiments/orion_closure/run_p4_instrument_ceiling_bounds.py",
+    "research/paper4_parent_assimilation_v1/PROTOCOL.json",
+    "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+    "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+    "experiments/orion_closure/run_p4_allocator_attribution.py",
+    "experiments/orion_closure/run_p4_adaptive_development_stress.py",
+    "src/rakl/training_scheduler.py"
+  ],
+  "mechanism_gate_state": "UNASSESSED",
+  "applicability_gate_state": "UNASSESSED",
+  "frozen_before_implementation": true,
+  "frozen_before_outcome_access": true,
+  "packet_content_sha256": "d318363d93721c0fe2900916e04324110ac365f327c8ad85094fae71dd50103b",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "replaces_promotion_gate": false
+}

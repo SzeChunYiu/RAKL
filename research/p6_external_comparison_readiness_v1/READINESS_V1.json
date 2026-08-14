@@ -1,0 +1,81 @@
+{
+  "schema_version": "p6-external-comparison-readiness-v1",
+  "packet_id": "P6-EXT-COMPARISON-READINESS-V1",
+  "paper": "VI",
+  "issue_lineage": [588, 525],
+  "created_utc": "2026-08-14",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permits_scalar_ranking": false,
+  "builds_parallel_comparison_framework": false,
+
+  "registry_basis": {
+    "path": "research/external_research_agents/",
+    "branch": "research/issue-588-external-agent-registry",
+    "pr": 591,
+    "basis_fingerprint": "a0565504e70eacf6e0b44bb4a7ff2c0d5eacfb88bc533a75e121c7b702c4a946",
+    "registry_version": "v1",
+    "saturation_status": "OPEN",
+    "on_main": false,
+    "import_avoided_because": "main does not carry the registry loader or data; facts are transcribed, not imported, so nothing here breaks CI on main."
+  },
+
+  "verdict": "NO_EXTERNAL_COMPARISON_RUNNABLE_AT_CAUSAL_GRADE",
+
+  "architecture_causal_eligible_systems": [
+    {"system_id": "SYS-AI_SCIENTIST_V2", "evidence_grade": "SEARCH_SNIPPET", "reproduction_status": "NOT_ATTEMPTED", "runnable_now": false},
+    {"system_id": "SYS-KARPATHY_AUTORESEARCH", "evidence_grade": "SEARCH_SNIPPET", "reproduction_status": "NOT_ATTEMPTED", "runnable_now": false},
+    {"system_id": "SYS-ASTA_V0", "evidence_grade": "SEARCH_SNIPPET", "reproduction_status": "NOT_ATTEMPTED", "runnable_now": false},
+    {"system_id": "SYS-MINI_SWE_AGENT", "evidence_grade": "SEARCH_SNIPPET", "reproduction_status": "NOT_ATTEMPTED", "runnable_now": false, "additional_gate_failed": "TASK_POPULATION_INCOMPATIBLE_WITH_LITERATURE_ROUTE"}
+  ],
+
+  "binding_blocker": {
+    "residual_id": "RES-EXT-001",
+    "statement": "A matched-resource contract must pin model, tool/retrieval stack, budget and evaluator. Those architecture fields read CANNOT_CHECK for every eligible system because entries rest on search snippets. A matched contract cannot be specified from CANNOT_CHECK fields.",
+    "consequence": "Adapter scoping is DOWNSTREAM of primary-text reads, not parallel to them. An adapter written now would encode guessed architecture and produce exactly the confound the comparator-class rule exists to prevent.",
+    "not_the_blocker": "engineering/adapter effort"
+  },
+
+  "second_gate_not_pinned_by_registry_v1": {
+    "name": "task_population_compatibility",
+    "statement": "comparator_class answers whether a system's confounders can be matched. It does not answer whether the system can attempt the task population at all. The two are independent.",
+    "worked_example": "SYS-MINI_SWE_AGENT is ARCHITECTURE_CAUSAL_ELIGIBLE but is class B only (scientific-execution/code). TAXONOMY.md routes class B to ScienceAgentBench / PhySciBench / AARRI-Bench, never to AutoResearchBench or DeepResearch Bench, so it cannot enter a literature-route arm.",
+    "recommendation": "Record task_population_compatibility per system alongside comparator_class so the gates are checked separately rather than conflated."
+  },
+
+  "same_substrate_exclusion": {
+    "benchmark_id": "BM-RESEARCHCLAWBENCH",
+    "statement": "Its strongest published agent is Claude Code, which is ORION's own harness. Any ORION result there is a same-substrate comparison and is not an independent architecture arm, regardless of comparator class.",
+    "character": "permanent scope label, not an engineering blocker"
+  },
+
+  "mechanic_assessment": {
+    "mechanic_id": "MEC-CONTROLLED_RETRIEVAL_ENVIRONMENT",
+    "registry_status": "highest-value infrastructure adoption in v1; independent_evidence NONE - not yet adopted",
+    "registry_argument": "qualitative - a controlled retrieval environment is what makes a literature-route arm causal rather than confounded by corpus access",
+    "new_quantitative_argument": {
+      "source": "SRSU-P6-GOVERNED-ACCEPTANCE (PR #596)",
+      "finding": "Under externally anchored evidence-availability rates (arXiv:2608.05179: 83% code, 38% seeds/traces), fail-closed governed acceptance carries a throughput tax of 0.897 to 1.000. A 12-gate contract needs per-gate availability 0.9816 for a 20% tax and 0.9913 for a 10% tax.",
+      "implication": "A controlled evidence/retrieval environment is not only what makes the comparison fair; it is what gives ORION's governance layer an operable regime at all. Availability is the binding parameter and an uncontrolled environment sits roughly two orders of magnitude below the requirement.",
+      "status_change": "methodological preference -> quantified precondition with a falsifiable target (per-gate availability > 0.98)"
+    },
+    "caveat": "The Asta registry entry is SEARCH_SNIPPET grade. Whether the Asta Environment actually delivers a controlled corpus with the required properties is CANNOT_CHECK until read at primary depth. The requirement is quantified; the fit of this instrument to it is not yet evidence.",
+    "adoption_recommendation": "ADOPT_CONDITIONAL_ON_PRIMARY_READ"
+  },
+
+  "ordered_unblock_path": [
+    {"step": 1, "residual": "RES-EXT-001", "action": "read primary full text for the four eligible systems; fill architecture fields from primaries only", "blocking": true},
+    {"step": 2, "residual": null, "action": "record task_population_compatibility per system, separate from comparator_class"},
+    {"step": 3, "residual": "RES-EXT-004", "action": "settle flagged chronology anchors arXiv:2606.07591 and arXiv:2608.05179 against the publisher record"},
+    {"step": 4, "residual": null, "action": "read the Asta Environment at primary depth; decide MEC-CONTROLLED_RETRIEVAL_ENVIRONMENT adoption against the 0.98 availability target"},
+    {"step": 5, "residual": null, "action": "scope adapters, only for systems passing BOTH gates"},
+    {"step": 6, "residual": "RES-EXT-002/RES-EXT-003", "action": "continue saturation rounds and run the operator-order perturbation audit; registry saturation is OPEN with zero flat rounds, so no completeness claim is available"}
+  ],
+
+  "what_must_not_be_promoted": [
+    "This is a readiness verdict, not a comparison. No ORION-versus-anything result exists.",
+    "'No external comparison is runnable at causal grade' describes our current evidence, not the quality or availability of those systems.",
+    "The 0.9816 availability requirement is derived from a synthetic 12-gate population and does not transfer to real research populations without a separate study.",
+    "No completeness claim about the external landscape; registry saturation is OPEN."
+  ]
+}

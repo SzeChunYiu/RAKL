@@ -1,0 +1,865 @@
+{
+  "schema_version": "external-research-agent-registry-v1",
+  "registry_id": "ORION-EXTERNAL-AGENT-REGISTRY",
+  "registry_version": "v1",
+  "freeze_date": "2026-08-14",
+  "basis_fingerprint": "a0565504e70eacf6e0b44bb4a7ff2c0d5eacfb88bc533a75e121c7b702c4a946",
+  "saturation_status": "OPEN",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permits_scalar_ranking": false,
+  "systems": [
+    {
+      "system_id": "SYS-AI_SCIENTIST_V2",
+      "name": "The AI Scientist-v2 (Sakana AI)",
+      "classes": [
+        "C"
+      ],
+      "availability": "OPEN_SOURCE",
+      "comparator_class": "ARCHITECTURE_CAUSAL_ELIGIBLE",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "CANNOT_CHECK",
+        "planning_architecture": "Progressive agentic tree search managed by a dedicated experiment-manager agent; removes the v1 dependence on human-authored code templates.",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "CANNOT_CHECK",
+        "tool_code_execution": "Executes its own experiments end-to-end.",
+        "experiment_design": "Formulates hypotheses, designs and executes experiments, analyses and visualises data, authors manuscripts.",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "CANNOT_CHECK"
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "EXT-ICLR-WORKSHOP-SUBMISSION",
+          "metric": "average reviewer score on one of three autonomous manuscripts",
+          "value": "6.33 (reported as roughly top 45% of submissions; stated as would-have-been-accepted after meta-review if human-generated)",
+          "system_configuration": "CANNOT_CHECK",
+          "reported_by": "SELF_REPORTED",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-AISCI2-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Reported difficulty generating genuinely novel, high-impact hypotheses.",
+        "Reported difficulty justifying design decisions with deep domain expertise.",
+        "Verification of outputs reported as time-intensive."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "End-to-end candidate generation without a separated assurance authority; contrast with RAKL governance/assurance separation.",
+      "candidate_mechanic_ids": [
+        "MEC-TREE_SEARCH_EXPERIMENT_MANAGER"
+      ],
+      "source_anchors": [
+        {
+          "anchor_id": "A-AISCI2-ARXIV",
+          "url": "https://arxiv.org/abs/2504.08066",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2504.08066",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-AISCI2-REPO",
+          "url": "https://github.com/sakanaai/ai-scientist-v2",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-INTERNAGENT",
+      "name": "InternAgent (closed-loop hypothesis-to-verification system)",
+      "classes": [
+        "C"
+      ],
+      "availability": "CANNOT_CHECK",
+      "comparator_class": "UNDETERMINED",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "v3 of the arXiv entry observed",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "CANNOT_CHECK",
+        "planning_architecture": "Unified closed-loop multi-agent system spanning hypothesis generation to experimental validation.",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "Multi-agent; exact topology CANNOT_CHECK.",
+        "tool_code_execution": "Reported to handle repository-level code.",
+        "experiment_design": "Closed-loop hypothesis to experimental validation.",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "CANNOT_CHECK"
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "EXT-INTERNAGENT-12-TASKS",
+          "metric": "performance gain and cost-efficiency across 12 scientific and AI tasks",
+          "value": "reported substantial gains; exact figures CANNOT_CHECK",
+          "system_configuration": "CANNOT_CHECK",
+          "reported_by": "SELF_REPORTED",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-INTERNAGENT-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Uses AI Scientist-v2 as its own comparison baseline for idea novelty/quality, which is a self-selected comparator and not an independent evaluation."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "Closed-loop hypothesis-to-verification cycle; compare against RAKL residual-driven loop with separated assurance.",
+      "candidate_mechanic_ids": [],
+      "source_anchors": [
+        {
+          "anchor_id": "A-INTERNAGENT-ARXIV",
+          "url": "https://www.alphaxiv.org/audio/2505.16938v3",
+          "anchor_kind": "THIRD_PARTY",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2505.16938v3",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-KARPATHY_AUTORESEARCH",
+      "name": "autoresearch (Karpathy)",
+      "classes": [
+        "D"
+      ],
+      "availability": "OPEN_SOURCE",
+      "comparator_class": "ARCHITECTURE_CAUSAL_ELIGIBLE",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "released 2026-03-07 per secondary reporting",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "None reported; this is an execution loop, not a retrieval system.",
+        "planning_architecture": "Minimal propose-train-evaluate loop; approximately 630 lines of Python per secondary reporting.",
+        "reading_extraction_method": "Not applicable - no literature route.",
+        "memory": "Keeps changes that improve validation loss, discards the rest.",
+        "multi_agent_topology": "Single agent.",
+        "tool_code_execution": "Agent autonomously modifies training code and runs short training sessions on a single GPU.",
+        "experiment_design": "Sequential greedy accept/reject on a single scalar (validation loss).",
+        "verification_self_checking": "Validation-loss comparison only; no independent verification reported.",
+        "stopping_saturation": "CANNOT_CHECK - loop reported as continuous.",
+        "provenance_citation_handling": "Not applicable.",
+        "resource_allocation": "Fixed short training runs on one GPU.",
+        "persistent_learning": "Retains accepted code modifications across iterations.",
+        "self_modification": "Yes - modifies its own training code."
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "EXT-GPT2-PRETRAIN",
+          "metric": "experiments completed / optimizations found / training-time reduction",
+          "value": "reported 700 experiments in 2 days, 20 additive optimizations, GPT-2 training time reduced 11%",
+          "system_configuration": "single GPU",
+          "reported_by": "SELF_REPORTED",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-AUTORESEARCH-SECONDARY"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Single-scalar acceptance criterion - structurally cannot represent non-compensatory or multi-QoI objectives.",
+        "Narrow domain (ML pretraining); issue #588 explicitly classes it as a self-improving-loop comparator, not a general scientific-agent baseline."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "Closest external analogue to a bare self-improvement loop with no governance, no assurance separation and no evidence gating. Useful precisely as the ungoverned control arm.",
+      "candidate_mechanic_ids": [
+        "MEC-GREEDY_ACCEPT_ON_HELD_OUT_SCALAR"
+      ],
+      "source_anchors": [
+        {
+          "anchor_id": "A-AUTORESEARCH-SECONDARY",
+          "url": "https://www.datacamp.com/tutorial/guide-to-autoresearch",
+          "anchor_kind": "THIRD_PARTY",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-MIMOSA",
+      "name": "Mimosa (self-evolving multi-agent ASR framework)",
+      "classes": [
+        "C",
+        "D"
+      ],
+      "availability": "OPEN_SOURCE",
+      "comparator_class": "UNDETERMINED",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "MCP-based tool auto-discovery via a companion platform exposing scientific tools as MCP services.",
+        "planning_architecture": "Writes, runs and improves its own multi-agent workflows; described as Darwinian workflow optimization.",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "Self-generated multi-agent workflows; topology is itself the evolving object.",
+        "tool_code_execution": "Code-generating agents run subtasks using discovered tools and scientific libraries.",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "LLM-based judges score outputs and drive iterative workflow refinement in a learning mode.",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "Workflow-level evolution retained across runs.",
+        "self_modification": "Yes - modifies its own multi-agent workflows."
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "EXT-MIMOSA-CASE",
+          "metric": "end-to-end autonomous reproduction",
+          "value": "reported reproduction of a 2018 molecular network analysis from raw .mzML files in a single command",
+          "system_configuration": "CANNOT_CHECK",
+          "reported_by": "SELF_REPORTED",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-MIMOSA-REPO",
+            "A-MIMOSA-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Uses LLM judges as the selection signal for workflow evolution - a known route to evaluator gaming and meta-overfit; this is a direct falsifier target for RAKL's routing-signal-is-not-evidence constitution."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "Self-modifying method layer. Closest external analogue to Self-RAKL mechanic evolution, but with an LLM-judge fitness function where RAKL requires evidence gates.",
+      "candidate_mechanic_ids": [
+        "MEC-MCP_TOOL_AUTODISCOVERY",
+        "MEC-DARWINIAN_WORKFLOW_EVOLUTION"
+      ],
+      "source_anchors": [
+        {
+          "anchor_id": "A-MIMOSA-REPO",
+          "url": "https://github.com/HolobiomicsLab/Mimosa-AI",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-MIMOSA-ARXIV",
+          "url": "https://arxiv.org/pdf/2603.28986",
+          "anchor_kind": "ARXIV_PDF",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2603.28986",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-DELVEAGENT",
+      "name": "DelveAgent (deep research in physical sciences)",
+      "classes": [
+        "A",
+        "B"
+      ],
+      "availability": "CANNOT_CHECK",
+      "comparator_class": "UNDETERMINED",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "2026-06 per arXiv identifier",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "CANNOT_CHECK",
+        "planning_architecture": "Adaptive planning loop enabling replanning after intermediate outcomes.",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "Dual-granularity memory supporting reuse of task experience and domain knowledge.",
+        "multi_agent_topology": "Modular multi-agent framework; exact topology CANNOT_CHECK.",
+        "tool_code_execution": "CANNOT_CHECK",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "Hierarchical physics-grounded reflection checking intermediate and final outputs for scientific consistency.",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "Reported inference cost about one third of Gemini Deep Research.",
+        "persistent_learning": "Memory supports reuse across tasks; persistence across sessions CANNOT_CHECK.",
+        "self_modification": "None reported."
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "BM-PHYSCIBENCH",
+          "metric": "accuracy improvement over strongest baseline",
+          "value": "up to +7.5 percentage points across PhySciBench and three additional scientific reasoning benchmarks, at about one third the inference cost of Gemini Deep Research",
+          "system_configuration": "CANNOT_CHECK",
+          "reported_by": "SELF_REPORTED",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-PHYSCI-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Benchmark and system are introduced in the same paper - a self-paired benchmark/system release requires independent replication before the improvement is treated as measured."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "Domain-grounded self-verification (physics consistency checks) is the closest external analogue to RAKL falsifier-bearing verification; the dual-granularity memory maps to RAKL fiber/experience reuse.",
+      "candidate_mechanic_ids": [
+        "MEC-DOMAIN_GROUNDED_REFLECTION",
+        "MEC-DUAL_GRANULARITY_MEMORY",
+        "MEC-ADAPTIVE_REPLANNING"
+      ],
+      "source_anchors": [
+        {
+          "anchor_id": "A-PHYSCI-ARXIV",
+          "url": "https://arxiv.org/abs/2606.18648",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.18648",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-CLAUDE_CODE_AS_RESEARCH_AGENT",
+      "name": "Claude Code evaluated as an autonomous research agent",
+      "classes": [
+        "B",
+        "C"
+      ],
+      "availability": "PROPRIETARY",
+      "comparator_class": "SYSTEM_LEVEL_ONLY",
+      "evidence_grade": "PRIMARY_ABSTRACT",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK - version not stated in the abstract",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "proprietary"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK",
+        "tool_retrieval_stack": "CANNOT_CHECK",
+        "planning_architecture": "CANNOT_CHECK",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "CANNOT_CHECK",
+        "tool_code_execution": "Yes - coding agent with an executable environment.",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "CANNOT_CHECK"
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "BM-RESEARCHCLAWBENCH",
+          "metric": "average rubric score (strongest autonomous agent)",
+          "value": "21.5",
+          "system_configuration": "unified ResearchClawBench protocol",
+          "reported_by": "BENCHMARK_AUTHORS",
+          "evidence_grade": "PRIMARY_ABSTRACT",
+          "anchor_ids": [
+            "A-RCB-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Shares the ResearchClawBench cohort failure modes: experimental protocol mismatch, evidence mismatch, missing scientific core."
+      ],
+      "reproduction_status": "NOT_REPRODUCIBLE_PROPRIETARY",
+      "rakl_analogue": "This is the harness ORION itself is operated through; it is a same-substrate comparator and must not be treated as an independent architecture arm.",
+      "candidate_mechanic_ids": [],
+      "source_anchors": [
+        {
+          "anchor_id": "A-RCB-ARXIV",
+          "url": "https://arxiv.org/abs/2606.07591",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.07591",
+          "reported_submission_date": "2026-05-28 (v1), revised 2026-07-03 (v5)",
+          "date_consistency": "FLAGGED"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-GEMINI_DEEP_RESEARCH",
+      "name": "Gemini Deep Research",
+      "classes": [
+        "A"
+      ],
+      "availability": "PROPRIETARY",
+      "comparator_class": "SYSTEM_LEVEL_ONLY",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "proprietary"
+      },
+      "architecture": {
+        "models": "CANNOT_CHECK - proprietary",
+        "tool_retrieval_stack": "CANNOT_CHECK - hidden retrieval corpus",
+        "planning_architecture": "CANNOT_CHECK",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "CANNOT_CHECK",
+        "tool_code_execution": "CANNOT_CHECK",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "CANNOT_CHECK"
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "BM-PHYSCIBENCH",
+          "metric": "accuracy as strongest baseline",
+          "value": "33.5%",
+          "system_configuration": "CANNOT_CHECK",
+          "reported_by": "BENCHMARK_AUTHORS",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-PHYSCI-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "PhySciBench authors report fragility in extended reasoning chains, limited knowledge transfer across steps, and lack of physics-grounded self-verification for the baseline cohort."
+      ],
+      "reproduction_status": "NOT_REPRODUCIBLE_PROPRIETARY",
+      "rakl_analogue": "System-level ceiling reference for literature-route capability. Model, tools and retrieval corpus cannot be matched, so no architecture-causal claim is licensed.",
+      "candidate_mechanic_ids": [],
+      "source_anchors": [
+        {
+          "anchor_id": "A-PHYSCI-ARXIV",
+          "url": "https://arxiv.org/abs/2606.18648",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.18648",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-ASTA_V0",
+      "name": "Asta v0 (Ai2)",
+      "classes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "availability": "MIXED",
+      "comparator_class": "ARCHITECTURE_CAUSAL_ELIGIBLE",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "v0",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "closed LLMs in the reported best configuration",
+        "tool_retrieval_stack": "Asta Environment with production-grade scientific literature search over a large corpus.",
+        "planning_architecture": "CANNOT_CHECK",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "CANNOT_CHECK",
+        "tool_code_execution": "Covers code and execution plus data analysis categories.",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "Leaderboard accounts for inference cost as a confounder.",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "None reported."
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "BM-ASTABENCH",
+          "metric": "overall accuracy",
+          "value": "53.0% (best open-source agent with closed LLMs); best open-source agent with open-weight LLMs reported at 11.1%",
+          "system_configuration": "closed LLMs",
+          "reported_by": "BENCHMARK_AUTHORS",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-ASTA-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Benchmark and reference agent released by the same organization; Asta v0 scores require the same self-paired-release caution as DelveAgent."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "The Asta Environment is the most directly usable external matched-tool contract for Phase 4 arms, because it fixes the retrieval corpus across agents.",
+      "candidate_mechanic_ids": [
+        "MEC-CONTROLLED_RETRIEVAL_ENVIRONMENT",
+        "MEC-COST_AWARE_LEADERBOARD"
+      ],
+      "source_anchors": [
+        {
+          "anchor_id": "A-ASTA-ARXIV",
+          "url": "https://arxiv.org/abs/2510.21652",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2510.21652",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-ASTA-PAGE",
+          "url": "https://allenai.org/asta/bench",
+          "anchor_kind": "PROJECT_PAGE",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "system_id": "SYS-MINI_SWE_AGENT",
+      "name": "Mini-SWE-Agent (evaluated on AARRI-Bench)",
+      "classes": [
+        "B"
+      ],
+      "availability": "OPEN_SOURCE",
+      "comparator_class": "ARCHITECTURE_CAUSAL_ELIGIBLE",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "version_freeze": {
+        "evaluated_version": "CANNOT_CHECK",
+        "evaluated_date": "CANNOT_CHECK",
+        "commit": "CANNOT_CHECK",
+        "license": "CANNOT_CHECK"
+      },
+      "architecture": {
+        "models": "Claude Opus 4.7 in the best-reported configuration",
+        "tool_retrieval_stack": "CANNOT_CHECK",
+        "planning_architecture": "CANNOT_CHECK",
+        "reading_extraction_method": "CANNOT_CHECK",
+        "memory": "CANNOT_CHECK",
+        "multi_agent_topology": "CANNOT_CHECK",
+        "tool_code_execution": "Yes.",
+        "experiment_design": "CANNOT_CHECK",
+        "verification_self_checking": "CANNOT_CHECK",
+        "stopping_saturation": "CANNOT_CHECK",
+        "provenance_citation_handling": "CANNOT_CHECK",
+        "resource_allocation": "CANNOT_CHECK",
+        "persistent_learning": "CANNOT_CHECK",
+        "self_modification": "CANNOT_CHECK"
+      },
+      "reported_results": [
+        {
+          "benchmark_id": "BM-AARRI",
+          "metric": "success rate (best-performing configuration)",
+          "value": "68.3%",
+          "system_configuration": "Mini-SWE-Agent with Claude Opus 4.7",
+          "reported_by": "BENCHMARK_AUTHORS",
+          "evidence_grade": "SEARCH_SNIPPET",
+          "anchor_ids": [
+            "A-AARRI-ARXIV"
+          ]
+        }
+      ],
+      "known_failure_modes": [
+        "Reported to frequently overlook subtle but critical details obvious to human researchers.",
+        "Reported limitations in field sensitivity, research ethics and nuanced scientific judgement."
+      ],
+      "reproduction_status": "NOT_ATTEMPTED",
+      "rakl_analogue": "Harness-level execution baseline; useful as the SIMPLE_RESEARCH_LOOP arm reference.",
+      "candidate_mechanic_ids": [],
+      "source_anchors": [
+        {
+          "anchor_id": "A-AARRI-ARXIV",
+          "url": "https://arxiv.org/abs/2606.07462",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.07462",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "benchmark_id": "BM-AUTORESEARCHBENCH",
+      "name": "AutoResearchBench",
+      "measures_class": [
+        "A"
+      ],
+      "task_count": "1000 problems",
+      "domains": "eight core areas of computer science",
+      "distinct_capability_measured": "Literature discovery under two separated modes: Deep Research (locate one specific target paper through multi-step reasoning) and Wide Research (assemble a complete set of papers meeting stated conditions). Wide Research is the only surveyed suite that scores set-completeness via IoU, which makes it the natural external probe for ORION's bounded-saturation and missed-key-source claims.",
+      "evaluation_protocol": "Full-text-first human-machine construction pipeline with human expert verification; dataset and evaluation pipeline publicly released.",
+      "evaluator_type": "HYBRID",
+      "cost_tracking": "CANNOT_CHECK",
+      "reported_ceiling": "9.39% accuracy on Deep Research and 9.31% IoU on Wide Research for the strongest LLMs; many strong baselines below 5%",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "Target papers are public; any ORION run must record whether the target was reachable from pretraining or from a cached corpus. Contamination check is required before any Tier 1 claim.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-ARB-ARXIV",
+          "url": "https://arxiv.org/abs/2604.25256",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2604.25256",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-DEEPRESEARCH_BENCH",
+      "name": "DeepResearch Bench",
+      "measures_class": [
+        "A"
+      ],
+      "task_count": "100 PhD-level tasks (50 Chinese, 50 English)",
+      "domains": "22 distinct fields",
+      "distinct_capability_measured": "Report quality and citation trustworthiness for open-ended research tasks. RACE scores report quality against reference-based adaptive criteria with dynamic weighting; FACT scores factual abundance and citation accuracy. FACT is the direct external analogue of ORION's claim/evidence fidelity and source-authenticity invariants.",
+      "evaluation_protocol": "RACE (reference-based adaptive criteria-driven evaluation with dynamic weighting) and FACT (factual abundance and citation trustworthiness).",
+      "evaluator_type": "LLM_JUDGE",
+      "cost_tracking": "CANNOT_CHECK",
+      "reported_ceiling": "CANNOT_CHECK",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "RACE is reference-based and LLM-judged; judge identity and version must be frozen and recorded, and ORION must not be evaluated by any model it also uses for generation.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-DRB-ARXIV",
+          "url": "https://arxiv.org/abs/2506.11763",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2506.11763",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-DRB-ICLR",
+          "url": "https://iclr.cc/virtual/2026/poster/10008065",
+          "anchor_kind": "PROCEEDINGS",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-DRB-REPO",
+          "url": "https://github.com/Ayanami0730/deep_research_bench",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-ASTABENCH",
+      "name": "AstaBench (Ai2)",
+      "measures_class": [
+        "A",
+        "B",
+        "C"
+      ],
+      "task_count": "2400+ problems across 11 benchmarks",
+      "domains": "four core categories: literature understanding, code and execution, data analysis, end-to-end discovery",
+      "distinct_capability_measured": "The only surveyed suite that couples a controlled agent environment with a cost-aware leaderboard, so it measures capability per unit inference cost rather than capability alone. This is the closest existing external instrument to the Phase 5 efficiency QoI vector and the only one that directly supports a quality-versus-cost Pareto plot.",
+      "evaluation_protocol": "Asta Environment provides controlled, reproducible evaluation with production-grade literature search tools; leaderboard controls for agent tooling and inference cost.",
+      "evaluator_type": "HYBRID",
+      "cost_tracking": "YES",
+      "reported_ceiling": "57 agents across 22 architectural classes evaluated; best open-source agent with open-weight LLMs 11.1% overall accuracy, best open-source agent with closed LLMs (Asta v0) 53.0%",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "External submissions are accepted, so the leaderboard population is not a fixed cohort; the evaluation epoch and cohort snapshot must be recorded with any comparison.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-ASTA-ARXIV",
+          "url": "https://arxiv.org/abs/2510.21652",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2510.21652",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-SCIENCEAGENTBENCH",
+      "name": "ScienceAgentBench",
+      "measures_class": [
+        "B"
+      ],
+      "task_count": "102 tasks from 44 peer-reviewed publications",
+      "domains": "four scientific disciplines; validated by nine subject-matter experts",
+      "distinct_capability_measured": "Executable scientific programming: every task unifies to a self-contained Python program, so success is machine-checkable rather than judge-scored. It is the strongest available defence against LLM-judge gaming in the surveyed set, and its cost reporting exposes the inference-compute-versus-solve-rate tradeoff directly.",
+      "evaluation_protocol": "Valid execution rate, success rate, CodeBERTScore, and cost; three attempts per task.",
+      "evaluator_type": "EXECUTABLE",
+      "cost_tracking": "YES",
+      "reported_ceiling": "best-performing agent solved 32.4% of tasks independently and 34.3% with expert-provided knowledge; self-debug routines raised solve rate at more than tenfold cost increase",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "Tasks derive from published papers whose code may be in pretraining data; issue #588 lists this suite with an 'Apr 2026' date but the primary anchor is arXiv 2410.05080 (ICLR'25). See ANCHOR_VERIFICATION.md.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-SAB-ARXIV",
+          "url": "https://arxiv.org/abs/2410.05080",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2410.05080",
+          "date_consistency": "FLAGGED"
+        },
+        {
+          "anchor_id": "A-SAB-REPO",
+          "url": "https://github.com/OSU-NLP-Group/ScienceAgentBench",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-PHYSCIBENCH",
+      "name": "PhySciBench",
+      "measures_class": [
+        "A",
+        "B"
+      ],
+      "task_count": "200 expert-curated questions",
+      "domains": "physics and chemistry, balanced, across six task categories",
+      "distinct_capability_measured": "Physical-science reasoning over extended chains where domain-grounded self-verification is possible. Its published failure taxonomy (extended-chain fragility, weak cross-step knowledge transfer, absent physics-grounded self-verification) maps onto ORION residual types more directly than any other surveyed suite.",
+      "evaluation_protocol": "CANNOT_CHECK",
+      "evaluator_type": "CANNOT_CHECK",
+      "cost_tracking": "YES",
+      "reported_ceiling": "strongest baseline Gemini Deep Research at 33.5% accuracy",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "Released together with DelveAgent by the same authors; the +7.5pp DelveAgent gain is a self-paired result.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-PHYSCI-ARXIV",
+          "url": "https://arxiv.org/abs/2606.18648",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.18648",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-RESEARCHCLAWBENCH",
+      "name": "ResearchClawBench (InternScience)",
+      "measures_class": [
+        "C"
+      ],
+      "task_count": "40 tasks",
+      "domains": "10 scientific domains",
+      "distinct_capability_measured": "End-to-end re-discovery with the target paper hidden during evaluation. This hidden-target construction is the closest external instrument to the RAKL Tier 3 fresh-blind requirement, and it is the only surveyed suite that scores re-discovery while explicitly leaving headroom for new discovery.",
+      "evaluation_protocol": "Expert-curated multimodal rubrics decomposing target scientific artifacts into weighted criteria; unified protocol across 7 auto-research agents and 17 native LLMs via the lightweight ResearchHarness.",
+      "evaluator_type": "EXPERT_RUBRIC",
+      "cost_tracking": "CANNOT_CHECK",
+      "reported_ceiling": "strongest autonomous agent Claude Code 21.5; strongest ResearchHarness LLM Claude-Opus-4.7 20.7; LLM frontier mean 26.5",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "Target papers are real published works and are hidden at evaluation time but public in principle; pretraining contamination must be checked. The published cohort already includes Claude Code, which is ORION's own substrate - any ORION result here is a same-substrate comparison, not an independent architecture arm.",
+      "evidence_grade": "PRIMARY_ABSTRACT",
+      "source_anchors": [
+        {
+          "anchor_id": "A-RCB-ARXIV",
+          "url": "https://arxiv.org/abs/2606.07591",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.07591",
+          "reported_submission_date": "2026-05-28 (v1), revised 2026-07-03 (v5)",
+          "date_consistency": "FLAGGED"
+        },
+        {
+          "anchor_id": "A-RCB-REPO",
+          "url": "https://github.com/InternScience/ResearchClawBench",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-AARRI",
+      "name": "AARRI-Bench (Act As a Real Research Intern)",
+      "measures_class": [
+        "B",
+        "C"
+      ],
+      "task_count": "CANNOT_CHECK",
+      "domains": "CANNOT_CHECK",
+      "distinct_capability_measured": "Whether an agent matches the professionalism and thoroughness of a human researcher on granular research scenarios, including field sensitivity and research ethics. It is the only surveyed suite scoring nuanced scientific judgement rather than task completion, which makes it the natural probe for ORION's calibrated-abstention and CANNOT_CHECK-honesty QoIs.",
+      "evaluation_protocol": "CANNOT_CHECK",
+      "evaluator_type": "CANNOT_CHECK",
+      "cost_tracking": "CANNOT_CHECK",
+      "reported_ceiling": "best configuration Mini-SWE-Agent with Claude Opus 4.7 at 68.3% success rate",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "CANNOT_CHECK",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-AARRI-ARXIV",
+          "url": "https://arxiv.org/abs/2606.07462",
+          "anchor_kind": "ARXIV_ABS",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2606.07462",
+          "date_consistency": "NOT_APPLICABLE"
+        },
+        {
+          "anchor_id": "A-AARRI-REPO",
+          "url": "https://github.com/AARR-bench/AARRI-bench",
+          "anchor_kind": "REPO",
+          "retrieved_on": "2026-08-14",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    },
+    {
+      "benchmark_id": "BM-HAL",
+      "name": "Holistic Agent Leaderboard (HAL)",
+      "measures_class": [
+        "B"
+      ],
+      "task_count": "nine benchmarks; 21730 rollouts across 9 models and 9 benchmarks",
+      "domains": "coding, web navigation, science tasks, customer service",
+      "distinct_capability_measured": "Not a scientific-capability suite. It is evaluation infrastructure: it decouples the agent scaffold from benchmark execution and tracks cost at the LLM-API-call level, and its Docent log analysis scores instruction following, tool use, verification, self-correction, environmental barriers and cheating/gaming. It is registered as the methodological reference for the Phase 4 matched-harness contract, not as a capability score source.",
+      "evaluation_protocol": "Standardized agent harnesses across nine benchmarks with shared scaffolds and centralized cost tracking; automated log analysis with an LLM judge.",
+      "evaluator_type": "HYBRID",
+      "cost_tracking": "YES",
+      "reported_ceiling": "not applicable; reported headline cost 40000 USD for 21730 rollouts",
+      "orion_adapter_status": "NOT_STARTED",
+      "leakage_risk_notes": "Its own log-analysis judge is an LLM, so ORION must not be scored by a judge sharing its generation model. Secondary reporting alongside this suite notes SWE-bench Verified score reporting was stopped after confirmed evaluation-set leakage - a precedent to cite when arguing for contamination checks.",
+      "evidence_grade": "SEARCH_SNIPPET",
+      "source_anchors": [
+        {
+          "anchor_id": "A-HAL-ARXIV",
+          "url": "https://arxiv.org/pdf/2510.11977",
+          "anchor_kind": "ARXIV_PDF",
+          "retrieved_on": "2026-08-14",
+          "identifier": "arXiv:2510.11977",
+          "date_consistency": "NOT_APPLICABLE"
+        }
+      ]
+    }
+  ]
+}
