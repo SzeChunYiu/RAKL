@@ -15,7 +15,16 @@ def _parent(disposition, **updates):
         method_version="transportability-parent-boundary-v1",
         subject_sha256=SUBJECT,
         disposition=disposition,
-        derivation_sha256=DERIVATION if disposition in {FormalParentDisposition.LICENSED, FormalParentDisposition.REJECTED} else None,
+        derivation_sha256=(
+            DERIVATION
+            if disposition
+            in {
+                FormalParentDisposition.LICENSED,
+                FormalParentDisposition.REJECTED,
+                FormalParentDisposition.OUT_OF_SCOPE,
+            }
+            else None
+        ),
     )
     values.update(updates)
     return FormalParentResult(**values)
@@ -55,7 +64,7 @@ def test_formal_cannot_check_fails_closed_even_when_orion_would_license():
     assert not result.orion_residual_eligible
 
 
-def test_out_of_scope_is_the_only_path_to_orion_residual():
+def test_evidence_bound_out_of_scope_is_the_only_path_to_orion_residual():
     for verdict in TransferVerdict:
         result = arbitrate_transfer(
             _parent(FormalParentDisposition.OUT_OF_SCOPE),
@@ -65,7 +74,20 @@ def test_out_of_scope_is_the_only_path_to_orion_residual():
         assert result.verdict is verdict
         assert result.authority_source == "ORION_OUTSIDE_FORMAL_PARENT_SCOPE"
         assert result.orion_residual_eligible
+        assert "formal_parent_evidence_bound_out_of_scope" in result.reasons
         assert not result.grants_scientific_authority
+
+
+def test_bare_out_of_scope_label_cannot_bypass_parent():
+    result = arbitrate_transfer(
+        _parent(FormalParentDisposition.OUT_OF_SCOPE, derivation_sha256=None),
+        TransferVerdict.LICENSED,
+        expected_subject_sha256=SUBJECT,
+    )
+    assert result.verdict is TransferVerdict.CANNOT_CHECK
+    assert result.authority_source == "BOUNDARY_VALIDATION_FAILURE"
+    assert "formal_parent_result_missing_derivation_digest" in result.reasons
+    assert not result.orion_residual_eligible
 
 
 def test_stale_subject_fails_closed_before_arbitration():
@@ -86,7 +108,7 @@ def test_decisive_parent_without_derivation_digest_fails_closed():
         expected_subject_sha256=SUBJECT,
     )
     assert result.verdict is TransferVerdict.CANNOT_CHECK
-    assert "formal_parent_decisive_result_missing_derivation_digest" in result.reasons
+    assert "formal_parent_result_missing_derivation_digest" in result.reasons
 
 
 def test_wrong_parent_identity_or_version_fails_closed():
@@ -117,4 +139,4 @@ def test_malformed_hashes_fail_closed():
     assert result.authority_source == "BOUNDARY_VALIDATION_FAILURE"
     assert "expected_subject_sha256_invalid" in result.reasons
     assert "formal_parent_subject_sha256_invalid" in result.reasons
-    assert "formal_parent_decisive_result_missing_derivation_digest" in result.reasons
+    assert "formal_parent_result_missing_derivation_digest" in result.reasons
