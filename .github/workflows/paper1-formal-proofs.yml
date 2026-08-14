@@ -58,21 +58,61 @@ jobs:
           lean --root=. -o /tmp/RaklFormal.olean RaklFormal.lean
           cat > /tmp/ax.lean <<'EOF'
           import RaklFormal
+          #print axioms RaklFormal.Incl.refl
+          #print axioms RaklFormal.Incl.trans
           #print axioms RaklFormal.no_faithful_scalarization
           #print axioms RaklFormal.projection_collision
           #print axioms RaklFormal.open_world_not_finitely_certifiable
           #print axioms RaklFormal.iInter_closed
+          #print axioms RaklFormal.iInter_lower
           #print axioms RaklFormal.iInter_greatest
+          #print axioms RaklFormal.cl_iUnion_closed
+          #print axioms RaklFormal.cl_iUnion_upper
           #print axioms RaklFormal.cl_iUnion_least
+          #print axioms RaklFormal.iter_below_prefixed
           #print axioms RaklFormal.stabilized_is_fixed
           #print axioms RaklFormal.stabilized_is_least
           #print axioms RaklFormal.runAll_preserves_canon
           #print axioms RaklFormal.no_uncertified_composition_changes_canon
           #print axioms RaklFormal.certified_operator_may_change_canon
           #print axioms RaklFormal.negative_history_monotone
+          #print axioms RaklFormal.symmetric_compat_not_antisymmetric
+          #print axioms RaklFormal.below_is_partial_order
+          #print axioms RaklFormal.pairwise_witnesses_but_no_join
+          #print axioms RaklFormal.parity_restrictions_are_total
+          #print axioms RaklFormal.parity_overlaps_agree
+          #print axioms RaklFormal.parity_no_global_section
+          #print axioms RaklFormal.parity_charts_have_no_global_section
+          #print axioms RaklFormal.coactivation_not_compatibility
+          #print axioms RaklFormal.coactivation_witness
+          #print axioms RaklFormal.workspace_preserves_authority
+          #print axioms RaklFormal.workspace_cannot_increase_authority
+          #print axioms RaklFormal.workspace_transition_changes_access
+          #print axioms RaklFormal.proposalGen_preserves_canon
+          #print axioms RaklFormal.proposal_non_sovereignty
+          #print axioms RaklFormal.proposalGen_changes_proposals
+          #print axioms RaklFormal.experienceUpdate_preserves_canon
+          #print axioms RaklFormal.experience_routing_non_escalation
+          #print axioms RaklFormal.experienceUpdate_changes_routing
+          #print axioms RaklFormal.derivedView_preserves_source
+          #print axioms RaklFormal.derived_view_non_escalation
+          #print axioms RaklFormal.derived_view_cannot_increase_authority
+          #print axioms RaklFormal.derivedView_changes_view
+          #print axioms RaklFormal.trainStep_preserves_canon
+          #print axioms RaklFormal.training_update_non_sovereignty
+          #print axioms RaklFormal.trainStep_changes_params
+          #print axioms RaklFormal.flatness_is_non_compensatory
+          #print axioms RaklFormal.growth_reopens_saturation
+          #print axioms RaklFormal.mem_take_append_left
+          #print axioms RaklFormal.le_length_append
+          #print axioms RaklFormal.saturation_returns_after_required_flat_rounds
+          #print axioms RaklFormal.freshness_expiry
+          #print axioms RaklFormal.freshness_not_compensable_by_flat_rounds
+          #print axioms RaklFormal.freshness_rerun_restores
+          #print axioms RaklFormal.freshness_expiry_witness
           EOF
           LEAN_PATH=/tmp lean /tmp/ax.lean | tee /tmp/ax.out
-          expected=12
+          expected=52
           total=$(grep -c . /tmp/ax.out)
           clean=$(grep -c 'does not depend on any axioms' /tmp/ax.out)
           echo "reported=$total axiom-free=$clean expected=$expected"
