@@ -90,32 +90,30 @@
       "kind": "proposition",
       "name": "Derived-view authority non-escalation",
       "location": "02bb_task_conditioned_erasure.tex:18",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "noninterference",
-      "notes": "FINDING: the proof argues 'by construction it can inherit but cannot mint authority certificates' - this is a restatement of the hypothesis, not a derivation. As written it is a definitional consequence presented as a proposition, which is the kind of thing a formal-methods referee flags. It is very likely TRUE once the certificate-inheritance relation is made explicit; mechanizing it would force that relation to be stated and would convert a soft claim into a hard one. Recommend mechanizing this BEFORE submission rather than after review.",
+      "notes": "FINDING (PRESERVED, original): the paper's proof argues 'by construction it can inherit but cannot mint authority certificates' - this is a restatement of the hypothesis, not a derivation. As written it is a definitional consequence presented as a proposition, which is the kind of thing a formal-methods referee flags. That finding was real and is preserved here as history, not deleted: it is NOT retracted by the later repairs, it is recorded as having been found and then fixed. The manuscript half was subsequently repaired independently (PR #610, 2026-08-14) - see repair_status. What changed on this side is that the formalization now discharges the claim without relying on the circular step: ViewState is the state space, ViewState.source the canonical projection, and Inherits (every certificate the derived view carries is already reachable from the pinned source) the certificate-inheritance relation the repair_action called for. derived_view_non_escalation carries Inherits as an INDUCTIVE INVARIANT across a composition of derivedView operators and concludes both source-invariance and no-certificate-minting; that is a derivation, not a restatement.",
       "repair_action": "Formalize 'authority certificates of Z are a subset of those reachable from P' as an explicit relation, then derive non-escalation as a monotonicity property of that relation.",
-      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "lean_names": "RaklFormal.derived_view_non_escalation, RaklFormal.derived_view_cannot_increase_authority, RaklFormal.derivedView_preserves_source, RaklFormal.derivedView_changes_view, RaklFormal.no_uncertified_composition_changes_canon",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
-      "repair_status": "REPAIRED ON BOTH SIDES. (1) Formalization: the previously-implicit hypothesis is now the explicit OperatorClass field uncertified_preserves, which the type checker forces every instantiation to discharge. (2) Manuscript (2026-08-14): the circular proof is replaced \u2014 the inheritance condition chi(Z) subseteq chi(P) is stated as an explicit premise and named load-bearing, the claim is derived as an instance of Proposition prop:proposal-non-sovereignty, and an added remark records the mechanization including the non-vacuity witness. PDF rebuilt: latexmk rc=0, zero unresolved references.",
-      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+      "repair_status": "REPAIRED ON BOTH SIDES. (1) Formalization: the certificate-inheritance relation requested by repair_action is now the explicit definition Inherits, and derived_view_non_escalation carries it as an INDUCTIVE INVARIANT across a composition of derivedView operators, concluding both source-invariance and no-certificate-minting. That is a derivation, not a restatement. The previously-implicit hypothesis is additionally the explicit OperatorClass field uncertified_preserves, which the type checker forces every instantiation to discharge. (2) Manuscript (2026-08-14, PR #610, landed independently of this work): the circular proof is replaced - the inheritance condition chi(Z) subseteq chi(P) is stated as an explicit premise and named load-bearing, the claim is derived as an instance of Proposition prop:proposal-non-sovereignty, and an added remark records the mechanization including the non-vacuity witness. PDF rebuilt: latexmk rc=0, zero unresolved references.",
+      "lean_names_note": "derivedView_changes_view is a non-vacuity witness: a derived view genuinely CAN change, so the result is not the degenerate 'nothing happens'. no_uncertified_composition_changes_canon remains listed because the shared principle is what this instance specializes."
     },
     {
       "id": "P1-T-PROPOSAL-NON-SOVEREIGNTY",
       "kind": "proposition",
       "name": "Proposal non-sovereignty",
       "location": "01_introduction_foundations_state.tex:173",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "noninterference",
-      "notes": "Same family as the derived-view result; likely to share its informal-proof risk. Priority for the next reading pass.",
-      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "notes": "Read at proof depth. Unlike the derived-view proposition this proof does NOT restate its hypothesis: the codomain restriction is stated in the proposition and the proof performs an actual induction over the composition ('composition therefore remains inside proposal-bearing or transient computational state until an operator with codomain in canonical state is invoked'). Sound as written. Instantiated against V3State (canon / proposals / transient): proposalGen is the operator form, and the codomain obligation is PROVED for that form (proposalGen_preserves_canon) rather than assumed, so no instantiation can quietly skip it.",
+      "lean_names": "RaklFormal.proposal_non_sovereignty, RaklFormal.proposalGen_preserves_canon, RaklFormal.proposalGen_changes_proposals, RaklFormal.no_uncertified_composition_changes_canon",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
-      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+      "lean_names_note": "proposalGen_changes_proposals is the non-vacuity witness: a proposal generator genuinely moves proposal state while canonical state is fixed."
     },
     {
       "id": "P1-T-NEGATIVE-HISTORY-MONOTONICITY",
@@ -135,121 +133,148 @@
       "kind": "proposition",
       "name": "Pairwise compatibility does not imply an order-theoretic lattice",
       "location": "02_compatibility_authority.tex:36",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "algebraic",
-      "notes": "Counterexample-shaped; should be cheap to mechanize and cheap to check."
+      "notes": "Read at proof depth. The proof gives two arguments and both are mechanized. PRECISION NOTE (not a gap): the prose hedge 'a witnessed compatibility relation is generally symmetric' is a modelling remark, not a proof step - 'generally' cannot discharge a universally quantified claim. The mechanization avoids relying on it by proving the two arguments as sharp statements. (1) symmetric_compat_not_antisymmetric: symmetry plus antisymmetry collapses a relation to equality, so a witness relation relating two DISTINCT atoms cannot be the order of a poset. (2) pairwise_witnesses_but_no_join: a concrete five-atom poset, verified to be a genuine partial order, in which every pair carries an upper-bound witness and yet a specific pair has NO least upper bound. That is strictly stronger than the paper's second argument, which only observes that no join element is constructed; the counterexample shows the universal property can fail outright even when no pair is left unwitnessed.",
+      "lean_names": "RaklFormal.symmetric_compat_not_antisymmetric, RaklFormal.below_is_partial_order, RaklFormal.pairwise_witnesses_but_no_join",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "lean_names_note": "below_is_partial_order is an anti-vacuity check on the counterexample: it verifies the order really is reflexive, transitive and antisymmetric, so the failure of joins is not an artefact of a malformed order."
     },
     {
       "id": "P1-T-THREE-CONTEXT-PARITY",
       "kind": "proposition",
       "name": "Three-context parity obstruction",
       "location": "02_compatibility_authority.tex:64",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
-      "load_bearing_class": "algebraic"
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic",
+      "notes": "Read at proof depth; correct and elementary. Mechanized in two halves so that neither half can carry the other. The no-global-section half is proved for an ARBITRARY type (transitivity of equality against a disequality), which is more general than the paper's Bool argument and shows the obstruction is not a parity accident. The pairwise-compatibility half is stated in its exact form - the two charts sharing an overlap restrict to the SAME set on it, and that set is the whole of Bool - rather than the weaker and referee-baiting 'each restriction is nonempty'. Together they are precisely the paper's claim: pairwise compatible on every overlap, no global section.",
+      "lean_names": "RaklFormal.parity_no_global_section, RaklFormal.parity_charts_have_no_global_section, RaklFormal.parity_restrictions_are_total, RaklFormal.parity_overlaps_agree",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
     },
     {
       "id": "P1-T-EXPERIENCE-ROUTING-NON-ESCALATION",
       "kind": "proposition",
       "name": "Experience-routing non-escalation",
       "location": "02b_v3_epistemic_projection.tex:25",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "noninterference",
-      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "notes": "Read at proof depth; sound, and it explicitly cites the proposal non-sovereignty assumption rather than re-deriving it. Instantiated against ExperienceState (canon / episodes / routing), with experienceUpdate as the operator form and the codomain obligation proved for that form. Mechanized in the proposition's own 'cannot increase any coordinate of alpha' shape: the authority order is an arbitrary strict relation with irreflexivity passed explicitly, so no order-theoretic structure is smuggled in.",
+      "lean_names": "RaklFormal.experience_routing_non_escalation, RaklFormal.experienceUpdate_preserves_canon, RaklFormal.experienceUpdate_changes_routing, RaklFormal.no_uncertified_composition_changes_canon",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
-      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+      "lean_names_note": "experienceUpdate_changes_routing is the non-vacuity witness: routing genuinely moves, which is the whole point - search order changes while authority does not."
     },
     {
       "id": "P1-T-TRAINING-UPDATE-NON-SOVEREIGNTY",
       "kind": "proposition",
       "name": "Training-update non-sovereignty",
       "location": "02c_training_time_projection.tex:30",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "noninterference",
-      "lean_names": "RaklFormal.no_uncertified_composition_changes_canon, RaklFormal.runAll_preserves_canon, RaklFormal.certified_operator_may_change_canon",
+      "notes": "Read at proof depth; sound. Instantiated against TrainState (canon / params / metrics), with trainStep as the operator form and the codomain obligation proved for that form. Mechanized in the 'cannot increase the scientific-authority projection' shape. The non-vacuity witness matters more here than anywhere else in the family: without it the proposition would be equally satisfied by a system in which training does nothing, and the paper's actual claim is the sharper one that training changes BEHAVIOUR while leaving authority fixed.",
+      "lean_names": "RaklFormal.training_update_non_sovereignty, RaklFormal.trainStep_preserves_canon, RaklFormal.trainStep_changes_params, RaklFormal.no_uncertified_composition_changes_canon",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
-      "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
+      "lean_names_note": "trainStep_changes_params is the non-vacuity witness: an optimizer step genuinely moves parameters while canonical state is fixed."
     },
     {
       "id": "P1-T-GREEDY-OPTIMALITY",
       "kind": "theorem",
       "name": "Optimality of reservation-first greedy selection",
       "location": "03_workspace.tex:48",
-      "status": "UNREVIEWED",
+      "status": "PAPER_PROOF_COMPLETE",
       "mechanization": "CANDIDATE",
       "load_bearing_class": "algorithmic",
-      "notes": "Greedy-optimality proofs are a classic site of hidden matroid/exchange assumptions. Priority for the next reading pass."
+      "notes": "Read at proof depth, hunting specifically for the hidden matroid/exchange assumption these proofs usually conceal. NO GAP FOUND. The exchange step is sound: feasibility gives |S* intersect p| >= r_p, so if some element of the top-r_p set of p is missing from S* then S* must contain an element of p outside that top set, whose utility is <= the missing one; swapping preserves cardinality, preserves every lower bound, and cannot decrease the objective. Assumption (i) disjointness is what makes exchanges in different partitions non-interfering, and it is stated. Stage two is genuinely unconstrained once the reserved sets are fixed - all lower bounds are already met and unit costs make the residual an ordinary top-k - and non-negativity (iii) is what licenses filling every remaining slot. The paper is also explicit about what breaks the theorem (heterogeneous costs, non-additive diversity bonuses, upper quotas, overlapping partitions), which is the right scoping. PRECISION NOTE (not a gap): 'the top r_p candidates' is not well defined under utility ties, and the implementation picks some tie-broken set. The argument survives unchanged, but a faithful formalization must quantify over ANY maximal r_p-subset (every element of p outside it has utility <= every element inside it) rather than over a unique 'the' top set. This is a statement-precision point, not an error.",
+      "not_mechanized": "The whole theorem. Deferred to a separate batch so that the harder finite-set/summation development cannot delay the ten items that are ready. Planned encoding: selections as List.Sublist of the candidate pool, 'top-k' as the tie-safe IsTopSubset predicate described in the precision note, and two lemmas - single-swap exchange (iterated) and residual-unconstrained top-k. This status is deliberately NOT reported as MECHANIZED and NOT reported as UNREVIEWED; it is 'read line by line by a same-session reviewer, no gap found', which per review_provenance is not reviewer-independent."
     },
     {
       "id": "P1-T-AUTHORITY-PRESERVATION",
       "kind": "proposition",
       "name": "Authority-preservation invariant",
       "location": "03_workspace.tex:72",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
-      "load_bearing_class": "noninterference"
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "noninterference",
+      "notes": "Read at proof depth. FINDING (minor, sound-but-thin): the one-line proof 'the codomain of a workspace-only transition excludes canonical authority coordinates, hence the canonical projection onto authority is invariant' is a valid derivation, because the codomain restriction is stated as a hypothesis IN the proposition. This is deliberately NOT escalated to the derived-view circularity finding, where the restriction is asserted inside the proof instead of being hypothesised. It is thin, not circular. Mechanized with the codomain restriction as an explicit argument, and given in the proposition's own 'cannot increase' form against an arbitrary strict order with irreflexivity passed explicitly.",
+      "lean_names": "RaklFormal.workspace_preserves_authority, RaklFormal.workspace_cannot_increase_authority, RaklFormal.workspace_transition_changes_access",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "lean_names_note": "workspace_transition_changes_access is the non-vacuity witness, and it is load-bearing for this claim in particular: without it the proposition reads as 'nothing happens'. It shows a workspace-only transition genuinely moves the transient component - access changes, authority does not - which is exactly the access/authority separation the section claims."
     },
     {
       "id": "P1-T-COACTIVATION-NOT-COMPATIBILITY",
       "kind": "proposition",
       "name": "Coactivation does not imply compatibility",
       "location": "03_workspace.tex:82",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
-      "load_bearing_class": "algebraic"
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic",
+      "notes": "Read at proof depth; correct. Mechanized in two halves. coactivation_not_compatibility is the general non-identifiability statement, deliberately given the same shape as projection_collision: a gate whose only inputs are partition tags and priorities cannot carry compatibility information, so for ANY such gate and any pair it coselects there is a compatibility relation making that pair incompatible with the selection unchanged. coactivation_witness is the concrete instance the paper's proof describes in prose - a reservation-first gate at capacity two with one reserved CHALLENGE slot, which computes a selection containing both a claim and the rebuttal that explicitly contradicts it. The selection is COMPUTED by the gate rather than stipulated, so the witness is not a restatement of the conclusion.",
+      "lean_names": "RaklFormal.coactivation_not_compatibility, RaklFormal.coactivation_witness",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none"
     },
     {
       "id": "P1-T-NEW-KNOWLEDGE-REOPENS",
       "kind": "proposition",
       "name": "New substantive knowledge reopens saturation",
       "location": "04_owmd.tex:193",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "termination",
-      "notes": "Directly implemented by audit_bounded_epistemic_saturation in src/rakl/epistemic_saturation.py; mechanizing it would tie the paper claim to the shipped code."
+      "notes": "Read at proof depth; correct. Directly implemented by audit_bounded_epistemic_saturation in src/rakl/epistemic_saturation.py and enforced behaviourally by PFC-SATURATION-REOPENS-ON-GROWTH in src/rakl/paper_framework_consistency.py, so mechanizing it ties paper -> proof -> code. Mechanized with the non-compensatory structure made explicit: Flat requires EVERY coordinate of the progress vector to be zero, and flatness_is_non_compensatory shows one non-zero coordinate destroys flatness however large the others are - ten new paragraphs cannot cancel one counterexample. The 'until' in the proposition is mechanized as BOTH halves, which is what stops the claim being vacuous: growth_reopens_saturation shows a non-flat round makes the newest flat run empty so no positive requirement can hold, and saturation_returns_after_required_flat_rounds shows the gate genuinely reopens rather than being destroyed. Without the second half the first would also be satisfied by a system that can never re-saturate.",
+      "lean_names": "RaklFormal.growth_reopens_saturation, RaklFormal.saturation_returns_after_required_flat_rounds, RaklFormal.flatness_is_non_compensatory, RaklFormal.mem_take_append_left, RaklFormal.le_length_append",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "lean_names_note": "mem_take_append_left and le_length_append are mathlib-free list lemmas proved here rather than imported, so that the development stays dependency-free and the axiom audit stays clean."
     },
     {
       "id": "P1-T-FRESHNESS-EXPIRY",
       "kind": "proposition",
       "name": "Freshness-horizon expiry",
       "location": "04_owmd.tex:207",
-      "status": "UNREVIEWED",
-      "mechanization": "CANDIDATE",
-      "load_bearing_class": "termination"
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "termination",
+      "notes": "Read at proof depth; correct, and arithmetically shallow as stated. HONEST SCOPE NOTE: the proposition on its own is close to a definitional consequence of what 'coverage through t-prime' means, so mechanizing only that would add little. The mechanization therefore states the content that actually carries weight, namely that the release gate is non-compensatory ACROSS KINDS of obligation: freshness_expiry shows a certificate that fully discharges its flat-round obligation still fails once the required cutoff moves past the one its route reached, and freshness_not_compensable_by_flat_rounds shows this holds for EVERY flat-round count, so staleness cannot be bought with more flat rounds. freshness_rerun_restores identifies rerunning the route as the only repair. The order on time is an arbitrary relation passed explicitly - no arithmetic or density assumption about timestamps is used.",
+      "lean_names": "RaklFormal.freshness_expiry, RaklFormal.freshness_not_compensable_by_flat_rounds, RaklFormal.freshness_rerun_restores, RaklFormal.freshness_expiry_witness",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "lean_names_note": "freshness_expiry_witness is the non-vacuity witness: a concrete certificate that over-discharges its flat-round obligation is still refused, and the rerun repairs exactly that. It rules out the reading in which the gate is unsatisfiable."
     }
   ],
   "summary": {
     "total_claims": 17,
-    "read_at_proof_depth": 11,
-    "paper_proof_complete": 0,
+    "read_at_proof_depth": 17,
+    "paper_proof_complete": 1,
     "paper_proof_informal": 0,
     "paper_proof_gap": 0,
-    "unreviewed": 6,
-    "mechanized": 5,
-    "partially_mechanized": 5
+    "unreviewed": 0,
+    "mechanized": 15,
+    "partially_mechanized": 1
   },
   "open_residuals": [
     {
       "residual_id": "RES-P1F-001",
-      "statement": "11 of 17 theorem-like claims have not been read at proof depth. Their status is UNREVIEWED, which is not 'checked and fine'.",
-      "closure_action": "Read each proof line by line and assign a status."
+      "statement": "CLOSED. All 17 theorem-like claims have now been read at proof depth. No claim remains UNREVIEWED.",
+      "closure_action": "None. Superseded by RES-P1F-003, which tracks the two claims not yet machine-checked."
     },
     {
       "residual_id": "RES-P1F-004",
-      "statement": "Independent formal-proof review (issue #216) is not addressed by this inventory and cannot be addressed from inside this session.",
+      "statement": "OPEN. Independent formal-proof review (issue #216) is not addressed by this inventory and cannot be addressed from inside this session. The operator has elected to substitute machine-checked proof for independent formal-proof review; that substitution is reviewer-independent for MECHANIZED claims only, and says nothing about the one PAPER_PROOF_COMPLETE claim.",
       "closure_action": "External reviewer. Mechanization reduces but does not eliminate this obligation."
     },
     {
       "residual_id": "RES-P1F-003",
-      "statement": "6 claims remain UNREVIEWED; 5 are PARTIAL (4 awaiting per-proposition instantiation, 1 awaiting the finite-basis cardinality bound).",
-      "closure_action": "Instantiate each non-escalation proposition against OperatorClass; add a finiteness development for the counting bound; read and mechanize the remaining 6."
+      "statement": "OPEN, narrowed. 15 of 17 claims are MECHANIZED. Two are not: P1-T-GREEDY-OPTIMALITY is PAPER_PROOF_COMPLETE (read line by line, no gap found, but same-session and therefore not reviewer-independent), and P1-T-FINITE-BASIS-SATURATION remains PARTIALLY_MECHANIZED pending the cardinality bound.",
+      "closure_action": "Add a mathlib-free finiteness development for the |U|-|K0| counting bound; mechanize greedy optimality with a tie-safe maximal-subset encoding of 'top r_p'."
     },
     {
       "residual_id": "RES-P1F-002",
@@ -262,9 +287,10 @@
     "system": "Lean 4.14.0",
     "dependencies": "none (mathlib-free by design)",
     "negative_control": "PASSED - a deliberately false lemma is rejected by the kernel, so the build is capable of failing",
-    "axiom_audit": "All mechanized theorems report 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext",
+    "axiom_audit": "Every theorem in the development reports 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext. The audit covers ALL theorems in the file, not a selected subset, so a new theorem cannot be added without being audited.",
     "reviewer_independent": true,
-    "axiom_audited_theorems": 12,
-    "shared_principle_note": "The four non-escalation propositions are proved by one shared principle rather than four near-duplicate mechanizations. Each remains PARTIAL until its own instantiation is discharged."
+    "axiom_audited_theorems": 52,
+    "axiom_audit_incident": "One propext leak was caught and fixed during this pass: coactivation_witness was initially proved by `decide`, and the core Decidable instance for list membership routes through propext. Replaced by an explicit membership term. Recorded because it is the exact failure mode the audit exists to catch, and because `decide` remains safe elsewhere in the file only where it decides Bool/Nat equalities rather than list membership.",
+    "shared_principle_note": "The four non-escalation propositions are proved by one shared principle (no_uncertified_composition_changes_canon) AND each is now separately instantiated against its own state space, operator form and non-vacuity witness. The codomain obligation is PROVED for each operator form rather than assumed, so the shared principle is specialized rather than merely cited."
   }
 }
