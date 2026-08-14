@@ -1,0 +1,58 @@
+name: orion-p1-p4-closure
+
+on:
+  push:
+    branches:
+      - automation/orion-p1-p4-closure-v2-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  strict-active-graph:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - name: Bind exact closure subject
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - name: Run four-paper strict dependency closure
+        run: >-
+          pytest -q
+          tests/test_orion_p1_p4_dependency_closure.py
+          tests/test_training_policy_authority.py
+          tests/test_epistemic_noninterference.py
+          tests/test_v3_scientific_authority_noninterference.py
+          tests/test_semantic_shortcut_router.py
+          tests/test_semantic_shortcut_router_v2.py
+          tests/test_semantic_shortcut_router_v3.py
+          tests/test_semantic_shortcut_consolidation.py
+          tests/test_training_scheduler.py
+          tests/test_phase2_adaptive_protocol.py
+      - name: Validate closure receipts and LUNARC successor shell
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('research/orion_p1_p4_closure_v2')
+          graph = json.loads((p/'DEPENDENCY_GRAPH.json').read_text())
+          assert graph['all_runtime_required_nodes_promotion_grade'] is True
+          assert graph['grants_scientific_authority'] is False
+          p3 = json.loads((p/'P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json').read_text())
+          assert p3['all_gates_pass'] is True
+          assert p3['terminal'].startswith('PROMOTE_TO_MECHANIC')
+          witness = json.loads((p/'P1_P2_TRANSPORT_WITNESS.json').read_text())
+          assert witness['all_subjects_identical'] is True
+          print('ORION P1-P4 strict active graph: PASS')
+          PY
+          bash -n experiments/training_ladder/run_phase2_v1_lunarc.sbatch
+          bash -n experiments/training_ladder/submit_phase2_v1_lunarc.sh
