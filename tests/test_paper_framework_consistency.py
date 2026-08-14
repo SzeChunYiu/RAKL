@@ -81,6 +81,71 @@ def test_narrow_production_rule_avoids_false_positives():
     }, f"production-claim detection drifted: {sorted(names)}"
 
 
+def test_outcome_receipt_check_finds_the_real_unbound_receipt():
+    """Second real-data finding: an 'all_caught' receipt that nothing re-executes."""
+    results = {r.binding_id: r for r in pfc.run_all()}
+    result = results["PFC-OUTCOME-RECEIPT-IS-TEST-BOUND"]
+    assert result.verdict is ConsistencyVerdict.DIVERGENT
+    assert "RAKL_V3_NONINTERFERENCE_INTEGRATION" in result.detail
+
+
+def test_outcome_receipt_scope_has_a_bound_control():
+    """The rule must not flag everything: at least one in-scope receipt IS bound.
+
+    Without a bound control the check could be firing on a repo-wide convention
+    rather than on a genuine asymmetry, and would be noise.
+    """
+    receipts = pfc._outcome_asserting_receipts()
+    assert any(bound for _, _, bound in receipts), "no bound control - rule is too broad"
+    assert any(not bound for _, _, bound in receipts)
+
+
+def test_raw_run_artifacts_are_excluded_from_receipt_rule():
+    """Regression: the unscoped rule flagged a SLURM job artifact on its first run.
+
+    Per-job outputs carrying slurm_job_id/pytest_exit_code are run records, not
+    curated evidence. Nothing cites them and there may be thousands, so demanding
+    a binding test for each would make the check useless noise.
+    """
+    flagged = {rel for rel, _, bound in pfc._outcome_asserting_receipts() if not bound}
+    assert not any("native_job_" in rel for rel in flagged), (
+        f"raw run artifact leaked into the receipt rule: {flagged}"
+    )
+
+
+def test_synthetic_unbound_outcome_receipt_would_be_caught(tmp_path, monkeypatch):
+    """The check must fire on a receipt it has never seen, not just the known one."""
+    fake_repo = tmp_path
+    (fake_repo / "research").mkdir()
+    (fake_repo / "tests").mkdir()
+    (fake_repo / "research" / "NEW_RECEIPT.json").write_text(
+        json.dumps({"verification": {"all_caught": True}}), encoding="utf-8"
+    )
+    (fake_repo / "tests" / "test_unrelated.py").write_text("# binds nothing\n", encoding="utf-8")
+    monkeypatch.setattr(pfc, "_REPO", fake_repo)
+
+    verdict, detail = pfc._check_outcome_receipts_are_test_bound()
+    assert verdict is ConsistencyVerdict.DIVERGENT
+    assert "NEW_RECEIPT.json" in detail
+
+
+def test_bound_outcome_receipt_reports_consistent(tmp_path, monkeypatch):
+    """The no-alarm case: a receipt a test references must not be flagged."""
+    fake_repo = tmp_path
+    (fake_repo / "research").mkdir()
+    (fake_repo / "tests").mkdir()
+    (fake_repo / "research" / "BOUND_RECEIPT.json").write_text(
+        json.dumps({"verification": {"all_caught": True}}), encoding="utf-8"
+    )
+    (fake_repo / "tests" / "test_binds.py").write_text(
+        "load('BOUND_RECEIPT.json')\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(pfc, "_REPO", fake_repo)
+
+    verdict, _ = pfc._check_outcome_receipts_are_test_bound()
+    assert verdict is ConsistencyVerdict.CONSISTENT
+
+
 def test_no_binding_is_silently_unchecked():
     """CANNOT_CHECK is a distinct outcome and must not be present on a healthy tree."""
     results = pfc.run_all()
