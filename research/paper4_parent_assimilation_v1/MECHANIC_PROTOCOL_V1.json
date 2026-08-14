@@ -1,0 +1,35 @@
+{
+  "schema_version": "paper4-parent-signal-assimilation-mechanic-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "parent": "research/paper4_parent_assimilation_v1/PROTOCOL.json",
+  "question": "Can ORION assimilate a stronger model-/skill-aware learner-value signal without allowing stale/unbound parent scores to bypass structural mastery, repetition, forgetting, negative-transfer or authority gates?",
+  "scope": "GOVERNED_PARENT_SIGNAL_ASSIMILATION_MECHANIC_ONLY",
+  "signal_contract": [
+    "candidate_id",
+    "model_checkpoint_hash",
+    "probe_family_hash",
+    "source_artifact_hash",
+    "learner_value in [0,1]",
+    "frozen_before_selection=true"
+  ],
+  "selection_rule": "Use ORION's existing vector mastery state to choose the target coordinate and preserve the principle repetition floor. Among safe candidates for that target, rank by bound parent learner_value, then target-coordinate gain, then risk/cost/id. Parent score never changes scientific or structural-transfer authority.",
+  "hard_gates": [
+    "missing parent signal -> CANNOT_CHECK",
+    "candidate/checkpoint/probe mismatch -> CANNOT_CHECK",
+    "posthoc/unfrozen parent signal -> INVALID",
+    "confirmatory target leakage remains INVALID",
+    "forgetting/negative-transfer remain hard noncompensatory gates",
+    "principle repetition floor preserved",
+    "parent score cannot scalarize or overwrite vector mastery",
+    "existing static fallback remains active until causal efficacy receipt"
+  ],
+  "promotion_if_green": "PROMOTE_TO_MECHANIC_GOVERNED_PARENT_SIGNAL_ASSIMILATION",
+  "nonclaims": [
+    "assimilated policy beats static",
+    "assimilated policy beats the original strongest parent",
+    "7B Phase-2 result",
+    "scientific authority"
+  ],
+  "grants_scientific_authority": false
+}
