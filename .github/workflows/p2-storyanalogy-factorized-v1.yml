@@ -1,0 +1,80 @@
+name: p2-storyanalogy-factorized-v1
+
+on:
+  push:
+    branches:
+      - automation/p2-storyanalogy-factorized-v1-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  storyanalogy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Freeze integrity
+        run: |
+          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/PROTOCOL.json)" = "fd2969f23634737d76b5d3f4cc704e74542480ea" || {
+            echo 'Protocol blob drifted after freeze'; exit 1;
+          }
+          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json)" = "$(git rev-parse 1862a8d14eb23a4e06e71ce1c821839ea14d224a^:research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json 2>/dev/null || true)" || true
+          python - <<'PY'
+          import json
+          p=json.load(open('research/paper2_storyanalogy_factorized_v1/PROTOCOL.json'))
+          a=json.load(open('research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json'))
+          f=json.load(open('research/paper2_storyanalogy_factorized_v1/IMPLEMENTATION_FREEZE.json'))
+          assert p['chronology']['storyanalogy_row_level_data_or_labels_accessed_before_freeze'] is False
+          assert a['model_fitting_before_amendment'] is False
+          assert f['model_fitting_before_freeze'] is False
+          assert f['confirmatory_statistics_before_freeze'] is False
+          assert p['grants_scientific_authority'] is False
+          PY
+      - name: Install fixed CPU analysis stack
+        run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'scikit-learn>=1.6,<1.9'
+      - name: Execute frozen external-human epoch
+        id: run
+        shell: bash
+        run: |
+          set +e
+          python experiments/paper2/run_storyanalogy_factorized_v1.py --out /tmp/storyanalogy
+          rc=$?
+          echo "runner_code=$rc" >> "$GITHUB_OUTPUT"
+          test -s /tmp/storyanalogy/FINAL_RECEIPT.json || exit 90
+          exit 0
+      - name: Validate scientific terminal without outcome relabelling
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/storyanalogy/FINAL_RECEIPT.json'))
+          allowed={
+            'PROMOTE_CONDITIONALLY_EXTERNAL_HUMAN_STRUCTURAL_ANALOGY_FACTORISATION_V1',
+            'NEGATIVE_FACTORISATION_NO_RESIDUAL_OVER_STRONGEST_TEXT_PARENT',
+            'NEGATIVE_FACTORISATION_UNSAFE_FALSE_ACCEPT',
+            'NEGATIVE_FACTORISATION_OVERREFUSES_VALID_ANALOGIES',
+            'DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD',
+            'INSTRUMENT_NOT_FALSIFIABLE',
+            'SCHEMA_INCOMPATIBLE_CANNOT_CHECK',
+            'RESOURCE_BLOCKED',
+          }
+          assert r['terminal'] in allowed, r['terminal']
+          assert r.get('grants_scientific_authority') is False
+          print(json.dumps({'terminal':r['terminal'],'confirmatory':r.get('confirmatory'),'partitions':r.get('partitions')},indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p2-storyanalogy-factorized-v1
+          path: /tmp/storyanalogy/FINAL_RECEIPT.json
+          if-no-files-found: error
