@@ -309,6 +309,11 @@ def assess_transfer_v2(
 
     LICENSED requires every load-bearing obligation to be satisfied. REJECTED requires
     a demonstrated violation. Otherwise unresolved load-bearing facts yield CANNOT_CHECK.
+
+    An empty load-bearing obligation set is CANNOT_CHECK, never LICENSED: with
+    nothing to satisfy, violate, or leave unknown there is no evidence of
+    transferability, and absence of evidence must not license (fail-open defect
+    found 2026-08-14, frozen as FAIL_OPEN_FOUND in research/framework_ladder).
     """
     identity_reasons: list[str] = []
     if witness.source_structure_id != source.structure_id or witness.source_context_id != source.context_id:
@@ -340,6 +345,24 @@ def assess_transfer_v2(
         trace for _, trace in load_bearing if trace.status is ObligationStatus.UNKNOWN
     ]
 
+    reasons = tuple(
+        trace.rationale_code
+        for trace in traces
+        if trace.status is not ObligationStatus.SATISFIED
+    )
+
+    if not load_bearing:
+        # Fail closed: with zero load-bearing obligations, `violations` and
+        # `unknowns` are vacuously empty and the branch below would return
+        # LICENSED with no reasons. An empty obligation set is an absence of
+        # evidence, not evidence of transferability.
+        return TransferAssessmentV2(
+            TransferDecision.CANNOT_CHECK,
+            traces,
+            ("empty_load_bearing_obligation_set", *reasons),
+            witness.content_hash,
+        )
+
     if violations:
         decision = TransferDecision.REJECTED
     elif unknowns:
@@ -347,9 +370,4 @@ def assess_transfer_v2(
     else:
         decision = TransferDecision.LICENSED
 
-    reasons = tuple(
-        trace.rationale_code
-        for trace in traces
-        if trace.status is not ObligationStatus.SATISFIED
-    )
     return TransferAssessmentV2(decision, traces, reasons, witness.content_hash)
