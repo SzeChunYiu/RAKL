@@ -1,7 +1,7 @@
 {
   "schema_version": "orion-p4-allocator-dynamics-freeze-v1",
   "date": "2026-08-14",
-  "paper": "Paper IV — Structural Learning Mechanics",
+  "paper": "Paper IV \u2014 Structural Learning Mechanics",
   "question": "Given a learner with coordinate-specific saturation and noncompensatory retention/forgetting constraints, does the promoted vector allocator avoid wasted repetition and safety regressions better than static, random, semantic-diversity, and strongest scalar-loss model-aware parents under equal training budget?",
   "relationship_to_7b": "This is a model-free control-law validation successor, motivated by but not substituted for the real corrected 7B state_reachability mechanism signal.",
   "seed": 202608140601,
@@ -32,12 +32,23 @@
     "D_STATIC_STRUCTURAL": "exact equal structural mix, 8 examples per coordinate",
     "E_VECTOR_ADAPTIVE": "one PRINCIPLE floor slot per round; then principle-until-mastered, hard retention repair, otherwise weakest unsaturated measured structural coordinate; hard-risk coordinates noncompensatory"
   },
-  "initial_mastery": [0.7, 0.52, 0.55, 0.54, 0.5, 0.78],
+  "initial_mastery": [
+    0.7,
+    0.52,
+    0.55,
+    0.54,
+    0.5,
+    0.78
+  ],
   "mastery_threshold": 0.9,
   "retention_floor": 0.8,
   "forgetting_per_nonprinciple_example": 0.0025,
   "retention_harm_per_nonretention_example": 0.0015,
-  "hard_safety_coords": ["PRINCIPLE", "BOUNDARY", "RETENTION"],
+  "hard_safety_coords": [
+    "PRINCIPLE",
+    "BOUNDARY",
+    "RETENTION"
+  ],
   "hard_gate": {
     "E_minus_D_balanced_mean_min": 0.05,
     "E_minus_C_balanced_mean_min": 0.02,
