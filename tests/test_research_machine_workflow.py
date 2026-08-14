@@ -151,3 +151,43 @@ def test_relevant_sources_must_be_processed():
             retained_semantic_ids=(),
             cost_policy_id="cost-v1",
         )
+
+
+def test_historical_trigger_residual_does_not_poison_flatness_after_resolution():
+    rounds = (
+        _round("r1", "foundational", 0, residual_ids=("old-residual",)),
+        _round("r2", "counterexample", 0),
+        _round("r3", "adjacent", 0),
+    )
+    result = assess_knowledge_saturation(rounds, policy=_policy())
+    assert result.decision is KnowledgeDecision.PROCEED_OBJECT_WORK
+
+
+def test_same_semantic_identity_cannot_be_counted_as_new_twice():
+    r1 = KnowledgeAcquisitionRound(
+        round_id="r1",
+        route_family="foundational",
+        mode=KnowledgeSearchMode.INITIAL_BROAD,
+        independent_route=True,
+        query_ids=("q1",),
+        source_ids=("p1",),
+        relevant_source_ids=("p1",),
+        retained_semantic_ids=("semantic-x",),
+        cost_policy_id="cost-v1",
+    )
+    r2 = KnowledgeAcquisitionRound(
+        round_id="r2",
+        route_family="counterexample",
+        mode=KnowledgeSearchMode.INITIAL_BROAD,
+        independent_route=True,
+        query_ids=("q2",),
+        source_ids=("p2",),
+        relevant_source_ids=("p2",),
+        retained_semantic_ids=("semantic-x",),
+        cost_policy_id="cost-v1",
+    )
+    r3 = _round("r3", "adjacent", 0)
+    result = assess_knowledge_saturation((r1, r2, r3), policy=_policy())
+    assert result.decision is KnowledgeDecision.CANNOT_CHECK
+    assert result.retained_semantic_count == 1
+    assert result.reasons[0].startswith("semantic_novelty_identity_repeated_across_rounds:")
