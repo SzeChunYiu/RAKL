@@ -81,6 +81,44 @@ def test_narrow_production_rule_avoids_false_positives():
     }, f"production-claim detection drifted: {sorted(names)}"
 
 
+def test_module_copy_in_build_tree_is_not_counted_as_a_caller(tmp_path, monkeypatch):
+    """Regression: an editable install leaves build/lib/rakl/<module>.py.
+
+    Counting that copy as a caller silently flipped PFC-PRODUCTION-PATH-IS-LIVE
+    from DIVERGENT to CONSISTENT in CI while passing locally — a silent pass,
+    which is worse than a failure because nothing looks wrong.
+    """
+    fake = tmp_path
+    (fake / "src" / "rakl").mkdir(parents=True)
+    (fake / "tests").mkdir()
+    (fake / "build" / "lib" / "rakl").mkdir(parents=True)
+
+    body = 'def widget():\n    """Production widget path."""\n    ...\n'
+    (fake / "src" / "rakl" / "widget_mod.py").write_text(body, encoding="utf-8")
+    # the build copy: same basename, must not rescue the check
+    (fake / "build" / "lib" / "rakl" / "widget_mod.py").write_text(body, encoding="utf-8")
+    (fake / "tests" / "test_widget.py").write_text("from rakl.widget_mod import widget\n", encoding="utf-8")
+
+    monkeypatch.setattr(pfc, "_REPO", fake)
+    verdict, detail = pfc._check_production_claims_have_nontest_callers()
+    assert verdict is ConsistencyVerdict.DIVERGENT, f"build copy was counted as a caller: {detail}"
+
+
+def test_a_real_non_test_caller_does_flip_it_consistent(tmp_path, monkeypatch):
+    """The no-alarm case: a genuine non-test caller must clear the finding."""
+    fake = tmp_path
+    (fake / "src" / "rakl").mkdir(parents=True)
+    (fake / "tests").mkdir()
+    (fake / "src" / "rakl" / "widget_mod.py").write_text(
+        'def widget():\n    """Production widget path."""\n    ...\n', encoding="utf-8")
+    (fake / "src" / "rakl" / "consumer.py").write_text(
+        "from .widget_mod import widget\n", encoding="utf-8")
+
+    monkeypatch.setattr(pfc, "_REPO", fake)
+    verdict, _ = pfc._check_production_claims_have_nontest_callers()
+    assert verdict is ConsistencyVerdict.CONSISTENT
+
+
 def test_outcome_receipt_check_finds_the_real_unbound_receipt():
     """Second real-data finding: an 'all_caught' receipt that nothing re-executes."""
     results = {r.binding_id: r for r in pfc.run_all()}
