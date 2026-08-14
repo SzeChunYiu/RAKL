@@ -93,6 +93,33 @@ export PYTHONHASHSEED=0
 export PYTHONPATH="$REPO_ROOT/src:$REPO_ROOT:${PYTHONPATH:-}"
 
 mkdir -p "$OUT_DIR"
+python - "$OUT_DIR/EXECUTION_SUBJECT.json" "$SUBJECT_SHA" "${SLURM_JOB_ID:-local}" "$MODEL_ID" "$MODEL_REVISION" <<'PY'
+import json, subprocess, sys
+from datetime import datetime, timezone
+from pathlib import Path
+out=Path(sys.argv[1])
+paths=(
+ 'research/paper4_phase2_v1/PROTOCOL_V3.json',
+ 'research/paper4_phase2_v1/INFERENCE_PLAN.json',
+ 'experiments/training_ladder/generator_v2.py',
+ 'experiments/training_ladder/phase2_adaptive_v1.py',
+ 'src/rakl/phase2_adaptive_receipt_admission.py',
+ 'src/rakl/training_policy_authority.py',
+)
+receipt={
+ 'schema_version':'paper4-phase2-compute-subject-v1',
+ 'started_at':datetime.now(timezone.utc).isoformat(),
+ 'subject_sha':sys.argv[2],
+ 'slurm_job_id':str(sys.argv[3]),
+ 'model_id':sys.argv[4],
+ 'model_revision':sys.argv[5],
+ 'git_blobs':{p:subprocess.check_output(['git','hash-object',p],text=True).strip() for p in paths},
+ 'grants_scientific_authority':False,
+ 'standalone_paper4_authorized':False,
+}
+out.write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+PY
+
 set +e
 python -m experiments.training_ladder.phase2_adaptive_v1 --outdir "$OUT_DIR"
 RUNNER_CODE=$?
@@ -115,7 +142,7 @@ print('[phase2] scientific terminal=', p['terminal'], 'local_runner_code=', $RUN
 PY
 
 test -s "$OUT_DIR/DATA_MANIFEST.json"
-sha256sum "$OUT_DIR/FINAL_RECEIPT.json" "$OUT_DIR/DATA_MANIFEST.json" > "$OUT_DIR/SHA256SUMS.txt"
+sha256sum "$OUT_DIR/EXECUTION_SUBJECT.json" "$OUT_DIR/FINAL_RECEIPT.json" "$OUT_DIR/DATA_MANIFEST.json" > "$OUT_DIR/SHA256SUMS.txt"
 echo "$RUNNER_CODE" > "$OUT_DIR/LOCAL_RUNNER_CODE.txt"
 echo "[phase2] complete scientific execution: $OUT_DIR"
 # A validated complete scientific terminal is a successfully executed scheduler
