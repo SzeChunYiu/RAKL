@@ -1,0 +1,33 @@
+{
+  "schema_version": "rakl-paper2-storyanalogy-factorized-v1-amendment-01",
+  "date": "2026-08-14",
+  "parent_protocol_commit": "872d89c4bae419897bcf3adcce8e1a6e62672f8b",
+  "reason": "After the protocol freeze and before any model fitting, threshold selection, parent selection, bootstrap or gate computation, the public Hugging Face dataset viewer was opened to resolve field names. That page exposed row-level human annotation values for viewer rows 0 through 99. Those rows are therefore not untouched evaluation material and are quarantined from every experiment partition.",
+  "outcome_accessed_before_amendment": false,
+  "model_fitting_before_amendment": false,
+  "threshold_calibration_before_amendment": false,
+  "parent_selection_before_amendment": false,
+  "confirmatory_statistics_before_amendment": false,
+  "resolved_schema_by_public_viewer_header": {
+    "story1": "s1",
+    "story2": "s2",
+    "entity_similarity": "entity",
+    "relation_similarity": "relation",
+    "domain": "domain"
+  },
+  "quarantine": {
+    "viewer_row_indices_inclusive": [0, 99],
+    "rule": "Any released row whose stable raw dataset row index is between 0 and 99 inclusive is excluded before connected-component construction and before DEV/CALIBRATION/CONFIRMATORY assignment. It may be used only as schema/acquisition smoke data and never for fitting, thresholding, parent selection, falsifiability metrics, confirmatory metrics or manuscript efficacy claims.",
+    "why_not_reassign": "Reassigning seen rows to DEV would allow label exposure to influence implementation. Permanent quarantine is the conservative fail-closed choice."
+  },
+  "scientific_settings_unchanged": [
+    "gold ACCEPT/REJECT/CANNOT_CHECK thresholds",
+    "connected-component split rule on all non-quarantined rows",
+    "model families and feature definitions",
+    "calibration grid and parent selection",
+    "falsifiability probes",
+    "confirmatory thresholds and bootstrap",
+    "claim boundary and allowed terminals"
+  ],
+  "grants_scientific_authority": false
+}
