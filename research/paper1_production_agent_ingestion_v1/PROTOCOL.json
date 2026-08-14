@@ -1,0 +1,49 @@
+{
+  "schema_version": "paper1-production-agent-ingestion-v1",
+  "date": "2026-08-14",
+  "base_main_sha": "13b7b3bedec8111b2401dd5ffbc286da0f0e2479",
+  "owner_issue": 592,
+  "parent": "merged raw-agent authority gateway + production authority chokepoint",
+  "question": "Can a production-facing runtime surface consume raw agent/model JSON through the registered gateway while remaining structurally incapable of supplying verification, attestation, certificate or authority context?",
+  "scope": "PRODUCTION_RAW_AGENT_OUTPUT_TO_INERT_AUTHORITY_PROPOSAL_PLANE",
+  "surface": {
+    "entrypoint": "python -m rakl authority-proposal <raw-json-file>",
+    "allowed_input": "raw UTF-8 JSON text produced outside the protected control plane",
+    "allowed_output": "proposal-plane parse record only",
+    "forbidden_output_or_input_control": [
+      "verification_outcome",
+      "attestation_id",
+      "authority_context",
+      "certificate_id",
+      "signer_key",
+      "scientific authority mutation"
+    ]
+  },
+  "frozen_hard_rules": [
+    "CLI must call parse_raw_untrusted_agent_authority_json rather than reconstruct AuthorityProposal itself",
+    "accepted payload may expose only inert proposal fields and grants_scientific_authority=false",
+    "forbidden/unknown/duplicate/deep/nonfinite/oversized raw payloads fail closed",
+    "CLI exposes no flags for protected control-plane values",
+    "production authority chokepoint remains green after adding the caller",
+    "existing protected scientific promotion path remains separate and unchanged"
+  ],
+  "hostile_cases": [
+    "duplicate attestation_id",
+    "verification_outcome smuggling",
+    "certificate_id smuggling",
+    "nested authority_context",
+    "Unicode lookalike control field",
+    "two concatenated JSON objects",
+    "NaN/nonfinite JSON",
+    "oversized payload"
+  ],
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_AGENT_OUTPUT_INGESTION",
+  "explicit_nonclaims": [
+    "a live language model has been adversarially evaluated",
+    "zero authority leakage has been established for all parsers or transports",
+    "scientific authority is granted",
+    "the CLI performs scientific verification"
+  ],
+  "next_if_green": "Run a separately frozen generated-payload assurance using real model outputs against this exact production surface; the model may propose content but cannot receive protected control-plane material.",
+  "grants_scientific_authority": false
+}
