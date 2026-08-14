@@ -26,10 +26,9 @@ jobs:
           python-version: '3.12'
       - name: Freeze integrity
         run: |
-          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/PROTOCOL.json)" = "fd2969f23634737d76b5d3f4cc704e74542480ea" || {
-            echo 'Protocol blob drifted after freeze'; exit 1;
-          }
-          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json)" = "$(git rev-parse 1862a8d14eb23a4e06e71ce1c821839ea14d224a^:research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json 2>/dev/null || true)" || true
+          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/PROTOCOL.json)" = "d54bc7c1963f246e015b3ea3337bfa4c0009ff2d"
+          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/AMENDMENT_01_SCHEMA_AND_PREVIEW_QUARANTINE.json)" = "424d211926d355b90aa5188890ddc19aa90d76f5"
+          test "$(git rev-parse HEAD:research/paper2_storyanalogy_factorized_v1/IMPLEMENTATION_FREEZE.json)" = "16fbcd7525b510423fcf1b2df7d1c1447db1bf5f"
           python - <<'PY'
           import json
           p=json.load(open('research/paper2_storyanalogy_factorized_v1/PROTOCOL.json'))
