@@ -1,0 +1,451 @@
+{
+  "schema_version": "rakl-paper3-lift-ceiling-qualification-v1",
+  "date": "2026-08-15",
+  "kind": "INSTRUMENT_ADMISSIBILITY_QUALIFICATION_ATTEMPT",
+  "paper": "Paper III \u2014 Method-Evolution Mechanics",
+  "question": "Is Paper III's fresh-task-lift 0.05 gate attainable in principle by the registered four-arm instrument, i.e. what is its admissibility ceiling?",
+  "manuscript_claim_verified": {
+    "site": "publication/papers/paper-03-method-evolution-mechanics/sections/07b_structural_learning_cautionary.tex:13",
+    "quoted": "its $0.05$ gate has no recorded ceiling qualification",
+    "verified": true,
+    "how": "read the file; the sentence is present at line 13. Independently corroborated by research/paper3_blocked_discharge_v1/DISCHARGE_PATHS.json:355-368 (T7, unmet_precondition.state = NOT_FOUND)."
+  },
+  "seed": 202608150001,
+  "mechanic_reused": "src/rakl/instrument_admissibility.py::decide_instrument_admissibility",
+  "inputs": {
+    "target_instrument": {
+      "what": "Paper III registered four-arm fresh-task benefit obligation",
+      "protocol_artifact": "experiments/paper5/ATTRIBUTION_PREREGISTRATION_V1.md",
+      "protocol_artifact_identification": {
+        "inference": "this file is titled 'Paper 5 attribution experiment preregistration v1'. It is identified as the nearest frozen protocol document for Paper III's own four-arm obligation, not taken as a Paper-III-scoped artifact.",
+        "grounds": [
+          "research/paper3_blocked_discharge_v1/DISCHARGE_PATHS.json:260 \u2014 names Paper III's immutable registered set as 'the four registered arms MODEL_ONLY / RAKL_RESET / RAKL_SHAM_MEMORY / RAKL_LEARNING and their four contrasts (architecture, content, experience, total)'",
+          "research/paper3_blocked_discharge_v1/BLOCKED-residual-terminals.md:45 \u2014 same four arms and four contrasts, under Paper III residual terminal R-1"
+        ],
+        "no_separately_scoped_paper3_protocol_file_found": true,
+        "search_run": "grep -rIn 'four.arm|four_arm|4-arm' research/ publication/ experiments/; full read of research/empirical_10_of_10_v1/PAPER3/DOWNSTREAM/PROTOCOL.json (371 bytes, status SCAFFOLD_ONLY__NOT_STARTED, no arms/panel/threshold) and of DOWNSTREAM/ROUTING_REGISTRATION_V1.md (a Paper II routing study)",
+        "consequence": "the protocol document for Paper III's own benefit obligation lives in another paper's directory and is marked 'frozen design proposal only' \u2014 a fourth missing-freeze fact, recorded here rather than smoothed over"
+      },
+      "protocol_status_field": "ATTRIBUTION_PREREGISTRATION_V1.md:3 \u2014 'frozen design proposal only. No run from this packet may be interpreted as preregistered until the final packet hash, task IDs, evaluator hash, model/tool contract, resource ceiling, sham policy, and learned/reset state hashes are completed before execution.'",
+      "arms": [
+        "MODEL_ONLY",
+        "RAKL_RESET",
+        "RAKL_SHAM_MEMORY",
+        "RAKL_LEARNING"
+      ],
+      "arms_source": "ATTRIBUTION_PREREGISTRATION_V1.md:10,16,21,27; restated as immutable at research/paper3_blocked_discharge_v1/DISCHARGE_PATHS.json:260",
+      "arm_structure_note": "the four arms are experimental CONDITIONS, not policies competing over a shared allocation budget",
+      "primary_statistic": "paired task-level mean score difference, per contrast",
+      "primary_statistic_source": "ATTRIBUTION_PREREGISTRATION_V1.md:87-93",
+      "contrasts": {
+        "TOTAL_LIFT": "RAKL_LEARNING - MODEL_ONLY  (ATTRIBUTION_PREREGISTRATION_V1.md:35)",
+        "EXPERIENCE_LIFT": "RAKL_LEARNING - RAKL_RESET  (\u2026:36)",
+        "CONTENT_LIFT": "RAKL_LEARNING - RAKL_SHAM_MEMORY  (\u2026:37)"
+      },
+      "panel_size": "120 task units (40 repeated-family / 40 cross-domain transfer / 40 hostile near-miss)",
+      "panel_size_source": "ATTRIBUTION_PREREGISTRATION_V1.md:46,48-50",
+      "panel_size_status": "TARGET, not frozen \u2014 ':52 Exact task IDs and source/evidence cutoff must be frozen in the final packet'; ':54 The 120-task target is a planning compromise, not evidence'",
+      "scoring_map": "a frozen evaluator produces a task score in [0,1] from an arm-blinded output",
+      "scoring_map_source": "ATTRIBUTION_PREREGISTRATION_V1.md:85",
+      "scoring_map_status": "NOT FROZEN \u2014 ':85 The exact evaluator protocol, rubric, success threshold, parser, and evaluator identity are hashed before runs.' No such hash exists in the repository."
+    },
+    "subject_pin": {
+      "source": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json",
+      "fields": [
+        "model_candidates[0].model_id",
+        "model_candidates[0].revision",
+        "model_candidates[0].precision",
+        "runtime.gpu_request",
+        "resource_ceiling.gpu_class",
+        "resource_ceiling.wall_time_hours"
+      ],
+      "note": "this freeze governs the upstream Stage-4 132-case CAPABILITY panel, which is a DIFFERENT instrument from the downstream lift gate and must not be conflated with it (research/paper3_blocked_discharge_v1/DISCHARGE_PATHS.json:366)"
+    },
+    "sibling_lane": {
+      "ceiling_receipt": "research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json",
+      "published_tier3_field": "bounds_on_achievable_advantage_over_static.tier_3_rigorous_upper_bound_harm_free_relaxation_mean = 0.024570935346802252",
+      "published_verdict": "research/paper4_instrument_admissibility_v1/REFERENCE_INSTRUMENT_ADMISSIBILITY.json :: decision.verdict = INADMISSIBLE",
+      "generative_model": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json (coordinates, rounds=6, batch_size=8, budget=48, initial_mastery, forgetting_per_nonprinciple_example, retention_harm_per_nonretention_example) + experiments/orion_closure/run_p4_adaptive_development_stress.py::world_rates",
+      "kappa": "research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json :: frozen_kappa = 1.2"
+    },
+    "mechanic": {
+      "path": "src/rakl/instrument_admissibility.py",
+      "entry_point": "decide_instrument_admissibility",
+      "fail_closed_contract": "instrument_admissibility.py:20-21 \u2014 'when the instrument's generative parameters are unknown the oracle is not computable and the gate fails closed to CANNOT_CHECK \u2014 never ADMISSIBLE'",
+      "bound_direction_contract": "instrument_admissibility.py:15-19 \u2014 a POLICY score is a LOWER bound and may never license INADMISSIBLE; only a rigorous UPPER bound may"
+    }
+  },
+  "registered_gate_provenance": {
+    "finding": "NO_REGISTERED_0_05_MATERIAL_EFFECT_THRESHOLD_FOUND_FOR_THE_LIFT_CONTRASTS",
+    "severity": "SECONDARY \u2014 independent of the primary verdict, which rests on oracle computability and would stand unchanged if such a threshold were located",
+    "where_0_05_actually_appears_in_the_four_arm_protocol": [
+      "ATTRIBUTION_PREREGISTRATION_V1.md:54 \u2014 'two-sided alpha 0.05' (significance level, paired with a ~15 percentage-point planning effect, NOT a 0.05 effect gate)",
+      "ATTRIBUTION_PREREGISTRATION_V1.md:144 \u2014 'Holm family-wise error control at alpha 0.05' (multiplicity control, not an effect threshold)"
+    ],
+    "where_a_registered_0_05_MDE_does_exist_in_paper_III": [
+      "research/paper3/power_design/POWER_SIMULATION_CONFIG.json :: registered_material_effects.primary_paired_brier_reduction_mde = 0.05 \u2014 a paired binary BRIER-reduction MDE for the OBJECTIVE transfer-validity classification lane, already executed; a different instrument from the four-arm lift",
+      "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/PRECONFIRMATORY_FREEZE_V1.json :: registered_mde_brier = 0.05 \u2014 same objective lane"
+    ],
+    "manuscript_position": "publication/papers/paper-03-method-evolution-mechanics/sections/07_evaluation_and_statistics.tex:137 \u2014 'material-effect thresholds \u2026 are frozen before evaluated results', i.e. prospective and not yet frozen for this lane",
+    "searches_run_to_justify_the_absence_claim": [
+      "grep -rIn 'TOTAL_LIFT|EXPERIENCE_LIFT|CONTENT_LIFT' research/ publication/ src/ experiments/ \u2014 only the three definition lines in ATTRIBUTION_PREREGISTRATION_V1.md:35-37",
+      "grep -rIn 'material_effect|min_effect|effect_floor|lift_min|min_lift' research/ src/ experiments/ \u2014 hits only the Paper II/III power-design configs and the objective-lane receipts; none binds a lift contrast",
+      "grep -rIn '0\\.05' research/empirical_10_of_10_v1/PAPER3 research/paper3_blocked_discharge_v1 publication/papers/paper-03-method-evolution-mechanics \u2014 all hits are objective-lane Brier MDEs, the Stage-4 context_qoi_error_max, alphas, or prose about the unqualified gate",
+      "read in full: research/empirical_10_of_10_v1/PAPER3/DOWNSTREAM/PROTOCOL.json (status SCAFFOLD_ONLY__NOT_STARTED, 371 bytes, no arms/threshold) and research/empirical_10_of_10_v1/PAPER3/DOWNSTREAM/ROUTING_REGISTRATION_V1.md (a Paper II routing study, not the lift lane)",
+      "find . -iname '*CEILING*' -o -iname '*ADMISSIB*' \u2014 no Paper-III-scoped ceiling artifact existed before this study, matching research/paper3_blocked_discharge_v1/DISCHARGE_PATHS.json:355-368 (T7, state NOT_FOUND)"
+    ],
+    "consequence": "the '0.05 gate' the manuscript flags is traceable to 07b:13 prose and to the objective lane's Brier MDE, not to a registered material-effect threshold on any lift contrast. This study therefore does not treat 0.05 as frozen for the lift; it is used only as the manuscript-asserted value, and the verdict is shown invariant to it across an MDE x kappa sweep.",
+    "must_not_change": "the 0.05 figure is not lowered, raised, or reinterpreted by this study; no threshold is adjusted to make any instrument appear admissible"
+  },
+  "assumptions": {
+    "mirrored_from_the_sibling_lane": [
+      "EQUAL BUDGET \u2014 the ceiling is the best advantage attainable over the reference parent under an identical resource budget (sibling: 48 training examples; here: the preregistration's single shared resource ceiling, ATTRIBUTION_PREREGISTRATION_V1.md:180)",
+      "ORACLE POLICY \u2014 the ceiling is what the BEST policy could attain, not what a specific candidate attains; policy scores are lower bounds only",
+      "BEST ACHIEVABLE PER-ITEM OUTCOME under the instrument's own generative dynamics \u2014 the relaxation may drop constraints but may never add capability the instrument lacks",
+      "DIRECTIONALITY \u2014 only a rigorous UPPER bound may license INADMISSIBLE; only a constructive LOWER/EXACT bound may license ADMISSIBLE; otherwise fail closed",
+      "kappa = 1.2, mirrored verbatim from research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json :: frozen_kappa",
+      "the verdict grants no scientific authority and may never be upgraded by arm-outcome access"
+    ],
+    "deviations_from_the_sibling_assumption_set": [
+      {
+        "deviation": "the sibling's declaration was frozen (KAPPA_FREEZE_V1.json); this study's Paper III declaration is PROVISIONAL and NON-FREEZING",
+        "why": "no Paper-III lift MDE is registered, so nothing legitimate exists to freeze. Freezing one here would manufacture a protocol obligation this lane never registered.",
+        "effect_on_verdict": "none \u2014 the uncomputable-oracle branch precedes every threshold comparison; demonstrated by the MDE x kappa sweep"
+      },
+      {
+        "deviation": "the sibling's instrument had a closed-form allocation space over which a relaxation could be optimized; Paper III's four arms are fixed CONDITIONS with no shared allocation choice",
+        "why": "structural property of the design (ATTRIBUTION_PREREGISTRATION_V1.md:8-30)",
+        "effect_on_verdict": "there is nothing for a monotone relaxation to relax, so the sibling's water-filling construction has no analogue here"
+      },
+      {
+        "deviation": "equal_budget_verified is set TRUE on the most favourable reading of ATTRIBUTION_PREREGISTRATION_V1.md:180",
+        "why": "so the verdict is attributable to oracle computability alone rather than to a budget technicality",
+        "effect_on_verdict": "none \u2014 the stricter reading (equal_budget_verified=False) is also computed and also fails closed, for an independent reason"
+      }
+    ],
+    "what_the_ceiling_would_have_held_fixed_had_it_been_computable": [
+      "the pinned subject (Qwen2.5-7B-Instruct @ a09a35458c\u2026, bfloat16, greedy, 256 new tokens)",
+      "the frozen evaluator's rubric, success threshold and parser",
+      "the frozen task panel and its strata proportions",
+      "the shared resource ceiling across all four arms"
+    ]
+  },
+  "terminal": "CANNOT_CHECK__ORACLE_NOT_COMPUTABLE_NO_GENERATIVE_MODEL",
+  "terminal_is_not": [
+    "INSTRUMENT_INADMISSIBLE_CEILING_BELOW_GATE \u2014 no upper bound exists, so the instrument is NOT shown inadmissible",
+    "ADMISSIBLE \u2014 no constructive lower bound exists, so the gate is NOT shown attainable",
+    "'checked and fine' \u2014 the ceiling was not computed because it is not computable pre-execution for this instrument class"
+  ],
+  "computed_ceiling": {
+    "value": null,
+    "bound_kind": null,
+    "confidence_interval": null,
+    "why_absent": "no generative model of the instrument was found from which any bound on the attainable lift could be derived. Scope of that claim: the two repository artifacts carrying four-arm-shaped outcome numbers were opened and rejected on stated grounds \u2014 see target.oracle_computability_determination.considered_and_rejected_as_surrogate_sources."
+  },
+  "sibling_reproduction_control": {
+    "control_id": "SIBLING_REPRODUCTION_CONTROL",
+    "purpose": "if this fails the implementation is wrong and no new ceiling may be reported",
+    "sibling_lane": "research/paper4_allocator_attribution_v1/",
+    "recomputed_from": {
+      "protocol": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+      "attribution_receipt": "research/paper4_allocator_attribution_v1/ATTRIBUTION_RECEIPT.json",
+      "runner_reused": "experiments/orion_closure/run_p4_instrument_ceiling_bounds.py::execute"
+    },
+    "published_tier3_upper_bound": 0.024570935346802252,
+    "recomputed_tier3_upper_bound": 0.024570935346802103,
+    "tier_exact_bitwise_match": {
+      "tier_1_greedy_oracle_policy_stochastic_mean": true,
+      "tier_2_constructive_best_found_expected_dynamics_mean": false,
+      "tier_3_rigorous_upper_bound_harm_free_relaxation_mean": false,
+      "tier_3_rigorous_upper_bound_worst_world": false
+    },
+    "tier_absolute_deviation": {
+      "tier_1_greedy_oracle_policy_stochastic_mean": 0.0,
+      "tier_2_constructive_best_found_expected_dynamics_mean": 9.280770596475918e-17,
+      "tier_3_rigorous_upper_bound_harm_free_relaxation_mean": 1.491862189340054e-16,
+      "tier_3_rigorous_upper_bound_worst_world": 1.1102230246251565e-16
+    },
+    "per_world_absolute_deviation": {
+      "EARLY_PRINCIPLE_SATURATION.constructive_best_minus_static": 0.0,
+      "EARLY_PRINCIPLE_SATURATION.rigorous_upper_bound_minus_static": 0.0,
+      "COMPOSITION_LAG.constructive_best_minus_static": 1.1102230246251565e-16,
+      "COMPOSITION_LAG.rigorous_upper_bound_minus_static": 2.220446049250313e-16,
+      "BOUNDARY_LAG.constructive_best_minus_static": 1.1102230246251565e-16,
+      "BOUNDARY_LAG.rigorous_upper_bound_minus_static": 0.0,
+      "REPRESENTATION_LAG.constructive_best_minus_static": 2.220446049250313e-16,
+      "REPRESENTATION_LAG.rigorous_upper_bound_minus_static": 3.3306690738754696e-16,
+      "TRANSFER_LAG.constructive_best_minus_static": 1.1102230246251565e-16,
+      "TRANSFER_LAG.rigorous_upper_bound_minus_static": 2.220446049250313e-16,
+      "RETENTION_SENSITIVE.constructive_best_minus_static": 0.0,
+      "RETENTION_SENSITIVE.rigorous_upper_bound_minus_static": 1.1102230246251565e-16
+    },
+    "per_world_values_bitwise_exact": "4/12",
+    "max_absolute_deviation": 3.3306690738754696e-16,
+    "tolerance": 1e-12,
+    "residual_disclosure": {
+      "observed": "the recomputation is bit-stable within this environment but differs from the published receipt by 1-3 ulp on 4 of 6 per-world values",
+      "attribution": "last-bit float accumulation over ~288 sequential multiply-add steps under a different CPython build/platform than the original run (this run: CPython 3.13 / arm64). The runner and the published receipt entered the repository in the same commit (addd73eb), so no post-hoc code edit is involved.",
+      "chronology_disclosure": [
+        "The control criterion was originally BITWISE equality on every value. The first run failed it, with a 1.49e-16 residual on the tier-3 upper bound.",
+        "The criterion was then set to 1e-12 absolute on the numeric values, on the attribution stated above and after (a) confirming the recomputation is bit-stable within this environment and (b) checking git history to rule out a post-hoc code edit. The decision-bearing outputs \u2014 verdict, declaration sha256, licensing bound id, kappa range \u2014 were REQUIRED to remain bitwise and do.",
+        "This ordering is recorded rather than hidden, mirroring research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json :: chronology_disclosure and the probe-repair note in experiments/orion_closure/run_p4_instrument_admissibility_assurance.py::_map_bounds. No threshold of any FROZEN artifact was touched; the relaxed criterion belongs to this study's own reproduction control."
+      ],
+      "why_it_cannot_mask_a_semantic_error": "the largest deviation is ~1.5e-16 while the quantity the control protects is the 0.0254 gap between the upper bound and the 0.05 gate \u2014 14 orders of magnitude larger. The verdict, licensing bound, declaration hash and kappa range all match BITWISE."
+    },
+    "recomputed_decision": {
+      "verdict": "INADMISSIBLE",
+      "instrument_id": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+      "registered_primary_metric": "E_minus_D_balanced_mastery",
+      "registered_minimum_detectable_effect": 0.05,
+      "frozen_kappa": 1.2,
+      "declaration_sha256": "e4f11c41c60338d63f9777835a5cb093ec4459f31e24e5cff738661bb74bf950",
+      "oracle_computability_status": "COMPUTABLE",
+      "equal_budget_verified": true,
+      "reference_parent_arm_id": "D_STATIC_STRUCTURAL",
+      "licensing_bound_id": "tier3_harm_free_relaxation",
+      "licensing_bound_kind": "UPPER_BOUND",
+      "best_lower_bound": 0.0044568782053362455,
+      "least_upper_bound": 0.024570935346802103,
+      "verdict_kappa_range": "holds_for_all_kappa_greater_than_0.491419",
+      "reasons": [
+        "least_upper_bound_below_threshold",
+        "least_upper=0.024570935346802103",
+        "threshold=kappa*mde=0.06",
+        "licensed_by_upper_bound:tier3_harm_free_relaxation",
+        "verdict_may_never_be_upgraded_by_arm_outcome_access"
+      ],
+      "grants_scientific_authority": false,
+      "licenses_comparison_execution": false,
+      "upgradeable_by_outcome_access": false
+    },
+    "checks": {
+      "recomputation_bit_stable_within_this_environment": true,
+      "all_tier_values_within_tolerance": true,
+      "all_per_world_values_within_tolerance": true,
+      "verdict_matches_published": true,
+      "declaration_sha256_matches_published_exactly": true,
+      "least_upper_bound_within_tolerance": true,
+      "best_lower_bound_within_tolerance": true,
+      "kappa_range_matches_published_exactly": true,
+      "licensing_bound_matches_published_exactly": true
+    },
+    "control_pass": true
+  },
+  "no_alarm_discrimination_control": {
+    "control_id": "NO_ALARM_DISCRIMINATION_CONTROL",
+    "purpose": "prove the gate is not a constant emitter; a computable instrument with real headroom must return ADMISSIBLE, so the target's CANNOT_CHECK is a measurement rather than the mechanic's default",
+    "seed": 202608150001,
+    "exact_ceiling": 0.08207226830764908,
+    "threshold_kappa_times_mde": 0.06,
+    "decision": {
+      "verdict": "ADMISSIBLE",
+      "instrument_id": "SYNTHETIC_COMPUTABLE_HEADROOM_CONTROL",
+      "registered_primary_metric": "synthetic_advantage_over_reference_parent",
+      "registered_minimum_detectable_effect": 0.05,
+      "frozen_kappa": 1.2,
+      "declaration_sha256": "272aab242d24e34c6ef85f3e09fc347752169aa2052abfccebd980ffced5b481",
+      "oracle_computability_status": "COMPUTABLE",
+      "equal_budget_verified": true,
+      "reference_parent_arm_id": "SYNTHETIC_STATIC_PARENT",
+      "licensing_bound_id": "exact_synthetic_optimum",
+      "licensing_bound_kind": "EXACT",
+      "best_lower_bound": 0.08207226830764908,
+      "least_upper_bound": 0.08207226830764908,
+      "verdict_kappa_range": "holds_for_all_kappa_up_to_1.641445",
+      "reasons": [
+        "best_lower_bound_at_or_above_threshold",
+        "best_lower=0.08207226830764908",
+        "threshold=kappa*mde=0.06",
+        "licensed_by_achievability_bound:exact_synthetic_optimum",
+        "admissibility_grants_no_expectation_that_any_policy_wins"
+      ],
+      "grants_scientific_authority": false,
+      "licenses_comparison_execution": true,
+      "upgradeable_by_outcome_access": false
+    },
+    "control_pass": true
+  },
+  "target": {
+    "target_id": "PAPER3_FRESH_TASK_LIFT",
+    "oracle_computability_determination": {
+      "value": "UNCOMPUTABLE",
+      "missing_input_1": "a generative model of per-task, per-arm outcomes for the pinned subject. Would have to come from executed pilot data on the staged LUNARC A100 subject; it does not and cannot exist pre-execution.",
+      "missing_input_2": "the frozen evaluator (rubric, parser, success threshold, identity hash) required by ATTRIBUTION_PREREGISTRATION_V1.md:85. Would have to come from a local freeze act by the protocol owner; it is free to produce and is simply absent.",
+      "missing_input_3": "a frozen task panel with exact task IDs (ATTRIBUTION_PREREGISTRATION_V1.md:52). Local, absent.",
+      "considered_and_rejected_as_surrogate_sources": [
+        {
+          "artifact": "research/paper5_harness_selftest_v1/HARNESS_SELFTEST_RECEIPT_V1.md",
+          "why_it_looked_relevant": "lines 69-72 carry four-arm contrast values (ARCHITECTURE/EXPERIENCE/CONTENT/TOTAL) in exactly the registered contrast structure",
+          "rejected_because": "read in full: status 'HARNESS_VALIDATED / NOT_A_PAPER5_RESULT', 'Model invoked: no', and every score was produced by experiments/paper5/selftest_adapter.py \u2014 a synthetic adapter with answers known in advance across three planted conditions (NULL_CONSTANT / NULL_NOISE / PLANTED_LIFT). It validates the analysis plumbing and contains no information about any real subject's per-item outcomes."
+        },
+        {
+          "artifact": "research/paper2_experience_benchmark_v1_2/native_job_3476548/VALIDATION_RECEIPT.json (terminal NEGATIVE_NO_TRANSFER_SUCCESS_LIFT_UNDER_0_5B, the 'preserved precursor' cited by research/paper3_publication_closeout_v1/FINAL_RECEIPT.json :: causal_model_efficacy)",
+          "why_it_looked_relevant": "it is the only executed model-level lift measurement in the Paper III lineage",
+          "rejected_because": "read in full: a sub-0.5B subject, TWO arms (RESET_BASELINE / LEARNING_ENABLED) not the registered four, task_count = 3 per phase, and success_rate = 0.0 in every cell \u2014 a degenerate floor with no discordant mass from which any per-item attainable outcome could be estimated. It is also the wrong subject, and STAGE3_5_FREEZE_V1.json sets model_substitution_allowed = false."
+        }
+      ],
+      "structural_note": "even with all three, the four arms are CONDITIONS rather than policies over a shared budget, so the sibling's monotone-relaxation construction has no analogue: there is no allocation space to relax."
+    },
+    "declaration": {
+      "instrument_id": "paper3_four_arm_fresh_task_lift__experiments/paper5/ATTRIBUTION_PREREGISTRATION_V1.md",
+      "registered_primary_metric": "paired_task_level_mean_score_difference__TOTAL_LIFT",
+      "registered_minimum_detectable_effect": 0.05,
+      "frozen_kappa": 1.2,
+      "content_sha256": "51305960537430adb942def8c21441e6c98dd1c0bcfac14e20ce3337a8ae74ef",
+      "freezes_nothing": true
+    },
+    "subject_pin_from_stage3_5_freeze": {
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "precision": "bfloat16",
+      "gpu_request": "gpu:a100:1",
+      "gpu_class": "single A100",
+      "wall_time_hours": 2
+    },
+    "decision": {
+      "verdict": "CANNOT_CHECK",
+      "instrument_id": "paper3_four_arm_fresh_task_lift__experiments/paper5/ATTRIBUTION_PREREGISTRATION_V1.md",
+      "registered_primary_metric": "paired_task_level_mean_score_difference__TOTAL_LIFT",
+      "registered_minimum_detectable_effect": 0.05,
+      "frozen_kappa": 1.2,
+      "declaration_sha256": "51305960537430adb942def8c21441e6c98dd1c0bcfac14e20ce3337a8ae74ef",
+      "oracle_computability_status": "UNCOMPUTABLE",
+      "equal_budget_verified": true,
+      "reference_parent_arm_id": "MODEL_ONLY",
+      "licensing_bound_id": null,
+      "licensing_bound_kind": null,
+      "best_lower_bound": null,
+      "least_upper_bound": null,
+      "verdict_kappa_range": "CANNOT_CHECK_is_kappa_independent",
+      "reasons": [
+        "oracle_not_computable:fail_closed",
+        "an_uncomputable_oracle_never_yields_ADMISSIBLE"
+      ],
+      "grants_scientific_authority": false,
+      "licenses_comparison_execution": false,
+      "upgradeable_by_outcome_access": false
+    },
+    "mde_kappa_sweep": [
+      {
+        "mde": 0.01,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.01,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.01,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.02,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.02,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.02,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.05,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.05,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.05,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.1,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.1,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.1,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.15,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.15,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.15,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.3,
+        "kappa": 1.0,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.3,
+        "kappa": 1.2,
+        "verdict": "CANNOT_CHECK"
+      },
+      {
+        "mde": 0.3,
+        "kappa": 2.0,
+        "verdict": "CANNOT_CHECK"
+      }
+    ],
+    "verdict_invariant_across_mde_and_kappa": true,
+    "strict_equal_budget_reading": {
+      "equal_budget_verified": false,
+      "verdict": "CANNOT_CHECK",
+      "reasons": [
+        "equal_budget_not_verified:unequal_budget_comparisons_are_out_of_scope"
+      ]
+    },
+    "rejected_vacuous_non_bound": {
+      "candidate": "saturation headroom = 1.0 - E[MODEL_ONLY score]",
+      "would_have_given": "a value >= 0.05 for any baseline below 0.95, i.e. a convenient pro-staging ADMISSIBLE",
+      "why_it_is_not_a_bound": "it requires E[MODEL_ONLY], an unmeasured quantity obtainable only by running the blocked measurement; and it is an achievability CLAIM, not a constructive lower bound, so it may never license ADMISSIBLE (instrument_admissibility.py:15-17 and :310)",
+      "fed_to_gate": false
+    },
+    "ceiling_value": null,
+    "ceiling_bound_kind": null
+  },
+  "all_controls_pass": true,
+  "decision_consequence": {
+    "for_the_a100_staging_decision": "The ceiling qualification the manuscript itself asks for CANNOT be produced for this instrument class before execution, so it cannot gate the accelerator spend either way. Staging the A100 is therefore not de-risked by this study, and the block is NOT 'only budget'.",
+    "the_honest_repair": "freeze the two artifacts that are missing and are free to produce \u2014 (a) the evaluator identity/rubric/parser/success-threshold hash (ATTRIBUTION_PREREGISTRATION_V1.md:85) and (b) a material-effect threshold for the lift contrasts \u2014 before any hours are bought. Both are local, cost nothing, and are prerequisites the preregistration already names at line 3.",
+    "what_would_make_a_ceiling_computable": "a calibrated generative surrogate of per-task, per-arm outcomes for the pinned subject, itself requiring executed data \u2014 i.e. a pilot, not the confirmatory packet. A pilot-derived surrogate would yield a ceiling but would need its own freeze and could never license ADMISSIBLE on a policy score.",
+    "what_this_study_does_not_say": [
+      "it does NOT say the 0.05 gate is unreachable \u2014 no upper bound was established",
+      "it does NOT say the gate is reachable \u2014 no lower bound was established",
+      "it does NOT convert BLOCKED_ON_CAPABILITY_QUALIFICATION into a null or a negative",
+      "it does NOT license skipping the admissibility requirement for instrument classes where a ceiling IS computable"
+    ]
+  },
+  "changed_no_frozen_artifact": true,
+  "grants_scientific_authority": false
+}
