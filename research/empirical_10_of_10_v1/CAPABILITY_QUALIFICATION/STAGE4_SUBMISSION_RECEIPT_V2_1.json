@@ -3,7 +3,16 @@
   "date": "2026-08-14",
   "owner_issue": 447,
   "transport_spec": "STAGE4_EXECUTION_TRANSPORT_V2_1",
-  "submitted_slurm_job_id": 3502571,
+  "submitted_slurm_job_id": 3502624,
+  "resubmission_record": {
+    "first_attempt_job_id": 3502571,
+    "first_attempt_outcome": "FAILED at 00:00:37, wrapper exit 1 — PRE-RECEIPT INFRASTRUCTURE FAILURE (no FINAL_CAPABILITY_RECEIPT.json exists; classified per transport as execution failure, never model capability). All pre-runner stages PASSED: runtime asserts (torch 2.8.0+cu128/transformers 4.55.0 on A100), model checkpoint load (4 shards), dry-run (132 cases, panel sha 0ab994fb…, shortcut audit clean), falsifier pytest 7/7.",
+    "root_cause": "pinned venv lacked jinja2 — transformers 4.55 apply_chat_template raises ImportError on first tokenize (chat-template rendering engine missing; the frozen template itself lives in the model/tokenizer files and was untouched)",
+    "repair": "jinja2==3.1.6 installed into the pinned venv (transport/runtime dependency; zero scientific packages changed: transformers 4.55.0 / torch 2.8.0+cu128 / numpy 2.0.2 re-asserted)",
+    "repair_verification": "login-node offline render probe with the exact frozen model path: apply_chat_template([user probe]) renders the Qwen im_start format correctly (CHAT_TEMPLATE_RENDER_OK)",
+    "retry_scientific_settings_modified": false,
+    "contract_basis": "transport pre_receipt_infrastructure_failure clause: a failure before a valid v2 receipt exists is an execution failure; retry after transport-only repair is not the forbidden outcome-dependent retry"
+  },
   "submitted_sbatch_blob_git_sha1": "327c992e2fab3456b9addfafb03c20c1e6fc02f6",
   "submitted_sbatch_source": "branch stage4-capability-execution-transport-v2-1 (PR #699), fetched fresh into /home/scyiu/stage4_v2_1_submit.sbatch at submit time; git hash-object asserted equal to the frozen contract entry immediately before sbatch (script aborts on mismatch)",
   "scientific_subject": {
@@ -27,7 +36,7 @@
     "account": "lu2026-2-51",
     "gres": "gpu:a100:1",
     "wall_time": "02:00:00",
-    "expected_out_dir": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE4_SCORING_V2_1_RUN_3502571"
+    "expected_out_dir": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE4_SCORING_V2_1_RUN_3502624"
   },
   "status_at_receipt_time": "SUBMITTED__NO_CAPABILITY_RESULT",
   "harvest_obligations": [
