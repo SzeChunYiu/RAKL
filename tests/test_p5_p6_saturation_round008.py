@@ -30,7 +30,14 @@ def test_alternate_vocabulary_repeat_preserves_surface_flatness_but_not_operator
 def test_minimal_conflict_correction_packet_is_valid_and_unassessed() -> None:
     packet = packet_from_dict(json.loads(PACKET.read_text(encoding="utf-8")))
     report = validate_mechanic_research_packet(packet)
-    assert report.verdict is MechanicResearchPacketVerdict.READY_FOR_EXISTING_PROMOTION_GATE, report.reasons
+    expected_hash = packet.with_content_hash().packet_content_sha256
+    assert report.verdict is MechanicResearchPacketVerdict.READY_FOR_EXISTING_PROMOTION_GATE, (
+        report.reasons,
+        "observed_hash",
+        packet.packet_content_sha256,
+        "recomputed_hash",
+        expected_hash,
+    )
     assert packet.mechanism_gate_state.value == "UNASSESSED"
     assert packet.applicability_gate_state.value == "UNASSESSED"
     assert packet.grants_scientific_authority is False
