@@ -38,6 +38,7 @@ class ChokepointReport:
 DEFAULT_ALLOWLIST: Mapping[str, frozenset[str]] = {
     "AuthorityProposal_constructor": frozenset({"src/rakl/agent_authority_gateway.py"}),
     "promote_scientific_authority_call": frozenset({"src/rakl/agent_authority_gateway.py"}),
+    "raw_agent_authority_parser_call": frozenset({"src/rakl/driver_learning.py"}),
     "AuthorityLedger_commit_verified_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
     "AuthorityLedger_revoke_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
     "AuthorityLedger_supersede_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
@@ -76,6 +77,8 @@ def _surface_for_call(node: ast.Call, imports: Mapping[str, str]) -> tuple[str, 
         return "AuthorityProposal_constructor", target
     if leaf == "promote_scientific_authority":
         return "promote_scientific_authority_call", target
+    if leaf == "parse_raw_untrusted_agent_authority_json":
+        return "raw_agent_authority_parser_call", target
     if leaf == "commit_verified":
         return "AuthorityLedger_commit_verified_call", target
     if leaf == "revoke":
@@ -95,7 +98,9 @@ def audit_source_tree(
 
     The audit is deliberately syntax-based and fail-closed: an unparsable source
     file is a finding. Tests/fixtures are outside the production root and do not
-    weaken the allowlist.
+    weaken the allowlist.  The raw-agent parser is also single-caller constrained
+    so future production code cannot silently create a second model-output
+    authority ingestion path with different framing semantics.
     """
 
     root = Path(repository_root)
