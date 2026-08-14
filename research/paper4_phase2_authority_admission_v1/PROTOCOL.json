@@ -1,0 +1,108 @@
+{
+  "schema_version": "rakl-paper4-phase2-authority-admission-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "base_head": "60654878bf69ade0e585a6cf087094a917ba50a9",
+  "strongest_fair_parent": {
+    "module": "src/rakl/training_policy_authority.py",
+    "blob_sha": "2f16a51049af7aa43a744c0a64ce98bdae0f12e7",
+    "tests": "tests/test_training_policy_authority.py",
+    "tests_blob_sha": "b82da48f015840cadf80d92f5875cb5264a143f0",
+    "parent_behavior": "STATIC_STRUCTURAL is the default, but any caller-constructed AdaptivePolicyAuthorization with a nonempty receipt id/subject/evidence list, terminal ADAPTIVE_RESIDUAL_SUPPORTED, and four caller-controlled booleans set true switches the active policy to ADAPTIVE_STRUCTURAL.",
+    "counterexample": "The parent test helper _auth() constructs such an authorization entirely in-process; no Phase-2 result bundle, raw assurance rows, registered inference recomputation, or canonical artifact admission is required."
+  },
+  "preserved_evidence": {
+    "phase1_corrected_results": "research/paper4_phase1_results_v2/README.md",
+    "phase2_protocol": "research/paper4_phase2_v1/PROTOCOL_V3.json",
+    "phase2_protocol_blob_sha": "0ca5aa15dc078ec92e82ab4aff94e5ffcf16b0af",
+    "phase2_inference_plan": "research/paper4_phase2_v1/INFERENCE_PLAN.json",
+    "phase2_inference_blob_sha": "2d31897ea6441d280519276e0f1fb3323bf03f99",
+    "phase2_runner": "experiments/training_ladder/phase2_adaptive_v1.py",
+    "phase2_runner_blob_sha": "5ade3b9fea3fc029870782d1157a867bc4feb700",
+    "development_negative": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+    "development_negative_blob_sha": "fc5d2363de1a6f1303ca9a80795fc291fe57a5a6",
+    "development_negative_terminal": "DEVELOPMENT_NEGATIVE_ADAPTIVE_OVERCONCENTRATES__STATIC_PARENT_RETAINS_DEFAULT",
+    "negative_must_remain_byte_unchanged": true
+  },
+  "atomic_obstruction": "Adaptive policy authority is represented as caller-asserted summary booleans rather than as a canonically admitted Phase-2 evidence bundle. The current parent therefore separates default safety from evidence authenticity but does not prevent authority laundering through a fabricated positive authorization object.",
+  "successor": {
+    "version": "v1",
+    "module": "src/rakl/phase2_adaptive_receipt_admission.py",
+    "integration": "src/rakl/training_policy_authority.py",
+    "entrypoint": "admit_phase2_adaptive_result_bundle",
+    "policy_entrypoint": "choose_active_training_policy_from_phase2_bundle",
+    "scope": "Canonical artifact-consistency admission for the frozen Paper-IV Phase-2 result bundle. No GPU/model outcome is generated and no scientific authority is granted.",
+    "required_bundle": [
+      "FINAL_RECEIPT.json",
+      "DATA_MANIFEST.json",
+      "ASSURANCE_A_UNIFORM_RANDOM.jsonl",
+      "ASSURANCE_B_SEMANTIC_DIVERSITY.jsonl",
+      "ASSURANCE_C_STRONGEST_MODEL_AWARE_PARENT.jsonl",
+      "ASSURANCE_D_STATIC_RAKL_STRUCTURAL.jsonl",
+      "ASSURANCE_E_ADAPTIVE_RAKL_STRUCTURAL.jsonl"
+    ],
+    "derived_not_caller_asserted": [
+      "fresh_assurance",
+      "strongest_parent_residual",
+      "hard_harms_pass",
+      "full_overhead_accounted",
+      "terminal",
+      "evaluated_subject_hash",
+      "evidence_ids"
+    ]
+  },
+  "hard_gates": {
+    "frozen_subject": [
+      "Phase-2 schema is rakl-paper4-phase2-result-v1",
+      "model is Qwen/Qwen2.5-7B-Instruct at revision a09a35458c702b33eeacc393d103063234e8bc28",
+      "protocol/inference identifiers are PROTOCOL_V3.json and INFERENCE_PLAN.json",
+      "grants_scientific_authority is false"
+    ],
+    "fresh_assurance": [
+      "manifest train/selection/assurance case-id sets are pairwise disjoint",
+      "each assurance exposure contains exactly 64 cases",
+      "every arm has exactly the same 384 assurance case ids, exposure labels and gold labels",
+      "no duplicate case ids within an arm",
+      "receipt data_manifest_hash equals the canonical hash of the supplied manifest payload"
+    ],
+    "independent_inference": [
+      "recompute E-D, E-C and D-B paired effects from raw assurance rows",
+      "recompute the frozen 10000-repetition paired bootstrap with seed 46699 offsets",
+      "recompute the frozen 20000-repetition sign-flip tests with seed 46700 offsets and Holm correction",
+      "recompute coordinate-specific E-D hard-harm intervals using the frozen -0.05 boundary",
+      "require E-D point >= 0.05, E-D CI lower > 0, Holm E-D p < 0.05, E-C CI lower >= -0.02, and every hard-harm CI lower > -0.05",
+      "require recomputed terminal to be exactly ADAPTIVE_RESIDUAL_SUPPORTED; ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST does not authorize the active default in this version"
+    ],
+    "resource_accounting": [
+      "all five arms must expose the frozen resource counter fields",
+      "all resource values must be finite and nonnegative",
+      "adaptive and strongest-parent arms must account model loads, selection scoring, training and assurance work rather than leaving zero/missing placeholders"
+    ],
+    "fail_closed": "Any missing, malformed, stale, mismatched or nonpositive evidence retains STATIC_STRUCTURAL. CANNOT_CHECK is never coerced into authority."
+  },
+  "adversarial_verification": [
+    "demonstrate the strongest-parent caller-fabricated authorization counterexample",
+    "reject terminal-only fabricated positive summaries with no raw evidence",
+    "reject stale model revision",
+    "reject changed protocol/inference identifiers",
+    "reject manifest train/selection/assurance overlap",
+    "reject duplicate or unpaired assurance rows",
+    "reject forged receipt analysis/terminal when raw rows recompute differently",
+    "reject missing/negative/nonfinite resource accounting",
+    "reject ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST for active-default authority in v1",
+    "accept a fully internally consistent synthetic positive bundle only as a validator contract test; it is not empirical Paper-IV evidence",
+    "preserve the model-free development negative byte-unchanged"
+  ],
+  "authority_boundary": {
+    "may_grant": "training-policy activation eligibility for a canonically admitted positive Phase-2 bundle",
+    "may_not_grant": [
+      "scientific authority",
+      "theorem authority",
+      "Paper-IV standalone empirical justification",
+      "evidence that the real 7B Phase-2 run has executed",
+      "permission to reinterpret or delete historical negative/resource-blocked evidence"
+    ]
+  },
+  "allowed_terminal_if_all_frozen_gates_pass": "PROMOTE_CONDITIONALLY_CANONICAL_ADAPTIVE_RECEIPT_ADMISSION",
+  "otherwise": "KEEP_STATIC_PARENT_AND_OPEN_NEXT_ATOMIC_RESIDUAL"
+}
