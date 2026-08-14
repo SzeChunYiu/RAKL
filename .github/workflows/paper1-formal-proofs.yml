@@ -144,7 +144,10 @@ jobs:
           #print axioms RaklFormal.exchange_partner_exists
           EOF
           LEAN_PATH=/tmp lean /tmp/ax.lean | tee /tmp/ax.out
-          expected=84
+          expected=87
+          #print axioms RaklFormal.covers_agree_on_pairwise_data
+          #print axioms RaklFormal.covers_differ_on_global_realizability
+          #print axioms RaklFormal.no_pairwise_predicate_decides_global_realizability
           total=$(grep -c . /tmp/ax.out)
           clean=$(grep -c 'does not depend on any axioms' /tmp/ax.out)
           echo "reported=$total axiom-free=$clean expected=$expected"

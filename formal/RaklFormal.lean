@@ -1587,4 +1587,90 @@ theorem exchange_partner_exists [DecidableEq I]
 
 end Greedy
 
+/-! ## Obstruction-blind distillation
+
+Compressing a corpus into a minimal support structure is what makes bounded
+saturation certifiable: the finite-basis theorem above needs a finite universe,
+and raw literature is not one. But the compression has a precondition that is easy
+to miss, because the thing it must retain does not look like content.
+
+Pairwise compatibility facts look like content. An obstruction is an *absence* —
+the fact that no global assignment exists — and a distiller keeping "the core of
+each piece" will keep the former and drop the latter.
+
+The two covers below have **identical pairwise data**: every constraint is
+individually satisfiable in both. They differ only in global realizability. So a
+distillation that records pairwise satisfiability cannot separate them, and
+navigation over its output will admit a support structure whose every step is
+licensed and which has no global section.
+
+This is the three-context parity construction of
+`02_compatibility_authority.tex:64`, recast as a condition on admissible
+distillation rather than as a curiosity about covers. -/
+
+section ObstructionBlindness
+
+/-- A three-chart cover over binary variables, given by its pairwise constraints. -/
+structure Cover where
+  onXY : Bool → Bool → Prop
+  onYZ : Bool → Bool → Prop
+  onXZ : Bool → Bool → Prop
+
+/-- Every constraint is satisfiable on its own chart. This is the pairwise record
+a "keep the core" distillation retains. -/
+def PairwiseRealizable (C : Cover) : Prop :=
+  (∃ x y, C.onXY x y) ∧ (∃ y z, C.onYZ y z) ∧ (∃ x z, C.onXZ x z)
+
+/-- One assignment satisfies all three charts at once. This is what the distilled
+record does *not* retain. -/
+def GloballyRealizable (C : Cover) : Prop :=
+  ∃ x y z, C.onXY x y ∧ C.onYZ y z ∧ C.onXZ x z
+
+/-- A globally consistent cover: agreement everywhere. -/
+def consistentCover : Cover :=
+  { onXY := fun x y => x = y, onYZ := fun y z => y = z, onXZ := fun x z => x = z }
+
+/-- The parity cover: agreement on two overlaps, disagreement on the third. -/
+def parityCover : Cover :=
+  { onXY := fun x y => x = y, onYZ := fun y z => y = z, onXZ := fun x z => x ≠ z }
+
+/-- Both covers look identical to a pairwise-only record. -/
+theorem covers_agree_on_pairwise_data :
+    PairwiseRealizable consistentCover ∧ PairwiseRealizable parityCover :=
+  ⟨⟨⟨true, true, rfl⟩, ⟨true, true, rfl⟩, ⟨true, true, rfl⟩⟩,
+   ⟨⟨true, true, rfl⟩, ⟨true, true, rfl⟩, ⟨true, false, fun h => Bool.noConfusion h⟩⟩⟩
+
+/-- They differ exactly where the pairwise record is silent. -/
+theorem covers_differ_on_global_realizability :
+    GloballyRealizable consistentCover ∧ ¬ GloballyRealizable parityCover := by
+  constructor
+  · exact ⟨true, true, true, rfl, rfl, rfl⟩
+  · rintro ⟨x, y, z, hxy, hyz, hxz⟩
+    exact hxz (hxy.trans hyz)
+
+/-- **Obstruction-blind distillation is unsound for navigation.**
+
+No predicate on the pairwise record can decide global realizability: the two
+covers share that record and disagree on the property. A distillation retaining
+only pairwise compatibility therefore cannot warn a navigator that a locally
+licensed support structure has no global section.
+
+Note this is an identifiability statement, not a claim that distillation is
+useless — it says precisely which datum must be carried alongside the cores. -/
+theorem no_pairwise_predicate_decides_global_realizability
+    (decide : (Cover → Prop) → Prop)
+    (readsOnlyPairwise : ∀ C D : Cover,
+      (PairwiseRealizable C ↔ PairwiseRealizable D) →
+      (decide (fun _ => PairwiseRealizable C) ↔ decide (fun _ => PairwiseRealizable D)))
+    (sound : ∀ C : Cover, decide (fun _ => PairwiseRealizable C) ↔ GloballyRealizable C) :
+    False := by
+  have hsame : PairwiseRealizable consistentCover ↔ PairwiseRealizable parityCover :=
+    ⟨fun _ => covers_agree_on_pairwise_data.2, fun _ => covers_agree_on_pairwise_data.1⟩
+  have hdec := readsOnlyPairwise consistentCover parityCover hsame
+  have hcon : decide (fun _ => PairwiseRealizable consistentCover) :=
+    (sound consistentCover).mpr covers_differ_on_global_realizability.1
+  exact covers_differ_on_global_realizability.2 ((sound parityCover).mp (hdec.mp hcon))
+
+end ObstructionBlindness
+
 end RaklFormal

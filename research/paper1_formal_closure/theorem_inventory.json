@@ -262,16 +262,29 @@
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
       "lean_names_note": "freshness_expiry_witness is the non-vacuity witness: a concrete certificate that over-discharges its flat-round obligation is still refused, and the rerun repairs exactly that. It rules out the reading in which the gate is unsatisfiable."
+    },
+    {
+      "id": "P1-T-OBSTRUCTION-BLIND-DISTILLATION",
+      "kind": "proposition",
+      "name": "Obstruction-blind distillation is unsound for navigation",
+      "location": "04g_minimal_support_structure.tex (new section, 2026-08-14)",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic/identifiability",
+      "lean_names": "RaklFormal.covers_agree_on_pairwise_data, RaklFormal.covers_differ_on_global_realizability, RaklFormal.no_pairwise_predicate_decides_global_realizability",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "notes": "NEW. Converts the paper's existing three-context parity counterexample from a curiosity about covers into a CONDITION on admissible distillation. Two covers share their pairwise-satisfiability record and differ in global realizability, so no predicate on that record decides it; a navigator consuming an obstruction-blind distillation will admit a support structure whose every step is licensed and which has no global section. This is an identifiability statement, not an argument against distillation - it names exactly which datum must travel alongside the retained cores. Section 02_compatibility_authority already RECOMMENDED explicit obstruction objects; this makes it a requirement and locates the cost of ignoring it in the navigator."
     }
   ],
   "summary": {
-    "total_claims": 17,
-    "read_at_proof_depth": 17,
+    "total_claims": 18,
+    "read_at_proof_depth": 18,
     "paper_proof_complete": 1,
     "paper_proof_informal": 0,
     "paper_proof_gap": 0,
     "unreviewed": 0,
-    "mechanized": 16,
+    "mechanized": 17,
     "partially_mechanized": 0
   },
   "open_residuals": [
@@ -306,7 +319,7 @@
     "negative_control": "PASSED - a deliberately false lemma is rejected by the kernel, so the build is capable of failing",
     "axiom_audit": "Every theorem in the development reports 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext. The audit covers ALL theorems in the file, not a selected subset, so a new theorem cannot be added without being audited.",
     "reviewer_independent": true,
-    "axiom_audited_theorems": 84,
+    "axiom_audited_theorems": 87,
     "axiom_audit_incident": "One propext leak was caught and fixed during this pass: coactivation_witness was initially proved by `decide`, and the core Decidable instance for list membership routes through propext. Replaced by an explicit membership term. Recorded because it is the exact failure mode the audit exists to catch, and because `decide` remains safe elsewhere in the file only where it decides Bool/Nat equalities rather than list membership.",
     "shared_principle_note": "The four non-escalation propositions are proved by one shared principle (no_uncertified_composition_changes_canon) AND each is now separately instantiated against its own state space, operator form and non-vacuity witness. The codomain obligation is PROVED for each operator form rather than assumed, so the shared principle is specialized rather than merely cited."
   }
