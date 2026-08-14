@@ -255,11 +255,81 @@ def _check_proprietary_never_architecture_causal() -> tuple[ConsistencyVerdict, 
     )
 
 
+def _production_claiming_symbols() -> list[tuple[str, str]]:
+    """Symbols whose docstring *declares* they are a production path.
+
+    Deliberately narrow: only a docstring whose first line begins with
+    "Production" counts. Matching any mention of the word instead would fire on
+    six further symbols that merely discuss production in passing - a checker
+    that cries wolf on its first real run gets switched off.
+    """
+    import ast
+    import re
+
+    found: list[tuple[str, str]] = []
+    for path in sorted((_REPO / "src" / "rakl").glob("*.py")):
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                doc = (ast.get_docstring(node) or "").strip()
+                if re.match(r"^Production\b", doc):
+                    found.append((path.name, node.name))
+    return found
+
+
+def _check_production_claims_have_nontest_callers() -> tuple[ConsistencyVerdict, str]:
+    """Papers V/VI: a path described as live must actually be live.
+
+    Framework obligation: a symbol whose docstring declares it a *production*
+    path must be reachable from something other than a test. Otherwise the code
+    asserts an enforcement posture that the call graph does not support, and any
+    paper sentence relying on that posture inherits the error.
+    """
+    import re
+
+    symbols = _production_claiming_symbols()
+    if not symbols:
+        return ConsistencyVerdict.CANNOT_CHECK, "no production-declaring symbols found to check"
+
+    offenders: list[str] = []
+    for module, symbol in symbols:
+        stem = module.removesuffix(".py")
+        callers: set[str] = set()
+        for path in _REPO.rglob("*.py"):
+            rel = path.relative_to(_REPO).as_posix()
+            if rel.startswith((".git/", ".claude/")) or rel == f"src/rakl/{module}":
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(rf"\b({re.escape(symbol)}|{re.escape(stem)})\b", text):
+                callers.add(rel)
+        non_test = {c for c in callers if not c.startswith("tests/") and "/tests/" not in c}
+        if not non_test:
+            offenders.append(f"{module}::{symbol} (referenced only by {len(callers)} test file(s))")
+
+    if offenders:
+        return (
+            ConsistencyVerdict.DIVERGENT,
+            "symbols declare themselves a production path but have no non-test caller: "
+            + "; ".join(offenders),
+        )
+    return (
+        ConsistencyVerdict.CONSISTENT,
+        f"all {len(symbols)} production-declaring symbols have a non-test caller",
+    )
+
+
 CHECKS: dict[str, Callable[[], tuple[ConsistencyVerdict, str]]] = {
     "PFC-OPEN-WORLD-NO-ABSOLUTE-COMPLETE": _check_open_world_no_absolute_complete,
     "PFC-SATURATION-REOPENS-ON-GROWTH": _check_saturation_reopens_on_growth,
     "PFC-NO-SCALAR-RANKING": _check_no_scalar_ranking_of_external_agents,
     "PFC-PROPRIETARY-NOT-CAUSAL": _check_proprietary_never_architecture_causal,
+    "PFC-PRODUCTION-PATH-IS-LIVE": _check_production_claims_have_nontest_callers,
 }
 
 
@@ -293,7 +363,28 @@ def run_all(path: Path | None = None) -> tuple[BindingResult, ...]:
 
 
 def divergences(results: tuple[BindingResult, ...]) -> tuple[BindingResult, ...]:
+    """Every divergence, accepted or not. The verdict is never softened."""
     return tuple(r for r in results if r.verdict is ConsistencyVerdict.DIVERGENT)
+
+
+def blocking_divergences(
+    results: tuple[BindingResult, ...], path: Path | None = None
+) -> tuple[BindingResult, ...]:
+    """Divergences with no recorded acceptance.
+
+    An accepted divergence is still reported as DIVERGENT - acceptance records
+    that a human decided how to resolve it, it does not make the code consistent.
+    Acceptance requires a closure_action, so it cannot be used to silence a
+    finding indefinitely without saying what will be done about it.
+    """
+    bindings = load_bindings(path)
+    accepted = {
+        b["binding_id"]
+        for b in bindings["bindings"]
+        if isinstance(b.get("accepted_divergence"), dict)
+        and b["accepted_divergence"].get("closure_action", "").strip()
+    }
+    return tuple(r for r in divergences(results) if r.binding_id not in accepted)
 
 
 def main() -> int:  # pragma: no cover - thin CLI
@@ -301,12 +392,14 @@ def main() -> int:  # pragma: no cover - thin CLI
     for item in results:
         print(f"{item.verdict.value:<13} {item.binding_id}\n              {item.detail}")
     bad = divergences(results)
+    blocking = blocking_divergences(results)
     unchecked = [r for r in results if r.verdict is ConsistencyVerdict.CANNOT_CHECK]
     print(
         f"\n{len(results) - len(bad) - len(unchecked)} consistent, "
-        f"{len(bad)} divergent, {len(unchecked)} cannot-check"
+        f"{len(bad)} divergent ({len(blocking)} blocking, {len(bad) - len(blocking)} accepted), "
+        f"{len(unchecked)} cannot-check"
     )
-    return 1 if bad else 0
+    return 1 if blocking else 0
 
 
 if __name__ == "__main__":  # pragma: no cover
