@@ -1,0 +1,40 @@
+{
+  "schema_version": "p3-stale-revival-freeze-v1",
+  "date": "2026-08-14",
+  "parent_negative": {
+    "receipt": "research/paper3_stale_memory_mode_v1/CONFIRMATORY_RECEIPT.json (PR #673, git blob dbddf16c)",
+    "terminal": "TYPED_GOVERNANCE_EXTERNAL_SURFACE_NOT_SUPPORTED_IN_ENVELOPE",
+    "primary_contrast_ON_minus_OFF": -0.2167,
+    "bootstrap_95ci": [-0.2917, -0.1333],
+    "n_rows": 240,
+    "claim_boundary": "ON-vs-OFF governance contrast only; never comparable to the published 55.2% STALE ceiling"
+  },
+  "attribution_from_receipt_structure": {
+    "selected_stage": "EVALUATION_SCORING_RULE (abstention-vs-guessing misalignment), selected as the single attributed stage",
+    "evidence": [
+      "dim1 exactly tied (0.375 vs 0.375): where both arms commit to answers, no governance deficit is measured",
+      "dim2/dim3 NAIVE_OFF sits at 0.575/0.500 - the chance region for guessing - while TYPED_ON sits BELOW chance at 0.200/0.225",
+      "below-chance performance concentrated exactly where the naive arm scores at chance is the signature of refusals (CANNOT_CHECK abstentions) being scored as failures, not of inferior knowledge: a knowledge deficit would not reliably push a committing arm below the guessing floor"
+    ],
+    "competing_diagnoses_preserved": [
+      "genuine capability cost of the typed surface on dim2/dim3 content",
+      "typed-surface prompt/format overhead consuming answer budget"
+    ],
+    "status": "BOUNDED_DIAGNOSIS_NOT_CONFIRMED - the receipt is aggregate-only (no abstention counts, no row-level data), so the diagnosis cannot be confirmed from repository bytes"
+  },
+  "revival_lever_decision": {
+    "lever": "scoring-rule alignment for abstentions: re-score the identical 240 rows under an abstention-aware rule (abstentions excluded from the denominator, and separately scored at the per-dim chance rate), reporting the ON-OFF contrast under both rules alongside the original",
+    "executable_now": false,
+    "why": "CANNOT_CHECK from repository bytes - only the 799-byte aggregate receipt exists; row-level outcomes and abstention flags were not harvested",
+    "registered_next_experiment": {
+      "id": "STALE_ABSTENTION_SCORING_REALIGNMENT_V1",
+      "data_requirement": "row-level harvest of the identical confirmatory run: per-row arm, dim, gold, response, abstention flag",
+      "frozen_prediction": "under abstention-aware scoring the dim2/dim3 TYPED_ON scores rise at least to the chance floor and the overall ON-OFF deficit shrinks materially",
+      "frozen_falsifier": "if the ON-OFF deficit persists at CI level under abstention-aware scoring, the scoring-rule attribution is REFUTED and the deficit must be re-attributed as a genuine governance cost of the typed external surface in this envelope",
+      "scoring_rules_frozen_before_data": ["abstentions_excluded_from_denominator", "abstentions_scored_at_per_dim_chance"],
+      "no_rescue_clause": "whichever way it falls, the original receipt and terminal remain verbatim; a scoring-rule finding would be an evaluation-stage instrument correction, versioned separately, consistent with the programme's dead-gates pattern"
+    }
+  },
+  "tradeoff_placement": "until re-scored, the negative stands as a measured governance COST cell on the Paper III frontier at face value, with the abstention-scoring caveat stated explicitly",
+  "grants_scientific_authority": false
+}

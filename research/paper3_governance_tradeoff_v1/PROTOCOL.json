@@ -1,0 +1,75 @@
+{
+  "schema_version": "p3-governance-tradeoff-protocol-v1",
+  "date": "2026-08-14",
+  "headline_question": "What does evidence governance buy, and cost, in recursive solver improvement? Answered as a Pareto tradeoff (throughput / development gain vs false promotion / evaluator integrity / honest-terminal rate), never a scalar verdict.",
+  "registered_comparator_shape": {
+    "mechanic_id": "MEC-GREEDY_ACCEPT_ON_HELD_OUT_SCALAR",
+    "registry": "research/external_research_agents/mechanics/mechanics.json",
+    "source_system": "SYS-KARPATHY_AUTORESEARCH",
+    "registered_role": "the ungoverned control arm; transfer question inverted: does governance cost throughput relative to this loop where its preconditions hold?"
+  },
+  "frozen_proposal_stream": {
+    "note": "both arms receive the IDENTICAL ordered stream of allocator mutation proposals; the stream mirrors receipted historical variants plus parametric mutations plus one planted dud",
+    "proposals": [
+      {"id": "M01_V1_ARGMIN_LEVEL", "desc": "v1 policy: floor slot + retention repair + principle-until-0.90 + argmin level block"},
+      {"id": "M02_V1_CAP_PRINCIPLE_8", "desc": "v1 with cumulative PRINCIPLE spend capped at 8 (X1 lever)"},
+      {"id": "M03_V1_DECONCENTRATE", "desc": "v1 with the 7 target slots spread (2,2,1,1,1) over ascending-mastery non-principle coordinates (X2 lever)"},
+      {"id": "M04_V1_CAP_AND_DECONC", "desc": "both levers (X3)"},
+      {"id": "M05_SCALAR_DEFICIT_BLOCK", "desc": "C-style: whole batch to argmax (1-m)+bias"},
+      {"id": "M06_MG_EMA050", "desc": "marginal-gain water-filling, EMA alpha 0.5 (the Path-A challenger)"},
+      {"id": "M07_MG_EMA025", "desc": "marginal-gain, alpha 0.25"},
+      {"id": "M08_MG_EMA075", "desc": "marginal-gain, alpha 0.75"},
+      {"id": "M09_MG_NOFLOOR", "desc": "marginal-gain without the principle floor slot"},
+      {"id": "M10_MG_FLOOR2", "desc": "marginal-gain with 2 floor slots"},
+      {"id": "M11_MG_RET_EMERGENCY", "desc": "marginal-gain + 1 retention slot when retention mastery < 0.6"},
+      {"id": "M12_RANDOM_ALLOCATION", "desc": "planted dud: uniform random coordinate draws"},
+      {"id": "M13_MG_INIT_012", "desc": "marginal-gain, rate prior initialized at 0.12"},
+      {"id": "M14_V1_THRESHOLD_080", "desc": "v1 with principle-until-0.80"}
+    ]
+  },
+  "instruments": {
+    "reference": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json (formally INADMISSIBLE per research/paper4_instrument_admissibility_v1/REFERENCE_INSTRUMENT_ADMISSIBILITY.json)",
+    "licensed_v2": "research/paper4_marginal_gain_challenger_v1/PROTOCOL.json instrument (ADMISSIBLE per INSTRUMENT_V2_CEILING.json)"
+  },
+  "eval_unit": "one policy evaluated over 6 worlds x 32 replicates on one instrument+seed",
+  "seeds": {
+    "greedy_dev_reference": 202608141401,
+    "truth_meter_licensed_assurance": 202608141501,
+    "governed_dev_licensed": 202608141601,
+    "governed_assurance_licensed": 202608141701
+  },
+  "arms": {
+    "UNGOVERNED_GREEDY": {
+      "environment": "reference instrument, dev seed; the arm has no admissibility mechanic and therefore does not know the instrument cannot resolve its estimand",
+      "acceptance_rule": "evaluate each proposal in stream order on the held-out development scalar (balanced-mastery mean); accept iff scalar strictly exceeds the current incumbent's scalar; incumbent starts at D_STATIC_STRUCTURAL; no gates, no safety constraint, no ceiling admissibility, no CANNOT_CHECK",
+      "budget": "14 proposal eval-units (incumbent scalar cached)"
+    },
+    "GOVERNED": {
+      "pipeline": "1) oracle-ceiling admissibility on the reference instrument (verdict already receipted INADMISSIBLE; cost charged as 2 eval-units by declaration) -> every reference-instrument comparison refused as CANNOT_CHECK; 2) licensed v2 instrument (ADMISSIBLE, licensing cost 2 eval-units by declaration); 3) evaluate all 14 proposals on the licensed dev seed; screening gate (frozen): F-D balanced >= 0.05 AND safety harm vs D >= -0.01; 4) one assurance eval-unit of the single best screening survivor; promote iff the frozen v2 gate family is green (>=0.05 with CI low > 0, safety >= -0.01, all worlds positive)",
+      "budget": "14 dev eval-units + 1 assurance eval-unit + 4 declared qualification units = 19"
+    }
+  },
+  "truth_meter": "experimenter-level, outside both arms: every accepted candidate of either arm is evaluated once on the licensed v2 instrument at the truth seed; charged to the experiment, not to either arm's budget",
+  "frozen_outcome_vector_per_arm": [
+    "development gain (the arm's own scalar for its final incumbent minus static, on the arm's own instrument)",
+    "fresh-assurance gain (licensed-instrument truth-seed F-D contrast of the final incumbent)",
+    "false-promotion count: accepted candidates whose licensed-instrument truth advantage over the arm's previous incumbent has mean <= 0",
+    "honest-terminal rate: fraction of proposal decisions recorded as refusal/CANNOT_CHECK rather than silent accept/reject",
+    "evaluator-integrity at end state (measured, not assumed): for the greedy scalar - (a) content-inertness rate: fraction of acceptances that would still accept with the accepted policy replaced by the planted dud policy; (b) noise-acceptance rate: fraction of acceptances whose dev improvement is below the measured bootstrap 95% half-width of the scalar; for the governed gates - the black-box falsifiability battery on the assurance-gate evidence",
+    "budget spent (eval-units)"
+  ],
+  "false_promotion_definition_frozen": "accepted mutation whose truth-meter advantage over the arm's prior incumbent is not positive (mean <= 0 on licensed assurance); the licensed instrument is the arbiter because the reference instrument is receipted as unable to adjudicate any equal-budget policy contrast",
+  "predictions_frozen_with_honest_priors": {
+    "TP1": "the greedy arm records >= 1 false promotion",
+    "TP2": "the greedy arm wins raw development throughput: more accepted 'improvements' per eval-unit than the governed arm promotes",
+    "TP3": ">= 50% of greedy acceptances are noise-acceptances or content-inert at end state",
+    "TP4": "the governed arm promotes <= 1 candidate with zero false promotions",
+    "TP5_honest_counter_prior": "the greedy arm's FINAL incumbent may nonetheless transfer positively to the licensed instrument (deficit-chasing policies won there when v1 was re-tested: E-D = +0.0747); if so, that is a finding about this proposal family, not a vindication of the acceptance rule, and it is reported on the frontier without adjustment"
+  },
+  "no_scalar_verdict": "results are reported as a Pareto frontier over the outcome vector; no arm is declared the winner by any scalarization",
+  "additional_frontier_cells_from_receipts": [
+    "PATH_A_GOVERNED_POSITIVE: research/paper4_marginal_gain_challenger_v1/ASSURANCE_RECEIPT.json (F-D +0.0760 in a licensed instrument, benefit cell)",
+    "STALE_EXTERNAL_SURFACE_COST: research/paper3_stale_memory_mode_v1/CONFIRMATORY_RECEIPT.json (PR #673): TYPED_ON 0.267 vs NAIVE_OFF 0.483, ON-OFF -0.217 CI [-0.292,-0.133] - a measured governance COST cell on an external surface, placed on the frontier, not buried, not the verdict"
+  ],
+  "grants_scientific_authority": false
+}
