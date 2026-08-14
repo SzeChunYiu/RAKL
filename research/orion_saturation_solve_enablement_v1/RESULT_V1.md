@@ -69,7 +69,11 @@ symmetrically across arms.
 
 ## Result
 
-n = 112 paired tasks. Floor `simp` = 0% and ceiling `simp [gold]` = 100%, both by construction.
+n = 112 paired tasks. Floor `simp` = 0% by construction. The ceiling `simp [gold]` = 100% was
+measured **before** the self-retrieval guard was applied; afterwards 1 task has all its gold
+premises excluded and 17 have some excluded, so the arms could not actually reach 100%. The
+exclusion is symmetric across arms, so the contrast is unbiased, but the reachable ceiling is
+below 100% and no reader should infer otherwise.
 
 | | Arm A (saturating) | Arm B (uniform, k=20) |
 |---|---|---|

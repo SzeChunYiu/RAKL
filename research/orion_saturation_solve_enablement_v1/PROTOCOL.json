@@ -114,6 +114,8 @@
       "Navigate the resulting structure: fuse over retained elements and select exactly M premises."
     ],
     "retention_record_required": "The run must record, per task, which covers were compressed under a certificate, which were retained under an obstruction object, and the resulting structure size.",
+    "status": "SPECIFIED_NOT_RUN",
+    "open_feasibility_question": "The admissibility test is unvalidated for cost. Corpus-level covers keyed by highest-IDF constant may contain hundreds of members, and `simp [cover]` on a large member set will exhaust heartbeats on nearly every cover — which would classify everything as an obstruction and collapse the distillation to zero compression. Whoever runs arm C must first measure the cover-size distribution and the admissibility pass rate, and cap cover size if needed, BEFORE spending on the full arm. This is recorded so it is not discovered mid-run.",
     "failure_diagnostic_primary": {
       "name": "dropped_needed_rate",
       "definition": "Among tasks where arm C fails, the fraction whose gold premise set is not fully contained in the retained distilled structure.",
@@ -161,6 +163,20 @@
         "falsifier"
       ],
       "multiplicity_acknowledged": "This is a second test of the same hypothesis. The v1 NULL stands on its own and is reported regardless of the revival's outcome; the revival is labelled as the doctrine-mandated single revival attempt, not as a replacement for v1.",
+      "revival_decision_rule_FROZEN_BEFORE_OUTCOME": {
+        "frozen_on": "2026-08-14, before population_v4 was complete and before any revival outcome existed",
+        "alpha": 0.025,
+        "basis": "Bonferroni over the two tests of the same hypothesis (v1 and revival). v1's direction (A>B) was known when the revival was launched, so the revival cannot be scored at the same alpha as a single pre-registered test without reading as fitted.",
+        "v1_status": "v1 remains a pre-registered confirmatory test and is filed NULL at its own alpha of 0.05. It is NOT reclassified exploratory to make room for the revival.",
+        "benefit_demonstrated_requires": "solve_rate_A > solve_rate_B AND exact McNemar two-sided p <= 0.025 on the fresh-task population, with retrieval budget matched and premise budget identical.",
+        "reversed_direction_meaning": "If the revival direction reverses (B > A), the v1 direction is attributed to noise and the combined reading is a NEGATIVE for the mechanism at this budget, not a null. This branch is declared now so it cannot be reinterpreted later.",
+        "null_meaning": "p > 0.025 with either direction is filed as 'not detected at this n' and the benefit column stays empty."
+      },
+      "independence_from_v1_REQUIRED": {
+        "problem": "All six v1 modules sit under the revival's prefixes, so population_v4 can contain tasks whose v1 outcomes have already been seen.",
+        "remedy": "Every task name present in population_v2 is excluded from population_v4 before the revival study runs, so the revival is scored only on genuinely fresh tasks.",
+        "must_record": "the excluded count and the resulting fresh-task n"
+      },
       "defect_found_during_revival": {
         "id": "REPAIR-2-PROBE-HEADER-MISMATCH",
         "observed": "First revival build scored only 498 of 4182 candidates (12%) as well-posed, against 89% in v1.",
