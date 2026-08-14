@@ -18,11 +18,44 @@ jobs:
     if: github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
+      - name: Resolve evaluation baseline at the merge base
+        id: baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PARENT_SHA: ${{ github.sha }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          # Protected inputs must be evaluated against the snapshot the candidate
+          # actually branched from, not the current default-branch head. A queued
+          # run whose branch is based on older main otherwise flags protected files
+          # added by later merges as "missing" (observed 2026-08-14: run
+          # 31831579917 evaluated a stale candidate against newer main and
+          # false-flagged five test files that postdate the candidate's base).
+          # The merge base keeps genuine deletions and rewrites detectable: a file
+          # present at the merge base and absent from the candidate is still
+          # flagged. Fail closed if the merge base cannot be resolved.
+          baseline="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/compare/${PARENT_SHA}...${CANDIDATE_SHA}" \
+            --jq .merge_base_commit.sha)"
+          if [ -z "$baseline" ] || [ "$baseline" = "null" ]; then
+            echo "::error::merge base of ${PARENT_SHA}...${CANDIDATE_SHA} unresolvable; failing closed"
+            exit 1
+          fi
+          echo "baseline_sha=${baseline}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout trusted parent evaluator
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
           path: trusted
+          persist-credentials: false
+
+      - name: Checkout evaluation baseline as passive data
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ steps.baseline.outputs.baseline_sha }}
+          path: baseline
           persist-credentials: false
 
       - name: Checkout exact candidate as passive data
@@ -32,26 +65,31 @@ jobs:
           path: candidate
           persist-credentials: false
 
-      - name: Bind both checkouts to recorded revisions
+      - name: Bind all checkouts to recorded revisions
         shell: bash
         env:
-          EXPECTED_PARENT_SHA: ${{ github.sha }}
+          EXPECTED_TRUSTED_SHA: ${{ github.sha }}
+          EXPECTED_BASELINE_SHA: ${{ steps.baseline.outputs.baseline_sha }}
           EXPECTED_CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
-          test "$(git -C trusted rev-parse HEAD)" = "$EXPECTED_PARENT_SHA"
+          test "$(git -C trusted rev-parse HEAD)" = "$EXPECTED_TRUSTED_SHA"
+          test "$(git -C baseline rev-parse HEAD)" = "$EXPECTED_BASELINE_SHA"
           test "$(git -C candidate rev-parse HEAD)" = "$EXPECTED_CANDIDATE_SHA"
 
       - name: Compare frozen parent evaluator inputs
         env:
           PYTHONPATH: ${{ github.workspace }}/trusted/src
-          PARENT_SHA: ${{ github.sha }}
+          BASELINE_SHA: ${{ steps.baseline.outputs.baseline_sha }}
           CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          # Candidate files are passive input only. Do not install, import, or execute
-          # code from the candidate checkout in this privileged observer.
+          # Baseline and candidate files are passive input only. Do not install,
+          # import, or execute code from those checkouts in this privileged
+          # observer; the evaluator itself runs from the trusted checkout, which
+          # stays pinned to the default-branch head so candidate code can never
+          # choose the rules it is judged by.
           python -m rakl.parent_evaluator \
-            --parent trusted \
+            --parent baseline \
             --candidate candidate \
-            --parent-sha "$PARENT_SHA" \
+            --parent-sha "$BASELINE_SHA" \
             --candidate-sha "$CANDIDATE_SHA"
