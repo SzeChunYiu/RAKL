@@ -1,0 +1,43 @@
+{
+  "schema_version": "paper1-production-authority-chokepoint-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper I — Epistemic Mechanics",
+  "base_main_sha": "321f3f72c82e33c8129dddc51bca926ec306f0b8",
+  "question": "Does the production Python source tree have any path that can construct a scientific AuthorityProposal or mutate scientific authority outside the registered protected ingress, such that untrusted/live agent output could bypass the hardened gateway when a future runtime caller is added?",
+  "expert_roles": [
+    "authority_security_boundary",
+    "runtime_integration_callgraph",
+    "empirical_gate_and_parent_control",
+    "adversarial_bypass_falsification"
+  ],
+  "strongest_parent": "merged agent/raw-JSON authority gateway plus v3 protected scientific-authority/noninterference runtime",
+  "pre_outcome_observation": "On the frozen base tree, repository search finds production AuthorityProposal construction only in src/rakl/agent_authority_gateway.py; production promote_scientific_authority calls only in that gateway; raw gateway functions have no production callers yet. Therefore deferred second-parser smuggling is not currently reachable, while source-level bypass by a future/new production caller remains the next enforceable boundary.",
+  "successor": "AST/source-tree choke-point checker that rejects unregistered production construction or mutation of scientific authority",
+  "production_root": "src/rakl",
+  "registered_chokepoints": {
+    "AuthorityProposal_constructor": ["src/rakl/agent_authority_gateway.py"],
+    "promote_scientific_authority_call": ["src/rakl/agent_authority_gateway.py"],
+    "AuthorityLedger_commit_verified_call": ["src/rakl/v3_scientific_authority.py"],
+    "AuthorityLedger_revoke_call": ["src/rakl/v3_scientific_authority.py"],
+    "AuthorityLedger_supersede_call": ["src/rakl/v3_scientific_authority.py"]
+  },
+  "hard_gates": [
+    "all production Python files parse successfully under the checker",
+    "no AuthorityProposal constructor outside the registered gateway",
+    "no promote_scientific_authority call outside the registered gateway",
+    "no commit_verified/revoke/supersede authority-ledger mutation outside v3_scientific_authority",
+    "checker detects registered hostile bypass fixtures for direct constructor, aliased constructor, module-qualified constructor, direct promotion and direct ledger mutation",
+    "existing agent/raw gateway and v3 scientific-authority/noninterference tests remain green"
+  ],
+  "falsifier": "Any production bypass not detected by the checker, or any legitimate existing protected path broken by the checker, rejects the successor.",
+  "claim_if_green": "Within the checked Python production tree and registered authority APIs, scientific proposal construction and authority mutation are source-enforced through explicit choke points; this is a framework conformance result, not a live-model empirical leakage-rate result.",
+  "forbidden_claims": [
+    "a live model has been empirically shown unable to attack the gateway",
+    "all languages/plugins/external services are covered",
+    "source conformance grants scientific authority"
+  ],
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_AUTHORITY_CHOKEPOINT",
+  "next_if_green": "When a real model/agent authority ingress is wired, bind that caller to submit_raw_untrusted_agent_authority_json and run fresh generated-payload assurance; until then do not invent a live-output path.",
+  "historical_negatives_retained": true,
+  "grants_scientific_authority": false
+}
