@@ -18,7 +18,7 @@ import hashlib
 from typing import Callable
 
 from .narrative_reducer_v2 import (
-    NEGATION_MARKERS, OBL_MARKER_POSITIONS, PREPOSITIONS,
+    NEGATION_MARKERS, PREPOSITIONS,
     RoleType, RelationType, EntityType,
     TypedRole, TypedRelation, TypedReducedStructure,
     _detect_role_type, _detect_entity_type, _detect_relation_type,
