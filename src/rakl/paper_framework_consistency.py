@@ -324,12 +324,102 @@ def _check_production_claims_have_nontest_callers() -> tuple[ConsistencyVerdict,
     )
 
 
+#: Receipt keys that assert a verification *outcome* rather than record data.
+_OUTCOME_KEYS = ("all_caught", "all_passed", "all_detected", "all_blocked", "all_rejected")
+
+
+def _outcome_asserting_receipts() -> list[tuple[str, list[str], bool]]:
+    """Receipts claiming a positive verification outcome, and whether a test binds them.
+
+    Scoped twice over, because both scopings were needed to avoid crying wolf.
+
+    First, to receipts asserting an *outcome* (``all_caught: true``), not every
+    receipt. A receipt that merely records data going stale is a documentation
+    issue; a receipt asserting "all mutations were caught" going stale is a false
+    guarantee, because it reads as a live property of the suite.
+
+    Second, raw run artifacts are excluded. A file carrying ``slurm_job_id`` or
+    ``pytest_exit_code`` is the output of one job, not curated evidence — there
+    may be thousands, nothing cites them, and demanding a test bind each one
+    would be nonsense. This exclusion was added after the unscoped rule flagged
+    exactly such a file on its first real run.
+    """
+    import re
+
+    tests_blob = "\n".join(
+        path.read_text(encoding="utf-8", errors="ignore")
+        for path in (_REPO / "tests").rglob("*.py")
+    )
+    pattern = re.compile(rf"^({'|'.join(_OUTCOME_KEYS)})$")
+    found: list[tuple[str, list[str], bool]] = []
+    seen: set[str] = set()
+
+    for path in sorted((_REPO / "research").rglob("*.json")):
+        rel = path.relative_to(_REPO).as_posix()
+        if rel in seen:
+            continue
+        seen.add(rel)
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError, UnicodeDecodeError):
+            continue
+
+        if isinstance(payload, dict) and (
+            "slurm_job_id" in payload or "pytest_exit_code" in payload
+        ):
+            continue  # raw run artifact, not curated evidence
+
+        hits: list[str] = []
+
+        def walk(node: Any, prefix: str = "") -> None:
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if pattern.match(key) and value is True:
+                        hits.append(f"{prefix}{key}")
+                    walk(value, f"{prefix}{key}.")
+            elif isinstance(node, list):
+                for item in node:
+                    walk(item, prefix)
+
+        walk(payload)
+        if hits:
+            bound = path.stem in tests_blob or path.name in tests_blob
+            found.append((rel, hits, bound))
+    return found
+
+
+def _check_outcome_receipts_are_test_bound() -> tuple[ConsistencyVerdict, str]:
+    """Paper VI: a claimed verification outcome must be re-executable, not archived.
+
+    Framework obligation: a receipt asserting that a verification passed must be
+    bound by a test, so a regression invalidates it. Otherwise the paper cites a
+    historical assertion as though it were a live guarantee.
+    """
+    receipts = _outcome_asserting_receipts()
+    if not receipts:
+        return ConsistencyVerdict.CANNOT_CHECK, "no outcome-asserting receipts found"
+
+    unbound = [f"{rel} asserts {hits}" for rel, hits, bound in receipts if not bound]
+    bound_count = sum(1 for _, _, bound in receipts if bound)
+    if unbound:
+        return (
+            ConsistencyVerdict.DIVERGENT,
+            f"outcome-asserting receipts with no binding test ({bound_count} of "
+            f"{len(receipts)} are bound): " + "; ".join(unbound),
+        )
+    return (
+        ConsistencyVerdict.CONSISTENT,
+        f"all {len(receipts)} outcome-asserting receipts are test-bound",
+    )
+
+
 CHECKS: dict[str, Callable[[], tuple[ConsistencyVerdict, str]]] = {
     "PFC-OPEN-WORLD-NO-ABSOLUTE-COMPLETE": _check_open_world_no_absolute_complete,
     "PFC-SATURATION-REOPENS-ON-GROWTH": _check_saturation_reopens_on_growth,
     "PFC-NO-SCALAR-RANKING": _check_no_scalar_ranking_of_external_agents,
     "PFC-PROPRIETARY-NOT-CAUSAL": _check_proprietary_never_architecture_causal,
     "PFC-PRODUCTION-PATH-IS-LIVE": _check_production_claims_have_nontest_callers,
+    "PFC-OUTCOME-RECEIPT-IS-TEST-BOUND": _check_outcome_receipts_are_test_bound,
 }
 
 
