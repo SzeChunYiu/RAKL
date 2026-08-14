@@ -39,6 +39,14 @@ FULL_TERMINALS = {
     "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION",
     "UNDERPOWERED",
 }
+COMPUTE_BOUND_PATHS = {
+    "research/paper4_phase2_v1/PROTOCOL_V3.json",
+    "research/paper4_phase2_v1/INFERENCE_PLAN.json",
+    "experiments/training_ladder/generator_v2.py",
+    "experiments/training_ladder/phase2_adaptive_v1.py",
+    "src/rakl/phase2_adaptive_receipt_admission.py",
+    "src/rakl/training_policy_authority.py",
+}
 
 
 def _load(path: Path) -> dict:
@@ -47,11 +55,6 @@ def _load(path: Path) -> dict:
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _canonical_hash(payload: object) -> str:
-    body = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode("utf-8")
-    return "sha256:" + hashlib.sha256(body).hexdigest()
 
 
 def _load_assurance(outdir: Path) -> dict[str, list[dict]]:
@@ -123,7 +126,10 @@ def harvest(
     compute_blobs = execution.get("git_blobs")
     if not isinstance(compute_blobs, Mapping):
         raise ValueError("compute_git_blob_binding_missing")
-    for path, observed in compute_blobs.items():
+    if set(compute_blobs) != COMPUTE_BOUND_PATHS:
+        raise ValueError("compute_git_blob_binding_incomplete_or_extra")
+    for path in COMPUTE_BOUND_PATHS:
+        observed = compute_blobs[path]
         expected = frozen.get(path)
         if expected is None or observed != expected:
             raise ValueError(f"compute_git_blob_mismatch:{path}")
