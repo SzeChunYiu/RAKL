@@ -15,9 +15,9 @@ non-compensatory — no scalar ranking of candidates anywhere.
 
 | Paper | Current question | Recommended question | Executable delta | Delta owner |
 |---|---|---|---|---|
-| I | What discipline must an evidence-governed agent obey? (soundness; answered, 87 mechanized theorems) | Where does the reasoning live, and which compiled obligations are load-bearing? (reasoning-location frame + hypothesis-necessity audit; operator addendum weighed in) | Per-hypothesis drop-probe + countermodel table over `formal/RaklFormal.lean` (CPU, Lean 4.14, feasible) | paper1 lanes |
+| I | What discipline must an evidence-governed agent obey? (soundness; answered, 87 mechanized theorems) | Containment hypothesis as opening axiom + reasoning-location frame + hypothesis-necessity audit (composed; revised across three operator addenda) | Per-hypothesis drop-probe + countermodel table over `formal/RaklFormal.lean` (CPU, Lean 4.14, feasible); representation Contest 1 | paper1 lanes |
 | II | When may experience transfer? (spec + executed ARN negative) | What reducer capability makes structural transfer pay? (capability staircase = frontier, not victory) | Frozen staircase on the frozen ARN pairs; R1 rung CPU-feasible; learned rungs resource-gated | paper2 lanes |
-| V | Can assurance make LLM math research auditable? (+ prospective performance) | What does kernel-verification buy per unit cost in the solving loop? (overhead / exposure / localization frontier) | Verified-vs-unverified derivation sweep on the real Lean hypergraph (CPU, minutes; endpoint classification frozen) | paper56-frontier |
+| V | Can assurance make LLM math research auditable? (+ prospective performance) | Kernel-dischargeable governed invention (frontier-cycle frame, containment Part 2b) + the verification cost/exposure/localization frontier as its executable measurement | Verified-vs-unverified derivation sweep on the real Lean hypergraph (CPU, minutes; endpoint classification frozen) | paper56-frontier |
 | VI | Is Orion a working engine? (rests on benefit column) | What does each layer contribute, and at what cost? (non-compensatory per-layer table; amortization thesis tested layer by layer) | Frontier continuation: L3-AUTHORITY arm (scalar-ranked vs partial-order acceptance — the no-scalarization theorem's empirical companion) | benefit-saturation lane |
 
 ## Files
@@ -47,7 +47,27 @@ non-compensatory — no scalar ranking of candidates anywhere.
   the incumbent exact signature cannot. Instrument-attributed residual and a
   versioned Stage A v2 revival are registered in the run receipt.
 - `../../docs/REASONING_LOCATION.md` — where the reasoning lives (three sites,
-  amortization-thesis falsifiability, honestly marked nearest work).
+  amortization-thesis falsifiability, nearest work assimilated with primary
+  anchors).
+- `../../docs/CONTAINMENT_HYPOTHESIS.md` — the operator's foundational axiom
+  formalized: four receipted qualifications, Part 2a compositional containment
+  (span, not inventory), Part 2b governed extension (kernel-dischargeable
+  invention; the frontier cycle), Part 3 scale-invariance (short, prospective,
+  with the two-solver cluster falsifier registered designed-not-executed), a
+  measurability clause, and an assimilation-first nearest-work scan.
+- `GOVERNED_AMORTIZATION_SYNTHESIS.md` — four formal parents eaten
+  (e-graphs, knowledge compilation, CBR, ITP hammers; primary-verified
+  anchors), the common invariant, and the novelty delta CHEWED per parent
+  (two of three clauses narrowed). Mechanic packets:
+  `research/external_research_agents/mechanics/formal_parents_amortization_v1.json`
+  and `formal_parents_invention_v1.json` (part-2 parents, honestly
+  CANNOT_CHECK-marked).
+- `assimilation/CONGRUENCE_CONTEST_PROTOCOL_V1.json` +
+  `assimilation/EVALUATOR_CONGRUENCE.py` — the executable discriminator from
+  the e-graph absorption: atomic vs surface-congruence vs witnessed-congruence
+  accumulation on the real Lean substrate, per-declared-query-class recall
+  (faithful term-level import PRECONDITION_BLOCKED, recorded). Results in
+  `assimilation/results_v1/` (separate commit after freeze).
 
 ## Cross-cutting findings
 

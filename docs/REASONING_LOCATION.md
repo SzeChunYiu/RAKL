@@ -73,22 +73,33 @@ The epistemic cut is a located address, not a vibe. Residual-driven reopening
   matched-ablation experiments only.
 - **Not novelty by default.** See nearest work below.
 
-## Nearest work (honest marks)
+## Nearest work (assimilated, not merely cited)
 
-Citations below are from-training knowledge; primary-source verification was
-NOT performed in this pass and each is CANNOT_CHECK until the nearest-work
-lane verifies against the live record.
+Upgraded 2026-08-14 per operator addendum #2: the four formal parents are
+compiled as mechanic candidates with primary-source anchors in
+`research/external_research_agents/mechanics/formal_parents_amortization_v1.json`,
+and synthesized in
+`research/programme_question_audit_v1/GOVERNED_AMORTIZATION_SYNTHESIS.md`
+(common invariant: governed amortization — pay a verification/compilation cost
+once so a DECLARED query class becomes cheap and safe).
 
-- **Knowledge compilation** (Darwiche & Marquis, *A Knowledge Compilation
-  Map*, JAIR 2002): offline compilation of a theory into a tractable form so
-  that online queries become cheap — the direct ancestor of Site 1's
-  cost-relocation shape.
-- **Proof-assistant lemma libraries / hammers** (mathlib practice;
-  Sledgehammer-family tooling): kernel-checked lemmas amortize proof effort
-  across future proofs; premise selection is retrieval over compiled
-  reasoning.
-- **Case-based reasoning** (Aamodt & Plaza, 1994): solving by retrieval and
-  adaptation of stored solved cases — Site 1 plus an ungoverned Site 2.
+- **Equality saturation / e-graphs** (Willsey et al. POPL 2021,
+  primary-verified; Tate 2009 via Paper I's own citation): congruence-compact
+  saturation + extraction — the operational parent of Site 1.
+- **Knowledge compilation** (Darwiche & Marquis, JAIR 2002,
+  primary-verified): the tractability contract — cheapness is only ever
+  relative to a declared query class; this is the precision Site 1's
+  amortization thesis was missing.
+- **Case-based reasoning** (Aamodt & Plaza 1994, primary-verified incl. the
+  RETRIEVE–REUSE–REVISE–RETAIN cycle verbatim): the failure taxonomy for a
+  loop shaped like ours.
+- **Proof-assistant lemma libraries / hammers** (Blanchette et al., JFR 2016,
+  primary-verified): verified amortization at scale for the truth coordinate;
+  premise selection is our retrieval problem with a literature.
+
+The novelty-delta table (each delta clause chewed against each parent, two of
+three clauses NARROWED) is in the synthesis file; the conjunction claim's
+field occupancy remains CANNOT_CHECK pending the nearest-work lane.
 
 **The delta this framework claims** (and must defend at nearest-work grade):
 compiled steps carry *use-time-re-verified certificates* and typed authority
