@@ -90,8 +90,6 @@ def test_exhaustive_failure_oracle_finds_all_minimum_cardinality_cores() -> None
 
 
 def test_deletion_conflict_is_inclusion_minimal_but_not_claimed_minimum() -> None:
-    # Two MUSes exist: {A,B} (size 2) and {C,D,E} (size 3). The deterministic
-    # deletion order lands on the larger inclusion-minimal conflict on purpose.
     def consistent(items):
         values = set(items)
         bad = ({"A", "B"} <= values) or ({"C", "D", "E"} <= values)
@@ -228,7 +226,10 @@ def test_receipt_hash_is_deterministic_and_subject_bound() -> None:
 
 
 def test_reports_never_grant_authority_even_on_verified_result() -> None:
-    report = _failure_report(("A",), lambda _: OracleVerdict.FAIL)
+    report = _failure_report(
+        ("A",),
+        lambda items: OracleVerdict.FAIL if "A" in items else OracleVerdict.PASS,
+    )
     assert report.verdict is FailureAnalysisVerdict.VERIFIED_RESULT
     assert report.grants_causal_authority is False
     assert report.grants_scientific_authority is False
