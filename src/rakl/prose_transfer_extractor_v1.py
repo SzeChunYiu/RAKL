@@ -259,7 +259,11 @@ def _extract_relation(sents: list[str], ref: SourceReference) -> tuple[Decision,
         return Decision.CANNOT_CHECK, False
     for sentence in sents:
         low = sentence.lower()
-        if "correspondence" not in low and "mapping" not in low:
+        # Every assertion about coverage refers to the *required* components.
+        # Selecting on "correspondence"/"mapping" alone also catches the
+        # direction sentence, whose contrast form ("the analysis reported
+        # here applies it ...") then trips the epistemic guard.
+        if "required" not in low:
             continue
         clause = _operative(sentence)
         if _is_epistemic(clause):
