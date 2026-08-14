@@ -1,0 +1,516 @@
+{
+  "note": "hidden-world truth (generator debug artifact; NOT arm input)",
+  "worlds": [
+    {
+      "world_id": "w0:material_hardness",
+      "object": "alloy-AX3",
+      "facets": [
+        "vickers_hardness",
+        "yield_strength",
+        "grain_size"
+      ],
+      "defaults": {
+        "population": "ingot-batch-A",
+        "scale": "bulk-specimen",
+        "horizon": "as-received",
+        "observation_model": "indenter-K2",
+        "assumptions": "annealed-state",
+        "intervention": "no-treatment"
+      },
+      "load_bearing": [
+        "assumptions",
+        "intervention"
+      ],
+      "banks": {
+        "population": [
+          "ingot-batch-A",
+          "ingot-batch-B"
+        ],
+        "scale": [
+          "bulk-specimen",
+          "thin-film"
+        ],
+        "horizon": [
+          "as-received",
+          "aged-1000h"
+        ],
+        "observation_model": [
+          "indenter-K2",
+          "indenter-K7"
+        ],
+        "assumptions": [
+          "annealed-state",
+          "cold-worked-state"
+        ],
+        "intervention": [
+          "no-treatment",
+          "quench-treated"
+        ]
+      },
+      "base_unit": "HV",
+      "alt_unit": "dHV",
+      "factor": 10,
+      "values": {
+        "vickers_hardness": {
+          "0|0": 384.8,
+          "0|1": 519.6,
+          "1|0": 654.4,
+          "1|1": 789.1
+        },
+        "yield_strength": {
+          "0|0": 250.1,
+          "0|1": 337.7,
+          "1|0": 425.4,
+          "1|1": 513.0
+        },
+        "grain_size": {
+          "0|0": 302.5,
+          "0|1": 408.5,
+          "1|0": 514.5,
+          "1|1": 620.4
+        }
+      }
+    },
+    {
+      "world_id": "w1:dose_response",
+      "object": "compound-QX4",
+      "facets": [
+        "ec50",
+        "max_response"
+      ],
+      "defaults": {
+        "population": "adult-cohort",
+        "scale": "organism-level",
+        "horizon": "24h-exposure",
+        "observation_model": "assay-K",
+        "assumptions": "fasting-condition",
+        "intervention": "single-dose"
+      },
+      "load_bearing": [
+        "assumptions",
+        "observation_model"
+      ],
+      "banks": {
+        "population": [
+          "adult-cohort",
+          "juvenile-cohort"
+        ],
+        "scale": [
+          "organism-level",
+          "cell-culture"
+        ],
+        "horizon": [
+          "24h-exposure",
+          "96h-exposure"
+        ],
+        "observation_model": [
+          "assay-K",
+          "assay-M"
+        ],
+        "assumptions": [
+          "fasting-condition",
+          "fed-condition"
+        ],
+        "intervention": [
+          "single-dose",
+          "repeat-dose"
+        ]
+      },
+      "base_unit": "mg/L",
+      "alt_unit": "ug/L",
+      "factor": 1000,
+      "values": {
+        "ec50": {
+          "0|0": 66.8,
+          "0|1": 90.3,
+          "1|0": 113.8,
+          "1|1": 137.2
+        },
+        "max_response": {
+          "0|0": 13.0,
+          "0|1": 17.7,
+          "1|0": 22.3,
+          "1|1": 26.9
+        }
+      }
+    },
+    {
+      "world_id": "w2:species_range",
+      "object": "moth-VN7",
+      "facets": [
+        "range_area",
+        "elevation_ceiling"
+      ],
+      "defaults": {
+        "population": "northern-clade",
+        "scale": "regional-survey",
+        "horizon": "decade-2010s",
+        "observation_model": "trap-grid",
+        "assumptions": "wet-season",
+        "intervention": "undisturbed-habitat"
+      },
+      "load_bearing": [
+        "horizon",
+        "population"
+      ],
+      "banks": {
+        "population": [
+          "northern-clade",
+          "southern-clade"
+        ],
+        "scale": [
+          "regional-survey",
+          "transect-survey"
+        ],
+        "horizon": [
+          "decade-2010s",
+          "decade-2020s"
+        ],
+        "observation_model": [
+          "trap-grid",
+          "acoustic-survey"
+        ],
+        "assumptions": [
+          "wet-season",
+          "dry-season"
+        ],
+        "intervention": [
+          "undisturbed-habitat",
+          "managed-habitat"
+        ]
+      },
+      "base_unit": "km2",
+      "alt_unit": "hm2",
+      "factor": 100,
+      "values": {
+        "range_area": {
+          "0|0": 212.4,
+          "0|1": 286.8,
+          "1|0": 361.3,
+          "1|1": 435.7
+        },
+        "elevation_ceiling": {
+          "0|0": 626.1,
+          "0|1": 845.3,
+          "1|0": 1064.6,
+          "1|1": 1283.8
+        }
+      }
+    },
+    {
+      "world_id": "w3:order_book_depth",
+      "object": "instrument-c17",
+      "facets": [
+        "top_depth",
+        "spread_ticks"
+      ],
+      "defaults": {
+        "population": "session-eu",
+        "scale": "top-of-book",
+        "horizon": "1min-window",
+        "observation_model": "feed-L2",
+        "assumptions": "normal-volatility",
+        "intervention": "no-auction"
+      },
+      "load_bearing": [
+        "intervention",
+        "scale"
+      ],
+      "banks": {
+        "population": [
+          "session-eu",
+          "session-us"
+        ],
+        "scale": [
+          "top-of-book",
+          "five-levels"
+        ],
+        "horizon": [
+          "1min-window",
+          "30min-window"
+        ],
+        "observation_model": [
+          "feed-L2",
+          "feed-L3"
+        ],
+        "assumptions": [
+          "normal-volatility",
+          "high-volatility"
+        ],
+        "intervention": [
+          "no-auction",
+          "post-auction"
+        ]
+      },
+      "base_unit": "lots",
+      "alt_unit": "decilots",
+      "factor": 10,
+      "values": {
+        "top_depth": {
+          "0|0": 206.0,
+          "0|1": 278.2,
+          "1|0": 350.4,
+          "1|1": 422.6
+        },
+        "spread_ticks": {
+          "0|0": 210.2,
+          "0|1": 283.9,
+          "1|0": 357.5,
+          "1|1": 431.2
+        }
+      }
+    },
+    {
+      "world_id": "w4:thermal_conductivity",
+      "object": "ceramic-TZ9",
+      "facets": [
+        "conductivity",
+        "diffusivity"
+      ],
+      "defaults": {
+        "population": "sinter-lot-1",
+        "scale": "pellet",
+        "horizon": "cycle-10",
+        "observation_model": "laser-flash",
+        "assumptions": "dry-atmosphere",
+        "intervention": "undoped"
+      },
+      "load_bearing": [
+        "intervention",
+        "observation_model"
+      ],
+      "banks": {
+        "population": [
+          "sinter-lot-1",
+          "sinter-lot-2"
+        ],
+        "scale": [
+          "pellet",
+          "powder-bed"
+        ],
+        "horizon": [
+          "cycle-10",
+          "cycle-500"
+        ],
+        "observation_model": [
+          "laser-flash",
+          "hot-disk"
+        ],
+        "assumptions": [
+          "dry-atmosphere",
+          "humid-atmosphere"
+        ],
+        "intervention": [
+          "undoped",
+          "yttria-doped"
+        ]
+      },
+      "base_unit": "W/mK",
+      "alt_unit": "mW/mmK",
+      "factor": 1,
+      "values": {
+        "conductivity": {
+          "0|0": 37.1,
+          "0|1": 50.2,
+          "1|0": 63.3,
+          "1|1": 76.4
+        },
+        "diffusivity": {
+          "0|0": 37.3,
+          "0|1": 50.5,
+          "1|0": 63.6,
+          "1|1": 76.8
+        }
+      }
+    },
+    {
+      "world_id": "w5:incidence_rate",
+      "object": "syndrome-RW2",
+      "facets": [
+        "incidence",
+        "recurrence"
+      ],
+      "defaults": {
+        "population": "registry-north",
+        "scale": "county-level",
+        "horizon": "year-1",
+        "observation_model": "passive-reporting",
+        "assumptions": "baseline-exposure",
+        "intervention": "no-program"
+      },
+      "load_bearing": [
+        "assumptions",
+        "intervention"
+      ],
+      "banks": {
+        "population": [
+          "registry-north",
+          "registry-south"
+        ],
+        "scale": [
+          "county-level",
+          "clinic-level"
+        ],
+        "horizon": [
+          "year-1",
+          "year-5"
+        ],
+        "observation_model": [
+          "passive-reporting",
+          "active-screening"
+        ],
+        "assumptions": [
+          "baseline-exposure",
+          "elevated-exposure"
+        ],
+        "intervention": [
+          "no-program",
+          "screening-program"
+        ]
+      },
+      "base_unit": "per-10k",
+      "alt_unit": "per-100k",
+      "factor": 10,
+      "values": {
+        "incidence": {
+          "0|0": 33.2,
+          "0|1": 44.9,
+          "1|0": 56.6,
+          "1|1": 68.4
+        },
+        "recurrence": {
+          "0|0": 51.4,
+          "0|1": 69.5,
+          "1|0": 87.6,
+          "1|1": 105.7
+        }
+      }
+    },
+    {
+      "world_id": "w6:solubility",
+      "object": "salt-KM5",
+      "facets": [
+        "solubility_limit",
+        "dissolution_rate"
+      ],
+      "defaults": {
+        "population": "lot-P",
+        "scale": "beaker-scale",
+        "horizon": "t-1h",
+        "observation_model": "gravimetric",
+        "assumptions": "ph-neutral",
+        "intervention": "unstirred"
+      },
+      "load_bearing": [
+        "horizon",
+        "observation_model"
+      ],
+      "banks": {
+        "population": [
+          "lot-P",
+          "lot-Q"
+        ],
+        "scale": [
+          "beaker-scale",
+          "reactor-scale"
+        ],
+        "horizon": [
+          "t-1h",
+          "t-48h"
+        ],
+        "observation_model": [
+          "gravimetric",
+          "conductometric"
+        ],
+        "assumptions": [
+          "ph-neutral",
+          "ph-acidic"
+        ],
+        "intervention": [
+          "unstirred",
+          "stirred-400rpm"
+        ]
+      },
+      "base_unit": "g/L",
+      "alt_unit": "mg/mL",
+      "factor": 1,
+      "values": {
+        "solubility_limit": {
+          "0|0": 188.9,
+          "0|1": 255.1,
+          "1|0": 321.3,
+          "1|1": 387.5
+        },
+        "dissolution_rate": {
+          "0|0": 28.9,
+          "0|1": 39.1,
+          "1|0": 49.3,
+          "1|1": 59.5
+        }
+      }
+    },
+    {
+      "world_id": "w7:stellar_luminosity",
+      "object": "star-HQ11",
+      "facets": [
+        "luminosity",
+        "variability_amplitude"
+      ],
+      "defaults": {
+        "population": "epoch-J2015",
+        "scale": "integrated-disk",
+        "horizon": "90d-baseline",
+        "observation_model": "space-photometer",
+        "assumptions": "quiet-phase",
+        "intervention": "no-dereddening"
+      },
+      "load_bearing": [
+        "intervention",
+        "population"
+      ],
+      "banks": {
+        "population": [
+          "epoch-J2015",
+          "epoch-J2025"
+        ],
+        "scale": [
+          "integrated-disk",
+          "photosphere-band"
+        ],
+        "horizon": [
+          "90d-baseline",
+          "900d-baseline"
+        ],
+        "observation_model": [
+          "space-photometer",
+          "ground-photometer"
+        ],
+        "assumptions": [
+          "quiet-phase",
+          "active-phase"
+        ],
+        "intervention": [
+          "no-dereddening",
+          "dereddened"
+        ]
+      },
+      "base_unit": "kL_sun",
+      "alt_unit": "hL_sun",
+      "factor": 10,
+      "values": {
+        "luminosity": {
+          "0|0": 88.9,
+          "0|1": 120.1,
+          "1|0": 151.3,
+          "1|1": 182.5
+        },
+        "variability_amplitude": {
+          "0|0": 607.6,
+          "0|1": 820.4,
+          "1|0": 1033.1,
+          "1|1": 1245.9
+        }
+      }
+    }
+  ]
+}
