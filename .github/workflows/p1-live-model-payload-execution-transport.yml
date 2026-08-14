@@ -1,0 +1,112 @@
+name: p1-live-model-payload-execution-transport
+
+on:
+  push:
+    branches:
+      - automation/p1-live-payload-execution-transport-v1-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  execution-transport:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Validate exact frozen subject and shell
+        run: |
+          bash -n experiments/paper1/lunarc/submit_and_harvest_live_model_payload_v1.sh
+          bash experiments/paper1/lunarc/submit_and_harvest_live_model_payload_v1.sh preflight "$(git rev-parse HEAD)" "$GITHUB_WORKSPACE"
+      - name: Simulate exact submission and successful negative harvest
+        run: |
+          mkdir -p /tmp/fakebin
+          cat >/tmp/fakebin/sbatch <<'SH'
+          #!/usr/bin/env bash
+          echo '515151;fakecluster'
+          SH
+          cat >/tmp/fakebin/sacct <<'SH'
+          #!/usr/bin/env bash
+          echo 'COMPLETED|'
+          SH
+          chmod +x /tmp/fakebin/sbatch /tmp/fakebin/sacct
+          export PATH="/tmp/fakebin:$PATH"
+          SUBJECT="$(git rev-parse HEAD)"
+          SCRIPT=experiments/paper1/lunarc/submit_and_harvest_live_model_payload_v1.sh
+          bash "$SCRIPT" submit "$SUBJECT" "$GITHUB_WORKSPACE"
+          OUT=research/paper1_live_model_payload_assurance_v1/RUN_515151
+          mkdir -p "$OUT"
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          out=Path('research/paper1_live_model_payload_assurance_v1/RUN_515151')
+          rows=out/'RAW_RESULTS.jsonl'
+          rows.write_text(''.join(json.dumps({'i':i},sort_keys=True)+'\n' for i in range(96)))
+          protocol=Path('research/paper1_live_model_payload_assurance_v1/PROTOCOL.json')
+          subject=__import__('subprocess').check_output(['git','rev-parse','HEAD'],text=True).strip()
+          receipt={
+            'schema_version':'paper1-live-model-payload-assurance-result-v1',
+            'panel':{'n':96,'panel_sha256':'5af33abe503d0531f933a37f769932510c76c6144be3d23fc241bd670645ff81'},
+            'metrics':{'n':96},
+            'terminal':'MODEL_CORPUS_UNDERSTRESSES_GATEWAY__NO_LIVE_HOSTILE_ASSURANCE',
+            'model':{'revision':'a09a35458c702b33eeacc393d103063234e8bc28'},
+            'subject_git_sha':subject,
+            'protocol_sha256':hashlib.sha256(protocol.read_bytes()).hexdigest(),
+            'raw_results_sha256':hashlib.sha256(rows.read_bytes()).hexdigest(),
+            'grants_scientific_authority':False,
+          }
+          (out/'FINAL_RECEIPT.json').write_text(json.dumps(receipt,sort_keys=True)+'\n')
+          PY
+          bash "$SCRIPT" harvest 515151 "$SUBJECT" "$GITHUB_WORKSPACE"
+      - name: Hostile receipt mutations must fail closed
+        run: |
+          export PATH="/tmp/fakebin:$PATH"
+          SUBJECT="$(git rev-parse HEAD)"
+          SCRIPT=experiments/paper1/lunarc/submit_and_harvest_live_model_payload_v1.sh
+          OUT=research/paper1_live_model_payload_assurance_v1/RUN_515151
+          RAW="$OUT/FINAL_RECEIPT.json"
+          cp "$RAW" /tmp/p1-good.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research/paper1_live_model_payload_assurance_v1/RUN_515151/FINAL_RECEIPT.json'); x=json.loads(p.read_text()); x['panel']['panel_sha256']='0'*64; p.write_text(json.dumps(x)+'\n')
+          PY
+          if bash "$SCRIPT" harvest 515151 "$SUBJECT" "$GITHUB_WORKSPACE"; then echo 'panel mutation escaped' >&2; exit 1; fi
+          cp /tmp/p1-good.json "$RAW"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research/paper1_live_model_payload_assurance_v1/RUN_515151/FINAL_RECEIPT.json'); x=json.loads(p.read_text()); x['subject_git_sha']='0'*40; p.write_text(json.dumps(x)+'\n')
+          PY
+          if bash "$SCRIPT" harvest 515151 "$SUBJECT" "$GITHUB_WORKSPACE"; then echo 'subject mutation escaped' >&2; exit 1; fi
+          cp /tmp/p1-good.json "$RAW"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('research/paper1_live_model_payload_assurance_v1/RUN_515151/FINAL_RECEIPT.json'); x=json.loads(p.read_text()); x['terminal']='MADE_UP_POSITIVE'; p.write_text(json.dumps(x)+'\n')
+          PY
+          if bash "$SCRIPT" harvest 515151 "$SUBJECT" "$GITHUB_WORKSPACE"; then echo 'terminal mutation escaped' >&2; exit 1; fi
+          cp /tmp/p1-good.json "$RAW"
+      - name: Authority and claim boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('research/paper1_live_model_payload_assurance_v1/EXECUTION_TRANSPORT_V1.json').read_text())
+          assert p['grants_scientific_authority'] is False
+          assert p['fixed_subject']['panel_n']==96
+          assert p['fixed_subject']['model_substitution_allowed'] is False
+          assert 'EXECUTION_PROVENANCE_ONLY' in p['claim_boundary']
+          print('P1 live-model execution transport: PASS')
+          PY
