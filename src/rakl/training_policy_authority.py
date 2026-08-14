@@ -122,15 +122,24 @@ def choose_active_training_policy_from_phase2_bundle(
     final_receipt: Mapping[str, object] | None = None,
     data_manifest: Mapping[str, object] | None = None,
     assurance_by_arm: Mapping[str, Sequence[Mapping[str, object]]] | None = None,
+    runtime_execution_receipt: Mapping[str, object] | None = None,
 ) -> TrainingPolicyDecision:
-    """Canonical v2 Paper-IV policy activation path.
+    """Canonical Paper-IV adaptive-policy activation path.
 
-    Unlike the legacy summarized authorization object, this entry point derives
-    the activation gates from the frozen Phase-2 artifact bundle.  Missing,
-    malformed, stale or nonpositive evidence always retains STATIC_STRUCTURAL.
+    The raw five-arm result is one necessary coordinate, not the entire authority
+    subject.  The statistical/evidence bundle is independently admitted, the
+    <=2x cost boundary is independently recomputed, and the external execution
+    runtime must separately bind to a governed pre-outcome LUNARC runtime freeze.
+
+    Until an actual RUNTIME_FREEZE_V1 digest is reviewed and compiled into
+    :mod:`rakl.phase2_runtime_authority`, even a fully consistent positive
+    synthetic/result bundle retains ``STATIC_STRUCTURAL``.  This is deliberate:
+    execution reproducibility cannot be supplied by caller assertion after the
+    outcome exists.
     """
 
     from rakl.phase2_adaptive_receipt_admission import admit_phase2_adaptive_result_bundle
+    from rakl.phase2_runtime_authority import evaluate_phase2_runtime_activation
 
     admission = admit_phase2_adaptive_result_bundle(
         final_receipt=final_receipt,
@@ -153,12 +162,25 @@ def choose_active_training_policy_from_phase2_bundle(
                 "positive_efficacy_cannot_override_frozen_cost_boundary",
             ),
         )
+
+    runtime_gate = evaluate_phase2_runtime_activation(runtime_execution_receipt)
+    if not runtime_gate.allowed:
+        return TrainingPolicyDecision(
+            TrainingPolicyMode.STATIC_STRUCTURAL,
+            (
+                "phase2_runtime_activation_gate_not_satisfied_static_parent_retained",
+                *runtime_gate.reasons,
+            ),
+        )
+
     return TrainingPolicyDecision(
         TrainingPolicyMode.ADAPTIVE_STRUCTURAL,
         (
             "canonical_phase2_bundle_admitted",
             "phase2_cost_terminal_independently_recomputed",
+            "phase2_runtime_freeze_and_execution_receipt_admitted",
             *admission.reasons,
+            *runtime_gate.reasons,
         ),
         admission.receipt_id,
     )
