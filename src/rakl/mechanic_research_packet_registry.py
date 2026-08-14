@@ -164,6 +164,31 @@ def _load_packet(entry: PacketRegistryEntry, repo_root: Path) -> MechanicResearc
     return packet_from_dict(document)
 
 
+def _integrity_reasons(packet: MechanicResearchPacket, entry: PacketRegistryEntry) -> list[str]:
+    reasons: list[str] = []
+    packet_report = validate_mechanic_research_packet(packet)
+    if packet_report.verdict is not MechanicResearchPacketVerdict.READY_FOR_EXISTING_PROMOTION_GATE:
+        for reason in packet_report.reasons or (packet_report.verdict.value,):
+            if reason == "packet_content_sha256_mismatch":
+                recomputed = packet.with_content_hash().packet_content_sha256
+                reasons.append(
+                    "packet_self_hash_mismatch:"
+                    f"observed={packet.packet_content_sha256}:recomputed={recomputed}"
+                )
+            else:
+                reasons.append(f"packet_invalid:{reason}")
+    if packet.packet_id != entry.packet_id:
+        reasons.append(
+            f"registry_packet_id_mismatch:registry={entry.packet_id}:packet={packet.packet_id}"
+        )
+    if packet.packet_content_sha256 != entry.packet_content_sha256:
+        reasons.append(
+            "registry_packet_hash_mismatch:"
+            f"registry={entry.packet_content_sha256}:packet={packet.packet_content_sha256}"
+        )
+    return reasons
+
+
 def validate_active_packet_registry(
     registry: ActivePacketRegistry,
     *,
@@ -178,13 +203,7 @@ def validate_active_packet_registry(
         except Exception as exc:
             reasons.append(f"{entry.variant_id}:packet_load_failed:{type(exc).__name__}:{exc}")
             continue
-        report = validate_mechanic_research_packet(packet)
-        if report.verdict is not MechanicResearchPacketVerdict.READY_FOR_EXISTING_PROMOTION_GATE:
-            reasons.extend(f"{entry.variant_id}:{reason}" for reason in report.reasons)
-        if packet.packet_id != entry.packet_id:
-            reasons.append(f"{entry.variant_id}:packet_id_mismatch")
-        if packet.packet_content_sha256 != entry.packet_content_sha256:
-            reasons.append(f"{entry.variant_id}:packet_content_sha256_mismatch")
+        reasons.extend(f"{entry.variant_id}:{reason}" for reason in _integrity_reasons(packet, entry))
         if entry.superseded_by and entry.superseded_by not in known_ids:
             reasons.append(f"{entry.variant_id}:superseded_target_missing")
         for dependency in entry.dependencies:
@@ -210,7 +229,6 @@ def resolve_packet_eligibility(
 
     try:
         packet = _load_packet(entry, Path(repo_root))
-        packet_report = validate_mechanic_research_packet(packet)
     except Exception as exc:
         return PacketEligibilityReport(
             variant_id=variant_id,
@@ -221,20 +239,13 @@ def resolve_packet_eligibility(
             packet_content_sha256=entry.packet_content_sha256,
         )
 
-    reasons: list[str] = []
-    if packet_report.verdict is not MechanicResearchPacketVerdict.READY_FOR_EXISTING_PROMOTION_GATE:
-        reasons.extend(packet_report.reasons or (packet_report.verdict.value,))
-    if packet.packet_id != entry.packet_id:
-        reasons.append("packet_id_mismatch")
-    if packet.packet_content_sha256 != entry.packet_content_sha256:
-        reasons.append("packet_content_sha256_mismatch")
-
-    if reasons:
+    integrity_reasons = _integrity_reasons(packet, entry)
+    if integrity_reasons:
         return PacketEligibilityReport(
             variant_id=variant_id,
             status=PacketRegistryStatus.CANNOT_CHECK,
             eligible_for_existing_promotion_gate=False,
-            reasons=tuple(reasons),
+            reasons=tuple(integrity_reasons),
             packet_id=entry.packet_id,
             packet_content_sha256=entry.packet_content_sha256,
             superseded_by=entry.superseded_by,
