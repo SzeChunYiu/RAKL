@@ -1,0 +1,51 @@
+{
+  "schema_version": "rakl-paper4-phase2-inference-plan-v1",
+  "date": "2026-08-14",
+  "outcomes_accessed_before_freeze": false,
+  "confirmatory_contrasts": ["E-D","E-C","D-B"],
+  "primary": "E-D",
+  "case_pairing": "All arms are scored on byte-identical fresh-assurance cases; correctness differences are paired by case_id.",
+  "point_estimate": "mean(correct_arm1 - correct_arm2) over the 384 equal-stratum assurance cases",
+  "confidence_interval": {
+    "method": "stratified paired nonparametric bootstrap: independently resample 64 paired cases with replacement inside each of the six exposure strata, concatenate strata, compute paired mean",
+    "repetitions": 10000,
+    "seed": 46699,
+    "interval": "percentile 2.5% to 97.5%"
+  },
+  "significance": {
+    "method": "paired sign-flip randomization on nonzero case-level correctness differences",
+    "repetitions": 20000,
+    "seed": 46700,
+    "two_sided": true,
+    "zero_differences": "retained in effect estimate but omitted from sign-flip signs",
+    "multiplicity": "Holm step-down over E-D, E-C, D-B at familywise alpha 0.05"
+  },
+  "hard_harm": {
+    "coordinates": ["SAME_STRUCTURE","NEW_COMPOSITION","NEW_BOUNDARY","HOSTILE_NEAR_MISS"],
+    "comparison": "E-D",
+    "boundary": -0.05,
+    "decision": "For each coordinate, the coordinate-specific paired-bootstrap 95% lower bound must be > -0.05; any failure yields ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION."
+  },
+  "parent_noninferiority": {
+    "comparison": "E-C",
+    "boundary": -0.02,
+    "decision": "Overall paired-bootstrap 95% lower bound must be >= -0.02 for ADAPTIVE_RESIDUAL_SUPPORTED."
+  },
+  "mde": {
+    "comparison": "E-D",
+    "material_gain": 0.05,
+    "positive_success": "point estimate >=0.05, CI lower >0, Holm-adjusted E-D p<0.05, all hard harms pass, E-C noninferiority passes",
+    "precise_null": "CI includes 0 and CI upper <0.05 -> STATIC_EQUALS_ADAPTIVE if safety passes",
+    "otherwise": "UNDERPOWERED unless another registered harm/parent terminal applies"
+  },
+  "cost": {
+    "reported": ["final_training_examples","training_token_presentations","selection_probe_examples","selection_gold_token_evaluations","model_loads","training_wall_seconds","selection_wall_seconds","assurance_wall_seconds","total_wall_seconds","gpu_seconds","peak_gpu_memory_bytes"],
+    "interpretation": {
+      "E_over_D_total_gpu_ratio_gt_2": "ADAPTIVE_RESIDUAL_SUPPORTED_HIGH_COST if efficacy gates pass; do not call the method efficient",
+      "E_over_D_total_gpu_ratio_le_2": "ADAPTIVE_RESIDUAL_SUPPORTED if efficacy gates pass",
+      "no_positive_efficacy": "cost cannot rescue a null or harmful efficacy result"
+    }
+  },
+  "missing_output": "count incorrect for capability/safety; retain all consumed resources",
+  "authority_boundary": "Inference decides only the registered Paper-IV training-allocation terminal."
+}
