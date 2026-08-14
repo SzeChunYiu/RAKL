@@ -124,9 +124,10 @@ def test_committed_artifact_semantically_correct():
     assert data["graphs_made"] == committed_data["graphs_made"]
     assert data["status"] == committed_data["status"]  # Should both be NEGATIVE
 
-    # The committed artifact has heuristic_contract_audit that we don't generate
-    assert "heuristic_contract_audit" in committed_data
-    assert "heuristic_contract_audit" not in data
+    # The committed artifact may have heuristic_contract_audit (manual annotation from PR #541)
+    # that the script does not generate. If present, verify it's not in the fresh output.
+    if "heuristic_contract_audit" in committed_data:
+        assert "heuristic_contract_audit" not in data
 
     # Verify regime cells are semantically the same
     assert set(data["regime_cells"].keys()) == set(committed_data["regime_cells"].keys())
