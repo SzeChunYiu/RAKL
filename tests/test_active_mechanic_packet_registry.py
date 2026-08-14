@@ -30,12 +30,11 @@ def test_current_active_set_matches_frozen_challenger_expectation() -> None:
     registry = _registry()
     active = {entry.variant_id for entry in registry.entries if entry.status is PacketRegistryStatus.ACTIVE}
     assert active == {
-        "navigation_dynamic_parallel_portfolio_v3",
-        "path_equivalence_stateful_por_v3",
         "operational_map_belief_v1",
         "path_cost_algebra_v1",
         "trajectory_to_certificate_assembly_v1",
         "verification_scheduler_v1",
+        "verified_failure_constraint_compilation_v1",
     }
 
 
@@ -55,9 +54,21 @@ def test_structurally_valid_packet_is_blocked_when_basis_expanded() -> None:
     assert "candidate_basis_expanded_before_execution" in report.reasons, report.reasons
 
 
+def test_round004_basis_expanded_packets_are_blocked_with_replacement_families() -> None:
+    for variant_id, replacement_family in (
+        ("navigation_dynamic_parallel_portfolio_v3", "navigation_dependency_tracked_incremental_v4"),
+        ("path_equivalence_stateful_por_v3", "path_reduction_with_verified_nogoods_v4"),
+    ):
+        report = resolve_packet_eligibility(variant_id, _registry(), repo_root=ROOT)
+        assert report.status is PacketRegistryStatus.BLOCKED_BASIS_EXPANDED, (variant_id, report.status, report.reasons)
+        assert report.eligible_for_existing_promotion_gate is False, (variant_id, report.reasons)
+        assert report.replacement_family == replacement_family, (variant_id, report)
+        assert "candidate_basis_expanded_before_execution" in report.reasons, (variant_id, report.reasons)
+
+
 def test_active_replacement_packet_is_eligible_for_ordinary_gate_only() -> None:
     report = resolve_packet_eligibility(
-        "navigation_dynamic_parallel_portfolio_v3", _registry(), repo_root=ROOT
+        "verified_failure_constraint_compilation_v1", _registry(), repo_root=ROOT
     )
     assert report.status is PacketRegistryStatus.ACTIVE, (report.status, report.reasons)
     assert report.eligible_for_existing_promotion_gate is True, report.reasons

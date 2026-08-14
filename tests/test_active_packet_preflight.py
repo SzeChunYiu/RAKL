@@ -67,6 +67,6 @@ def test_future_candidate_bound_to_blocked_capstone_packet_is_blocked() -> None:
 
 def test_future_candidate_bound_to_active_packet_passes_preflight() -> None:
     synthetic = copy.deepcopy(CANDIDATES)
-    synthetic["future_candidate"] = _synthetic_spec("navigation_dynamic_parallel_portfolio_v3")
+    synthetic["future_candidate"] = _synthetic_spec("verified_failure_constraint_compilation_v1")
     registry = load_active_packet_registry(REGISTRY_PATH)
     assert active_registration_problems(candidates=synthetic, registry=registry) == ()
