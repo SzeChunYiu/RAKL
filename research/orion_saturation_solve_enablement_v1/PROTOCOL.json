@@ -133,9 +133,42 @@
     "ROUTES": ["jaccard", "idf", "rarest", "containment", "name_token", "pair", "two_hop"],
     "REQUIRED_ROUTES": ["jaccard", "idf", "rarest"],
     "SAME_CONTEXT_FLAT_REQUIRED": 2,
-    "INDEPENDENT_FLAT_REQUIRED": 2,
-    "round_schedule": "per route: a primary sweep over ranks [0,40) marked independent with lineage {route}, then a deepening sweep over ranks [40,80) in the same context marked non-independent. 14 rounds total.",
-    "required_routes_rationale": "The required routes are those keyed on the goal's own constant vocabulary. Saturation may not be declared before that vocabulary has been swept; the extended routes are expansions and are optional."
+    "INDEPENDENT_FLAT_REQUIRED": 1,
+    "DEEPEN_SWEEPS": 3,
+    "round_schedule": "per route: a primary sweep over ranks [0,40) marked independent with lineage {route}, then 3 deepening sweeps over ranks [40,80), [80,120), [120,160) in the same context marked non-independent. 28 rounds total.",
+    "required_routes_rationale": "The required routes are those keyed on the goal's own constant vocabulary. Saturation may not be declared before that vocabulary has been swept; the extended routes are expansions and are optional.",
+    "self_retrieval_guard": "The task's own theorem and its near-name variants are excluded from every route. Without this the retriever ranks the goal's own statement first and `simp [self]` closes every task in both arms, manufacturing a 100% tie. Exclusion is symmetric across arms."
+  },
+  "design_iterations_pre_outcome": [
+    {
+      "id": "DESIGN-ITERATION-1",
+      "detected_by": "pre-outcome design non-degeneracy check (retrieval only; no solve outcome accessed)",
+      "observed": "rounds_A_distribution = {14: 112}. Saturation never fired; every task exhausted the schedule, so k = 14 and arm A was byte-identical to arm B.",
+      "diagnosis": "Structural incompatibility between the round schedule and the tracker's requirements, not a property of the corpus. The schedule gave each route context exactly ONE non-independent round, so same_context_flat_count could never reach SAME_CONTEXT_FLAT_REQUIRED = 2 and SATURATED_SCOPED was unreachable by construction.",
+      "repair": "Three deepening sweeps per route context instead of one (so a context can go flat within itself), and INDEPENDENT_FLAT_REQUIRED lowered from 2 to 1 — a setting the tracker's own source explicitly sanctions for scoped/cheap benchmarks.",
+      "not_tuning": "No outcome was visible when this change was made. The check is a retrieval-only degeneracy test and the repair restores the mechanism's ability to fire at all; it does not select among outcomes."
+    }
+  ],
+  "design_check_frozen": {
+    "rounds_A_distribution": {"11": 18, "13": 5, "15": 6, "17": 1, "23": 82},
+    "rounds_A_mean": 20.142857142857142,
+    "rounds_A_stdev": 4.816002237439307,
+    "k_uniform_FROZEN": 20,
+    "censored_at_schedule_end": 0,
+    "degenerate_single_valued": false,
+    "total_rounds_A": 2256,
+    "total_rounds_B": 2240,
+    "budget_match_residual": "A spends 0.7% more retrieval rounds in total than B. Reported, not hidden. The direction of the residual favours A, so a null or loss for A is not explained by it; a win for A would need this residual acknowledged.",
+    "tasks_where_A_stops_earlier_than_B": 30,
+    "tasks_where_A_stops_later_than_B": 82,
+    "mean_banned_per_task": 1.857,
+    "tasks_with_some_gold_banned": 17,
+    "tasks_with_all_gold_banned": 1,
+    "note": "k was derived from arm A's round counts, which depend only on retrieval, never on solve outcomes. Deriving it therefore does not constitute confirmatory outcome access."
+  },
+  "power_limitation": {
+    "n_tasks": 112,
+    "statement": "112 paired tasks is small. Exact McNemar has low power against modest effects, so a null must be reported as 'not detected at this n', never as 'no effect'. The population is the full deterministic yield of the frozen module list after two-sided Lean control filtering; it was not subsampled for convenience."
   },
   "measurement_model_coordinates": {
     "source": "docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md (2026-08-09, status: research-only, not written against this task)",

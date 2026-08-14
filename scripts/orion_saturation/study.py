@@ -39,7 +39,9 @@ MAX_HEARTBEATS = 400000
 #: swept. The extended routes are expansions and are optional.
 REQUIRED_ROUTES = frozenset({"jaccard", "idf", "rarest"})
 SAME_CONTEXT_FLAT_REQUIRED = 2
-INDEPENDENT_FLAT_REQUIRED = 2
+INDEPENDENT_FLAT_REQUIRED = 1
+#: Deepening sweeps per route, after the primary sweep.
+DEEPEN_SWEEPS = 3
 
 
 def load_corpus(path: Path) -> PremiseIndex:
@@ -52,20 +54,59 @@ def load_corpus(path: Path) -> PremiseIndex:
     return PremiseIndex(premises)
 
 
-def round_schedule(index: PremiseIndex, goal: frozenset[str]) -> list[dict]:
+def _norm(name: str) -> str:
+    """Strip decoration that distinguishes a lemma from its trivial variants."""
+    base = name.rstrip("'")
+    for suffix in ("_iff", "_eq", "_def", "_symm", "_comm", "_self"):
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
+    return base
+
+
+def forbidden_premises(index: PremiseIndex, name: str) -> frozenset[str]:
+    """Self-retrieval guard.
+
+    The task's own theorem lives in the same corpus the retriever searches, and
+    every route would rank it first (its type is identical to the goal), so
+    ``simp [self]`` would close every goal in both arms and the comparison would
+    measure nothing. Trivial restatements of the same lemma leak the same way,
+    so near-name variants are excluded too. This is deliberately conservative:
+    over-excluding costs recall symmetrically in every arm, whereas
+    under-excluding silently manufactures a 100% tie.
+    """
+    base = _norm(name)
+    out = {name}
+    for other in index.by_name:
+        if other == name:
+            continue
+        if _norm(other) == base:
+            out.add(other)
+        elif other.startswith(name + "_") or name.startswith(other + "_"):
+            out.add(other)
+    return frozenset(out)
+
+
+def round_schedule(
+    index: PremiseIndex, goal: frozenset[str], banned: frozenset[str]
+) -> list[dict]:
     """The frozen round schedule: per route, a primary sweep then a deepening
     sweep over the next slice of the same ranking."""
+    depth = (1 + DEEPEN_SWEEPS) * K_PER_ROUND
     schedule = []
     for route in ROUTES:
-        ranked = run_route(index, route, goal, 2 * K_PER_ROUND)
+        ranked = [p for p in run_route(index, route, goal, depth + K_PER_ROUND)
+                  if p not in banned][:depth]
         schedule.append(
             {"route": route, "ranking": ranked[:K_PER_ROUND], "independent": True,
              "round_id": f"{route}-primary"}
         )
-        schedule.append(
-            {"route": route, "ranking": ranked[K_PER_ROUND:], "independent": False,
-             "round_id": f"{route}-deepen"}
-        )
+        for s in range(1, DEEPEN_SWEEPS + 1):
+            schedule.append(
+                {"route": route,
+                 "ranking": ranked[s * K_PER_ROUND : (s + 1) * K_PER_ROUND],
+                 "independent": False,
+                 "round_id": f"{route}-deepen{s}"}
+            )
     return schedule
 
 
@@ -97,6 +138,21 @@ def saturating_rounds(schedule: list[dict]) -> int:
 
 def select(schedule: list[dict], n_rounds: int) -> list[str]:
     return rrf_fuse([s["ranking"] for s in schedule[:n_rounds]], M_PREMISES)
+
+
+def mcnemar_exact(b: int, c: int) -> float:
+    """Two-sided exact McNemar (binomial on the discordant pairs).
+
+    Pre-declared as the primary test. Written out rather than pulled from scipy
+    so the frozen protocol does not depend on a library version.
+    """
+    n = b + c
+    if n == 0:
+        return 1.0
+    from math import comb
+
+    tail = sum(comb(n, i) for i in range(0, min(b, c) + 1))
+    return min(1.0, 2.0 * tail / (2.0**n))
 
 
 def _batch(args) -> dict[str, bool]:
@@ -131,11 +187,13 @@ def main() -> None:
     print(f"population={len(pop)} corpus={len(index.premises)}", flush=True)
 
     t0 = time.time()
-    schedules, rounds_a = {}, {}
+    schedules, rounds_a, banned_counts = {}, {}, {}
     for task in pop:
         goal = frozenset(index.by_name[task["name"]].consts) if task["name"] in index.by_name \
             else frozenset()
-        sched = round_schedule(index, goal)
+        banned = forbidden_premises(index, task["name"])
+        banned_counts[task["task_id"]] = len(banned)
+        sched = round_schedule(index, goal, banned)
         schedules[task["task_id"]] = sched
         rounds_a[task["task_id"]] = saturating_rounds(sched)
     print(f"retrieval+saturation done in {time.time() - t0:.1f}s", flush=True)
@@ -144,6 +202,18 @@ def main() -> None:
     dist = {r: counts.count(r) for r in sorted(set(counts))}
     k = round(statistics.mean(counts))
     censored = sum(1 for c in counts if c == len(next(iter(schedules.values()))))
+    # A gold premise caught by the self-retrieval guard lowers the reachable
+    # ceiling for BOTH arms. Report it rather than let it sit as a silent floor.
+    gold_banned_any = 0
+    gold_banned_all = 0
+    for task in pop:
+        banned = forbidden_premises(index, task["name"])
+        gold = set(task["gold"])
+        if gold & banned:
+            gold_banned_any += 1
+        if gold and gold <= banned:
+            gold_banned_all += 1
+
     design = {
         "rounds_A_distribution": dist,
         "rounds_A_mean": statistics.mean(counts),
@@ -151,6 +221,9 @@ def main() -> None:
         "k_uniform": k,
         "censored_at_schedule_end": censored,
         "degenerate_single_valued": len(dist) == 1,
+        "mean_banned_per_task": statistics.mean(banned_counts.values()),
+        "tasks_with_some_gold_banned": gold_banned_any,
+        "tasks_with_all_gold_banned": gold_banned_all,
     }
     print("DESIGN CHECK:", json.dumps(design), flush=True)
     if args.stop_after_design_check:
@@ -193,6 +266,7 @@ def main() -> None:
         "solve_rate_A": sum(r["solved_A"] for r in rows) / n,
         "solve_rate_B": sum(r["solved_B"] for r in rows) / n,
         "discordant_A_only": a_only, "discordant_B_only": b_only,
+        "mcnemar_exact_p_two_sided": mcnemar_exact(a_only, b_only),
         "total_rounds_A": sum(r["rounds_A"] for r in rows),
         "total_rounds_B": sum(r["rounds_B"] for r in rows),
         "mean_gold_cov_A": statistics.mean(r["gold_cov_A"] for r in rows),
