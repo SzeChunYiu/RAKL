@@ -1,0 +1,144 @@
+{
+  "benchmark_id": "SELF_RAKL_RESEARCH_044_META_EVOLUTION_V1",
+  "frozen_against_main": "9a9b1ced619de046f2d7d58594c3c2d76f71db37",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "PROPOSAL_ONLY",
+  "question": "Can RAKL route self-improvement across implementation, search operators, representations, ontologies, topology, evaluator policy, meta-policy, and the mutation language itself without treating any incumbent architecture as sacred or letting the proposer self-certify?",
+  "invariants": [
+    "negative history is preserved",
+    "no mutation is required when the incumbent is still producing registered gain",
+    "representation and topology are mutable research objects, not constitutional truths",
+    "evaluator changes require an outer frozen assurance boundary",
+    "constitutional changes remain externally gated",
+    "candidate selection is Pareto/set-valued and does not silently collapse every objective to one scalar",
+    "a mutation operator may itself be mutated only through a higher-order registered mutation surface"
+  ],
+  "routing_cases": [
+    {
+      "id": "R44_01_IMPLEMENTATION_LOCAL",
+      "causes": ["IMPLEMENTATION_DEFECT"],
+      "stagnant": true,
+      "expected_primary": "IMPLEMENTATION",
+      "expected_contains": ["IMPLEMENTATION"],
+      "expected_excludes": ["REPRESENTATION", "TOPOLOGY", "META_POLICY", "MUTATION_LANGUAGE"]
+    },
+    {
+      "id": "R44_02_REPRESENTATION_DIRECT",
+      "causes": ["REPRESENTATION_GAP"],
+      "stagnant": true,
+      "expected_primary": "REPRESENTATION",
+      "expected_contains": ["REPRESENTATION"]
+    },
+    {
+      "id": "R44_03_REPRESENTATION_PLATEAU_BROADENS",
+      "causes": ["REPRESENTATION_GAP"],
+      "stagnant": true,
+      "same_layer_failed_generations": 3,
+      "expected_contains": ["REPRESENTATION", "TOPOLOGY"],
+      "expected_reason_contains": "representation_plateau_opens_topology_search"
+    },
+    {
+      "id": "R44_04_TOPOLOGY_PLATEAU_BROADENS",
+      "causes": ["DECOMPOSITION_GAP", "COMPOSITION_INTERFACE_GAP"],
+      "stagnant": true,
+      "same_layer_failed_generations": 3,
+      "expected_contains": ["TOPOLOGY", "META_POLICY"],
+      "expected_reason_contains": "topology_plateau_opens_meta_policy_search"
+    },
+    {
+      "id": "R44_05_META_POLICY_PLATEAU_OPENS_LANGUAGE",
+      "causes": ["COMPUTE_ALLOCATION_GAP", "STOPPING_GAP"],
+      "stagnant": true,
+      "same_layer_failed_generations": 4,
+      "expected_contains": ["META_POLICY", "MUTATION_LANGUAGE"],
+      "expected_reason_contains": "meta_policy_plateau_opens_mutation_language_search"
+    },
+    {
+      "id": "R44_06_EVALUATOR_DEFECT",
+      "causes": ["METRIC_FALSEHOOD"],
+      "stagnant": true,
+      "expected_primary": "EVALUATOR",
+      "expected_requires_outer_assurance": true
+    },
+    {
+      "id": "R44_07_UNKNOWN_REQUIRES_DISCRIMINATOR",
+      "causes": ["UNKNOWN"],
+      "stagnant": true,
+      "expected_action": "RUN_DISCRIMINATOR",
+      "expected_contains": []
+    },
+    {
+      "id": "R44_08_PRODUCTIVE_ROUTE_NO_FORCED_MUTATION",
+      "causes": ["REPRESENTATION_GAP"],
+      "stagnant": false,
+      "knowledge_gain_positive": true,
+      "expected_action": "KEEP_INCUMBENT",
+      "expected_contains": []
+    },
+    {
+      "id": "R44_09_FRACTAL_NOT_SACRED",
+      "causes": ["DECOMPOSITION_GAP"],
+      "stagnant": true,
+      "same_layer_failed_generations": 2,
+      "current_topology": "recursive_fractal",
+      "registered_topology_challengers": ["heterarchy", "blackboard", "dynamic_dag"],
+      "expected_primary": "TOPOLOGY",
+      "expected_incumbent_topology_protected": false
+    },
+    {
+      "id": "R44_10_ONTOLOGY_IS_MUTABLE",
+      "causes": ["ONTOLOGY_GAP"],
+      "stagnant": true,
+      "expected_primary": "ONTOLOGY",
+      "expected_contains": ["ONTOLOGY", "REPRESENTATION"]
+    }
+  ],
+  "pareto_cases": [
+    {
+      "id": "P44_01_KEEP_NONDOMINATED_TRADEOFFS",
+      "candidates": [
+        {"id": "quality_heavy", "quality": 4.0, "cost": -3.0, "latency": -1.0, "robustness": 1.0, "complexity": -2.0},
+        {"id": "efficient", "quality": 2.0, "cost": 2.0, "latency": 2.0, "robustness": 0.0, "complexity": 1.0},
+        {"id": "dominated", "quality": 1.0, "cost": -4.0, "latency": -2.0, "robustness": -1.0, "complexity": -3.0}
+      ],
+      "expected_frontier": ["efficient", "quality_heavy"]
+    }
+  ],
+  "meta_policy_cases": [
+    {
+      "id": "M44_01_CREDIT_SUCCESSFUL_OPERATOR",
+      "weights": {"local_patch": 1.0, "representation_reset": 1.0},
+      "operator": "representation_reset",
+      "outcome": "SCOPED_EVOLUTION_EVIDENCE",
+      "expected_relation": "representation_reset_gt_local_patch"
+    },
+    {
+      "id": "M44_02_DEBIT_META_OVERFIT",
+      "weights": {"local_patch": 1.0, "representation_reset": 1.0},
+      "operator": "representation_reset",
+      "outcome": "META_OVERFIT",
+      "expected_relation": "representation_reset_lt_local_patch"
+    }
+  ],
+  "governance_cases": [
+    {
+      "id": "G44_01_EVALUATOR_CANNOT_SELF_CERTIFY",
+      "target_layer": "EVALUATOR",
+      "outer_assurance_frozen": false,
+      "expected_eligible_for_auto_promotion": false
+    },
+    {
+      "id": "G44_02_MUTATION_LANGUAGE_IS_MUTABLE_BUT_GOVERNED",
+      "target_layer": "MUTATION_LANGUAGE",
+      "outer_assurance_frozen": true,
+      "expected_proposal_allowed": true,
+      "expected_grants_scientific_authority": false
+    },
+    {
+      "id": "G44_03_CONSTITUTION_REMAINS_EXTERNAL",
+      "target_layer": "CONSTITUTION",
+      "outer_assurance_frozen": true,
+      "expected_eligible_for_auto_promotion": false
+    }
+  ]
+}
