@@ -20,8 +20,16 @@ Suppose a task-conditioned view $Z=Q_{q,c}(P)$ is materialized only as a derived
 \end{proposition}
 
 \begin{proof}
-The quotient transition has codomain in derived computational state, not canonical scientific state. By construction it can inherit but cannot mint authority certificates, and the canonical source remains content-addressed and immutable. Hence any proposal or result obtained from $Z$ remains proposal-side until a separately licensed scientific update is supported by the ordinary evidence or verification path. In particular, computational suppression of a coordinate is not a scientific retraction, and success on the reduced view is not itself an authority certificate for the original problem.
+Write $\chi(\cdot)$ for the set of authority certificates reachable from a state. The hypothesis of the proposition is the \emph{inheritance condition} $\chi(Z)\subseteq\chi(P)$: the quotient may carry forward certificates already reachable from the pinned source, and no others. This is a premise about how $Q_{q,c}$ is constructed, not a consequence of constructing it, and the proposition fails without it --- a quotient able to attach a certificate absent from $P$ would escalate authority by definition. Stating the condition explicitly is therefore load-bearing rather than pedantic.
+
+Under that condition the claim is an instance of Proposition~\ref{prop:proposal-non-sovereignty}. Constructing $Z$, retrieving from $Z$ and solving over $Z$ all have codomain in derived computational state rather than canonical scientific state, and by the inheritance condition none of them can mint a certificate $\chi$ that $P$ did not already admit. They are therefore certificate-free operators, and no finite composition of certificate-free operators changes the canonical projection. Authority moves only when a separately licensed update carrying the required certificate is invoked through the ordinary evidence or verification path.
+
+In particular, computational suppression of a coordinate is not a scientific retraction, and success on the reduced view is not itself an authority certificate for the original problem.
 \end{proof}
+
+\begin{remark}
+The composition step above is machine-checked. In the accompanying Lean development, \texttt{OperatorClass} carries the inheritance condition as an explicit field \texttt{uncertified\_preserves}, and \texttt{no\_uncertified\_composition\_changes\_canon} derives invariance of the canonical projection under any finite composition of certificate-free operators. Mechanization is what forced the inheritance condition into the open: an earlier version of this proof asserted that the quotient ``can inherit but cannot mint'' certificates, which restates the hypothesis rather than discharging it. A companion witness, \texttt{certified\_operator\_may\_change\_canon}, rules out the degenerate reading in which non-escalation holds merely because nothing ever updates.
+\end{remark}
 
 When a quotient-side computation produces a candidate solution, reconstruction and verification against the original source are distinct obligations. Thus
 \[
