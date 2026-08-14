@@ -1,0 +1,55 @@
+{
+  "schema_version": "rakl-p3-unreproducible-result-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "status": "CANNOT_CHECK",
+  "authority": "GOVERNANCE_AUDIT_STATUS_ONLY",
+
+  "subject": {
+    "quoted_result": "research/paper3_publication_closeout_v1/FINAL_RECEIPT.json :: structured_validation",
+    "frozen_protocol": "research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json",
+    "quoted_numbers": {
+      "n_cases": 2688,
+      "n_families": 21,
+      "route_plus_negative_trace_exact": 1.0,
+      "unsafe_route_rate": 0.0,
+      "cannot_check_recall": 1.0,
+      "viable_route_recall": 1.0,
+      "strongest_composite_parent_information_ceiling": 0.6190476190476191,
+      "strongest_composite_parent_unsafe_rate": 0.30952380952380953,
+      "hostile_mutations_caught": "12/12"
+    }
+  },
+
+  "finding": "The protocol is frozen and the numbers are quoted in the closeout receipt, but no harness, no case set and no result artifact for this protocol exists anywhere in the repository or its history. The result is therefore not reproducible and not independently checkable. This is CANNOT_CHECK, not a refutation: the numbers may well be correct.",
+
+  "search_scope_justification": [
+    "git log --all --oneline -S <token> with NO pathspec, for four v2-distinctive family tokens (STALE_REJECTION_BLOCKS_FALLTHROUGH, PARTIAL_NEEDS_GLUE, REPEATED_RESIDUAL_LIFT, CURRENT_PASS_OVERRIDES_OLD_REJECTION) and for the metric name route_plus_negative_trace_exact: every one returns exactly one commit, 05441aa8.",
+    "git show --stat 05441aa8: of the 26 files it touches, the only one carrying those tokens is research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json (24 lines). No runner is added.",
+    "git log --all --diff-filter=A --name-only -- 'experiments/paper3/*': every file ever added under that path is enumerated; none implements this protocol.",
+    "Repository-wide grep for the string 2688: it occurs only in the closeout receipt itself (plus unrelated hash/frequency digits), i.e. the case count exists as a written number and never as a generated artifact.",
+    "find over research/ for any .jsonl case set or RESULT artifact under a paper3 path: only research/paper3/power_design/POWER_RESULTS.json, which belongs to a different lane."
+  ],
+
+  "structurally_predicted_defect_pending_harness": {
+    "prediction": "The same P3_TYPED_ARM_SELF_IDENTITY defect confirmed in the 14-family v1 harness is predicted to hold here.",
+    "grounds": [
+      "The gate registers strict_exact_min = 1.0, strict_unsafe_max = 0.0, strict_cannot_check_recall_min = 1.0 and strict_legal_route_recall_min = 1.0 — four thresholds set exactly at the ceiling, the signature of a metric that cannot move.",
+      "The reported values are exactly those four ceilings.",
+      "The protocol shares its lineage and its parent/mutation architecture with the v1 harness (parent_v1_terminal = INSTRUMENT_DEFECT_TWO_MUTATIONS_NOT_EXERCISED), and reuses COMPOSITE_SIMPLE_PARENT as the residual arm.",
+      "As in v1, the only two quantities that carry variance are the composite parent ceiling (0.619) and the mutation kill count (12/12)."
+    ],
+    "status": "PREDICTED_NOT_VERIFIED",
+    "why_not_asserted": "Asserting the defect without the code would be exactly the overreach this audit exists to prevent. The prediction is recorded so that it can be checked the moment the harness is produced, and so that no later run can quietly claim the prediction was never made."
+  },
+
+  "required_next_action": "Produce the harness that generated research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json's result, or withdraw the structured_validation block from research/paper3_publication_closeout_v1/FINAL_RECEIPT.json. Until one of those happens, the 2688-case result must not be cited in the manuscript as evidence.",
+
+  "not_claimed": [
+    "that the quoted numbers are wrong",
+    "that the v2 work was not performed",
+    "that the v2 gate is non-falsifiable (that is predicted, not verified)"
+  ],
+
+  "grants_scientific_authority": false
+}
