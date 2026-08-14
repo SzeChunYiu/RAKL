@@ -1,0 +1,163 @@
+{
+  "schema_version": "paper2-arn-stage-attribution-v1",
+  "date": "2026-08-14",
+  "owner_issue": 688,
+  "subject": "ARN_DETERMINISTIC_REDUCER_V1",
+  "terminal": "NEGATIVE__CAPABILITY_ABSENT",
+  "source_artifacts": {
+    "PROTOCOL": "research/paper2_external_corpus_v1/PROTOCOL.json",
+    "RESULT": "research/paper2_external_corpus_v1/results/RESULT.json",
+    "REDUCER": "src/rakl/narrative_reducer.py",
+    "result_blob_sha": "1f61c0de7e406432b97fde05501889da231ebadb"
+  },
+  "confirmatory_metrics": {
+    "witness_advantage": -0.016186770428015584,
+    "bootstrap_95ci_lower": -0.049805447470817055,
+    "bootstrap_95ci_upper": 0.016186770428015584,
+    "mde": 0.05,
+    "valid_accept_rate": 0.023346303501945526,
+    "invalid_false_accept_rate": 0.04409857328145266,
+    "witness_exact_accuracy": 0.4896238651102464,
+    "band_control_exact_accuracy": 0.506485084306096,
+    "confirmatory_n": 1542
+  },
+  "stage_attribution": {
+    "EXTRACTION": {
+      "verdict": "TOO_SPARSE",
+      "mechanism_description": "Deterministic reducer in src/rakl/narrative_reducer.py implements: (1) stopword-filtered content tokens (length>=3) as vocabulary; (2) top 12 tokens by frequency as roles (alphabetical tie-break); (3) within-sentence consecutive role co-occurrence (window<=4 tokens) as relations; (4) negation/contrast markers emit obstructions.",
+      "deficits": [
+        "No dependency parsing or syntactic structure",
+        "No entity recognition or typing",
+        "No relation typing (all relations are undirected co-occurrence)",
+        "No role hierarchy (flat 12-token limit)",
+        "No semantic similarity or word sense disambiguation",
+        "Negation detection is crude (presence of contrast marker + >=2 roles)",
+        "Misses cross-sentence relations",
+        "No causal or process structure extraction"
+      ],
+      "evidence_from_result": {
+        "dev_theta_w": 0.1,
+        "dev_theta_l": 0.08,
+        "strongest_control": "band",
+        "band_control_dev_exact": 0.5463,
+        "witness_dev_exact": 0.0,
+        "confirmatory_witness_exact": 0.4896,
+        "confirmatory_band_exact": 0.5065
+      },
+      "interpretation": "The witness performed WORSE than a simple band metadata control (which just uses dataset-author 'near'/'far' labels). This indicates the extraction mechanism captures less useful signal than the surface annotation. The sparse flat extraction (12 roles, local co-occurrence) is insufficient for scientific analogy."
+    },
+    "ABSTRACTION": {
+      "verdict": "NONE",
+      "mechanism_description": "The reducer has NO abstraction stage. It directly outputs a flat SupportStructure with atoms (roles) and edges (relations). There is no intermediate concept construction, no hierarchical abstraction, no causal/process abstraction.",
+      "deficits": [
+        "No abstraction hierarchy (no multi-granularity levels)",
+        "No intermediate concepts or roles",
+        "No process abstraction (events, states, transitions)",
+        "No causal relation extraction",
+        "No domain abstraction or ontological mapping"
+      ],
+      "evidence_from_source": "narrative_reducer.py lines 61-117 show direct construction of SupportStructure from extracted tokens. No intermediate abstraction layer exists.",
+      "interpretation": "ARN reducer is a surface lexical matching system, not a structural abstraction system. The negative confirms that surface features alone cannot capture scientific analogy structure."
+    },
+    "MAPPING": {
+      "verdict": "FAILED",
+      "mechanism_description": "Mapping is coverage-based: coverage_ratio = (|covered_roles| + 2*|covered_relations|) / (|required_roles| + 2*|required_relations|). Decision: ACCEPT if coverage_ratio >= theta_w (0.1), else REJECT. No partial credit, no role typing, no relation semantics.",
+      "deficits": [
+        "No role typing or semantic compatibility",
+        "No relation semantics (all relations have same weight)",
+        "No partial mapping credit (binary accept/reject)",
+        "No cross-level mapping (no levels to map between)",
+        "No structural similarity beyond coverage",
+        "Weight 2x for relations is arbitrary, not empirically justified"
+      ],
+      "evidence_from_result": {
+        "G1_advantage": -0.0162,
+        "G1_ci_upper": 0.0162,
+        "G1_mde": 0.05,
+        "G1_pass": false,
+        "witness_exact": 0.4896,
+        "band_exact": 0.5065,
+        "witness_worse_than_control": true
+      },
+      "interpretation": "The coverage-based mapping failed to beat even a simple band control. This indicates that simple structural coverage is insufficient for scientific analogy mapping. More sophisticated mapping (e.g., typed role compatibility, relation semantics, partial credit) is needed."
+    },
+    "TYPED_LICENCE": {
+      "verdict": "NOT_APPLICABLE",
+      "mechanism_description": "ARN reducer has NO typed licence mechanism. There is no applicability condition, no scope restriction, no boundary/QoI statement, no preserved/non-preserved relation classification.",
+      "deficits": [
+        "No applicability mechanism (when is analogy valid?)",
+        "No scope restriction (what aspects of source apply?)",
+        "No boundary/QoI statement (what is being compared?)",
+        "No preserved vs non-preserved relation classification",
+        "No typed licence output (only binary ACCEPT/REJECT)"
+      ],
+      "evidence_from_protocol": "PROTOCOL.json arm definition shows witness returns only decision (ACCEPT/REJECT) + coverage_ratio. No applicability fields.",
+      "interpretation": "ARN reducer cannot express WHEN an analogy is valid, WHAT aspects transfer, or WHERE the boundary lies. This is a fundamental gap compared to ORION-style applicability witnesses."
+    },
+    "ABSTENTION": {
+      "verdict": "NOT_USED",
+      "mechanism_description": "CANNOT_CHECK is emitted ONLY when either side has <2 roles or 0 relations (insufficient extraction evidence). No abstention on uncertain mappings, missing decisive evidence, or scope violations.",
+      "deficits": [
+        "No abstention on low-confidence mappings",
+        "No abstention on missing decisive evidence",
+        "No abstention on scope violations",
+        "No abstention on uncertain applicability",
+        "Binary forced choice (ACCEPT/REJECT) even when unclear"
+      ],
+      "evidence_from_result": {
+        "G3_cannot_check_rate": 0.0,
+        "G3_dominant": false,
+        "quadrant_accept_rates": {
+          "far_analogy_Q2": 0.0130,
+          "near_analogy": 0.0338,
+          "far_distractor": 0.0152,
+          "near_distractor_Q3": 0.0747
+        }
+      },
+      "interpretation": "Despite poor performance (worse than control), witness never abstained (0.0% CANNOT_CHECK). The reducer is forced to make binary decisions even when evidence is insufficient. A principled abstention mechanism would have prevented many false accepts."
+    }
+  },
+  "root_cause_synthesis": {
+    "primary_failure_stage": "EXTRACTION",
+    "secondary_failure_stage": "ABSTRACTION",
+    "tertiary_failure_stage": "ABSTENTION",
+    "root_cause_statement": "ARN reducer is a deterministic surface lexical matching system with (1) sparse flat extraction (12 roles, local co-occurrence), (2) no abstraction hierarchy, (3) no applicability reasoning, and (4) no principled abstention. The witness advantage CI [-0.0498, +0.0162] fails to clear MDE 0.05, and witness performed WORSE than a simple band control (0.489 vs 0.506). This confirms that shallow bag-of-features extraction is insufficient for scientific analogy decisions.",
+    "implications_for_successors": [
+      "Successor must have richer extraction (dependency parsing, entity typing, relation typing)",
+      "Successor must have abstraction hierarchy (multi-granularity levels)",
+      "Successor must have typed licence mechanism (applicability, scope, boundary/QoI)",
+      "Successor must have principled abstention (uncertain mappings, missing evidence)"
+    ]
+  },
+  "comparison_to_661_arms": {
+    "P1_DIRECT_MODEL": {
+      "extraction": "Model-internal (not specified)",
+      "abstraction": "None (direct decision)",
+      "mapping": "Direct term-to-term",
+      "typed_licence": "None",
+      "abstention": "CANNOT_CHECK on missing decisive evidence"
+    },
+    "P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION": {
+      "extraction": "Model-inferred relational/process structure",
+      "abstraction": "Single-level (list of statements)",
+      "mapping": "Structured-based (after inference)",
+      "typed_licence": "None",
+      "abstention": "CANNOT_CHECK on missing decisive evidence"
+    },
+    "C1_GROUNDED_STRUCTURAL_WITNESS": {
+      "extraction": "Model-inferred with exact source spans",
+      "abstraction": "Single-level (preserved_relations list)",
+      "mapping": "Structured with source_span/target_span",
+      "typed_licence": "Yes (boundary_qoi, preserved/non_preserved)",
+      "abstention": "Yes (CANNOT_CHECK when material condition uncheckable)"
+    },
+    "ARN_REDUCER": {
+      "extraction": "Deterministic stopword-filtered lexical",
+      "abstraction": "None (flat structure)",
+      "mapping": "Coverage ratio (binary)",
+      "typed_licence": "No",
+      "abstention": "Only on insufficient extraction (<2 roles or 0 relations)"
+    },
+    "gap_analysis": "ARN lacks: (1) semantic extraction (dependency parsing, typing), (2) abstraction hierarchy, (3) typed licence, (4) principled abstention. C1 in #661 addresses typed licence and abstention, but still lacks multi-level abstraction (item 3 in this issue)."
+  }
+}
