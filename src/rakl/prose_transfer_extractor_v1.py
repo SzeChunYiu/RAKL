@@ -69,30 +69,54 @@ ABOVE_CUES = (
     "reach",
 )
 
-# Completeness of a correspondence.
+# Completeness of a correspondence. Note that "unmatched"/"unpaired" are
+# *deficiency* words: they assert incompleteness on their own, and only mean
+# completeness under negation ("leaves no required X unpaired"), which the
+# negation-parity rule already handles. "not all" is likewise left out, because
+# its "not" is counted once by the parity rule against the " all " cue.
 COMPLETE_CUES = (
     "every",
     " all ",
     "in full",
     "fully",
     "entire",
-    "complete",
     "without exception",
-    "unpaired",
-    "unmatched",
-    "left out",
 )
 INCOMPLETE_CUES = (
     "some",
     "part",
     "partial",
     "partly",
-    "not all",
     "short",
     "omit",
     "miss",
     "incomplete",
     "few",
+    "unpaired",
+    "unmatched",
+    "left out",
+)
+
+# Report / epistemic verbs. A clause whose predicate is one of these is not an
+# assertion about the coordinate's value, so the coordinate is CANNOT_CHECK.
+# This is general hedge (evidentiality) detection, and it is what lets the
+# extractor work without the hedge lexicon, which is dev/heldout-disjoint.
+EPISTEMIC_CUES = (
+    "assess",
+    "report",
+    "determin",
+    "examin",
+    "evaluat",
+    "ascertain",
+    "verif",
+    "quantif",
+    "characteris",
+    "characteriz",
+    "specif",
+    "unclear",
+    "unknown",
+    "left open",
+    "not stated",
 )
 
 # Whether a stated precondition holds.
@@ -107,6 +131,12 @@ def _sentences(text: str) -> list[str]:
 def _operative(sentence: str) -> str:
     """Discourse heuristic: after a semicolon, the later clause is the claim."""
     return sentence.rsplit(";", 1)[-1].strip() if ";" in sentence else sentence
+
+
+def _is_epistemic(text: str) -> bool:
+    """A clause reporting that something was (not) measured asserts no value."""
+    low = " " + text.lower() + " "
+    return low.lstrip().startswith("whether ") or any(cue in low for cue in EPISTEMIC_CUES)
 
 
 def _negations(text: str) -> int:
@@ -232,6 +262,8 @@ def _extract_relation(sents: list[str], ref: SourceReference) -> tuple[Decision,
         if "correspondence" not in low and "mapping" not in low:
             continue
         clause = _operative(sentence)
+        if _is_epistemic(clause):
+            return Decision.CANNOT_CHECK, True
         m = re.search(r"covers (?P<k>\d+) of (?:the )?(?P<m>\d+)", clause)
         if m:
             return _status(int(m.group("k")) >= int(m.group("m"))), True
@@ -252,8 +284,8 @@ def _extract_precondition(sents: list[str], ref: SourceReference) -> Decision:
         if key not in sentence.lower():
             continue
         clause = _operative(sentence)
-        if key not in clause.lower():
-            continue
+        if _is_epistemic(clause):
+            return Decision.CANNOT_CHECK
         verdict = _polarity(clause, HOLDS_CUES, FAILS_CUES)
         if verdict is not None:
             return _status(verdict)
@@ -268,8 +300,8 @@ def _extract_effect(sents: list[str], ref: SourceReference) -> Decision:
         if key not in sentence.lower():
             continue
         clause = _operative(sentence)
-        if key not in clause.lower():
-            continue
+        if _is_epistemic(clause):
+            return Decision.CANNOT_CHECK
         m = re.search(r"reaches (?P<pct>[0-9]+(?:\.[0-9]+)?)% of the stated bound", clause)
         if m:
             return _status(float(m.group("pct")) < 100.0)
