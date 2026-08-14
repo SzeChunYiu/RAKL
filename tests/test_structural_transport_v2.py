@@ -59,26 +59,40 @@ def _witness(
     )
 
 
+def _covering_obligations() -> list[TransferObligation]:
+    """Obligations that cover every load-bearing part of `_object`'s source content."""
+    return [
+        TransferObligation(
+            "qoi",
+            ObligationKind.QOI,
+            "stability",
+            "stability",
+            evidence_ids=("evidence:qoi",),
+        ),
+        TransferObligation(
+            "invariant",
+            ObligationKind.INVARIANT,
+            "arrival_gt_service_implies_growth",
+            "arrival_gt_service_implies_growth",
+            evidence_ids=("evidence:invariant",),
+        ),
+        TransferObligation(
+            "relation",
+            ObligationKind.RELATION,
+            "a|competes_with|b|1",
+            "a|competes_with|b|1",
+            evidence_ids=("evidence:relation",),
+        ),
+    ]
+
+
 def test_valid_distant_transfer_can_license_when_obligations_hold() -> None:
     source, target = _object("source", "source-context"), _object("target", "target-context")
     witness = _witness(
         source,
         target,
-        [
-            TransferObligation(
-                "qoi",
-                ObligationKind.QOI,
-                "stability",
-                "stability",
-                evidence_ids=("evidence:qoi",),
-            ),
-            TransferObligation(
-                "invariant",
-                ObligationKind.INVARIANT,
-                "arrival_gt_service_implies_growth",
-                "arrival_gt_service_implies_growth",
-                evidence_ids=("evidence:invariant",),
-            ),
+        _covering_obligations()
+        + [
             TransferObligation(
                 "boundary",
                 ObligationKind.BOUNDARY,
@@ -175,15 +189,7 @@ def test_permitted_non_loadbearing_loss_does_not_block() -> None:
     witness = _witness(
         source,
         target,
-        [
-            TransferObligation(
-                "qoi",
-                ObligationKind.QOI,
-                "stability",
-                "stability",
-                evidence_ids=("evidence:qoi",),
-            )
-        ],
+        _covering_obligations(),
         permitted_losses=frozenset({"entity_semantics"}),
     )
     assert assess_transfer_v2(source, target, witness).decision is TransferDecision.LICENSED
@@ -227,6 +233,165 @@ def test_direction_specific_violation_rejects() -> None:
         ],
     )
     assert assess_transfer_v2(source, target, witness).decision is TransferDecision.REJECTED
+
+
+def _zero_obligation_witness(
+    source: StructuralObject, target: StructuralObject
+) -> StructuralWitnessV2:
+    return StructuralWitnessV2(
+        witness_id="w",
+        source_structure_id=source.structure_id,
+        target_structure_id=target.structure_id,
+        source_context_id=source.context_id,
+        target_context_id=target.context_id,
+        qoi="stability",
+        role_mapping=(),
+        obligations=(),
+    )
+
+
+def test_zero_obligation_witness_cannot_license_identical_objects() -> None:
+    """An empty obligation list asks nothing, so nothing can fail: it must not license."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    assessment = assess_transfer_v2(source, target, _zero_obligation_witness(source, target))
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "uncovered_qoi" in assessment.reasons
+
+
+def test_zero_obligation_witness_cannot_license_unrelated_target() -> None:
+    source = _object("source", "source-context")
+    target = StructuralObject(
+        structure_id="target",
+        domain="test-domain",
+        qoi="stability",
+        context_id="target-context",
+        roles=(StructuralRole("z", "other"),),
+        relations=(),
+        invariants=frozenset(),
+        boundaries=(),
+        evidence_ids=("evidence:target",),
+    )
+    assessment = assess_transfer_v2(source, target, _zero_obligation_witness(source, target))
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "uncovered_source_relation:a|competes_with|b|1" in assessment.reasons
+    assert "uncovered_source_invariant:arrival_gt_service_implies_growth" in assessment.reasons
+
+
+def test_uncovered_source_relation_blocks_license() -> None:
+    """Thinning one obligation out of an otherwise complete witness must abstain."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    obligations = [
+        obligation
+        for obligation in _covering_obligations()
+        if obligation.obligation_id != "relation"
+    ]
+    witness = _witness(source, target, obligations)
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "uncovered_source_relation:a|competes_with|b|1" in assessment.reasons
+
+
+def test_optional_obligations_cannot_discharge_coverage() -> None:
+    """An OPTIONAL obligation can never block, so it must not count as coverage."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    witness = _witness(
+        source,
+        target,
+        [
+            TransferObligation(
+                obligation.obligation_id,
+                obligation.kind,
+                obligation.source_ref,
+                obligation.target_ref,
+                requirement=ObligationRequirement.OPTIONAL,
+                evidence_ids=obligation.evidence_ids,
+            )
+            for obligation in _covering_obligations()
+        ],
+    )
+    assert assess_transfer_v2(source, target, witness).decision is TransferDecision.CANNOT_CHECK
+
+
+def test_witness_cannot_self_certify_a_structurally_decidable_obligation() -> None:
+    """A SATISFIED claim about a checkable fact is derived, not taken on the witness's word."""
+    source = _object("source", "source-context")
+    target = _object("target", "target-context", matching_invariant=False)
+    witness = _witness(
+        source,
+        target,
+        [
+            obligation
+            if obligation.obligation_id != "invariant"
+            else TransferObligation(
+                "invariant",
+                ObligationKind.INVARIANT,
+                "arrival_gt_service_implies_growth",
+                "arrival_gt_service_implies_growth",
+                evidence_ids=("evidence:invariant",),
+                status=ObligationStatus.SATISFIED,
+                rationale_code="witness_says_so",
+            )
+            for obligation in _covering_obligations()
+        ],
+    )
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is TransferDecision.REJECTED
+    assert "invariant_missing" in assessment.reasons
+
+
+def test_relation_obligation_must_check_the_role_mapping_image() -> None:
+    """The witness may not redirect a source relation onto some other target relation."""
+    source = _object("source", "source-context")
+    target = StructuralObject(
+        structure_id="target",
+        domain="test-domain",
+        qoi="stability",
+        context_id="target-context",
+        roles=(StructuralRole("a", "input"), StructuralRole("b", "capacity")),
+        # The image of the source relation is absent; only its reverse is present.
+        relations=(StructuralRelation("b", "competes_with", "a"),),
+        invariants=frozenset({"arrival_gt_service_implies_growth"}),
+        boundaries=(BoundaryCondition("flow_regime", "continual"),),
+        evidence_ids=("evidence:target",),
+    )
+    witness = _witness(
+        source,
+        target,
+        [
+            obligation
+            if obligation.obligation_id != "relation"
+            else TransferObligation(
+                "relation",
+                ObligationKind.RELATION,
+                "a|competes_with|b|1",
+                "b|competes_with|a|1",
+                evidence_ids=("evidence:relation",),
+            )
+            for obligation in _covering_obligations()
+        ],
+    )
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "relation_target_ref_not_role_mapping_image" in assessment.reasons
+
+
+def test_content_hash_is_deterministic() -> None:
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    witness = _witness(
+        source,
+        target,
+        [
+            TransferObligation(
+                "qoi",
+                ObligationKind.QOI,
+                "stability",
+                "stability",
+                evidence_ids=("evidence:qoi",),
+            )
+        ],
+    )
+    assert witness.content_hash == witness.content_hash
+    assert len(witness.content_hash) == 64
 
 
 def _disjoint_target(structure_id: str, context_id: str) -> StructuralObject:
@@ -289,21 +454,10 @@ def test_optional_only_obligations_fail_closed() -> None:
 
 def test_licensed_always_carries_a_satisfied_load_bearing_obligation() -> None:
     """The LICENSED-with-zero-reasons path is dead: any LICENSED assessment must
-    trace at least one satisfied load-bearing obligation."""
+    trace at least one satisfied load-bearing obligation. Witness upgraded to the
+    covering set under the source-derived coverage regime (#633)."""
     source, target = _object("source", "source-context"), _object("target", "target-context")
-    licensed_witness = _witness(
-        source,
-        target,
-        [
-            TransferObligation(
-                "qoi",
-                ObligationKind.QOI,
-                "stability",
-                "stability",
-                evidence_ids=("evidence:qoi",),
-            )
-        ],
-    )
+    licensed_witness = _witness(source, target, _covering_obligations())
     empty_witness = _witness(source, target, [])
     for witness in (licensed_witness, empty_witness):
         assessment = assess_transfer_v2(source, target, witness)
@@ -326,50 +480,13 @@ def test_licensed_always_carries_a_satisfied_load_bearing_obligation() -> None:
 
 
 def test_no_alarm_legitimate_licensing_unchanged() -> None:
-    """No-alarm control: a real satisfied-obligation case still returns LICENSED
-    with satisfied traces and no reasons, exactly as before the repair."""
+    """No-alarm control: a fully covering satisfied case still returns LICENSED
+    with satisfied traces and no reasons, exactly as before both repairs.
+    Witness upgraded to the covering set under #633."""
     source, target = _object("source", "source-context"), _object("target", "target-context")
-    witness = _witness(
-        source,
-        target,
-        [
-            TransferObligation(
-                "qoi",
-                ObligationKind.QOI,
-                "stability",
-                "stability",
-                evidence_ids=("evidence:qoi",),
-            ),
-            TransferObligation(
-                "invariant",
-                ObligationKind.INVARIANT,
-                "arrival_gt_service_implies_growth",
-                "arrival_gt_service_implies_growth",
-                evidence_ids=("evidence:invariant",),
-            ),
-        ],
-    )
+    witness = _witness(source, target, _covering_obligations())
     assessment = assess_transfer_v2(source, target, witness)
     assert assessment.decision is TransferDecision.LICENSED
     assert assessment.reasons == ()
     assert all(trace.status is ObligationStatus.SATISFIED for trace in assessment.traces)
-    assert len(assessment.traces) == 2
-
-
-def test_content_hash_is_deterministic() -> None:
-    source, target = _object("source", "source-context"), _object("target", "target-context")
-    witness = _witness(
-        source,
-        target,
-        [
-            TransferObligation(
-                "qoi",
-                ObligationKind.QOI,
-                "stability",
-                "stability",
-                evidence_ids=("evidence:qoi",),
-            )
-        ],
-    )
-    assert witness.content_hash == witness.content_hash
-    assert len(witness.content_hash) == 64
+    assert len(assessment.traces) == len(_covering_obligations())
