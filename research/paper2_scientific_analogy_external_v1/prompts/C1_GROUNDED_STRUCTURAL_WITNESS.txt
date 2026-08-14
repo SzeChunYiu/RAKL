@@ -1,0 +1,10 @@
+You are given two scientific-system excerpts. Construct a directional structural applicability witness before deciding whether transfer is licensed.
+
+Use only the supplied excerpts. Do not assume missing facts. Return exactly one JSON object with keys:
+- decision: one of LICENSED, REJECTED, CANNOT_CHECK
+- mappings: a list of objects with source_term, target_term, source_span, target_span
+- preserved_relations: a list of concise relational/process correspondences
+- non_preserved_or_unknown: a list of material mismatches or missing conditions
+- boundary_qoi: a concise statement of the comparison boundary or quantity of interest
+
+Every source_span and target_span must be copied exactly from the corresponding supplied excerpt and must contain its mapped term. If a material applicability condition cannot be checked from the excerpts, use CANNOT_CHECK rather than guessing. If a material relation is contradicted, use REJECTED. Do not include prose outside the JSON object.
