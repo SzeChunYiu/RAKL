@@ -1,0 +1,2485 @@
+{
+ "generated": "2026-08-14",
+ "source_tree": "/Users/billy/RAKL/src/rakl",
+ "total_modules": 288,
+ "note_subpackages": "metrics/, schemas/, training_ladder/ assigned as whole directories",
+ "seed_provenance": "two prior audits; seeds preserved verbatim (reason='audit seed')",
+ "summary_counts": {
+  "rakl": 1,
+  "rakl/core": 18,
+  "rakl/governance": 24,
+  "rakl/orion/challenger_evaluation": 7,
+  "rakl/orion/episode_memory": 5,
+  "rakl/orion/experience_analysis": 5,
+  "rakl/orion/lesson_learning": 3,
+  "rakl/orion/operator_acquisition": 6,
+  "rakl/orion/policy_learning": 10,
+  "rakl/orion/promotion": 4,
+  "rakl/orion/self_evolution": 15,
+  "rakl/runtime": 16,
+  "rakl/solver/composition": 14,
+  "rakl/solver/contract": 7,
+  "rakl/solver/decomposition": 3,
+  "rakl/solver/knowledge_space": 10,
+  "rakl/solver/navigation": 18,
+  "rakl/solver/residual": 8,
+  "rakl/solver/retrieval": 9,
+  "rakl/solver/saturation": 6,
+  "rakl/solver/structuralization": 6,
+  "rakl/solver/transport": 6,
+  "rakl/solver/verification": 20,
+  "rakl/studies": 67
+ },
+ "top20_highest_importers": [
+  {
+   "module": "v3_authority",
+   "importers_count": 17,
+   "target": "rakl/core"
+  },
+  {
+   "module": "experience_substrate",
+   "importers_count": 15,
+   "target": "rakl/orion/episode_memory"
+  },
+  {
+   "module": "formalism",
+   "importers_count": 12,
+   "target": "rakl/core"
+  },
+  {
+   "module": "paper3_annotation",
+   "importers_count": 12,
+   "target": "rakl/governance"
+  },
+  {
+   "module": "authority_ledger",
+   "importers_count": 11,
+   "target": "rakl/core"
+  },
+  {
+   "module": "structural_types",
+   "importers_count": 9,
+   "target": "rakl/solver/structuralization"
+  },
+  {
+   "module": "evolution_trace",
+   "importers_count": 8,
+   "target": "rakl/orion/self_evolution"
+  },
+  {
+   "module": "problem_solving_algebra",
+   "importers_count": 8,
+   "target": "rakl/solver/decomposition"
+  },
+  {
+   "module": "semantic_shortcut",
+   "importers_count": 8,
+   "target": "rakl/solver/retrieval"
+  },
+  {
+   "module": "canonical_commitment",
+   "importers_count": 7,
+   "target": "rakl/core"
+  },
+  {
+   "module": "core",
+   "importers_count": 7,
+   "target": "rakl/core"
+  },
+  {
+   "module": "failure_lattice",
+   "importers_count": 7,
+   "target": "rakl/solver/residual"
+  },
+  {
+   "module": "invention",
+   "importers_count": 7,
+   "target": "rakl/solver/contract"
+  },
+  {
+   "module": "issue_closeout_stubs",
+   "importers_count": 6,
+   "target": "rakl/studies"
+  },
+  {
+   "module": "matched_microtrial",
+   "importers_count": 6,
+   "target": "rakl/orion/challenger_evaluation"
+  },
+  {
+   "module": "paper2_pendulum_microtrial",
+   "importers_count": 6,
+   "target": "rakl/studies"
+  },
+  {
+   "module": "problem_fibre",
+   "importers_count": 6,
+   "target": "rakl/solver/contract"
+  },
+  {
+   "module": "research_tool_inventory",
+   "importers_count": 6,
+   "target": "rakl/orion/experience_analysis"
+  },
+  {
+   "module": "training_projection",
+   "importers_count": 6,
+   "target": "rakl/orion/policy_learning"
+  },
+  {
+   "module": "typed_lattice",
+   "importers_count": 6,
+   "target": "rakl/solver/knowledge_space"
+  }
+ ],
+ "path_pinned_count": 200,
+ "assignments": [
+  {
+   "module": "__init__",
+   "target": "rakl",
+   "confidence": "high",
+   "reason": "root package init, not moved",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "__main__",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "python -m rakl entrypoint",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "ablation_a3_a4_conformance",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 ablation conformance",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "ablation_a3_a4_matched_empirical",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 matched ablation runner",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "agent_authority_gateway",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "untrusted agent payload chokepoint",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "ai_operator_demoted_closeout",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper1/5 closeout helpers",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "alr_model_baselines",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "issue #154 baseline runner",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "alr_neighbour_residual",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "issue #154 residual audit",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "amortization",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "amortization cost coordinates",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "applicability",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "application_feedback",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "fail-closed application feedback ingestion",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "approximation_budget",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "composable error budgets for composition",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/verification"
+  },
+  {
+   "module": "artifact_attestation",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "artifact attestation receipts",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "artifact_contract_coverage",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "artifact-contract coverage receipt",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "assimilation",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "associative_experience",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #129",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "assumption_sensitivity",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "assumption scenario sensitivity gate",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "atlas_gluing",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "authority_assurance",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "assurance bindings around authority objects",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "authority_chokepoint",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "static authority chokepoint guard",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "authority_leakage_audit",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "degeneracy audit of #154 panels",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "authority_leakage_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "issue #154 benchmark harness",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "authority_leakage_panel_v2",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "issue #154 twin-pair panel",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "authority_ledger",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "canonical authority poset coordinates",
+   "importers_count": 11,
+   "path_pinned": true
+  },
+  {
+   "module": "authority_transport",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "availability_oracle",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "decision-time filtration oracle",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "backward_multiseed",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "backward_multiseed_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "frozen hidden-path benchmark harness",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "breakthrough_learning",
+   "target": "rakl/orion/experience_analysis",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "bridge_composition",
+   "target": "rakl/solver/composition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "canonical_commitment",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "canonical identity commitment hashing",
+   "importers_count": 7,
+   "path_pinned": true
+  },
+  {
+   "module": "capability",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "medium",
+   "reason": "capability shaping operator contract",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "capability_gated_closeout",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "capability-gated closeout terminal validation",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "challenge_learning",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "child_operators",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "claim_evidence",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "claim-evidence span relation primitive",
+   "importers_count": 3,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/verification"
+  },
+  {
+   "module": "cli",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "CLI entrypoint",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "closest_parent_ablation",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #156",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "closest_parent_matrix",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper2 closest-parent matrix validator",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "cognitive_compilation",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "medium",
+   "reason": "governed cognitive-compilation contract",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "compatibility_complex",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "medium",
+   "reason": "compat facade over typed_lattice",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "conceptual_basis_independence",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #132",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "constructive_lattice",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "candidate theory construction state",
+   "importers_count": 2,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/knowledge_space"
+  },
+  {
+   "module": "content_addressed_archive",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "context_compiler",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "medium",
+   "reason": "materializable view over canonical memory",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "context_efficiency",
+   "target": "rakl/runtime",
+   "confidence": "medium",
+   "reason": "context/token efficiency metrology",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "controlled_witness_extraction",
+   "target": "rakl/solver/verification",
+   "confidence": "low",
+   "reason": "controlled candidate-visible text interface",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "core",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "L0 projection/relation/authority/discriminator primitives",
+   "importers_count": 7,
+   "path_pinned": true
+  },
+  {
+   "module": "cost_geometry",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "Lawvere quasimetric cost geometry",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "current_work_coverage",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "open-work coverage receipt",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "cycle_metrics_harvest",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper V harvest instrumentation",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "degeneracy_probe",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "cannot-fail-construct probes (falsifiability family)",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "derivation",
+   "target": "rakl/solver/composition",
+   "confidence": "high",
+   "reason": "audit seed (untracked, exists)",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "diagnosis_state_machine",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "discovery_coverage",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "medium",
+   "reason": "capability-first exogenous discovery intents",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/retrieval"
+  },
+  {
+   "module": "driver_learning",
+   "target": "rakl/orion/lesson_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "episode_admission",
+   "target": "rakl/orion/episode_memory",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "epistemic task-world benchmark primitives",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_evolution",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/orion/self_evolution"
+  },
+  {
+   "module": "epistemic_gps",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #130",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "epistemic_noninterference",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "executable authority noninterference invariant",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_projection_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "architecture projection benchmark worlds",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_saturation",
+   "target": "rakl/solver/saturation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_search",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "epistemic_sufficiency",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "sequential evidence-sufficiency mechanics",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "epistemic_trajectory",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "evaluator",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "high",
+   "reason": "content-addressed challenger judge definition",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "evidence_binding_certificate",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "evidence_lineage",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "provenance graph evidence justification",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/verification"
+  },
+  {
+   "module": "evolution",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "evolution_archive",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "evolution_metrics",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "evolution_trace",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 8,
+   "path_pinned": true
+  },
+  {
+   "module": "execution",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "execution surface",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper2 RESET-vs-LEARNING benchmark",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_learning",
+   "target": "rakl/orion/lesson_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_memory",
+   "target": "rakl/orion/episode_memory",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_policy",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_substrate",
+   "target": "rakl/orion/episode_memory",
+   "confidence": "high",
+   "reason": "audit seed: TaskEpisode substrate",
+   "importers_count": 15,
+   "path_pinned": true
+  },
+  {
+   "module": "experience_to_method_promotion",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #157",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "external_agent_registry",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "failure_lattice",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 7,
+   "path_pinned": true,
+   "shared_with": "rakl/orion/experience_analysis"
+  },
+  {
+   "module": "failure_learning",
+   "target": "rakl/orion/lesson_learning",
+   "confidence": "high",
+   "reason": "failure diagnosis revision, boundary lessons",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "field_construction",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "cost-to-go field constructor strategies",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "field_successor",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "field-construction successor (#538)",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "fieldability",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "field certification and amortization break-even",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "formal_contracts",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "formal closure validation of mechanics",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "formal_oracles",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "formal_signatures",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "structural motif signatures for evaluators",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "formalism",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "typed math AST shared substrate",
+   "importers_count": 12,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/composition"
+  },
+  {
+   "module": "framework_candidate_freeze",
+   "target": "rakl/solver/contract",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "framework_freshness",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "framework freshness/adoption receipt",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "framework_ladder",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "progressive-build layer conformance check",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/core"
+  },
+  {
+   "module": "gate_falsifiability",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "generator_transport",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "gluing_learning",
+   "target": "rakl/solver/residual",
+   "confidence": "medium",
+   "reason": "typed residual from failed assembly",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/composition"
+  },
+  {
+   "module": "governed_intervention",
+   "target": "rakl/orion/promotion",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "hard_gates",
+   "target": "rakl/solver/contract",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/verification"
+  },
+  {
+   "module": "hosted_anthropic_client",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "hosted model client",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "identity",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "typed identity relations primitive",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "identity_reservation",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "identity reservation collision guard",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "identity_reuse",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "exact structural identity reuse",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "identity_saturation",
+   "target": "rakl/solver/saturation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "inference",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "bootstrap/permutation stats for gates",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "integration_epoch",
+   "target": "rakl/runtime",
+   "confidence": "medium",
+   "reason": "experiment-epoch composition surface",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "invention",
+   "target": "rakl/solver/contract",
+   "confidence": "high",
+   "reason": "audit seed: PositiveGoalContract",
+   "importers_count": 7,
+   "path_pinned": true
+  },
+  {
+   "module": "invention_api",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "constructive invention engine facade",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "invention_benchmark",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "hidden-world benchmark, imported by invention_api",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "invention_runtime",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "positive-goal invention lane coordinator",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/runtime"
+  },
+  {
+   "module": "issue_closeout_stubs",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "imported only by alias closeout stubs",
+   "importers_count": 6,
+   "path_pinned": false
+  },
+  {
+   "module": "lattice_metrology",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "medium",
+   "reason": "lattice snapshot growth metrology",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/saturation"
+  },
+  {
+   "module": "learning_governance_factorial",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "alias stub, issue #155",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "manuscript_saturation",
+   "target": "rakl/solver/saturation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "matched_microtrial",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "medium",
+   "reason": "matched-ceiling workflow comparison design",
+   "importers_count": 6,
+   "path_pinned": true,
+   "shared_with": "rakl/studies"
+  },
+  {
+   "module": "math_context",
+   "target": "rakl/solver/contract",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "math_oracles",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "math_research_api",
+   "target": "rakl/runtime",
+   "confidence": "medium",
+   "reason": "math research facade",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "math_research_assurance",
+   "target": "rakl/solver/verification",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 5,
+   "path_pinned": true
+  },
+  {
+   "module": "math_research_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "math research benchmark",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "math_research_runtime",
+   "target": "rakl/runtime",
+   "confidence": "medium",
+   "reason": "math research runtime",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "measurement",
+   "target": "rakl/solver/structuralization",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "mechanic_diagnosis",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "mechanic diagnosis, pairs with state machine",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "mechanic_research_packet",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "medium",
+   "reason": "preregistration packet for mechanic variants",
+   "importers_count": 1,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "mechanic_research_packet_io",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "medium",
+   "reason": "packet set I/O, shadow-only",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "mechanism_benefit",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "mechanism benefit-vs-soundness benchmark",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "mechanism_compiler",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "mechanism edge interaction-law compiler",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "mechanism_fidelity",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "mechanism fidelity benchmark primitives",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "memory",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "medium",
+   "reason": "append-only research memory, supersession",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/orion/episode_memory"
+  },
+  {
+   "module": "memory_coverage",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "memory_reference_resolution",
+   "target": "rakl/orion/episode_memory",
+   "confidence": "medium",
+   "reason": "fibre-time experience reference integrity",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/solver/knowledge_space"
+  },
+  {
+   "module": "meta",
+   "target": "rakl/orion/promotion",
+   "confidence": "medium",
+   "reason": "fail-closed self-modification promotion gate",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "meta_controller",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "meta_history",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "medium",
+   "reason": "historical meta-fiber ledger",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "meta_history_v2",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "medium",
+   "reason": "historical meta-fiber ledger",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "meta_history_v3",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "medium",
+   "reason": "historical meta-fiber ledger",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "meta_history_v4",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "medium",
+   "reason": "historical meta-fiber ledger",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "meta_registry",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "medium",
+   "reason": "meta-fiber registry validation",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "metacognition",
+   "target": "rakl/orion/experience_analysis",
+   "confidence": "medium",
+   "reason": "metacognitive audit verdicts",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/residual"
+  },
+  {
+   "module": "method_specs",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "v3 method-ownership conformance guard",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "method_telemetry",
+   "target": "rakl/orion/episode_memory",
+   "confidence": "medium",
+   "reason": "typed method telemetry per episode",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "method_telemetry_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "telemetry matched benchmark, issue #125",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "metrics/",
+   "target": "rakl/orion/experience_analysis",
+   "confidence": "medium",
+   "reason": "Orion KPI layer, trajectory figure",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "metrology",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "PSD/affine metrology validation checks",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "mini_archive_demo",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "demo script",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "mini_research_demo",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "demo script",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "mini_research_metrology",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "demo metrology receipts",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "missing_operator",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/orion/operator_acquisition"
+  },
+  {
+   "module": "model_criticism",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "model criticism probes and trials",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "multires_memory",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 5,
+   "path_pinned": true
+  },
+  {
+   "module": "navigation_dynamics",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "navigation_parallel",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "navigation_quotient",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "reachability-preserving quotient validation",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/structuralization"
+  },
+  {
+   "module": "navigation_successor",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "neural_structural_contract",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "low",
+   "reason": "neural TCSQ/witness learning prereg",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/solver/structuralization"
+  },
+  {
+   "module": "objective_transfer_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper2 benchmark verifier families",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "objective_transfer_benchmark_v2",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper2 benchmark six-family extension",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "objective_transfer_robustness",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper2 benchmark robustness",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "observability_adapters",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "observability_reports",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "RSHEA P6 observability reports",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "obstruction_transformation_corpus",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "open_world_discovery",
+   "target": "rakl/orion/operator_acquisition",
+   "confidence": "medium",
+   "reason": "open-world mechanism discovery, assimilation",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "operational_map",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "operational map closure/coverage certificate",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_alr_a3a4_confirmatory_prep_wave1",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 confirmatory prep",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_alr_confirmatory",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 confirmatory packet",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_capability_floor_receipt",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 capability receipt",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_capability_v3_diagnostic",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 instrument audit",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_cpu_staging",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 staging",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_cpu_staging_v3_1",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 staging",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_cpu_staging_v3_2",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 staging",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_cpu_staging_v3_2_1",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 staging",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_empirical_study",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 empirical study",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_experience_benchmark_runner",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 frozen protocol runner",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_experience_root_cause",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 root-cause helpers",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_model_staging_v4_3",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 staging",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 6,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial_v4_1",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial_v4_2",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial_v4_3",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial_v4_3_1",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_pendulum_microtrial_v4_4",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 experiment runner",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper2_power_design",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 power design",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper2_v4_4_positive_control",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper2 positive control",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_ai_operator_annotation",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 demoted annotation path",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_ai_operator_workload",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 LUNARC workload",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_annotation",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "annotation types imported by framework corpus",
+   "importers_count": 12,
+   "path_pinned": true,
+   "shared_with": "rakl/studies"
+  },
+  {
+   "module": "paper3_annotation_import",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 annotation import",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_cheap_gate",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 gate study",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_cheap_gate_figure",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 figure",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_confirmatory_gate",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 confirmatory gate",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_lunarc_preflight",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 operational script",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_lunarc_workload",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 LUNARC workload",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_power_design",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 power design",
+   "importers_count": 2,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_strong_control",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 strong control",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper3_successor_validation",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 successor freeze",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "paper3_witness_decoupling",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper3 decoupling diagnostic",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper5_fresh_twin_generator",
+   "target": "rakl/studies",
+   "confidence": "high",
+   "reason": "paper5 twin generator",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "paper_framework_consistency",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "manuscript-to-framework consistency binding",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/studies"
+  },
+  {
+   "module": "parent_evaluator",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "path_congruence",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "Mazurkiewicz trace congruence for paths",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "path_cost",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "navigation path cost",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "path_equivalence",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "commuting-transition swap witnesses",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "phase2_adaptive_receipt_admission",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "phase-2 receipt admission reproduction",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "pre_action_receipt",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "pre-action consequential-operator execution gate",
+   "importers_count": 2,
+   "path_pinned": true,
+   "shared_with": "rakl/orion/episode_memory"
+  },
+  {
+   "module": "pre_scratch_fibre_freeze",
+   "target": "rakl/solver/contract",
+   "confidence": "medium",
+   "reason": "host hook freezing fibre pre-hypothesis",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "prepolymarket",
+   "target": "rakl/runtime",
+   "confidence": "low",
+   "reason": "compat facade exposing hardening layers",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "problem_fibre",
+   "target": "rakl/solver/contract",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 6,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/decomposition"
+  },
+  {
+   "module": "problem_novelty",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "novelty classification of verified solutions",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "problem_solving_algebra",
+   "target": "rakl/solver/decomposition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 8,
+   "path_pinned": true
+  },
+  {
+   "module": "project_runtime",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "project runtime",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "promotion",
+   "target": "rakl/orion/promotion",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "promotion_attestation",
+   "target": "rakl/orion/promotion",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "proof_dag",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "proof DAG and lemma checkpoints",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "publication_gate",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "publication gate",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "quantifier_compatibility",
+   "target": "rakl/solver/composition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "quantifier_cowitness",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "existential co-witness challenger",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "rakl_cycle_metrics",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper V longitudinal cycle metrology",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "recursive_solver",
+   "target": "rakl/solver/decomposition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "reference_profile",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "model capability contract behind runtime",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "release_manifest",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "release/publication manifest",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "repository_boundary",
+   "target": "rakl/governance",
+   "confidence": "high",
+   "reason": "fail-closed repository-boundary checks",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "research_cycle",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "lifecycle stage/authority contracts",
+   "importers_count": 2,
+   "path_pinned": true,
+   "shared_with": "rakl/runtime"
+  },
+  {
+   "module": "research_identity",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "atom/candidate identity collision detection",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "research_machine_workflow",
+   "target": "rakl/solver/saturation",
+   "confidence": "medium",
+   "reason": "knowledge-acquisition state transitions",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "research_memory",
+   "target": "rakl/orion/experience_analysis",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "research_tool_inventory",
+   "target": "rakl/orion/experience_analysis",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 6,
+   "path_pinned": true
+  },
+  {
+   "module": "research_trace",
+   "target": "rakl/solver/residual",
+   "confidence": "medium",
+   "reason": "auditable hash-chained decision trace",
+   "importers_count": 2,
+   "path_pinned": true,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "retrieval_benchmark",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "root_coordinate_preservation",
+   "target": "rakl/solver/contract",
+   "confidence": "medium",
+   "reason": "root-coordinate QoI preservation receipt",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "round044_runtime_guards",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "stage-bound runtime invariant guards",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "route_family_health",
+   "target": "rakl/solver/residual",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "runtime_resumption",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "saturation",
+   "target": "rakl/solver/saturation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "saturation_vector",
+   "target": "rakl/solver/saturation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 5,
+   "path_pinned": true
+  },
+  {
+   "module": "schema_reference_constraints",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "cross-instance JSON reference integrity",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "schemas/",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "application-feedback bundle JSON schema",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "search_controller",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "search loop budget/frontier controller",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "search_policy_learning",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "self_bootstrap",
+   "target": "rakl/orion/challenger_evaluation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "self_hosting_bridge",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "self_hosting_runtime",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_quotient",
+   "target": "rakl/solver/structuralization",
+   "confidence": "medium",
+   "reason": "task-conditioned structural quotient",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_quotient_assurance",
+   "target": "rakl/solver/verification",
+   "confidence": "medium",
+   "reason": "quotient validation resolution gate",
+   "importers_count": 1,
+   "path_pinned": false,
+   "shared_with": "rakl/solver/structuralization"
+  },
+  {
+   "module": "semantic_quotient_memory",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "medium",
+   "reason": "TCSQ memory view, inherited authority",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "semantic_quotient_reconstruction",
+   "target": "rakl/solver/structuralization",
+   "confidence": "medium",
+   "reason": "quotient reconstruction validation",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "semantic_quotient_runtime",
+   "target": "rakl/solver/structuralization",
+   "confidence": "medium",
+   "reason": "fail-closed quotient compilation into fibres",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/runtime"
+  },
+  {
+   "module": "semantic_shortcut",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 8,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_shortcut_consolidation",
+   "target": "rakl/solver/retrieval",
+   "confidence": "medium",
+   "reason": "post-success structural episode consolidation",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_shortcut_router",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_shortcut_router_v2",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "semantic_shortcut_router_v3",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "shadow_artifact_hash",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "canonical hash helpers for artifacts",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "shadow_controller",
+   "target": "rakl/orion/self_evolution",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "similarity",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 4,
+   "path_pinned": true
+  },
+  {
+   "module": "solution_assembly",
+   "target": "rakl/solver/composition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "solver_compilation",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "preservation receipts, effect conflict composition",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "strategy_motifs",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "reusable strategy route motifs",
+   "importers_count": 5,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/retrieval"
+  },
+  {
+   "module": "structural_benchmark",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper3 structural benchmark cases",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "structural_benchmark_receipt",
+   "target": "rakl/studies",
+   "confidence": "medium",
+   "reason": "paper3 benchmark receipt",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "structural_identity_bridge",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "structural identity reuse across contexts",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "structural_routing_benchmark",
+   "target": "rakl/solver/retrieval",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": false
+  },
+  {
+   "module": "structural_transfer",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 2,
+   "path_pinned": true
+  },
+  {
+   "module": "structural_transfer_use",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "use-site hardening of structural witness",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "structural_transport_v2",
+   "target": "rakl/solver/transport",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "structural_types",
+   "target": "rakl/solver/structuralization",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 9,
+   "path_pinned": true
+  },
+  {
+   "module": "structure_space",
+   "target": "rakl/solver/structuralization",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 1,
+   "path_pinned": false,
+   "shared_with": "rakl/solver/knowledge_space"
+  },
+  {
+   "module": "subject_identity",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "evaluated-subject identity binding",
+   "importers_count": 1,
+   "path_pinned": true,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "summation_compatibility",
+   "target": "rakl/solver/composition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "support_solver",
+   "target": "rakl/solver/navigation",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 3,
+   "path_pinned": false
+  },
+  {
+   "module": "symbolic_discovery",
+   "target": "rakl/solver/composition",
+   "confidence": "medium",
+   "reason": "grammar/beam law-candidate discovery operator",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "token_budget",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "token budget",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "training_ladder/",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "high",
+   "reason": "training-time phase 0/1 scaffold",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "training_policy_authority",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "training_projection",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "medium",
+   "reason": "training-time projection state contract",
+   "importers_count": 6,
+   "path_pinned": true
+  },
+  {
+   "module": "training_projection_binding",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "medium",
+   "reason": "training projection assurance sidecars",
+   "importers_count": 1,
+   "path_pinned": false,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "training_scheduler",
+   "target": "rakl/orion/policy_learning",
+   "confidence": "medium",
+   "reason": "learner-conditioned training batch selection",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "tree",
+   "target": "rakl/solver/decomposition",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "typed_lattice",
+   "target": "rakl/solver/knowledge_space",
+   "confidence": "high",
+   "reason": "audit seed",
+   "importers_count": 6,
+   "path_pinned": true
+  },
+  {
+   "module": "unified_integration_contract",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "version-binding manifest for handoff",
+   "importers_count": 1,
+   "path_pinned": false
+  },
+  {
+   "module": "unified_solver_registry",
+   "target": "rakl/runtime",
+   "confidence": "low",
+   "reason": "solver mechanic registry validator",
+   "importers_count": 0,
+   "path_pinned": true
+  },
+  {
+   "module": "unified_substrate",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "read-only overlay across canonical stores",
+   "importers_count": 3,
+   "path_pinned": true
+  },
+  {
+   "module": "v3",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "public v3 facade",
+   "importers_count": 1,
+   "path_pinned": true
+  },
+  {
+   "module": "v3_authority",
+   "target": "rakl/core",
+   "confidence": "high",
+   "reason": "content-addressed authority receipt primitives",
+   "importers_count": 17,
+   "path_pinned": true,
+   "shared_with": "rakl/governance"
+  },
+  {
+   "module": "v3_commitment",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "versioned commitment migration surface",
+   "importers_count": 2,
+   "path_pinned": false
+  },
+  {
+   "module": "v3_metrology",
+   "target": "rakl/core",
+   "confidence": "medium",
+   "reason": "read-only state metrology portrait",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/runtime"
+  },
+  {
+   "module": "v3_runtime",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "v3 runtime core",
+   "importers_count": 5,
+   "path_pinned": true
+  },
+  {
+   "module": "v3_scientific_authority",
+   "target": "rakl/governance",
+   "confidence": "medium",
+   "reason": "binds authority certificates into runtime",
+   "importers_count": 5,
+   "path_pinned": true,
+   "shared_with": "rakl/core"
+  },
+  {
+   "module": "verified_transformation_geometry",
+   "target": "rakl/solver/navigation",
+   "confidence": "medium",
+   "reason": "edge assurance/reachability navigation contracts",
+   "importers_count": 0,
+   "path_pinned": true,
+   "shared_with": "rakl/solver/transport"
+  },
+  {
+   "module": "workspace",
+   "target": "rakl/runtime",
+   "confidence": "high",
+   "reason": "workspace",
+   "importers_count": 0,
+   "path_pinned": true
+  }
+ ]
+}

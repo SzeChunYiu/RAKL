@@ -22,8 +22,16 @@ A note on `decide`: it is safe for the Bool/Nat decisions used here, but the cor
 `Decidable` instance for **list membership** routes through `propext`. One such leak was
 caught by the audit during this pass and replaced with an explicit membership term.
 
-What is *not* here: the finite-basis cardinality bound (needs a finiteness development),
-and greedy optimality (`03_workspace.tex:48`), which has been read line by line with no
-gap found but is not machine-checked. No claim is `UNREVIEWED`. Mechanization reduces the
-external formal-review obligation (issue #216); it does not discharge it, and nothing in
-this directory is independent review.
+What is *not* here: greedy optimality (`03_workspace.tex:48`). Three ingredients its proof
+uses — the exchange step, the existence of a swap partner, and top-`k` optimality — are
+machine-checked and axiom-free, but **no part of the optimality statement is**, so the claim
+stays `PAPER_PROOF_COMPLETE` rather than being upgraded on the strength of its lemmas. No
+claim is `UNREVIEWED`. Mechanization reduces the external formal-review obligation
+(issue #216); it does not discharge it, and nothing in this directory is independent review.
+
+The finiteness development carries three encoding hypotheses that the paper gets for free
+from typing or from working with real finite sets — most importantly, "every strict
+inclusion adds an element" is supplied as a **witness function** rather than an
+existential, because turning `∃` into list data needs `Classical.choice`. That is a
+genuine strengthening of the hypothesis and is spelled out in the inventory's
+`encoding_hypotheses`, not glossed.

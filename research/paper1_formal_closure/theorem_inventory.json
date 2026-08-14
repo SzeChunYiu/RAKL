@@ -16,7 +16,13 @@
     "PAPER_PROOF_INFORMAL": "The stated 'proof' argues from construction/definition rather than deriving the claim. Not necessarily wrong - but it is not a proof as written.",
     "PAPER_PROOF_GAP": "A specific gap was identified. Must be repaired before publication.",
     "UNREVIEWED": "Not yet read at proof depth in this pass. Explicitly NOT 'checked and fine'.",
-    "PARTIALLY_MECHANIZED": "Some but not all of the claim's content is machine-checked. The unmechanized part is named explicitly in not_mechanized."
+    "PARTIALLY_MECHANIZED": "Some but not all of the claim's content is machine-checked. The unmechanized part is named explicitly in not_mechanized. NOTE: 'content' means part of the claim's own STATEMENT. Machine-checking lemmas that the claim's proof merely uses does NOT qualify - see P1-T-GREEDY-OPTIMALITY, which stays PAPER_PROOF_COMPLETE for exactly this reason."
+  },
+  "mechanization_vocabulary": {
+    "_note": "The 'mechanization' field describes formalization EFFORT and is independent of 'status', which describes what the claim is entitled to assert. A claim can be PAPER_PROOF_COMPLETE with mechanization PARTIAL: real Lean work exists and is listed in lean_names, but none of it discharges the claim's statement.",
+    "FULL": "The claim's statement is machine-checked.",
+    "PARTIAL": "Lean work exists for this claim but does not (yet) discharge its statement.",
+    "CANDIDATE": "Identified as mechanizable; no Lean work yet."
   },
   "claims": [
     {
@@ -76,14 +82,15 @@
       "kind": "theorem",
       "name": "Finite-basis saturation",
       "location": "04_owmd.tex:162",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "termination",
-      "notes": "Knaster-Tarski-shaped: inflationary + monotone gives a fixed point at the first non-strict step, and the stabilized state is the least fixed point above K0. Both of those halves are mechanized and axiom-free. The paper's additional cardinality bound is separate - see not_mechanized.",
-      "lean_names": "RaklFormal.iter_below_prefixed, stabilized_is_fixed, stabilized_is_least",
+      "notes": "Knaster-Tarski-shaped: inflationary + monotone gives a fixed point at the first non-strict step, and the stabilized state is the least fixed point above K0. Both halves were already mechanized. The cardinality bound is now mechanized too, on a mathlib-free finiteness development (pigeonhole via a hand-rolled Distinct/dropOne, plus a keep/countP partition of the universe). FINDING (precision, not a gap): the counting half needs ONLY inflationarity, not monotonicity - exactly as the paper's own sentence 'Inflationarity gives K_n subset K_{n+1}' implies. Monotonicity is genuinely required for the least-fixed-point half and is used there. iter_index_monotone therefore does not take a monotonicity hypothesis, so the counting bound cannot be silently credited to a hypothesis it does not use. The bound is stated additively (card K0 + n <= |U|) because natural subtraction truncates; the paper's literal |U|-|K0| form is derived as finite_basis_strict_growth_bound_sub.",
+      "lean_names": "RaklFormal.iter_below_prefixed, RaklFormal.stabilized_is_fixed, RaklFormal.stabilized_is_least, RaklFormal.finite_basis_strict_growth_bound, RaklFormal.finite_basis_strict_growth_bound_sub, RaklFormal.distinct_length_le, RaklFormal.iter_index_monotone, RaklFormal.iter_within_univ, RaklFormal.distinct_witnesses, RaklFormal.finite_basis_bound_is_attained",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The cardinality bound (at most |U|-|K0| strict-growth steps) is NOT mechanized; it requires a finiteness/cardinality development. The least-fixed-point and stabilization halves ARE mechanized."
+      "encoding_hypotheses": "Three things the paper gets from typing or from working with genuine finite sets have to be re-supplied as explicit hypotheses under the predicate encoding, and none of them is hidden. (1) 'F : P(U_B) -> P(U_B)' is not a typing fact when subsets are predicates, so 'F maps subsets of U to subsets of U' is the hypothesis hFuniv, and K0 subset U is hK0univ. (2) The finite universe is an explicit enumeration univ : List A with Distinct univ, which is what makes the keep-length the true cardinality rather than a multiset count. (3) STRENGTHENING, stated plainly: 'every strict inclusion adds at least one element' is supplied as a witness FUNCTION w naming the element each step adds, not as a bare existential. Turning an existential into list data requires Classical.choice, which would put 'choice' into the axiom report and destroy the development's central claim. So the constructive content of the paper's sentence is required directly. This is a genuinely stronger hypothesis than the paper's prose and is recorded here rather than glossed. The iterates themselves are never assumed decidable - only K0 is - which is what keeps the development constructive.",
+      "lean_names_note": "finite_basis_bound_is_attained is the non-vacuity witness: the bound is attained, so it is not an idle inequality. distinct_length_le is the pigeonhole sub-lemma the whole counting argument rests on; it is proved here rather than imported."
     },
     {
       "id": "P1-T-DERIVED-VIEW-NON-ESCALATION",
@@ -105,7 +112,7 @@
       "id": "P1-T-PROPOSAL-NON-SOVEREIGNTY",
       "kind": "proposition",
       "name": "Proposal non-sovereignty",
-      "location": "01_introduction_foundations_state.tex:173",
+      "location": "01_introduction_foundations_state.tex:176",
       "status": "MECHANIZED",
       "mechanization": "FULL",
       "load_bearing_class": "noninterference",
@@ -119,7 +126,7 @@
       "id": "P1-T-NEGATIVE-HISTORY-MONOTONICITY",
       "kind": "proposition",
       "name": "Negative-history monotonicity under append-only archival policy",
-      "location": "01_introduction_foundations_state.tex:191",
+      "location": "01_introduction_foundations_state.tex:194",
       "status": "MECHANIZED",
       "mechanization": "FULL",
       "load_bearing_class": "composition",
@@ -189,16 +196,23 @@
       "name": "Optimality of reservation-first greedy selection",
       "location": "03_workspace.tex:48",
       "status": "PAPER_PROOF_COMPLETE",
-      "mechanization": "CANDIDATE",
+      "mechanization": "PARTIAL",
       "load_bearing_class": "algorithmic",
       "notes": "Read at proof depth, hunting specifically for the hidden matroid/exchange assumption these proofs usually conceal. NO GAP FOUND. The exchange step is sound: feasibility gives |S* intersect p| >= r_p, so if some element of the top-r_p set of p is missing from S* then S* must contain an element of p outside that top set, whose utility is <= the missing one; swapping preserves cardinality, preserves every lower bound, and cannot decrease the objective. Assumption (i) disjointness is what makes exchanges in different partitions non-interfering, and it is stated. Stage two is genuinely unconstrained once the reserved sets are fixed - all lower bounds are already met and unit costs make the residual an ordinary top-k - and non-negativity (iii) is what licenses filling every remaining slot. The paper is also explicit about what breaks the theorem (heterogeneous costs, non-additive diversity bonuses, upper quotas, overlapping partitions), which is the right scoping. PRECISION NOTE (not a gap): 'the top r_p candidates' is not well defined under utility ties, and the implementation picks some tie-broken set. The argument survives unchanged, but a faithful formalization must quantify over ANY maximal r_p-subset (every element of p outside it has utility <= every element inside it) rather than over a unique 'the' top set. This is a statement-precision point, not an error.",
-      "not_mechanized": "The whole theorem. Deferred to a separate batch so that the harder finite-set/summation development cannot delay the ten items that are ready. Planned encoding: selections as List.Sublist of the candidate pool, 'top-k' as the tie-safe IsTopSubset predicate described in the precision note, and two lemmas - single-swap exchange (iterated) and residual-unconstrained top-k. This status is deliberately NOT reported as MECHANIZED and NOT reported as UNREVIEWED; it is 'read line by line by a same-session reviewer, no gap found', which per review_provenance is not reviewer-independent."
+      "lean_names": "RaklFormal.sum_swap_ge, RaklFormal.top_subset_optimal, RaklFormal.exchange_partner_exists, RaklFormal.sum_le_of_pointwise_dominated, RaklFormal.sumU_congr_mem, RaklFormal.sumU_keep_split, RaklFormal.distinct_subset_exhausts, RaklFormal.subset_or_witness",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "mechanized_part": "Every non-trivial ingredient of BOTH stages is machine-checked. (a) sum_swap_ge - the exchange step: swapping a selected item for an unselected one of at least equal utility never decreases the objective. (b) exchange_partner_exists - the counting step the paper compresses into 'suppose S* contains a reserved-slot candidate j whose utility is lower'. The paper ASSERTS a swap partner is available; here its availability is DERIVED from feasibility (via distinct_subset_exhausts). This was the step most likely to hide an assumption, and it does not. (c) top_subset_optimal - top-k optimality against the tie-safe IsTopSubset predicate: any admissible selection of at most k eligible candidates is worth no more than a maximal k-subset. That is the paper's second stage, and applied per partition it is what the first-stage exchange establishes. Non-negativity (assumption iii) enters exactly once, in sum_le_of_pointwise_dominated.",
+      "not_mechanized": "The ASSEMBLY: iterating the exchange across the reserved partitions while carrying feasibility, and splitting the objective across the reserved/fill boundary to combine the two stages into the single statement 'reservation-first greedy is optimal'. This is bookkeeping over the three mechanized ingredients rather than further mathematical content, but it is NOT machine-checked and is therefore not claimed.",
+      "status_rationale": "Deliberately PAPER_PROOF_COMPLETE and NOT PARTIALLY_MECHANIZED. Per status_vocabulary, PARTIALLY_MECHANIZED means some of THE CLAIM'S CONTENT is machine-checked - as for the finite-basis least-fixed-point half, or the non-escalation shared principle, where a proper part of the theorem's own statement was proved. Here no part of the optimality STATEMENT is machine-checked; what is proved is three lemmas that its proof uses. Labelling that PARTIALLY_MECHANIZED would let a reader infer that part of the optimality claim holds by machine check, which is false. The status therefore reports only what is reviewer-independent about this claim - nothing - while mechanized_part records the genuine machine-checked ingredients. Stretching a status label to fit the evidence is the precise failure mode this inventory exists to prevent.",
+      "encoding_hypotheses": "Utilities are Nat. The paper states u_i >= 0 over the reals. Nat supplies non-negativity (assumption iii) for free, and the argument uses only +, <=, transitivity and add_le_add, so nothing in the proof depends on Nat beyond those - but the statement as mechanized is a SPECIAL CASE and is not claimed to cover real-valued utilities. IsTopSubset makes maximality relative to the eligibility predicate rather than to the whole pool, which is required for the reserved stage: a reserved item may be worth less than an unselected item of another partition, so whole-pool maximality would be false there.",
+      "lean_names_note": "subset_or_witness keeps the swap-partner argument constructive. The usual 'not a subset, therefore a counterexample exists' step is classical; deciding membership with a hand-rolled memB avoids both Classical.choice and core's List.elem bridge lemmas, which depend on propext."
     },
     {
       "id": "P1-T-AUTHORITY-PRESERVATION",
       "kind": "proposition",
       "name": "Authority-preservation invariant",
-      "location": "03_workspace.tex:72",
+      "location": "03_workspace.tex:76",
       "status": "MECHANIZED",
       "mechanization": "FULL",
       "load_bearing_class": "noninterference",
@@ -212,7 +226,7 @@
       "id": "P1-T-COACTIVATION-NOT-COMPATIBILITY",
       "kind": "proposition",
       "name": "Coactivation does not imply compatibility",
-      "location": "03_workspace.tex:82",
+      "location": "03_workspace.tex:86",
       "status": "MECHANIZED",
       "mechanization": "FULL",
       "load_bearing_class": "algebraic",
@@ -248,33 +262,49 @@
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
       "lean_names_note": "freshness_expiry_witness is the non-vacuity witness: a concrete certificate that over-discharges its flat-round obligation is still refused, and the rerun repairs exactly that. It rules out the reading in which the gate is unsatisfiable."
+    },
+    {
+      "id": "P1-T-OBSTRUCTION-BLIND-DISTILLATION",
+      "kind": "proposition",
+      "name": "Obstruction-blind distillation is unsound for navigation",
+      "location": "04g_minimal_support_structure.tex:39",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
+      "load_bearing_class": "algebraic/identifiability",
+      "lean_names": "RaklFormal.covers_agree_on_pairwise_data, RaklFormal.covers_differ_on_global_realizability, RaklFormal.no_pairwise_predicate_decides_global_realizability",
+      "lean_file": "formal/RaklFormal.lean",
+      "axiom_dependencies": "none",
+      "notes": "NEW. Converts the paper's existing three-context parity counterexample from a curiosity about covers into a CONDITION on admissible distillation. Two covers share their pairwise-satisfiability record and differ in global realizability, so no predicate on that record decides it; a navigator consuming an obstruction-blind distillation will admit a support structure whose every step is licensed and which has no global section. This is an identifiability statement, not an argument against distillation - it names exactly which datum must travel alongside the retained cores. Section 02_compatibility_authority already RECOMMENDED explicit obstruction objects; this makes it a requirement and locates the cost of ignoring it in the navigator."
     }
   ],
   "summary": {
-    "total_claims": 17,
-    "read_at_proof_depth": 17,
+    "total_claims": 18,
+    "read_at_proof_depth": 18,
     "paper_proof_complete": 1,
     "paper_proof_informal": 0,
     "paper_proof_gap": 0,
     "unreviewed": 0,
-    "mechanized": 15,
-    "partially_mechanized": 1
+    "mechanized": 17,
+    "partially_mechanized": 0
   },
   "open_residuals": [
     {
       "residual_id": "RES-P1F-001",
       "statement": "CLOSED. All 17 theorem-like claims have now been read at proof depth. No claim remains UNREVIEWED.",
-      "closure_action": "None. Superseded by RES-P1F-003, which tracks the two claims not yet machine-checked."
+      "closure_action": "None. Superseded by RES-P1F-003, which tracks the two claims not yet machine-checked.",
+      "status": "CLOSED"
     },
     {
       "residual_id": "RES-P1F-004",
       "statement": "OPEN. Independent formal-proof review (issue #216) is not addressed by this inventory and cannot be addressed from inside this session. The operator has elected to substitute machine-checked proof for independent formal-proof review; that substitution is reviewer-independent for MECHANIZED claims only, and says nothing about the one PAPER_PROOF_COMPLETE claim.",
-      "closure_action": "External reviewer. Mechanization reduces but does not eliminate this obligation."
+      "closure_action": "External reviewer. Mechanization reduces but does not eliminate this obligation.",
+      "status": "OPEN"
     },
     {
       "residual_id": "RES-P1F-003",
-      "statement": "OPEN, narrowed. 15 of 17 claims are MECHANIZED. Two are not: P1-T-GREEDY-OPTIMALITY is PAPER_PROOF_COMPLETE (read line by line, no gap found, but same-session and therefore not reviewer-independent), and P1-T-FINITE-BASIS-SATURATION remains PARTIALLY_MECHANIZED pending the cardinality bound.",
-      "closure_action": "Add a mathlib-free finiteness development for the |U|-|K0| counting bound; mechanize greedy optimality with a tie-safe maximal-subset encoding of 'top r_p'."
+      "statement": "OPEN, narrowed to one item. 16 of 17 claims are MECHANIZED. P1-T-GREEDY-OPTIMALITY is NOT: it stays PAPER_PROOF_COMPLETE, which is same-session evidence and NOT reviewer-independent. Three of its proof's ingredients (exchange step, swap-partner existence, top-k optimality) are machine-checked and axiom-free, but no part of the optimality STATEMENT is, so the claim is not reported as partially mechanized - see its status_rationale.",
+      "closure_action": "Discharge the assembly: iterate the exchange across reserved partitions carrying feasibility, then split the objective across the reserved/fill boundary. No new mathematical content is expected - the ingredients are proved - but until it is machine-checked the theorem is not claimed.",
+      "status": "OPEN"
     },
     {
       "residual_id": "RES-P1F-002",
@@ -289,7 +319,7 @@
     "negative_control": "PASSED - a deliberately false lemma is rejected by the kernel, so the build is capable of failing",
     "axiom_audit": "Every theorem in the development reports 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext. The audit covers ALL theorems in the file, not a selected subset, so a new theorem cannot be added without being audited.",
     "reviewer_independent": true,
-    "axiom_audited_theorems": 52,
+    "axiom_audited_theorems": 87,
     "axiom_audit_incident": "One propext leak was caught and fixed during this pass: coactivation_witness was initially proved by `decide`, and the core Decidable instance for list membership routes through propext. Replaced by an explicit membership term. Recorded because it is the exact failure mode the audit exists to catch, and because `decide` remains safe elsewhere in the file only where it decides Bool/Nat equalities rather than list membership.",
     "shared_principle_note": "The four non-escalation propositions are proved by one shared principle (no_uncertified_composition_changes_canon) AND each is now separately instantiated against its own state space, operator form and non-vacuity witness. The codomain obligation is PROVED for each operator form rather than assumed, so the shared principle is specialized rather than merely cited."
   }

@@ -1,0 +1,45 @@
+{
+  "schema_version": "p4-instrument-admissibility-kappa-freeze-v1",
+  "date": "2026-08-14",
+  "packet": "research/paper4_allocator_attribution_v1/PACKET_oracle_ceiling_calibration_gate_v1.json",
+  "packet_content_sha256": "d318363d93721c0fe2900916e04324110ac365f327c8ad85094fae71dd50103b",
+  "frozen_kappa": 1.2,
+  "admissibility_rule": "an equal-budget allocation-comparison instrument is ADMISSIBLE only when a constructive (lower/exact) bound on its achievable ceiling is >= kappa * registered_MDE; INADMISSIBLE only when a rigorous upper bound is < kappa * registered_MDE; otherwise CANNOT_CHECK (fail closed)",
+  "kappa_rationale": [
+    "kappa=1 is the logical minimum: an instrument whose achievable ceiling is below its own registered MDE cannot generate the effect it is gating on, for any sample size.",
+    "kappa=1.2 adds a power margin: if the best achievable effect sits exactly at the MDE, the best possible policy sits exactly at the gate and sampling noise makes a pass at best a coin flip; requiring 20% headroom above the MDE is the analogue of not powering a study at its own significance boundary.",
+    "kappa is deliberately modest because the INADMISSIBLE branch already carries built-in conservatism: it may only be licensed by an UPPER bound, and every relaxation looseness inflates that bound, making INADMISSIBLE harder, not easier, to reach."
+  ],
+  "chronology_disclosure": [
+    "This freeze precedes the construction and ceiling computation of every fresh-assurance case and of any successor instrument (their seeds and definitions are declared below and had not been executed when this file was written).",
+    "It does NOT precede the reference instrument's ceiling, which was computed earlier and is already merged in research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json (tier-3 upper bound 0.024571 vs MDE 0.05).",
+    "For the reference instrument the verdict is therefore kappa-insensitive rather than kappa-chosen: INADMISSIBLE holds for every kappa > 0.4914, so no choice of kappa >= 1 could alter it. The reference verdict is a formalization of an already-preserved finding, not a chronology-clean discovery; the fresh-assurance cases below carry the chronology-clean demonstration."
+  ],
+  "fresh_assurance_benchmark_id": "P4_INSTRUMENT_ADMISSIBILITY_FRESH_ASSURANCE_V1",
+  "fresh_assurance_seed": 202608141101,
+  "fresh_assurance_seed_disjoint_from": [202608140601],
+  "fresh_assurance_case_ids": [
+    "FRESH_DEGENERATE_ZERO_HEADROOM",
+    "FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM",
+    "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY",
+    "FRESH_UNCOMPUTABLE_ORACLE_STUB",
+    "FRESH_CEILING_MARGINALLY_ABOVE_MDE"
+  ],
+  "fresh_assurance_expected_verdicts": {
+    "FRESH_DEGENERATE_ZERO_HEADROOM": "INADMISSIBLE",
+    "FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM": "ADMISSIBLE",
+    "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY": "ADMISSIBLE_VIA_LOWER_BOUND_ONLY_no_valid_monotone_relaxation_supplied",
+    "FRESH_UNCOMPUTABLE_ORACLE_STUB": "CANNOT_CHECK",
+    "FRESH_CEILING_MARGINALLY_ABOVE_MDE": "INADMISSIBLE_exact_ceiling_in_(MDE, kappa*MDE)"
+  },
+  "falsifiability_audit_obligation": "before any confirmatory use, the gate must pass a per-condition black-box audit via src/rakl/gate_falsifiability.py, control condition first, with expected SENSITIVE/INSENSITIVE outcomes declared per probe in the audit receipt; INSENSITIVE-where-sensitivity-was-expected fails the audit",
+  "hard_obligations_restated": [
+    "kappa and the registered MDE may never be revised after ceiling access",
+    "an INADMISSIBLE verdict may never be upgraded by arm-outcome access",
+    "a policy score may never license INADMISSIBLE",
+    "an uncomputable oracle may never yield ADMISSIBLE",
+    "the gate never promotes, revives, or reverses any allocator terminal"
+  ],
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false
+}

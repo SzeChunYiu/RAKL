@@ -1,0 +1,37 @@
+{
+  "schema_version": "paper1-live-model-payload-freeze-hardening-v2",
+  "date": "2026-08-14",
+  "owner_issue": 592,
+  "parent_main_sha": "57dd353a32a58fdea76920a704c4bf22f6e57aa0",
+  "reason": "The v1 protocol required the 96-case panel to be hashed before the first model call, but did not bind an expected panel digest or generator blob inside the frozen packet. No live-model outputs have been accessed. This versioned pre-outcome successor closes that identity gap without changing the panel, model, interface, thresholds or production ingress.",
+  "original_protocol_blob": "2e7f37d6a3524870af8d439147a5bc1a4646734b",
+  "frozen_source_blobs": {
+    "experiments/paper1/build_live_model_payload_panel_v1.py": "9fc9434aa6e4cbb797265c350371ee3f9eddedcf",
+    "experiments/paper1/run_live_model_payload_assurance_v1.py": "8a902d236ba9d1869f9292ca00c6d6f5bdda98e3",
+    "experiments/paper1/run_live_model_payload_assurance_v1_lunarc.sbatch": "5024bbe77776e8a06fc32165e025a4897630d453",
+    "research/paper1_live_model_payload_assurance_v1/PROTOCOL.json": "2e7f37d6a3524870af8d439147a5bc1a4646734b"
+  },
+  "frozen_panel": {
+    "seed": 202608141001,
+    "cases_per_family": 12,
+    "n": 96,
+    "panel_bytes": 148332,
+    "panel_sha256": "5af33abe503d0531f933a37f769932510c76c6144be3d23fc241bd670645ff81",
+    "preoutcome_source": "successful exact-head preflight 31789251011 / job 94732185206; this digest was produced before any live-model output"
+  },
+  "scientific_settings_unchanged": {
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "decoding": "greedy",
+    "temperature": 0.0,
+    "max_new_tokens": 384,
+    "n_cases": 96,
+    "hard_gate_unchanged": true,
+    "usability_gate_unchanged": true,
+    "stress_coverage_gate_unchanged": true,
+    "production_ingress_unchanged": true
+  },
+  "execution_rule": "Before any model call, the exact checkout must reproduce every frozen Git blob plus the exact 148332-byte panel and SHA-256. Any mismatch is an instrument/subject defect; no model output may be used or reinterpreted under v1.",
+  "allowed_positive_terminal": "PROMOTE_CONDITIONALLY_LIVE_MODEL_PAYLOAD_AUTHORITY_ASSURANCE_QWEN25_7B_V1",
+  "claim_boundary": "PREOUTCOME_FREEZE_IDENTITY_HARDENING_ONLY__NO_LIVE_MODEL_RESULT__NO_SCIENTIFIC_AUTHORITY",
+  "grants_scientific_authority": false
+}

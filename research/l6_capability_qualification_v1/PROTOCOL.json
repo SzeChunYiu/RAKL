@@ -1,0 +1,149 @@
+{
+  "protocol_id": "L6-CAPABILITY-QUALIFICATION-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@4b8a5951",
+  "ladder_obligation": {
+    "layer_id": "L6-METHOD-EVOLUTION",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Fresh-task lift versus a static-method parent. Currently BLOCKED_ON_CAPABILITY_QUALIFICATION, explicitly not a null.",
+    "ledger_row": "research/mechanism_benefit_ledger/ledger.json MECH-METHOD-EVOLUTION: benefit NOT_ATTEMPTED; 'the single largest benefit gap in the programme'.",
+    "frontier_binding": "research/orion_claim_frontier_v1/CLAIM_FRONTIER.json P3 next_target FRESH_MODEL_INTERFACE_QUALIFICATION_THEN_RAW_TRAJECTORY_CAUSAL_LIFT: a qualification pass authorizes only a separately frozen power-sized matched experiment; it does not itself show the method-evolution mechanic helps."
+  },
+  "question": "Is the system's capability floor sufficient that a method change COULD express a measurable fresh-task lift? Concretely: does the static-method parent complete a registered fresh-task battery inside a two-sided headroom window with non-degenerate variance, on an instrument whose gold labels are structurally independent of predictions, with episodes/lessons demonstrably reaching the routing surface and enough relevant experience existing for a method-evolution arm to have anything to leverage?",
+  "claim_boundary": "CAPABILITY_QUALIFICATION_ONLY__NOT_LIFT__NOT_BENEFIT__NOT_MODEL_EFFICACY__NOT_SCIENTIFIC_AUTHORITY",
+  "defect_register_this_design_avoids": {
+    "L6_gold_is_the_prediction": "ladder.json L6 readiness evidence: 'Four of six Paper III gate conditions NON_FALSIFIABLE; gold label is the prediction (same pure function, same argument). Registered thresholds sit exactly at the ceilings.' Countermeasures here: (a) gold minted only by a hidden-world generator or by the separate independent oracle module under the PR #634 independence contract (no import, no call, enumerated forbidden inputs, gold committed before any parent run); (b) every qualification gate threshold is strictly interior to the achievable range and each gate is demonstrated flippable by a planted evaluator selftest world; (c) a run-level gate-falsifiability audit (research/paper3_gate_falsifiability_audit_v1 battery pattern) is a registered execution obligation - a zero-variance gate is an instrument defect, not a pass.",
+    "paper3_model_level_experience_negative": "research/orion_p1_p4_closure_v2/README.md preserves the historical model-level experience negative; research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION Stage 1 localized the class: an undefined evidence-role instruction surface made 'cannot bind evidence' and 'answered under the other admissible reading' unidentifiable, so a lift-style negative was uninterpretable. Countermeasure: QC1 runs the Stage-0-style role-semantics audit (audit input is instruction text only, never outcomes) BEFORE any parent metric is read; failure is CANNOT_CHECK(INSTRUMENT_DEFECT), never NOT_QUALIFIED and never a capability claim.",
+    "non_falsifiable_successor_gates": "research/paper3_gate_falsifiability_audit_v1/GATE_FALSIFIABILITY_AUDIT.json: typed_exact/typed_unsafe/typed_cannot_check/typed_legitimate_apply were NON_FALSIFIABLE (zero-variance under 9 probes x 32 trials). Successor gates here use interior windows (QC2, QC3, QC4, QC6) or conformance gates with planted failing worlds (QC5, QC7, QC8)."
+  },
+  "subject_binding": {
+    "subject": "The static-method parent: the promoted RAKL mechanics with method evolution OFF - SearchPolicy(version='static-parent-v1') at the frozen defaults of src/rakl/search_policy_learning.SearchPolicy, no episode-store consultation, no lesson application, no experience-conditioned routing - over a role-defined task interface.",
+    "execution_precondition": "SUBJECT_FREEZE required BEFORE battery generation: exact model id/revision/decoding/resource + interface hash frozen either by issue #447 Stage-3 freeze (research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION, currently proposal-only) or by an L6-specific SUBJECT_FREEZE_V1.json committed first. No RAKL treatment outcome may participate in subject selection (CLAIM_FRONTIER P3 promotion_gate: no threshold/model shopping). An unfrozen subject at evaluation time is CANNOT_CHECK(SUBJECT_NOT_FROZEN).",
+    "relation_to_447": "Deliberately consumes the #447 Stage-0/Stage-2 instrument discipline and does not fork it: the merged Stage-2 role-defined interface and pre-frozen candidate model set are the strongest fair parents (CLAIM_FRONTIER P3 strongest_parent). This protocol adds the L6-specific coordinates (#QC5-QC7) that #447 does not cover."
+  },
+  "battery": {
+    "n_tasks": 240,
+    "families": {
+      "STRAIGHT_SUPPORT": 20,
+      "STRAIGHT_REFUTATION": 20,
+      "SUPPORT_WITH_IRRELEVANT_DISTRACTORS": 20,
+      "REFUTATION_WITH_IRRELEVANT_DISTRACTORS": 20,
+      "CONTEXT_QOI_NEAR_MISS": 20,
+      "SCOPE_RESTRICTION": 20,
+      "CONFLICTING_EVIDENCE": 20,
+      "MISSING_DECISIVE_EVIDENCE_CANNOT_CHECK": 20,
+      "SAME_ROOT_PSEUDO_CORROBORATION": 20,
+      "INDEPENDENT_CORROBORATION": 20,
+      "CORRECT_VERDICT_WRONG_EVIDENCE_ID_TRAP": 20,
+      "EXPERIENCE_APPLICABLE_STRUCTURED_ROUTING": 20
+    },
+    "family_sources": {
+      "families_1_to_11": "The eleven Stage-4 panel families (experiments/paper3/build_capability_stage4_panel_v1.py), regenerated fresh with a new registered seed; gold minted by the generator's hidden world at generation time, never by any arm.",
+      "family_12": "Fresh structured routing records over the 14 candidate-visible fields of research/paper3_independent_oracle_action_v1/PROTOCOL.json; gold computed by experiments/paper3/independent_action_oracle_v1.oracle_action (merged PR #634, structurally independent of the shipped candidate). Role: end-to-end liveness of the routing surface inside the scored path; expected near-ceiling for the parent and therefore expected to occupy one of the four QC4 out-of-window slots."
+    },
+    "scoring": "Known-answer or independently-oracled scoring ONLY. Hardened Stage-5 scorer discipline (experiments/paper3/run_capability_stage4_v2._score): gold denominators unconditional on model behavior; an incomplete evidence partition cannot remove itself from a hard-metric denominator; refusal/timeout/malformed output = failure in the all-N denominator; declared CANNOT_CHECK is correct only when gold is CANNOT_CHECK.",
+    "generation": "Seeded parametric generator, no network, no LLM labeling. Generator seed and family list registered before the episode store is read; the only corpus read during generation is the QC7 exclusion check. 10% human audit (24 tasks) sampled by seed; the auditor sees only rendered task text and gold, never any arm output (auditor_saw_arm_outputs must be false; disagreement >= 0.05 is CANNOT_CHECK).",
+    "freshness_semantics": "Freshness is instance-level, not family-level. Family-level overlap with the experience corpus is REQUIRED on purpose (a method-evolution arm can only express lift where experience is relevant); instance-level freshness is what makes the eventual claim a fresh-task claim."
+  },
+  "freshness_check": {
+    "checked_against": "research/self_rakl_seed_corpus_v1/seed_corpus.jsonl at frozen head 7113f24bbed5b93c0197069078fff9e7189dee0b912fd7d65e35ef16e4c55396 (139 episodes, all PROPOSAL_SHADOW_STORED, PR #651).",
+    "procedure": [
+      "For every battery task: task_content_hash = sha256(canonical task JSON without gold); EpisodeStore.find_by_artifact_hash(task_content_hash) must be empty.",
+      "No stored episode problem_signature tuple may exactly equal a task's problem_signature tuple (exact structural check, never embedding or lexical similarity).",
+      "Battery task ids disjoint from all stored episode_ids.",
+      "Battery minted after the store freeze; the store head hash the check ran against is recorded in the bundle and must equal the frozen head."
+    ],
+    "tolerance": "Zero. One contaminated instance fails QC7; remediation regenerates exactly the contaminated instances under a fresh registered seed block, preserving the contaminated ids in the receipt."
+  },
+  "routing_surface_reachability": {
+    "purpose": "The L6 blocker is only lifted if episodes/lessons demonstrably REACH the routing surface; otherwise a lift experiment measures a mechanism that is not connected.",
+    "receipts_required": [
+      "EpisodeStore(research/self_rakl_seed_corpus_v1/seed_corpus.jsonl) opens with verify VALID and head == frozen head; episodes_shadow_count == 139; zero admission upgrades detected before/after all reads (shadow stays shadow; byte-identical store).",
+      "Registered query battery - episodes(), episodes_by_outcome(SUCCESS), episodes_in_time_range(full corpus range), find_by_artifact_hash(known hash) - returns non-empty, deterministic results across two independent runs.",
+      "Content sensitivity: >= 14 registered flip pairs (>= 1 per candidate-visible routing field of the PR #634 record schema). Each pair derives a structured routing state from stored episode content, passes it to the promoted structured experience-to-action mechanic, then flips exactly one load-bearing field and requires the returned action to change. All pairs must flip: proves the routing surface consumes episode-derived content rather than decoration."
+    ],
+    "boundary": "These receipts use SHADOW episodes as inputs to a reachability check only. PROPOSAL_SHADOW_STORED never satisfies canonical inventory, promotion, lesson/tool, proof or root gates (src/rakl/experience_substrate.TaskEpisode contract), and this check cannot upgrade them."
+  },
+  "qualification_coordinates": {
+    "QC1_INSTRUMENT_VALIDITY": {
+      "gate": "Role-semantics audit passed on instruction text only; gold-independence receipts clean (oracle present, no candidate import, no oracle output fed to candidate, forbidden inputs absent, gold committed before parent run); human audit blind to arm outputs with disagreement < 0.05.",
+      "on_violation": "CANNOT_CHECK(INSTRUMENT_DEFECT) - parent metrics are not interpreted (mirrors research/paper3_independent_oracle_action_v1 instrument_terminal).",
+      "justification": "Direct countermeasure to the two registered defect classes above; checked FIRST so an instrument defect can never be read as a capability result."
+    },
+    "QC2_PARENT_COMPLETION_WINDOW": {
+      "gate": "Parent battery completion rate p_hat in [0.20, 0.80] on the all-N denominator; if the exact Clopper-Pearson 95% CI contains a window edge the coordinate is CANNOT_CHECK(QC2_EDGE_INDETERMINATE) with a registered +120-task extension (same generator, new seed block) - pre-registered precision step, not post-hoc rescue.",
+      "justification": "Below 0.20 the failure mass is attributable to base capability, not method: a method change modulates HOW the system searches, and 0->0 outcomes carry no method information (this is exactly the uninterpretability the L6 blocker names). Above 0.80 ceiling compression shrinks the discordant-pair mass and the maximum expressible lift falls under the 0.10 target with degraded McNemar power. N=240 puts the 95% CI half-width near 0.05-0.06, so the window is decidable except within one half-width of an edge. Both PASS and FAIL are reachable (interior thresholds; planted selftest worlds at 0.10 and 0.95)."
+    },
+    "QC3_NON_DEGENERATE_VARIANCE": {
+      "gate": ">= 8 of 12 families strictly mixed (0 < successes < 20) AND structured-readout validity >= 0.90.",
+      "justification": "A lift estimator needs within-family outcome variance; up to 4 families may be legitimately degenerate (deliberately easy/hard anchors plus family 12 near ceiling). Readout floor 0.90: the Stage-1 diagnosis showed parse was NOT the bottleneck at 5/5 - if readout collapses the measurement is dominated by interface failure and must be repaired there, not read as capability."
+    },
+    "QC4_PER_FAMILY_HEADROOM": {
+      "gate": ">= 8 of 12 families with family completion rate in [0.10, 0.90].",
+      "justification": "The lift experiment needs per-family reads (which method surfaces improved); headroom in at least two-thirds of strata keeps those reads informative. Family 12 is expected to occupy an out-of-window slot by design."
+    },
+    "QC5_ROUTING_SURFACE_REACHABILITY": {
+      "gate": "Store integrity + snapshot receipts clean (else CANNOT_CHECK); query battery deterministic and non-empty; all >= 14 registered content-sensitivity flip pairs flip.",
+      "justification": "Conformance gate, exact by design (like PR #634 all-mutants-caught, which the falsifiability audit rated FALSIFIABLE); a planted selftest world with 27/28 flips fails it. Failure is an operational routing defect, never a capability negative."
+    },
+    "QC6_EXPERIENCE_RELEVANCE_COVERAGE": {
+      "gate": ">= 50% of battery families have >= 1 stored episode whose problem_signature contains the family's registered signature token (exact token mapping, registered before execution), AND >= 1 family has an episode with a verified (SUCCESS) outcome.",
+      "justification": "A method-evolution arm can only leverage experience that exists: below half coverage a lift null is attributable to experience starvation, not method inefficacy. The verified-outcome floor is 1 because APPLY_VERIFIED_LESSON routing is gated on verified lessons; the seed corpus currently holds only 2 SUCCESS / 137 UNKNOWN outcomes (research/self_rakl_seed_corpus_v1/MIGRATION_RECEIPT.md), so this coordinate is expected to be the binding constraint and its remediation lever (typed outcome backfill, migration V2 per receipt residual 3) is registered in advance."
+    },
+    "QC7_FRESHNESS": {
+      "gate": "Zero contaminated instances under the freshness_check procedure, verified against the frozen store head.",
+      "justification": "Freshness is definitional for the fresh-task claim; it is a rate-zero gate with a cheap total remediation (regenerate the exact contaminated instances), so zero tolerance does not create a dead end."
+    },
+    "QC8_COST_TELEMETRY": {
+      "gate": "Per-task cost receipts (wall_ms; tokens when a model interface is the subject; peak RSS) present for 100% of parent runs, with >= 2 distinct values and not all zero.",
+      "justification": "The lift experiment must charge all costs (matched budgets); qualification verifies the cost instrument works before the experiment that depends on it."
+    }
+  },
+  "typed_outcomes": {
+    "QUALIFIED": "All coordinates PASS. Authorizes ONLY the freezing of L6-LIFT-V1 (a separate future protocol). Explicitly NOT a lift, NOT a benefit, NOT model efficacy, NOT scientific authority; ladder.json is not edited by this outcome.",
+    "NOT_QUALIFIED": "Coordinate list; every failed coordinate names the floor condition, the measured value, and its registered remediation lever (frozen in EVALUATOR.py REMEDIATION). Per the global-recovery doctrine each failure is intermediate: one attributed revival iteration per failed coordinate (single-stage attribution first), re-frozen as V2 with the V1 receipt preserved verbatim.",
+    "CANNOT_CHECK": "Typed reasons (INSTRUMENT_DEFECT:*, SUBJECT_NOT_FROZEN, STORE_INTEGRITY_FAILURE, STORE_SNAPSHOT_MISMATCH, SHADOW_POSTURE_VIOLATED, FRESHNESS_CHECK_WRONG_SNAPSHOT, QC2_EDGE_INDETERMINATE, MISSING_SECTION:*, BATTERY_STRUCTURE:*). Never conflated with NOT_QUALIFIED and never with 'checked and fine'. Evaluator exit code 3, distinct from evaluated 0."
+  },
+  "evaluator": {
+    "file": "research/l6_capability_qualification_v1/EVALUATOR.py",
+    "sha256": "7288a8eb4ab2fe921562ef32e40e974b68f410e626a6615800efc53c48da7422",
+    "selftest": "python3 research/l6_capability_qualification_v1/EVALUATOR.py --selftest (verified PASS at freeze: clean world QUALIFIED; one planted FAIL world per gate; typed CANNOT_CHECK worlds; determinism byte-identical).",
+    "purity": "Deterministic, stdlib-only, no I/O beyond the bundle read; consumes scored booleans and receipts, never gold or raw predictions.",
+    "no_post_result_rescue": "Thresholds, family list, store binding, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue)."
+  },
+  "lift_experiment_design_sketch": {
+    "status": "SKETCH_ONLY - frozen separately as L6-LIFT-V1 only after a QUALIFIED outcome; recorded here so qualification measures the right floor.",
+    "design": "Paired within-task across arms on a FRESH battery draw (new seed block, disjoint instances, same generator and freshness check; qualification instances are burned).",
+    "arms": {
+      "A_static_parent": "Identical subject to this qualification's parent (same frozen SUBJECT_FREEZE identity).",
+      "B_method_evolution": "Identical except the method-evolution mechanic is ON: experience-conditioned routing via the promoted structured experience-to-action mechanic, verified-lesson application, and search-policy deltas derived through the registered flow (src/rakl/search_policy_learning derive_search_policy_update / materialize_search_policy_challenger). This IS the method change under test.",
+      "C_sham_experience": "B's machinery over a permuted-content placebo store (same size, same cost); separates mechanism from scaffolding/overhead (clean-baseline + shuffle-null discipline).",
+      "D_episodes_only": "B without verified-lesson gating (raw retrieval); attributes lesson-gating value beyond retrieval."
+    },
+    "primary_contrast": "B vs A completion delta, McNemar exact on discordant pairs, two-sided. Attribution contrasts: B vs C (mechanism beyond placebo), B vs D (gating beyond retrieval).",
+    "power_sketch": "Target lift 0.10 absolute at alpha 0.05 two-sided, power 0.80. With discordant-pair probabilities p10=0.12, p01=0.02, n ~= (1.96*sqrt(0.14) + 0.84*sqrt(0.13))^2 / 0.01 ~= 107 pairs; N_lift = 300 paired tasks gives ~3x margin, supports per-family reads, and protects the smaller B-vs-C effect. QC2's window guarantees the parent rate this calculation assumes.",
+    "matched_budgets": "Identical model id/revision/decoding, identical wall-clock and token caps, identical retrieval surfaces except the experience store; arms B/C/D are charged store-query and consolidation costs in the receipt (all costs charged).",
+    "suppression_guard": "The method-change arm must not win by task refusal: all-N denominators fixed by the battery; refusal/timeout/malformed = failure; declared CANNOT_CHECK correct only when gold is CANNOT_CHECK (the battery's gold-CANNOT_CHECK family makes abstention measurable in both directions); if any arm's non-gold CANNOT_CHECK rate exceeds the parent's by > 0.05 absolute, the outcome cannot be PROMOTE regardless of the primary contrast."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over subject-freeze, battery-generation, freshness-check, store-reachability, parent-run and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py) over the typed verdict",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - any ladder.json edit requires external GovernanceSignOff in a separate PR; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "non_claims": [
+    "Qualification is not lift: a QUALIFIED outcome demonstrates the floor conditions for an interpretable lift experiment, not any benefit of method evolution.",
+    "Passing gates is not benefit: every gate here is a precondition check on the parent and the instrument, none measures the method-evolution mechanic's value.",
+    "Shadow episodes stay shadow: PROPOSAL_SHADOW_STORED is consumed read-only for reachability/relevance/freshness receipts and is never upgraded, counted toward canonical inventory, or used to satisfy promotion/lesson/tool/proof gates.",
+    "ladder.json is untouched by this study; benefit_measured/readiness fields change only via a separate governed PR after the LIFT experiment, never after qualification.",
+    "No framework module is modified; the historical L6 gate negatives, the Paper III model-level experience negative, and the #447 Stage-0/1 findings remain immutable and are cited, not rewritten."
+  ],
+  "grants_scientific_authority": false
+}

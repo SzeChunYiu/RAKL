@@ -154,10 +154,10 @@ end Lattice
 
 /-! ## Theorem: Finite-basis saturation
 
-Paper I, `04_owmd.tex:162`. The least-fixed-point half is mechanized here. The
-cardinality bound (`at most |U| - |K₀|` strict-growth steps) is *not* mechanized —
-it needs a finiteness/cardinality development — and is recorded as such in the
-inventory rather than being claimed. -/
+Paper I, `04_owmd.tex:162`. The least-fixed-point and stabilization halves are
+mechanized here. The cardinality bound (`at most |U| - |K₀|` strict-growth steps)
+needs a finiteness development and is mechanized in the `Finiteness` section at
+the end of this file. -/
 def Iter {A : Type u} (F : Sub A → Sub A) (K₀ : Sub A) : Nat → Sub A
   | 0 => K₀
   | n + 1 => F (Iter F K₀ n)
@@ -894,5 +894,783 @@ theorem freshness_expiry_witness :
    ⟨show (5 : Nat) ≤ 5 by decide, show (7 : Nat) ≤ 8 by decide⟩⟩
 
 end Freshness
+
+/-! ## Theorem: Finite-basis saturation — the cardinality bound
+
+Paper I, `04_owmd.tex:162`. The least-fixed-point and stabilization halves are
+mechanized above. This section adds the counting half: at most `|U| - |K₀|`
+strict-growth steps.
+
+Encoding decisions, stated rather than hidden — each is a place where a
+predicate encoding has to re-supply something the paper gets from typing:
+
+* Subsets are predicates, so `F : P(U_B) → P(U_B)` is not a typing fact here.
+  "`F` maps subsets of `U` to subsets of `U`" is the explicit hypothesis
+  `hFuniv`, and `K₀ ⊆ U` is `hK₀univ`.
+* The finite universe is an explicit enumeration `univ : List A`. `Distinct univ`
+  is what makes `keep`-length the true cardinality rather than a multiset count.
+* "Every strict inclusion adds at least one element" is supplied as a **witness
+  function** `w`, naming the element each step adds, rather than as a bare `∃`.
+  Turning `∃ a, P a` into list data requires `Classical.choice`, which would put
+  `choice` into the axiom report and destroy the development's central claim.
+  Requiring the witness is therefore a genuine strengthening of the hypothesis
+  relative to the paper's sentence, and it is recorded as such in the inventory.
+* The bound is primarily stated **additively** (`card K₀ + n ≤ |U|`). Natural
+  subtraction truncates, so the additive form is the faithful one; the paper's
+  literal `|U| - |K₀|` reading is derived from it as a corollary.
+
+The iterates themselves are never required to be decidable. Only `K₀` is, which
+is what lets the whole development stay constructive. -/
+
+section Finiteness
+
+variable {A : Type u}
+
+/-- Duplicate-freeness, defined here rather than imported so that the counting
+lemmas depend on nothing outside this file. -/
+inductive Distinct : List A → Prop
+  | nil : Distinct []
+  | cons {x : A} {xs : List A} : ¬ x ∈ xs → Distinct xs → Distinct (x :: xs)
+
+/-- Remove the first occurrence of `a`. -/
+def dropOne [DecidableEq A] (a : A) : List A → List A
+  | [] => []
+  | x :: xs => if x = a then xs else x :: dropOne a xs
+
+/-- Removing one occurrence of a member shortens the list by exactly one. -/
+theorem length_dropOne [DecidableEq A] (a : A) :
+    ∀ l : List A, a ∈ l → (dropOne a l).length + 1 = l.length := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    show (if x = a then xs else x :: dropOne a xs).length + 1 = xs.length + 1
+    split
+    · rfl
+    · next hne =>
+      have hmem : a ∈ xs := by
+        cases h with
+        | head => exact absurd rfl hne
+        | tail _ h' => exact h'
+      show (dropOne a xs).length + 1 + 1 = xs.length + 1
+      rw [ih hmem]
+
+/-- Removal keeps every other member. -/
+theorem mem_dropOne [DecidableEq A] (a b : A) :
+    ∀ l : List A, b ∈ l → ¬ b = a → b ∈ dropOne a l := by
+  intro l
+  induction l with
+  | nil => intro h _; cases h
+  | cons x xs ih =>
+    intro h hne
+    show b ∈ (if x = a then xs else x :: dropOne a xs)
+    split
+    · next hxa =>
+      cases h with
+      | head => exact absurd hxa hne
+      | tail _ h' => exact h'
+    · cases h with
+      | head => exact List.Mem.head _
+      | tail _ h' => exact List.Mem.tail _ (ih h' hne)
+
+/-- **Pigeonhole.** A duplicate-free list contained in another list is no longer
+than it. This is the sub-lemma the whole counting bound rests on. -/
+theorem distinct_length_le [DecidableEq A] :
+    ∀ (l m : List A), Distinct l → (∀ a ∈ l, a ∈ m) → l.length ≤ m.length := by
+  intro l
+  induction l with
+  | nil => intro _ _ _; exact Nat.zero_le _
+  | cons x xs ih =>
+    intro m hd hsub
+    cases hd with
+    | cons hx hxs =>
+      have hxm : x ∈ m := hsub x (List.Mem.head _)
+      have hsub' : ∀ a ∈ xs, a ∈ dropOne x m := fun a ha =>
+        mem_dropOne x a m (hsub a (List.Mem.tail _ ha)) (fun heq => hx (heq ▸ ha))
+      have h1 : xs.length ≤ (dropOne x m).length := ih (dropOne x m) hxs hsub'
+      have h2 : (dropOne x m).length + 1 = m.length := length_dropOne x m hxm
+      show xs.length + 1 ≤ m.length
+      rw [← h2]
+      exact Nat.succ_le_succ h1
+
+/-- Elements satisfying a decidable predicate, in order. -/
+def keep (p : A → Bool) : List A → List A
+  | [] => []
+  | x :: xs => if p x then x :: keep p xs else keep p xs
+
+/-- A member satisfying the predicate survives the filter. -/
+theorem mem_keep (p : A → Bool) :
+    ∀ (l : List A) (a : A), a ∈ l → p a = true → a ∈ keep p l := by
+  intro l
+  induction l with
+  | nil => intro a h _; cases h
+  | cons x xs ih =>
+    intro a h hp
+    show a ∈ (if p x then x :: keep p xs else keep p xs)
+    cases h with
+    | head =>
+      rw [if_pos hp]
+      exact List.Mem.head _
+    | tail _ h' =>
+      split
+      · exact List.Mem.tail _ (ih a h' hp)
+      · exact ih a h' hp
+
+/-- A predicate and its negation partition the list. -/
+theorem length_keep_add_not (p : A → Bool) :
+    ∀ l : List A, (keep p l).length + (keep (fun a => !p a) l).length = l.length := by
+  intro l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    show (if p x then x :: keep p xs else keep p xs).length
+        + (if !p x then x :: keep (fun a => !p a) xs else keep (fun a => !p a) xs).length
+        = xs.length + 1
+    cases hx : p x with
+    | true =>
+      show (keep p xs).length + 1 + (keep (fun a => !p a) xs).length = xs.length + 1
+      rw [Nat.add_right_comm, ih]
+    | false =>
+      show (keep p xs).length + (keep (fun a => !p a) xs).length + 1 = xs.length + 1
+      rw [ih]
+
+/-- Every iterate stays inside the declared universe. -/
+theorem iter_within_univ (F : Sub A → Sub A) (K₀ : Sub A) (univ : List A)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ) :
+    ∀ n a, Iter F K₀ n a → a ∈ univ := by
+  intro n
+  induction n with
+  | zero => exact hK₀univ
+  | succ k ih => exact hFuniv (Iter F K₀ k) ih
+
+/-- The iteration is increasing in its index. Note this needs *only*
+inflationarity, not monotonicity — matching the paper's own "Inflationarity gives
+`K_n ⊆ K_{n+1}`", and worth keeping visible so the counting half is not silently
+credited to a hypothesis it does not use. -/
+theorem iter_index_monotone (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X) (K₀ : Sub A) :
+    ∀ i j, i ≤ j → Iter F K₀ i ⊑ Iter F K₀ j := by
+  intro i j
+  induction j with
+  | zero =>
+    intro h
+    have : i = 0 := Nat.eq_zero_of_le_zero h
+    subst this
+    exact Incl.refl _
+  | succ k ih =>
+    intro h
+    rcases Nat.eq_or_lt_of_le h with heq | hlt
+    · subst heq; exact Incl.refl _
+    · exact Incl.trans (ih (Nat.le_of_lt_succ hlt)) (infl _)
+
+/-- `witnesses w n = [w (n-1), …, w 0]`. -/
+def witnesses (w : Nat → A) : Nat → List A
+  | 0 => []
+  | k + 1 => w k :: witnesses w k
+
+theorem length_witnesses (w : Nat → A) : ∀ n, (witnesses w n).length = n := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ k ih => show (witnesses w k).length + 1 = k + 1; rw [ih]
+
+theorem mem_witnesses (w : Nat → A) :
+    ∀ n a, a ∈ witnesses w n → ∃ i, i < n ∧ w i = a := by
+  intro n
+  induction n with
+  | zero => intro a h; cases h
+  | succ k ih =>
+    intro a h
+    cases h with
+    | head => exact ⟨k, Nat.lt_succ_self k, rfl⟩
+    | tail _ h' =>
+      rcases ih a h' with ⟨i, hi, hw⟩
+      exact ⟨i, Nat.lt_succ_of_lt hi, hw⟩
+
+/-- The elements added by distinct strict-growth steps are distinct. This is the
+step the paper compresses into "every strict inclusion adds at least one
+element": if `w i = w j` for `i < j` then the element added at step `i` is
+already present at stage `j`, contradicting the fact that step `j` adds it. -/
+theorem distinct_witnesses (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (K₀ : Sub A) (w : Nat → A) :
+    ∀ n, (∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) →
+      Distinct (witnesses w n) := by
+  intro n
+  induction n with
+  | zero => intro _; exact Distinct.nil
+  | succ k ih =>
+    intro hw
+    refine Distinct.cons ?_ (ih fun i hi => hw i (Nat.lt_succ_of_lt hi))
+    intro hmem
+    rcases mem_witnesses w k (w k) hmem with ⟨i, hi, hwi⟩
+    have h1 : Iter F K₀ (i + 1) (w i) := (hw i (Nat.lt_succ_of_lt hi)).1
+    have h2 : Iter F K₀ k (w i) := iter_index_monotone F infl K₀ (i + 1) k hi (w i) h1
+    exact (hw k (Nat.lt_succ_self k)).2 (hwi ▸ h2)
+
+/-- **Finite-basis saturation, cardinality bound.** `n` strict-growth steps force
+`|K₀| + n ≤ |U|`, so there can be at most `|U| - |K₀|` of them. -/
+theorem finite_basis_strict_growth_bound [DecidableEq A]
+    (univ : List A) (_huniv : Distinct univ)
+    (K₀ : Sub A) [DecidablePred K₀]
+    (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ)
+    (w : Nat → A) (n : Nat)
+    (hw : ∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) :
+    (keep (fun a => decide (K₀ a)) univ).length + n ≤ univ.length := by
+  have hsub : ∀ a ∈ witnesses w n, a ∈ keep (fun a => !decide (K₀ a)) univ := by
+    intro a ha
+    rcases mem_witnesses w n a ha with ⟨i, hi, hwi⟩
+    have hmemU : w i ∈ univ :=
+      iter_within_univ F K₀ univ hK₀univ hFuniv (i + 1) (w i) (hw i hi).1
+    have hnotK : ¬ K₀ (w i) := fun hk =>
+      (hw i hi).2 (iter_index_monotone F infl K₀ 0 i (Nat.zero_le i) (w i) hk)
+    have hb : (!decide (K₀ (w i))) = true := by
+      rw [decide_eq_false hnotK]
+      rfl
+    exact hwi ▸ mem_keep _ univ (w i) hmemU hb
+  have hle : (witnesses w n).length ≤ (keep (fun a => !decide (K₀ a)) univ).length :=
+    distinct_length_le (witnesses w n) _
+      (distinct_witnesses F infl K₀ w n hw) hsub
+  rw [length_witnesses] at hle
+  rw [← length_keep_add_not (fun a => decide (K₀ a)) univ]
+  exact Nat.add_le_add_left hle _
+
+/-- `n + k ≤ L → n ≤ L - k`, proved here rather than taken from core: the core
+lemma `Nat.le_sub_of_add_le` depends on `propext`, which would show up in the
+axiom report and break the development's central claim. -/
+theorem le_sub_of_add_le : ∀ (k n L : Nat), n + k ≤ L → n ≤ L - k := by
+  intro k
+  induction k with
+  | zero => intro _ _ h; exact h
+  | succ j ih =>
+    intro n L h
+    cases L with
+    | zero => exact absurd h (Nat.not_succ_le_zero _)
+    | succ m =>
+      have hs : (m + 1) - (j + 1) = m - j := Nat.succ_sub_succ m j
+      rw [hs]
+      exact ih n m (Nat.le_of_succ_le_succ h)
+
+/-- The paper's literal `|U| - |K₀|` reading. Natural subtraction truncates, so
+the additive statement above is the primary one and this is derived from it. -/
+theorem finite_basis_strict_growth_bound_sub [DecidableEq A]
+    (univ : List A) (huniv : Distinct univ)
+    (K₀ : Sub A) [DecidablePred K₀]
+    (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ)
+    (w : Nat → A) (n : Nat)
+    (hw : ∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) :
+    n ≤ univ.length - (keep (fun a => decide (K₀ a)) univ).length := by
+  have h := finite_basis_strict_growth_bound univ huniv K₀ F infl hK₀univ hFuniv w n hw
+  rw [Nat.add_comm] at h
+  exact le_sub_of_add_le _ n univ.length h
+
+/-- Non-vacuity: the bound is attained, so it is not an idle inequality. Over a
+one-element universe with `K₀` empty, exactly one strict-growth step is possible
+and the bound reads `0 + 1 ≤ 1`. -/
+theorem finite_basis_bound_is_attained :
+    (keep (fun a => decide ((fun _ => False) a)) [()]).length + 1 = ([()] : List Unit).length :=
+  rfl
+
+end Finiteness
+
+/-! ## Ingredients of: Optimality of reservation-first greedy selection
+
+Paper I, `03_workspace.tex:48`.
+
+**This section does NOT prove the theorem.** It proves three ingredients its
+proof uses — the exchange step (`sum_swap_ge`), the existence of a swap partner
+(`exchange_partner_exists`), and top-`k` optimality (`top_subset_optimal`). The
+assembly — iterating the exchange across reserved partitions while carrying
+feasibility, then splitting the objective across the reserved/fill boundary — is
+not mechanized, so no part of the optimality *statement* is machine-checked here.
+The claim accordingly stays `PAPER_PROOF_COMPLETE` in the inventory rather than
+being upgraded on the strength of its lemmas.
+
+Utilities are `Nat`. That is a real restriction and is recorded in the inventory
+rather than glossed: the paper states `u_i ≥ 0` over the reals. `Nat` supplies
+non-negativity — assumption (iii) — for free, and the argument below uses only
+`+`, `≤`, transitivity and `add_le_add`, so nothing depends on `Nat` beyond
+those. The statement as mechanized is nonetheless a special case.
+
+"The top `r_p` candidates" is not well defined under utility ties, and the
+implementation picks *some* tie-broken set. `IsTopSubset` therefore quantifies
+over **any** maximal `k`-subset rather than a unique one. That is the precision
+point recorded against the paper's statement. -/
+
+section Greedy
+
+variable {I : Type u}
+
+/-- Additive utility of a selection — assumption (iii), and unit costs are the
+fact that each member contributes exactly one term. -/
+def sumU (u : I → Nat) : List I → Nat
+  | [] => 0
+  | x :: xs => u x + sumU u xs
+
+/-- Boolean membership. Defined here because core's `List.elem`/`Mem` bridge
+depends on `propext`, which the axiom audit forbids. -/
+def memB [DecidableEq I] (a : I) : List I → Bool
+  | [] => false
+  | x :: xs => if x = a then true else memB a xs
+
+theorem mem_of_memB [DecidableEq I] (a : I) : ∀ l : List I, memB a l = true → a ∈ l := by
+  intro l
+  induction l with
+  | nil => intro h; exact Bool.noConfusion h
+  | cons x xs ih =>
+    intro h
+    revert h
+    show (if x = a then true else memB a xs) = true → a ∈ x :: xs
+    split
+    · next heq => intro _; exact heq ▸ List.Mem.head _
+    · intro h; exact List.Mem.tail _ (ih h)
+
+theorem memB_of_mem [DecidableEq I] (a : I) : ∀ l : List I, a ∈ l → memB a l = true := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    show (if x = a then true else memB a xs) = true
+    split
+    · rfl
+    · next hne =>
+      cases h with
+      | head => exact absurd rfl hne
+      | tail _ h' => exact ih h'
+
+/-- Removing a member and adding back its utility recovers the original sum. -/
+theorem sumU_dropOne [DecidableEq I] (u : I → Nat) :
+    ∀ (l : List I) (j : I), j ∈ l → u j + sumU u (dropOne j l) = sumU u l := by
+  intro l
+  induction l with
+  | nil => intro j h; cases h
+  | cons x xs ih =>
+    intro j h
+    show u j + sumU u (if x = j then xs else x :: dropOne j xs) = u x + sumU u xs
+    split
+    · next heq => rw [heq]
+    · next hne =>
+      have hmem : j ∈ xs := by
+        cases h with
+        | head => exact absurd rfl hne
+        | tail _ h' => exact h'
+      show u j + (u x + sumU u (dropOne j xs)) = u x + sumU u xs
+      rw [← ih j hmem, ← Nat.add_assoc, ← Nat.add_assoc, Nat.add_comm (u j) (u x)]
+
+/-- **The exchange step.** Swapping a selected `j` for an unselected `i` of at
+least equal utility never decreases the objective. This is the single move the
+paper's first stage iterates. -/
+theorem sum_swap_ge [DecidableEq I] (u : I → Nat) (sel : List I) (i j : I)
+    (hj : j ∈ sel) (hle : u j ≤ u i) :
+    sumU u sel ≤ sumU u (i :: dropOne j sel) := by
+  show sumU u sel ≤ u i + sumU u (dropOne j sel)
+  rw [← sumU_dropOne u sel j hj]
+  exact Nat.add_le_add_right hle _
+
+/-- A predicate and its negation split the utility of a selection. -/
+theorem sumU_keep_split (u : I → Nat) (q : I → Bool) :
+    ∀ l : List I, sumU u (keep q l) + sumU u (keep (fun a => !q a) l) = sumU u l := by
+  intro l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    show sumU u (if q x then x :: keep q xs else keep q xs)
+        + sumU u (if !q x then x :: keep (fun a => !q a) xs else keep (fun a => !q a) xs)
+        = u x + sumU u xs
+    cases hx : q x with
+    | true =>
+      show u x + sumU u (keep q xs) + sumU u (keep (fun a => !q a) xs) = u x + sumU u xs
+      rw [Nat.add_assoc, ih]
+    | false =>
+      show sumU u (keep q xs) + (u x + sumU u (keep (fun a => !q a) xs)) = u x + sumU u xs
+      rw [← Nat.add_assoc, Nat.add_comm (sumU u (keep q xs)) (u x), Nat.add_assoc, ih]
+
+theorem mem_of_mem_dropOne [DecidableEq I] (a b : I) :
+    ∀ l : List I, b ∈ dropOne a l → b ∈ l := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    revert h
+    show b ∈ (if x = a then xs else x :: dropOne a xs) → b ∈ x :: xs
+    split
+    · intro h; exact List.Mem.tail _ h
+    · intro h
+      cases h with
+      | head => exact List.Mem.head _
+      | tail _ h' => exact List.Mem.tail _ (ih h')
+
+theorem distinct_dropOne [DecidableEq I] (a : I) :
+    ∀ l : List I, Distinct l → Distinct (dropOne a l) := by
+  intro l
+  induction l with
+  | nil => intro _; exact Distinct.nil
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show Distinct (if x = a then xs else x :: dropOne a xs)
+      split
+      · exact hxs
+      · exact Distinct.cons (fun hmem => hx (mem_of_mem_dropOne a x xs hmem)) (ih hxs)
+
+theorem not_mem_dropOne_self [DecidableEq I] (a : I) :
+    ∀ l : List I, Distinct l → ¬ a ∈ dropOne a l := by
+  intro l
+  induction l with
+  | nil => intro _ h; cases h
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show ¬ a ∈ (if x = a then xs else x :: dropOne a xs)
+      split
+      · next heq => exact heq ▸ hx
+      · next hne =>
+        intro hmem
+        cases hmem with
+        | head => exact hne rfl
+        | tail _ h' => exact ih hxs h'
+
+/-- Utility depends only on the *set* of selected items, not on their order.
+Needed because the greedy output and a competing selection agree as sets on
+their shared part but not as lists. -/
+theorem sumU_congr_mem [DecidableEq I] (u : I → Nat) :
+    ∀ (l m : List I), Distinct l → Distinct m → (∀ a, a ∈ l ↔ a ∈ m) →
+      sumU u l = sumU u m := by
+  intro l
+  induction l with
+  | nil =>
+    intro m _ _ hiff
+    cases m with
+    | nil => rfl
+    | cons y ys => cases (hiff y).mpr (List.Mem.head _)
+  | cons x xs ih =>
+    intro m hdl hdm hiff
+    cases hdl with
+    | cons hx hxs =>
+      have hxm : x ∈ m := (hiff x).mp (List.Mem.head _)
+      have hiff' : ∀ a, a ∈ xs ↔ a ∈ dropOne x m := by
+        intro a
+        constructor
+        · intro ha
+          exact mem_dropOne x a m ((hiff a).mp (List.Mem.tail _ ha)) (fun heq => hx (heq ▸ ha))
+        · intro ha
+          have ham : a ∈ m := mem_of_mem_dropOne x a m ha
+          cases (hiff a).mpr ham with
+          | head => exact absurd ha (not_mem_dropOne_self _ m hdm)
+          | tail _ h' => exact h'
+      have heq : sumU u xs = sumU u (dropOne x m) :=
+        ih (dropOne x m) hxs (distinct_dropOne x m hdm) hiff'
+      show u x + sumU u xs = sumU u m
+      rw [heq]
+      exact sumU_dropOne u m x hxm
+
+theorem mem_of_mem_keep (q : I → Bool) :
+    ∀ (l : List I) (a : I), a ∈ keep q l → a ∈ l ∧ q a = true := by
+  intro l
+  induction l with
+  | nil => intro a h; cases h
+  | cons x xs ih =>
+    intro a h
+    revert h
+    show a ∈ (if q x then x :: keep q xs else keep q xs) → a ∈ x :: xs ∧ q a = true
+    split
+    · next hqx =>
+      intro h
+      cases h with
+      | head => exact ⟨List.Mem.head _, hqx⟩
+      | tail _ h' => exact ⟨List.Mem.tail _ (ih a h').1, (ih a h').2⟩
+    · intro h
+      exact ⟨List.Mem.tail _ (ih a h).1, (ih a h).2⟩
+
+theorem distinct_keep (q : I → Bool) : ∀ l : List I, Distinct l → Distinct (keep q l) := by
+  intro l
+  induction l with
+  | nil => intro _; exact Distinct.nil
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show Distinct (if q x then x :: keep q xs else keep q xs)
+      split
+      · exact Distinct.cons (fun hmem => hx (mem_of_mem_keep q xs x hmem).1) (ih hxs)
+      · exact ih hxs
+
+/-- Duplicate-free lists with the same members have the same length. -/
+theorem length_congr_mem [DecidableEq I] (l m : List I)
+    (hdl : Distinct l) (hdm : Distinct m) (hiff : ∀ a, a ∈ l ↔ a ∈ m) :
+    l.length = m.length :=
+  Nat.le_antisymm
+    (distinct_length_le l m hdl (fun a ha => (hiff a).mp ha))
+    (distinct_length_le m l hdm (fun a ha => (hiff a).mpr ha))
+
+/-- If every member of `X` is dominated by every member of `Y` and `Y` is at
+least as long, then `X` is worth no more. Non-negativity is what lets the extra
+slots of `Y` only help — this is where assumption (iii) does its work. -/
+theorem sum_le_of_pointwise_dominated (u : I → Nat) :
+    ∀ (X Y : List I), X.length ≤ Y.length → (∀ a ∈ X, ∀ b ∈ Y, u a ≤ u b) →
+      sumU u X ≤ sumU u Y := by
+  intro X
+  induction X with
+  | nil => intro _ _ _; exact Nat.zero_le _
+  | cons x xs ih =>
+    intro Y hlen hdom
+    cases Y with
+    | nil => exact absurd hlen (Nat.not_succ_le_zero _)
+    | cons y ys =>
+      have h1 : u x ≤ u y := hdom x (List.Mem.head _) y (List.Mem.head _)
+      have h2 : sumU u xs ≤ sumU u ys :=
+        ih ys (Nat.le_of_succ_le_succ hlen)
+          (fun a ha b hb => hdom a (List.Mem.tail _ ha) b (List.Mem.tail _ hb))
+      show u x + sumU u xs ≤ u y + sumU u ys
+      exact Nat.add_le_add h1 h2
+
+/-- Cancellation on the right. Proved here because core's
+`Nat.le_of_add_le_add_left` and `Nat.le_of_add_le_add_right` both depend on
+`propext` — the third such leak the axiom audit has caught in this development. -/
+theorem le_of_add_le_add_right : ∀ (a b c : Nat), b + a ≤ c + a → b ≤ c := by
+  intro a
+  induction a with
+  | zero => intro _ _ h; exact h
+  | succ k ih => intro b c h; exact ih b c (Nat.le_of_succ_le_succ h)
+
+/-- A maximal `k`-element selection of `q`-eligible pool members: every eligible
+candidate left out is worth no more than every one taken.
+
+This is the **tie-safe** reading of "the top `k`". It quantifies over any maximal
+subset rather than a unique one, and — crucially for the reserved stage —
+maximality is relative to the eligibility predicate `q`, not to the whole pool.
+Whole-pool maximality would be false for a reserved partition, since a reserved
+item may be worth less than an unselected item of another partition. -/
+structure IsTopSubset (u : I → Nat) (q : I → Bool) (pool sel : List I) (k : Nat) : Prop where
+  distinct : Distinct sel
+  inPool : ∀ i ∈ sel, i ∈ pool
+  eligible : ∀ i ∈ sel, q i = true
+  card : sel.length = k
+  maximal : ∀ a ∈ pool, q a = true → ¬ a ∈ sel → ∀ b ∈ sel, u a ≤ u b
+
+/-- **Top-`k` optimality.** Any admissible selection of at most `k` eligible
+candidates is worth no more than a maximal `k`-subset.
+
+Applied to the whole eligible pool this is the paper's second stage — the
+residual, once every lower bound is already met, is ordinary top-`k`. Applied per
+partition it is what the first-stage exchange establishes: the reserved slots of
+a partition may be taken by that partition's top `r_p`. -/
+theorem top_subset_optimal [DecidableEq I]
+    (u : I → Nat) (q : I → Bool) (pool sel cand : List I) (k : Nat)
+    (htop : IsTopSubset u q pool sel k)
+    (hcd : Distinct cand) (hcp : ∀ i ∈ cand, i ∈ pool) (hce : ∀ i ∈ cand, q i = true)
+    (hck : cand.length ≤ k) :
+    sumU u cand ≤ sumU u sel := by
+  have hb1t1 : ∀ a, a ∈ keep (fun i => memB i sel) cand ↔ a ∈ keep (fun i => memB i cand) sel := by
+    intro a
+    constructor
+    · intro ha
+      have h := mem_of_mem_keep _ cand a ha
+      exact mem_keep _ sel a (mem_of_memB a sel h.2) (memB_of_mem a cand h.1)
+    · intro ha
+      have h := mem_of_mem_keep _ sel a ha
+      exact mem_keep _ cand a (mem_of_memB a cand h.2) (memB_of_mem a sel h.1)
+  have hsum1 : sumU u (keep (fun i => memB i sel) cand)
+      = sumU u (keep (fun i => memB i cand) sel) :=
+    sumU_congr_mem u _ _ (distinct_keep _ cand hcd) (distinct_keep _ sel htop.distinct) hb1t1
+  have hlen1 : (keep (fun i => memB i sel) cand).length
+      = (keep (fun i => memB i cand) sel).length :=
+    length_congr_mem _ _ (distinct_keep _ cand hcd) (distinct_keep _ sel htop.distinct) hb1t1
+  have hlen2 : (keep (fun i => !memB i sel) cand).length
+      ≤ (keep (fun i => !memB i cand) sel).length := by
+    have hc := length_keep_add_not (fun i => memB i sel) cand
+    have hs := length_keep_add_not (fun i => memB i cand) sel
+    have key : (keep (fun i => memB i sel) cand).length
+             + (keep (fun i => !memB i sel) cand).length
+           ≤ (keep (fun i => memB i cand) sel).length
+             + (keep (fun i => !memB i cand) sel).length := by
+      rw [hc, hs, htop.card]
+      exact hck
+    rw [hlen1] at key
+    rw [Nat.add_comm (keep (fun i => memB i cand) sel).length
+          (keep (fun i => !memB i sel) cand).length] at key
+    rw [Nat.add_comm (keep (fun i => memB i cand) sel).length
+          (keep (fun i => !memB i cand) sel).length] at key
+    exact le_of_add_le_add_right _ _ _ key
+  have hdom : sumU u (keep (fun i => !memB i sel) cand)
+      ≤ sumU u (keep (fun i => !memB i cand) sel) := by
+    refine sum_le_of_pointwise_dominated u _ _ hlen2 ?_
+    intro a ha b hb
+    have ha' := mem_of_mem_keep _ cand a ha
+    have hb' := mem_of_mem_keep _ sel b hb
+    refine htop.maximal a (hcp a ha'.1) (hce a ha'.1) ?_ b hb'.1
+    intro hmem
+    have : memB a sel = true := memB_of_mem a sel hmem
+    rw [this] at ha'
+    exact Bool.noConfusion ha'.2
+  have hc := sumU_keep_split u (fun i => memB i sel) cand
+  have hs := sumU_keep_split u (fun i => memB i cand) sel
+  rw [← hc, ← hs, hsum1]
+  exact Nat.add_le_add_left hdom _
+
+/-- Either a list is contained in `T`, or it exhibits a member outside `T`.
+Decided rather than assumed: `memB` keeps this constructive, where the usual
+"not a subset, therefore there exists a counterexample" step would need
+classical logic. -/
+theorem subset_or_witness [DecidableEq I] (T : List I) :
+    ∀ l : List I, (∀ j ∈ l, j ∈ T) ∨ (∃ j, j ∈ l ∧ ¬ j ∈ T) := by
+  intro l
+  induction l with
+  | nil => exact Or.inl (fun j hj => nomatch hj)
+  | cons x xs ih =>
+    cases hx : memB x T with
+    | false =>
+      refine Or.inr ⟨x, List.Mem.head _, ?_⟩
+      intro hc
+      rw [memB_of_mem x T hc] at hx
+      exact Bool.noConfusion hx
+    | true =>
+      cases ih with
+      | inl hsub =>
+        refine Or.inl (fun j hj => ?_)
+        cases hj with
+        | head => exact mem_of_memB x T hx
+        | tail _ h' => exact hsub j h'
+      | inr hw =>
+        rcases hw with ⟨j, hj, hnj⟩
+        exact Or.inr ⟨j, List.Mem.tail _ hj, hnj⟩
+
+/-- A duplicate-free list contained in a no-longer list exhausts it. -/
+theorem distinct_subset_exhausts [DecidableEq I] (l m : List I)
+    (hdl : Distinct l) (hsub : ∀ a ∈ l, a ∈ m) (hcard : m.length ≤ l.length) :
+    ∀ a ∈ m, a ∈ l := by
+  intro a ha
+  cases hmb : memB a l with
+  | true => exact mem_of_memB a l hmb
+  | false =>
+    exfalso
+    have hnl : ¬ a ∈ l := by
+      intro hc
+      rw [memB_of_mem a l hc] at hmb
+      exact Bool.noConfusion hmb
+    have hsub' : ∀ b ∈ l, b ∈ dropOne a m := fun b hb =>
+      mem_dropOne a b m (hsub b hb) (fun heq => hnl (heq ▸ hb))
+    have h1 : l.length ≤ (dropOne a m).length := distinct_length_le l _ hdl hsub'
+    have h2 : (dropOne a m).length + 1 = m.length := length_dropOne a m ha
+    have h3 : l.length + 1 ≤ m.length := by rw [← h2]; exact Nat.succ_le_succ h1
+    exact Nat.not_succ_le_self l.length (Nat.le_trans h3 hcard)
+
+/-- **The swap partner always exists.** This is the counting step the paper
+compresses into "suppose `S*` contains a reserved-slot candidate `j` whose
+utility is lower than an unselected candidate `i`". If the selection already
+meets partition `p`'s reservation but misses one of `p`'s top `r_p` candidates,
+then it must contain some candidate of `p` outside that top set — which is
+precisely the element the exchange swaps out.
+
+Without this the exchange argument would be an assertion that a swap partner is
+available; here its availability is derived from feasibility. -/
+theorem exchange_partner_exists [DecidableEq I]
+    (top selp : List I) (hsel : Distinct selp)
+    (hcard : top.length ≤ selp.length)
+    (i : I) (hitop : i ∈ top) (hisel : ¬ i ∈ selp) :
+    ∃ j, j ∈ selp ∧ ¬ j ∈ top := by
+  rcases subset_or_witness top selp with hsub | hw
+  · exact absurd (distinct_subset_exhausts selp top hsel hsub hcard i hitop) hisel
+  · exact hw
+
+end Greedy
+
+/-! ## Obstruction-blind distillation
+
+Compressing a corpus into a minimal support structure is what makes bounded
+saturation certifiable: the finite-basis theorem above needs a finite universe,
+and raw literature is not one. But the compression has a precondition that is easy
+to miss, because the thing it must retain does not look like content.
+
+Pairwise compatibility facts look like content. An obstruction is an *absence* —
+the fact that no global assignment exists — and a distiller keeping "the core of
+each piece" will keep the former and drop the latter.
+
+The two covers below have **identical pairwise data**: every constraint is
+individually satisfiable in both. They differ only in global realizability. So a
+distillation that records pairwise satisfiability cannot separate them, and
+navigation over its output will admit a support structure whose every step is
+licensed and which has no global section.
+
+This is the three-context parity construction of
+`02_compatibility_authority.tex:64`, recast as a condition on admissible
+distillation rather than as a curiosity about covers. -/
+
+section ObstructionBlindness
+
+/-- A three-chart cover over binary variables, given by its pairwise constraints. -/
+structure Cover where
+  onXY : Bool → Bool → Prop
+  onYZ : Bool → Bool → Prop
+  onXZ : Bool → Bool → Prop
+
+/-- Every constraint is satisfiable on its own chart. This is the pairwise record
+a "keep the core" distillation retains. -/
+def PairwiseRealizable (C : Cover) : Prop :=
+  (∃ x y, C.onXY x y) ∧ (∃ y z, C.onYZ y z) ∧ (∃ x z, C.onXZ x z)
+
+/-- One assignment satisfies all three charts at once. This is what the distilled
+record does *not* retain. -/
+def GloballyRealizable (C : Cover) : Prop :=
+  ∃ x y z, C.onXY x y ∧ C.onYZ y z ∧ C.onXZ x z
+
+/-- A globally consistent cover: agreement everywhere. -/
+def consistentCover : Cover :=
+  { onXY := fun x y => x = y, onYZ := fun y z => y = z, onXZ := fun x z => x = z }
+
+/-- The parity cover: agreement on two overlaps, disagreement on the third. -/
+def parityCover : Cover :=
+  { onXY := fun x y => x = y, onYZ := fun y z => y = z, onXZ := fun x z => x ≠ z }
+
+/-- Both covers look identical to a pairwise-only record. -/
+theorem covers_agree_on_pairwise_data :
+    PairwiseRealizable consistentCover ∧ PairwiseRealizable parityCover :=
+  ⟨⟨⟨true, true, rfl⟩, ⟨true, true, rfl⟩, ⟨true, true, rfl⟩⟩,
+   ⟨⟨true, true, rfl⟩, ⟨true, true, rfl⟩, ⟨true, false, fun h => Bool.noConfusion h⟩⟩⟩
+
+/-- They differ exactly where the pairwise record is silent. -/
+theorem covers_differ_on_global_realizability :
+    GloballyRealizable consistentCover ∧ ¬ GloballyRealizable parityCover := by
+  constructor
+  · exact ⟨true, true, true, rfl, rfl, rfl⟩
+  · rintro ⟨x, y, z, hxy, hyz, hxz⟩
+    exact hxz (hxy.trans hyz)
+
+/-- **Obstruction-blind distillation is unsound for navigation.**
+
+No predicate on the pairwise record can decide global realizability: the two
+covers share that record and disagree on the property. A distillation retaining
+only pairwise compatibility therefore cannot warn a navigator that a locally
+licensed support structure has no global section.
+
+Note this is an identifiability statement, not a claim that distillation is
+useless — it says precisely which datum must be carried alongside the cores. -/
+theorem no_pairwise_predicate_decides_global_realizability
+    (decide : (Cover → Prop) → Prop)
+    (readsOnlyPairwise : ∀ C D : Cover,
+      (PairwiseRealizable C ↔ PairwiseRealizable D) →
+      (decide (fun _ => PairwiseRealizable C) ↔ decide (fun _ => PairwiseRealizable D)))
+    (sound : ∀ C : Cover, decide (fun _ => PairwiseRealizable C) ↔ GloballyRealizable C) :
+    False := by
+  have hsame : PairwiseRealizable consistentCover ↔ PairwiseRealizable parityCover :=
+    ⟨fun _ => covers_agree_on_pairwise_data.2, fun _ => covers_agree_on_pairwise_data.1⟩
+  have hdec := readsOnlyPairwise consistentCover parityCover hsame
+  have hcon : decide (fun _ => PairwiseRealizable consistentCover) :=
+    (sound consistentCover).mpr covers_differ_on_global_realizability.1
+  exact covers_differ_on_global_realizability.2 ((sound parityCover).mp (hdec.mp hcon))
+
+end ObstructionBlindness
 
 end RaklFormal

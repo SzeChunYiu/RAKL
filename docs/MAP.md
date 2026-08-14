@@ -70,6 +70,7 @@ held the framework's generative half, including the navigation loop and the meas
 - [`RESEARCH_MEMORY_ARCHITECTURE.md`](RESEARCH_MEMORY_ARCHITECTURE.md) — RAKL Research Memory Architecture
 - [`SOLVING_NEW_MATHEMATICS.md`](SOLVING_NEW_MATHEMATICS.md) — Solving New Mathematics with Orion — an explicit protocol
 - [`MATHEMATICAL_RESEARCH_ASSURANCE.md`](MATHEMATICAL_RESEARCH_ASSURANCE.md) — Mathematical Research Assurance in RAKL
+- [`REASONING_LOCATION.md`](REASONING_LOCATION.md) — Where the reasoning lives (compiled space / governed interfaces / failure analysis) `[research-only]`
 - [`MATH_RESEARCH_QUICKSTART.md`](MATH_RESEARCH_QUICKSTART.md) — Mathematical Research Quickstart
 
 ## L5-SATURATION — Bounded epistemic saturation
@@ -82,6 +83,7 @@ held the framework's generative half, including the navigation loop and the meas
 - [`KNOWLEDGE_SATURATION.md`](KNOWLEDGE_SATURATION.md) — Knowledge Saturation
 - [`MANUSCRIPT_SATURATION.md`](MANUSCRIPT_SATURATION.md) — Manuscript saturation
 - [`LATTICE_METROLOGY_AND_CAPACITY.md`](LATTICE_METROLOGY_AND_CAPACITY.md) — RAKL lattice metrology, learning storage and capacity control
+- [`CONTAINMENT_HYPOTHESIS.md`](CONTAINMENT_HYPOTHESIS.md) — The Containment Hypothesis (opening axiom candidate, four qualifications with receipts) `[research-only]`
 
 ## L6-METHOD-EVOLUTION — Experience, challenge learning and method acquisition
 

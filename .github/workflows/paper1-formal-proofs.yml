@@ -110,9 +110,44 @@ jobs:
           #print axioms RaklFormal.freshness_not_compensable_by_flat_rounds
           #print axioms RaklFormal.freshness_rerun_restores
           #print axioms RaklFormal.freshness_expiry_witness
+          #print axioms RaklFormal.length_dropOne
+          #print axioms RaklFormal.mem_dropOne
+          #print axioms RaklFormal.distinct_length_le
+          #print axioms RaklFormal.mem_keep
+          #print axioms RaklFormal.length_keep_add_not
+          #print axioms RaklFormal.iter_within_univ
+          #print axioms RaklFormal.iter_index_monotone
+          #print axioms RaklFormal.length_witnesses
+          #print axioms RaklFormal.mem_witnesses
+          #print axioms RaklFormal.distinct_witnesses
+          #print axioms RaklFormal.finite_basis_strict_growth_bound
+          #print axioms RaklFormal.le_sub_of_add_le
+          #print axioms RaklFormal.finite_basis_strict_growth_bound_sub
+          #print axioms RaklFormal.finite_basis_bound_is_attained
+          #print axioms RaklFormal.mem_of_memB
+          #print axioms RaklFormal.memB_of_mem
+          #print axioms RaklFormal.sumU_dropOne
+          #print axioms RaklFormal.sum_swap_ge
+          #print axioms RaklFormal.sumU_keep_split
+          #print axioms RaklFormal.mem_of_mem_dropOne
+          #print axioms RaklFormal.distinct_dropOne
+          #print axioms RaklFormal.not_mem_dropOne_self
+          #print axioms RaklFormal.sumU_congr_mem
+          #print axioms RaklFormal.mem_of_mem_keep
+          #print axioms RaklFormal.distinct_keep
+          #print axioms RaklFormal.length_congr_mem
+          #print axioms RaklFormal.sum_le_of_pointwise_dominated
+          #print axioms RaklFormal.le_of_add_le_add_right
+          #print axioms RaklFormal.top_subset_optimal
+          #print axioms RaklFormal.subset_or_witness
+          #print axioms RaklFormal.distinct_subset_exhausts
+          #print axioms RaklFormal.exchange_partner_exists
+          #print axioms RaklFormal.covers_agree_on_pairwise_data
+          #print axioms RaklFormal.covers_differ_on_global_realizability
+          #print axioms RaklFormal.no_pairwise_predicate_decides_global_realizability
           EOF
           LEAN_PATH=/tmp lean /tmp/ax.lean | tee /tmp/ax.out
-          expected=52
+          expected=87
           total=$(grep -c . /tmp/ax.out)
           clean=$(grep -c 'does not depend on any axioms' /tmp/ax.out)
           echo "reported=$total axiom-free=$clean expected=$expected"
@@ -130,12 +165,17 @@ jobs:
           declared = set(re.findall(r'^theorem\s+([A-Za-z_][A-Za-z0-9_.\']*)', lean_src, re.M))
           bad = []
           for claim in inv["claims"]:
-              if claim["status"] not in {"MECHANIZED", "PARTIALLY_MECHANIZED"}:
-                  continue
+              # Every declared Lean name must resolve, whatever the claim's status.
+              # A claim that is NOT mechanized may still cite machine-checked lemmas
+              # (see P1-T-GREEDY-OPTIMALITY); those names must be real too, or the
+              # inventory overstates without tripping any status check.
               names = [n.strip().removeprefix("RaklFormal.") for n in claim.get("lean_names", "").split(",")]
               for name in filter(None, names):
                   if name not in declared:
                       bad.append(f"{claim['id']} claims Lean theorem {name!r}, which does not exist")
+              # A MECHANIZED claim with no Lean names would be an unbacked assertion.
+              if claim["status"] == "MECHANIZED" and not list(filter(None, names)):
+                  bad.append(f"{claim['id']} is MECHANIZED but names no Lean theorem")
           if inv["review_provenance"]["independent"] is not False:
               bad.append("inventory must not claim independent review")
           if bad:

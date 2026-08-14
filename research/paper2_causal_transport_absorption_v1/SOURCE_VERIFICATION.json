@@ -1,0 +1,126 @@
+{
+  "schema_version": "paper2-transport-source-verification-v1",
+  "freeze_date": "2026-08-14",
+  "issue": "#609 follow-on: assimilate the causal-transport parent rather than cite it",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "note": "Every VERIFIED statement below was read from the primary PDF in this run. Statements that could not be read from primary text in this run are recorded as CANNOT_CHECK and must not be cited as verified. The prior audit file research/paper2_nearest_work_2026/NOVELTY_THREAT_RANKING.md is a secondary source and was NOT used as evidence for any statement here.",
+
+  "candidate_identity_resolution": {
+    "problem": "The nearest-work audit refers to 'sID Corollary 3'. Three sibling algorithms exist in this family and the numbering differs per venue, so the pointer was independently re-derived from primary text rather than inherited.",
+    "resolved": {
+      "sID": "Bareinboim & Pearl, 'Transportability of Causal Effects: Completeness Results', AAAI 2012, 26(1):698-704. Two domains (Pi source, Pi* target). THIS is the algorithm the audit's pointer refers to, and the pointer is CORRECT.",
+      "muSID": "Bareinboim & Pearl, 'Meta-Transportability of Causal Effects: A Formal Approach', AISTATS 2013, PMLR 31:135-143. Multiple heterogeneous source domains (mu-transportability).",
+      "TR_z": "Bareinboim & Pearl, 'Causal Transportability with Limited Experiments', AAAI 2013, pp. 95-101 (tech report R-408). z-transportability; explicitly built 'based on the algorithm sID ... introduced in [BP, 2012b]'."
+    },
+    "audit_pointer_status": "VERIFIED. 'sID Corollary 3' is exactly right for AAAI 2012. Recording this because the same corollary number means something different in each sibling paper: Corollary 3 in the muSID paper is the do-calculus completeness statement, and Corollary 3 in the TR_z paper is the zs-hedge criterion."
+  },
+
+  "verified_statements": [
+    {
+      "id": "V1-SID-INPUTS",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Figure 4, p. 6",
+      "verbatim": "function sID(y, x, P*, I, D) INPUT: x,y: value assignments; P*: observational distribution in Pi*, I set of interventional distributions in Pi, D a selection diagram, S set of selection nodes. OUTPUT: Expression for P*_x(y) in terms of P*, I or FAIL(F, F').",
+      "load_bearing_because": "Fixes the exact input tuple the completeness result is relative to. The selection diagram D is a HARD INPUT, not something the algorithm infers."
+    },
+    {
+      "id": "V2-SID-SOUNDNESS",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Theorem 6, p. 6",
+      "verbatim": "Whenever sID returns an expression for P_x(y), it is correct.",
+      "load_bearing_because": "Soundness of the positive verdict."
+    },
+    {
+      "id": "V3-SID-FAIL-CERTIFICATE",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Theorem 7, p. 6",
+      "verbatim": "Assume sID fails to transport P_x(y) (executes line 7). Then there exists X' subset-eq X, Y' subset-eq Y, such that the graph pair D, C_0 returned by the fail condition of sID contain as edge subgraphs s*-trees F, F' that form a s-hedge for P_x'(y').",
+      "load_bearing_because": "THE decisive structural fact. The FAIL branch does not merely report 'search exhausted'; it RETURNS a structural object (an s-hedge) that witnesses the obstruction. This is the part ORION lacks."
+    },
+    {
+      "id": "V4-SID-COMPLETENESS",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Corollary 3, p. 6",
+      "verbatim": "sID is complete.",
+      "load_bearing_because": "The exact completeness pointer. Verbatim text is three words; its content is supplied by Theorem 7 plus Corollary 4."
+    },
+    {
+      "id": "V5-DOCALCULUS-COMPLETENESS",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Corollary 4, p. 6",
+      "verbatim": "The rules of do-calculus, together with standard probability manipulations are complete for establishing transportability of all effects of the form P*_x(y).",
+      "load_bearing_because": "This is what upgrades FAIL from 'this algorithm found nothing' to 'nothing exists'. Completeness of the underlying calculus is what licenses quantification over derivations."
+    },
+    {
+      "id": "V6-METHOD-INDEPENDENCE",
+      "source": "Bareinboim & Pearl, AISTATS 2013 (muSID paper), p. 142, prose immediately preceding Corollary 3",
+      "verbatim": "Furthermore, we show below that the do-calculus is complete for establishing mu-transportability, which means that failure in the exhaustive application of its rules implies the inexistence of a mapping from the available data to the target relation (i.e., there is no mu-transport formula), independently of the method used to obtain such mapping.",
+      "load_bearing_because": "THE precise scope of the strong reading, in the authors' own words. Two clauses matter equally: (a) 'independently of the method used' -- the quantification IS over all derivation methods, so the operator's asymmetry is real; (b) 'from the available data' -- the impossibility is relative to the FIXED input tuple, NOT absolute. Both must be carried."
+    },
+    {
+      "id": "V7-IMPOSSIBILITY-IS-TWO-MODEL-INDISTINGUISHABILITY",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Appendix 2, proof of Theorem 4 and Lemmas 5-7, pp. 7-8",
+      "verbatim": "The proof will proceed by constructing a family of counterexamples. For any such G and any set X, we will construct two causal models M_1 and M_2 that will agree on <P, P*, I>, but disagree on the interventional distribution P_x(y).",
+      "load_bearing_because": "THE MECHANISM, not the slogan. The impossibility certificate is an INDISTINGUISHABILITY WITNESS: two models consistent with every declared input yet disagreeing on the QoI. That is why the refusal is method-independent -- no function of the inputs can separate them -- and simultaneously why it is input-relative -- add an input that separates them and the certificate dissolves."
+    },
+    {
+      "id": "V8-KNOWLEDGE-PRECONDITION",
+      "source": "Bareinboim & Pearl, AISTATS 2013 (muSID paper), Section 7 Conclusions, p. 142",
+      "verbatim": "Of course, our analysis is based on the assumption that the analyst is in possession of sufficient background knowledge to determine, at least qualitatively, where the populations may differ from one another. In practice, such knowledge may only be partially available and, as is the case in every mathematical exercise, the benefit of the analysis lies primarily in understanding what knowledge is needed for the task to succeed and how sensitive conclusions are to knowledge that we do not possess.",
+      "load_bearing_because": "The authors themselves place the missing-knowledge case OUTSIDE the formalism. This is the precondition ORION generally cannot discharge, and therefore the precondition that must gate any imported strong verdict."
+    },
+    {
+      "id": "V9-DIAGRAM-PRECONDITION",
+      "source": "Bareinboim & Pearl, AISTATS 2013 (muSID paper), footnote 4, p. 137",
+      "verbatim": "Transportability assumes that enough structural knowledge about both domains is known in order to substantiate the production of their respective causal diagrams.",
+      "load_bearing_because": "Restates V8 as a hard input requirement on D."
+    },
+    {
+      "id": "V10-PRACTICAL-PREDICATION",
+      "source": "Bareinboim & Pearl, AAAI 2013 (R-408, TR_z paper), Conclusions, p. 6",
+      "verbatim": "While practical applications of these results are predicated on the availability of problem-specific selection diagrams, the general understanding of why some problems permit information transfer and other do not has scientific merit on its own.",
+      "load_bearing_because": "Third independent restatement of the same precondition, by the same authors, in the sibling paper."
+    },
+    {
+      "id": "V11-LICENCE-PHRASING",
+      "source": "Bareinboim & Pearl, 'A General Algorithm for Deciding Transportability of Experimental Results', arXiv:1312.7485, abstract",
+      "verbatim": "defined as a license to transfer information learned in experimental studies to a different population, on which only observational studies can be conducted",
+      "load_bearing_because": "Confirms the source family itself uses 'licence to transfer'. The claim-space collision with ORION's transport contract is real and stated in the source's own vocabulary."
+    },
+    {
+      "id": "V12-NO-THIRD-VERDICT",
+      "source": "Bareinboim & Pearl, AAAI 2012 (R-390-L), Figure 4 OUTPUT line, p. 6",
+      "verbatim": "OUTPUT: Expression for P*_x(y) in terms of P*, I or FAIL(F, F').",
+      "load_bearing_because": "The output type is binary: a transport formula, or FAIL with its certificate. There is no returned CANNOT_CHECK. Combined with V8, the missing-knowledge case is a user obligation discharged before the call, never a value the procedure returns. This is the one place ORION's contract is genuinely wider, and it is a difference in output type, not a claim of superiority."
+    }
+  ],
+
+  "cannot_check": [
+    {
+      "id": "CC1-SID-COMPLEXITY",
+      "claim": "Computational complexity bound for sID.",
+      "status": "CANNOT_CHECK",
+      "reason": "No complexity statement was located in the pages of AAAI 2012 read in this run. Do not assert a bound. The ORION analogue's own cost must be measured directly rather than inherited by analogy."
+    },
+    {
+      "id": "CC2-PEARL-BAREINBOIM-2014-QUOTE",
+      "claim": "The audit attributes 'a licence to transfer causal effects learned in experimental studies to a new population' to Pearl & Bareinboim (2014), Statistical Science 29(4):579-595.",
+      "status": "CANNOT_CHECK",
+      "reason": "The Statistical Science paper was not fetched in this run. A licence-phrasing IS verified from arXiv:1312.7485 (see V11); cite V11 rather than the unverified 2014 attribution."
+    },
+    {
+      "id": "CC3-PNAS-2016-QUOTE",
+      "claim": "The audit quotes PNAS 2016 p. 7351 on knowledge unavailability.",
+      "status": "CANNOT_CHECK",
+      "reason": "PNAS 2016 not fetched in this run. V8/V9/V10 establish the same precondition from three primary sources actually read here; prefer those."
+    },
+    {
+      "id": "CC4-THEOREM7-LINE-REFERENCE",
+      "claim": "Theorem 7 says sID 'executes line 7' on failure; Figure 4 as rendered shows FAIL(D, C_0) on line 7.",
+      "status": "VERIFIED_CONSISTENT_FOR_SID",
+      "reason": "In AAAI 2012 Fig. 4 the FAIL branch is line 7, matching Theorem 7. NOTE the sibling papers renumber: in the muSID paper Theorem 5 also says 'executes line 7' while its Fig. 5 shows FAIL on line 8. That discrepancy is in the muSID paper and does not affect the sID pointer used here."
+    }
+  ],
+
+  "corrected_characterisation": {
+    "as_briefed": "When sID refuses, the refusal is a certificate of impossibility -- no estimator exists.",
+    "as_verified": "When sID refuses, no transport formula exists FROM THE GIVEN INPUTS <P*, I, D>, independently of the method used to derive one, and the refusal returns an s-hedge witnessing this (V3, V5, V6). It is not absolute impossibility: the certificate is an indistinguishability construction relative to the declared inputs (V7), so enlarging I or refining D can flip FAIL to a transport formula.",
+    "why_this_matters_for_the_transfer": "The corrected reading makes the mechanic CLOSER to ORION, not further. ORION's REJECTED is also relative to fixed inputs. The entire gap is that sID quantifies over all derivations while ORION quantifies over nothing -- it evaluates exactly one supplied witness. That is a transferable structural move. 'Theirs is absolute, ours is not' would have been an untransferable and false framing."
+  }
+}

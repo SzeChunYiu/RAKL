@@ -1,0 +1,71 @@
+{
+  "schema_version": "external-agent-mechanics-v1",
+  "freeze_date": "2026-08-14",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "note": "Part-2 assimilation pass (operator addendum: containment hypothesis Part 2 — compositional containment + governed extension). Parents of the COMPOSITION and INVENTION half of the axiom. VERIFICATION HONESTY: unlike formal_parents_amortization_v1.json, the three parents below were NOT primary-verified in this pass — every source_verification block says so explicitly, entries are from-training sketches flagged for the nearest-work lane, and nothing unpublished is guessed. Hammers/premise selection (the fourth part-2 parent) is already compiled with primary anchors in formal_parents_amortization_v1.json (MEC-LEMMA_AMORTIZATION_PREMISE_SELECTION) and is not duplicated here.",
+  "mechanics": [
+    {
+      "mechanic_id": "MEC-CONJECTURE_GENERATION_GOVERNED",
+      "source_system_ids": ["SYS-AM_LENAT", "SYS-GRAFFITI_FAJTLOWICZ", "SYS-NEURAL_CONJECTURING"],
+      "process_surface": "the invention proposer (the creative slot of the frontier cycle)",
+      "source_verification": {
+        "CC1": "CANNOT_CHECK - no primary source fetched this pass. From-training sketch: Lenat's AM (1976-77) generated mathematical concepts/conjectures via heuristics over a frame representation; Fajtlowicz's Graffiti (late 1980s) generated graph-theoretic inequality conjectures, some publication-grade, filtered against counterexample databases; recent neural conjecturing produces candidate statements from learned models. Verbatim claims, exact mechanisms and evaluation records must be verified by the nearest-work lane before any comparative sentence is published."
+      },
+      "preconditions": "A generator over a statement space; a FILTER that kills bad candidates cheaply (counterexamples, triviality checks); a valuation of interestingness (AM's weakest, most criticized component).",
+      "mechanism": "Generate candidate statements the corpus does not contain; filter mechanically where possible; surface survivors for expensive validation. The parents' documented lesson (pending verification): generation is cheap, VALUATION is the bottleneck, and self-scored interestingness drifts.",
+      "claimed_benefit": "Existence proof that machine-generated conjectures can reach publication grade (Graffiti's record, pending primary verification).",
+      "cost": "Candidate flood; valuation drift; survivorship bias in retrospective reporting of the parents' successes.",
+      "failure_modes": [
+        "Self-scored interestingness becoming a de-facto authority (the exact leak Orion's floor-0 rule exists to prevent).",
+        "Counting filtered survivors as discoveries before target validation.",
+        "Retrospective cherry-picking of the parents' hit lists (why primary verification is mandatory before citing their success rates)."
+      ],
+      "scope": "Proposal generation only. Nothing in these parents addresses authority transport of an accepted conjecture into a larger derivation.",
+      "independent_evidence": "NONE for the transfer.",
+      "rakl_analogue": "The pluggable creative slot of the frontier cycle (docs/CONTAINMENT_HYPOTHESIS.md Part 2b); src/rakl/recursive_solver.py governed invention: proposals enter at authority floor 0 with non-empty obligations, only after research saturation + decomposition exhaustion (LIFT rule).",
+      "candidate_transfer_obligation": "What Orion eats is the FILTER discipline, not the generators: cheap mechanical falsification (counterexample search) before any expensive obligation discharge. FALSIFIER for the transfer: if adding a cheap-falsification stage before kernel discharge does not reduce cost per admitted bridge at equal admission quality on a real frontier-cycle workload, the stage is dead weight."
+    },
+    {
+      "mechanic_id": "MEC-POLYA_DECOMPOSITION_ANALOGY",
+      "source_system_ids": ["SYS-POLYA_HEURISTICS"],
+      "process_surface": "decomposition and analogy routing (the classical parent of the whole fiber discipline)",
+      "source_verification": {
+        "CC1": "CANNOT_CHECK - no primary source fetched this pass. From-training sketch: Polya (How to Solve It, 1945; Mathematics and Plausible Reasoning, 1954) systematized: understand the problem, devise a plan via related/analogous solved problems, decompose, generalize/specialize, work backward from the goal, and treat plausible reasoning as distinct from demonstrative proof. Verbatim formulations pending nearest-work verification."
+      },
+      "preconditions": "A solver (human, in the source) able to recognize structural kinship with solved problems.",
+      "mechanism": "Route a new problem through: restatement, analogous-solved-problem retrieval, decomposition into subproblems, backward reasoning from the goal, and explicit separation of plausible from demonstrative steps.",
+      "claimed_benefit": "The classical articulation of exactly the moves Orion mechanizes: fiber decomposition, analogue/method-transfer matrices, backward corridor, and the plausible-vs-demonstrative split (proposal vs authority).",
+      "cost": "None mechanical - it is a discipline, not machinery.",
+      "failure_modes": [
+        "Treating Polya's plausible reasoning as if it carried demonstrative force (the authority leak, named by the parent itself).",
+        "Analogy by surface resemblance (the parent warns; our structural-witness requirement is the mechanization of that warning)."
+      ],
+      "scope": "Human mathematical practice; transfers as DESIGN VOCABULARY and as the honesty benchmark - a claim that Orion's decomposition/analogy loop is novel must survive comparison with a 1945 articulation.",
+      "independent_evidence": "NONE for the transfer.",
+      "rakl_analogue": "Atomization + context fibers (skills/rakl-core workflow B-C), analogue/method-transfer matrix (D-E), backward corridor (docs/EPISTEMIC_PATHFINDING_AND_GAP_COMPLETION.md), proposal-vs-authority split (constitutional).",
+      "candidate_transfer_obligation": "Nothing to import - the obligation runs the OTHER way: Paper I/V nearest-work sections must cite Polya as the classical parent of the decomposition/analogy discipline and claim only the MECHANIZATION + GOVERNANCE as delta. FALSIFIER of the delta wording: any Orion claim sentence that would be true of Polya's discipline as practiced by a careful human is not a novelty sentence."
+    },
+    {
+      "mechanic_id": "MEC-SEARCH_GUIDED_PROOF_COMPOSITION",
+      "source_system_ids": ["SYS-MCTS_PROOF_SEARCH", "SYS-ALPHAPROOF_CLASS"],
+      "process_surface": "composition search over the derivation space (the span-navigation half of Part 2a)",
+      "source_verification": {
+        "CC1": "CANNOT_CHECK - no primary source fetched this pass. From-training sketch: guided search (MCTS or learned policy/value) over formal proof states, with the proof assistant as the transition oracle; AlphaProof-class systems reported IMO-level results (2024) with a Lean verifier in the loop. UNPUBLISHED INTERNALS ARE CANNOT_CHECK AND ARE NOT GUESSED - only published statements may be cited after the nearest-work lane verifies them."
+      },
+      "preconditions": "A formal environment whose states are checkable (the kernel as oracle); a search budget; optionally a learned guidance policy.",
+      "mechanism": "Navigate the exponential composition space with guided search; every accepted step is kernel-checked, so guidance quality affects COST, never soundness - structurally the same wager as Part 2b's frontier cycle.",
+      "claimed_benefit": "Evidence (pending primary verification) that kernel-in-the-loop search can reach frontier-adjacent mathematics; confirms the span-not-inventory reading of Part 2a at scale.",
+      "cost": "Enormous compute in the reported systems; guidance training data; opaque proposal policies.",
+      "failure_modes": [
+        "Attributing soundness to the policy instead of the kernel (the parents themselves do not make this error; press coverage does).",
+        "Benchmark-shaped search: competition problems have known-solvable structure; frontier research problems do not come with that guarantee.",
+        "For Orion: importing the search pattern without the obstruction layer - guided recombination at distance is exactly where jointly-unrealizable gluings arise (Part 2a), and a kernel rejects a wrong PROOF but cannot reject a wrong PROBLEM DECOMPOSITION."
+      ],
+      "scope": "Formal proof search with mechanical verification. The parents optimize single-theorem search; none maintain a persistent, authority-typed, obstruction-preserving space across problems.",
+      "independent_evidence": "NONE for the transfer.",
+      "rakl_analogue": "derivation.py forward closure + support_solver routes as the (currently unguided) composition search; certificates.py as the kernel-authority binding; the missing piece on our side is any guidance policy at all - and the missing piece on theirs is the persistent governed space. The deltas are complementary, not competitive.",
+      "candidate_transfer_obligation": "Candidate import: guidance-as-cost-reducer with zero authority (a policy may reorder the corridor, never license an edge). FALSIFIER: a guided arm that changes WHICH derivations are accepted (not just how fast) has leaked authority into guidance and must be rejected; a guided arm that does not reduce expansions at equal solve set is dead weight."
+    }
+  ]
+}

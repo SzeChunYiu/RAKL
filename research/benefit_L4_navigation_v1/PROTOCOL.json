@@ -1,0 +1,149 @@
+{
+  "protocol_id": "BENEFIT-L4-NAVIGATION-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@08169241",
+  "ladder_obligation": {
+    "layer_id": "L4-NAVIGATION",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does navigating a distilled support structure solve more than reading raw sources at matched total budget? This is arm C of the benefit experiment and the load-bearing open question.",
+    "frontier_rationale": "The ladder names this the load-bearing open question; L4 is the framework's verb (search for an authority-valid support structure). This protocol deterministically instantiates the raw-reading comparator the ladder calls arm C as arm A, so the contrast is exactly distil-and-navigate versus budgeted raw reading.",
+    "gate_falsifiability_note": "ladder.json L4 readiness records gate_falsifiable: NOT_AUDITED for the navigation machinery. This experiment measures benefit, not gate falsifiability; the falsifiability audit of src/rakl/support_solver.py remains a separate open obligation and is a registered execution residual, not a precondition this protocol waives."
+  },
+  "hypothesis": {
+    "statement": "On known-answer worlds whose target claims need multi-hop support chains buried in a raw source pool, distilling sources into an obstruction-preserving support hypergraph and navigating it (rakl.support_solver: distil -> saturate -> navigate -> connect, with epistemic-cut/repair-directed acquisition) yields a higher verified solve rate than budgeted lexical raw-source reading at MATCHED total budget with ALL distillation cost charged to the navigating arm, and the advantage is attributable to genuine structure-directed acquisition rather than to the cost model or any fixed reading schedule.",
+    "direction": "SR_B - SR_A >= 0.10 absolute on the primary set (gold SOLVABLE, budget class MEDIUM or LOOSE)",
+    "budget_conditionality": "The benefit claim is budget-conditional and PROMOTE applies ONLY at budgets B_units >= 4 * S* (budget classes MEDIUM and LOOSE, where S* is the world's minimal covering source count). At TIGHT budget (B_units = 2 * S*: exactly enough for zero-waste distillation) the distillation overhead is expected to dominate and NO benefit is claimed; class N2 is a registered honest-cost read outside the PROMOTE scope. Shallow single-hop worlds (N4), where distillation cannot pay off, are likewise charged to arm B via the SFH floor.",
+    "known_at_design_time": "Both arms are deterministic policies, so qualitative behavior on the parametric classes is partially derivable a priori (e.g. B pays double per source and must recover via cut/frontier-directed acquisition; both arms honestly fall for a lexical decoy on their first acquisition). The run certifies exact magnitudes under randomized world realization, separation from both nulls, the honest-cost floor, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_budgeted_raw_reading": {
+      "definition": "Read sources in frozen lexical order (descending overlap between a source's index tokens and the target token set = description_tokens + start_atom + goal_atom; ties by source_id) at COST_READ = 1.0 per source until the budget cannot fund another read. After each read, run the SAME connect rule as arm B (admissible-route check over all facts read so far: authority-licensed Dijkstra with obstruction rejection on the assembled atom set). Declare SOLVED with the found route, else NOT_SOLVED at budget exhaustion. This is the strongest honest raw arm: it shares B's connect step and B's visibility of the source index, so the contrast isolates acquisition ordering and the distillation cost.",
+      "inputs_visible": ["source index (source_id + index_tokens) for all sources", "full typed content of each source only after paying its read cost", "target contract", "surface_text"],
+      "implementation": "Deterministic policy frozen in the execution-run harness; must match EVALUATOR.py arm_a_policy verbatim (executable drift check, CANNOT_CHECK on mismatch)."
+    },
+    "B_distil_and_navigate": {
+      "definition": "Distil sources at COST_DISTIL = 2.0 per source into a growing typed rakl.support_solver.SupportStructure (Atoms, licensed SupportEdges, explicit Obstructions). After each distillation call rakl.support_solver.solve on the partial structure against the Target contract: REACHED => declare SOLVED with the route; CUT => acquisition guidance = endpoints of the MinimalRepair elements (or the EpistemicCut when no unobstructed relaxed route exists); UNREACHABLE_IN_PRINCIPLE => guidance = forward frontier from start + backward frontier into goal + {start, goal}. Next source = max overlap between index tokens and the guidance set (ties by target-token overlap, then source_id); first acquisition bootstraps by target-token overlap exactly like arm A. NOT_SOLVED at budget exhaustion. ALL distillation cost is charged to this arm; COST_DISTIL = 2 * COST_READ is a deliberately conservative doubling (read + typed encoding) so any measured advantage survives at least 2x distillation overhead.",
+      "exact_functions": [
+        "rakl.support_solver.SupportStructure",
+        "rakl.support_solver.Atom",
+        "rakl.support_solver.SupportEdge",
+        "rakl.support_solver.Obstruction",
+        "rakl.support_solver.Target",
+        "rakl.support_solver.solve",
+        "rakl.support_solver.SolveReport",
+        "rakl.support_solver.EpistemicCut",
+        "rakl.support_solver.MinimalRepair"
+      ],
+      "module_pins": {
+        "src/rakl/support_solver.py_sha256": "180548b10a4465194c0aefd458a55e78dd23e00a9d8a7e4eb64ca6bd4fd374c6",
+        "pin_rule": "The run receipt must record the content sha256 of the module in the run environment; a mismatch with this pin is CANNOT_CHECK unless the protocol is re-frozen as V2 against the changed semantics BEFORE any result access."
+      },
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md section 8 and docs/EPISTEMIC_PATHFINDING_AND_GAP_COMPLETION.md: solving is search for an authority-valid support structure reaching the target contract tau; failing is informative (the min-cost epistemic cut names what would have to be established). Distillation is obstruction-preserving (Paper I: no pairwise-only predicate decides global realizability), authority is carried on every edge, and the distilled universe is the finite basis.",
+      "known_limitation_frozen_in_advance": "At TIGHT budgets and on shallow single-hop worlds the 2x distillation cost cannot be recovered; classes N2 and N4 exist to charge this honestly (N2 outside the PROMOTE scope, N4 inside the SFH floor). Arm B's first acquisition is as lexically fooled as arm A's (no structure exists yet to navigate); recovery via guidance is the mechanism under test."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical world records (same source index, same per-source typed content, same target); neither arm performs retrieval, network access, or LLM calls (token budget 0 for both).",
+      "budget_currency": "Acquisition units: COST_READ = 1.0 per raw source read (arm A), COST_DISTIL = 2.0 per source distilled (arm B). Total budget_units identical across arms per world. Navigation/connect compute is charged in wall-clock/RSS receipts per arm; the connect rule is shared so it cancels in the contrast.",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "SR denominators are fixed by the corpus (primary set for the primary contrast; class N4 for the floor; all N for FSR) and identical across arms; NOT_SOLVED still counts in every denominator."
+    }
+  },
+  "estimator": {
+    "sr_definition_source": "research/framework_ladder/ladder.json L4-NAVIGATION benefit_obligation (solve rate at matched total budget). Registered here as SR pending a separate quant-model extension in docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md.",
+    "sr": "SR_arm = |{i in primary set : declaration = SOLVED and route verified against the FULL world}| / |primary set|; primary set = gold SOLVABLE worlds with budget_class in {MEDIUM, LOOSE} (n = 270). A declared route must exist edge-by-edge in the world at the demanded authority and must not realize ANY world obstruction, read or unread; a SOLVED failing this is a false solve, excluded from SR and counted in FSR.",
+    "world_instance": "A hidden support hypergraph (8-14 atoms, licensed edges, 0-2 obstruction covers) scattered across 8-16 rendered sources (1-3 true facts each plus distractor facts/sources), a target contract (start, goal, required authority, description tokens), a per-world minimal covering source count S*, and a budget class.",
+    "primary_contrast": "delta_SR = SR_B - SR_A on the primary set, paired on identical worlds; McNemar exact test on world-level verified-solve indicators (two-sided, exact binomial on discordant pairs).",
+    "false_solve_guard": "FSR_arm over all N; FSR_B must be exactly 0 for PROMOTE (a navigating arm that fabricates routes cannot promote regardless of SR).",
+    "honest_cost_floor": "SFH_B = SR of arm B on class N4 (shallow single-hop at MEDIUM budget) >= 0.70. The L4 analogue of the L0 TCR floor with the direction adapted to a solve-rate observable: arm B must not gut the easy regime (where distillation cannot pay off) to look good on the deep regime.",
+    "loose_noninferiority": "SR_B >= SR_A - 0.02 on class N3 (LOOSE budget): the claim must not invert when budget stops binding.",
+    "evaluator_file": "research/benefit_L4_navigation_v1/EVALUATOR.py",
+    "evaluator_sha256": "2dd3726fc99354c1fe70704843ac628946cb00eeb15955747fcb8494eebe418d",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ on 2026-08-14 (greps for navigation corpus, solve rate, support corpus): no labeled matched-budget solve corpus exists. research/navigation_dynamics_parallel_v1/ is a dynamics study (rounds/results, no gold-labeled budget-matched population); src/rakl/backward_multiseed_benchmark.py is a different benchmark family; tests/ hold unit fixtures for support_solver only.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_worlds": 400,
+    "composition": {
+      "N1_deep_chain_medium": 120,
+      "N2_deep_chain_tight": 60,
+      "N3_deep_chain_loose": 60,
+      "N4_shallow_single_hop_medium": 40,
+      "N5_distractor_heavy_medium": 60,
+      "N6_obstructed_decoy_medium": 30,
+      "N7_unsolvable_medium": 30
+    },
+    "budget_classes": {
+      "TIGHT": "budget_units = 2 * S* (zero-waste distillation is just fundable; outside PROMOTE scope)",
+      "MEDIUM": "budget_units = 4 * S* (primary PROMOTE regime)",
+      "LOOSE": "budget_units = 8 * S* (secondary; non-inferiority gate)"
+    },
+    "gold_solvable_total": 370,
+    "gold_unsolvable_total": 30,
+    "primary_set_size": 270,
+    "labeling_procedure": "Gold labels are minted by the generator from the hidden world at generation time via exact route search over the full fact set (admissible-route existence at the demanded authority, obstruction covers included). S* is computed exactly by minimal set cover over source fact-sets at generation time (worlds are sized to keep this exact). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling. A rendering-faithfulness check re-verifies at generation time that the union of rendered source facts reproduces the hidden world's solvability; a mismatch drops the row before freeze.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold labels, S*, and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_label and minimal_source_count fields stripped; the evaluator joins on world_id.",
+      "Human/oracle audit: 40 worlds (10%) sampled by seed, audited by a reviewer shown ONLY the rendered world description and the gold label, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Paired McNemar design on the primary set (n = 270), mirroring BENEFIT-L1-COMPOSITION-V1. For discordant-pair probabilities p10 = 0.12 (B-only solves) and p01 = 0.02, detecting delta_SR = 0.10 at two-sided alpha = 0.05 with 80% power needs approximately n = (1.96*sqrt(0.14) + 0.84*sqrt(0.14 - 0.01))^2 / 0.10^2 ~= 107 worlds; 270 gives ~2.5x margin. N = 400 total additionally funds the honest-cost classes (N2 = 60, N4 = 40), the mechanism-stress class (N5 = 60), the false-solve class (N7 = 30), and the 10% audit sample. The margin is deliberate so the corpus remains adequately powered for the pre-registered LLM-arm follow-up where effects will be smaller and noisier."
+  },
+  "nulls": {
+    "null_1_random_acquisition": "1000 seeded runs of arm B's exact cost model and budget with the navigation guidance replaced by random source order (no structure consulted). SR distribution on the primary set; require SR_B > 95th percentile. The equal-budget suppression analogue: tests that the benefit comes from NAVIGATING the distilled structure, not from paying distillation cost while touching fewer sources.",
+    "null_2_index_permutation": "Permute source index tokens across sources within each world (1000 seeded permutations); re-run arm B's frozen policy replica; SR distribution on the primary set; require SR_B > 95th percentile. The structure-permutation null: B's advantage must exploit genuine structure-to-source binding; if it survives metadata scrambling it was not using the structure."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, budget classes, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "delta_SR >= 0.10 on the primary set (MEDIUM + LOOSE, gold SOLVABLE)",
+        "McNemar exact p < 0.001",
+        "SFH_B >= 0.70 (arm B solve rate on N4)",
+        "FSR_B == 0",
+        "SR_B >= SR_A - 0.02 on N3 (LOOSE)",
+        "SR_B > 95th percentile of null 1 AND of null 2",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid",
+        "no rule drift between either arm's declarations and the frozen decision-equivalent policies"
+      ],
+      "justification": "0.10 absolute = 27 additional verified solves per 270 primary worlds under a 2x distillation-cost handicap, an order of magnitude above the tolerated label-noise ceiling; p < 0.001 because the design is heavily powered and a single primary contrast is registered; the SFH floor 0.70 because a navigator that loses more than ~30% of trivially solvable worlds to its own overhead would gut the solving loop's use as a default (the benefit must be regime-robust, not bought by sacrificing the shallow regime); FSR_B = 0 because a fabricated route is an authority breach, not a miss; the LOOSE non-inferiority gate pins the budget-conditional claim at both ends of its registered scope."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "delta_SR <= 0.02 on the primary set",
+        "SR_B <= 95th percentile of null 1",
+        "SR_B <= 95th percentile of null 2"
+      ],
+      "justification": "An advantage indistinguishable from random acquisition at B's cost model, or one that survives index scrambling, means navigation of the distilled structure specifically is not the source of the benefit — which is exactly the load-bearing question the ladder poses."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. delta_SR in (0.02, 0.10), or nulls beaten but SFH_B < 0.70, or FSR_B > 0, or benefit present at LOOSE but absent at MEDIUM (a budget-scope shrink, to be re-frozen as such).",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: on synthetic known-answer multi-hop worlds, distil-and-navigate solves more than budgeted lexical raw reading at matched total budget with all distillation cost charged, FOR BUDGETS >= 4 * S* ONLY. ladder.json L4 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no claim at TIGHT budgets, no LLM-arm generalization, no natural-corpus generalization, no claim that the acquisition policy is optimal; all are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (world realization / index-token informativeness / acquisition-guidance rule / cost ratio / null design / arm-A strength), apply the single matching lever, re-freeze as BENEFIT-L4-NAVIGATION-V2, re-run against the strongest parent. Pre-registered most-likely lever for a cost-attributed failure: measure the guidance quality at COST_DISTIL = 1.0 (pure ordering contrast) to separate 'navigation does not guide' from 'navigation guides but cannot amortize 2x'; a cost-ratio change is a V2 re-freeze, never a post-hoc rescue. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: benefit concentrated at LOOSE only - attribute to acquisition-guidance latency (guidance needs a structural seed before it pays), add a typed two-phase policy (bounded lexical bootstrap then guidance), cost charged to arm B, entering via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch to src/rakl/support_solver.py."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "execution_precondition": "The separate L4 gate-falsifiability audit of src/rakl/support_solver.py (ladder readiness gate_falsifiable: NOT_AUDITED) SHOULD land before the execution run so a fail-open navigation gate cannot silently inflate arm B; if it has not landed, the run receipt must record that the audit is outstanding and the verdict is capped at CONDITIONAL regardless of metrics.",
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}

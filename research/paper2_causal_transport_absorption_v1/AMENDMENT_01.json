@@ -1,0 +1,36 @@
+{
+  "schema_version": "paper2-transport-absorption-amendment-v1",
+  "amendment_id": "AMENDMENT-01",
+  "date": "2026-08-14",
+  "amends": "research/paper2_causal_transport_absorption_v1/PROTOCOL.json",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+
+  "chronology_disclosure": "G4b and the strata audit were added AFTER the protocol freeze and AFTER first outcome access. They are recorded here rather than edited into PROTOCOL.json, because backfilling a frozen protocol does not repair discovery chronology. The originally frozen gates G1-G5 are unchanged and were all evaluated before this amendment.",
+
+  "direction_of_change": "STRICTLY_TIGHTENING",
+  "why_this_is_not_a_threshold_rescue": "A post-result protocol change is illegitimate when it makes passing EASIER. This one makes passing strictly harder: it adds an additional gate that the candidate must also satisfy, and removes, weakens and relaxes nothing. No previously failing criterion was rescued -- G1-G5 had already passed on their own frozen terms before G4b existed. Had G4b failed, the recorded outcome would have been a failed transfer.",
+
+  "trigger": "Same-session adversarial review observed that G4 compares two implementations against each other, which cannot distinguish 'both correct' from 'both wrong in the same way', and that the randomised generator might under-sample the only stratum where the injective-mapping search is load-bearing.",
+
+  "coverage_measurement": {
+    "finding": "The concern was partially justified. Measured over the frozen 600-case sweep: 288/600 cases have any source relations at all (the remaining 312 make S3 vacuously true), 28 have S3 true with relations present, and 18 fall in the discriminating stratum where S3 is true ONLY via a non-canonical role mapping.",
+    "interpretation": "The discriminating stratum is non-empty, so the original G4 result is not vacuous with respect to S3. But 18 of 600 is thin, and most negative S3 verdicts in the sweep are settled by the cheap relation-type check rather than by the search. G4's 600/600 agreement is therefore strong evidence for S1, S2 and type-level pruning, and only modest evidence for the search itself.",
+    "status": "This is a limitation of the original G4, recorded rather than removed."
+  },
+
+  "added_gate": {
+    "id": "G4b_PLANTED_KNOWN_ANSWER",
+    "rationale": "Ground truth known BY CONSTRUCTION rather than obtained from the brute-force oracle, so it is a planted-PASS / planted-FAIL pair rather than two implementations agreeing.",
+    "planted_pass": "Embed a known injective phi and build the target as the phi-image of the source relations, so a licensing mapping provably exists. RETAIN ONLY cases where the canonical sorted-order mapping fails, so the search must find a non-obvious map.",
+    "planted_fail": "Give the source a relation whose type appears nowhere in the target, so no mapping can preserve it.",
+    "honest_limitation_of_the_planted_fail_arm": "Sound but cheap: the relation-type check settles it without the search running. The planted-FAIL arm therefore does NOT independently exercise the search on the negative side. The only evidence for search correctness on the negative side remains the randomised oracle cross-check. This is an acknowledged residual, not a closed question.",
+    "result": "178 planted-PASS cases and 178 planted-FAIL cases, zero failures in either direction. 22 candidate cases were discarded because the canonical mapping already sufficed."
+  },
+
+  "residuals_after_this_amendment": [
+    "The completeness proposition remains EMPIRICALLY SUPPORTED, not proved. The proof sketch in PROTOCOL.json is proposal-only.",
+    "The negative direction of S3 is not exercised by a planted known-answer case; only by oracle cross-check.",
+    "ARM-2 remains CANNOT_CONSTRUCT and is not rescued by this amendment."
+  ]
+}

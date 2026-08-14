@@ -1,0 +1,84 @@
+{
+  "schema_version": "rakl-paper3-assimilation-588-runnability-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "question": "Is the issue #588 competitor-mechanic assimilation study runnable today, with MEC-DARWINIAN_WORKFLOW_EVOLUTION as the designated comparator?",
+  "verdict": "NOT_RUNNABLE",
+  "authority": "STATUS_ESTABLISHMENT_ONLY",
+
+  "the_important_finding": "The repository has already reached this verdict and recorded it honestly. research/paper6_scoped_utility_v1/PREREGISTRATION_V1.json carries arm E_LLM_JUDGE_FITNESS, source_mechanic MEC-DARWINIAN_WORKFLOW_EVOLUTION, with kind BLOCKED and state CANNOT_CHECK, declining to run it because 'A simulated judge with an assumed error model would be a sensitivity model, not a measurement.' That refusal is pinned by tests/test_paper6_scoped_utility_v1.py::test_llm_judge_arm_is_blocked_and_not_simulated. No new decision is needed; the existing one is correct and should not be reopened by substituting a simulated judge.",
+
+  "designated_comparator": {
+    "mechanic_id": "MEC-DARWINIAN_WORKFLOW_EVOLUTION",
+    "source_system": "SYS-MIMOSA",
+    "record": "research/external_research_agents/mechanics/mechanics.json",
+    "transfer_obligation_verbatim": "Faithful-transfer challenger: workflow-level mutation with an LLM-judge fitness, run to see whether it gains or gates-fails. Repaired challenger: same mutation operator with the fitness replaced by a RAKL evidence gate. The contrast between the two is the actual experiment.",
+    "rakl_analogue_verbatim": "Self-RAKL mechanic evolution. This is the closest external system to ORION's own recursive layer and therefore the most informative comparator in the registry.",
+    "anchors": [
+      "A-MIMOSA-REPO https://github.com/HolobiomicsLab/Mimosa-AI (REPO, retrieved 2026-08-14)",
+      "A-MIMOSA-ARXIV https://arxiv.org/pdf/2603.28986 (arXiv:2603.28986, retrieved 2026-08-14)"
+    ],
+    "anchor_verification_status": "NOT_VERIFIED — arXiv:2603.28986 appears in no row of the Confirmed table in research/external_research_agents/ANCHOR_VERIFICATION.md; Mimosa is named there only in Correction 2 as a class-D system the issue had missed",
+    "evidence_grade": "SEARCH_SNIPPET",
+    "reproduction_status": "NOT_ATTEMPTED",
+    "comparator_class": "UNDETERMINED",
+    "version_freeze": "CANNOT_CHECK on all four fields (evaluated_version, evaluated_date, commit, license)"
+  },
+
+  "hard_blockers": [
+    {
+      "blocker": "SYS-MIMOSA comparator_class is UNDETERMINED",
+      "consequence": "research/external_research_agents/TAXONOMY.md defines UNDETERMINED as 'not yet assessed; may not be used in any arm'. No Mimosa comparison arm is licensed today at any tier.",
+      "scope": "blocks the external comparison arm only — both challengers in the transfer obligation are RAKL-internal, so this does not by itself block the internal contrast"
+    },
+    {
+      "blocker": "no LLM judge under a matched budget",
+      "consequence": "blocks the faithful-transfer challenger, which is defined by having an LLM-judge fitness",
+      "already_recorded_at": "research/paper6_scoped_utility_v1/PREREGISTRATION_V1.json arm E"
+    },
+    {
+      "blocker": "no workflow-level mutation operator over first-class editable RAKL workflows",
+      "consequence": "blocks BOTH challengers, and therefore the faithful-versus-repaired contrast that the obligation calls 'the actual experiment'. The mechanic's stated precondition is 'Workflows are first-class editable objects and a fitness signal exists over their outputs'; no such operator exists in src/ or experiments/."
+    },
+    {
+      "blocker": "no primary full text for SYS-MIMOSA",
+      "consequence": "a matched resource contract cannot be specified from fields that read CANNOT_CHECK",
+      "recorded_as": "residual RES-EXT-001 in research/p6_external_comparison_readiness_v1/README.md, whose verdict opens 'none at causal grade'"
+    },
+    {
+      "blocker": "no frozen development benchmark, no matched resource contract, no Tier-3 fresh-transfer assurance set",
+      "consequence": "blocks #588 Phase 7 steps 5 and 7"
+    }
+  ],
+
+  "structural_absence": {
+    "claim": "No harness, protocol freeze, benchmark or runner for the #588 assimilation study exists anywhere in the repository.",
+    "scope_justification": [
+      "repo-wide grep for all nine literal mechanic IDs: 8 files, none of them Python",
+      "repo-wide grep for MEC-DARWINIAN_WORKFLOW_EVOLUTION: five files only (three registry files, two paper6 files), zero .py files",
+      "repo-wide grep for faithful-transfer / repaired-challenger vocabulary: two files, both documentation",
+      "find by basename for *assimilat*, *mechanic*, *external_agent*, *external_research*, *challenger*, *588*",
+      "enumeration of all 46 scripts across the seven experiments/ subdirectories",
+      "full file enumeration of research/external_research_agents/ — 6 files, 3 dirs"
+    ],
+    "missing_directories": "#588 Phase 1 specifies systems/, mechanics/, benchmarks/, evaluations/ and assimilation/ under research/external_research_agents/. Only mechanics/ and saturation/ exist; systems/, benchmarks/, evaluations/ and assimilation/ do not.",
+    "corroborated_by": "research/external_research_agents/README.md states directly that Phase-7 RSHEA engagement has not happened and that 'Nothing in this directory may enter that flow as anything but an input.'"
+  },
+
+  "what_exists_and_is_not_a_harness": [
+    "src/rakl/external_agent_registry.py — a registry loader, saturation auditor and anchor-integrity checker; a validator, not a runner",
+    "experiments/paper6/run_governed_acceptance.py and _v1_1.py — a working runner for arm E's siblings (A_ORION_GOVERNED, B_GREEDY_HELDOUT_SCALAR_MATCHED, C_GATES_LOGGED_NOT_EXECUTED, D_FAIL_OPEN). No arm-E code path in either file.",
+    "src/rakl/assimilation.py — a generic evidence-governed method-operator assimilation gate containing zero references to #588 or any MEC-* identifier"
+  ],
+
+  "registry_health_bearing_on_this": {
+    "saturation_status": "OPEN — 3 rounds, 0 flat rounds",
+    "independent_evidence_for_all_nine_mechanics": "NONE — seven read 'no reproduction attempted', two read 'not yet adopted'",
+    "evidence_grade_distribution": "8 of 9 systems are SEARCH_SNIPPET; only SYS-CLAUDE_CODE_AS_RESEARCH_AGENT reaches PRIMARY_ABSTRACT",
+    "taxonomy_note_verbatim": "no public class-D suite exists — ORION's self-improvement claims cannot be externally validated by any Tier 1 suite currently in the registry"
+  },
+
+  "cheapest_unblocking_move": "The internal faithful-versus-repaired contrast does not require Mimosa and does not require the UNDETERMINED comparator class to be resolved. It requires exactly two things that do not exist: a workflow-level mutation operator over editable RAKL workflows, and an LLM-judge budget. The mutation operator is the harder and more valuable of the two, because it is a prerequisite for any future Self-RAKL mechanic-evolution experiment regardless of comparator. Building it is the highest-leverage next step; simulating the judge is explicitly not.",
+
+  "grants_scientific_authority": false
+}

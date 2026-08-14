@@ -57,6 +57,10 @@ After these mandatory choices are fixed, no residual partition constraint restri
 
 The assumptions matter. Heterogeneous costs turn the fill stage into a knapsack-like problem; pairwise diversity bonuses make utility non-additive; upper quotas or overlapping group memberships couple the reservations. The theorem therefore certifies the current implementation's narrow policy, not a universal workspace optimizer.
 
+\begin{remark}
+This is the one numbered claim in the paper whose statement is not machine-checked, and we report the boundary exactly. In the accompanying Lean development, the key ingredients of the proof above are machine-checked: the exchange step (swapping a selected item for an unselected one of at least equal utility never decreases the objective), the availability of a swap partner --- derived from feasibility rather than asserted --- and top-$k$ optimality against a tie-safe predicate that quantifies over \emph{any} maximal $r_p$-subset, which repairs the tie-ambiguity in the phrase ``the top $r_p$ candidates.'' The mechanized statements encode utilities as naturals, so they cover a non-negative special case of the real-valued statement. The assembly of these ingredients into the stated optimality theorem is not machine-checked; this theorem's status rests on the paper proof.
+\end{remark}
+
 \subsection{Access, coherence and authority}
 
 For an item \(a\), define

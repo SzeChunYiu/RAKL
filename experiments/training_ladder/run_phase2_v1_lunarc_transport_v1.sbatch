@@ -1,0 +1,150 @@
+#!/bin/bash
+# Paper IV Phase-2 (#466) execution-provenance successor.
+#
+# Scientific subject is unchanged: this wrapper uses the same exact model,
+# environment setup and frozen phase2_adaptive_v1 runner as
+# run_phase2_v1_lunarc.sbatch.  The only transport change is to capture the
+# runner's local return code, validate it against the complete registered
+# scientific terminal, and only then exit scheduler-success.  Pre-receipt
+# crashes and code/terminal mismatches remain scheduler failures.
+#SBATCH -A lu2026-2-51
+#SBATCH -p gpua100
+#SBATCH --gres=gpu:a100:1
+#SBATCH -t 12:00:00
+#SBATCH -c 8
+#SBATCH --mem=64G
+#SBATCH -J orion_p4_phase2
+#SBATCH -o orion_p4_phase2_%j.out
+#SBATCH -e orion_p4_phase2_%j.err
+
+set -euo pipefail
+
+REPO_ROOT="${REPO_ROOT:-/projects/hep/fs9/users/scyiu/orion}"
+ASSET_ROOT="${ASSET_ROOT:-/projects/hep/fs9/users/scyiu/RAKL-paper2/assets}"
+MODEL_ROOT="${MODEL_ROOT:-$ASSET_ROOT/paper2-model-qwen25-7b-v1/model/Qwen--Qwen2.5-7B-Instruct}"
+MODEL_REVISION="a09a35458c702b33eeacc393d103063234e8bc28"
+MODEL_ID="Qwen/Qwen2.5-7B-Instruct"
+OUT_DIR="${OUT_DIR:-$REPO_ROOT/experiments/training_ladder/phase2_v1_out/${SLURM_JOB_ID:-local}}"
+VENV_DIR="${VENV_DIR:-$HOME/.venvs/rakl-paper4-phase2}"
+SUBJECT_SHA="${SUBJECT_SHA:-}"
+
+cd "$REPO_ROOT"
+if [ -z "$SUBJECT_SHA" ]; then
+  echo "[phase2] ERROR explicit SUBJECT_SHA required by execution transport" >&2
+  exit 3
+fi
+test "$(git rev-parse HEAD)" = "$SUBJECT_SHA" || {
+  echo "[phase2] ERROR repository subject mismatch" >&2; exit 3;
+}
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  echo "[phase2] ERROR tracked checkout dirty" >&2
+  exit 3
+fi
+
+echo "[phase2] host=$(hostname) job=${SLURM_JOB_ID:-local}"
+echo "[phase2] repo=$(git rev-parse HEAD)"
+echo "[phase2] exact model=$MODEL_ID@$MODEL_REVISION"
+echo "[phase2] output=$OUT_DIR"
+
+module purge 2>/dev/null || true
+module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1 2>/dev/null \
+  || echo "[phase2] PyTorch module unavailable; using venv CUDA torch"
+
+if [ ! -d "$VENV_DIR" ]; then
+  python -m venv --system-site-packages "$VENV_DIR"
+  # shellcheck disable=SC1091
+  source "$VENV_DIR/bin/activate"
+  python -m pip install --upgrade pip
+  python -m pip install "torch" "transformers" "huggingface_hub" "peft>=0.10" "accelerate>=0.27"
+else
+  # shellcheck disable=SC1091
+  source "$VENV_DIR/bin/activate"
+fi
+
+python - <<'PY'
+import torch
+print('[phase2] torch', torch.__version__, 'cuda', torch.cuda.is_available())
+if not torch.cuda.is_available():
+    raise SystemExit('CUDA unavailable: do not substitute another model/runtime')
+PY
+
+if [ -f "$MODEL_ROOT/$MODEL_REVISION/config.json" ]; then
+  MODEL_DIR="$MODEL_ROOT/$MODEL_REVISION"
+elif [ -f "$MODEL_ROOT/config.json" ]; then
+  MODEL_DIR="$MODEL_ROOT"
+else
+  MODEL_DIR="$(find "$MODEL_ROOT" -maxdepth 3 -path "*/$MODEL_REVISION/config.json" -printf '%h\n' 2>/dev/null | head -1)"
+fi
+if [ -z "${MODEL_DIR:-}" ] || [ ! -f "$MODEL_DIR/config.json" ]; then
+  echo "[phase2] ERROR exact staged revision not found under $MODEL_ROOT" >&2
+  exit 4
+fi
+
+echo "[phase2] staged model dir=$MODEL_DIR"
+
+CACHE_ROOT="${TMPDIR:-/tmp}/orion-p4-hf-cache-${SLURM_JOB_ID:-$$}"
+SNAP_DIR="$CACHE_ROOT/models--Qwen--Qwen2.5-7B-Instruct/snapshots/$MODEL_REVISION"
+mkdir -p "$(dirname "$SNAP_DIR")"
+ln -s "$MODEL_DIR" "$SNAP_DIR"
+export HF_HUB_CACHE="$CACHE_ROOT"
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export PYTHONHASHSEED=0
+export PYTHONPATH="$REPO_ROOT/src:$REPO_ROOT:${PYTHONPATH:-}"
+
+mkdir -p "$OUT_DIR"
+python - "$OUT_DIR/EXECUTION_SUBJECT.json" "$SUBJECT_SHA" "${SLURM_JOB_ID:-local}" "$MODEL_ID" "$MODEL_REVISION" <<'PY'
+import json, subprocess, sys
+from datetime import datetime, timezone
+from pathlib import Path
+out=Path(sys.argv[1])
+paths=(
+ 'research/paper4_phase2_v1/PROTOCOL_V3.json',
+ 'research/paper4_phase2_v1/INFERENCE_PLAN.json',
+ 'experiments/training_ladder/generator_v2.py',
+ 'experiments/training_ladder/phase2_adaptive_v1.py',
+ 'src/rakl/phase2_adaptive_receipt_admission.py',
+ 'src/rakl/training_policy_authority.py',
+)
+receipt={
+ 'schema_version':'paper4-phase2-compute-subject-v1',
+ 'started_at':datetime.now(timezone.utc).isoformat(),
+ 'subject_sha':sys.argv[2],
+ 'slurm_job_id':str(sys.argv[3]),
+ 'model_id':sys.argv[4],
+ 'model_revision':sys.argv[5],
+ 'git_blobs':{p:subprocess.check_output(['git','hash-object',p],text=True).strip() for p in paths},
+ 'grants_scientific_authority':False,
+ 'standalone_paper4_authorized':False,
+}
+out.write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+PY
+
+set +e
+python -m experiments.training_ladder.phase2_adaptive_v1 --outdir "$OUT_DIR"
+RUNNER_CODE=$?
+set -e
+
+test -s "$OUT_DIR/FINAL_RECEIPT.json"
+python experiments/training_ladder/validate_phase2_v1_terminal.py \
+  --receipt "$OUT_DIR/FINAL_RECEIPT.json" \
+  --runner-code "$RUNNER_CODE"
+
+python - <<PY
+import json, pathlib
+p = json.loads(pathlib.Path('$OUT_DIR/FINAL_RECEIPT.json').read_text())
+assert p.get('grants_scientific_authority') is False
+if p.get('model_id') is not None:
+    assert p['model_id'] == '$MODEL_ID'
+if p.get('model_revision') is not None:
+    assert p['model_revision'] == '$MODEL_REVISION'
+print('[phase2] scientific terminal=', p['terminal'], 'local_runner_code=', $RUNNER_CODE)
+PY
+
+test -s "$OUT_DIR/DATA_MANIFEST.json"
+sha256sum "$OUT_DIR/EXECUTION_SUBJECT.json" "$OUT_DIR/FINAL_RECEIPT.json" "$OUT_DIR/DATA_MANIFEST.json" > "$OUT_DIR/SHA256SUMS.txt"
+echo "$RUNNER_CODE" > "$OUT_DIR/LOCAL_RUNNER_CODE.txt"
+echo "[phase2] complete scientific execution: $OUT_DIR"
+# A validated complete scientific terminal is a successfully executed scheduler
+# job.  The scientific sign is carried by FINAL_RECEIPT.json, not SLURM state.
+exit 0

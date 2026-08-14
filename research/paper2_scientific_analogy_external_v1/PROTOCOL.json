@@ -1,0 +1,135 @@
+{
+  "schema_version": "paper2-scientific-analogy-external-v1",
+  "date": "2026-08-14",
+  "base_main_sha": "a1fe806f1dae0a99e89a374189732d794e322361",
+  "owner_frontier": "research/orion_claim_frontier_v1/CLAIM_FRONTIER.json:P2",
+  "mission": "Test whether a capability-qualified model using an explicit grounded structural witness improves scientific analogy mapping and fail-closed analogy decisions over the same model used as a direct-text parent, on external human-labelled scientific analogy corpora.",
+  "chronology": {
+    "status": "FROZEN_PRE_OUTCOME",
+    "qualification_dependency": "issue #447 CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "no_model_outputs_accessed_for_this_protocol": true,
+    "pre_freeze_external_preview_quarantine": {
+      "SCAR_ids": [1,2,3,4,5,6,7,8,9,10],
+      "ProParaLogy_csv_row_indices": [0,1,2,3,4,5,6,7,8,9,10],
+      "reason": "These rows were exposed during schema/corpus suitability inspection before this protocol freeze and may not enter confirmatory scoring."
+    }
+  },
+  "expert_cell": [
+    {"role":"structural-transfer lead","responsibility":"Define mapping/witness object, directionality, applicability and source-span obligations."},
+    {"role":"experimental-statistics lead","responsibility":"Paired estimands, MDE/noninferiority, multiplicity, bootstrap/sign-flip and stopping rules."},
+    {"role":"external-validity lead","responsibility":"Verify corpus provenance, human-label status, scientific-domain scope and claim boundary."},
+    {"role":"adversarial-evaluator lead","responsibility":"Plant false-accept, stale-span, mapping-reversal, incomplete-evidence and always-abstain attacks; require demonstrable gate falsifiability."}
+  ],
+  "external_sources": {
+    "SCAR": {
+      "paper": "Yuan et al., Findings of EMNLP 2023, doi:10.18653/v1/2023.findings-emnlp.160",
+      "repository": "siyuyuan/scar",
+      "repository_commit": "3dfc897cf6cc685531edc80ab64f35660403fc6c",
+      "english_blob_path": "release/system_analogy_en.json",
+      "english_blob_git_sha": "214464cc4274f1af5a0bc1008a194b133c214e15",
+      "readme_blob_git_sha": "8c75dc5c03b8373bab104659d919eede5954ac24",
+      "declared_scope": "400 scientific analogies across 13 domains; mappings and explanations; institution-recruited annotators with double-check quality control",
+      "use": "positive analogy mapping and exact source-span grounding; not a negative/abstention corpus"
+    },
+    "PROPARA_LOGY": {
+      "paper": "Sultan et al., NAACL 2024, doi:10.18653/v1/2024.naacl-long.329",
+      "repository": "orensul/ParallelPARC",
+      "repository_commit": "5b88971a6ce1ba120e8bc6f78f2b2c8d623dc622",
+      "gold_blob_path": "datasets/gold_test_set/gold_set_analogies_w_challenging_distractors_w_randoms.csv",
+      "gold_blob_git_sha": "e6aa2fa366c7da25b6b4f7fcb70b76e79487c7d9",
+      "gold_blob_bytes": 518642,
+      "dataset_readme_blob_git_sha": "9bf128d87f5978edc03ad2bcb4fda8df21b0a80f",
+      "declared_scope": "310 gold scientific-process analogies with human validation; paired challenging distractors and random targets",
+      "use": "positive retention plus challenging/random negative false-accept evaluation"
+    }
+  },
+  "acquisition_gate": {
+    "before_any_model_call": [
+      "fetch exact external repository commits and paths above",
+      "record raw byte SHA-256 and byte count for each acquired corpus",
+      "verify schema against frozen adapters",
+      "apply the preview quarantines exactly",
+      "freeze the resulting case manifest and case-order hash"
+    ],
+    "mismatch_terminal": "EXTERNAL_CORPUS_IDENTITY_OR_SCHEMA_MISMATCH"
+  },
+  "model_subject": {
+    "source": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3 from #447 only",
+    "selection_rule": "Use the exact qualified model/revision/interface or freeze an equivalence/transport receipt before P2 outputs. P2 outcomes may not select or alter the model.",
+    "model_shopping_forbidden": true
+  },
+  "arms": {
+    "P0_LEXICAL": "frozen deterministic lexical similarity baseline; no gold labels at inference",
+    "P1_DIRECT_MODEL": "same qualified model and raw texts, asked for direct ANALOGY/NON_ANALOGY/CANNOT_CHECK decision or direct term mapping without the ORION witness schema",
+    "C1_GROUNDED_STRUCTURAL_WITNESS": "same qualified model/revision with explicit directional mapping, relation, preserved/non-preserved property, boundary/QoI, uncertainty and exact source/target span fields; downstream decision is derived from the structured witness",
+    "O1_GOLD_ORACLE": "diagnostic ceiling using external mappings/relations; never a fair parent and never candidate-visible"
+  },
+  "candidate_output_contract": {
+    "decision": ["LICENSED","REJECTED","CANNOT_CHECK"],
+    "mappings": "list of source_term,target_term pairs",
+    "grounding": "each licensed mapping must include exact source_span and target_span substrings from the presented texts",
+    "applicability": "explicit boundary/QoI or process-condition statement; missing decisive evidence must permit CANNOT_CHECK",
+    "forbidden": ["gold mapping fields","analogy_type labels","distractor/random identity","human explanations","external evaluator feedback before final output"]
+  },
+  "confirmatory_units": {
+    "SCAR": "one non-quarantined annotated system analogy",
+    "PROPARA_LOGY": "one non-quarantined source instance; its true target, challenging distractor and random target remain a paired block",
+    "repetitions": "model repetitions, if any, are within-unit and never treated as independent cases"
+  },
+  "primary_estimands": {
+    "E1_SCAR_MAPPING": "paired per-case mapping F1(C1) - mapping F1(P1)",
+    "E2_PROPARA_CHALLENGING_FALSE_ACCEPT": "paired challenging-distractor false-accept(P1) - false-accept(C1)",
+    "E3_PROPARA_TRUE_RETENTION": "true-target licensed rate(C1) - licensed rate(P1)",
+    "E4_GROUNDING": "fraction of C1 licensed mappings whose declared source/target spans are exact substrings and contain the corresponding mapped term",
+    "E5_ABSTENTION_CONTROL": "CANNOT_CHECK precision/recall on separately generated missing-evidence controls"
+  },
+  "frozen_gates": {
+    "SCAR_mapping_residual_mde": 0.05,
+    "SCAR_mapping_success": "mean paired mapping-F1 gain >= 0.05 and bootstrap 95% lower bound > 0",
+    "ProPara_challenging_false_accept_reduction_mde": 0.05,
+    "ProPara_challenging_success": "absolute false-accept reduction >= 0.05 and paired 95% lower bound > 0",
+    "ProPara_true_retention_noninferiority_margin": -0.03,
+    "ProPara_true_retention_gate": "paired 95% lower bound >= -0.03",
+    "random_target_false_accept_max": 0.05,
+    "grounded_mapping_rate_min": 0.95,
+    "cannot_check_recall_min": 0.90,
+    "cannot_check_precision_min": 0.90,
+    "all_registered_falsifier_mutations_must_fail": true,
+    "resource_accounting_required": true
+  },
+  "inference": {
+    "paired_bootstrap_repetitions": 20000,
+    "paired_sign_flip_for_primary_directional_contrasts": true,
+    "multiplicity": "Holm across E1 and E2; E3-E5 are hard noninferiority/safety gates",
+    "confidence": 0.95,
+    "optional_stopping": false,
+    "missing_or_invalid_output": "count as candidate failure and retain in all relevant denominators"
+  },
+  "falsifiability": {
+    "pre_outcome_fixture_suite": [
+      "always LICENSED fails challenging/random negatives",
+      "always REJECTED fails true analogies",
+      "always CANNOT_CHECK fails true-retention",
+      "stale or fabricated span fails grounding",
+      "reversed source/target mapping fails mapping score",
+      "incomplete mapping evidence cannot disappear from denominators",
+      "gold/distractor identity fields are inaccessible to candidate",
+      "pair-order or file-row identity alone cannot satisfy the gate"
+    ],
+    "confirmatory_execution_forbidden_until_fixture_suite_green": true
+  },
+  "cost": {
+    "report": ["input_tokens","output_tokens","model_calls","wall_time","GPU_time","peak_memory","materialized_context_tokens"],
+    "interpretation": "A quality gain bought only by materially higher resources is a quality-cost tradeoff, not unconditional architecture superiority."
+  },
+  "terminals": {
+    "positive": "PROMOTE_CONDITIONALLY_EXTERNAL_HUMAN_SCIENTIFIC_ANALOGY_GROUNDED_WITNESS",
+    "direct_parent_matches": "DIRECT_MODEL_PARENT_MATCHES_STRUCTURED_WITNESS",
+    "mapping_only": "STRUCTURAL_MAPPING_SIGNAL_WITHOUT_FAIL_CLOSED_DECISION_RESIDUAL",
+    "safety_harm": "STRUCTURED_WITNESS_HARMS_VALID_RETENTION_OR_FALSE_ACCEPT",
+    "capability": "P2_BLOCKED_BY_UNQUALIFIED_MODEL_INTERFACE",
+    "invalid": "INVALID_OR_CONTAMINATED_EXTERNAL_ANALOGY_EPOCH"
+  },
+  "positive_claim_boundary": "A positive result would support that, at the independently qualified model/interface, an explicit grounded structural witness improves mapping and/or fail-closed scientific analogy decisions on these external human-labelled corpora relative to the matched direct-model parent. It would not establish universal cross-domain transfer, independent human validation of every generated source span, end-to-end downstream research utility, or scientific authority.",
+  "grants_scientific_authority": false
+}

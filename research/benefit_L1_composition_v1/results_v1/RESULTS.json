@@ -1,0 +1,112 @@
+{
+  "protocol_id": "BENEFIT-L1-COMPOSITION-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "headline": {
+    "ucr_a": 0.5,
+    "ucr_b": 0.0,
+    "delta_ucr": 0.5,
+    "vca_a": 1.0,
+    "vca_b": 0.75,
+    "mcnemar": {"b": 200, "c": 0, "p_two_sided": 1.2446030555722283e-60},
+    "null_1_equal_n_suppression": {
+      "applicable": true,
+      "k_b": 120,
+      "k_a": 360,
+      "q05": 0.15,
+      "mean": 0.1669675,
+      "observed_ucr_b": 0.0,
+      "beaten": true
+    },
+    "null_2_contract_permutation": {
+      "q05": 0.0125,
+      "mean": 0.025135,
+      "observed_ucr_b": 0.0,
+      "beaten": true
+    },
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "delta_ucr_ge_0.10": true,
+    "mcnemar_p_lt_0.001": true,
+    "vca_b_ge_0.70": true,
+    "ucr_b_below_null1_q05": true,
+    "ucr_b_below_null2_q05": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true,
+    "no_rule_drift_either_arm": true
+  },
+  "module_pin_verification": {
+    "EVALUATOR.py": "f206d15610afc7fbd0cbc86e1d131f477fa4d02f638a783607b2afe45e3f580c (MATCH, verified before any execution and inside every step)",
+    "src/rakl/bridge_composition.py": "11a5368dccbdf10dac505915193e7c3f0e830d71cd514aa40889383ffbd47302 (MATCH)",
+    "src/rakl/similarity.py": "97dedb16784866649ff01e80075b32d65593788d0455e2179728062e0aeb546e (MATCH)"
+  },
+  "per_class": {
+    "arm_A_untyped_chaining": {
+      "D1": {"n": 120, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": 1.0},
+      "D2": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": 1.0},
+      "D3": {"n": 60, "unsupported_compositions": 60, "ucr_within_class": 1.0, "vca_within_class": null},
+      "D4": {"n": 60, "unsupported_compositions": 60, "ucr_within_class": 1.0, "vca_within_class": null},
+      "D5": {"n": 40, "unsupported_compositions": 40, "ucr_within_class": 1.0, "vca_within_class": null},
+      "D6": {"n": 40, "unsupported_compositions": 40, "ucr_within_class": 1.0, "vca_within_class": null},
+      "D7": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null}
+    },
+    "arm_B_typed_transition_algebra": {
+      "D1": {"n": 120, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": 1.0, "sub_verdicts": {"COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY": 120}},
+      "D2": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": 0.0, "sub_verdicts": {"CANNOT_CHECK": 40}},
+      "D3": {"n": 60, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null, "sub_verdicts": {"REJECT": 60}},
+      "D4": {"n": 60, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null, "sub_verdicts": {"NAVIGABLE_ONLY": 60}},
+      "D5": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null, "sub_verdicts": {"REJECT": 40}},
+      "D6": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null, "sub_verdicts": {"NAVIGABLE_ONLY": 40}},
+      "D7": {"n": 40, "unsupported_compositions": 0, "ucr_within_class": 0.0, "vca_within_class": null, "sub_verdicts": {"REJECT": 40}}
+    },
+    "note": "Arm B's designed-in D2 miss (all 40 supported-but-record-incomplete chains refused via CANNOT_CHECK, VCA_B = 120/160 = 0.75) is charged, visible, and sits above the frozen 0.70 floor exactly as PROTOCOL.json anticipated. Arm A's UCR is driven entirely by D3-D6 (contract-content violations invisible to syntactic connectivity); D7 confirms arm A is an honest baseline, not a straw man. Arm B's refusal sub-verdicts separate cleanly: incomplete records surface as CANNOT_CHECK, genuine violations as REJECT (invariant break, role mismatch, disconnection) or NAVIGABLE_ONLY (regime disjoint, error overflow)."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized contract realization, separation from both nulls, the over-refusal guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "Mechanical L1 composition licensing (rakl.bridge_composition.evaluate_bridge_path, the six licensing conditions of FORMAL_SYSTEM_SPECIFICATION section 4) on a synthetic known-answer corpus reduces unsupported-composition rate versus untyped chaining without null-equivalent refusal.",
+  "explicit_non_claims": [
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus generalization (registered follow-up)",
+    "ladder.json L1 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "014e7e69cd906fe5b19f7cc1d2c9202fdf9506e88c477e05061be0ff652f136e",
+    "corpus_v1_stripped.json": "4ee7a0f2348626a7c233f6a3242b3b953cdaf41e20ad0668e35aeac72057c08e",
+    "audit_sample.json": "fc5325b393bb4dae187e2c9656361d29f15f0b8aa3fc86c64c3bab7e42891756",
+    "worlds_v1.json": "678cc0dc2476b2ae1578e230a2e18999e228ae34dc3dc5c6bffbcff0facac216",
+    "harness/generate_corpus.py": "b6e86351dae55fcba6da7b05035c5aafc48db992a1e265eeaded9f80a81cd475",
+    "harness/arm_harness.py": "292c4a52d3d358f06f9e6ed99b518bfb3980e0c929e6a080a8402354c0cab131",
+    "arm_a_output.json": "1065371e7a5ec7bd315a35f1765fe0c1b047ed83274033c71d86b733aa781ef5",
+    "arm_b_output.json": "abdfcb3eed722625a43f2e20885f0068309ca79df621a4e83027256edc30870e",
+    "evaluator_report.json": "5b9d1df3ec672d7fac53436c079e62b95f18595bbe1d1dca561c321e68a854a0",
+    "AUDIT_RECEIPT.json": "a7b3c75d6570acac864ff9879c4d63bec823c39aae8dafe0233cca55d66375c8"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T16:59:11Z",
+    "corpus_frozen_at": "2026-08-14T16:59:11Z",
+    "audit_performed_at": "2026-08-14T16:59:53Z",
+    "arm_run_started_at": "2026-08-14T17:00:01Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:2b1f659b73374a5f",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l1-composition-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs) — mechanically valid per the receipt fields, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer corpus; the registered follow-ups (LLM arm, natural corpus) remain open.",
+    "D2-RECORD-INCOMPLETENESS-MISS: arm B structurally withholds all 40 supported-but-record-incomplete chains (VCA_B=0.75). Pre-registered lever if this must close: score CANNOT_CHECK-driven refusals separately from REJECT-driven refusals and add a typed record-repair step (bounded re-query for the missing licensing field, cost charged to arm B) via the mechanism-invention workflow — an L1-machinery extension, not a patch to src/rakl/bridge_composition.py."
+  ],
+  "grants_scientific_authority": false
+}

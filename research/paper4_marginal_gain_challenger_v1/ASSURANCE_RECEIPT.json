@@ -1,0 +1,148 @@
+{
+  "schema_version": "p4-marginal-gain-challenger-result-v1",
+  "date": "2026-08-14",
+  "phase": "assurance",
+  "scope": "MODEL_FREE_DEVELOPMENT_STRESS_NOT_7B_CONFIRMATORY",
+  "instrument_id": "P4_INSTRUMENT_V2_STATE_DIVERGENT_DEFICIT_PAIRS",
+  "seed": 202608141301,
+  "n_world_replicates": 384,
+  "arms": {
+    "A_UNIFORM_RANDOM": {
+      "balanced_mastery_mean": 0.8319007420974801,
+      "hard_safety_min_mean": 0.6998709746525199,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 7.895833333333333,
+        "COMPOSITION": 8.338541666666666,
+        "BOUNDARY": 7.872395833333333,
+        "REPRESENTATION": 8.005208333333334,
+        "TRANSFER": 8.002604166666666,
+        "RETENTION": 7.885416666666667
+      }
+    },
+    "B_DIVERSITY": {
+      "balanced_mastery_mean": 0.8361366611639385,
+      "hard_safety_min_mean": 0.7271201065323148,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 8,
+        "COMPOSITION": 8,
+        "BOUNDARY": 8,
+        "REPRESENTATION": 8,
+        "TRANSFER": 8,
+        "RETENTION": 8
+      }
+    },
+    "C_SCALAR_LOSS_AWARE": {
+      "balanced_mastery_mean": 0.9118531113023975,
+      "hard_safety_min_mean": 0.8453008911215966,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 9.333333333333334,
+        "COMPOSITION": 11.729166666666666,
+        "BOUNDARY": 5.333333333333333,
+        "REPRESENTATION": 6.9375,
+        "TRANSFER": 6.666666666666667,
+        "RETENTION": 8
+      }
+    },
+    "D_STATIC_STRUCTURAL": {
+      "balanced_mastery_mean": 0.8361261824383353,
+      "hard_safety_min_mean": 0.726726046279911,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 8,
+        "COMPOSITION": 8,
+        "BOUNDARY": 8,
+        "REPRESENTATION": 8,
+        "TRANSFER": 8,
+        "RETENTION": 8
+      }
+    },
+    "E_VECTOR_ADAPTIVE": {
+      "balanced_mastery_mean": 0.9108427715715295,
+      "hard_safety_min_mean": 0.8836028922060366,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 8.333333333333334,
+        "COMPOSITION": 10.572916666666666,
+        "BOUNDARY": 7,
+        "REPRESENTATION": 7,
+        "TRANSFER": 7,
+        "RETENTION": 8.09375
+      }
+    },
+    "F_MARGINAL_GAIN_V4": {
+      "balanced_mastery_mean": 0.9121025341761145,
+      "hard_safety_min_mean": 0.8836665665794347,
+      "examples_mean": 48,
+      "mean_counts": {
+        "PRINCIPLE": 8.065104166666666,
+        "COMPOSITION": 11.1015625,
+        "BOUNDARY": 7.041666666666667,
+        "REPRESENTATION": 7.192708333333333,
+        "TRANSFER": 7.3125,
+        "RETENTION": 7.286458333333333
+      }
+    }
+  },
+  "contrasts": {
+    "F_minus_D_balanced_mastery": {
+      "mean": 0.07597635173777927,
+      "bootstrap_95ci": [
+        0.07554627912887134,
+        0.07640413356636101
+      ]
+    },
+    "F_minus_C_balanced_mastery": {
+      "mean": 0.00024942287371694055,
+      "bootstrap_95ci": [
+        0.00011956499984755193,
+        0.0003794648172216252
+      ]
+    },
+    "F_minus_D_hard_safety_min": {
+      "mean": 0.15694052029952368,
+      "bootstrap_95ci": [
+        0.1411859742758068,
+        0.17221594657761052
+      ]
+    },
+    "E_minus_D_balanced_mastery": {
+      "mean": 0.07471658913319427,
+      "bootstrap_95ci": [
+        0.07419631321952183,
+        0.07523610011273178
+      ]
+    },
+    "F_minus_strongest_parent_balanced_mastery": {
+      "strongest_parent": "C_SCALAR_LOSS_AWARE",
+      "mean": 0.00024942287371694055,
+      "bootstrap_95ci": [
+        0.0001159976432701694,
+        0.00037928872234750986
+      ]
+    },
+    "per_world_F_minus_D": {
+      "DEFICIT_COMPOSITION_REPRESENTATION": 0.07441498635704281,
+      "DEFICIT_BOUNDARY_TRANSFER": 0.07531193797421745,
+      "DEFICIT_PRINCIPLE_COMPOSITION": 0.06930559899750591,
+      "DEFICIT_RETENTION_REPRESENTATION": 0.08081423911505722,
+      "DEFICIT_TRANSFER_COMPOSITION": 0.07486404900799323,
+      "DEFICIT_BOUNDARY_RETENTION": 0.08114729897485894
+    }
+  },
+  "grants_scientific_authority": false,
+  "changes_7b_phase2_evaluator": false,
+  "activates_training_policy_authority": false,
+  "reverses_parent_negative": false,
+  "hard_gate_results": {
+    "P2_F_minus_D_balanced_mean_min": true,
+    "P3_F_minus_C_balanced_mean_min": true,
+    "P3b_F_minus_strongest_parent_min": true,
+    "P4_F_safety_harm_vs_D_min": true,
+    "P5_all_worlds_F_minus_D_positive": true,
+    "P6_v1_negative_persists_in_licensed_instrument": false
+  },
+  "terminal": "DEVELOPMENT_POSITIVE_MARGINAL_GAIN_CHALLENGER_IN_LICENSED_INSTRUMENT"
+}

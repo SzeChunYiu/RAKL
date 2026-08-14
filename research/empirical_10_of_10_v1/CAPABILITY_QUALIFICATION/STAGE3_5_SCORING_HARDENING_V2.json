@@ -1,0 +1,42 @@
+{
+  "schema_version": "rakl-capability-qualification-stage3-5-scoring-hardening-v2",
+  "date": "2026-08-14",
+  "owner_issue": 447,
+  "parent_main_sha": "3ca013666ae6c837bacdb57e8a219cba4ba1b7ec",
+  "chronology": {
+    "model_outputs_accessed_before_freeze": false,
+    "qualification_outcomes_accessed_before_freeze": false,
+    "reason_for_amendment": "adversarial code review found that the v1 scorer conditioned support/reject, CANNOT_CHECK and context/QoI hard-metric denominators on a total evidence partition. A syntactically valid but scientifically malformed response could therefore omit evidence IDs and disappear from those denominators while consuming only the joint-exact error budget."
+  },
+  "unchanged_subjects": {
+    "panel_manifest": "FRESH_TASK_MANIFEST_V1.json",
+    "panel_sha256": "0ab994fb0f8f3523014023ff703151afe4c66e86a8f030435f509d141055cc0e",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "interface": "protocol_stage2/LICENSES_VERDICT",
+    "decoding": "greedy",
+    "resource_ceiling": "single A100 / 2 hours",
+    "vector_thresholds": "unchanged from STAGE3_5_FREEZE_V1.json"
+  },
+  "hardened_scoring_contract": {
+    "parse_validity": "A readout counts as valid only when JSON/schema parsing succeeds AND selected_evidence_ids plus rejected_evidence_ids form an exact disjoint partition of every supplied evidence ID. Missing/extra evidence IDs are invalid structured readout, not a semantic case that may be dropped.",
+    "support_id_recall": "Denominator contains every gold selected evidence ID across every task, including tasks with malformed or missing model readout; absent predicted IDs are false negatives.",
+    "reject_id_recall": "Denominator contains every gold rejected evidence ID across every task, including tasks with malformed or missing model readout; absent predicted IDs are false negatives.",
+    "cannot_check_recall": "Denominator is every gold CANNOT_CHECK task regardless of parse or evidence-partition validity.",
+    "cannot_check_precision": "Denominator is every parsed model prediction of CANNOT_CHECK regardless of evidence-partition validity.",
+    "context_qoi_error_rate": "Denominator is all CONTEXT_QOI_NEAR_MISS tasks; parse failure, malformed evidence partition, or any non-CONTEXT_MISALIGNED verdict is an error.",
+    "joint_exact": "Still requires exact verdict, exact selected set, exact rejected set and a total evidence partition.",
+    "family_exact": "Unchanged; malformed readout is non-exact."
+  },
+  "required_adversarial_falsifier": {
+    "name": "INCOMPLETE_PARTITION_DENOMINATOR_EVASION",
+    "construction": "Start from gold-exact outputs, replace up to the existing joint-exact/family error budget with syntactically valid CANNOT_CHECK outputs whose evidence partition is incomplete and distribute them across families.",
+    "v1_expected": "At least one construction can satisfy the reported hard vector while its true CANNOT_CHECK precision or evidence-binding fidelity violates the frozen gate.",
+    "v2_required": "Every such construction must fail at least one unchanged hard gate; specifically malformed partitions must reduce parse_validity and cannot hide from verdict/evidence denominators."
+  },
+  "authority_boundary": {
+    "qualification_pass_only_authorizes_downstream_model_interface_use": true,
+    "grants_rakl_treatment_benefit": false,
+    "grants_scientific_authority": false
+  }
+}

@@ -62,6 +62,14 @@ class ResumableStateEnvelope:
     epoch_content_hash: str
     ledger_content_hash: str
     decision_receipt_content_hash: Optional[str]
+    # Optional pointer to a durable episode store (rakl.episode_store): path +
+    # chain head hash. Add-only for backward compatibility - envelopes
+    # serialized before this field existed restore unchanged (defaults None).
+    # The reference is a pointer, never authority: restoring does not open or
+    # verify the store (this module stays pure/no-I/O); chain verification
+    # belongs to ``episode_store.verify_episode_store(path, expected_head_hash=...)``.
+    episode_store_path: Optional[str] = None
+    episode_store_head_hash: Optional[str] = None
 
     @property
     def content_hash(self) -> str:
@@ -75,6 +83,9 @@ class RestoredState:
     epoch: EvaluationEpoch
     ledger: MetricLedger
     decision_receipt: Optional[MetaDecisionReceipt]
+    # Carried verbatim from the envelope; a pointer only, no verification here.
+    episode_store_path: Optional[str] = None
+    episode_store_head_hash: Optional[str] = None
 
 
 # --- serialize ----------------------------------------------------------------
@@ -83,6 +94,8 @@ def serialize_resumable_state(
     epoch: EvaluationEpoch,
     ledger: MetricLedger,
     decision_receipt: Optional[MetaDecisionReceipt] = None,
+    episode_store_path: Optional[str] = None,
+    episode_store_head_hash: Optional[str] = None,
 ) -> ResumableStateEnvelope:
     """Freeze epoch + ledger (+ optional decision receipt) into a sealed envelope.
 
@@ -112,6 +125,8 @@ def serialize_resumable_state(
         epoch_content_hash=epoch_hash,
         ledger_content_hash=ledger_hash,
         decision_receipt_content_hash=dr_hash,
+        episode_store_path=episode_store_path,
+        episode_store_head_hash=episode_store_head_hash,
     )
 
 
@@ -233,4 +248,10 @@ def restore_resumable_state(envelope: ResumableStateEnvelope) -> RestoredState:
         if canonical_hash(asdict(decision_receipt)) != envelope.decision_receipt_content_hash:
             raise ResumptionTamperError("restored decision receipt hash diverged from its seal")
 
-    return RestoredState(epoch=epoch, ledger=ledger, decision_receipt=decision_receipt)
+    return RestoredState(
+        epoch=epoch,
+        ledger=ledger,
+        decision_receipt=decision_receipt,
+        episode_store_path=envelope.episode_store_path,
+        episode_store_head_hash=envelope.episode_store_head_hash,
+    )
