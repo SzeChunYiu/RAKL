@@ -1,0 +1,298 @@
+{
+  "A_full_arm_constant_loss": {
+    "full_arm_loss_is_constant": true,
+    "full_arm_loss_variance": 1.2416159080560412e-37,
+    "full_arm_losses_distinct_values": [
+      0.0004
+    ],
+    "interpretation": "brier(full) is constant because full==verify==gold and binary_probability maps the gold decision to 0.98/0.02. The registered 'paired' Brier gain is therefore the mechanism arm's absolute loss minus a fixed 0.0004; it is not a paired comparison of two predictors.",
+    "mechanism_arm_mean_loss": 0.3604,
+    "registered_primary_gain_equals_mechanism_loss_minus_constant": true
+  },
+  "B_sign_test_degeneracy": {
+    "all_seeds_six_of_six_positive": true,
+    "interpretation": "If every seed yields 6/6 positive family signs, the registered p=0.03125 is a property of the generator's item strata, not evidence of cross-family generalization. The frozen gate cannot fail.",
+    "rows": [
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 101,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 202,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 303,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 404,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 505,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 606,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 707,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 808,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 909,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 1010,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 1111,
+        "supported": true
+      },
+      {
+        "exact_two_sided_p": 0.03125,
+        "positive_families": 6,
+        "seed": 1212,
+        "supported": true
+      }
+    ],
+    "seeds_tested": 12,
+    "sign_test_is_structurally_guaranteed": true
+  },
+  "C_trivial_arm_baseline": {
+    "arms": {
+      "always_accept": {
+        "exact3": 0.4444444444444444,
+        "invalid_false_accept": 1.0,
+        "unknown_abstain": 0.0,
+        "valid_accept": 1.0
+      },
+      "always_cannot_check": {
+        "exact3": 0.1111111111111111,
+        "invalid_false_accept": 0.0,
+        "unknown_abstain": 1.0,
+        "valid_accept": 0.0
+      },
+      "always_reject": {
+        "exact3": 0.4444444444444444,
+        "invalid_false_accept": 0.0,
+        "unknown_abstain": 0.0,
+        "valid_accept": 0.0
+      },
+      "full": {
+        "exact3": 1.0,
+        "invalid_false_accept": 0.0,
+        "unknown_abstain": 1.0,
+        "valid_accept": 1.0
+      },
+      "mechanism": {
+        "exact3": 0.5925925925925926,
+        "invalid_false_accept": 0.75,
+        "unknown_abstain": 0.3333333333333333,
+        "valid_accept": 1.0
+      },
+      "relational": {
+        "exact3": 0.5654320987654321,
+        "invalid_false_accept": 0.75,
+        "unknown_abstain": 0.08888888888888889,
+        "valid_accept": 1.0
+      }
+    },
+    "discriminating_quantity": "valid_accept at equal invalid_false_accept",
+    "interpretation": "always_reject attains invalid_false_accept=0.0 with valid_accept=0.0. full attains invalid_false_accept=0.0 with valid_accept=1.0. The defensible claim is joint retention+rejection, never the false-accept rate alone.",
+    "zero_false_accept_is_not_unique_to_full": true
+  },
+  "D_coordinate_shuffle_equal_n_null": {
+    "interpretation": "Under the equal-n coordinate shuffle the merge rule and the marginal coordinate distribution are unchanged; only the task<->coordinate binding is destroyed. Collapse of valid_accept/exact3 under the null is the evidence that coordinates carry task-specific information rather than the gate being merely conservative.",
+    "null_exact3_lo_mean_hi": [
+      0.3790123456790123,
+      0.4070185185185185,
+      0.43703703703703706
+    ],
+    "null_invalid_false_accept_lo_mean_hi": [
+      0.41388888888888886,
+      0.44545833333333335,
+      0.4888888888888889
+    ],
+    "null_valid_accept_lo_mean_hi": [
+      0.40555555555555556,
+      0.44272222222222224,
+      0.475
+    ],
+    "observed_full_exact3": 1.0,
+    "observed_full_invalid_false_accept": 0.0,
+    "observed_full_valid_accept": 1.0,
+    "reps": 200
+  },
+  "E_leave_one_coordinate_out": {
+    "interpretation": "drop_X false-accept above zero identifies coordinate X as load-bearing for fail-closed rejection on this benchmark.",
+    "leave_one_out": {
+      "drop_boundary": {
+        "exact3": 0.9444444444444444,
+        "invalid_false_accept": 0.125,
+        "unknown_abstain": 1.0,
+        "valid_accept": 1.0
+      },
+      "drop_direction": {
+        "exact3": 0.8888888888888888,
+        "invalid_false_accept": 0.25,
+        "unknown_abstain": 1.0,
+        "valid_accept": 1.0
+      },
+      "drop_effect": {
+        "exact3": 0.8802469135802469,
+        "invalid_false_accept": 0.25,
+        "unknown_abstain": 0.9222222222222223,
+        "valid_accept": 1.0
+      },
+      "drop_precondition": {
+        "exact3": 0.8246913580246914,
+        "invalid_false_accept": 0.25,
+        "unknown_abstain": 0.4222222222222222,
+        "valid_accept": 1.0
+      },
+      "drop_qoi": {
+        "exact3": 0.9444444444444444,
+        "invalid_false_accept": 0.125,
+        "unknown_abstain": 1.0,
+        "valid_accept": 1.0
+      },
+      "drop_relation": {
+        "exact3": 0.9901234567901235,
+        "invalid_false_accept": 0.0,
+        "unknown_abstain": 0.9111111111111111,
+        "valid_accept": 1.0
+      }
+    },
+    "single_coordinate": {
+      "only_boundary": {
+        "exact3": 0.5,
+        "invalid_false_accept": 0.875,
+        "unknown_abstain": 0.0,
+        "valid_accept": 1.0
+      },
+      "only_direction": {
+        "exact3": 0.5555555555555556,
+        "invalid_false_accept": 0.75,
+        "unknown_abstain": 0.0,
+        "valid_accept": 1.0
+      },
+      "only_effect": {
+        "exact3": 0.5925925925925926,
+        "invalid_false_accept": 0.75,
+        "unknown_abstain": 0.3333333333333333,
+        "valid_accept": 1.0
+      },
+      "only_precondition": {
+        "exact3": 0.6481481481481481,
+        "invalid_false_accept": 0.75,
+        "unknown_abstain": 0.8333333333333334,
+        "valid_accept": 1.0
+      },
+      "only_qoi": {
+        "exact3": 0.5,
+        "invalid_false_accept": 0.875,
+        "unknown_abstain": 0.0,
+        "valid_accept": 1.0
+      },
+      "only_relation": {
+        "exact3": 0.454320987654321,
+        "invalid_false_accept": 1.0,
+        "unknown_abstain": 0.08888888888888889,
+        "valid_accept": 1.0
+      }
+    }
+  },
+  "F_item_type_dose_response": {
+    "interpretation": "mechanism_only IS the `effect` coordinate. Item strata whose discriminating coordinate is not `effect` must therefore fail the mechanism arm by construction. Their share of the total gain measures how much of the headline result is generator design rather than empirical cross-family robustness.",
+    "per_item_type": {
+      "BOUNDARY_QOI_MISMATCH": {
+        "decidable_n": 90,
+        "full_minus_mechanism_brier_gain": 0.96,
+        "mechanism_exact3": 0.0,
+        "n": 90
+      },
+      "DIRECTION_REVERSED_INVALID": {
+        "decidable_n": 90,
+        "full_minus_mechanism_brier_gain": 0.96,
+        "mechanism_exact3": 0.0,
+        "n": 90
+      },
+      "INVALID_DISTANT_CONTROL": {
+        "decidable_n": 90,
+        "full_minus_mechanism_brier_gain": 0.48,
+        "mechanism_exact3": 0.5,
+        "n": 90
+      },
+      "PARTIAL_MAPPING_REQUIRES_CANNOT_CHECK": {
+        "decidable_n": 0,
+        "full_minus_mechanism_brier_gain": null,
+        "mechanism_exact3": 0.3333333333333333,
+        "n": 90
+      },
+      "SEMANTIC_NEAR_MISS_INVALID_TRANSFER": {
+        "decidable_n": 90,
+        "full_minus_mechanism_brier_gain": 0.48,
+        "mechanism_exact3": 0.5,
+        "n": 90
+      },
+      "VALID_DISTANT_TRANSFER": {
+        "decidable_n": 180,
+        "full_minus_mechanism_brier_gain": 0.0,
+        "mechanism_exact3": 1.0,
+        "n": 180
+      },
+      "VALID_NEAR_CONTROL": {
+        "decidable_n": 180,
+        "full_minus_mechanism_brier_gain": 0.0,
+        "mechanism_exact3": 1.0,
+        "n": 180
+      }
+    },
+    "share_of_total_gain": {
+      "BOUNDARY_QOI_MISMATCH": 0.3333333333333333,
+      "DIRECTION_REVERSED_INVALID": 0.3333333333333333,
+      "INVALID_DISTANT_CONTROL": 0.16666666666666666,
+      "PARTIAL_MAPPING_REQUIRES_CANNOT_CHECK": 0.0,
+      "SEMANTIC_NEAR_MISS_INVALID_TRANSFER": 0.16666666666666666,
+      "VALID_DISTANT_TRANSFER": 0.0,
+      "VALID_NEAR_CONTROL": 0.0
+    }
+  },
+  "claim_boundary": "Diagnostic only. Does not promote, demote or replace any frozen verdict. Does not establish natural-language extraction, natural-domain transfer, independent-human validation or downstream action utility.",
+  "confirmatory_seed_audited": 2026081212,
+  "grants_scientific_authority": false,
+  "n": 810,
+  "schema": "paper2-six-family-audit-v1",
+  "status": "AUXILIARY_DIAGNOSTIC_ONLY__NOT_PART_OF_FROZEN_REGISTRATION"
+}
