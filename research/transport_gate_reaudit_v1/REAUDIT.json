@@ -1,0 +1,254 @@
+{
+  "schema_version": "rakl-transport-gate-reaudit-v1",
+  "completes": {
+    "sweep": "research/solver_gate_falsifiability_sweep_v1 (PR #645 @ 928495eb)",
+    "skipped_step_closed": "transport (was: under repair in parallel branch, P0.1)",
+    "coverage_after_this": "saturation (AUDIT.md row 5) + 12 sweep gates + this transport gate = 14 audited gate surfaces across all 11 RAKL_SOLVER steps; steps 2 and 3(reduction fidelity) remain NO_REGISTERED_GATE findings, not sweeps"
+  },
+  "gate": {
+    "module": "src/rakl/structural_transport_v2.py",
+    "function": "assess_transfer_v2",
+    "repaired_by": "PR #643 (b282dc04), on main @ 600cfc92",
+    "frozen_defect": "research/framework_ladder/ladder.json layers[3].readiness.gate_falsifiable = FAIL_OPEN_FOUND (frozen, intentionally not edited); repair receipt: research/transport_failopen_repair_v1/RECEIPT.md"
+  },
+  "battery": "src/rakl/gate_falsifiability.py",
+  "trials_per_probe": 32,
+  "seeds": [
+    20260814,
+    20260815
+  ],
+  "fail_open_probe_family": [
+    "empty_obligation_set",
+    "demote_all_obligations_to_optional"
+  ],
+  "repaired_gate": {
+    "gate_id": "structural_transport_v2.assess_transfer_v2 (repaired, PR #643)",
+    "adapter": "",
+    "no_alarm_control": {
+      "intact_evidence_passes": true,
+      "checked_before_probes": true
+    },
+    "notes": "pass := LICENSED on a legitimate 5-load-bearing-obligation witness; fail-open family: empty_obligation_set, demote_all_obligations_to_optional",
+    "per_seed": {
+      "20260814": {
+        "verdict": "FALSIFIABLE",
+        "probes": {
+          "corrupt_witness_identity": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "demote_all_obligations_to_optional": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "empty_obligation_set": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "force_explicit_violation": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "randomize_structural_target_refs": {
+            "outcome": "SENSITIVE",
+            "flips": 31,
+            "trials": 32
+          },
+          "rewire_role_mapping": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "strip_obligation_evidence_ids": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          }
+        }
+      },
+      "20260815": {
+        "verdict": "FALSIFIABLE",
+        "probes": {
+          "corrupt_witness_identity": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "demote_all_obligations_to_optional": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "empty_obligation_set": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "force_explicit_violation": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "randomize_structural_target_refs": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "rewire_role_mapping": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "strip_obligation_evidence_ids": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          }
+        }
+      }
+    },
+    "classification": "FALSIFIABLE",
+    "insensitive_probes": [],
+    "sensitive_probes": [
+      "corrupt_witness_identity",
+      "demote_all_obligations_to_optional",
+      "empty_obligation_set",
+      "force_explicit_violation",
+      "randomize_structural_target_refs",
+      "rewire_role_mapping",
+      "strip_obligation_evidence_ids"
+    ],
+    "reaudit_classification": "FALSIFIABLE"
+  },
+  "known_answer_counterfactual": {
+    "commit": "631196b4",
+    "blob_sha256": "f8b03ab9965f04400fac2d74c8c533e2354046025887b6aefd8b79968cf99e87",
+    "gate_id": "structural_transport_v2.assess_transfer_v2 (pre-repair, 631196b4)",
+    "adapter": "",
+    "no_alarm_control": {
+      "intact_evidence_passes": true,
+      "checked_before_probes": true
+    },
+    "notes": "planted-FAIL known-answer world: probes must reproduce FAIL_OPEN here",
+    "per_seed": {
+      "20260814": {
+        "verdict": "FALSIFIABLE",
+        "probes": {
+          "corrupt_witness_identity": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "demote_all_obligations_to_optional": {
+            "outcome": "INSENSITIVE",
+            "flips": 0,
+            "trials": 32
+          },
+          "empty_obligation_set": {
+            "outcome": "INSENSITIVE",
+            "flips": 0,
+            "trials": 32
+          },
+          "force_explicit_violation": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "randomize_structural_target_refs": {
+            "outcome": "SENSITIVE",
+            "flips": 31,
+            "trials": 32
+          },
+          "rewire_role_mapping": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "strip_obligation_evidence_ids": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          }
+        }
+      },
+      "20260815": {
+        "verdict": "FALSIFIABLE",
+        "probes": {
+          "corrupt_witness_identity": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "demote_all_obligations_to_optional": {
+            "outcome": "INSENSITIVE",
+            "flips": 0,
+            "trials": 32
+          },
+          "empty_obligation_set": {
+            "outcome": "INSENSITIVE",
+            "flips": 0,
+            "trials": 32
+          },
+          "force_explicit_violation": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "randomize_structural_target_refs": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "rewire_role_mapping": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          },
+          "strip_obligation_evidence_ids": {
+            "outcome": "SENSITIVE",
+            "flips": 32,
+            "trials": 32
+          }
+        }
+      }
+    },
+    "classification": "FALSIFIABLE",
+    "insensitive_probes": [
+      "demote_all_obligations_to_optional",
+      "empty_obligation_set"
+    ],
+    "sensitive_probes": [
+      "corrupt_witness_identity",
+      "force_explicit_violation",
+      "randomize_structural_target_refs",
+      "rewire_role_mapping",
+      "strip_obligation_evidence_ids"
+    ],
+    "reaudit_classification": "FAIL_OPEN",
+    "purpose": "planted-FAIL world validating the probes: the pre-repair gate must classify FAIL_OPEN (fail-open probes INSENSITIVE) while remaining battery-FALSIFIABLE on other probes \u2014 showing why FAIL_OPEN needs directed probes and is invisible to the plain battery verdict"
+  },
+  "directed_fail_open_checks": {
+    "repaired": {
+      "input": "disjoint structures, zero obligations",
+      "decision": "CANNOT_CHECK",
+      "reasons": [
+        "empty_load_bearing_obligation_set"
+      ],
+      "licensed": false
+    },
+    "pre_repair": {
+      "input": "disjoint structures, zero obligations",
+      "decision": "LICENSED",
+      "reasons": [],
+      "licensed": true
+    }
+  },
+  "probes_validated_against_planted_defect": true,
+  "final_classification": "FALSIFIABLE",
+  "grants_scientific_authority": false,
+  "note": "FALSIFIABLE means only that the gate can fail under evidence perturbation; it never certifies that a PASS is correct. Same-context audit, not independent review."
+}
