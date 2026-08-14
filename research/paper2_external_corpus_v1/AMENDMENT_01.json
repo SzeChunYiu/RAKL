@@ -1,0 +1,19 @@
+{
+  "schema_version": "paper2-external-corpus-amendment-v1",
+  "amendment_id": "AMENDMENT_01",
+  "date": "2026-08-14",
+  "confirmatory_outcomes_accessed": false,
+  "what_happened": "Acquisition on laptop billy succeeded (arn.csv, 1,256,913 bytes, n_rows=1095). The actual header is a multiple-choice format: id, proverb, query_narrative, first_choice, second_choice, distractor_similarity, analogy_level, correct_answer. The frozen keyword contingency (M1/M2) cannot bind it correctly: 'analogy_level' and 'distractor_similarity' are BAND columns, yet the frozen keywords would bind them as candidate TEXT columns. Executing on that binding would have scored garbage pairs. The defect was caught at the schema-binding stage, before any arm scoring; only the header and the schema fields (id, proverb, distractor_similarity, analogy_level, correct_answer) of the first 3 rows were inspected, as the protocol permits.",
+  "binding_M3_multiple_choice": {
+    "query": "query_narrative",
+    "analogy_text": "first_choice if correct_answer=='1' else second_choice",
+    "distractor_text": "the other choice",
+    "correct_answer_domain": "{'1','2'}; rows outside the domain are skipped and counted; skipped > 5% of rows -> terminal CANNOT_CHECK__SCHEMA_MISMATCH",
+    "analogy_band": "analogy_level (near/far, as published)",
+    "distractor_band": "distractor_similarity mapped {high -> near, low -> far, else -> unknown} (high surface similarity is the near-surface case; near-band distractors are the Q3 analogue)",
+    "group": "proverb (the ARN system-mapping identity; grouping by it prevents system-mapping leakage across the DEV/CONFIRM split)"
+  },
+  "unchanged": "Arms, thresholds grids, battery probes, gates, MDE, seeds, split fractions, terminals and the gold-isolation rule are unchanged from PROTOCOL.json. Gold derives from correct_answer via pair construction; no arm receives it.",
+  "chronology_note": "This amendment is committed before any arm scoring, threshold fitting, admission run or battery run on the real corpus. Observed schema values recorded verbatim in the commit: correct_answer='1' on rows 1-3; distractor_similarity='high' on rows 1-3; analogy_level in {far, near} on rows 1-3.",
+  "grants_scientific_authority": false
+}
