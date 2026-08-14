@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Submission/harvest transport for the already-frozen Paper-III capability
-# qualification.  This script changes no scientific setting.  Its only job is
+# qualification. This script changes no scientific setting. Its only job is
 # to bind repository subject -> SLURM job -> raw Stage-5 receipt fail-closed.
 
 usage() {
@@ -74,7 +74,7 @@ assert transport["grants_scientific_authority"] is False
 print("frozen execution subject: PASS")
 PY
 
-  # Re-materialize the sealed panel before a scheduler submission.  This does
+  # Re-materialize the sealed panel before a scheduler submission. This does
   # not call a model and therefore cannot consume qualification outcomes.
   TMP="$(mktemp -d)"
   trap 'rm -rf "$TMP"' RETURN
@@ -91,9 +91,10 @@ import hashlib, json, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-transport_path, out_path, subject, job_id = map(Path, sys.argv[1:3]) + tuple() if False else (sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-transport_path = Path(transport_path)
-out_path = Path(out_path)
+transport_path = Path(sys.argv[1])
+out_path = Path(sys.argv[2])
+subject = sys.argv[3]
+job_id = sys.argv[4]
 transport = json.loads(transport_path.read_text())
 receipt = {
     "schema_version": "rakl-capability-stage4-submission-receipt-v1",
