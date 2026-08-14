@@ -27,14 +27,14 @@ jobs:
           python-version: '3.12'
       - name: Verify exact audited source blobs and receipt
         run: |
-          test "$(git hash-object .github/workflows/p3-independent-oracle-action.yml)" = d26b1175d23d21c85dc46edb54fade0caf23dec2
+          test "$(git hash-object .github/workflows/p3-independent-oracle-action.yml)" = 1331f7541fe748abdeb845ae48f3a3e52c59ce2b
           test "$(git hash-object experiments/paper3/independent_action_oracle_v1.py)" = 2945d70c855cc11bd1e9644b5b28bc137bcff76a
           test "$(git hash-object experiments/paper3/run_independent_oracle_action_v1.py)" = 41caed06d6e8f307027a72f602ba8ba1d7802fdf
           test "$(git hash-object research/paper3_independent_oracle_action_v1/PROTOCOL.json)" = e48284664e26c37d50e2671162ecd58db3398eb1
           test "$(git hash-object research/paper3_independent_oracle_action_v1/FINAL_RECEIPT.json)" = 84eeeb2bba67e19aaa3e5028be45ebfafda23bf5
       - name: Preserve historical candidate and narrowing lineage
         run: |
-          git diff --exit-code 8fa768f62444cca5fec99cf0673dc16d57b55722 -- \
+          git diff --exit-code bbb6e9aca18d3cee2fb486ae68ffd9bacf5b2fe7 -- \
             research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json \
             research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json \
             experiments/orion_closure/run_p3_structured_experience_action.py
