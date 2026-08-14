@@ -26,24 +26,38 @@ jobs:
           python-version: '3.12'
       - name: Install test surface
         run: python -m pip install -e '.[test]'
-      - name: Validate frozen protocol and predecessor negatives
+      - name: Validate frozen protocol, parent amendment and predecessor negatives
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           p=Path('research/paper2_scientific_analogy_external_v1')
           protocol=json.loads((p/'PROTOCOL.json').read_text())
+          amendment=json.loads((p/'AMENDMENT_01_STRONGEST_PARENT_AND_ACQUISITION.json').read_text())
           negatives=json.loads((p/'PREDECESSOR_NEGATIVE_LEDGER.json').read_text())
           assert protocol['chronology']['status']=='FROZEN_PRE_OUTCOME'
+          assert amendment['chronology']=='PRE_MODEL_OUTCOME'
           assert protocol['model_subject']['model_shopping_forbidden'] is True
           assert protocol['external_sources']['SCAR']['english_blob_git_sha']=='214464cc4274f1af5a0bc1008a194b133c214e15'
           assert protocol['external_sources']['PROPARA_LOGY']['gold_blob_git_sha']=='e6aa2fa366c7da25b6b4f7fcb70b76e79487c7d9'
+          assert amendment['strongest_parent_update']['published_parent_anchors']['SCAR_repository_direct_template_blob']=='5bc03bac47fcd315bac58a5f856c0178cf634c93'
+          assert amendment['matched_resource_contract']['same_model_revision_interface'] is True
+          assert amendment['strongest_parent_update']['comparison_rule'].startswith('C1 must clear')
           assert protocol['chronology']['pre_freeze_external_preview_quarantine']['SCAR_ids']==list(range(1,11))
           assert protocol['chronology']['pre_freeze_external_preview_quarantine']['ProParaLogy_csv_row_indices']==list(range(0,11))
+          assert amendment['acquisition_and_case_order']['SCAR_preview_quarantine_ids']==list(range(1,11))
+          assert amendment['acquisition_and_case_order']['ProParaLogy_preview_quarantine_csv_indices']==list(range(0,11))
           assert all(not item.get('confirmatory_labels_scored_or_used', True) for item in negatives['predecessors'][1:])
+          for name in ('P1_DIRECT_MODEL.txt','P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION.txt','C1_GROUNDED_STRUCTURAL_WITNESS.txt'):
+              assert (p/'prompts'/name).read_text().strip()
           assert protocol['grants_scientific_authority'] is False
+          assert amendment['grants_scientific_authority'] is False
           assert negatives['grants_scientific_authority'] is False
           print('P2 external scientific-analogy freeze: PASS')
           PY
       - name: Prove source-span and fail-closed gates are failable
         run: pytest -q tests/test_external_analogy_grounding.py
+      - name: Prove exact acquisition, quarantine and protected-gold separation
+        run: pytest -q tests/test_paper2_external_scientific_analogy_acquire.py
+      - name: Static syntax check for acquisition builder
+        run: python -m py_compile scripts/paper2_external_scientific_analogy_acquire.py
