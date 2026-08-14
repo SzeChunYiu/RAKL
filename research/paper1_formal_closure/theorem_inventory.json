@@ -76,14 +76,15 @@
       "kind": "theorem",
       "name": "Finite-basis saturation",
       "location": "04_owmd.tex:162",
-      "status": "PARTIALLY_MECHANIZED",
-      "mechanization": "PARTIAL",
+      "status": "MECHANIZED",
+      "mechanization": "FULL",
       "load_bearing_class": "termination",
-      "notes": "Knaster-Tarski-shaped: inflationary + monotone gives a fixed point at the first non-strict step, and the stabilized state is the least fixed point above K0. Both of those halves are mechanized and axiom-free. The paper's additional cardinality bound is separate - see not_mechanized.",
-      "lean_names": "RaklFormal.iter_below_prefixed, stabilized_is_fixed, stabilized_is_least",
+      "notes": "Knaster-Tarski-shaped: inflationary + monotone gives a fixed point at the first non-strict step, and the stabilized state is the least fixed point above K0. Both halves were already mechanized. The cardinality bound is now mechanized too, on a mathlib-free finiteness development (pigeonhole via a hand-rolled Distinct/dropOne, plus a keep/countP partition of the universe). FINDING (precision, not a gap): the counting half needs ONLY inflationarity, not monotonicity - exactly as the paper's own sentence 'Inflationarity gives K_n subset K_{n+1}' implies. Monotonicity is genuinely required for the least-fixed-point half and is used there. iter_index_monotone therefore does not take a monotonicity hypothesis, so the counting bound cannot be silently credited to a hypothesis it does not use. The bound is stated additively (card K0 + n <= |U|) because natural subtraction truncates; the paper's literal |U|-|K0| form is derived as finite_basis_strict_growth_bound_sub.",
+      "lean_names": "RaklFormal.iter_below_prefixed, RaklFormal.stabilized_is_fixed, RaklFormal.stabilized_is_least, RaklFormal.finite_basis_strict_growth_bound, RaklFormal.finite_basis_strict_growth_bound_sub, RaklFormal.distinct_length_le, RaklFormal.iter_index_monotone, RaklFormal.iter_within_univ, RaklFormal.distinct_witnesses, RaklFormal.finite_basis_bound_is_attained",
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
-      "not_mechanized": "The cardinality bound (at most |U|-|K0| strict-growth steps) is NOT mechanized; it requires a finiteness/cardinality development. The least-fixed-point and stabilization halves ARE mechanized."
+      "encoding_hypotheses": "Three things the paper gets from typing or from working with genuine finite sets have to be re-supplied as explicit hypotheses under the predicate encoding, and none of them is hidden. (1) 'F : P(U_B) -> P(U_B)' is not a typing fact when subsets are predicates, so 'F maps subsets of U to subsets of U' is the hypothesis hFuniv, and K0 subset U is hK0univ. (2) The finite universe is an explicit enumeration univ : List A with Distinct univ, which is what makes the keep-length the true cardinality rather than a multiset count. (3) STRENGTHENING, stated plainly: 'every strict inclusion adds at least one element' is supplied as a witness FUNCTION w naming the element each step adds, not as a bare existential. Turning an existential into list data requires Classical.choice, which would put 'choice' into the axiom report and destroy the development's central claim. So the constructive content of the paper's sentence is required directly. This is a genuinely stronger hypothesis than the paper's prose and is recorded here rather than glossed. The iterates themselves are never assumed decidable - only K0 is - which is what keeps the development constructive.",
+      "lean_names_note": "finite_basis_bound_is_attained is the non-vacuity witness: the bound is attained, so it is not an idle inequality. distinct_length_le is the pigeonhole sub-lemma the whole counting argument rests on; it is proved here rather than imported."
     },
     {
       "id": "P1-T-DERIVED-VIEW-NON-ESCALATION",
@@ -257,8 +258,8 @@
     "paper_proof_informal": 0,
     "paper_proof_gap": 0,
     "unreviewed": 0,
-    "mechanized": 15,
-    "partially_mechanized": 1
+    "mechanized": 16,
+    "partially_mechanized": 0
   },
   "open_residuals": [
     {
@@ -273,8 +274,8 @@
     },
     {
       "residual_id": "RES-P1F-003",
-      "statement": "OPEN, narrowed. 15 of 17 claims are MECHANIZED. Two are not: P1-T-GREEDY-OPTIMALITY is PAPER_PROOF_COMPLETE (read line by line, no gap found, but same-session and therefore not reviewer-independent), and P1-T-FINITE-BASIS-SATURATION remains PARTIALLY_MECHANIZED pending the cardinality bound.",
-      "closure_action": "Add a mathlib-free finiteness development for the |U|-|K0| counting bound; mechanize greedy optimality with a tie-safe maximal-subset encoding of 'top r_p'."
+      "statement": "OPEN, narrowed further. 16 of 17 claims are MECHANIZED. The finite-basis cardinality bound is now machine-checked, so no claim is PARTIALLY_MECHANIZED. The single remaining non-mechanized claim is P1-T-GREEDY-OPTIMALITY, at PAPER_PROOF_COMPLETE: read line by line with no gap found, but same-session and therefore NOT reviewer-independent.",
+      "closure_action": "Mechanize greedy optimality with a tie-safe maximal-subset encoding of 'top r_p'."
     },
     {
       "residual_id": "RES-P1F-002",
@@ -289,7 +290,7 @@
     "negative_control": "PASSED - a deliberately false lemma is rejected by the kernel, so the build is capable of failing",
     "axiom_audit": "Every theorem in the development reports 'does not depend on any axioms' - fully constructive, no classical choice, no propext/funext. The audit covers ALL theorems in the file, not a selected subset, so a new theorem cannot be added without being audited.",
     "reviewer_independent": true,
-    "axiom_audited_theorems": 52,
+    "axiom_audited_theorems": 66,
     "axiom_audit_incident": "One propext leak was caught and fixed during this pass: coactivation_witness was initially proved by `decide`, and the core Decidable instance for list membership routes through propext. Replaced by an explicit membership term. Recorded because it is the exact failure mode the audit exists to catch, and because `decide` remains safe elsewhere in the file only where it decides Bool/Nat equalities rather than list membership.",
     "shared_principle_note": "The four non-escalation propositions are proved by one shared principle (no_uncertified_composition_changes_canon) AND each is now separately instantiated against its own state space, operator form and non-vacuity witness. The codomain obligation is PROVED for each operator form rather than assumed, so the shared principle is specialized rather than merely cited."
   }

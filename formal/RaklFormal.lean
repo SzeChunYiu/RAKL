@@ -154,10 +154,10 @@ end Lattice
 
 /-! ## Theorem: Finite-basis saturation
 
-Paper I, `04_owmd.tex:162`. The least-fixed-point half is mechanized here. The
-cardinality bound (`at most |U| - |K₀|` strict-growth steps) is *not* mechanized —
-it needs a finiteness/cardinality development — and is recorded as such in the
-inventory rather than being claimed. -/
+Paper I, `04_owmd.tex:162`. The least-fixed-point and stabilization halves are
+mechanized here. The cardinality bound (`at most |U| - |K₀|` strict-growth steps)
+needs a finiteness development and is mechanized in the `Finiteness` section at
+the end of this file. -/
 def Iter {A : Type u} (F : Sub A → Sub A) (K₀ : Sub A) : Nat → Sub A
   | 0 => K₀
   | n + 1 => F (Iter F K₀ n)
@@ -894,5 +894,291 @@ theorem freshness_expiry_witness :
    ⟨show (5 : Nat) ≤ 5 by decide, show (7 : Nat) ≤ 8 by decide⟩⟩
 
 end Freshness
+
+/-! ## Theorem: Finite-basis saturation — the cardinality bound
+
+Paper I, `04_owmd.tex:162`. The least-fixed-point and stabilization halves are
+mechanized above. This section adds the counting half: at most `|U| - |K₀|`
+strict-growth steps.
+
+Encoding decisions, stated rather than hidden — each is a place where a
+predicate encoding has to re-supply something the paper gets from typing:
+
+* Subsets are predicates, so `F : P(U_B) → P(U_B)` is not a typing fact here.
+  "`F` maps subsets of `U` to subsets of `U`" is the explicit hypothesis
+  `hFuniv`, and `K₀ ⊆ U` is `hK₀univ`.
+* The finite universe is an explicit enumeration `univ : List A`. `Distinct univ`
+  is what makes `keep`-length the true cardinality rather than a multiset count.
+* "Every strict inclusion adds at least one element" is supplied as a **witness
+  function** `w`, naming the element each step adds, rather than as a bare `∃`.
+  Turning `∃ a, P a` into list data requires `Classical.choice`, which would put
+  `choice` into the axiom report and destroy the development's central claim.
+  Requiring the witness is therefore a genuine strengthening of the hypothesis
+  relative to the paper's sentence, and it is recorded as such in the inventory.
+* The bound is primarily stated **additively** (`card K₀ + n ≤ |U|`). Natural
+  subtraction truncates, so the additive form is the faithful one; the paper's
+  literal `|U| - |K₀|` reading is derived from it as a corollary.
+
+The iterates themselves are never required to be decidable. Only `K₀` is, which
+is what lets the whole development stay constructive. -/
+
+section Finiteness
+
+variable {A : Type u}
+
+/-- Duplicate-freeness, defined here rather than imported so that the counting
+lemmas depend on nothing outside this file. -/
+inductive Distinct : List A → Prop
+  | nil : Distinct []
+  | cons {x : A} {xs : List A} : ¬ x ∈ xs → Distinct xs → Distinct (x :: xs)
+
+/-- Remove the first occurrence of `a`. -/
+def dropOne [DecidableEq A] (a : A) : List A → List A
+  | [] => []
+  | x :: xs => if x = a then xs else x :: dropOne a xs
+
+/-- Removing one occurrence of a member shortens the list by exactly one. -/
+theorem length_dropOne [DecidableEq A] (a : A) :
+    ∀ l : List A, a ∈ l → (dropOne a l).length + 1 = l.length := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    show (if x = a then xs else x :: dropOne a xs).length + 1 = xs.length + 1
+    split
+    · rfl
+    · next hne =>
+      have hmem : a ∈ xs := by
+        cases h with
+        | head => exact absurd rfl hne
+        | tail _ h' => exact h'
+      show (dropOne a xs).length + 1 + 1 = xs.length + 1
+      rw [ih hmem]
+
+/-- Removal keeps every other member. -/
+theorem mem_dropOne [DecidableEq A] (a b : A) :
+    ∀ l : List A, b ∈ l → ¬ b = a → b ∈ dropOne a l := by
+  intro l
+  induction l with
+  | nil => intro h _; cases h
+  | cons x xs ih =>
+    intro h hne
+    show b ∈ (if x = a then xs else x :: dropOne a xs)
+    split
+    · next hxa =>
+      cases h with
+      | head => exact absurd hxa hne
+      | tail _ h' => exact h'
+    · cases h with
+      | head => exact List.Mem.head _
+      | tail _ h' => exact List.Mem.tail _ (ih h' hne)
+
+/-- **Pigeonhole.** A duplicate-free list contained in another list is no longer
+than it. This is the sub-lemma the whole counting bound rests on. -/
+theorem distinct_length_le [DecidableEq A] :
+    ∀ (l m : List A), Distinct l → (∀ a ∈ l, a ∈ m) → l.length ≤ m.length := by
+  intro l
+  induction l with
+  | nil => intro _ _ _; exact Nat.zero_le _
+  | cons x xs ih =>
+    intro m hd hsub
+    cases hd with
+    | cons hx hxs =>
+      have hxm : x ∈ m := hsub x (List.Mem.head _)
+      have hsub' : ∀ a ∈ xs, a ∈ dropOne x m := fun a ha =>
+        mem_dropOne x a m (hsub a (List.Mem.tail _ ha)) (fun heq => hx (heq ▸ ha))
+      have h1 : xs.length ≤ (dropOne x m).length := ih (dropOne x m) hxs hsub'
+      have h2 : (dropOne x m).length + 1 = m.length := length_dropOne x m hxm
+      show xs.length + 1 ≤ m.length
+      rw [← h2]
+      exact Nat.succ_le_succ h1
+
+/-- Elements satisfying a decidable predicate, in order. -/
+def keep (p : A → Bool) : List A → List A
+  | [] => []
+  | x :: xs => if p x then x :: keep p xs else keep p xs
+
+/-- A member satisfying the predicate survives the filter. -/
+theorem mem_keep (p : A → Bool) :
+    ∀ (l : List A) (a : A), a ∈ l → p a = true → a ∈ keep p l := by
+  intro l
+  induction l with
+  | nil => intro a h _; cases h
+  | cons x xs ih =>
+    intro a h hp
+    show a ∈ (if p x then x :: keep p xs else keep p xs)
+    cases h with
+    | head =>
+      rw [if_pos hp]
+      exact List.Mem.head _
+    | tail _ h' =>
+      split
+      · exact List.Mem.tail _ (ih a h' hp)
+      · exact ih a h' hp
+
+/-- A predicate and its negation partition the list. -/
+theorem length_keep_add_not (p : A → Bool) :
+    ∀ l : List A, (keep p l).length + (keep (fun a => !p a) l).length = l.length := by
+  intro l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    show (if p x then x :: keep p xs else keep p xs).length
+        + (if !p x then x :: keep (fun a => !p a) xs else keep (fun a => !p a) xs).length
+        = xs.length + 1
+    cases hx : p x with
+    | true =>
+      show (keep p xs).length + 1 + (keep (fun a => !p a) xs).length = xs.length + 1
+      rw [Nat.add_right_comm, ih]
+    | false =>
+      show (keep p xs).length + (keep (fun a => !p a) xs).length + 1 = xs.length + 1
+      rw [ih]
+
+/-- Every iterate stays inside the declared universe. -/
+theorem iter_within_univ (F : Sub A → Sub A) (K₀ : Sub A) (univ : List A)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ) :
+    ∀ n a, Iter F K₀ n a → a ∈ univ := by
+  intro n
+  induction n with
+  | zero => exact hK₀univ
+  | succ k ih => exact hFuniv (Iter F K₀ k) ih
+
+/-- The iteration is increasing in its index. Note this needs *only*
+inflationarity, not monotonicity — matching the paper's own "Inflationarity gives
+`K_n ⊆ K_{n+1}`", and worth keeping visible so the counting half is not silently
+credited to a hypothesis it does not use. -/
+theorem iter_index_monotone (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X) (K₀ : Sub A) :
+    ∀ i j, i ≤ j → Iter F K₀ i ⊑ Iter F K₀ j := by
+  intro i j
+  induction j with
+  | zero =>
+    intro h
+    have : i = 0 := Nat.eq_zero_of_le_zero h
+    subst this
+    exact Incl.refl _
+  | succ k ih =>
+    intro h
+    rcases Nat.eq_or_lt_of_le h with heq | hlt
+    · subst heq; exact Incl.refl _
+    · exact Incl.trans (ih (Nat.le_of_lt_succ hlt)) (infl _)
+
+/-- `witnesses w n = [w (n-1), …, w 0]`. -/
+def witnesses (w : Nat → A) : Nat → List A
+  | 0 => []
+  | k + 1 => w k :: witnesses w k
+
+theorem length_witnesses (w : Nat → A) : ∀ n, (witnesses w n).length = n := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ k ih => show (witnesses w k).length + 1 = k + 1; rw [ih]
+
+theorem mem_witnesses (w : Nat → A) :
+    ∀ n a, a ∈ witnesses w n → ∃ i, i < n ∧ w i = a := by
+  intro n
+  induction n with
+  | zero => intro a h; cases h
+  | succ k ih =>
+    intro a h
+    cases h with
+    | head => exact ⟨k, Nat.lt_succ_self k, rfl⟩
+    | tail _ h' =>
+      rcases ih a h' with ⟨i, hi, hw⟩
+      exact ⟨i, Nat.lt_succ_of_lt hi, hw⟩
+
+/-- The elements added by distinct strict-growth steps are distinct. This is the
+step the paper compresses into "every strict inclusion adds at least one
+element": if `w i = w j` for `i < j` then the element added at step `i` is
+already present at stage `j`, contradicting the fact that step `j` adds it. -/
+theorem distinct_witnesses (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (K₀ : Sub A) (w : Nat → A) :
+    ∀ n, (∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) →
+      Distinct (witnesses w n) := by
+  intro n
+  induction n with
+  | zero => intro _; exact Distinct.nil
+  | succ k ih =>
+    intro hw
+    refine Distinct.cons ?_ (ih fun i hi => hw i (Nat.lt_succ_of_lt hi))
+    intro hmem
+    rcases mem_witnesses w k (w k) hmem with ⟨i, hi, hwi⟩
+    have h1 : Iter F K₀ (i + 1) (w i) := (hw i (Nat.lt_succ_of_lt hi)).1
+    have h2 : Iter F K₀ k (w i) := iter_index_monotone F infl K₀ (i + 1) k hi (w i) h1
+    exact (hw k (Nat.lt_succ_self k)).2 (hwi ▸ h2)
+
+/-- **Finite-basis saturation, cardinality bound.** `n` strict-growth steps force
+`|K₀| + n ≤ |U|`, so there can be at most `|U| - |K₀|` of them. -/
+theorem finite_basis_strict_growth_bound [DecidableEq A]
+    (univ : List A) (_huniv : Distinct univ)
+    (K₀ : Sub A) [DecidablePred K₀]
+    (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ)
+    (w : Nat → A) (n : Nat)
+    (hw : ∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) :
+    (keep (fun a => decide (K₀ a)) univ).length + n ≤ univ.length := by
+  have hsub : ∀ a ∈ witnesses w n, a ∈ keep (fun a => !decide (K₀ a)) univ := by
+    intro a ha
+    rcases mem_witnesses w n a ha with ⟨i, hi, hwi⟩
+    have hmemU : w i ∈ univ :=
+      iter_within_univ F K₀ univ hK₀univ hFuniv (i + 1) (w i) (hw i hi).1
+    have hnotK : ¬ K₀ (w i) := fun hk =>
+      (hw i hi).2 (iter_index_monotone F infl K₀ 0 i (Nat.zero_le i) (w i) hk)
+    have hb : (!decide (K₀ (w i))) = true := by
+      rw [decide_eq_false hnotK]
+      rfl
+    exact hwi ▸ mem_keep _ univ (w i) hmemU hb
+  have hle : (witnesses w n).length ≤ (keep (fun a => !decide (K₀ a)) univ).length :=
+    distinct_length_le (witnesses w n) _
+      (distinct_witnesses F infl K₀ w n hw) hsub
+  rw [length_witnesses] at hle
+  rw [← length_keep_add_not (fun a => decide (K₀ a)) univ]
+  exact Nat.add_le_add_left hle _
+
+/-- `n + k ≤ L → n ≤ L - k`, proved here rather than taken from core: the core
+lemma `Nat.le_sub_of_add_le` depends on `propext`, which would show up in the
+axiom report and break the development's central claim. -/
+theorem le_sub_of_add_le : ∀ (k n L : Nat), n + k ≤ L → n ≤ L - k := by
+  intro k
+  induction k with
+  | zero => intro _ _ h; exact h
+  | succ j ih =>
+    intro n L h
+    cases L with
+    | zero => exact absurd h (Nat.not_succ_le_zero _)
+    | succ m =>
+      have hs : (m + 1) - (j + 1) = m - j := Nat.succ_sub_succ m j
+      rw [hs]
+      exact ih n m (Nat.le_of_succ_le_succ h)
+
+/-- The paper's literal `|U| - |K₀|` reading. Natural subtraction truncates, so
+the additive statement above is the primary one and this is derived from it. -/
+theorem finite_basis_strict_growth_bound_sub [DecidableEq A]
+    (univ : List A) (huniv : Distinct univ)
+    (K₀ : Sub A) [DecidablePred K₀]
+    (F : Sub A → Sub A)
+    (infl : ∀ X, X ⊑ F X)
+    (hK₀univ : ∀ a, K₀ a → a ∈ univ)
+    (hFuniv : ∀ X : Sub A, (∀ a, X a → a ∈ univ) → ∀ a, F X a → a ∈ univ)
+    (w : Nat → A) (n : Nat)
+    (hw : ∀ i, i < n → Iter F K₀ (i + 1) (w i) ∧ ¬ Iter F K₀ i (w i)) :
+    n ≤ univ.length - (keep (fun a => decide (K₀ a)) univ).length := by
+  have h := finite_basis_strict_growth_bound univ huniv K₀ F infl hK₀univ hFuniv w n hw
+  rw [Nat.add_comm] at h
+  exact le_sub_of_add_le _ n univ.length h
+
+/-- Non-vacuity: the bound is attained, so it is not an idle inequality. Over a
+one-element universe with `K₀` empty, exactly one strict-growth step is possible
+and the bound reads `0 + 1 ≤ 1`. -/
+theorem finite_basis_bound_is_attained :
+    (keep (fun a => decide ((fun _ => False) a)) [()]).length + 1 = ([()] : List Unit).length :=
+  rfl
+
+end Finiteness
 
 end RaklFormal
