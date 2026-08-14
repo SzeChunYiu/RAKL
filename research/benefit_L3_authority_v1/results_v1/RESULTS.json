@@ -1,0 +1,119 @@
+{
+  "protocol_id": "BENEFIT-L3-AUTHORITY-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "headline": {
+    "alr_a": 0.5,
+    "alr_b": 0.0,
+    "delta_alr": 0.5,
+    "vua_a": 1.0,
+    "vua_b": 0.75,
+    "mcnemar": {"b": 200, "c": 0, "p_two_sided": 1.2446030555722283e-60},
+    "null_1_equal_n_suppression": {
+      "applicable": true,
+      "k_b": 120,
+      "k_a": 360,
+      "q05": 0.15,
+      "mean": 0.167155,
+      "observed_alr_b": 0.0,
+      "beaten": true
+    },
+    "null_2_evidence_permutation": {
+      "q05": 0.16,
+      "mean": 0.18446,
+      "observed_alr_b": 0.0,
+      "beaten": true
+    },
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "delta_alr_ge_0.10": true,
+    "mcnemar_p_lt_0.001": true,
+    "vua_b_ge_0.70": true,
+    "alr_b_below_null1_q05": true,
+    "alr_b_below_null2_q05": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true,
+    "no_rule_drift_either_arm": true
+  },
+  "module_pin_verification": {
+    "EVALUATOR.py": "3be90012a5c3179e899e505e65b4a098610128e104199d68fd759edd4ce61a4b (MATCH, verified before any execution and inside every step)",
+    "src/rakl/authority_ledger.py": "3a045599c1ffb022e73a5580c34ffc83ce034296a917f2489bb60815e2458d26 (MATCH)",
+    "src/rakl/evidence_binding_certificate.py": "0057fdc65a7d36463191644217670be1c00787cd30ed26c8ac2270fbe535a11e (MATCH)",
+    "src/rakl/claim_evidence.py": "85e845b2db579c3c0ed32b367c90efd28bde0d9a4adbd41177863f2c21dd8e23 (MATCH)",
+    "src/rakl/v3_scientific_authority.py": "722faea333686ea58bd08ec879e971f48280a8248bdf0ca97823e1b047495d97 (MATCH)",
+    "src/rakl/v3_authority.py": "77da0496436f83eddd6e04e8149b0a4826d3b177379f66a53a2af22666badfdd (MATCH)",
+    "src/rakl/epistemic_noninterference.py": "66019b2dd8a4e594535d132554286b2e2937572e1abbc7eb8d1af8bc9ca72cfb (MATCH)"
+  },
+  "per_class": {
+    "arm_A_ungoverned_upgrade": {
+      "A1": {"n": 120, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": 1.0},
+      "A2": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": 1.0},
+      "A3": {"n": 60, "unsupported_upgrades": 60, "alr_within_class": 1.0, "vua_within_class": null},
+      "A4": {"n": 60, "unsupported_upgrades": 60, "alr_within_class": 1.0, "vua_within_class": null},
+      "A5": {"n": 40, "unsupported_upgrades": 40, "alr_within_class": 1.0, "vua_within_class": null},
+      "A6": {"n": 40, "unsupported_upgrades": 40, "alr_within_class": 1.0, "vua_within_class": null},
+      "A7": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null}
+    },
+    "arm_B_certificate_gated_upgrade": {
+      "A1": {"n": 120, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": 1.0, "sub_verdicts": {"VALID_FOR_PROMOTION_CHALLENGER": 120}},
+      "A2": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": 0.0, "sub_verdicts": {"CANNOT_CHECK": 40}},
+      "A3": {"n": 60, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null, "sub_verdicts": {"INVALID": 60}},
+      "A4": {"n": 60, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null, "sub_verdicts": {"INVALID": 60}},
+      "A5": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null, "sub_verdicts": {"INVALID": 40}},
+      "A6": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null, "sub_verdicts": {"INVALID": 40}},
+      "A7": {"n": 40, "unsupported_upgrades": 0, "alr_within_class": 0.0, "vua_within_class": null, "sub_verdicts": {"INVALID": 40}}
+    },
+    "note": "Arm B's designed-in A2 miss (all 40 supported-but-record-incomplete claims refused via CANNOT_CHECK, VUA_B = 120/160 = 0.75) is charged, visible, and sits above the frozen 0.70 floor exactly as PROTOCOL.json anticipated. Arm A's ALR is driven entirely by A3-A6 (review/lineage/scope/axis content invisible to syntactic reference resolution); A7 confirms arm A is an honest baseline, not a straw man (it refuses all 40 dangling-citation rows). Arm B's benefit spans ALL invalid-upgrade classes, not a strict subset: A3 (no reviewed support), A4 (tamper/root-collapse/experience-as-science), A5 (scope leak), A6 (axis leak) are all refused. The 120 arm-B upgrades were realized as real AuthorityLedger.commit_verified certificates (120 active ledger certificates), so ALR_B measures actual ledger state."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized record realization, separation from both nulls, the over-refusal guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "Mechanical certificate-gated authority upgrading (rakl.evidence_binding_certificate.evaluate_evidence_binding_for_promotion feeding rakl.authority_ledger.AuthorityLedger.commit_verified — the challenger evidence-binding stack, explicitly not the canonical v3 promotion path) on a synthetic known-answer corpus reduces authority-leak rate versus ungoverned upgrading without null-equivalent refusal.",
+  "explicit_non_claims": [
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus generalization (registered follow-up)",
+    "no claim about the canonical v3 promotion path (arm B is the challenger bridge surface)",
+    "no repair or excuse of the assess_transfer_v2 fail-open defect (separate open P-item; this experiment neither uses nor measures it)",
+    "ladder.json L3 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "13f46cad67e83eebd15ad8b018084dd75cfc3d02b231e05b14e31ead211c944d",
+    "corpus_v1_stripped.json": "be08b6cb12b8cf191dee645d48ce2e7709c425ee2370013cf4e5829043adf261",
+    "audit_sample.json": "d9510975493137760501e2d283b33b0bfb97ed2dd5f71f93fa8a09acfea33f2a",
+    "worlds_v1.json": "5df83d35a20a8b0bd7fc6f145e676a2a1851af3ffd97a5ceb37ed84cfb561741",
+    "harness/generate_corpus.py": "c2688d1b4f9ed946250e97082c2f4120cd1a9c03def6f798eca7c502c3bed657",
+    "harness/arm_harness.py": "802274fb8e43a036721dc283430229c545ab951c1da5e7cbba5aac002529072a",
+    "arm_a_output.json": "37c7ac41d90dbddd3515cff47e8566c7b3b45afabb7049539e97c92ad695b6f4",
+    "arm_b_output.json": "2724ccde00cc094dadb49b38dafbd82a298085ecf6dfec0b43da1def6195b8fb",
+    "evaluator_report.json": "580348d5f391a8f01f84ac5d85206f9b02ce807004360552609ed563ccf983ca",
+    "AUDIT_RECEIPT.json": "6a984f6ea5e10166f68591d9492ce29d4bce40847bd63c695313aed4024a5730"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T18:18:32Z",
+    "corpus_frozen_at": "2026-08-14T18:18:32Z",
+    "audit_performed_at": "2026-08-14T18:19:07Z",
+    "arm_run_started_at": "2026-08-14T18:19:17Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:ecb4394bbe43e658",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l3-authority-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs) — mechanically valid per the receipt fields, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer corpus; the registered follow-ups (LLM arm, natural corpus) remain open.",
+    "A2-RECORD-INCOMPLETENESS-MISS: arm B structurally withholds all 40 supported-but-record-incomplete claims (VUA_B=0.75). Pre-registered lever if this must close: score CANNOT_CHECK-driven refusals separately from INVALID/CONFLICT-driven refusals and add a typed record-repair step (bounded re-query for the missing verification field, cost charged to arm B) via the mechanism-invention workflow — an L3-machinery extension, not a patch to src/rakl/evidence_binding_certificate.py.",
+    "ASSESS-TRANSFER-V2-FAIL-OPEN: the ladder L3 readiness defect (assess_transfer_v2 LICENSED with zero reasons on disjoint structures) remains a separate open P-item, untouched and unexcused by this outcome."
+  ],
+  "grants_scientific_authority": false
+}
