@@ -16,8 +16,8 @@
 \newcommand{\code}[1]{\texttt{#1}}
 
 \title{Structural Learning Mechanics:\\
-Instrument Admissibility for Equal-Budget Allocation Comparisons\\
-\large A negative-results and metrology report}
+A Preregistered Protocol for Learner-Conditioned\\
+Structural Data Allocation}
 \author{Sze Chun Yiu\\Stockholm University\\\texttt{sze-chun.yiu@fysik.su.se}}
 \date{August 2026}
 
@@ -26,36 +26,56 @@ Instrument Admissibility for Equal-Budget Allocation Comparisons\\
 \maketitle
 
 \begin{abstract}
-An experiment can be amply powered by every conventional criterion and still be structurally unable to answer its own registered question. This paper reports that failure mode concretely, names the metrology defect, and contributes the method that detects it before a confirmatory budget is spent. The empirical core is a preserved negative: in a frozen model-free development-stress instrument, a learner-conditioned adaptive allocation policy lost to a static structural parent under equal training budget ($E-D=-0.0166$, bootstrap 95\% CI $[-0.0174,-0.0158]$), with the loss attributed by a frozen diagnostic protocol to the allocation stage --- guard-rail budget capture plus within-round concentration --- and with the protocol's own pre-registered attribution prediction \emph{falsified} and preserved. The decisive finding sits one level deeper: a rigorous upper bound on the advantage \emph{any} equal-budget allocation policy could achieve over the static parent in that instrument is $+0.0246$, a factor $2.03$ below the instrument's own frozen $0.05$ promotion gate. The instrument could not have produced a positive verdict for any policy, however good --- and this is invisible to conventional power analysis, because the bootstrap confidence intervals on the primary contrast are ${\approx}0.0016$ wide. Power analysis bounds sampling noise for an assumed effect size; it is silent on whether the instrument can generate the effect at all. We formalize the repair as an \emph{oracle-ceiling admissibility gate}: before executing an equal-budget allocation comparison, compute bounds on the achievable ceiling and require $\text{ceiling}\ge\kappa\cdot\mathrm{MDE}$ with $\kappa$ frozen in advance; only a rigorous upper bound may license \code{INADMISSIBLE}, only a constructive achievability bound may license \code{ADMISSIBLE}, and an uncomputable oracle fails closed to \code{CANNOT\_CHECK}. The gate passes a five-case known-answer fresh-assurance battery with pre-frozen expected verdicts and a per-condition black-box falsifiability audit. A demonstration closes the loop: repairing the diagnosed instrument defect (world-divergent initial learner state) yields a licensed instrument in which a marginal-gain challenger beats the static parent on every frozen gate ($F-D=+0.0760$) --- and in which the original ``defective'' v1 policy \emph{also} wins ($+0.0747$), falsifying a second registered prediction and showing the original negative was policy$\times$instrument-conditional. Both falsified predictions are preserved verbatim. The paper makes no positive claim about real-model training; the original standalone positive-claims Paper~IV remains unauthorized, and this report does not reverse that decision.
+Curriculum, active, influence-based, saturation-aware and model-aware data selection are now well-developed research areas: existing systems already condition example selection on a learner's evolving state, target missing skills, deduplicate semantically redundant data, and reallocate training budget after apparent saturation. This paper does \emph{not} claim to have invented any of those functions, and it does not report that a proposed extension of them works. Instead it isolates a narrower, distinct residual hypothesis --- that data allocation conditioned on an explicit, \emph{directional}, quantity-of-interest- and applicability-boundary-scoped \emph{structural} coordinate, with a learner-specific \emph{vector} mastery state and exact reuse of the same structural identities at inference, allocates training budget more cost-effectively than a strong static structural curation and than the strongest generic learner-conditioned parent, subject to noncompensatory retention and transfer-safety constraints --- and it freezes, in advance, the experimental protocol designed to answer whether that residual exists. We state the conceptual mechanics that are ready: three separate projections of one substrate (scientific authority, search routing, training allocation) that must not share authority semantics; a learner-conditioned, staleable structural-saturation receipt; and a mastery vector over principle, composition, boundary, representation, transfer and retention coordinates. We argue several \emph{architectural} propositions --- learner-conditioned saturation is not a fixed point of the training operator, a scalar mastery summary is representationally inadequate for the allocation decision, retention safety must be a hard constraint rather than an objective term, and the training projection cannot mint scientific authority. We then preregister a Phase~0--4 protocol, mapping each phase to its governing decision record, with frozen design parameters, decision gates, and an explicit falsifier for each. The paper makes no positive empirical claim for adaptive allocation. It reports one executed step, the Phase-0/1 prerequisite instrument on the frozen Qwen2.5 0.5B--7B ladder, together with its \emph{retraction}: root-cause analysis found the run to be an instrument artifact---a degenerate generator exposing only two unique inputs per family, and a training bug in which byte-pair encoding merged the answer-token space so the gold token was masked out and no gradient ever reached the VALID/INVALID decision. Either defect alone voids the run, so it identifies neither a residual nor a capability floor. We then present a corrected v2 instrument (token-id concatenation so the answer is trained; a varied, length-matched generator with disjoint train/probe instances; a learnability positive-control gate) whose held-out validation restores real generalising learning where v1 produced only constants. The residual hypothesis is therefore unresolved, and the full v2 ladder re-run is the pending prerequisite to any Phase-2 decision.
 \end{abstract}
 
 \begin{center}
 \fbox{\parbox{0.94\textwidth}{\small
-\textbf{Status: rescoped claims object.} An earlier version of this document was a design-and-protocol preprint for a prospective positive adaptive-allocation claim. That standalone positive paper was, and remains, unauthorized under decision gate \#462; this rescope does not reverse or relitigate that decision --- it is a \emph{different claims object}: a negative-results and metrology report whose every quantitative statement is read from preserved, frozen receipts in the accompanying research artifact. The preserved negatives are not reinterpreted as positives anywhere in this document. All analysis is same-context (produced within the same research programme, with language-model assistance); none of it is independent review.
+\textbf{Status: design-and-protocol preprint; the Phase-0/1 v1 run was executed and then RETRACTED as an instrument artifact; a corrected v2 instrument is built and validated; no positive empirical claim is made.}
+This document preregisters a Phase~0--4 protocol and reports one executed step and its retraction: the Phase-0/1 exposure instrument (\#461) was run on the frozen Qwen2.5 0.5B--7B ladder (\S\ref{sec:phase1-result}), then found on root-cause analysis to be invalidated by two independent defects (a two-input degenerate generator; and a masked-answer-token training bug under which no gradient reached the decision). The v1 terminals are preserved only as negative instrument history; they support no claim about the residual, which is \emph{unresolved}. A corrected v2 instrument is built and its held-out validation restores genuine generalising learning; the full v2 ladder re-run is the pending prerequisite. Every quantitative value in the protocol sections is a preregistered threshold or design parameter chosen \emph{before} data access; nothing grants scientific or promotion authority. A standalone \emph{positive} empirical paper remains conditional on (i) the v2 re-run and the later training programme (\#466/\#467/\#468), (ii) a trainable, sufficiently capable in-ladder model and authorized compute, and (iii) affirmative authorization at gate \#462.
 }}
 \end{center}
 
-\section{The gap, the residual question, and what this paper now claims}
+\section{The gap: what is prior art, and what is the residual}
 \label{sec:gap}
 
-A learner does not benefit equally from every training example, and the modern data-selection literature acts on this at scale: skill-based frameworks sample adaptively along learned skill dependencies \cite{chen2023skillit}; skill-graph selection curates by structural role \cite{li2025mass}; model-aware influence methods track which data most improve the current parameters \cite{yu2024mates}; token-level methods select within an example \cite{lin2024rho1}; optimizer-aware influence methods target instruction tuning \cite{xia2024less}; de-duplication and diversification beat random one-pass exposure \cite{tirumala2023d4,abbas2023semdedup}; mixture reweighting optimizes domain proportions \cite{xie2023doremi}; and skill-targeted adaptive training profiles a learner's missing skills after saturation \cite{he2026stat}. Compositional-generalization work shows that atomic-skill examples do not automatically teach composition \cite{wei2026steps}; structural information is learned and used at inference \cite{chen2026structural}; latent skills route and compose across adaptation \cite{ling2026rex}; and spaced, varied retrieval improves retention and transfer, not merely acquisition \cite{butler2010}.
+A learner that is trained on a corpus does not benefit equally from every example. This observation is old, and the modern literature that acts on it is large and strong. Skill-based frameworks learn ordered skill dependencies and sample adaptively along them \cite{chen2023skillit}; skill-graph selection curates mathematical pretraining data by structural role \cite{li2025mass}; model-aware influence methods maintain an evolving estimate of which data most improve the current parameters \cite{yu2024mates}; token-level and reference-loss methods select \emph{within} an example \cite{lin2024rho1}; influence-for-instruction-tuning methods pick data by optimizer-aware gradient alignment \cite{xia2024less}; document de-duplication and diversification methods show that intelligent repetition can beat random one-pass exposure \cite{tirumala2023d4}; semantic de-duplication removes near-duplicate content at web scale \cite{abbas2023semdedup}; domain-reweighting methods optimize the training mixture \cite{xie2023doremi}; and skill-targeted adaptive training profiles a learner's \emph{missing} skills and synthesizes or selects examples against them after vanilla fine-tuning saturates \cite{he2026stat}. Compositional-generalization work shows that atomic-skill examples do not automatically teach composition and that the distribution shape and training format matter \cite{wei2026steps}. Work on the emergence and test-time use of abstract structure in language models shows that structural information is learned and used at inference \cite{chen2026structural}, and reusable-experience methods route and compose latent skills across adaptation \cite{ling2026rex}. The cognitive-science literature, finally, establishes that spaced and varied retrieval improves \emph{retention and transfer}, not merely acquisition \cite{butler2010}.
 
-The research programme behind this paper registered a narrow residual hypothesis over that prior art: that allocation conditioned on an explicit, directional, quantity-of-interest-scoped \emph{structural} coordinate with a learner-specific \emph{vector} mastery state beats strong static structural curation under equal budget and noncompensatory safety constraints. That hypothesis is \emph{not} what this paper claims. What this paper now claims is what its receipts support:
+We concede all of this as prior art. In particular, this paper does \emph{not} claim: the first learner-conditioned curriculum; the first missing-skill targeting; the first saturation-aware adaptive training; the first model-state-specific allocation; or that ``the model's current state changes which data are useful.'' Each of those is occupied. Any paper that framed its contribution as one of them would be correctly rejected as a re-description of \cite{chen2023skillit,yu2024mates,he2026stat}.
 
-\begin{enumerate}[leftmargin=1.5em,itemsep=2pt]
-\item \textbf{A metrology method (primary contribution).} An equal-budget allocation comparison is uninformative about its registered estimand when the achievable oracle ceiling of the instrument lies below its registered minimum detectable effect, and this failure mode is invisible to conventional power analysis. We give a concrete admissibility gate --- $\text{ceiling}\ge\kappa\cdot\mathrm{MDE}$, $\kappa$ frozen before ceiling access, with direction-of-license rules and fail-closed semantics --- demonstrated on exactly one preserved instrument and validated on a fresh known-answer battery (\S\ref{sec:admissibility}--\S\ref{sec:gatevalidation}).
-\item \textbf{An attributed negative (empirical core).} The adaptive-v1 policy lost to its static parent in the frozen development-stress instrument; the loss decomposes into guard-rail budget capture and within-round concentration; and the diagnostic protocol's own pre-registered attribution prediction failed and is preserved as failed (\S\ref{sec:negative}).
-\item \textbf{A closed-loop demonstration (secondary).} Repairing the diagnosed instrument defect produces a licensed instrument in which a marginal-gain challenger clears every frozen gate against the static parent --- and in which the v1 policy also wins, falsifying a second registered prediction and relocating the original negative from ``policy defect'' to ``policy$\times$instrument interaction'' (\S\ref{sec:demonstration}).
+\paragraph{The residual.}
+What is \emph{not} obviously occupied is a specific conjunction. \RAKL{} already represents transfer at inference through directional, quantity-of-interest- and applicability-boundary-scoped relational structural objects with explicit records of \emph{non-preserved} properties and hostile near-misses (the sibling method-evolution and structural-transfer mechanics; \S\ref{sec:series}). The residual hypothesis of this paper is that data allocation conditioned on \emph{that same} structural substrate --- rather than on a free skill label, a token loss, an influence scalar, or a domain group --- carries distinct, measurable value. Concretely, the residual is the joint presence of:
+\begin{enumerate}[leftmargin=1.4em,itemsep=1pt]
+\item explicit \emph{directional} / quantity-of-interest / applicability-boundary structural coordinates as the unit of allocation, not a free skill label;
+\item a learner-specific \emph{vector} saturation state distinguishing principle acquisition from composition, boundary, representation and transfer mastery;
+\item a \emph{causal} allocation value, established by a matched contrast against a strong static structural curation, not by beating random or full-data training;
+\item \emph{exact} reuse of the same structural identities at training-allocation time and at inference-time transfer;
+\item an \emph{acceptable total cost}, accounting for structure extraction, mastery probing and scheduling overhead, not tokens alone; and
+\item \emph{noncompensatory} retention and transfer safety, so that saved tokens cannot be bought with forgetting or lost composition.
 \end{enumerate}
 
-Everything else --- the structural-coordinate mechanics, the preregistered Phase~0--4 protocol, the frozen 7B confirmatory design --- appears here as context and preserved history, not as claims. No real-model result exists, and none is asserted.
+\paragraph{This is an open question, and it may return negative.}
+Whether that residual survives is an \emph{empirical} question, and the honest prior is uncertain. The strongest single threat is skill-targeted adaptive training \cite{he2026stat}, which already profiles learner-specific missing skills and adapts after saturation; if a faithful instance of it explains the same gain, the residual is not real. Model-aware influence selection \cite{yu2024mates} blocks any claim that adaptivity itself is the contribution. De-duplication-and-diversification results \cite{tirumala2023d4} and the retention literature \cite{butler2010} forbid modelling saturation as ``mastered $\Rightarrow$ never show again.'' The protocol below is designed precisely so that a negative outcome is reportable and consequential: if adaptive structural allocation does not distinguishably beat \emph{static} structural allocation, or if a simpler parent fully explains any gain, the mechanism is \emph{unsupported as a distinct contribution} and is absorbed into the sibling method-evolution paper rather than spun into a standalone claim.
 
-\section{Structural coordinates and the mechanics under test}
+\paragraph{What this paper is.}
+This paper is therefore a preregistered design-and-protocol preprint. It contributes (a) the conceptual mechanics of learner-conditioned structural data allocation, which are architecturally ready, and (b) the frozen Phase~0--4 experimental protocol that will be executed once training is authorized. It reports no result. It reserves no priority over the prior art above. It states, in advance, the conditions under which its own central hypothesis would be declared false.
+
+\section{Structural coordinates and learner-conditioned saturation}
 \label{sec:mechanics}
 
-The mechanics are retained from the design phase because the negative results below are unintelligible without them; they are architecture, not findings.
+\subsection{Three projections of one substrate}
+Let $R_t$ denote the complete external research substrate at time $t$ --- a canonical/raw corpus together with scientific and experience state. \RAKL{} already exposes a scientific-authority projection $K_t=\pi_{\mathrm{epi}}(R_t)$ (what is scientifically licensed) and a search/routing projection $Q_t=\pi_{\mathrm{search}}(R_t)$ (what should be inspected next). The present mechanics add a third:
+\[
+L_t \;=\; \pi_{\mathrm{train}}(R_t,\theta_t),
+\]
+the \emph{training projection}: which registered example or structural coordinate should receive gradient budget next, given the current model parameters $\theta_t$. The three projections may share content identities and lineage, but they must not share authority semantics. The binding invariant is
+\[
+\text{training utility}\;\neq\;\text{search rank}\;\neq\;\text{scientific authority}.
+\]
+A high-value training example may be scientifically weak; a highly authoritative source may be redundant for a given learner; a centrally cited source may be useful for routing yet add almost no independent structural exposure. The training projection is the only one of the three that depends on $\theta_t$, and that dependence is the source of every architectural property below.
 
-Let $R_t$ denote the external research substrate at time $t$. The framework exposes a scientific-authority projection $K_t=\pi_{\mathrm{epi}}(R_t)$ and a search projection $Q_t=\pi_{\mathrm{search}}(R_t)$; the training extension adds $L_t=\pi_{\mathrm{train}}(R_t,\theta_t)$, the only projection that depends on model parameters $\theta_t$. The binding invariant is that training utility, search rank and scientific authority never share semantics.
+\subsection{Structural objects as the unit of allocation}
+The unit of allocation is not a free-text skill label but a registered relational \emph{structural object} $s$ carrying a direction (which relation licenses which use), a quantity of interest, an applicability boundary, and an explicit set of \emph{non-preserved} properties and hostile near-misses. This is the same object family used for inference-time transfer in the sibling mechanics; the training projection annotates existing structural identities rather than minting new ones, and raw examples remain canonical.
 
 \begin{definition}[Structural mastery vector]
 \label{def:mastery}
@@ -63,158 +83,210 @@ For a registered structural object $s$ and parameters $\theta_t$, the learner-co
 \[
 M_t(s)=\bigl(m_{\mathrm{principle}},\,m_{\mathrm{composition}},\,m_{\mathrm{boundary}},\,m_{\mathrm{representation}},\,m_{\mathrm{transfer}},\,m_{\mathrm{retention}}\bigr),
 \]
-each coordinate estimated by a frozen probe family rather than model introspection.
+each coordinate estimated by a \emph{frozen probe family} rather than by model introspection: base relational-rule acquisition; use of $s$ in registered multi-structure compositions; behaviour under boundary/regime change and semantic near-misses; invariance across notation and surface encoding; structure-known/domain-new performance; and resistance to forgetting after training moves elsewhere.
 \end{definition}
 
-Three architectural propositions from the design phase remain load-bearing for reading the results: learner-conditioned saturation is not a fixed point of the training operator (a saturation receipt is staleable and checkpoint-bound); a scalar mastery summary is representationally inadequate for the allocation decision (two states with equal mean demand different allocations); and retention/transfer safety must be noncompensatory constraints, since any finite additive retention weight admits schedules that buy the primary objective with unbounded forgetting \cite{tirumala2023d4,butler2010}. The production allocator implements these as hard gates; the negative below is \emph{not} a failure of these constraints but of the allocation policy operating inside them.
-
-\paragraph{The estimand.}
-The registered causal object is the contrast $E-D$ at equal total budget between \textbf{E}, adaptive structural-mastery allocation, and \textbf{D}, \emph{static} structural curation over the identical substrate, alongside \textbf{A} uniform random, \textbf{B} semantic diversity, and \textbf{C}, the strongest scalar loss-aware learner-conditioned parent. $E-D$ isolates the learner-conditioning residual; $E-A$ and $E-B$ conflate it with curation value; $E-C$ tests residual value beyond generic learner-conditioning.
-
-\section{Preserved instrument history I: the Phase-0/1 retraction}
-\label{sec:phase1-result}
-
-The programme's first instrument lesson predates the present one and is preserved because the two share a defect class. The Phase-0/1 exposure instrument (frozen packet, subject hash \texttt{fce2bb17\ldots}) was executed on the frozen Qwen2.5 instruction-tuned ladder ($0.5$B--$7$B, A100, LoRA per exposure count, six mastery coordinates on held-out cases) --- and then \textbf{retracted as an instrument artifact} on root-cause analysis. Two independent defects were found: (1) a \emph{degenerate generator} exposing only two unique rendered inputs per structural family, so no structural rule could be induced and an edge-count heuristic explained the apparent learning; (2) a \emph{masked-answer-token training bug}: byte-pair encoding merged the separating space into the answer token, the masking boundary fell after the gold token, and no gradient ever reached the VALID/INVALID decision --- every reported outcome was the untrained base model's prior. Either defect alone voids the run, so it identifies neither a residual nor a capability floor. The v1 terminals are preserved as negative instrument history supporting no claim in either direction:
-\begin{gather*}
-\texttt{V1\_PHASE1}=\texttt{INSTRUMENT\_GENERATOR\_DEFECT},\quad
-\texttt{MECHANISM\_SIGNAL}=\texttt{CANNOT\_CHECK}.
-\end{gather*}
-A corrected v2 instrument (token-id concatenation; varied, length-matched, disjoint train/probe instances; a learnability positive-control gate) restored genuine generalising learning, and its A100 re-run produced one real signal on the corrected ladder: 7B \code{state\_reachability} $\to$ \code{MECHANISM\_SIGNAL\_PRESENT} (principle mastered at exposure 2, late same-structure gain $0$, unsaturated-coordinate late gain $+0.25$), in exactly 1 of 12 model$\times$family cells. That signal motivated the allocator whose failure is this paper's empirical core. The pattern to hold onto: \emph{an instrument that cannot produce the signal it was built to test, while looking healthy}. The Phase-0/1 v1 instrument failed this way at the level of gradient flow; the development-stress instrument below fails the same way at the level of achievable effect size.
-
-\section{The empirical core: an attributed equal-budget negative}
-\label{sec:negative}
-
-\subsection{The preserved development negative}
-A model-free development-stress panel was frozen before outcomes (seed $202608140601$; six worlds spanning early principle saturation, composition/boundary/representation/transfer lag, and retention sensitivity; $384$ world-replicates; equal $48$-example budget per arm; balanced mastery and hard-safety-minimum endpoints; promotion gate $E-D\ge 0.05$). The adaptive-v1 policy --- one PRINCIPLE floor slot per round, principle-until-$0.90$, hard retention repair, otherwise all remaining slots to the weakest measured coordinate --- \textbf{lost}:
-\[
-E-D\ \text{(balanced mastery)} = -0.0166\ [-0.0174,-0.0158],\qquad
-E-D\ \text{(hard-safety min)} = -0.0503\ [-0.0578,-0.0431],
-\]
-preserved as \code{DEVELOPMENT\_NEGATIVE\_ADAPTIVE\_OVERCONCENTRATES\_\allowbreak STATIC\_PARENT\_RETAINS\_DEFAULT}, with active-default authority revoked from adaptive scheduling: the static structural parent remains the governed production policy. This outcome was produced by the closure lane of the research programme \emph{before} any of the admissibility analysis below existed; the analysis inherits the outcome, it did not generate it.
-
-\subsection{Frozen attribution, with its own falsified prediction}
-A follow-up diagnostic protocol was frozen before outcome access with four numbered predictions and falsifiers, then executed with world dynamics and RNG streams imported unchanged from the frozen parent runner. Findings, all read from receipts:
-
-\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-\item \textbf{Guard-rail budget capture.} v1 spends $13$ of $48$ examples on PRINCIPLE versus the parent's $8$ --- in every world --- because the principle threshold rule and the floor slot are budget-consuming \emph{targets} while the dynamics simultaneously erode PRINCIPLE. Per-coordinate $E-D$ mastery: PRINCIPLE $+0.0387$, every other coordinate negative. Capping PRINCIPLE at the parent's $8$ (arm X1) drives the allocation's $L_1$ distance from uniform from $10.33$ to $1.31$ and recovers $35\%$ of the gap.
-\item \textbf{Within-round concentration.} X1 reaches near-uniform budget yet still loses $-0.0108$: committing seven slots to one coordinate inside a round wastes budget against per-coordinate saturating gains.
-\item \textbf{Falsified prediction P1, preserved.} The protocol's pre-registered prediction P1 stated that the principle cap closes ${\ge}60\%$ of the gap ($\Delta\ge 0.010$). Observed: $\Delta=+0.0058$, $35\%$ of the gap. \textbf{P1 is recorded as FALSIFIED.} No threshold was moved after outcome access; the attribution terminal is \code{ATTRIBUTION\_MIXED}, not the single-lever story P1 predicted.
-\item \textbf{A confounded arm, declared uninformative.} Arm X2, designed to isolate concentration, instead \emph{increased} budget distortion ($L_1$ $10.33\to16.00$) because spreading slots re-selects the argmin every round; its deficit is fully accounted for by budget distortion, and it is used as evidence in \emph{neither} direction.
-\item \textbf{A corrected root-cause reading.} The original receipt's narrative (``commits all non-repetition slots to one weakest coordinate'') is refuted \emph{as a budget-level story} by the realized counts, which are near-uniform outside PRINCIPLE; the receipt file itself is immutable and unedited, and only its interpretation is corrected.
-\end{itemize}
-
-Both v1 defects --- argmin mastery \emph{level} where the thesis concerns the mastery \emph{derivative}, and whole-round single-target blocks --- are present in the promoted production allocator, so the diagnosis transfers beyond the simulator.
-
-\section{The primary contribution: oracle-ceiling instrument admissibility}
-\label{sec:admissibility}
-
-\subsection{The decisive measurement}
-The attribution's deepest finding is not about the policy at all. Three bounds were computed on the advantage \emph{any} equal-budget allocation policy could achieve over the static parent in this instrument:
-
-\begin{center}
-\small
-\begin{tabular}{@{}llll@{}}
-\toprule
-tier & object & direction & mean advantage over static \\
-\midrule
-1 & greedy oracle \emph{policy} (true-parameter access) & lower bound & $+0.00148$ \\
-2 & best constructive allocation found (local search) & lower bound & $+0.00446$ \\
-3 & harm-free relaxation, solved exactly & \textbf{upper bound} & $\mathbf{+0.02457}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-The tier-3 bound is rigorous for this instrument: every harm term in the dynamics is non-negative and subtracted, the gain step $m\mapsto m(1-r)+r$ is monotone increasing in $m$, so the harm-free trajectory dominates every with-harm trajectory pointwise; maximizing it over integer count vectors is a concave separable allocation solved exactly by greedy water-filling. Hence \emph{no equal-budget allocation policy, however optimal, can reach this instrument's own registered $0.05$ gate} --- the achievable ceiling sits a factor $2.03$ below it.
-
-\paragraph{Correction record, preserved.} A first-pass analysis cited the greedy oracle's $+0.00148$ as ``the ceiling, $34\times$ below the gate.'' That inference was invalid --- a greedy oracle is a \emph{policy}, so its score is only a \emph{lower} bound on the ceiling, and it understated the constructively achievable advantage by a factor of three. The correction strictly weakens the headline margin ($34\times\to 2.03\times$) and was made before the gate was implemented or assessed. The tier-3 relaxation is loose by construction (tier-2/tier-3 spread ${\approx}5.5\times$), so the margin is stated as a factor of two on a loose bound, not as airtight.
-
-\subsection{Invisible to power analysis}
-The bootstrap 95\% confidence intervals on the primary contrast are ${\approx}0.0016$ wide --- by conventional power analysis this experiment is amply powered, and no pre-registration checklist item flags it. The defect is orthogonal to sampling noise: classical power analysis bounds the noise around an \emph{assumed} effect size; it is silent on whether the instrument's dynamics can generate an effect of that size at all. Three structural causes were identified and verified in the frozen runner: round-0 learner state is effectively world-independent, so state information carries almost nothing a static arm does not exploit; gains are concave and separable while harms are linear and coordinate-independent, making equal spread near-optimal by construction; and six rounds against five non-principle coordinates degenerate argmin cycling into round-robin. Consequently the preserved negative is valid \emph{only} as ``this v1 policy in this instrument'': the instrument could not have adjudicated the registered estimand in either direction, for any policy.
-
-\subsection{The admissibility gate}
-\label{sec:gatedef}
-The repair, frozen as a sealed mechanic packet before implementation, is a pre-execution gate:
-
-\begin{definition}[Oracle-ceiling admissibility]
-\label{def:gate}
-Let an equal-budget allocation-comparison instrument register a primary contrast with minimum detectable effect $\mathrm{MDE}>0$, and let $\kappa>0$ be frozen before any ceiling value is computed. Given bounds on the instrument's achievable ceiling (the supremum over admissible policies of the mean primary-contrast advantage over the reference parent), the gate returns:
-\code{INADMISSIBLE} iff a rigorous \emph{upper} bound is $<\kappa\cdot\mathrm{MDE}$;
-\code{ADMISSIBLE} iff a constructive \emph{achievability} (lower or exact) bound is $\ge\kappa\cdot\mathrm{MDE}$;
-and \code{CANNOT\_CHECK} otherwise --- including whenever the oracle is not computable under the instrument's own generative model, the budget constraint is unverified, or the supplied bounds are missing, inconsistent, or too loose to decide.
+\begin{definition}[Learner-conditioned structural redundancy and staleable saturation]
+\label{def:sat}
+For an example $x$ mapping to structural object(s) $s(x)$, redundancy is defined \emph{relative to the current state}, $R_t(x\mid\theta_t,M_t)$, not as a static pairwise property. A saturation receipt binds a checkpoint/optimizer identity, the structure and coordinate set, a frozen probe-suite hash, exposure/diversity history, the current mastery vector with uncertainty, a marginal-gain estimate, a minimum repetition/retention floor, and an expiry rule; it is invalidated or refreshed when $\theta_t$ moves materially, and it grants no scientific authority.
 \end{definition}
 
-The direction-of-license rules are the content of the mechanic: a policy score can prove an instrument \emph{has} headroom, never that it lacks it; a relaxation optimum can prove it \emph{lacks} headroom, never that any policy attains it. An \code{INADMISSIBLE} verdict may never be upgraded by access to arm outcomes; $\kappa$ and the MDE may never be revised after ceiling access; the gate decides only whether a comparison is worth executing and grants no authority of any kind. In the accompanying artifact, $\kappa=1.2$ is frozen with a declared rationale (an instrument whose best achievable effect sits exactly at its MDE gives the best possible policy a coin flip at its own gate), together with the disclosure that for the reference instrument the verdict is $\kappa$-\emph{insensitive} --- \code{INADMISSIBLE} holds for every $\kappa>0.4914$ --- so the choice of $\kappa$ is not outcome-tuned there.
+\subsection{Architectural propositions}
+The following are \emph{architectural} facts about the design --- consequences of the definitions and of the product-order discipline inherited from the epistemic mechanics --- not empirical findings. They constrain what a correct implementation must look like; they do not assert that the mechanism improves training.
 
-\subsection{Relation to prior art, and the residual claimed}
-Every ingredient is established: oracle/skyline baselines in retrieval and recommendation, regret-versus-oracle formulations in online allocation, ceiling analysis in pipeline debugging, and --- structurally closest --- the assay \emph{positive control}: an instrument that cannot register a known-positive signal is inadmissible. Classical power analysis and MDE pre-registration are the strongest incumbents and are what the frozen protocols here already used. The residual claimed is narrow: the conversion of an oracle/skyline computation into a \emph{frozen pre-execution admissibility decision bound to the registered MDE}, with fail-closed \code{CANNOT\_CHECK} when the oracle is not computable, and with the direction-of-license asymmetry made explicit. Demonstrated on exactly one preserved instrument; nothing more is claimed.
-
-\section{Validating the validator}
-\label{sec:gatevalidation}
-
-A gate that cannot fail is worse than no gate, so the gate itself was audited before any confirmatory use.
-
-\paragraph{Known-answer and hostile worlds.} The implementation carries one test per sealed-packet counterexample: exact zero headroom $\to$ \code{INADMISSIBLE}; genuine headroom $\to$ \code{ADMISSIBLE}; uncomputable oracle with a huge \emph{claimed} lower bound $\to$ \code{CANNOT\_CHECK}, never \code{ADMISSIBLE}; the observed tight-CI/low-ceiling case $\to$ \code{INADMISSIBLE} regardless of CI width; an exact ceiling in the open interval $(\mathrm{MDE},\kappa\cdot\mathrm{MDE})$ $\to$ \code{INADMISSIBLE} under the frozen $\kappa$, the no-post-hoc-rescue case; loose straddling bounds $\to$ \code{CANNOT\_CHECK}; a tiny lower bound alone can never license \code{INADMISSIBLE}; a huge upper bound alone can never license \code{ADMISSIBLE}.
-
-\paragraph{Fresh assurance with pre-frozen verdicts.} Five fresh cases were constructed at a seed disjoint from every development artifact, with expected verdicts frozen \emph{before} the runner existed: all five verdicts matched, including an \code{ADMISSIBLE} licensed by a lower bound alone in a nonseparable-synergy instrument where no monotone relaxation exists (the gate works with no upper bound at all), and an exact-enumeration instrument swept deterministically until its true ceiling landed in $(\mathrm{MDE},\kappa\cdot\mathrm{MDE})$.
-
-\paragraph{Black-box falsifiability audit, control first.} Each condition was probed by evidence perturbations with the expected \code{SENSITIVE}/\code{INSENSITIVE} outcome of every probe declared before execution --- including asserted \emph{no-alarm} rows, e.g.\ the \code{CANNOT\_CHECK} of an uncomputable oracle must be \emph{insensitive} to arbitrary inflation of the claimed bounds. All conditions pass. The audit's own first run produced two false alarms --- from the \emph{probe harness}, not the gate: independent per-bound scale factors occasionally produced lower$>$upper evidence, which the gate correctly refused as \code{CANNOT\_CHECK}. The probe was repaired to a shared draw; the gate was not changed; the correction is preserved in the runner.
-
-\paragraph{Same-system ablation.} Replacing the oracle upper bound with the strongest implementable policy scores flips the reference verdict \code{INADMISSIBLE}$\to$\code{CANNOT\_CHECK} in $32/32$ trials: the upper-bound component carries the mechanic, and without it the gate cannot reduce to strongest-parent reporting.
-
-\section{Closing the loop: a licensed instrument and an honest positive}
-\label{sec:demonstration}
-
-\subsection{Instrument repair and licensing}
-The diagnosed blocking cause --- world-independent initial learner state --- was repaired in a successor instrument: each world assigns a distinct \emph{deficient coordinate pair} (initial mastery $0.10$ against near-saturated $0.94$ elsewhere), so which coordinates are weak is world-specific and observable only through the learner-state projection. Dynamics, total budget ($48$), rounds and batch size are imported unchanged from the frozen parent runner; PRINCIPLE and RETENTION each appear among the deficient pairs so that neither the v1 guard rails nor their removal is uniformly favoured. The gate licensed the first configuration tried --- \code{ADMISSIBLE}: constructive lower bound $+0.0800\ge\kappa\cdot\mathrm{MDE}=0.06$, upper bound $+0.0974$, a tier spread of $1.22\times$ against the reference instrument's $5.5\times$ --- and the design log contains exactly one entry.
-
-The gate then did fresh pre-outcome work: a pre-declared rule required every registered contrast gate, not only the primary one, to be ceiling-licensed. The constructive ceiling over the scalar loss-aware parent C is only $+0.0046$ --- far below $\kappa\cdot 0.02$ --- so the v1-style ``beat C by $0.02$'' gate would have been a \emph{second} structurally unreachable gate; it was bound sign-only (CI excluding zero) before any arm outcome, and the material-margin question against C is recorded as unresolvable by this instrument.
-
-\subsection{The challenger and the frozen result}
-The queued policy lever was implemented as a versioned challenger, never mutating the production allocator: per-slot believed-marginal-gain water-filling ($\mathrm{argmax}\ \hat r_c(1-m_c)$ against a believed state that saturates as slots are spent, $\hat r$ estimated online from observed increments), with guard rails demoted from budget-consuming targets to constraints. All thresholds, seeds, falsifiers and terminal branches were frozen before outcome access; the assurance seed was consumed once; no algorithm change occurred between freeze and assurance. Result, read from the receipt:
+\begin{proposition}[Learner-conditioned saturation is not a fixed point of training]
+\label{prop:nonidem}
+Let the training operator carry $\theta_t\mapsto\theta_{t+1}$ with $\theta_{t+1}\neq\theta_t$. Then in general
 \[
-F-D = +0.0760\ [0.0755, 0.0764],\quad\text{positive in }6/6\text{ worlds},\quad
-\text{safety } F-D = +0.157,
+\pi_{\mathrm{train}}(R_t,\theta_{t+1})\neq\pi_{\mathrm{train}}(R_t,\theta_t),
 \]
-clearing every frozen gate ($F$ extracts ${\approx}95\%$ of the licensed constructive ceiling), with $F-C=+0.00025$ positive under the sign-only gate --- at the scale of the $0.0046$ C-ceiling, exactly as the licensing analysis anticipated.
+so a saturation decision valid at $\theta_t$ need not remain valid at $\theta_{t+1}$, even with $R_t$ fixed.
+\end{proposition}
+\begin{proof}
+$\pi_{\mathrm{train}}$ is defined as a function of $\theta_t$ through the mastery vector of Definition~\ref{def:mastery}, whose coordinates are outputs of probes evaluated on the current parameters. A non-trivial parameter update changes those outputs on at least one coordinate for at least one structure unless the update is orthogonal to every probe, which is not guaranteed. Hence the projection is time-varying under training. In particular a receipt asserting saturation of $s$ at $\theta_t$ carries no guarantee at $\theta_{t+1}$; this is why Definition~\ref{def:sat} makes the receipt staleable and checkpoint-bound rather than permanent. The contrast with the scientific-authority projection $K_t$ is exact: a change in $L_t$ driven by a weight update does not, by itself, change any claim in $K_t$.
+\end{proof}
 
-\subsection{A second falsified prediction, preserved}
-The frozen diagnostic prediction P6 stated that the v1 policy would \emph{remain negative} in a licensed instrument --- that the original loss reflected an intrinsic policy defect. \textbf{P6 is falsified}: $E(\text{v1})-D=+0.0747$ in the licensed instrument. The honest reading, recorded in the receipts: the preserved parent negative was \emph{policy$\times$instrument-conditional}; in a state-divergent instrument, deficit-chasing of either kind (level- or gain-driven) beats static allocation, and the specific marginal-gain-versus-level contrast is small ($F-E\approx+0.0014$, both endpoints in the challenger's favour). The strongest supported claim is therefore \emph{adaptive-versus-static in licensed instruments}; the mechanism-level claim about the mastery derivative remains open. The parent negative itself is preserved verbatim and remains correctly scoped: static allocation was, and remains, the right production default on the evidence that existed.
+\begin{proposition}[A scalar mastery summary is representationally inadequate for allocation]
+\label{prop:scalar}
+Let allocation depend on distinguishing a state in which a principle is mastered but its composition is not from a state in which every coordinate is uniformly half-mastered. A scalar summary $\bar m(s)\in\mathbb{R}$ cannot separate these states, whereas the vector $M_t(s)$ of Definition~\ref{def:mastery} can. Hence no scalar mastery score is a sufficient statistic for the allocation decision.
+\end{proposition}
+\begin{proof}
+Choose two mastery vectors with equal mean, e.g.\ $(1,0,\ldots)$ (principle mastered, composition absent) and $(\tfrac12,\tfrac12,\ldots)$. Any function of $\bar m$ alone assigns them the same allocation, yet the correct next-example choice differs: the first calls for composition/boundary exposure, the second for continued broad exposure. Therefore the allocation policy is not measurable with respect to $\bar m$, and the vector representation is necessary. A scalar is admissible only as a derived reporting summary that never erases a low coordinate, exactly as the product-order discipline requires. This is the training-time image of the epistemic no-scalarization principle.
+\end{proof}
 
-\section{Preserved protocol context: the frozen confirmatory path}
+\begin{proposition}[Retention and transfer safety must be hard constraints, not objective terms]
+\label{prop:retention}
+Let the allocation objective be tokens-to-target for a fixed capability probe, and suppose retention enters as an additive reward term with any finite weight. Then there exists a schedule that improves the objective while driving the retention coordinate arbitrarily low. Therefore retention (and, symmetrically, composition/boundary transfer) safety must be encoded as a noncompensatory constraint --- a separate product coordinate with a floor --- rather than as a term traded off inside the objective.
+\end{proposition}
+\begin{proof}
+If retention contributes additively with weight $w<\infty$, then for any target gain $\Delta$ on the primary objective there is a reallocation that redirects budget away from the saturated structure, increasing the primary term by more than $w$ times the retention loss it induces; the weighted sum rises while retention falls. Iterating drives retention toward its infimum. A finite weight thus cannot protect the coordinate. Only a hard floor --- a constraint that renders any violating schedule infeasible regardless of primary gain --- prevents saved tokens from being purchased with forgetting. The de-duplication-with-diversification and spaced-retrieval literatures make this a live, not hypothetical, failure mode \cite{tirumala2023d4,butler2010}.
+\end{proof}
+
+\begin{proposition}[Training-projection non-interference]
+\label{prop:noninterference}
+Let $\rho$ be any transition confined to the training projection (annotation, mastery-probe update, saturation-receipt issuance, allocation-policy change), and let $\pi_{\mathrm{epi}}$ be the scientific-authority projection. Then
+\[
+\pi_{\mathrm{epi}}(\rho(R_t))=\pi_{\mathrm{epi}}(R_t),
+\]
+unless a separately registered evidence, refutation, specification or review transition also occurs.
+\end{proposition}
+\begin{proof}
+By construction every training surface exposes \code{grants\_scientific\_authority == False}, and the scientific-authority projection is defined only over evidence, refutation, specification, novelty and review transitions. A training-only transition touches none of these coordinates, so $\pi_{\mathrm{epi}}$ is invariant under it. Consequently a scheduler that learns a source family yields high transfer gain does not thereby raise the scientific authority of that family's claims; source authority may act only as a minimum data-quality constraint on candidates, never as a multiplier into a training-utility score. This mirrors the routing-only projection invariant of the verified-discovery mechanics.
+\end{proof}
+
+\section{Adaptive versus static allocation: the causal question}
+\label{sec:causal}
+
+\subsection{The estimand}
+The scientific object is not ``does adaptive allocation help?'' but a specific contrast. Consider matched arms at equal total compute: \textbf{A} uniform/random; \textbf{B} semantic diversity/de-duplication \cite{tirumala2023d4,abbas2023semdedup}; \textbf{C} the strongest faithful learner-conditioned parent \cite{he2026stat,yu2024mates,chen2023skillit}; \textbf{D} \emph{static} \RAKL{} structural curation; \textbf{E} \emph{adaptive} \RAKL{} structural-mastery allocation; with optional \textbf{F} a loss/perplexity-only adaptive scheduler and \textbf{G} an influence-only scheduler \cite{xia2024less}.
+
+\begin{proposition}[Identification of the residual]
+\label{prop:estimand}
+The primary estimand $E-D$ is the unique contrast among these arms that isolates the learner-conditioned structural residual over the static structural baseline. The contrasts $E-A$ and $E-B$ conflate the residual with the value of \emph{any} curation; $E-C$, $E-F$ and $E-G$ identify whether the residual adds anything beyond, respectively, generic learner-conditioning, loss-based selection, and influence-based selection. No single contrast other than $E-D$ answers the paper's residual question, and no positive $E-A$ licenses a residual claim.
+\end{proposition}
+\begin{proof}
+$D$ and $E$ share the identical structural substrate, cost accounting and constraint set and differ only in whether allocation is conditioned on the learner-specific mastery vector; hence their difference removes every common cause except learner-conditioning and identifies its marginal effect. $A$ and $B$ differ from $E$ in the presence of structural curation itself, so $E-A$ and $E-B$ are confounded by curation value. $C$, $F$ and $G$ each hold a different rival selection principle fixed, so their contrasts identify the residual beyond that specific rival, not the residual as such. The claim follows.
+\end{proof}
+
+\subsection{Primary endpoint and typed inference}
+The primary endpoint is \emph{total cost to a frozen structural-OOD capability target}, reported as a vector: tokens-, examples-, FLOPs-, GPU-hours- and wall-clock-to-target, \emph{plus} all preprocessing, selection and probe cost. A run that trains on fewer tokens but consumes more total compute after structural extraction and probing is not an efficiency win. Secondary endpoints include novel-composition accuracy, boundary/regime robustness, semantic-decoy rejection, representation invariance, cross-domain transfer, calibration, and forgetting/retention. Outcomes are reported as \emph{typed inference states} --- \code{DISTINGUISHABLE\_BENEFIT}, \code{DISTINGUISHABLE\_HARM}, \code{MEASURED\_BUT\_INDISTINGUISHABLE}, \code{UNDERPOWERED}, \code{CANNOT\_IDENTIFY}, \code{INVALID\_CONTAMINATED} --- never a sign-only verdict. A material minimum detectable effect, a precision target and stop rules are declared before confirmatory access (see \S\ref{sec:protocol} for the frozen values, all design parameters).
+
+\subsection{Failure-driven, not heuristic-driven, adaptation}
+A flat or harmful transfer result must not directly spawn a new sampling heuristic. Instead it enters a typed diagnosis chain: \code{failure} $\to$ typed \code{diagnosis} $\to$ bounded, diagnosis-bound policy challenger $\to$ fresh assurance $\to$ promote/reject/narrow. The diagnosis taxonomy distinguishes at least \code{SAME\_STRUCTURE\_SATURATED}, \code{COMPOSITION\_GAP}, \code{BOUNDARY\_GAP}, \code{REPRESENTATION\_GAP}, \code{TRANSFER\_DOMAIN\_GAP}, \code{RETENTION\_FORGETTING\_GAP}, \code{MODEL\_OPTIMIZATION\_FLOOR}, \code{STRUCTURE\_EXTRACTION\_DEFECT}, \code{PROBE\_INSTRUMENT\_DEFECT}, \code{DATA\_QUALITY\_DEFECT} and \code{INSUFFICIENT\_POWER}, because these imply different interventions and because a model floor or an instrument defect must never be mistaken for genuine structural saturation. A counterfactual repair (freeze the failed case; hold model, optimizer, candidate pool and compute fixed; alter exactly one registered mechanism; require the intervention to move the registered failure quantity in development before any challenger is built) blocks the \code{bad-batch} $\to$ \code{clever-curriculum} $\to$ \code{same-benchmark-retest} $\to$ \code{victory} pathway.
+
+\section{The preregistered protocol}
 \label{sec:protocol}
 
-The preregistered Phase~0--4 programme and its governing decision records (\#461, \#466, \#467, \#468) remain frozen history: the exposure-ladder design, the matched five-arm Phase-2 comparison at the exact pinned Qwen2.5-7B revision with $\mathrm{MDE}=0.05$, disjoint selection probes, a $384$-case assurance panel, hard harm bounds and full overhead accounting. None of it has been executed at 7B, and nothing here substitutes for it. The present report adds one advisory, now backed by a formal verdict rather than a suspicion: the frozen 7B protocol registers $\mathrm{MDE}=0.05$ with no ceiling calibration, and whether that instrument has $0.05$ of state-conditioning headroom is \code{CANNOT\_CHECK} until probed --- the recommended cheap ceiling probe should precede the confirmatory spend. The frozen protocol files are untouched.
+The protocol is frozen here, before any training data access. Phases map to their governing decision records; the standalone paper is authorized only if decision gate \#462 returns affirmatively after the programme. All numeric values in this section are \emph{design parameters chosen before data}, not measurements.
 
-\section{Threats to validity}
+\paragraph{Frozen design parameters (chosen before outcome).}
+The exposure schedule per structural family is the geometric ladder $n\in\{1,2,4,8,16,32,64,\dots\}$. Mastery is measured on the six coordinates of Definition~\ref{def:mastery} by probe families frozen before any adaptive-scheduler outcome. The primary estimand is $E-D$ (Proposition~\ref{prop:estimand}) on total cost to a frozen structural-OOD target. The registered material effect size is a minimum detectable effect of $0.05$ on the paired primary contrast, with interval estimates by item bootstrap at $20{,}000$ resamples; the co-primary false-promotion target --- the fraction of arms that reach a positive residual verdict without a genuine effect --- is $0$. Any broad cross-family or cross-model law requires agreement across at least four exact-verifier structural families for the core comparison and at least six families before a law is asserted. Gold structure labels are assigned by the generator/verifier, never by a language-model judge. Seeds, generators, thresholds, probe-suite hashes and the candidate pool are frozen and their hashes published before the confirmatory seed executes.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Preregistered Phase~0--4 protocol. Every parameter is a design choice fixed before data; no cell reports a measurement.}
+\label{tab:phases}
+\begin{tabularx}{\textwidth}{@{}p{2.05cm}p{1.55cm}YY@{}}
+\toprule
+\textbf{Phase} & \textbf{Gate} & \textbf{Objective and design} & \textbf{Falsifier / negative outcome} \\
+\midrule
+0 --- Known-world generator & \#461 & Build a generator with exact latent ground truth over independent factors (principle, composition, boundary, representation, transfer shell, surface variation); small algebra/rule, graph-flow, coordinate-transform, finite-state and conservation families; labels from executable relations, with coordinate-ablated twins and chronology-bound partitions. & Generator validity fails: surface wording leaks the structure label, or a coordinate-ablated twin classifier matches the full classifier, i.e.\ the task is readable from artifacts rather than structure. Protocol halts; no learning claim proceeds. \\
+\addlinespace
+1 --- Exposure curves & \#461 & Train each family at the frozen exposure ladder; at each checkpoint measure all six mastery coordinates and the marginal value of the next equal-cost example when it is same-structure vs.\ new representation/boundary/domain/composition or a hostile near-miss. & The \emph{relative} value of equivalent repetition does \emph{not} fall after principle mastery while unsaturated coordinates stay valuable, i.e.\ no state-dependent structural residual exists. Central mechanism unsupported; do not build the scheduler. \\
+\addlinespace
+2 --- Powered Adaptive vs.\ Static & \#466 & Matched arms A--E (optional F, G) at equal total compute; primary estimand $E-D$; parent-residual estimands $E-C$, $E-F$, $E-G$; MDE $0.05$; typed inference states; retention/composition/boundary encoded as hard constraints. & \code{MEASURED\_BUT\_INDISTINGUISHABLE} or \code{DISTINGUISHABLE\_HARM} on $E-D$, or a simpler parent ($C$/$F$/$G$) fully explains any gain. Residual unsupported as a distinct contribution; absorb into the method-evolution paper. \\
+\addlinespace
+3 --- Shared train/\allowbreak inference identity reuse & \#467 & Freeze the trained model; reuse the \emph{exact} registered structural identities/\allowbreak roles/\allowbreak relations/\allowbreak invariants/\allowbreak boundaries in inference-time retrieval and witnessed transfer; hold out novel compositions, boundary flips, representation changes, domain-new shells and structure-wrong decoys. & A separate latent representation is required at inference, i.e.\ training-allocation and inference-transfer do \emph{not} share one structural identity family. Report two mechanisms, not a unification. \\
+\addlinespace
+4 --- Cross-family / cross-model law & \#468 & Repeat the powered comparison across $\geq 6$ structural families and across model scales/families to test whether the residual generalizes into a stable law rather than a single-setting artifact; sign test across families; report $\Delta C$ with blocking regressions dominant. & The residual does not replicate across families or scales, or reverses sign; no generalization law is asserted, and any single-setting effect is reported as scoped, not general. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Phase 0 --- known-world structural generator (\#461)}
+The programme does not begin with a large model or natural literature. It begins with a generator whose latent ground truth is exact, over independent factors (principle, composition graph, boundary/regime, representation, transfer/domain shell, surface variation), across at least five family types. The generator's own validity is a prerequisite gate: surface wording may not leak the structure label; valid and invalid cases share templates where possible; labels are computed from executable relations rather than perturbation names; coordinate-ablated twins test whether a classifier is merely reading generator artifacts; and task partitions are chronology-bound before any learner outcome. If those checks fail, no downstream learning claim is licensed.
+
+\subsection{Phase 1 --- structural exposure curves (\#461)}
+For each family, train at the frozen exposure ladder and, at each checkpoint, measure the six mastery coordinates and the marginal value of the next equal-cost example under each of same-structure repetition, new representation, new boundary, new domain shell, new composition, and hostile near-miss. Monotonic decline is \emph{not} required --- composition or boundary changes may produce gain spikes, and this is anticipated. The central mechanism is supported only if the \emph{relative} value of equivalent repetition falls after principle mastery while unsaturated coordinates remain valuable. If it does not, the scheduler is not built.
+
+\subsection{Phase 2 --- powered adaptive versus static (\#466)}
+Only if Phase~1 shows a measurable state-dependent residual is the smallest adaptive \code{TrainingAllocationPolicy} implemented, with one diagnosis-driven update family, and the matched arms run at equal total compute. The primary estimand is $E-D$; parent-residual estimands are $E-C$, $E-F$, $E-G$; retention, composition and boundary safety are hard constraints, not objective terms (Proposition~\ref{prop:retention}). The decisive preregistered test is that saved tokens must not be bought with a violated constraint: an arm that reaches the cost target while failing a retention or composition floor is a failure, not a win. The negative outcome --- \code{MEASURED\_BUT\_INDISTINGUISHABLE}, \code{DISTINGUISHABLE\_HARM}, or full explanation by a simpler parent --- absorbs the mechanism into the method-evolution paper.
+
+\subsection{Phase 3 --- exact train/inference structural-identity reuse (\#467)}
+The trained model is frozen and the \emph{exact} registered structural identities used for training allocation are reused in inference-time retrieval and witnessed transfer, over held-out novel compositions, boundary flips, representation changes, domain-new shells and structure-wrong decoys. Strong unification requires one structural-identity family to serve both training allocation and inference transfer. If a separate latent skill representation is required at inference, the honest report is two mechanisms, not a unification --- a result that weakens, but does not by itself refute, the residual.
+
+\subsection{Phase 4 --- cross-family / cross-model generalization law (\#468)}
+The powered comparison is repeated across at least six structural families and across model scales and families, with a sign test across families and $\Delta C$ reported so that blocking regressions dominate. Only agreement across families and scales licenses a generalization law; a residual that appears in one setting and vanishes or reverses in others is reported as scoped, never as a law. Throughout, system-level uplift (parallel probing, exhaustive rival enumeration, externalized memory) is attributed as a system win via a $\Delta C$ vector and never reported as ``the model learns better.''
+
+\section{Phase-0/1 instrument: executed run, retraction, and the corrected instrument}
+\label{sec:phase1-result}
+
+We executed the Phase-0/1 exposure instrument (frozen packet, subject hash \texttt{fce2bb17\ldots}) on the frozen Qwen2.5 instruction-tuned ladder at $0.5$B, $1.5$B, $3$B and $7$B parameters on A100 GPUs, fine-tuning a LoRA adapter at each exposure count $\{1,2,4,8,16,32,64\}$ per family and probing six mastery coordinates on held-out cases. The as-recorded terminals are Table~\ref{tab:phase1-terminals}. \textbf{We retract these terminals as measurements of the mechanism.} Post-hoc root-cause analysis identified two independent instrument defects (below), either of which alone invalidates the run; the terminals are preserved only as negative instrument history. This is the protocol's \texttt{INSTRUMENT\_OR\_GENERATOR\_DEFECT} outcome, not a result about the learner-conditioned structural residual.
+
+\begin{table}[t]
+\centering\small
+\caption{Executed Phase-0/1 terminals on the frozen Qwen2.5 ladder (seed 461). Read directly from the frozen instrument; no value is a promotion signal.}
+\label{tab:phase1-terminals}
+\begin{tabularx}{\textwidth}{@{}llY@{}}
+\toprule
+\textbf{Model} & \textbf{Terminal} & \textbf{What happened} \\
+\midrule
+Qwen2.5-0.5B & \texttt{NO\_STATE\_DEPENDENT\_RESIDUAL} & max same-structure accuracy $0.667$; no differential state-dependent gain \\
+\addlinespace
+Qwen2.5-1.5B & \texttt{MODEL\_FLOOR} & never cleared chance ($0.5$) on the principle coordinate \\
+\addlinespace
+Qwen2.5-3B & \texttt{REPETITION\_REMAINS\_VALUABLE} & learned \texttt{state\_reachability} $0.5\!\to\!1.0$ (exposure $\geq 4$, held); other two families at chance \\
+\addlinespace
+Qwen2.5-7B & \texttt{NO\_STATE\_DEPENDENT\_RESIDUAL} & learned \texttt{state\_reachability} early (exposure $1$--$4$) then forgot it ($0.5$ by exposure $8$) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Defect 1 --- degenerate generator.} The v1 generator emitted only \emph{two} unique rendered inputs per structural family: within a family every valid case was identical and every invalid case was identical (e.g.\ \texttt{balance} was always \texttt{store:6}$\to$VALID versus \texttt{store:5}$\to$INVALID). ``Training'' therefore attempted to memorise a one-token difference between two otherwise-identical strings; even a strong optimiser collapses to a constant predictor. There is no distribution from which a structural \emph{rule} could be induced, and no train/probe generalization gap. The apparent \texttt{state\_reachability} ``learning'' in Table~\ref{tab:phase1-terminals} was additionally confounded: its valid inputs contained \emph{more edges} than its invalid inputs, so an edge-count (length) heuristic---available to the base model with no training---suffices.
+
+\paragraph{Defect 2 --- no training signal reached the answer.} The trainer built the sequence as the string \texttt{prompt + " " + gold} and masked the loss up to the tokenised length of \texttt{prompt + " "}. Byte-pair encoding merges the separating space into the answer token (\texttt{" VALID"} and \texttt{" INVALID"} are each a single token), so the masking boundary fell \emph{after} the gold token: the answer token was masked out and the loss saw no answer signal. No gradient ever reached the VALID/INVALID decision; every reported outcome was the untrained base model's prior, not a trained checkpoint. This defect alone voids the entire ladder independently of Defect~1.
+
+\paragraph{Consequence.} With no answer gradient and only two inputs per family, the v1 run cannot identify structural rule learning, a state-dependent residual, repetition value, or a model capability floor. The correct reading is
+\begin{gather*}
+\texttt{V1\_PHASE1}=\texttt{INSTRUMENT\_GENERATOR\_DEFECT},\\
+\texttt{MECHANISM\_SIGNAL}=\texttt{CANNOT\_CHECK},\qquad
+\texttt{PHASE2}=\texttt{NOT\_OPEN}.
+\end{gather*}
+The residual hypothesis is \emph{unresolved}; it was neither supported nor refuted.
+
+\paragraph{The corrected instrument.} A v2 instrument fixes both defects: the trainer concatenates prompt and answer \emph{token ids} so the gold token is trained (and exactly matches the token compared at scoring time), and the generator draws \emph{varied} instances per family (dozens of unique inputs, magnitude/graph variation, valid and invalid \emph{length-matched}, with train and probe drawn from disjoint instances so success requires generalising the rule, not memorising a string). A learnability positive-control gate is added: a ``no residual'' verdict is admissible only for a model that first clears the base task. Held-out validation confirms the corrected instrument produces real, non-constant, generalising learning where the v1 instrument produced only constants: on a trivial control (integer parity) accuracy moves from a constant $0.5$ to $1.0$, and on varied \texttt{state\_reachability} a small model reaches $0.75$ on \emph{unseen} graphs. The full v2 ladder re-run is the pending prerequisite to any Phase-2 decision; until it is executed the mechanism remains unresolved.
+
+\section{Threats to validity and why the paper may return negative}
 \label{sec:threats}
 
-\paragraph{The ceiling bound may be loose or wrong for other dynamics.} The tier-3 argument is instrument-specific: it requires non-negative subtractive harms and a monotone gain map. Nonseparable dynamics void the water-filling optimality argument --- in that case the gate must (and, in the fresh-assurance battery, does) either license via a constructive bound or fail closed. An \code{INADMISSIBLE} verdict inherits the rigor of the relaxation it stands on, and the reference verdict's $2.03\times$ margin sits on a bound that is loose by a factor of ${\approx}5.5$ against the best construction.
+This protocol is built to be able to fail, and several honest routes to a negative outcome are load-bearing.
 
-\paragraph{Model-free scope.} Every quantitative result is from model-free development-stress simulators with known generative parameters. That is precisely the regime the gate targets (the oracle is computable); for real-model instruments the oracle is not computable and the gate correctly returns \code{CANNOT\_CHECK} rather than a verdict. Nothing here transfers to real training runs except the method and the advisory.
+\paragraph{The residual may not exist.} If Phase~1 finds no state-dependent structural residual, or Phase~2 finds $E-D$ indistinguishable, the learner-conditioned structural mechanism is unsupported. This is a supported result, not a disappointment to be engineered away.
 
-\paragraph{The licensed instrument was designed to have headroom.} Instrument v2 was constructed so that state information is decision-relevant --- the analogue of spiking a positive control into an assay. The licensing ceiling is policy-agnostic and was computed before any arm outcome, and the sign-only C-gate shows the design was not tuned to flatter the challenger (its residual over C is three orders of magnitude below its residual over D). Still, a licensed instrument demonstrates that the comparison \emph{can} discriminate, not that its worlds are representative of any real training regime.
+\paragraph{A simpler parent may explain everything.} Skill-targeted adaptive training \cite{he2026stat}, model-aware influence selection \cite{yu2024mates}, loss-based selection \cite{lin2024rho1} or influence-based selection \cite{xia2024less} may reproduce any gain. The parent-residual estimands $E-C$, $E-F$, $E-G$ exist precisely to detect this, and a full-explanation outcome terminates the standalone claim.
 
-\paragraph{Same-context analysis.} The attribution, the gate, the licensing and the challenger were produced within one research programme (with the development negative produced by an earlier lane than the analysis). Same-context critique, however disciplined, is not independent review, and no claim here has received any.
+\paragraph{The saturation model may be wrong.} If ``mastered $\Rightarrow$ reduce marginal exposure'' harms retention or composition despite the floor, the de-duplication-and-diversification and spaced-retrieval evidence \cite{tirumala2023d4,abbas2023semdedup,butler2010} is vindicated over the naive picture, and the constraint set --- not the objective --- was the real contribution.
 
-\paragraph{Multiplicity across the revival lane.} The revival executed one gate battery, one licensing computation and one assurance run, with expected outcomes frozen before each; the two falsified predictions (P1, P6) are reported alongside the confirmed ones rather than being absorbed. Nonetheless the lane as a whole was run once, by one team, on one family of simulators.
+\paragraph{The substrate may not unify.} If Phase~3 requires a separate inference representation \cite{ling2026rex,chen2026structural}, the shared-substrate claim is downgraded to two mechanisms.
+
+\paragraph{Cost may erase the token win.} Structure extraction, mastery probing and scheduling overhead may exceed the token savings; the total-cost endpoint is defined so this counts as no win.
+
+\paragraph{Instrument circularity.} A mastery probe that reads generator artifacts, or an adaptive scheduler tuned on the development set and retested on the same benchmark, would manufacture a spurious residual. Coordinate-ablated twins, chronology-bound partitions, frozen probe hashes, disjoint fresh assurance and the counterfactual-repair contract are the guards; a development instrument must first survive a coordinate-ablated-twin circularity attack, and failed instruments are preserved as negative history.
+
+\paragraph{Power and identification.} Underpowered or contaminated runs return \code{UNDERPOWERED} or \code{INVALID\_CONTAMINATED}, never a sign-only claim. Open-world non-certifiability applies: no finite protocol certifies the residual absolutely; a positive result is bounded relative to the declared families, models and horizon, and any newly observed structural regime reopens it.
 
 \section{Relationship to the rest of the series}
 \label{sec:series}
 
-\textbf{Paper~I} contributes the product-order, no-scalarization and freeze-before-outcome discipline this report exercises. \textbf{Paper~II} contributes the directional structural objects the training projection annotates. \textbf{Paper~III} (method-evolution) is the closest sibling and the default owner of any conceptual residue of the adaptive-allocation programme; its own negative two-arm training precursor \cite{yiu2026verified} is not evidence for or against anything here. \textbf{Paper~V} contributes the routing-only-projection precedent and the discipline that proposal fluency never becomes authority. The admissibility mechanic itself is a candidate reusable tool for any sibling that runs equal-budget comparisons against registered MDEs; its consolidation into the shared framework is governed by the usual promotion gates, not by this paper.
+This paper is a sibling, not a superset, of the surrounding work, and it is careful not to re-claim any of it.
 
-\section{Scope, authorization, and what this paper does not do}
+\textbf{Paper~I (epistemic/governance mechanics)} contributes the product-order, no-scalarization and freeze-before-outcome discipline that the training projection reuses. Learner-conditioned saturation is deliberately kept \emph{separate} from epistemic saturation: a change in the training projection driven by a weight update alters gradient allocation but, by Proposition~\ref{prop:noninterference}, changes no scientific claim. Training efficiency is not part of Paper~I's contribution.
+
+\textbf{Paper~II (whole-framework architecture / structural transfer)} contributes the directional structural objects and witnesses that the training projection annotates. The distinction from external-state operation is exact: there, $\theta_{t+1}=\theta_t$; here the training-time extension permits $\theta_{t+1}\neq\theta_t$, requiring separate training-state, checkpoint and optimizer provenance. The current framework does \emph{not} already change weights, and this paper does not imply it does.
+
+\textbf{Paper~III (method-evolution mechanics)} is the closest sibling and the default owner of this material. Paper~III studies experience$\to$method evolution and reports a \emph{negative} two-arm training precursor: a frozen reset-versus-learning packet produced schema-valid records but \emph{zero registered successes} under a small instruction-tuned model, a scoped negative transfer-success result, not a continual-learning gain \cite{yiu2026verified}. That negative precursor belongs to Paper~III and is \emph{not} evidence for the present mechanism; it is cited here only to underline that no training gain is on the table. The governance default is that this material remains in Paper~III unless the Phase~0--4 residual survives with substantial distinct novelty.
+
+\textbf{Paper~V (verified discovery in mathematics)} contributes the routing-only-projection precedent that Proposition~\ref{prop:noninterference} mirrors, and the discipline that proposal fluency never becomes authority \cite{yiu2026verified}. Conceptual analogy to avoiding repeated mathematical rediscovery is explicitly \emph{insufficient} to move this paper's claim; only a direct training experiment would.
+
+\textbf{Paper~VI (generative mechanics, prospective)} is where value/promise and severity coordinates would decide \emph{whether} a training programme is worth its compute; this paper supplies the allocation object that such a decision would schedule, but makes no claim on that prospective work.
+
+\section{What must happen before any empirical claim}
 \label{sec:preconditions}
 
+No empirical statement in the residual family may be made until all of the following hold.
+
 \begin{enumerate}[leftmargin=1.5em,itemsep=2pt]
-\item \textbf{This rescope does not reverse \#462.} The original standalone positive-claims Paper~IV --- learner-conditioned structural allocation as a demonstrated mechanism --- was rejected at gate \#462 and remains rejected. Zero of that gate's justification conditions are met: the real-model exposure signal exists in 1 of 12 cells, the 7B Phase-2 comparison is unexecuted, and no cross-family law exists. This document is a different claims object (negative results and metrology) and claims nothing the gate governs.
-\item \textbf{No training-policy authority moves.} The static structural parent remains the governed production default. The challenger's licensed-instrument win is development evidence for continuing its lane; activation would require the external \code{ADAPTIVE\_RESIDUAL\_SUPPORTED} path with fresh assurance, strongest-parent residual, hard-harm and full-overhead gates --- none of which this report touches.
-\item \textbf{Negative history is immutable.} The Phase-0/1 v1 retraction, the adaptive-v1 development negative, the falsified predictions P1 and P6, the confounded X2 arm, and the corrected 34$\times$ ceiling claim are all preserved verbatim in the artifact; later results reinterpret none of them.
-\item \textbf{The 7B confirmatory path is unchanged} and remains the only route to any real-model claim in this family.
+\item \textbf{Authorized compute for the positive programme.} The Phase-0/1 v1 instrument was executed on academic HPC (\S\ref{sec:phase1-result}) but retracted as an instrument artifact; a corrected v2 instrument is built and its re-run across the ladder is the immediate prerequisite. The later Phase-2--4 training programme---which alone could support a \emph{positive} adaptive-allocation claim---additionally requires authorized capacity for a capable in-ladder model; that run has not been performed.
+\item \textbf{A trainable, capable in-ladder model.} A model meeting the registered capability floor must be available and in-scope. The relevant frozen gate flags --- \texttt{CAPABLE\_MODEL\_AVAILABLE} and \texttt{MODEL\_CAPABILITY\_FLOOR} --- must be satisfied before Phase~2 opens; the sibling capability campaign was previously exhausted without opening the powered comparison, so the confirmatory packet remains \emph{unavailable} rather than promoted from a precursor.
+\item \textbf{Programme execution in order.} Decision records \#461 (Phase~0/1), \#466 (Phase~2), \#467 (Phase~3) and \#468 (Phase~4) must be executed, each gate passing before the next opens, with the Phase-0 generator validity and Phase-1 exposure-curve residual as hard prerequisites.
+\item \textbf{Authorization at gate \#462.} A standalone empirical Paper~IV may be produced only if decision gate \#462 authorizes it. If \#462 returns \code{ABSORB\_INTO\_PAPER\_III}, \code{CONCEPTUAL\_CROSS\_PAPER\_ONLY} or \code{REJECT\_NEW\_PAPER}, no standalone empirical Paper~IV is manufactured, and this document remains a design-and-protocol preprint.
 \end{enumerate}
 
+Until every condition is met, the residual hypothesis is unresolved, the mechanics of \S\ref{sec:mechanics} stand only as architecture, and the protocol of \S\ref{sec:protocol} stands only as a frozen design.
+
 \section*{Code, materials and AI-use disclosure}
-A public research artifact accompanies this series; every quantitative value in this report is read from frozen receipts in that artifact (the development-stress receipts, the attribution protocol and receipt, the three-tier ceiling bounds, the $\kappa$ freeze, the fresh-assurance and falsifiability-audit receipts, the licensing receipt, and the challenger development and assurance receipts), and the gate implementation with its known-answer battery is part of the artifact's source tree. Language models and coding agents were used for literature search, analysis, drafting and implementation assistance and are not authors, independent reviewers or human experts. Same-context analysis is labeled as such throughout; no claim in this paper has received independent review, and none is represented as having done so.
+A public research artifact accompanies this series. This paper reports no experiment; it preregisters one. Language models and coding agents were used for literature search, drafting and implementation assistance and are not authors, independent reviewers or human experts. No prospective quantity in this paper is reported as a measurement; every numeric value is a preregistered threshold, target or design parameter fixed before data access, and no result is claimed.
 
 \begin{thebibliography}{99}
 \sloppy
@@ -283,6 +355,21 @@ Z.~Ling et al.,
 A.~C.~Butler,
 ``Repeated Testing Produces Superior Transfer of Learning Relative to Repeated Studying,''
 \emph{Journal of Experimental Psychology: Learning, Memory, and Cognition} \textbf{36}(5), 1118--1133 (2010).
+
+\bibitem{shinn2023reflexion}
+N.~Shinn, F.~Cassano, E.~Berman, A.~Gopinath, K.~Narasimhan, and S.~Yao,
+``Reflexion: Language Agents with Verbal Reinforcement Learning,''
+\emph{arXiv:2303.11366} (2023).
+
+\bibitem{zhao2023expel}
+A.~Zhao, D.~Huang, Q.~Xu, M.~Lin, Y.-J.~Liu, and G.~Huang,
+``ExpeL: LLM Agents Are Experiential Learners,''
+\emph{arXiv:2308.10144} (2023).
+
+\bibitem{wang2024awm}
+Z.~Z.~Wang, J.~Mao, D.~Fried, and G.~Neubig,
+``Agent Workflow Memory,''
+\emph{arXiv:2409.07429} (2024).
 
 \bibitem{yiu2026verified}
 S.~C.~Yiu,

@@ -1,0 +1,199 @@
+\section{Measured results: the governance tradeoff, a completed local-loop cycle, and the first global pass}
+\label{sec:tradeoff-results}
+
+Every number in this section is read from a frozen receipt in the accompanying
+artifact; freezes preceded outcome access throughout, and falsified frozen predictions
+are reported as falsified.
+
+\subsection{The dead-gates corpus: evaluator decay, observed and receipted}
+\label{sec:dead-gates}
+
+Under this paper's headline question, four receipted findings previously treated as
+methods material are measured evidence: they are receipted instances of \emph{evaluator
+decay in a self-improving pipeline} --- the failure mode evidence governance exists to
+prevent --- observed in our own programme and caught by the governance layer's own
+audit machinery. Each gate was passing its registered thresholds when caught:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Six-family robustness gate} (Paper~II lane): registered gate passed 6/6
+at $p=0.03125$, then shown structurally incapable of failing --- scrambling every
+source and target text left all extracted coordinates unchanged $810/810$, and one arm
+of the ``paired'' statistic carried variance $1.2\times10^{-37}$
+(\path{research/paper2_six_family_audit_v1/}).
+\item \textbf{Gold-equals-prediction identity} (this paper's earlier instrument): four
+accuracy-shaped gate conditions were satisfied \emph{by construction} and could not
+fail; the repaired successor uses an independently implemented declarative oracle and
+post-freeze gold, and its per-condition black-box audit returns FALSIFIABLE throughout
+(\path{research/paper3_gate_falsifiability_audit_v1/}).
+\item \textbf{Fail-open applicability licensing}: \texttt{assess\_transfer\_v2} returned
+LICENSED with zero satisfied obligations for structures sharing no roles, relations or
+invariants; repaired to fail closed --- an empty obligation set is an absence of
+evidence (\path{research/transport_failopen_repair_v1/},
+\path{research/transport_gate_reaudit_v1/}).
+\item \textbf{Serialization round-trip identity}: a controlled-witness extraction gate
+reported $1.000$ exact decisions that were subsequently narrowed to
+serialization-interface fidelity --- gold and prediction traverse the same
+serialization, so the perfect score measured the round-trip, not the capability
+(\path{research/paper2_controlled_witness_extraction_v1/},
+narrowing recorded in \path{research/orion_claim_frontier_v1/CLAIM_FRONTIER.json}).
+\end{itemize}
+
+The claim is exactly this and no more: four independent evaluator-integrity failures
+across three papers of one programme, every one invisible to its own registered
+statistics, every one surfaced by falsifiability-style audit rather than by outcome
+anomaly. This corpus motivates measuring evaluator integrity as a first-class axis of
+the tradeoff below; it is not evidence about pipelines in general.
+
+\subsection{A completed local-loop cycle through a licensed instrument}
+\label{sec:local-cycle}
+
+Section~\ref{sec:structural-cautionary} reported the mutation family's failure and its
+attributed cause, and adopted instrument admissibility prospectively. That requirement
+has now been executed end to end, completing one full local-loop cycle:
+\emph{failure} (adaptive-v1 lost to its static parent; preserved) $\to$
+\emph{diagnosis} (guard-rail budget capture plus within-round concentration; the
+instrument itself provably unable to reach its own $0.05$ gate) $\to$ \emph{mutation}
+(a marginal-gain challenger: per-slot believed-marginal-gain water-filling with guard
+rails demoted from budget-consuming targets to constraints; the production allocator
+byte-untouched) $\to$ \emph{fresh validation} (a licensed successor instrument and a
+single frozen assurance run).
+
+The admissibility mechanic itself was validated before use: known-answer tests cover
+every sealed-packet counterexample; a five-case fresh-assurance battery with verdicts
+frozen \emph{before} the runner existed matched 5/5 (including an ADMISSIBLE licensed
+by a constructive lower bound alone where no monotone relaxation exists, and the
+frozen-$\kappa$ no-rescue case); a per-condition black-box falsifiability audit passed
+with expected SENSITIVE/INSENSITIVE outcomes declared pre-execution; and a
+same-system ablation showed the upper-bound component carries the mechanic (dropping
+it flips the reference verdict to \CANNOTCHECK{} in 32/32 trials)
+(\path{research/paper4_instrument_admissibility_v1/}).
+
+The repaired instrument (world-divergent initial learner state, dynamics and budget
+imported unchanged) was licensed ADMISSIBLE on its first configuration: constructive
+ceiling $+0.0800\ \ge\ \kappa\cdot\mathrm{MDE}=0.06$, rigorous upper bound $+0.0974$.
+The gate did fresh pre-outcome work here: the ceiling over the strongest scalar parent
+is only $+0.0046$, so the inherited ``beat the scalar parent by $0.02$'' gate would
+have been a second structurally unreachable gate; it was re-registered sign-only
+before any arm outcome. On the frozen assurance seed, consumed once, the challenger
+cleared every gate: $F-D=+0.0760$ $[0.0755,0.0764]$, positive in $6/6$ worlds, safest
+arm on the hard-safety floor
+(\path{research/paper4_marginal_gain_challenger_v1/ASSURANCE_RECEIPT.json}).
+
+\paragraph{A falsified diagnostic, preserved.} The frozen prediction P6 stated the v1
+policy would remain negative in a licensed instrument. It is \textbf{falsified}:
+$E(\text{v1})-D=+0.0747$ there. The preserved parent negative was therefore
+policy$\times$instrument-conditional, and the strongest supported claim is
+adaptive-versus-static \emph{in licensed instruments}; the specific
+marginal-gain-versus-level mechanism contrast is small ($F-E\approx+0.0014$) and
+remains open. The parent negative, its terminal, and the earlier attribution
+prediction P1 --- itself falsified ($35\%$ of the gap recovered against a
+pre-registered $\ge 60\%$) --- all remain verbatim.
+
+\subsection{The governed-versus-ungoverned tradeoff, measured}
+\label{sec:tradeoff-experiment}
+
+The registered ungoverned comparator
+(\texttt{MEC-GREEDY\_ACCEPT\_ON\_HELD\_OUT\_SCALAR}, from the external-agent registry;
+the acceptance rule of ungoverned self-improvement loops: keep a mutation iff a
+held-out scalar improves) was executed against the governed pipeline over the
+\emph{identical} frozen stream of 14 allocator mutation proposals, with the outcome
+vector, false-promotion definition, budgets and five predictions frozen before any
+outcome access (\path{research/paper3_governance_tradeoff_v1/}). The truth meter is a
+licensed-instrument evaluation at a disjoint seed, outside both arms.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+axis & ungoverned greedy & governed \\
+\midrule
+environment & reference instrument & reference refused (\CANNOTCHECK); licensed \\
+ & \emph{(formally inadmissible; the arm} & \emph{successor instrument} \\
+ & \emph{has no mechanic to know)} & \\
+development gain (own signal) & $+0.0025$ & $+0.0781$ \\
+truth (licensed fresh seed) & $+0.0756$ & $+0.0781$ \\
+dev-versus-truth agreement & $30\times$ understatement & agreement to $4$ decimals \\
+accepted / promoted & 1 of 14 & 1 of 14 \\
+false promotions & 0 & 0 \\
+honest-terminal rate & $0.0$ & $1.0$ \\
+evaluator integrity at end & content-dependent on its one accept & gates FALSIFIABLE ($2/2$ probes) \\
+budget (eval-units) & 14 & 19 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Three of five frozen predictions were falsified, and the surprise is the
+result.} We predicted the greedy arm would false-promote (TP1), out-accept the
+governed arm (TP2), and accumulate noise-driven or content-inert acceptances (TP3).
+None of that happened. In this environment the ungoverned failure mode is
+\emph{silent starvation and verdict inversion}: on the inadmissible instrument every
+marginal-gain proposal measured $\approx-0.001$ and was rejected --- $10$ of the $13$
+rejected proposals clear the $0.05$ screen on the licensed instrument --- so the
+greedy loop discarded the entire winning mechanism family, kept a candidate whose
+measured value understates its true value $30$-fold, and emitted zero honest
+terminals, because no refusal semantics exist for it to emit. Its final incumbent
+nonetheless transfers positively (TP5, an honestly registered counter-prior): with
+this proposal family, deficit-chasing policies are good, so the ungoverned loop was
+lucky in outcome while blind in process. The false-promotion failure mode presumably
+requires a noisier or looser environment; that regime was not exercised, and no claim
+is made about it.
+
+\paragraph{What governance measurably bought and cost here.} Bought: the licensed
+comparison existing at all (instrument qualification), development/truth agreement,
+refusal receipts on $14/14$ broken comparisons, and falsifiable end-state gates.
+Cost: $+5$ eval-units ($\approx 36\%$) and a slower acceptance cadence --- plus, on a
+separate external surface, a measured governance \emph{cost} cell that this paper
+places on the frontier rather than burying: on the external STALE memory-mode
+envelope, the typed governed surface scored $0.267$ against the naive ungoverned
+arm's $0.483$ (ON$-$OFF $=-0.217$, CI $[-0.292,-0.133]$, $n=240$;
+terminal \texttt{TYPED\_GOVERNANCE\_EXTERNAL\_SURFACE\_NOT\_SUPPORTED\_IN\_ENVELOPE}).
+Two boundaries are load-bearing: the contrast is ON-versus-OFF governance only and is
+never comparable to the published $55.2\%$ STALE ceiling; and the scoring rule treats
+abstention like error --- the receipt's dimension structure (arms tied where both
+commit; the typed arm \emph{below chance} exactly where the naive arm guesses at
+chance) suggests refusals may be scored as failures, an evaluation-stage hypothesis
+consistent with the dead-gates pattern, but the aggregate-only receipt cannot confirm
+it, so a re-scoring experiment with abstention-aware rules is registered and frozen
+(\path{research/paper3_stale_revival_v1/}) rather than executed. Until re-scored, the
+cost cell stands at face value. No cell of this frontier is the paper's verdict; the
+frontier is the result.
+
+\subsection{The first global-loop structural pass}
+\label{sec:global-pass}
+
+The global loop's first two stages have been executed once: nine receipted local
+trajectories --- the four dead gates, the instrument-ceiling trajectory, the
+typed-refusal absorption, the STALE surface, the licensed challenger cycle, and the
+tradeoff experiment --- were reduced mechanically into the structure space of
+\path{src/rakl/structure_space.py} under a fixed role vocabulary
+(\texttt{defect\_stage}, \texttt{superstage}, \texttt{lever\_type},
+\texttt{instrument\_state}, \texttt{sign}), with every trajectory's receipt files
+read at run time and one binding honestly recorded \CANNOTCHECK{} (a receipt that
+lives on an unmerged branch). The space accumulated $34$ distinct roles with
+per-round growth $[5,3,3,4,4,5,5,2,3]$ and is \textbf{OPEN} --- nowhere near
+saturated (\path{research/paper3_global_structural_pass_v1/}).
+
+Three patterns surface, each citing its trajectories, each scoped to this programme:
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+\item \textbf{Evaluation-stage dominance.} Every trajectory whose defect stage is
+confirmed lives on the evaluation side --- confirmatory gates, applicability
+licensing, measurement interface, instrument power. Zero confirmed defects live on
+the proposal-generation side. In this programme, the thing that decays in recursive
+improvement is the \emph{measuring apparatus}, not the mutation generator.
+\item \textbf{Healthy-signal inversion.} The broken instruments looked healthy by
+their own statistics ($p=0.03125$; CIs ${\approx}0.0016$ wide; $1.000$ accuracy)
+while structurally unable to measure their targets: health statistics and measurement
+capacity are independent axes.
+\item \textbf{Two lever families.} Every successful repair is refusal-shaped (make
+the signal able to say no or nothing: fail-closed licensing, typed refusal, ceiling
+admissibility, governed acceptance) or independence-shaped (make the signal
+independent of what it judges: black-box audit, independent oracle with post-freeze
+gold, interpretation narrowing).
+\end{enumerate}
+
+This is a first structural pass over nine trajectories --- explicitly \emph{not} a
+validated generational improvement. The global loop's remaining stages (constructing
+a next-generation solver from the surfaced patterns, and cross-family fresh
+validation of that generation) are prospective, unexecuted, and carry registered
+gates of their own before any claim can exist.

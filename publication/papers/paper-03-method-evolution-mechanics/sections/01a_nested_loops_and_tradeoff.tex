@@ -1,0 +1,63 @@
+\section{Self-RAKL as two nested loops, and the question this paper now answers}
+\label{sec:nested-loops}
+
+This paper's subject is recursive solver improvement under evidence governance, and its
+headline question is deliberately not ``does governed recursive improvement run''
+(process existence is weak evidence) and not ``does the loop beat a static method''
+(a sign-only headline invites exactly the scalarization this framework forbids). The
+question is:
+
+\begin{center}
+\emph{What does evidence governance buy, and what does it cost, in recursive solver
+improvement?}
+\end{center}
+
+\noindent It is answered as a measured tradeoff over a vector of outcomes ---
+development throughput and solve-rate against false promotion, evaluator integrity and
+honest-terminal rate --- and never collapsed to a scalar verdict, consistent with the
+no-scalarization discipline inherited from the epistemic mechanics.
+
+\paragraph{The two nested loops.}
+Self-RAKL organizes recursive improvement as two loops:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{LOCAL loop} (per problem family): a problem failure enters typed RAKL
+diagnosis; diagnosis attributes the failure to one stage; a candidate \emph{solver
+mutation} is generated against that attribution; the mutation is validated on fresh,
+gate-protected evidence; the outcome --- positive, negative, or refusal --- is
+preserved. The architecture and governed-upgrade sections (through
+\S\ref{sec:upgrade}) specify the machinery; Section~\ref{sec:structural-cautionary}
+and Section~\ref{sec:tradeoff-results} report one complete executed cycle.
+\item \textbf{GLOBAL loop} (across problem families): many local mutation trajectories
+are themselves reduced into a structure space; structural analysis of that space
+surfaces reusable mutation patterns and incompatibilities; a new solver generation is
+constructed from the surfaced patterns; and the new generation is validated on fresh
+cross-family evidence. Of these four stages, \emph{only the first two have been
+executed} --- a first structural pass over nine receipted trajectories
+(Section~\ref{sec:global-pass}) --- and the construct-new-generation and
+cross-family-validation stages are prospective and unexecuted. No generational
+improvement is claimed.
+\end{itemize}
+
+\paragraph{Relation to the structural-learning lane (former Paper~IV).}
+By operator decision the structural-learning lane is combined into this paper: its
+adaptive-training experiment is \emph{one mutation family inside the local loop}
+(Section~\ref{sec:structural-cautionary}), and its instrument-admissibility mechanic
+(oracle ceiling versus registered minimum detectable effect) is presented as a
+\emph{discovered reusable mutation pattern} --- a global-loop output --- rather than a
+standalone metrology paper. The lane's artifacts remain byte-intact in the research
+record. This combination is exactly the cross-paper route that decision gate \#462
+prescribed when it routed the lane \texttt{CONCEPTUAL\_CROSS\_PAPER\_ONLY}; the
+standalone positive Paper~IV remains unauthorized and this paper does not revisit that
+decision.
+
+\paragraph{Measured evidence, and its honest scope.}
+Everything quantitative below is read from frozen receipts: the dead-gates corpus
+(four independent evaluator failures across three papers, every one passing its own
+registered thresholds; Section~\ref{sec:tradeoff-results}), a completed local-loop
+cycle through an admissibility-licensed instrument, a governed-versus-ungoverned
+acceptance experiment over one frozen proposal stream with three of five frozen
+predictions falsified and preserved, a measured governance \emph{cost} cell on an
+external evaluation surface, and the first global-loop structural pass. All of it is
+same-context analysis within one programme; none of it is independent review; and
+every pattern claim is scoped ``observed in this programme,'' never a universal law.
