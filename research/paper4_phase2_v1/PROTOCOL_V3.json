@@ -3,6 +3,11 @@
   "date": "2026-08-14",
   "supersedes_preoutcome_protocol": "research/paper4_phase2_v1/PROTOCOL_V2.json",
   "supersession_reason": "Pre-outcome implementation audit against experiments/training_ladder/exposure_executor.py found V2 described 4-bit NF4 and LoRA dropout 0.05, whereas the corrected Phase-1 executor used AutoModelForCausalLM.from_pretrained without a quantization override and LoraConfig(r=8, alpha=16, dropout=0.0, bias=none, task_type=CAUSAL_LM). No Phase-2 model output had been accessed. V3 binds the actual Phase-1-equivalent training semantics and is the only outcome-authorizing protocol.",
+  "preoutcome_schema_alias_repair": {
+    "original_bytes_preserved_at": "research/paper4_phase2_v1/PROTOCOL_V3_ORIGINAL_PREEXEC.json",
+    "reason": "The frozen runner expects training.model_revision while V3 named the identical pinned value training.revision. Before any Phase-2 model output, add the redundant alias only; no scientific value, task, arm, seed, MDE, harm bound or training semantics changes.",
+    "outcomes_accessed_before_repair": false
+  },
   "outcomes_accessed_before_v3_freeze": false,
   "paper": "Paper IV — Structural Learning Mechanics",
   "issue": 466,
@@ -21,6 +26,7 @@
   "training": {
     "model_id": "Qwen/Qwen2.5-7B-Instruct",
     "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
     "loading_semantics": "AutoModelForCausalLM.from_pretrained on the exact pinned revision/snapshot with no post-freeze quantization or dtype policy change. If the exact model cannot fit the available accelerator, emit RESOURCE_BLOCKED.",
     "tokenizer_semantics": "AutoTokenizer.from_pretrained exact pinned revision; pad token set to eos only if absent",
     "lora": {"r":8,"alpha":16,"dropout":0.0,"bias":"none","task_type":"CAUSAL_LM","target_modules":["q_proj","v_proj"]},
