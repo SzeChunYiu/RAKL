@@ -1,0 +1,82 @@
+{
+  "schema_version": "rakl-capability-stage4-harvest-record-v2-1",
+  "date": "2026-08-14",
+  "owner_issue": 447,
+  "transport_spec": "STAGE4_EXECUTION_TRANSPORT_V2_1",
+  "submission_receipt": "STAGE4_SUBMISSION_RECEIPT_V2_1.json (submitted job 3502624; first attempt 3502571 pre-receipt infra failure recorded there)",
+  "harvested_job": {
+    "slurm_job_id": 3502624,
+    "scheduler_state": "COMPLETED",
+    "scheduler_exit_code": "0:0",
+    "elapsed": "00:02:44",
+    "wall_seconds_run": 152.279,
+    "runtime": "torch 2.8.0+cu128 / transformers 4.55.0 / NVIDIA A100 80GB PCIe"
+  },
+  "receipt_verification": {
+    "file": "STAGE4_SCORING_V2_1_RUN_3502624/FINAL_CAPABILITY_RECEIPT.json",
+    "sha256": "b318a919133988575ee3dd58b2d2d820d172b68571099b1a80dbd59ce98811da",
+    "bytes": 3419,
+    "hash_binding": "sha256 computed on the LUNARC node by the harvest watcher AND recomputed on the harvest workstation from an independently transferred copy — identical",
+    "schema_version": "rakl-capability-qualification-stage5-result-v2",
+    "in_job_validator_verdict": "VALID_STAGE5_TERMINAL:DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+    "scoring_hardening_binding": {
+      "spec": "STAGE3_5_SCORING_HARDENING_V2.json",
+      "spec_sha256": "32c85e91766122f15657629a325a0133aee35a033d9a029bb81fe582cc4ab96e",
+      "thresholds_changed_from_v1": false,
+      "panel_changed_from_v1": false,
+      "model_or_interface_changed_from_v1": false
+    },
+    "contract_matches": {
+      "model_id": "Qwen/Qwen2.5-7B-Instruct — matches frozen contract",
+      "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28 — matches frozen contract",
+      "panel_sha256": "0ab994fb0f8f3523014023ff703151afe4c66e86a8f030435f509d141055cc0e — matches frozen contract; INDEPENDENTLY re-verified: sha256 of the committed FRESH_TASKS_MATERIALIZED.jsonl equals this value",
+      "all_132_cases_completed": true,
+      "metrics_n": 132,
+      "model_substitution_performed": false,
+      "decoding": "greedy, temperature 0.0, max_new_tokens 256, batch_size 1 — matches frozen contract",
+      "shortcut_audit": "clean (no ALWAYS_SUPPORT / ALWAYS_REFUTE / ALWAYS_CANNOT_CHECK / ALWAYS_CONTEXT_MISALIGNED responder) — instrument probative, panel not degenerate"
+    }
+  },
+  "terminal": "DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+  "runner_code_to_terminal": "exit 1 -> DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY (per transport table); scheduler exit 0:0 is the wrapper, the receipt carries the scientific terminal",
+  "headline_metrics": {
+    "raw_json_schema_parse_validity": 0.8636,
+    "parse_validity": 0.8258,
+    "parse_validity_ci95": [0.7521, 0.8810],
+    "exact_joint_verdict_and_binding": 0.5455,
+    "exact_joint_ci95": [0.4604, 0.6279],
+    "support_id_recall": 0.4635,
+    "reject_id_recall": 0.9881,
+    "context_qoi_error_rate": 0.75,
+    "cannot_check_recall": 0.5,
+    "cannot_check_precision": 0.3529,
+    "all_vector_gates_pass": false
+  },
+  "family_pattern": {
+    "perfect_families": ["STRAIGHT_SUPPORT 1.0", "STRAIGHT_REFUTATION 1.0", "SCOPE_RESTRICTION 1.0", "SUPPORT_WITH_IRRELEVANT_DISTRACTORS 1.0"],
+    "strong_families": ["CORRECT_VERDICT_WRONG_EVIDENCE_ID_TRAP 0.9167", "INDEPENDENT_CORROBORATION 0.9167"],
+    "failed_families": ["CONFLICTING_EVIDENCE 0.0", "CONTEXT_QOI_NEAR_MISS 0.0", "MISSING_DECISIVE_EVIDENCE_CANNOT_CHECK 0.0", "REFUTATION_WITH_IRRELEVANT_DISTRACTORS 0.0833", "SAME_ROOT_PSEUDO_CORROBORATION 0.0833"],
+    "reading": "the model is near-perfect on surface-verdict families but at chance on the discrimination families that require evidence-identity binding under distraction, conflicting evidence, or missing decisive evidence — exactly the profile the terminal names: diagnostic overfit or insufficient capability"
+  },
+  "claim_boundary": "NEGATIVE_CAPABILITY_QUALIFICATION__NO_AUTHORIZE_RECEIPT_MINTED. The verdict is about Qwen/Qwen2.5-7B-Instruct under the frozen Stage-2 interface and 132-case panel; it is NOT a verdict about the instrument (probative, shortcut-clean) and NOT about other executors or model scales.",
+  "grants_scientific_authority": false,
+  "grants_model_level_efficacy": false,
+  "unlocks_treatment_result": false,
+  "successor_implications": {
+    "capable_model_authorize_receipt_v3_minted": false,
+    "paper2_successor_gate_661": "S1-S4 remain gated: SUCCESSOR_PLAN_V1's precondition (CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3) is NOT satisfied by this subject",
+    "revival_paths_not_yet_authorized": [
+      "a different already-staged open-weight model under the SAME frozen transport/panel/scoring (no scale shopping requires governance sign-off on candidate selection order)",
+      "executor-class re-scoping per the paper-II acquisition/licence split (the licence itself is executor-independent)"
+    ],
+    "note": "This harvest closes #447's BLOCKED_ON_EXECUTION state: execution infrastructure is proven; the scientific answer for this subject is negative."
+  },
+  "committed_run_artifacts": {
+    "STAGE4_SCORING_V2_1_RUN_3502624/FINAL_CAPABILITY_RECEIPT.json": "b318a919133988575ee3dd58b2d2d820d172b68571099b1a80dbd59ce98811da",
+    "STAGE4_SCORING_V2_1_RUN_3502624/qualification_results.json": "f0c7d48beb59d85e9785ee1db411aaaa45e56756a2d66e6769155e73e6c7ee15",
+    "STAGE4_SCORING_V2_1_RUN_3502624/RAW_OUTPUTS.jsonl": "d2a02aa4dc7bfeb7d44707b12b6ff2ecde950a5195d6827007e9f580cac89149",
+    "STAGE4_SCORING_V2_1_RUN_3502624/FRESH_TASKS_MATERIALIZED.jsonl": "0ab994fb0f8f3523014023ff703151afe4c66e86a8f030435f509d141055cc0e (equals panel_sha256)",
+    "STAGE4_SCORING_V2_1_RUN_3502624/dry_run/FRESH_TASKS_MATERIALIZED.jsonl": "byte-identical to the run copy (pre-run panel verification)",
+    "STAGE4_SCORING_V2_1_RUN_3502624/orion_p3_cap_v3s21_3502624.stdout.txt": "cf2368df6abadace6d655611f1846a2315aed3b6c0d4993ed5150fc1c925b507"
+  }
+}
