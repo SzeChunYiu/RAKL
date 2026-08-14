@@ -130,3 +130,70 @@ def test_a_realized_citation_is_not_reported_as_missing(ladder):
 
 def test_ladder_grants_no_authority(ladder):
     assert ladder["grants_scientific_authority"] is False
+
+
+# --- readiness and frontier --------------------------------------------------------
+
+
+def test_frontier_is_the_lowest_unready_layer(ladder):
+    from rakl.framework_ladder import frontier, layer_blockers
+    blockers = layer_blockers(ladder)
+    current = frontier(ladder)
+    ids = [l.layer_id for l in layers(ladder)]
+    assert current is not None, "no frontier means every layer is READY; it is not"
+    # everything below the frontier must be ready
+    for lid in ids[: ids.index(current)]:
+        assert blockers[lid] == (), f"{lid} is below the frontier but not READY"
+    assert blockers[current]
+
+
+def test_readiness_is_non_compensatory(ladder):
+    """Strong soundness must not offset an absent benefit."""
+    from rakl.framework_ladder import layer_blockers
+    for layer in layers(ladder):
+        record = next(e for e in ladder["layers"] if e["layer_id"] == layer.layer_id)["readiness"]
+        if record["soundness"] == "MECHANIZED" and not record["benefit_measured"]:
+            assert "benefit not measured" in layer_blockers(ladder)[layer.layer_id]
+
+
+def test_known_bad_gates_block_readiness(ladder):
+    """The two gate defects found on 2026-08-14 must appear as blockers."""
+    from rakl.framework_ladder import layer_blockers
+    blockers = layer_blockers(ladder)
+    assert any("FAIL_OPEN_FOUND" in b for b in blockers["L3-AUTHORITY"])
+    assert any("NON_FALSIFIABLE" in b for b in blockers["L6-METHOD-EVOLUTION"])
+
+
+def test_unaudited_gate_does_not_block_on_its_own(ladder):
+    """An unaudited gate is unknown, not known-bad; only its benefit gap blocks."""
+    from rakl.framework_ladder import layer_blockers
+    assert layer_blockers(ladder)["L4-NAVIGATION"] == ("benefit not measured",)
+
+
+def test_a_fully_ready_layer_reports_no_blockers(ladder):
+    """No-alarm case: satisfy every criterion and the layer must clear."""
+    import copy
+    fixed = copy.deepcopy(ladder)
+    from rakl.framework_ladder import layer_blockers
+    fixed["layers"][0]["readiness"].update(benefit_measured=True)
+    assert layer_blockers(fixed)["L0-OBJECT"] == ()
+
+
+def test_missing_readiness_record_is_a_blocker(ladder):
+    import copy
+    from rakl.framework_ladder import layer_blockers
+    broken = copy.deepcopy(ladder)
+    broken["layers"][3].pop("readiness")
+    assert layer_blockers(broken)[broken["layers"][3]["layer_id"]] == ("no readiness record",)
+
+
+def test_core_and_map_exist_and_index_every_doc():
+    """The reorganization must not silently omit a document."""
+    import pathlib, re
+    docs = pathlib.Path(__file__).resolve().parents[1] / "docs"
+    core = docs / "CORE.md"
+    mapfile = docs / "MAP.md"
+    assert core.is_file() and mapfile.is_file()
+    listed = set(re.findall(r"\[`([A-Z0-9_]+)\.md`\]", mapfile.read_text(encoding="utf-8")))
+    present = {p.stem for p in docs.glob("*.md")} - {"CORE", "MAP"}
+    assert present - listed == set(), f"docs missing from MAP.md: {sorted(present - listed)}"

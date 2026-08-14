@@ -162,6 +162,54 @@ def missing_paper_citations(ladder: dict[str, Any] | None = None) -> tuple[str, 
     return tuple(gaps)
 
 
+#: Soundness values that satisfy the readiness criterion.
+_SOUND_OK = frozenset({"MECHANIZED", "PROVED_ON_PAPER"})
+#: Gate verdicts that BLOCK readiness. NOT_AUDITED does not block on its own —
+#: an unaudited gate is unknown, not known-bad — but it is reported.
+_GATE_BLOCKING = frozenset({"NON_FALSIFIABLE", "FAIL_OPEN_FOUND"})
+
+
+def layer_blockers(ladder: dict[str, Any] | None = None) -> dict[str, tuple[str, ...]]:
+    """Per layer, the readiness criteria that do not hold.
+
+    Non-compensatory: a strong soundness coordinate never offsets an absent
+    benefit coordinate. This mirrors the framework's own no-scalarization result.
+    """
+    payload = ladder if ladder is not None else load_ladder()
+    out: dict[str, tuple[str, ...]] = {}
+    for entry in payload["layers"]:
+        r = entry.get("readiness")
+        if r is None:
+            out[entry["layer_id"]] = ("no readiness record",)
+            continue
+        blockers: list[str] = []
+        if not r.get("spec_present"):
+            blockers.append("not specified")
+        if not r.get("paper_home"):
+            blockers.append("no paper states it as a positive claim")
+        if r.get("soundness") not in _SOUND_OK:
+            blockers.append(f"soundness={r.get('soundness')}")
+        if r.get("gate_falsifiable") in _GATE_BLOCKING:
+            blockers.append(f"gate={r.get('gate_falsifiable')}")
+        if not r.get("benefit_measured"):
+            blockers.append("benefit not measured")
+        out[entry["layer_id"]] = tuple(blockers)
+    return out
+
+
+def frontier(ladder: dict[str, Any] | None = None) -> str | None:
+    """The lowest layer that is not READY — where work should happen.
+
+    Returns None when every layer is ready, which would mean the programme has a
+    measured benefit at every level. It does not currently.
+    """
+    blockers = layer_blockers(ladder)
+    for entry in (ladder if ladder is not None else load_ladder())["layers"]:
+        if blockers[entry["layer_id"]]:
+            return entry["layer_id"]
+    return None
+
+
 def main() -> int:  # pragma: no cover - thin CLI
     ladder = load_ladder()
     for layer in layers(ladder):
@@ -177,6 +225,13 @@ def main() -> int:  # pragma: no cover - thin CLI
     print(f"\nladder-implied paper dependencies not realized in the manuscripts: {len(gaps)}")
     for item in gaps:
         print(f"  - {item}")
+    print("\n--- readiness (non-compensatory) ---")
+    blockers = layer_blockers(ladder)
+    for layer in layers(ladder):
+        b = blockers[layer.layer_id]
+        print(f"{layer.layer_id:<22} {'READY' if not b else '; '.join(b)}")
+    current = frontier(ladder)
+    print(f"\nFRONTIER: {current or 'none - every layer ready'}")
     return 1 if problems or unhoused else 0
 
 
