@@ -55,6 +55,11 @@ jobs:
           assert negatives['grants_scientific_authority'] is False
           print('P2 external scientific-analogy freeze: PASS')
           PY
+      - name: Bind byte-identical predecessor negative receipts
+        run: |
+          test "$(git hash-object research/paper2_scientific_analogy_external_v1/predecessors/ARN_NEGATIVE_RESULT.json)" = "1f61c0de7e406432b97fde05501889da231ebadb"
+          test "$(git hash-object research/paper2_scientific_analogy_external_v1/predecessors/STORYANALOGY_FACTORIZED_V1_NEGATIVE.json)" = "413f1833d6748bdc115691d0437cd45500f7355c"
+          test "$(git hash-object research/paper2_scientific_analogy_external_v1/predecessors/STORYANALOGY_ORDINAL_V2_NEGATIVE.json)" = "c1e12bf049c17ab61c1634412d077384fbfd61e0"
       - name: Prove source-span and fail-closed gates are failable
         run: pytest -q tests/test_external_analogy_grounding.py
       - name: Prove exact acquisition, quarantine and protected-gold separation
