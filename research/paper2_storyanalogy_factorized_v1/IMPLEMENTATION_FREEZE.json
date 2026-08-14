@@ -1,0 +1,55 @@
+{
+  "schema_version": "rakl-paper2-storyanalogy-factorized-v1-implementation-freeze",
+  "date": "2026-08-14",
+  "parent_protocol_commit": "872d89c4bae419897bcf3adcce8e1a6e62672f8b",
+  "preview_quarantine_commit": "d0854dbf1585afc3f6f6717731eaafbb9644573f",
+  "model_fitting_before_freeze": false,
+  "threshold_calibration_before_freeze": false,
+  "confirmatory_statistics_before_freeze": false,
+  "pair_surface": "Normalize each story by strip + collapse ASCII whitespace; order the two normalized stories by SHA-256 digest; concatenate as 'STORY_A\\n<text>\\nSTORY_B\\n<text>'.",
+  "tokenizer_for_lexical_parent": "lowercase regex [a-z0-9]+ over each normalized story; Jaccard over token sets",
+  "P0_LEXICAL": {
+    "grid": "lo,hi in {0.00,0.05,...,1.00}, lo < hi",
+    "decision": "Jaccard<=lo => REJECT; Jaccard>=hi => ACCEPT; otherwise CANNOT_CHECK",
+    "selection": "maximize CALIBRATION exact3; ties: lower invalid_false_accept, then higher valid_accept, then lexicographically smaller (lo,hi)"
+  },
+  "vectorizer": {
+    "fit_partition": "DEV only",
+    "word": {"ngram_range":[1,2],"min_df":2,"sublinear_tf":true,"max_features":120000,"lowercase":true},
+    "char": {"analyzer":"char_wb","ngram_range":[3,5],"min_df":2,"sublinear_tf":true,"max_features":120000,"lowercase":true},
+    "combination": "FeatureUnion(word,char)"
+  },
+  "P1_DIRECT_TEXT": {
+    "classifier": "SGDClassifier(loss=log_loss,alpha=1e-5,max_iter=2000,tol=1e-4,random_state=20260814,class_weight=balanced)",
+    "confidence_grid": [0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90],
+    "decision": "If argmax class is CANNOT_CHECK, emit CANNOT_CHECK. Otherwise emit argmax only when max class probability>=tau; else CANNOT_CHECK.",
+    "selection": "maximize CALIBRATION exact3; ties: lower invalid_false_accept, higher valid_accept, lower tau"
+  },
+  "E_FACTORISED_STRUCTURAL": {
+    "relation_head_target": "1 iff RelSim>=2.0 else 0",
+    "entity_head_target": "1 iff EntSim<=1.0 else 0",
+    "relation_head": "SGDClassifier(loss=log_loss,alpha=1e-5,max_iter=2000,tol=1e-4,random_state=20260814,class_weight=balanced)",
+    "entity_head": "SGDClassifier(loss=log_loss,alpha=1e-5,max_iter=2000,tol=1e-4,random_state=20260815,class_weight=balanced)",
+    "threshold_grid_each_head": [0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90],
+    "decision": "ACCEPT iff p_rel>=tau_rel AND p_ent_low>=tau_ent; REJECT iff p_rel<=1-tau_rel OR p_ent_low<=1-tau_ent; otherwise CANNOT_CHECK. ACCEPT precedence is evaluated first; with tau>=0.5 the clauses cannot conflict except exactly at 0.5, where ACCEPT precedence is frozen.",
+    "selection": "Among threshold pairs satisfying CALIBRATION invalid_false_accept<=0.15 AND valid_accept>=0.50, maximize exact3; ties: lower invalid_false_accept, higher valid_accept, lexicographically smaller (tau_rel,tau_ent). If none, DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD and do not inspect confirmatory labels."
+  },
+  "strongest_parent": "After P0 and P1 calibration, choose higher exact3; ties within 1e-15 select P0_LEXICAL.",
+  "falsifiability_numeric_contract": {
+    "TEXT_DESTRUCTION": "Use random seed 2026081401 to independently permute first-story and second-story positions across CALIBRATION rows before candidate transformation. Original candidate exact3 - destroyed candidate exact3 >=0.10.",
+    "RELATION_HEAD_SHUFFLE": "Permute p_rel with seed 2026081402; >=0.05 of CALIBRATION decision vector must change.",
+    "ENTITY_HEAD_SHUFFLE": "Permute p_ent_low with seed 2026081403; >=0.05 of CALIBRATION decision vector must change.",
+    "HEAD_SWAP": "Swap p_rel and p_ent_low without refitting; >=0.05 of CALIBRATION decisions must change.",
+    "GOLD_SHUFFLE": "Permute CALIBRATION gold with seed 2026081404 after every arm is frozen; candidate-minus-strongest-parent exact3 advantage under shuffled gold must be <0.02.",
+    "TRIVIAL_CONTROLS": "No constant decision may jointly have valid_accept>=0.65 and invalid_false_accept<=0.15 on CALIBRATION."
+  },
+  "bootstrap": {
+    "seed": 20260814991,
+    "repetitions": 10000,
+    "unit": "confirmatory released pair row after leakage-component split",
+    "statistic": "paired exact3(candidate)-exact3(parent)",
+    "interval": "2.5 and 97.5 percentile"
+  },
+  "network_acquisition": "Outcome-bearing runner must fetch the public StoryAnalogy CSV from the exact Hugging Face repository and record content SHA-256; a changed upstream byte stream is a new evidence subject but does not change this protocol.",
+  "grants_scientific_authority": false
+}
