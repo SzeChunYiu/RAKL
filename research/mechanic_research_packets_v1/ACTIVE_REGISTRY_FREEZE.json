@@ -1,0 +1,52 @@
+{
+  "schema_version": "rshea-active-packet-registry-freeze-v1",
+  "change_class": "CLASS_B_WORKFLOW_METHOD",
+  "parent_main_sha": "b7747f21b58e8f827b1dab1a487739b83722af28",
+  "problem": "The P3 promotion gate loads only the original P2 packet set. Later saturation rounds can supersede or basis-expand those packets, so a structurally valid but scientifically stale packet could otherwise remain eligible for future promotion.",
+  "hypothesis": "A separate active-packet registry can resolve packet identity, supersession, basis-expanded-before-execution status and dependency blocking without rewriting any frozen packet or weakening the existing evidence/telemetry/applicability gates.",
+  "frozen_input_artifacts": [
+    "research/mechanic_research_packets_v1/PAPER5_PAPER6_SUCCESSORS.json",
+    "research/p5_p6_saturation_v1/ROUND_001_SUPERSESSION.json",
+    "research/p5_p6_saturation_v1/ROUND_002_AMENDMENTS.json",
+    "research/p5_p6_saturation_v1/packets/*.json"
+  ],
+  "expected_current_statuses": {
+    "ACTIVE": [
+      "navigation_dynamic_parallel_portfolio_v3",
+      "path_equivalence_stateful_por_v3",
+      "operational_map_belief_v1",
+      "path_cost_algebra_v1",
+      "trajectory_to_certificate_assembly_v1",
+      "verification_scheduler_v1"
+    ],
+    "BLOCKED_BASIS_EXPANDED": [
+      "vtg_lean_geometry_v2",
+      "field_cheapest_useful_selector_v2",
+      "diagnosis_discriminating_intervention_v3",
+      "navigation_quotient_validation_v1",
+      "verified_solver_compilation_v1",
+      "mechanic_value_of_computation_controller_v1"
+    ],
+    "BLOCKED_DEPENDENCY": [
+      "capstone_integrated_solver_v1"
+    ]
+  },
+  "hard_rules": [
+    "superseded packets never authorize new implementation or promotion",
+    "basis-expanded-before-execution packets are ineligible until a fresh replacement packet is frozen",
+    "blocked dependencies remain ineligible even if their own packet is structurally valid",
+    "packet registry status grants no scientific or promotion authority",
+    "historical legacy candidate verdicts remain unchanged",
+    "valid ACTIVE status only makes the ordinary promotion gate eligible to evaluate evidence"
+  ],
+  "negative_controls": [
+    "old vtg_lean_geometry_v1 remains structurally valid but must resolve SUPERSEDED",
+    "vtg_lean_geometry_v2 is structurally valid but must resolve BLOCKED_BASIS_EXPANDED after round 002",
+    "capstone_integrated_solver_v1 must resolve BLOCKED_DEPENDENCY while value-of-computation constituent is basis-expanded",
+    "navigation_dynamic_parallel_portfolio_v3 remains ACTIVE",
+    "unknown variant fails closed"
+  ],
+  "rollback": "Revert the registry/gate adapter. Frozen packet and saturation artifacts remain unchanged and continue to fail closed under the older P3 gate.",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false
+}
