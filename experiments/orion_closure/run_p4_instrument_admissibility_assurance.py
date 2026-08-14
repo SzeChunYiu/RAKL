@@ -592,6 +592,31 @@ def main():
         "grants_scientific_authority": False,
     }, indent=2) + "\n")
 
+    # Same-system ablation (packet obligation): replace the oracle upper bound
+    # with the strongest implementable policy score only.  This is exactly the
+    # drop_upper_bounds probe; on the reference instrument it must flip
+    # INADMISSIBLE -> CANNOT_CHECK, showing the upper-bound component carries
+    # the mechanic (a policy score alone can never license INADMISSIBLE).
+    ref_audit = next(r for r in audit_rows
+                     if r["condition_id"] == "REFERENCE_P4_DEVELOPMENT_STRESS_INSTRUMENT")
+    drop_upper = next(p for p in ref_audit["probes"] if p["probe_id"] == "drop_upper_bounds")
+    ablation = {
+        "obligation": "same_system_ablation from PACKET_oracle_ceiling_calibration_gate_v1",
+        "implementation": "drop_upper_bounds probe on the reference instrument: evidence "
+                          "reduced to implementable policy scores (tier 1 greedy, tier 2 "
+                          "constructive) with the tier-3 upper bound removed",
+        "verdict_changed": drop_upper["observed"] == "SENSITIVE",
+        "flips": drop_upper["flips"],
+        "trials": drop_upper["trials"],
+        "reading": "the INADMISSIBLE verdict is carried by the upper-bound component; "
+                   "without it the gate fails closed to CANNOT_CHECK rather than "
+                   "reducing to strongest-parent reporting — the novelty residual "
+                   "is not withdrawn"
+        if drop_upper["observed"] == "SENSITIVE" else
+        "verdicts unchanged without the oracle component — the gate reduces to "
+        "strongest-parent reporting and the novelty residual must be withdrawn",
+    }
+
     (out / "GATE_ASSURANCE_RECEIPT.json").write_text(json.dumps({
         "schema_version": "p4-instrument-admissibility-assurance-v1",
         "date": freeze["date"],
@@ -603,6 +628,7 @@ def main():
         "all_expectations_met": all_pass,
         "falsifiability_audit": "GATE_FALSIFIABILITY_AUDIT.json",
         "falsifiability_all_conditions_pass": audit_pass,
+        "same_system_ablation": ablation,
         "grants_scientific_authority": False,
     }, indent=2) + "\n")
 
