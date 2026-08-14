@@ -1,5 +1,35 @@
 {
   "candidates": {
+    "diagnosis_active_successor": {
+      "artifact": "research/unified_problem_solving_v1/results/diagnosis_active_successor.json",
+      "net": {
+        "hi": -0.1008,
+        "lo": -0.1183,
+        "mean": -0.1095,
+        "n": 6000
+      },
+      "note": "leakage-free active sequential diagnosis; abstention_supported; honest NEGATIVE expected",
+      "reason": "net_negative_in_tested_regime",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [
+          "mean_probe_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome",
+          "mean_probe_cost"
+        ],
+        "required": [
+          "sample",
+          "outcome",
+          "mean_probe_cost"
+        ],
+        "status": "COMPLETE"
+      },
+      "verdict": "KEEP_PROPOSAL_ONLY"
+    },
     "field_construction": {
       "artifact": "research/unified_problem_solving_v1/results/field_construction.json",
       "net": {
@@ -1065,6 +1095,7 @@
     "six_family_law"
   ],
   "proposal_only": [
+    "diagnosis_active_successor",
     "field_construction",
     "field_construction_successor",
     "mechanic_diagnosis",
