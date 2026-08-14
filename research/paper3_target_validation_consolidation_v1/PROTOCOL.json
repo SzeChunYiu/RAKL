@@ -1,0 +1,100 @@
+{
+  "schema_version": "rakl-paper3-target-validation-consolidation-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "base_main_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+  "atomic_gap": "A canonical SEARCH/JUMP/GLUE/LIFT review explicitly says route_is_proposal_only_and_requires_target_validation, but semantic_shortcut.add_transformation_episode accepts caller-constructed VERIFIED_LOCAL/SOURCE_EVENT_VERIFIED episodes without proving that a successful, canonically admitted target TaskEpisode actually validated the routed transformation. The manuscript's post-success consolidation rule is therefore stronger than the protected runtime surface.",
+  "expert_review_roles": [
+    {
+      "role": "formal-governance reviewer",
+      "background": "typed authority systems, provenance, fail-closed state transitions",
+      "responsibility": "Ensure proposal route authority, observed target success, structural-memory authority, scientific authority and ResearchTool promotion remain non-interchangeable."
+    },
+    {
+      "role": "runtime-integration reviewer",
+      "background": "immutable Python state machines and RAKL v3 substrate/runtime",
+      "responsibility": "Reuse canonical TaskEpisode admission and the existing semantic-shortcut audit without weakening either; keep the old low-level append API unchanged for compatibility."
+    },
+    {
+      "role": "adversarial-verification reviewer",
+      "background": "content-addressed evidence, mutation testing, stale-subject attacks",
+      "responsibility": "Attack shadow episodes, failed/partial outcomes, stale memory/review hashes, target/context mismatch, caller authority inflation, missing lineage and forged candidate hashes."
+    },
+    {
+      "role": "experimental-RSHEA reviewer",
+      "background": "preregistration, strongest-parent comparisons, negative-result preservation",
+      "responsibility": "Compare against the strongest fair current parents (bare add_transformation_episode and protected lesson/tool consolidation), freeze gates before tests, and refuse any efficacy or scientific promotion claim."
+    }
+  ],
+  "strongest_fair_parents": [
+    {
+      "parent": "semantic_shortcut.add_transformation_episode",
+      "strength": "Exact immutable memory append with structural validation and duplicate rejection.",
+      "known_limitation_under_test": "Caller supplies TransformationEpisodeAuthority directly; no target TaskEpisode or canonical admission is required."
+    },
+    {
+      "parent": "v3_runtime.consolidate_lesson / experience_learning.assess_lesson_consolidation",
+      "strength": "Protected, evidence-bound lesson/tool consolidation that preserves candidate-vs-reusable authority separation.",
+      "role": "Governance design parent; successor must not weaken this stronger lesson/tool path or auto-promote ResearchTool."
+    }
+  ],
+  "successor_contract": {
+    "module": "src/rakl/semantic_shortcut_consolidation.py",
+    "entrypoint": "consolidate_validated_target_transformation",
+    "inputs": [
+      "bound ObstructionTransformationMemory",
+      "proposal-only candidate ObstructionTransformationEpisode",
+      "exact ObstructionTransformationReview and ShortcutReviewReport",
+      "successful TaskEpisode",
+      "matching canonical EpisodeAdmissionReceipt"
+    ],
+    "rules": [
+      "Re-audit the exact review against the exact memory; do not trust a supplied PASS report alone.",
+      "Require the TaskEpisode to be canonically admitted, outcome SUCCESS, and atom/context-identical to the review target.",
+      "Require the candidate source obstruction/domain to equal the target obstruction/domain and require candidate authority PROPOSAL_ONLY.",
+      "Require lineage to account for the target TaskEpisode, review, and every selected source episode; for LIFT also account for the missing-transformation specification.",
+      "Mint at most VERIFIED_LOCAL structural-memory authority in v1; never PROOF_BACKED, scientific authority, lesson authority or ResearchTool authority.",
+      "Recompute the promoted structural episode artifact hash from exact content; caller hash cannot survive promotion unchanged.",
+      "Append a new promoted episode id while leaving the proposal candidate and all negative history immutable outside the returned memory view."
+    ]
+  },
+  "frozen_tests": [
+    "strongest-parent counterexample: bare add_transformation_episode accepts a syntactically valid caller-asserted VERIFIED_LOCAL episode with no target validation",
+    "successor accepts a proposal-only candidate only after exact route re-audit + canonically admitted successful target TaskEpisode",
+    "shadow-only target episode blocks consolidation",
+    "missing/invalid admission receipt blocks consolidation",
+    "FAILURE, PARTIAL_SUCCESS, BLOCKED and UNKNOWN target outcomes block consolidation",
+    "supplied stale or forged ShortcutReviewReport PASS cannot substitute for exact re-audit",
+    "review target atom/context mismatch blocks consolidation",
+    "review memory snapshot mismatch blocks consolidation",
+    "candidate target obstruction/domain mismatch blocks consolidation",
+    "candidate with pre-existing verified/proof authority blocks caller authority inflation",
+    "missing selected-source lineage blocks SEARCH/JUMP/GLUE consolidation",
+    "LIFT consolidation requires missing-spec lineage",
+    "promoted episode authority is VERIFIED_LOCAL and artifact hash is recomputed from promoted content",
+    "no ResearchTool inventory or scientific-authority state is touched"
+  ],
+  "hard_gates": {
+    "new_tests_all_pass": true,
+    "existing_semantic_shortcut_tests_all_pass": true,
+    "existing_episode_storage_admission_tests_all_pass": true,
+    "existing_experience_learning_and_v3_runtime_tests_all_pass": true,
+    "full_repository_ci_not_weakened": true,
+    "negative_history_unchanged": true
+  },
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_TARGET_VALIDATION_CONSOLIDATION",
+  "why_conditional_not_unconditional": "This closes the framework/runtime authority gap for post-success structural consolidation. It does not establish that obstruction-transformation memory improves model research performance; #401 remains CANNOT_EXECUTE_MATCHED_EVAL under the capable-model blocker.",
+  "preserved_negatives": [
+    "#401 CANNOT_EXECUTE_MATCHED_EVAL",
+    "Qwen capability-floor history through 7B",
+    "no natural-language extraction efficacy result",
+    "no model-level continual-research performance claim"
+  ],
+  "nonclaims": [
+    "scientific/theorem authority",
+    "ResearchTool promotion",
+    "cross-domain transfer efficacy",
+    "matched semantic-router superiority",
+    "natural-language obstruction or witness extraction"
+  ]
+}

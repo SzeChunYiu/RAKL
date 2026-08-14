@@ -1,0 +1,114 @@
+{
+  "schema_version": "rakl-paper3-glue-rejection-production-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "expert_review_roles": [
+    {
+      "role": "formal-governance reviewer",
+      "responsibility": "Prove that GLUE rejection is a typed evidence transition and that CANNOT_CHECK can never be coerced into rejection."
+    },
+    {
+      "role": "runtime-integration reviewer",
+      "responsibility": "Keep the v1/v2 routers and canonical audit unchanged; make the successor additive and preserve immutable transformation memory."
+    },
+    {
+      "role": "adversarial-verification reviewer",
+      "responsibility": "Attack composition order, episode revision, target/context, witness content, missing evidence, incomplete candidate accounting and negative-history retention."
+    },
+    {
+      "role": "experimental-RSHEA reviewer",
+      "responsibility": "Freeze before implementation, compare with strongest fair parents, preserve prior negatives and stop promotion on any unearned shortcut."
+    }
+  ],
+  "stack_parent_pr": 567,
+  "stack_parent_head_sha": "13688283a169e39171e5498032a51f9799b24ba1",
+  "current_main_sha_at_freeze": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+  "parent_negatives_preserved": [
+    {
+      "issue": 401,
+      "terminal": "CANNOT_EXECUTE_MATCHED_EVAL",
+      "superseded": false
+    },
+    {
+      "parent": "production v1 route resolver",
+      "terminal": "PROMOTE_CONDITIONALLY_PRODUCTION_ROUTE_RESOLVER",
+      "superseded": false
+    },
+    {
+      "parent": "production v2 typed SEARCH/JUMP rejection",
+      "terminal": "PROMOTE_CONDITIONALLY_PRODUCTION_TYPED_REJECTION_FALLTHROUGH",
+      "superseded": false
+    }
+  ],
+  "atomic_gap": "Permit LIFT only after every structurally viable GLUE composition is either accepted or individually, conclusively, content-bound rejected; unresolved or merely malformed composition evidence must remain CANNOT_CHECK.",
+  "successor_contract": {
+    "module": "src/rakl/semantic_shortcut_router_v3.py",
+    "entrypoint": "resolve_obstruction_transformation_route_with_composition_rejections",
+    "certificate": "CompositionRejectionCertificate",
+    "issuance_rule": "A composition certificate is minted only inside the resolver after the unchanged canonical GLUE audit returns FAIL for the exact composition review and every audit reason is in the registered conclusive allowlist.",
+    "initial_conclusive_reason_allowlist": [
+      "mapping_has_unrepaired_source_preconditions"
+    ],
+    "binding": [
+      "GLUE candidate key derived from the exact episode set",
+      "composition id",
+      "ordered episode ids",
+      "exact episode artifact hashes/revisions",
+      "operation order",
+      "target atom id",
+      "target context hash",
+      "research-memory review hash",
+      "target obstruction id",
+      "input transformation-memory snapshot hash",
+      "composition witness artifact hash",
+      "composition witness semantic-content hash",
+      "failed candidate-review artifact hash",
+      "canonical audit reasons",
+      "evidence pointers"
+    ],
+    "memory_rule": "Rejecting one composition does not delete its component episodes because they may participate in other compositions. Canonical memory is unchanged; only the exact composition candidate is marked rejected by certificate.",
+    "uncertainty_rule": "Missing witness, CANNOT_CHECK, malformed/nonconclusive FAIL, or an unaccounted GLUE candidate blocks LIFT and remains CANNOT_CHECK.",
+    "lift_rule": "LIFT may be attempted only when every GLUE candidate key in the bound memory is covered by a valid composition rejection certificate and the existing ExhaustionWitness plus MissingTransformationSpecification pass the unchanged canonical audit.",
+    "negative_history_rule": "Every certified GLUE rejection remains in the returned resolution trace alongside any prior SEARCH/JUMP rejection certificates.",
+    "authority": "routing/proposal only; no theorem, novelty, scientific or model-efficacy authority"
+  },
+  "strong_parents": [
+    "production v2 fail-closed GLUE behavior",
+    "naive any-GLUE-FAIL-means-LIFT",
+    "composition-id-only rejection",
+    "episode-set-bound but order/revision-unbound rejection",
+    "caller-supplied rejection string"
+  ],
+  "frozen_tests": [
+    "valid GLUE still wins immediately and mints no rejection certificate",
+    "one conclusive GLUE rejection plus complete exhaustion can legally reach LIFT",
+    "the same case remains CANNOT_CHECK under production v2",
+    "missing GLUE witness remains CANNOT_CHECK",
+    "nonconclusive GLUE audit failure remains CANNOT_CHECK",
+    "CANNOT_CHECK never mints a composition rejection certificate",
+    "composition certificate validation fails on wrong operation order",
+    "composition certificate validation fails after any component episode revision changes",
+    "composition certificate validation fails on target obstruction/context mismatch",
+    "composition witness semantic-content or certificate hash tampering is detected",
+    "one rejected GLUE composition plus one unresolved GLUE composition still blocks LIFT",
+    "LIFT is blocked unless ExhaustionWitness accounts for every exact GLUE candidate key",
+    "negative-history output retains prior SEARCH/JUMP and GLUE rejection certificates",
+    "existing v1 and v2 resolver behavior remains unchanged"
+  ],
+  "hard_gates": {
+    "new_v3_tests_all_pass": true,
+    "existing_v2_router_tests_all_pass": true,
+    "existing_v1_router_tests_all_pass": true,
+    "existing_semantic_shortcut_tests_all_pass": true,
+    "existing_math_research_runtime_tests_all_pass": true,
+    "full_repository_protected_ci_not_weakened": true,
+    "no_existing_negative_or_evaluator_rewritten": true
+  },
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_GLUE_REJECTION_FALLTHROUGH",
+  "remaining_nonclaims": [
+    "natural-language obstruction/witness extraction",
+    "model-level continual-research performance lift",
+    "proof or scientific authority",
+    "broad GLUE rejection reasons beyond the registered conclusive allowlist"
+  ]
+}

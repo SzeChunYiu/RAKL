@@ -1,0 +1,21 @@
+{
+  "schema_version": "paper1-agent-output-authority-firewall-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper I — Epistemic Mechanics",
+  "base_main_sha": "60654878bf69ade0e585a6cf087094a917ba50a9",
+  "question": "Can untrusted agent-generated authority proposals be admitted to the typed proposal plane without allowing model-controlled fields to synthesize protected attestation, signer, evaluator, certificate or verification authority?",
+  "parent": "current certificate-bound v3 scientific-authority runtime and epistemic-noninterference suite",
+  "successor": "explicit agent payload gateway separating untrusted proposal fields from protected control-plane arguments",
+  "allowed_agent_fields": ["claim_id", "axis", "proposition", "scope_id", "evidence_ids"],
+  "forbidden_agent_control_fields": ["verified", "verification_outcome", "outcome", "attestation_id", "authority_context", "signer_key", "signer_id", "certificate_id", "evaluator_artifact_id", "subject_hash", "grants_authority"],
+  "hard_gates": [
+    "all forbidden control-plane fields fail closed",
+    "well-formed payload can create only an inert AuthorityProposal",
+    "submission without separately supplied protected context cannot mint authority",
+    "existing legitimate protected promotion/revocation/supersession controls remain green",
+    "existing noninterference mutation suite remains green"
+  ],
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_AGENT_OUTPUT_AUTHORITY_FIREWALL",
+  "next_if_green": "run live-model/generated-payload assurance against the same gateway; do not claim empirical LLM leakage rate from property tests alone",
+  "grants_scientific_authority": false
+}

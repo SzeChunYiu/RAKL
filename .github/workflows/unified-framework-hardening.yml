@@ -88,7 +88,7 @@ jobs:
           grep -Fx 'EQUIVALENCE_SPOT_FAILURES=0' unified_path_quotient_stdout.txt
           python research/unified_problem_solving_v1/field_hypothesis_experiment.py | tee unified_field_hypothesis_stdout.txt
           grep -Fx 'AUTHORITY_GRANTED=false' unified_field_hypothesis_stdout.txt
-          python research/unified_problem_solving_v1/diagnosis_accuracy_experiment.py | tee unified_diagnosis_stdout.txt
+          python research/unified_problem_solving_v1/diagnosis_redesign_experiment.py --scenarios 200 --replicates 3 | tee unified_diagnosis_stdout.txt
           grep -Fx 'AUTHORITY_GRANTED=false' unified_diagnosis_stdout.txt
           # The committed result receipts these papers cite must byte-match a
           # fresh run against HEAD, or the job fails loudly instead of shipping
@@ -129,7 +129,7 @@ jobs:
           cp publication/papers/paper-04-structural-learning-mechanics/main.tex research/unified_problem_solving_v1/PAPER4_PATCHED_MAIN.tex
           ! grep -F 'returns a supported negative' publication/papers/paper-04-structural-learning-mechanics/main.tex
           ! grep -F 'obstruction located at the instrument' publication/papers/paper-04-structural-learning-mechanics/main.tex
-          grep -F 'generator defect' publication/papers/paper-04-structural-learning-mechanics/main.tex
+          grep -F 'Either defect alone voids the run' publication/papers/paper-04-structural-learning-mechanics/main.tex
       - name: Install manuscript tools
         run: |
           sudo apt-get update -qq
@@ -172,7 +172,7 @@ jobs:
           check_one publication/papers/paper-06-rakl-scientific-research-engine/source 'Paper VI'
           grep -F 'Verified transformation geometry' publication/papers/paper-05-verified-discovery-in-mathematics/unified_main.txt
           grep -F 'Unified problem-solving substrate' publication/papers/paper-06-rakl-scientific-research-engine/source/unified_main.txt
-          grep -F 'generator defect' publication/papers/paper-04-structural-learning-mechanics/unified_main.txt
+          grep -F 'Either defect alone voids the run' publication/papers/paper-04-structural-learning-mechanics/unified_main.txt
       - name: Upload hardening evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

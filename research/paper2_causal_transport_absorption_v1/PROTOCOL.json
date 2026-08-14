@@ -1,0 +1,94 @@
+{
+  "schema_version": "paper2-transport-absorption-protocol-v1",
+  "freeze_date": "2026-08-14",
+  "frozen_before_implementation": true,
+  "frozen_before_outcome_access": true,
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permitted_publication_claim": "PROPOSAL_ONLY. At most: 'a typed refusal that separates a witness-independent impossibility certificate from a witness-local non-licence, with the certificate gated on an explicit closed-world declaration'. No claim of parity with, superiority over, or generalisation of sID is permitted under any outcome of this protocol.",
+
+  "object": "ORION's applicability/transport gate assess_transfer (src/rakl/structural_transfer.py), specifically the semantics of its REJECTED verdict.",
+  "qoi": "Whether the negative verdict can be split into CERTIFIABLY_IMPOSSIBLE (no admissible witness licenses this transfer) and MERELY_UNLICENSED (this witness does not license it) without emitting false impossibility certificates.",
+  "residual_targeted": "ORION's REJECTED quantifies over nothing. sID's FAIL quantifies over all derivations at fixed inputs (SOURCE_VERIFICATION V3, V5, V6).",
+
+  "reason_code_partition": {
+    "note": "FROZEN BEFORE IMPLEMENTATION. Derived by reading which fields of StructuralWitness each reason code depends on. A code is WITNESS_LOCAL if some other admissible witness over the same (source, target) pair can avoid it. The impossibility certificate MUST be derivable from the STRUCTURAL set alone; if any WITNESS_LOCAL code can reach the certificate, the adapted challenger fails for the same reason as the faithful one and the experiment is uninterpretable.",
+    "WITNESS_LOCAL": [
+      {"code": "source_identity_mismatch", "repair": "witness names the correct source structure_id"},
+      {"code": "target_identity_mismatch", "repair": "witness names the correct target structure_id"},
+      {"code": "incomplete_source_role_mapping", "repair": "witness supplies a total role_mapping"},
+      {"code": "target_role_missing", "repair": "witness maps into target.role_ids"},
+      {"code": "witness_claims_unknown_source_invariant", "repair": "witness declares only genuine source invariants"},
+      {"code": "boundary_mismatch:*", "repair": "witness declares fewer required_target_boundaries; the empty set always passes. NOTE: boundary conditions in v1 are entirely witness-discretionary and can therefore NEVER support an impossibility certificate. Recorded as a limitation of the transfer, not a defect introduced by it."},
+      {"code": "missing_witness_evidence", "repair": "witness supplies a non-empty evidence_ids"}
+    ],
+    "STRUCTURAL": [
+      {
+        "criterion": "S1_QOI",
+        "condition": "source.qoi == target.qoi",
+        "why_witness_independent": "No witness field participates in this check."
+      },
+      {
+        "criterion": "S2_INVARIANTS",
+        "condition": "source.invariants is a subset of target.invariants",
+        "why_witness_independent": "assess_transfer computes preserved = source.invariants AND declared AND target.invariants and requires it to equal source.invariants. Declaring more cannot help (the target intersection bounds it); declaring less cannot help (the equality fails). So the inclusion is forced regardless of what the witness declares. Reason codes declared_invariant_missing_in_target and source_invariants_not_fully_preserved both reduce to this single criterion."
+      },
+      {
+        "criterion": "S3_RELATIONS",
+        "condition": "there EXISTS a total map phi from source.role_ids to target.role_ids such that for every relation r in source.relations, the signature (phi(r.source_role), r.relation_type, phi(r.target_role), r.directed) is in target.relations",
+        "why_witness_independent": "Existentially quantified over the entire role-mapping space. This is the direct analogue of sID quantifying over derivations. Requires closed-world target.relations to be meaningful."
+      }
+    ]
+  },
+
+  "completeness_proposition_to_test": {
+    "statement": "Fix a source object S and a target object T, with T carrying a closed-world completeness declaration. Then there EXISTS a StructuralWitness w such that assess_transfer(S, T, w).decision == LICENSED if and only if S1 and S2 and S3 all hold.",
+    "proof_sketch_forward": "If a licensing witness w exists then its role_mapping witnesses S3; the qoi check gives S1; and the invariant check forces source.invariants subset-of declared subset-of target.invariants, giving S2.",
+    "proof_sketch_backward": "Given phi from S3, construct w with role_mapping=phi, preserved_invariants=source.invariants (contained in target.invariants by S2), required_target_boundaries=(), a non-empty evidence_ids, and matching identities. Every check in assess_transfer then passes.",
+    "status": "PROPOSAL_ONLY. To be checked EMPIRICALLY by brute-force witness construction on small cases in the benchmark below, not asserted. A proof sketch in this file is not a verified theorem.",
+    "decidability_note": "The role-mapping space is finite, size |target.role_ids|^|source.role_ids|, so exhaustion is decidable -- unlike a general do-calculus derivation search. This is the one respect in which the ORION setting is EASIER than the source setting, and it is what makes the transfer conceivable at all."
+  },
+
+  "challengers": [
+    {
+      "id": "CH-A-FAITHFUL_IMPORT",
+      "intent": "Faithful transfer of the source's verdict form WITHOUT its assumptions. Every ORION REJECTED is relabelled CERTIFIABLY_IMPOSSIBLE. This is what 'we have completeness too' looks like when the preconditions are not checked.",
+      "expected_failure": "Emits impossibility certificates on repairable witness defects and on open-world targets.",
+      "role": "This is the control arm. It is EXPECTED to fail; that failure is the positive evidence that the preconditions are load-bearing."
+    },
+    {
+      "id": "CH-B-TYPED_REFUSAL_REPAIRED",
+      "intent": "Adapted transfer. Emits CERTIFIABLY_IMPOSSIBLE only when (i) the target carries a closed-world completeness declaration, (ii) bounded exhaustion over the role-mapping space COMPLETES within budget, and (iii) at least one of S1/S2/S3 fails. Otherwise MERELY_UNLICENSED.",
+      "fail_closed_rules": [
+        "search budget exhausted without completing -> MERELY_UNLICENSED, never a certificate",
+        "target not declared closed-world -> MERELY_UNLICENSED, never a certificate",
+        "any witness-local reason code -> plays no part in the certificate decision"
+      ]
+    }
+  ],
+
+  "benchmark_arms": [
+    {"arm": "ARM-1_REPAIRABLE_ROLE_MAP", "construction": "A licensing witness exists under a DIFFERENT role mapping, but the supplied witness uses a wrong one.", "ground_truth": "MERELY_UNLICENSED", "oracle": "constructive -- exhibit the repairing witness and show assess_transfer returns LICENSED for it", "expected_A": "false certificate", "expected_B": "correct"},
+    {"arm": "ARM-2_REPAIRABLE_EVIDENCE", "construction": "Witness is structurally perfect but has empty evidence_ids.", "ground_truth": "MERELY_UNLICENSED", "oracle": "constructive", "expected_A": "false certificate", "expected_B": "correct"},
+    {"arm": "ARM-3_REPAIRABLE_BOUNDARY", "construction": "Witness declares a required target boundary the target does not meet; dropping the declaration licenses.", "ground_truth": "MERELY_UNLICENSED", "oracle": "constructive", "expected_A": "false certificate", "expected_B": "correct"},
+    {"arm": "ARM-4_STRUCTURAL_RELATION", "construction": "Closed-world target genuinely lacks a required relation under EVERY role mapping.", "ground_truth": "CERTIFIABLY_IMPOSSIBLE", "oracle": "brute-force over all witnesses", "expected_A": "correct by accident", "expected_B": "must fire"},
+    {"arm": "ARM-5_STRUCTURAL_QOI", "construction": "Closed-world target with a different QoI.", "ground_truth": "CERTIFIABLY_IMPOSSIBLE", "oracle": "brute-force", "expected_A": "correct by accident", "expected_B": "must fire"},
+    {"arm": "ARM-6_STRUCTURAL_INVARIANT", "construction": "Closed-world target missing a source invariant.", "ground_truth": "CERTIFIABLY_IMPOSSIBLE", "oracle": "brute-force", "expected_A": "correct by accident", "expected_B": "must fire"},
+    {"arm": "ARM-7_OPEN_WORLD", "construction": "Target missing a required relation but NOT declared closed-world.", "ground_truth": "MERELY_UNLICENSED", "oracle": "by declaration -- absence of a relation means 'not recorded', so impossibility is not established", "expected_A": "false certificate", "expected_B": "must NOT fire"},
+    {"arm": "ARM-8_BUDGET_EXHAUSTION", "construction": "Closed-world, genuinely impossible, but role space large enough to exceed the search budget.", "ground_truth": "MERELY_UNLICENSED", "oracle": "by fail-closed rule -- an incomplete exhaustion establishes nothing", "expected_A": "false certificate", "expected_B": "must return MERELY_UNLICENSED (honest under-firing)"}
+  ],
+
+  "hard_gates": {
+    "note": "Non-compensatory. Every gate must pass on its own; no averaging across gates or arms.",
+    "G1_NO_FALSE_CERTIFICATE": "CH-B emits ZERO CERTIFIABLY_IMPOSSIBLE verdicts across ARM-1,2,3,7,8. A single one fails the transfer outright. A wrong impossibility certificate is worse than a plain refusal.",
+    "G2_NOT_VACUOUS": "CH-B emits CERTIFIABLY_IMPOSSIBLE on 100% of ARM-4,5,6. A gate that never fires trivially satisfies G1 and is useless.",
+    "G3_SEPARATION": "CH-B differs from CH-A on at least one case. If the two never differ, the distinction is empty and the mechanic adds nothing.",
+    "G4_PROPOSITION_HOLDS": "On every generated case, the brute-force witness oracle agrees with the S1/S2/S3 criterion. Any disagreement REFUTES the completeness proposition and the mechanic must be recorded as failed-to-transfer.",
+    "G5_NO_REGRESSION": "assess_transfer's own LICENSED/REJECTED/CANNOT_CHECK outputs are byte-identical before and after. The new capability is strictly additive; the existing gate is not modified."
+  },
+
+  "negative_result_commitment": "If any hard gate fails, the outcome is recorded as a FAILED TRANSFER with both the positive and negative evidence retained, and the mechanic is NOT promoted. Thresholds in this file may not be adjusted after outcome access. A failed transfer is a first-class result of this protocol.",
+
+  "compute_binding": "All execution on laptop billy (~/rakl-verify, .venv/bin/python). No execution on the Mac.",
+  "authority_note": "This protocol grants no scientific or promotion authority. Same-session implementation and testing is NOT independent review. Nothing here modifies CONSTITUTION, evaluator/workflow files, or promotion criteria."
+}

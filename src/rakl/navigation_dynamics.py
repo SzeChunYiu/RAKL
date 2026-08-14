@@ -645,9 +645,19 @@ class GreedyBestFirst(Navigator):
 class AStarWithGivenHeuristic(Navigator):
     """STRONG control: A* on ``f = g + h`` with the problem's given heuristic.
 
-    When ``h`` is admissible this returns an exactly optimal route while expanding
-    far fewer nodes than uninformed search. Any dynamics in this module has to beat
-    *this* on the measured axis to be worth its complexity.
+    Heuristic contract (admissibility): for every node ``v``,
+    ``h(v) <= true_dist(v, goal)``. Under admissibility this returns an exactly
+    optimal route while expanding far fewer nodes than uninformed search. Any
+    dynamics in this module has to beat *this* on the measured axis to be worth
+    its complexity.
+
+    Implementation: a node whose ``g`` improves after it was first expanded is
+    *reopened* (removed from the closed set and re-inserted in the frontier).
+    Reopening is required for optimality when the heuristic is admissible but
+    inconsistent; when the heuristic is consistent the reopen branch is never
+    taken and the search behaves as an efficient closed-set A*. The implementation
+    therefore matches the admissible-optimality theorem without narrowing the
+    contract to consistent heuristics.
     """
 
     strategy_id = "astar_given_heuristic"
@@ -659,13 +669,13 @@ class AStarWithGivenHeuristic(Navigator):
         prev: Dict[str, str] = {}
         heap: list[tuple[float, int, str]] = [(problem.h(problem.start), 0, problem.start)]
         tie = 1
-        settled: set[str] = set()
+        closed: set[str] = set()
         expansions = 0
         while heap:
             _f, _t, node = heapq.heappop(heap)
-            if node in settled:
+            if node in closed:
                 continue
-            settled.add(node)
+            closed.add(node)
             expansions += 1
             if node == problem.goal:
                 route = _unwind(prev, problem.start, problem.goal)
@@ -675,6 +685,8 @@ class AStarWithGivenHeuristic(Navigator):
                 if nd < g.get(nb, inf):
                     g[nb] = nd
                     prev[nb] = node
+                    if nb in closed:
+                        closed.discard(nb)  # reopen: a strictly cheaper path was found
                     heapq.heappush(heap, (nd + problem.h(nb), tie, nb))
                     tie += 1
         return self._no_route(problem, search_expansions=expansions, relaxation_sweeps=0)

@@ -1,0 +1,55 @@
+{
+  "schema_version": "rakl-paper4-allocator-promotion-receipt-v1",
+  "date": "2026-08-14",
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "mechanic": "learner-conditioned vector structural training allocator",
+  "terminal": "PROMOTE_CONDITIONALLY_STRUCTURAL_TRAINING_ALLOCATOR",
+  "exact_evaluated_code_head": "a64904669ce5a9535099f3cc5c73f777b895b816",
+  "authorizing_phase1": {
+    "artifact": "research/paper4_phase1_results_v2/7b/run_manifest_v2.json",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "family": "state_reachability",
+    "terminal": "MECHANISM_SIGNAL_PRESENT",
+    "principle_mastered_at_exposure": 2,
+    "same_structure_late_gain": 0.0,
+    "unsaturated_coord_late_gain": 0.25
+  },
+  "production_surface": {
+    "module": "src/rakl/training_scheduler.py",
+    "entrypoint": "choose_adaptive_training_batch",
+    "input_contract": "TrainingProjectionSnapshot",
+    "mechanism": [
+      "retain the six-coordinate mastery vector rather than scalarizing it",
+      "prioritize principle until the frozen mastery threshold",
+      "enforce retention as a hard floor",
+      "target the lowest measured unsaturated coordinate after principle mastery",
+      "preserve a nonzero same-structure repetition floor",
+      "treat forgetting and negative-transfer risk as noncompensatory hard gates",
+      "fail closed on unmeasured, posthoc, leaky, unsafe or insufficient candidate sets"
+    ],
+    "grants_scientific_authority": false,
+    "claims_scheduler_efficacy": false
+  },
+  "exact_head_gates": {
+    "p4_scheduler_promotion": {"run_id":31773245680,"conclusion":"success"},
+    "artifact_contract_coverage": {"run_id":31773245720,"conclusion":"success"},
+    "protected_repository_test": {"run_id":31773245739,"conclusion":"success"}
+  },
+  "preoutcome_rshea_history": [
+    "PROTOCOL_V1: incomplete policy/hyperparameter freeze; superseded before outcomes",
+    "PROTOCOL_V2: Phase-1 training-semantics mismatch; superseded before outcomes",
+    "PROTOCOL_V3 initial reader: revision-key schema alias mismatch; original bytes preserved and redundant alias repaired before outcomes",
+    "PHASE2_DATA_CONSTRUCTOR_V1: exact prompt-byte overlap across partitions; leakage guard preserved and Phase-2-only opaque nonce repair added before outcomes",
+    "p4-scheduler workflow wrapper/import defects: tests were already green; wrapper repaired without changing the mechanic/evaluator"
+  ],
+  "causal_phase2": {
+    "outcome_authorizing_protocol": "research/paper4_phase2_v1/PROTOCOL_V3.json",
+    "inference_plan": "research/paper4_phase2_v1/INFERENCE_PLAN.json",
+    "runner": "experiments/training_ladder/phase2_adaptive_v1.py",
+    "status": "NOT_EXECUTED_BY_THIS_PROMOTION_RECEIPT",
+    "reason": "Mechanic promotion is distinct from Adaptive-vs-Static efficacy. The latter requires the exact pinned 7B five-arm run and cannot inherit the Phase-1 signal."
+  },
+  "standalone_paper4_authority": "NOT_GRANTED_BY_ALLOCATOR_PROMOTION",
+  "issue_462_requirement_remaining": "Execute the frozen 7B five-arm Phase-2 comparison, preserve strongest-parent/cost/safety terminals, then test generalization across fresh structural families/model regimes before PAPER_IV_JUSTIFIED.",
+  "grants_scientific_authority": false
+}

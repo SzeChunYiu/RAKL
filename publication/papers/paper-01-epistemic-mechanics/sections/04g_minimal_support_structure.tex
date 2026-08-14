@@ -1,0 +1,67 @@
+\section{Minimal support structure and navigation}\label{sec:support-structure}
+
+The preceding sections establish a stopping rule, a compatibility discipline and an authority boundary. Each is stated as a constraint: what the system may not conclude, may not collapse, may not certify. This section states what the structure is \emph{for}. It is the positive counterpart to the constraints, and it is what makes bounded saturation reachable rather than merely well defined.
+
+\subsection{The target is not the largest lattice}
+
+A scientific inquiry carries a registered target
+\[
+\tau=(q,\alpha,\gamma),
+\]
+where \(q\) is the question or quantity of interest, \(\alpha\) the authority layer required to answer it, and \(\gamma\) the target context. Nothing about \(\tau\) rewards accumulation. The useful object is the \emph{smallest} evidence-governed support structure that connects admissible evidence to \(\tau\) without context drift, authority escalation or unsupported transition composition.
+
+A linear derivation is a special case. Most scientific answers require several prerequisites to converge, so the natural object is a typed support hypergraph
+\[
+P_\tau\subseteq G_t=(V_t,E_t,H_t),
+\]
+a subgraph of the current scoped epistemic graph in which every step preserves its declared context, relation type, evidence lineage, uncertainty and authority contract. The endpoint is not authorized merely because a path exists; every transition must be licensed at the layer \(\tau\) demands. This is the same discipline as Section~\ref{sec:authority}, applied to paths rather than to single claims.
+
+\subsection{Distillation is what makes saturation certifiable}
+
+Theorem~\ref{thm:finite-basis} (finite-basis saturation) requires a finite universe \(U_{\mathcal B}\). The scientific literature is not one, which is why Section~\ref{sec:saturation} can offer only \emph{bounded} saturation relative to a declared search world, and why unrestricted completeness is not finitely certifiable at all.
+
+Compression to a minimal support structure changes this. A distillation that retains, from each source, only the elements admissible under the registered basis produces a finite \(U_{\mathcal B}\), and the fixed point becomes reachable in at most \(|U_{\mathcal B}|-|K_0|\) strict-growth steps. The saturation criterion is then a statement about a fixed point that the process can actually attain, rather than a horizon it approaches.
+
+This is also where the context economy comes from, though that is the lesser benefit. A generator need not materialize the full atlas; it can receive the target contract, the current path corridor, the unresolved bottlenecks, the candidate next actions and the relevant negative history, while the atlas remains external and reconstructable. Reduced context is a consequence of working with the minimal support structure, not the reason for building one.
+
+\subsection{Solving as navigation}
+
+Given a target contract and a distilled structure, the solving problem becomes a search over admissible support hyperpaths. Search is naturally bidirectional: forward from current evidence toward target-relevant reachable claims, and backward from \(\tau\) toward the prerequisites its authority layer would require. Their intersection defines a \emph{path corridor}, the locally relevant region of the atlas for this question.
+
+When no authority-valid support hyperpath reaches \(\tau\), the failure is often localizable to a set of unresolved prerequisites that intersects every admissible support structure. Such an \emph{epistemic cut} is the useful output of a failed search: it names what would have to be established, rather than reporting only that the target was not reached.
+
+\subsection{Obstructions cannot be distilled away}
+
+Distillation has a precondition that is easy to miss, because the datum it must retain does not resemble content.
+
+Pairwise compatibility facts look like content: each is a positive, quotable relation between two objects. An obstruction is an absence --- the fact that no global assignment exists across a cover --- and a distiller instructed to keep the core of each piece will keep the former and discard the latter. The consequence is not a loss of detail. It is a loss of exactly the information that prevents wrong connections.
+
+\begin{proposition}[Obstruction-blind distillation is unsound for navigation]\label{prop:obstruction-blind}
+Let \(D\) be a distillation that records, for each cover it compresses, only which constraints are individually satisfiable. Then no predicate on \(D\)'s output decides global realizability, and navigation over \(D\)'s output admits support structures in which every step is licensed and which possess no global section.
+\end{proposition}
+
+\begin{proof}
+Take the three-context parity cover of Section~\ref{sec:compatibility} and the cover obtained from it by replacing the third constraint \(x\oplus z=1\) with \(x\oplus z=0\). Every constraint is individually satisfiable in both, so the two covers have identical images under \(D\). The second admits the global assignment \(x=y=z\); the first admits none, since the first two constraints force \(x=z\) and the third forbids it. A predicate on \(D\)'s output therefore assigns the same value to two covers that differ in global realizability, so no such predicate can decide it. A navigator consuming \(D\)'s output has no warning that the parity cover is unrealizable and will admit it.
+\end{proof}
+
+The proposition is an identifiability statement, not an argument against distillation. It says precisely which datum must travel alongside the retained cores.
+
+\begin{definition}[Obstruction-preserving distillation]
+A distillation is \emph{obstruction-preserving} for a cover if it retains either the higher-order admissibility certificate for that cover or an explicit obstruction object recording its failure.
+\end{definition}
+
+Only obstruction-preserving distillations are admissible inputs to support-structure navigation. Section~\ref{sec:compatibility} already observes that a mature implementation should carry certificates attached to larger covers or explicit obstruction objects rather than pairwise edge labels alone; Proposition~\ref{prop:obstruction-blind} converts that recommendation into a requirement, and locates the cost of ignoring it in the navigator rather than in the representation.
+
+\begin{remark}
+Proposition~\ref{prop:obstruction-blind} is machine-checked. In the accompanying Lean development, \texttt{covers\_agree\_on\_pairwise\_data} and \texttt{covers\_differ\_on\_global\_realizability} exhibit the two covers, and \texttt{no\_pairwise\_predicate\_decides\_global\_realizability} derives the impossibility. All three are axiom-free.
+\end{remark}
+
+\subsection{What distillation does not buy}
+
+Compression relocates uncertainty; it does not remove it. Before distillation the open question is whether the search covered enough of the world. After distillation it is whether the distiller retained the right elements --- and the open-world result of Section~\ref{sec:saturation} applies unchanged to that second question, since no finite transcript can certify that nothing load-bearing was dropped.
+
+The exchange is nonetheless favourable, for a reason worth stating explicitly. A distillation is a declared, inspectable artifact with a fixed basis; an unbounded corpus is not. Auditing what a structure omits is a tractable problem, and Proposition~\ref{prop:obstruction-blind} identifies the first thing such an audit must check. Whether the resulting structure is a better object to navigate than the sources it replaces is an empirical question about problem-solving performance, not a corollary of this section, and it is not settled here.
+
+\begin{remark}[Implementation]
+The navigation loop of this section is executable in the accompanying artifact, not only specified. A distilled structure (\path{support_solver.py}) carries atoms, authority-licensed typed edges and \emph{explicit obstruction objects}; route search rejects any assembled atom set realizing a registered obstructed cover --- the check is applied to the assembled cover rather than edge-locally, which is exactly the discipline Proposition~\ref{prop:obstruction-blind} forces --- and a failed search returns an epistemic cut (what no admissible route can avoid) together with a distinct minimal repair (what would suffice to open one), reporting when either set is approximate rather than exact. Multi-premise derivation is forward closure over hyperedges under the same obstruction refusal (\path{derivation.py}); as a real-data check, the dependency graph of the paper's own Lean development is parsed into hyperedges and a theorem is re-derived from the axiom-free base by traversal alone. Edge licenses are derived from certificates whose checkers are re-executed at use time: a failing checker demotes the edge and an erroring checker yields cannot-check, never a pass (\path{certificates.py}). A structure space with fail-closed applicability matching and recursive fiber decomposition composes these into a solving loop (\path{structure_space.py}, \path{recursive_solver.py}). Every output of this loop is a support claim carrying no scientific authority, per Section~\ref{sec:solver_noninterference}. Whether navigating distilled structures improves problem-solving performance over navigating the undistilled sources is under prospective evaluation at the time of writing; no benefit result is claimed here.
+\end{remark}

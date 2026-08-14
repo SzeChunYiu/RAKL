@@ -1,0 +1,70 @@
+{
+  "schema_version": "rakl-p3-stale-feasibility-receipt-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "lane": "external non-self-generated evaluation surface for the typed experience state",
+  "authority": "FEASIBILITY_VERIFICATION_ONLY",
+  "terminal": "PUBLISHED_FULL_CONTEXT_PROTOCOL_INFEASIBLE__MEMORY_SYSTEM_MODE_FEASIBLE_UNDER_SANCTIONED_GPU",
+  "terminal_note": "Two-part verdict after the operator sanctioned the laptop GPU (RTX A3000 6GB) for this lane. Part 1: the published full-context target-model protocol remains infeasible — blocker B1 is context length (400/400 haystacks at ~167K–200K approx tokens), not parameter count, and no 6GB configuration ingests it at any quantization. Part 2: the benchmark's own memory-framework mode (incremental per-session ingestion, retrieval at query time) is feasible with a declared quantized local subject under a NEW freeze; see stale_memory_mode_v1 below. Results in that mode are an ON-vs-OFF governance contrast only and are never comparable to the published 55.2% full-context ceiling.",
+
+  "subject": {
+    "lever_record": "research/paper3_gate_falsifiability_audit_v1/FRESH_TASK_LIFT_STATUS.json (branch research/paper3-lift-status-and-nearest-work, commit 013b8416) — lever 'evaluate the typed state on an externally constructed benchmark that needs no LUNARC qualification', status PROPOSED_NOT_EXECUTED",
+    "benchmark": "STALE: Can LLM Agents Know When Their Memories Are No Longer Valid? (Hanxiang Chao, Yihan Bai, Rui Sheng, Tianle Li, Yushi Sun; arXiv:2605.06527)",
+    "mandated_envelope": "laptop billy — 6 GB RTX A3000 / CPU; no hosted-API confirmatory dependency"
+  },
+
+  "verification_performed_on": "billy-laptop, 2026-08-14, ~/stale-feas",
+  "primary_sources_fetched": {
+    "arxiv_abs": "https://arxiv.org/abs/2605.06527 — title/authors/scenario count (400) / query count (1,200) / best-model ceiling (55.2%) all match the recorded lever",
+    "code": "https://github.com/icedreamc/STALE — cloned (STALE/Generation, STALE/Evaluation, cup_mem)",
+    "dataset": "https://huggingface.co/datasets/STALEproj/STALE — refs/convert/parquet train shard downloaded, 288,947,099 bytes, 400 rows, CC BY 4.0",
+    "schema_observed": ["uid", "M_old", "M_new", "explanation", "probing_queries{dim1,dim2,dim3}", "relevant_session_index", "timestamps", "haystack_session", "type"]
+  },
+
+  "feasibility_questions": {
+    "dataset_obtainable": {
+      "answer": "YES",
+      "evidence": "parquet shard downloaded and parsed on billy-laptop; 400 rows; license CC BY 4.0"
+    },
+    "evaluation_machine_checkable_or_third_party_labelled": {
+      "answer": "NO",
+      "evidence": "Official scoring is LLM-judged free text: STALE/Evaluation/full_eval_performance.py imports SYSTEM_PROMPT_ALL_IN_ONE_JUDGE from judge_prompts.py and calls JUDGE_MODEL (default 'gemini-3.1-flash-lite-preview') through an OpenAI-compatible API. Gold-adjacent fields (explanation, M_old/M_new) exist but the published metric is judge-scored, not exact-match."
+    },
+    "runnable_within_6GB_A3000_cpu_envelope": {
+      "answer": "NO",
+      "evidence": "Measured over all 400 rows of the downloaded parquet (len(json.dumps(haystack_session))//4): approx-token stats min 167,660 / p25 181,005 / median 184,823 / p75 188,762 / p90 192,122 / max 200,382. Share of scenarios fitting 30K tokens: 0.0. Share fitting 16K tokens: 0.0. The official runner (STALE/Evaluation/run_target_model.py) formats the full haystack into the target-model prompt against a 128,000-token limit with optional trimming, i.e. it presumes a hosted long-context API. No model runnable in 6 GB VRAM / CPU ingests 167K–200K-token contexts."
+    }
+  },
+
+  "exact_blockers": [
+    "B1_CONTEXT_LENGTH: every one of the 400 scenarios requires a ~167K–200K-token context; the mandated envelope cannot execute the published target-model protocol on even one scenario.",
+    "B2_JUDGE_DEPENDENCY: the published metric is produced by a hosted LLM judge; a machine-checkable substitute deviates from the published protocol and severs comparability with the 55.2% ceiling.",
+    "B3_TYPED_COORDINATE_LEAKAGE: deriving RAKL typed coordinates (version_current / not_refuted / validity_known) deterministically from the dataset's own M_old/M_new/relevant_session_index/explanation fields would hand the candidate the conflict labels the benchmark measures the detection of — the same defect class (gold assigned from construction intent) that research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json disqualifies. An honest ON-arm requires natural-language extraction, which is exactly the capability-bound adapter residual Paper III fences to the #447 qualification lane."
+  ],
+
+  "stale_memory_mode_v1": {
+    "status": "FEASIBLE_UNDER_SANCTIONED_GPU_ENVELOPE — NEW freeze required before outcome access",
+    "envelope_recheck": "Operator sanctioned the RTX A3000 6GB for this lane (2026-08-14). Per-session ingestion needs only a few-K-token context per call; a quantized instruct model plus small KV cache fits 6GB. B1 stands only against the full-context protocol; B2 is handled by a declared local arm-blind judge (severing leaderboard comparability, claimed nowhere); B3 is handled by forbidding both arms any access to M_old/M_new/explanation/relevant_session_index at inference time.",
+    "design_cut": "Ingestion is SHARED: one extraction pass per scenario produces one memory store; the arms fork only at the governance layer (typed invalidation chains + refusal semantics ON vs naive retrieval OFF) at matched answer-time budget. This varies exactly one dimension and halves compute.",
+    "admissibility_precondition": "A frozen pre-confirmatory probe on a disjoint probe subset must show a registered minimum skyline-minus-floor separation under this judge and subject, else INSTRUMENT_INADMISSIBLE_CEILING_BELOW_GATE and the confirmatory subset is not spent — the Paper IV oracle-ceiling mechanic applied prospectively.",
+    "old_freeze_untouched": "The frozen 7B/A100 four-arm protocol and its BLOCKED_ON_CAPABILITY_QUALIFICATION terminal remain on record verbatim; this is a new protocol with its own falsifiers, not a substitution."
+  },
+
+  "reduced_scope_variant_proposed_not_executed": {
+    "design": "Incremental memory-system arms (the benchmark's own memory-framework mode, not full-context): sessions ingested one at a time by a small local model (sessions are individually small), typed invalidation governance ON vs OFF at matched budget, same local judge for both arms, scenario subset sized to compute.",
+    "why_not_executed_here": [
+      "results would not be comparable to the published 55.2% ceiling (different model class, different judge, subset)",
+      "instrument admissibility in the floor regime is unproven: with a small local model both arms may floor at ~0, in which case the run cannot express the ON-vs-OFF effect — the Paper IV oracle-ceiling lesson (research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json) applies literally and requires a frozen pre-execution admissibility probe before any confirmatory spend",
+      "ingestion compute for the full 400 scenarios is ~74M tokens through a local model — days of laptop GPU time, a budget decision that belongs to the operator"
+    ],
+    "precondition_if_revived": "freeze an admissibility probe (oracle/skyline arm must clear a registered minimum separation in this envelope) BEFORE the matched-arm confirmatory run; audit every gate condition with src/rakl/gate_falsifiability.py per condition before outcome access; the old frozen four-arm protocol and its BLOCKED terminal remain on record verbatim"
+  },
+
+  "what_this_receipt_does_not_claim": [
+    "that STALE is a bad benchmark (it is well-constructed and its staleness coordinates genuinely overlap RAKL's typed state)",
+    "that the fresh-task lift is null (it remains BLOCKED_ON_CAPABILITY_QUALIFICATION, explicitly not a null)",
+    "that no external evaluation surface exists (only that this one is infeasible under this envelope)"
+  ],
+
+  "grants_scientific_authority": false
+}

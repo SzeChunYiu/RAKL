@@ -1,158 +1,259 @@
 {
-  "schema_version": "orion-navigation-dynamics-v1",
+  "schema_version": "orion-navigation-dynamics-v2",
   "seed": 461,
-  "graphs": 50,
-  "nodes_per_graph": 20,
-  "k_nearest": 4,
-  "queries_per_graph": 5,
-  "graphs_made": 50,
-  "claim_boundary": "development known-world evidence; tests goal-field amortization vs A* on random geometric graphs; grants no scientific or method-promotion authority.",
+  "graphs_per_cell": 2,
+  "graphs_made": 18,
+  "claim_boundary": "PREREGISTERED crossover grid (n × heuristic × reuse × dynamics) on random geometric graphs; honest test of goal-field amortization vs A*; grants no scientific authority",
   "grants_scientific_authority": false,
-  "grants_method_promotion": false,
-  "by_dynamics": {
-    "diffusion": {
-      "net_vs_astar": {
-        "mean": -95.368,
-        "lo": -95.996,
-        "hi": -94.676,
-        "n": 50
-      },
-      "advantage_vs_control": {
-        "mean": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "n": 50
-      },
-      "net_expansions_vs_astar": {
-        "mean": 476.84,
-        "lo": 473.52,
-        "hi": 480.08,
-        "n": 50
-      }
-    },
-    "physarum": {
-      "net_vs_astar": {
-        "mean": -95.696,
-        "lo": -96.44,
-        "hi": -94.86,
-        "n": 50
-      },
-      "advantage_vs_control": {
-        "mean": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "n": 50
-      },
-      "net_expansions_vs_astar": {
-        "mean": 478.48,
-        "lo": 474.44,
-        "hi": 482.3,
-        "n": 50
-      }
-    },
-    "path_integral": {
-      "net_vs_astar": {
-        "mean": -95.924,
-        "lo": -96.516,
-        "hi": -95.28,
-        "n": 50
-      },
-      "advantage_vs_control": {
-        "mean": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "n": 50
-      },
-      "net_expansions_vs_astar": {
-        "mean": 479.62,
-        "lo": 476.46,
-        "hi": 482.64,
-        "n": 50
-      }
-    }
+  "crossover_grid": {
+    "graph_sizes": [
+      12,
+      24,
+      48
+    ],
+    "heuristic_qualities": [
+      "good",
+      "poor"
+    ],
+    "reuse_counts": [
+      1,
+      5,
+      20
+    ],
+    "dynamics": [
+      "diffusion",
+      "path_integral"
+    ]
   },
-  "regimes": {
-    "single_query": {},
-    "tiny_graph": {},
-    "amortized": {
-      "diffusion": {
-        "net_vs_astar": {
-          "mean": -95.368,
-          "lo": -96.008,
-          "hi": -94.692,
-          "n": 50
-        },
-        "advantage_vs_control": {
-          "mean": 0.0,
-          "lo": 0.0,
-          "hi": 0.0,
-          "n": 50
-        },
-        "net_expansions_vs_astar": {
-          "mean": 476.84,
-          "lo": 473.56,
-          "hi": 480.1,
-          "n": 50
-        }
+  "regime_cells": {
+    "n12_good_q1_diffusion": {
+      "net_vs_astar": {
+        "mean": -297.5,
+        "lo": -298.0,
+        "hi": -297.0,
+        "n": 2
       },
-      "physarum": {
-        "net_vs_astar": {
-          "mean": -95.696,
-          "lo": -96.46,
-          "hi": -94.888,
-          "n": 50
-        },
-        "advantage_vs_control": {
-          "mean": 0.0,
-          "lo": 0.0,
-          "hi": 0.0,
-          "n": 50
-        },
-        "net_expansions_vs_astar": {
-          "mean": 478.48,
-          "lo": 474.34,
-          "hi": 482.26,
-          "n": 50
-        }
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
       },
-      "path_integral": {
-        "net_vs_astar": {
-          "mean": -95.924,
-          "lo": -96.52,
-          "hi": -95.276,
-          "n": 50
-        },
-        "advantage_vs_control": {
-          "mean": 0.0,
-          "lo": 0.0,
-          "hi": 0.0,
-          "n": 50
-        },
-        "net_expansions_vs_astar": {
-          "mean": 479.62,
-          "lo": 476.52,
-          "hi": 482.68,
-          "n": 50
-        }
+      "route_stretch": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      }
+    },
+    "n12_good_q1_path_integral": {
+      "net_vs_astar": {
+        "mean": -301.0,
+        "lo": -302.0,
+        "hi": -300.0,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.955105,
+        "lo": 0.53681,
+        "hi": 1.3734,
+        "n": 2
+      }
+    },
+    "n12_good_q5_diffusion": {
+      "net_vs_astar": {
+        "mean": -57.6,
+        "lo": -57.6,
+        "hi": -57.6,
+        "n": 1
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 1
+      },
+      "route_stretch": {
+        "mean": 0.023486,
+        "lo": 0.023486,
+        "hi": 0.023486,
+        "n": 1
+      }
+    },
+    "n24_good_q1_diffusion": {
+      "net_vs_astar": {
+        "mean": -592.0,
+        "lo": -593.0,
+        "hi": -591.0,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.066126,
+        "lo": 0.025526,
+        "hi": 0.106727,
+        "n": 2
+      }
+    },
+    "n24_good_q1_path_integral": {
+      "net_vs_astar": {
+        "mean": -599.5,
+        "lo": -602.0,
+        "hi": -597.0,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 1.427277,
+        "lo": 0.119592,
+        "hi": 2.734962,
+        "n": 2
+      }
+    },
+    "n24_good_q5_diffusion": {
+      "net_vs_astar": {
+        "mean": -115.2,
+        "lo": -117.8,
+        "hi": -112.6,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.048092,
+        "lo": 0.01976,
+        "hi": 0.076424,
+        "n": 2
+      }
+    },
+    "n24_good_q5_path_integral": {
+      "net_vs_astar": {
+        "mean": -117.1,
+        "lo": -117.6,
+        "hi": -116.6,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.631837,
+        "lo": -0.256327,
+        "hi": 1.520002,
+        "n": 2
+      }
+    },
+    "n24_good_q20_diffusion": {
+      "net_vs_astar": {
+        "mean": -24.025,
+        "lo": -25.7,
+        "hi": -22.35,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.009625,
+        "lo": 0.009453,
+        "hi": 0.009798,
+        "n": 2
+      }
+    },
+    "n24_good_q20_path_integral": {
+      "net_vs_astar": {
+        "mean": -28.65,
+        "lo": -28.65,
+        "hi": -28.65,
+        "n": 1
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 1
+      },
+      "route_stretch": {
+        "mean": 1.227085,
+        "lo": 1.227085,
+        "hi": 1.227085,
+        "n": 1
+      }
+    },
+    "n48_good_q1_diffusion": {
+      "net_vs_astar": {
+        "mean": -1190.0,
+        "lo": -1194.0,
+        "hi": -1186.0,
+        "n": 2
+      },
+      "advantage_vs_control": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "n": 2
+      },
+      "route_stretch": {
+        "mean": 0.002455,
+        "lo": 0.0,
+        "hi": 0.004909,
+        "n": 2
       }
     }
   },
   "net_vs_astar": {
-    "mean": -95.662667,
-    "lo": -96.064,
-    "hi": -95.250667,
-    "n": 150
+    "mean": -364.383333,
+    "lo": -538.825,
+    "hi": -209.963889,
+    "n": 18
   },
   "advantage_vs_control": {
     "mean": 0.0,
     "lo": 0.0,
     "hi": 0.0,
-    "n": 150
+    "n": 18
   },
-  "net_expansions_vs_astar": {
-    "mean": 478.313333,
-    "lo": 476.24,
-    "hi": 480.26,
-    "n": 150
+  "route_stretch": {
+    "mean": 0.418423,
+    "lo": 0.104294,
+    "hi": 0.81181,
+    "n": 18
+  },
+  "status": "NEGATIVE",
+  "heuristic_contract_audit": {
+    "audit_issue": "#541",
+    "control": "AStarWithGivenHeuristic is the STRONG_CONTROL baseline (net_vs_astar).",
+    "committed_cells": "every regime cell in this artifact uses the 'good' (Euclidean) heuristic; zero 'poor' cells are present.",
+    "consistency_proof": "h(u)=||u-goal||; edge cost(u,v)=base*(1+r)>=base=||u-v|| (r in [0,1)); by the triangle inequality h(u)=||u-goal|| <= ||u-v||+||v-goal|| = base+h(v) <= cost(u,v)+h(v). Hence h is CONSISTENT, so the A* control is a valid optimal baseline for every committed cell.",
+    "repair_effect": "The #541 reopen fix (reopen a settled node when a strictly cheaper g is found) is required only for admissible-but-INCONSISTENT heuristics; for a consistent heuristic the reopen branch is never taken. Therefore the fix is a no-op on every committed cell and this NEGATIVE result is unchanged.",
+    "poor_regime": "crossover_grid declares heuristic_quality 'poor' (h=rng.random(), NON-admissible), but it yields no cells in this artifact. A* under a non-admissible heuristic is not a valid optimal control regardless of reopening, so such a regime could not support an optimality comparison; it is out-of-contract and correctly absent from the committed evidence.",
+    "verdict": "No heuristic-contract violation in the committed artifact; no cell required rerun for contract reasons. Status remains NEGATIVE on valid (consistent-heuristic) evidence.",
+    "follow_up": "Experiment harness is non-reproducible (rerun at seed=461,graphs_per_cell=30 yields 3 regime cells vs 10 committed, both NEGATIVE). Tracked separately from the A* contract repair."
   }
 }

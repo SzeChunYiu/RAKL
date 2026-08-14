@@ -1,0 +1,48 @@
+name: p4-phase2-package
+
+on:
+  push:
+    branches:
+      - automation/p4-phase2-v1-20260814
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - name: Bind exact package subject
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Hash package files
+        run: |
+          sha256sum \
+            research/paper4_phase2_v1/PROTOCOL.json \
+            research/paper4_phase2_v1/PROTOCOL_V2.json \
+            research/paper4_phase2_v1/PROTOCOL_V3.json \
+            research/paper4_phase2_v1/PROTOCOL_V3_ORIGINAL_PREEXEC.json \
+            research/paper4_phase2_v1/INFERENCE_PLAN.json \
+            research/paper4_phase2_v1/INSTRUMENT_HISTORY.json \
+            research/paper4_phase2_v1/ALLOCATOR_PROMOTION_RECEIPT.json \
+            src/rakl/training_scheduler.py \
+            experiments/training_ladder/generator_v2.py \
+            experiments/training_ladder/phase2_adaptive_v1.py \
+            tests/test_training_scheduler.py \
+            tests/test_phase2_adaptive_protocol.py \
+            > research/paper4_phase2_v1/PACKAGE_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper4-phase2-promotion-package
+          path: |
+            research/paper4_phase2_v1/
+            src/rakl/training_scheduler.py
+            experiments/training_ladder/generator_v2.py
+            experiments/training_ladder/phase2_adaptive_v1.py
+            tests/test_training_scheduler.py
+            tests/test_phase2_adaptive_protocol.py
+          if-no-files-found: error
+          retention-days: 30

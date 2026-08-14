@@ -1,0 +1,20 @@
+{
+  "schema_version": "paper2-storyanalogy-factorized-result-v1",
+  "terminal": "DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD",
+  "workflow_run": 31806774651,
+  "workflow_job": 94787490235,
+  "exact_head_sha": "9f66720f762b5f89d92f522f3160f34c74f2ed5d",
+  "artifact_id": 9221494114,
+  "artifact_digest": "sha256:40bad272bb20288ed73c471278f9424a70f061c35b9e37819c2be9be3f53f4c0",
+  "source_sha256": "a74f1799ec6eec32a1d82aea5e036ac70c39feb298554c05da8382bf1d80319c",
+  "n_rows": 24388,
+  "partitions": {"DEV":14587,"CALIBRATION":4760,"CONFIRMATORY":4941},
+  "confirmatory_labels_scored_or_used": false,
+  "parent_calibration": {
+    "P0_LEXICAL": {"exact3":0.5329831932773109,"valid_accept":0.0,"invalid_false_accept":0.0,"cannot_check_recall":0.9874706342991386},
+    "P1_DIRECT_TEXT": {"exact3":0.5846638655462185,"valid_accept":0.04530201342281879,"invalid_false_accept":0.0055900621118012426,"cannot_check_recall":0.8809710258418167}
+  },
+  "root_cause": "The v1 factorization uses binary REL_HIGH and ENT_LOW heads. Those targets collapse the registered middle ambiguity bands together with decisive negative bands. Specifically, relation<2 merges relation<=1 (decisive REJECT coordinate) with 1<relation<2 (potential CANNOT_CHECK coordinate), and entity>1 merges entity>=2 (decisive REJECT coordinate) with 1<entity<2 (potential CANNOT_CHECK coordinate). The downstream decision layer therefore cannot recover the tri-state gold partition even with a perfect binary classifier unless confidence happens to encode the hidden within-negative ordering. No calibrated threshold pair satisfied the preregistered safety/retention constraints.",
+  "successor_class": "REPRESENTATION_CHANGE_TO_ORDINAL_THREE_ZONE_HEADS",
+  "grants_scientific_authority": false
+}

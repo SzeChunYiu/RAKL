@@ -1,33 +1,27 @@
 #!/usr/bin/env python3
-"""Navigation dynamics vs A*: does a reusable GoalField give net advantage?
+"""Navigation dynamics crossover: fair benchmark vs A* across regimes.
 
-Scientific question: does GoalField (diffusion/path-integral) give a NET advantage over
-STRONG_CONTROL (A* with the given heuristic) on states-expanded/verifier-calls/route-stretch,
-with construction cost AMORTIZED over multiple queries (build-once-reuse-many)?
+PREREGISTRATION (GitHub issue #519):
+We test whether GoalField dynamics (diffusion/path-integral) give NET advantage over
+A* STRONG_CONTROL across a regime grid of:
+  1. Graph size (n ∈ {12, 24, 48})
+  2. Heuristic quality (good=Euclidean vs poor=random)
+  3. Reuse count (queries ∈ {1, 5, 20})
 
-The entire point of a goal field is that it depends on the goal and the graph but NOT on
-the query start, so one relaxation solve serves every start. This experiment measures whether
-that amortization pays off compared to recomputing A* for each query.
+Hypothesis: dynamics benefit from amortization on large graphs with good heuristics
+and many queries. A* dominates on small graphs, poor heuristics, or single queries.
 
-Setup:
-  * Random geometric graphs (nodes on unit square, edge cost >= straight-line distance).
-  * For each graph: build ONE goal field per dynamics (diffusion/path-integral).
-  * Run N queries from random starts to the same goal.
-  * Compare: dynamics (build cost amortized over N queries) vs A* (recomputed per query).
+Scientific question: where (if anywhere) does dynamics beat A* after charging its
+own construction cost honestly?
 
-Measured (per dynamics vs control):
-  * net_vs_astar: (equivalent_expansions_dynamics - equivalent_expansions_astar) / queries
-    Positive = dynamics uses MORE expansions than A* (bad).
-    Negative = dynamics uses FEWER expansions than A* (good).
-  * advantage_vs_control: fraction of queries where dynamics wins (fewer expansions).
-  * net_expansions_vs_astar: raw difference in equivalent_expansions (dynamics - astar).
+Metrics (per dynamics vs A*):
+  * net_vs_astar: ctl_eq_per_q - dyn_eq_per_q (POSITIVE = dynamics wins)
+  * advantage_vs_control: fraction of queries where dynamics wins
+  * route_stretch: (dyn_cost / ctl_cost) - 1 (0 = optimal, positive = slower)
 
-Honesty: development known-world evidence only. Grants NO scientific or method-promotion
-authority. Reports whatever the distribution shows, with bootstrap CIs.
-
-Includes negative regimes:
-  * Single-query regime (amortization doesn't pay).
-  * Tiny graphs (field construction cost dominates).
+Result contract: TOP-LEVEL net_vs_astar with CI {lo, hi}, status field,
+grants_scientific_authority: false. Terminal vocabulary: SUPPORTED/PARTIAL/
+NEGATIVE/CANNOT_CHECK/UNDERPOWERED/ARCHITECTURE_ONLY.
 """
 from __future__ import annotations
 
@@ -37,6 +31,7 @@ import math
 import random
 from collections import defaultdict
 from pathlib import Path
+from itertools import product
 
 import sys
 sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
@@ -47,8 +42,6 @@ from rakl.navigation_dynamics import (
     AStarWithGivenHeuristic,
     NavigationProblem,
     NavigationEdge,
-    STRONG_CONTROL,
-    CONTROL_STRATEGIES,
     DYNAMICS_STRATEGIES,
 )
 
@@ -56,13 +49,16 @@ HERE = Path(__file__).resolve().parent
 RESULT = HERE / "results" / "navigation_dynamics.json"
 
 
-def _random_geometric_problem(rng: random.Random, n: int, k: int, seed_offset: int = 0):
-    """Generate a random geometric graph on unit square.
+def _random_geometric_problem(rng: random.Random, n: int, k: int, seed_offset: int = 0, heuristic_quality: str = "good"):
+    """Generate random geometric graph with configurable heuristic quality.
     
-    Nodes are points on [0,1]^2. Each node connects to k nearest neighbors by straight-line
-    distance. Edge cost = straight-line * (1 + random()) to ensure heuristic admissibility.
+    Args:
+        n: number of nodes
+        k: each node connects to k nearest neighbors
+        seed_offset: for reproducibility
+        heuristic_quality: "good" = Euclidean (admissible), "poor" = random (non-admissible)
     """
-    rng2 = random.Random(seed_offset)  # separate seed for point positions
+    rng2 = random.Random(seed_offset)
     points = {f"n{i}": (rng2.random(), rng2.random()) for i in range(n)}
     names = sorted(points)
     
@@ -74,60 +70,54 @@ def _random_geometric_problem(rng: random.Random, n: int, k: int, seed_offset: i
         others = sorted(names, key=lambda o: dist(points[name], points[o]))[1 : k + 1]
         for other in others:
             base = dist(points[name], points[other])
-            cost = base * (1.0 + rng.random())  # >= straight line: heuristic stays admissible
+            cost = base * (1.0 + rng.random())  # >= straight line
             edges.append(NavigationEdge(name, other, cost))
     
     start, goal = names[0], names[-1]
-    heuristic = {name: dist(points[name], points[goal]) for name in names}
-    return NavigationProblem(f"geo-n{n}-k{k}", tuple(edges), start, goal, heuristic)
-
-
-def _run_single_query(problem, dynamics, control):
-    """Run one query: dynamics vs control on the same problem.
     
-    Returns (dyn_proposal, ctl_proposal).
-    """
-    dyn_prop = dynamics.propose(problem)
-    ctl_prop = control.propose(problem)
-    return dyn_prop, ctl_prop
+    # Heuristic quality toggle
+    if heuristic_quality == "good":
+        heuristic = {name: dist(points[name], points[goal]) for name in names}
+    else:  # poor heuristic (non-admissible random)
+        heuristic = {name: rng.random() for name in names}
+    
+    return NavigationProblem(f"geo-n{n}-k{k}-{heuristic_quality}", tuple(edges), start, goal, heuristic)
 
 
-def _run_amortized_experiment(base_problem, dyn_kwargs, control_cls, queries, rng):
+def _run_amortized_experiment(base_problem, dynamics_name, queries, rng):
     """Run amortized experiment: build field once, query many times.
     
-    Args:
-        base_problem: The base problem (defines graph, heuristic, original goal).
-        dyn_kwargs: kwargs to create dynamics navigator.
-        control_cls: Navigator class (A*).
-        queries: List of (start, goal) query tuples.
-        rng: Random seed for reproducibility.
-    
-    Returns:
-        Dict with metrics for this experiment run.
+    Returns dict with metrics or None if dynamics doesn't support goal fields.
     """
     from rakl.navigation_dynamics import get_navigator
-    dynamics = get_navigator("diffusion", **dyn_kwargs)
-    control = control_cls()
     
-    # Build goal field ONCE using the base problem's goal
+    # Create dynamics with appropriate kwargs
+    if dynamics_name == "diffusion":
+        dynamics = get_navigator(dynamics_name, sweeps=25)
+    elif dynamics_name == "path_integral":
+        dynamics = get_navigator(dynamics_name, sweeps=25, temperature=0.25)
+    else:
+        return None  # physarum doesn't support goal fields
+    
+    control = AStarWithGivenHeuristic()
+    
+    # Build goal field ONCE
     goal_field = dynamics.build_goal_field(base_problem)
     if goal_field is None:
-        # Physarum doesn't support goal fields
         return None
     
     results = {
-        "dynamics_equivalent_expansions": 0,
-        "control_equivalent_expansions": 0,
-        "queries_found_route_dynamics": 0,
-        "queries_found_route_control": 0,
+        "dynamics_eq": 0.0,
+        "control_eq": 0.0,
+        "dynamics_cost": 0.0,
+        "control_cost": 0.0,
+        "queries_found_dyn": 0,
+        "queries_found_ctl": 0,
         "queries_total": len(queries),
-        "build_sweeps": goal_field.build_sweeps,
-        "graph_nodes": goal_field.graph_nodes,
-        "build_node_scans": goal_field.build_node_scans,
+        "build_scans": goal_field.build_node_scans,
     }
     
     for start, goal in queries:
-        # Create query problem with same graph/heuristic but different start
         query = NavigationProblem(
             f"q-{start}-to-{goal}",
             base_problem.edges,
@@ -136,23 +126,22 @@ def _run_amortized_experiment(base_problem, dyn_kwargs, control_cls, queries, rn
             base_problem.heuristic,
         )
         
-        # Dynamics: use prebuilt field (propose_from charges only the walk)
         dyn_prop = goal_field.propose_from(query)
-        
-        # Control: run full A* for each query
         ctl_prop = control.propose(query)
         
         # Charge: dynamics = build_cost / queries + walk_cost
         dyn_total = goal_field.build_node_scans / len(queries) + dyn_prop.equivalent_expansions
         ctl_total = ctl_prop.equivalent_expansions
         
-        results["dynamics_equivalent_expansions"] += dyn_total
-        results["control_equivalent_expansions"] += ctl_total
+        results["dynamics_eq"] += dyn_total
+        results["control_eq"] += ctl_total
         
         if dyn_prop.found_route:
-            results["queries_found_route_dynamics"] += 1
+            results["queries_found_dyn"] += 1
+            results["dynamics_cost"] += dyn_prop.proposed_cost
         if ctl_prop.found_route:
-            results["queries_found_route_control"] += 1
+            results["queries_found_ctl"] += 1
+            results["control_cost"] += ctl_prop.proposed_cost
     
     return results
 
@@ -170,163 +159,159 @@ def _boot(vals, rng, B=5000):
     return {"mean": round(m, 6), "lo": round(samples[int(0.025 * B)], 6), "hi": round(samples[int(0.975 * B)], 6), "n": len(vals)}
 
 
-def run(seed=461, graphs=100, n=24, k=4, queries_per_graph=10):
-    """Run the navigation dynamics experiment.
+def run_crossover(seed=461, graphs_per_cell=30):
+    """Run crossover experiment across full regime grid.
     
-    Args:
-        seed: Random seed for reproducibility.
-        graphs: Number of random graphs to generate.
-        n: Number of nodes per graph.
-        k: Each node connects to k nearest neighbors.
-        queries_per_graph: Number of random start-goal queries per graph.
+    Grid dimensions:
+      - Graph size: [12, 24, 48]
+      - Heuristic quality: ["good", "poor"]
+      - Reuse count: [1, 5, 20]
+      - Dynamics: ["diffusion", "path_integral"]
+    
+    Total cells: 3 × 2 × 3 × 2 = 36 regime cells
     """
     rng = random.Random(seed)
     
-    # Collect results per dynamics
-    per_dynamics = defaultdict(lambda: {
-        "net_vs_astar": [],      # (dyn_eq - ctl_eq) per query
-        "advantage_vs_control": [],  # 1 if dyn wins, 0 otherwise
-        "net_expansions_vs_astar": [],  # raw difference
+    # Crossover grid
+    graph_sizes = [12, 24, 48]
+    heuristic_qualities = ["good", "poor"]
+    reuse_counts = [1, 5, 20]
+    
+    # Store results per regime cell
+    regime_results = defaultdict(lambda: {
+        "net_vs_astar": [],
+        "advantage_vs_control": [],
+        "route_stretch": [],
     })
     
-    # Also collect per-regime results
-    regimes = {
-        "single_query": defaultdict(lambda: {"net_vs_astar": [], "advantage_vs_control": [], "net_expansions_vs_astar": []}),
-        "tiny_graph": defaultdict(lambda: {"net_vs_astar": [], "advantage_vs_control": [], "net_expansions_vs_astar": []}),
-        "amortized": defaultdict(lambda: {"net_vs_astar": [], "advantage_vs_control": [], "net_expansions_vs_astar": []}),
-    }
+    # Also collect top-level metrics
+    all_net_vs_astar = []
+    all_advantage = []
+    all_stretch = []
     
     graphs_made = 0
-    attempts = 0
-    max_attempts = graphs * 10  # prevent infinite loop
     
-    while graphs_made < graphs and attempts < max_attempts:
-        attempts += 1
+    for n, hq, reuse, dyn_name in product(graph_sizes, heuristic_qualities, reuse_counts, DYNAMICS_STRATEGIES):
+        if dyn_name == "physarum":
+            continue  # skip physarum (no goal field support)
         
-        # Generate base problem
-        base = _random_geometric_problem(rng, n=n, k=k, seed_offset=attempts)
+        cell_key = f"n{n}_{hq}_q{reuse}_{dyn_name}"
         
-        # Verify A* can find a route from start to goal
-        ctl = AStarWithGivenHeuristic()
-        check = ctl.propose(base)
-        if not check.found_route:
-            continue  # skip unsolvable graphs
-        
-        graphs_made += 1
-        
-        # Test each dynamics
-        for dyn_name in DYNAMICS_STRATEGIES:
-            from rakl.navigation_dynamics import get_navigator
+        for _ in range(graphs_per_cell):
+            # Generate base problem
+            base = _random_geometric_problem(rng, n=n, k=4, seed_offset=graphs_made, heuristic_quality=hq)
             
-            # Generate queries (random starts to same goal)
+            # Verify A* can solve it
+            check = AStarWithGivenHeuristic().propose(base)
+            if not check.found_route:
+                continue
+            
+            graphs_made += 1
+            
+            # Generate queries (different starts to same goal)
             queries = []
-            nodes = [n for n in base.nodes if n != base.goal]
-            for _ in range(queries_per_graph):
-                start = rng.choice(nodes)
-                queries.append((start, base.goal))
+            nodes = [node for node in base.nodes if node != base.goal]
+            for _ in range(reuse):
+                if nodes:
+                    start = rng.choice(nodes)
+                    queries.append((start, base.goal))
             
-            # Get dynamics navigator kwargs (sweeps=25 for diffusion/path_integral)
-            dyn_kwargs = {"sweeps": 25}
-            result = _run_amortized_experiment(base, dyn_kwargs, AStarWithGivenHeuristic, queries, rng)
+            if not queries:
+                continue
+            
+            result = _run_amortized_experiment(base, dyn_name, queries, rng)
             if result is None:
-                continue  # Physarum doesn't support goal fields
+                continue
             
             # Per-query metrics
-            dyn_eq_per_q = result["dynamics_equivalent_expansions"] / result["queries_total"]
-            ctl_eq_per_q = result["control_equivalent_expansions"] / result["queries_total"]
+            dyn_eq_per_q = result["dynamics_eq"] / result["queries_total"]
+            ctl_eq_per_q = result["control_eq"] / result["queries_total"]
             
-            # net_vs_astar: POSITIVE = dynamics beats A* (uses fewer expansions)
+            # net_vs_astar: POSITIVE = dynamics wins
             net_vs_astar = ctl_eq_per_q - dyn_eq_per_q
             advantage = 1.0 if dyn_eq_per_q < ctl_eq_per_q else 0.0
-            net_expansions = result["dynamics_equivalent_expansions"] - result["control_equivalent_expansions"]
             
-            per_dynamics[dyn_name]["net_vs_astar"].append(net_vs_astar)
-            per_dynamics[dyn_name]["advantage_vs_control"].append(advantage)
-            per_dynamics[dyn_name]["net_expansions_vs_astar"].append(net_expansions)
+            # route_stretch: how much slower is dynamics?
+            stretch = 0.0
+            if result["queries_found_dyn"] > 0 and result["queries_found_ctl"] > 0:
+                dyn_avg = result["dynamics_cost"] / result["queries_found_dyn"]
+                ctl_avg = result["control_cost"] / result["queries_found_ctl"]
+                stretch = (dyn_avg / ctl_avg) - 1.0 if ctl_avg > 0 else 0.0
             
-            # Regime classification
-            if queries_per_graph == 1:
-                regimes["single_query"][dyn_name]["net_vs_astar"].append(net_vs_astar)
-                regimes["single_query"][dyn_name]["advantage_vs_control"].append(advantage)
-                regimes["single_query"][dyn_name]["net_expansions_vs_astar"].append(net_expansions)
-            elif n <= 12:
-                regimes["tiny_graph"][dyn_name]["net_vs_astar"].append(net_vs_astar)
-                regimes["tiny_graph"][dyn_name]["advantage_vs_control"].append(advantage)
-                regimes["tiny_graph"][dyn_name]["net_expansions_vs_astar"].append(net_expansions)
-            else:
-                regimes["amortized"][dyn_name]["net_vs_astar"].append(net_vs_astar)
-                regimes["amortized"][dyn_name]["advantage_vs_control"].append(advantage)
-                regimes["amortized"][dyn_name]["net_expansions_vs_astar"].append(net_expansions)
+            regime_results[cell_key]["net_vs_astar"].append(net_vs_astar)
+            regime_results[cell_key]["advantage_vs_control"].append(advantage)
+            regime_results[cell_key]["route_stretch"].append(stretch)
+            
+            all_net_vs_astar.append(net_vs_astar)
+            all_advantage.append(advantage)
+            all_stretch.append(stretch)
     
     # Bootstrap CIs
     bs = random.Random(seed + 1)
-    output = {
-        "schema_version": "orion-navigation-dynamics-v1",
-        "seed": seed,
-        "graphs": graphs,
-        "nodes_per_graph": n,
-        "k_nearest": k,
-        "queries_per_graph": queries_per_graph,
-        "graphs_made": graphs_made,
-        "claim_boundary": "development known-world evidence; tests goal-field amortization vs A* on random geometric graphs; grants no scientific or method-promotion authority.",
-        "grants_scientific_authority": False,
-        "grants_method_promotion": False,
-        "by_dynamics": {},
-        "regimes": {},
-    }
     
-    for dyn_name in DYNAMICS_STRATEGIES:
-        if dyn_name not in per_dynamics:
-            continue
-        output["by_dynamics"][dyn_name] = {
-            "net_vs_astar": _boot(per_dynamics[dyn_name]["net_vs_astar"], bs),
-            "advantage_vs_control": _boot(per_dynamics[dyn_name]["advantage_vs_control"], bs),
-            "net_expansions_vs_astar": _boot(per_dynamics[dyn_name]["net_expansions_vs_astar"], bs),
+    # Process each regime cell
+    regime_output = {}
+    for cell_key, metrics in regime_results.items():
+        regime_output[cell_key] = {
+            "net_vs_astar": _boot(metrics["net_vs_astar"], bs),
+            "advantage_vs_control": _boot(metrics["advantage_vs_control"], bs),
+            "route_stretch": _boot(metrics["route_stretch"], bs),
         }
     
-    for regime_name, regime_data in regimes.items():
-        output["regimes"][regime_name] = {}
-        for dyn_name in DYNAMICS_STRATEGIES:
-            if dyn_name not in regime_data or not regime_data[dyn_name]["net_vs_astar"]:
-                continue
-            output["regimes"][regime_name][dyn_name] = {
-                "net_vs_astar": _boot(regime_data[dyn_name]["net_vs_astar"], bs),
-                "advantage_vs_control": _boot(regime_data[dyn_name]["advantage_vs_control"], bs),
-                "net_expansions_vs_astar": _boot(regime_data[dyn_name]["net_expansions_vs_astar"], bs),
-            }
+    # Top-level metrics
+    top_level = {
+        "schema_version": "orion-navigation-dynamics-v2",
+        "seed": seed,
+        "graphs_per_cell": graphs_per_cell,
+        "graphs_made": graphs_made,
+        "claim_boundary": "PREREGISTERED crossover grid (n × heuristic × reuse × dynamics) on random geometric graphs; honest test of goal-field amortization vs A*; grants no scientific authority",
+        "grants_scientific_authority": False,
+        "crossover_grid": {
+            "graph_sizes": graph_sizes,
+            "heuristic_qualities": heuristic_qualities,
+            "reuse_counts": reuse_counts,
+            "dynamics": [d for d in DYNAMICS_STRATEGIES if d != "physarum"],
+        },
+        "regime_cells": regime_output,
+        "net_vs_astar": _boot(all_net_vs_astar, bs),
+        "advantage_vs_control": _boot(all_advantage, bs),
+        "route_stretch": _boot(all_stretch, bs),
+    }
     
-    # Top-level net metrics (combined across dynamics, for PROMOTE check)
-    all_net_vs_astar = []
-    all_advantage = []
-    all_net_expansions = []
-    for dyn_data in per_dynamics.values():
-        all_net_vs_astar.extend(dyn_data["net_vs_astar"])
-        all_advantage.extend(dyn_data["advantage_vs_control"])
-        all_net_expansions.extend(dyn_data["net_expansions_vs_astar"])
+    # Determine terminal status
+    net = top_level["net_vs_astar"]
+    if net is None:
+        status = "CANNOT_CHECK"
+    elif net["lo"] > 0:
+        status = "SUPPORTED"  # dynamics beats A* with CI excluding 0
+    elif net["hi"] < 0:
+        status = "NEGATIVE"  # dynamics loses to A* with CI excluding 0
+    elif 0 in [net["lo"], net["hi"]]:
+        status = "PARTIAL"  # CI includes 0 (inconclusive)
+    else:
+        status = "CANNOT_CHECK"
     
-    output["net_vs_astar"] = _boot(all_net_vs_astar, bs)
-    output["advantage_vs_control"] = _boot(all_advantage, bs)
-    output["net_expansions_vs_astar"] = _boot(all_net_expansions, bs)
+    top_level["status"] = status
     
-    return output
+    return top_level
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=461)
-    ap.add_argument("--graphs", type=int, default=100)
-    ap.add_argument("--nodes", type=int, default=24)
-    ap.add_argument("--k", type=int, default=4)
-    ap.add_argument("--queries", type=int, default=10)
+    ap.add_argument("--graphs-per-cell", type=int, default=30)
     a = ap.parse_args()
-    res = run(seed=a.seed, graphs=a.graphs, n=a.nodes, k=a.k, queries_per_graph=a.queries)
+    res = run_crossover(seed=a.seed, graphs_per_cell=a.graphs_per_cell)
     RESULT.parent.mkdir(parents=True, exist_ok=True)
     RESULT.write_text(json.dumps(res, indent=2))
     print(f"WROTE={RESULT.relative_to(HERE.parents[1])}")
-    print("net_vs_astar:", res["net_vs_astar"])
-    print("advantage_vs_control:", res["advantage_vs_control"])
-    print("net_expansions_vs_astar:", res["net_expansions_vs_astar"])
-    print("AUTHORITY_GRANTED=false")
+    print(f"\n=== CROSSOVER RESULTS ===")
+    print(f"Status: {res['status']}")
+    print(f"net_vs_astar: {res['net_vs_astar']}")
+    print(f"advantage_vs_control: {res['advantage_vs_control']}")
+    print(f"route_stretch: {res['route_stretch']}")
+    print(f"\nRegime cells: {len(res['regime_cells'])}")
+    print(f"AUTHORITY_GRANTED=false")
     return 0
 
 

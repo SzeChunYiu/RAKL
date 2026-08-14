@@ -1,0 +1,299 @@
+{
+  "schema_version": "p4-gate-falsifiability-audit-v1",
+  "date": "2026-08-14",
+  "kind": "PER_CONDITION_BLACK_BOX_FALSIFIABILITY_AUDIT",
+  "auditor": "src/rakl/gate_falsifiability.py::audit_gate",
+  "note": "expected outcomes were declared in the runner before execution; INSENSITIVE-expected rows assert the no-alarm case; control first",
+  "conditions": [
+    {
+      "condition_id": "CONTROL_FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM",
+      "baseline_verdict": "ADMISSIBLE",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_uncomputable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "unset_equal_budget",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "drop_lower_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "drop_upper_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    },
+    {
+      "condition_id": "REFERENCE_P4_DEVELOPMENT_STRESS_INSTRUMENT",
+      "baseline_verdict": "INADMISSIBLE",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_uncomputable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "unset_equal_budget",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "drop_upper_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "drop_lower_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    },
+    {
+      "condition_id": "FRESH_DEGENERATE_ZERO_HEADROOM",
+      "baseline_verdict": "INADMISSIBLE",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "add_headroom",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_uncomputable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "unset_equal_budget",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    },
+    {
+      "condition_id": "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY",
+      "baseline_verdict": "ADMISSIBLE",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_uncomputable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "unset_equal_budget",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "drop_lower_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    },
+    {
+      "condition_id": "FRESH_UNCOMPUTABLE_ORACLE_STUB",
+      "baseline_verdict": "CANNOT_CHECK",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "add_headroom",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_computable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    },
+    {
+      "condition_id": "FRESH_CEILING_MARGINALLY_ABOVE_MDE",
+      "baseline_verdict": "INADMISSIBLE",
+      "gate_falsifiability_verdict": "FALSIFIABLE",
+      "probes": [
+        {
+          "probe_id": "inflate_bounds",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "attenuate_bounds",
+          "expected": "INSENSITIVE",
+          "observed": "INSENSITIVE",
+          "flips": 0,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "mark_oracle_uncomputable",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        },
+        {
+          "probe_id": "unset_equal_budget",
+          "expected": "SENSITIVE",
+          "observed": "SENSITIVE",
+          "flips": 32,
+          "trials": 32,
+          "match": true
+        }
+      ],
+      "condition_pass": true
+    }
+  ],
+  "all_conditions_pass": true,
+  "grants_scientific_authority": false
+}

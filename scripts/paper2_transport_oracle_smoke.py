@@ -97,6 +97,15 @@ def run(seed: int = 20260812, n: int = 1200) -> dict[str, object]:
                 "arrival_gt_service_implies_growth",
                 evidence_ids=(f"evidence:invariant:{index}",),
             ),
+            # Required for source coverage: an obligation set that leaves a source
+            # relation unasked cannot license (see assess_transfer_v2 coverage rule).
+            TransferObligation(
+                "relation",
+                ObligationKind.RELATION,
+                "arrival|competes_with|service|1",
+                "arrival|competes_with|service|1",
+                evidence_ids=(f"evidence:relation:{index}",),
+            ),
         ]
         if failure == "precondition":
             precondition_status = ObligationStatus.VIOLATED

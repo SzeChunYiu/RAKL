@@ -1,0 +1,139 @@
+{
+  "protocol_id": "BENEFIT-L5-SATURATION-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@08169241",
+  "ladder_obligation": {
+    "layer_id": "L5-SATURATION",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does stopping on this rule beat stopping arbitrarily at matched budget? External observable available: set-completeness IoU.",
+    "frontier_rationale": "Third of the three next unmeasured ladder obligations after the executed L0/L1/L2 PROMOTE runs. L5's gate is the one rung already audited FALSIFIABLE from the start (audit_bounded_epistemic_saturation, control asserted first per ladder readiness evidence), so the benefit question is the only outstanding obligation on this rung."
+  },
+  "hypothesis": {
+    "statement": "On known-answer retrieval streams over a finite relevant-fact basis with a distractor tail, stopping when rakl.epistemic_saturation.audit_bounded_epistemic_saturation certifies BOUNDED_SATURATED (two consecutive substantively flat, gate-clean rounds) retains a set-completeness IoU non-inferior to budget-exhaustion stopping while strictly saving budget, and beats arbitrary stopping at equal total budget; the advantage is attributable to genuine growth-signal binding (including the audit's non-flatness conjuncts) rather than to any fixed stopping schedule.",
+    "direction": "Completeness non-inferior (loss confidently < 0.05) AND mean budget saved >= 0.10 of T_MAX AND completeness above both equal-budget nulls",
+    "known_at_design_time": "Both arms are deterministic, so qualitative behavior on the parametric classes is partially derivable a priori (budget exhaustion is complete whenever the stream delivers the basis; the saturation rule's risk is concentrated in the false-flat trap and late-complete classes, which exist to price it). The run certifies exact magnitudes under randomized stream realization, separation from both nulls, the premature-stop floor, the uncertifiable-basis guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_budget_exhaustion_stopping": {
+      "definition": "Consume the full stream: stop_round = T_MAX = 24 for every world. This is the strongest honest arbitrary comparator for the completeness observable (it maximizes collected facts), which is exactly why the benefit claim against it is non-inferiority PLUS strict budget saving rather than completeness superiority. Arbitrary stopping at matched budget is realized as null 1 (a comparator distribution, per the equal-n house discipline), not as a second arm.",
+      "inputs_visible": ["the full round stream (identical to arm B)", "per-round audit-gate facts - present and ignored"],
+      "implementation": "Deterministic rule frozen in the execution-run harness; must match EVALUATOR.py arm_a_stop verbatim (executable drift check, CANNOT_CHECK on mismatch)."
+    },
+    "B_saturation_stopping": {
+      "definition": "After each round, build the SaturationRound record honestly from the rendered per-round world facts (substantive EpistemicGrowthVector from newly retained deduplicated relevant facts plus rendered non-fact substantive updates; bounded_discovery_closed / route_coverage_stable / omission_audit_passed / nearest_work_audit_passed / operator-order stability / blocking_fibers as rendered world facts) and call rakl.epistemic_saturation.audit_bounded_epistemic_saturation with required_consecutive_flat_rounds = 2 on the rounds so far under a per-world frozen SaturationBasis. Stop at the first round where the report status is BOUNDED_SATURATED; otherwise run to T_MAX. Collection machinery (relevance + dedup by canonical fact identity) is IDENTICAL across arms; only the stop rule differs, so every observable difference is a stop-time difference.",
+      "exact_functions": [
+        "rakl.epistemic_saturation.audit_bounded_epistemic_saturation",
+        "rakl.epistemic_saturation.SaturationBasis",
+        "rakl.epistemic_saturation.SaturationRound",
+        "rakl.epistemic_saturation.EpistemicGrowthVector",
+        "rakl.epistemic_saturation.OperatorOrderAudit",
+        "rakl.epistemic_saturation.SaturationStatus"
+      ],
+      "module_pins": {
+        "src/rakl/epistemic_saturation.py_sha256": "aac384c41999c44facc526a9a32a306ac71eeab9d008fe5248500fcddb423546",
+        "pin_rule": "The run receipt must record the content sha256 of the module in the run environment; a mismatch with this pin is CANNOT_CHECK unless the protocol is re-frozen as V2 against the changed semantics BEFORE any result access."
+      },
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md section 12: saturation is relative to a declared route family and requires a finite basis to be certifiable rather than merely bounded; flat marginal growth alone is insufficient (the audit's bounded-discovery/route-coverage/omission/nearest-work/operator-order conjuncts). Class S4 makes exactly this distinction measurable and the attribution gate makes it load-bearing.",
+      "known_limitation_frozen_in_advance": "The rule can only be as good as the rendered round facts; on class S3 (basis completes near T_MAX) available savings are ~0 by construction and on class S6 (basis never certifiably exhausted) the correct behavior is to save nothing. Both classes charge arm B honestly and are gated (premature-stop floor; zero-early-stop guard)."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical round streams for every world; neither arm performs retrieval, network access, or LLM calls (token budget 0 for both).",
+      "budget_currency": "Rounds consumed (T_MAX = 24 frozen constant across the corpus so the budget-permutation null is well-defined). budget_saved_B(i) = (T_MAX - stop_B(i)) / T_MAX.",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "All rates are over all N worlds (or the named frozen class subsets); early stops still count in every denominator."
+    }
+  },
+  "estimator": {
+    "iou_definition_source": "research/framework_ladder/ladder.json L5-SATURATION benefit_obligation (set-completeness IoU). Registered here pending a separate quant-model extension in docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md.",
+    "iou": "IoU_arm(i) = |collected_relevant_at_stop ∩ F*| / |collected_relevant_at_stop ∪ F*| where F* is the generator-known finite relevant-fact basis; completeness C_arm(i) = 1 iff F* ⊆ collected_relevant_at_stop. Collection is shared and monotone, so IoU differences are purely stop-time differences.",
+    "budget_saved": "saved_B(i) = (T_MAX - stop_B(i)) / T_MAX; mean and fraction-of-worlds-saved reported.",
+    "world_instance": "A finite relevant-fact basis (6-14 canonical fact ids) delivered through a 24-round stream with distractor items, repeats/paraphrases (same canonical fact id), rendered per-round audit-gate facts, and a generator-known completion round t_complete (or NONE for class S6).",
+    "primary_contrast": "The frozen PROMOTE conjunction below (non-inferiority + strict saving + equal-budget superiority via null 1). The paired exact test is the one-sided binomial on completeness-loss worlds (A complete, B incomplete) against the 0.05 margin, with no offset credit for the reverse direction (conservative).",
+    "premature_stop_floor": "C_B on class S3 (late-complete) >= 0.70 - the over-refusal analogue charged against arm B: savings must not be minted by stopping early exactly where stopping early loses the basis.",
+    "uncertifiable_basis_guard": "Zero early stops on class S6: when bounded discovery never closes, certifying saturation is a gate breach, not a saving.",
+    "attribution_gate": "C_B(S4) - C_bare_flatness(S4) >= 0.10, where bare-flatness is the frozen ablation stopping on flat growth alone. Makes the audit's non-flatness conjuncts load-bearing: if flat-counting alone matches the full audit, the L5 mechanism specifically has not earned the benefit.",
+    "evaluator_file": "research/benefit_L5_saturation_v1/EVALUATOR.py",
+    "evaluator_sha256": "b3e739d8b8a02121d11568f2de718bea6cdacbbbb888d8f0e074db49b83fec7f",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ on 2026-08-14 (greps for saturation corpus, set-completeness, IoU): no labeled stopping-rule corpus exists. research/p5_p6_saturation_v1/ is a research-packet study (packets/results, no gold-labeled stream population); Self-RAKL ledger hits are unrelated; tests/ hold unit fixtures for audit_bounded_epistemic_saturation only.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_worlds": 400,
+    "t_max_rounds": 24,
+    "composition": {
+      "S1_standard": 140,
+      "S2_early_complete": 60,
+      "S3_late_complete": 60,
+      "S4_false_flat_trap": 60,
+      "S5_repeat_heavy": 40,
+      "S6_uncertifiable_basis": 40
+    },
+    "labeling_procedure": "Gold basis F* and completion round t_complete are minted by the generator from the hidden world at generation time (which stream items are genuine basis facts, which are repeats/paraphrases of the same canonical fact, which are distractors; when the basis is exhausted; whether bounded discovery genuinely closes). Rendered per-round gate facts are truthful projections of the hidden world (during an S4 trap window bounded_discovery_closed is genuinely false because unexhausted routes remain). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold bases, t_complete, and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_basis and t_complete fields stripped (arms see only the stream and round facts); the evaluator joins on world_id.",
+      "Human/oracle audit: 40 worlds (10%) sampled by seed, audited by a reviewer shown ONLY the rendered stream and the gold basis/completion round, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Non-inferiority design on paired completeness. The frozen test rejects at b_obs <= 7 of N = 400 (exact: P(Binom(400, 0.05) <= 7) ~= 8e-4 < 0.001). If the true completeness-loss rate is <= 0.005 (the design intent: losses confined to rare boundary realizations of S3/S4), then b_obs ~ Binom(400, 0.005), and P(b_obs <= 7) > 0.99 - comfortably > 80% power. The savings prong is a large-effect continuous contrast (classes S1/S2 alone are designed to make mean savings >> 0.10 achievable when the rule works) and does not bind the sample size. N = 400 also funds per-class gates (>= 40 per class) and the 10% audit sample."
+  },
+  "nulls": {
+    "null_1_budget_permutation": "Permute arm B's own per-world stop-round multiset across worlds (1000 seeded permutations; total consumed budget identical by construction, allocation arbitrary — the equal-n suppression analogue in budget currency). Aggregate completeness-rate distribution; require C_B > 95th percentile. Tests that the benefit comes from stopping at the RIGHT time per world, not from the budget distribution; this is also the rigorous form of 'beats arbitrary stopping at matched budget' from the ladder obligation.",
+    "null_2_signal_permutation": "Permute the per-round signal view (substantive growth totals + audit gates + blocking fibers) across rounds within each world (1000 seeded permutations); re-run arm B's frozen stop rule on the permuted signal while collection follows the TRUE delivery schedule; aggregate completeness-rate distribution; require C_B > 95th percentile. The structure-permutation null: the advantage must require genuine growth-signal binding rather than stopping at a base-rate time."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "exact one-sided binomial P(Binom(400, 0.05) <= b_obs) < 0.001, b_obs = worlds where A is complete and B is not (no offset credit)",
+        "mean IoU_B >= mean IoU_A - 0.02",
+        "mean budget saved >= 0.10 of T_MAX",
+        "fraction of worlds with strictly positive saving >= 0.50",
+        "C_B on S3 >= 0.70 (premature-stop floor)",
+        "zero early stops on S6 (uncertifiable-basis guard)",
+        "C_B(S4) - C_bare_flatness(S4) >= 0.10 (attribution gate)",
+        "C_B > 95th percentile of null 1 AND of null 2",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid",
+        "no rule drift between either arm's stop rounds and the frozen decision-equivalent rules"
+      ],
+      "justification": "The exact conjunction the ladder obligation requires, frozen: IoU non-inferior (loss confidently below 0.05, mean deficit <= 0.02) AND budget strictly saved (mean >= 10% of T_MAX, majority of worlds saving), with equal-budget superiority carried by null 1. The S3 floor prices the only way the rule can fake savings (stopping early where early is wrong); the S6 guard makes an uncertifiable-basis stop a hard fail rather than a saving; the S4 attribution gate requires the audit's non-flatness conjuncts - the actual L5 mechanism - to be load-bearing versus bare flat-counting."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "completeness-loss rate b_obs / N >= 0.05",
+        "mean budget saved <= 0.02",
+        "C_B <= 95th percentile of null 1",
+        "C_B <= 95th percentile of null 2"
+      ],
+      "justification": "A rule that loses the basis at the margin rate, or never meaningfully stops early, or is matched by arbitrary equal-budget stopping, or ignores its own growth signal, does not convert the saturation gate into measured benefit."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. non-inferiority holds with mean saving in (0.02, 0.10), or nulls beaten but the S3 floor or S4 attribution gate fails, or savings concentrated in S2 only.",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: on synthetic known-answer streams over a finite basis, flat-round saturation stopping (the full audit conjunction) retains non-inferior set-completeness while strictly saving budget, and beats arbitrary equal-budget stopping. ladder.json L5 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no LLM-arm generalization, no natural-corpus (real literature stream) generalization, no infinite-basis claim (S6 behavior is refusal, not capability); all are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (stream realization / flat-window statistics / gate-fact rendering / required_consecutive_flat_rounds choice / null design / arm-A framing), apply the single matching lever, re-freeze as BENEFIT-L5-SATURATION-V2, re-run against the strongest parent. A required_consecutive_flat_rounds change is a V2 re-freeze with its own justification, never a post-hoc rescue. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: savings below threshold at intact completeness - attribute to the conservative two-flat-round window interacting with the distractor tail's residual growth rendering, and evaluate a typed freshness-horizon extension (the audit's required_freshness_cutoff channel, currently unexercised) entering via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch to src/rakl/epistemic_saturation.py."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}

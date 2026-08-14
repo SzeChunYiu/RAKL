@@ -1,0 +1,75 @@
+{
+  "schema_version": "rakl-paper3-typed-rejection-production-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "stack_parent_pr": 565,
+  "stack_parent_head_sha": "f72e366b0fed949f4ffe28fecc49af6ba187c86c",
+  "current_main_sha_at_freeze": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+  "parent_negative_preserved": {
+    "issue": 401,
+    "terminal": "CANNOT_EXECUTE_MATCHED_EVAL",
+    "superseded": false
+  },
+  "prior_mechanic_terminal": "PROMOTE_CONDITIONALLY_TYPED_REJECTION_FALLTHROUGH_GOVERNANCE",
+  "atomic_gap": "Bind legal fallthrough after a conclusively failed earlier SEARCH/JUMP candidate to production artifacts without converting missing evidence or arbitrary audit failures into rejection authority.",
+  "successor_contract": {
+    "module": "src/rakl/semantic_shortcut_router_v2.py",
+    "entrypoint": "resolve_obstruction_transformation_route_with_rejections",
+    "rejection_certificate": "CandidateRejectionCertificate",
+    "issuance_rule": "Certificates are minted only inside the resolver after the existing canonical audit returns FAIL for the exact candidate review and every audit reason is in the registered conclusive-rejection allowlist.",
+    "initial_conclusive_reason_allowlist": [
+      "mapping_has_unrepaired_source_preconditions"
+    ],
+    "binding": [
+      "route mode",
+      "candidate episode id",
+      "candidate artifact hash/revision",
+      "target atom id",
+      "target context hash",
+      "research-memory review hash",
+      "target obstruction id",
+      "input memory snapshot hash",
+      "failed candidate-review artifact hash",
+      "canonical audit reasons",
+      "certificate evidence pointers"
+    ],
+    "residual_view_rule": "A certified rejected episode is removed only from an ephemeral residual routing-memory view. Canonical transformation memory is not mutated, superseded, or rewritten. The certificate binds the input snapshot and the derived output snapshot.",
+    "uncertainty_rule": "CANNOT_CHECK never mints a rejection certificate and always blocks fallthrough.",
+    "priority_rule": "SEARCH remains higher priority than JUMP; JUMP remains higher than GLUE; GLUE remains higher than LIFT. A later route is considered only after every earlier structural candidate has either passed (and wins), been conclusively certified rejected, or been absent.",
+    "glue_boundary": "This version does not certify rejected GLUE compositions; inconclusive/failed GLUE remains fail-closed. The successor may still reach GLUE or LIFT after typed SEARCH/JUMP rejections when the residual view and existing canonical audit permit it.",
+    "authority": "routing/proposal only; no theorem, novelty, scientific, or model-efficacy authority"
+  },
+  "strong_parents": [
+    "existing v1 fail-closed production resolver",
+    "naive FAIL-means-fallthrough resolver",
+    "caller-supplied bare rejection reason",
+    "unbound/stale rejection certificate"
+  ],
+  "frozen_tests": [
+    "conclusive direct precondition rejection permits a valid JUMP and preserves the rejection trace",
+    "missing direct witness remains CANNOT_CHECK and cannot fall through",
+    "nonconclusive mapping-audit failure remains CANNOT_CHECK",
+    "CANNOT_CHECK audit never mints a rejection certificate",
+    "certificate validation fails after candidate revision changes",
+    "certificate validation fails on target obstruction/context mismatch",
+    "certificate hash tampering is detected",
+    "rejected JUMP can expose a valid GLUE on the residual routing view",
+    "typed SEARCH/JUMP rejections can precede LIFT only when the existing exhaustion/spec audit passes",
+    "existing v1 resolver behavior remains unchanged"
+  ],
+  "hard_gates": {
+    "new_v2_tests_all_pass": true,
+    "existing_v1_router_tests_all_pass": true,
+    "existing_semantic_shortcut_tests_all_pass": true,
+    "existing_math_research_runtime_tests_all_pass": true,
+    "full_repository_protected_ci_not_weakened": true,
+    "no_existing_negative_or_evaluator_rewritten": true
+  },
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_TYPED_REJECTION_FALLTHROUGH",
+  "remaining_nonclaims": [
+    "natural-language obstruction/witness extraction",
+    "model-level continual-research performance lift",
+    "proof or scientific authority",
+    "typed rejection of GLUE compositions beyond the registered conclusive reason surface"
+  ]
+}

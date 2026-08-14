@@ -1,0 +1,29 @@
+{
+  "schema_version": "paper1-agent-output-authority-firewall-promotion-v1",
+  "date": "2026-08-14",
+  "terminal": "PROMOTE_CONDITIONALLY_AGENT_OUTPUT_AUTHORITY_FIREWALL",
+  "evidence_subject": {
+    "head_sha": "47141032683056883d3ccfb2c898803b433e4d4a",
+    "workflow_run": 31779472285,
+    "workflow_job": 94701883012,
+    "conclusion": "SUCCESS"
+  },
+  "gates": {
+    "exact_subject_binding": "PASS",
+    "forbidden_agent_control_field_property_fuzzing": "PASS",
+    "unknown_agent_fields_fail_closed": "PASS",
+    "well_formed_agent_payload_is_proposal_only": "PASS",
+    "no_attestation_no_authority": "PASS",
+    "existing_v3_scientific_authority_parent_suite": "PASS",
+    "existing_epistemic_noninterference_parent_suite": "PASS"
+  },
+  "scope": "UNTRUSTED_AGENT_PAYLOAD_TO_INERT_AUTHORITY_PROPOSAL_GATEWAY",
+  "allowed_claim": "At the implemented gateway, untrusted agent/model payload fields cannot supply protected verification, signer, attestation, evaluator or certificate authority; a well-formed payload creates only an inert typed AuthorityProposal and still requires a separately governed protected attestation to move scientific authority.",
+  "next_frontier": "LIVE_OR_GENERATED_AGENT_PAYLOAD_ASSURANCE",
+  "nonclaims": [
+    "empirical leakage rate of arbitrary deployed LLMs",
+    "independent external security review complete",
+    "scientific authority granted by this receipt"
+  ],
+  "grants_scientific_authority": false
+}

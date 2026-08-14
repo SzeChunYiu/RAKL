@@ -1,0 +1,102 @@
+{
+  "protocol_id": "BENEFIT-L0-FCR-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "headline": {
+    "fcr_a": 0.5,
+    "fcr_b": 0.0,
+    "delta_fcr": 0.5,
+    "tcr_a": 1.0,
+    "tcr_b": 0.75,
+    "mcnemar": {"b": 200, "c": 0, "p_two_sided": 1.2446030555722283e-60},
+    "null_1_equal_n_suppression": {
+      "applicable": true,
+      "k_b": 90,
+      "k_a": 320,
+      "q05": 0.1225,
+      "mean": 0.1402025,
+      "observed_fcr_b": 0.0,
+      "beaten": true
+    },
+    "null_2_context_permutation": {
+      "q05": 0.0025,
+      "mean": 0.0110175,
+      "observed_fcr_b": 0.0,
+      "beaten": true
+    },
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "delta_fcr_ge_0.10": true,
+    "mcnemar_p_lt_0.001": true,
+    "tcr_b_ge_0.70": true,
+    "fcr_b_below_null1_q05": true,
+    "fcr_b_below_null2_q05": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true
+  },
+  "per_class": {
+    "arm_A_naive_text_comparison": {
+      "C1": {"n": 90, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": 1.0},
+      "C2": {"n": 30, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": 1.0},
+      "C3": {"n": 120, "false_contradictions": 120, "fcr_within_class": 1.0, "tcr_within_class": null},
+      "C4": {"n": 80, "false_contradictions": 80, "fcr_within_class": 1.0, "tcr_within_class": null},
+      "C5": {"n": 80, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": null}
+    },
+    "arm_B_context_aligned_projection": {
+      "C1": {"n": 90, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": 1.0},
+      "C2": {"n": 30, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": 0.0},
+      "C3": {"n": 120, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": null},
+      "C4": {"n": 80, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": null},
+      "C5": {"n": 80, "false_contradictions": 0, "fcr_within_class": 0.0, "tcr_within_class": null}
+    },
+    "note": "Arm B's designed-in C2 miss (30/120 gold contradictions withheld, TCR_B = 0.75) is charged, visible, and sits above the frozen 0.70 floor exactly as PROTOCOL.json anticipated; arm A's FCR is driven entirely by C3 (context-dependent differences) and C4 (unit-equivalent restatements)."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized surface realization, separation from both nulls, the suppression guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "Mechanical L0 machinery (rakl.core context-aligned projection, FORMAL_SYSTEM_SPECIFICATION section 5 contradiction predicate) on a synthetic known-answer corpus reduces FCR versus naive value comparison without null-equivalent suppression.",
+  "explicit_non_claims": [
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus generalization (registered follow-up)",
+    "ladder.json L0 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "79cadc5e42c30bdb54e218bde745900970f124fd0872e8ca808491c98461a33b",
+    "corpus_v1_stripped.json": "8b548ab5579b98796b62defd866a5d37956e80e0d3e6f3acdba3b4a48ca01883",
+    "audit_sample.json": "708031ae3df6bd7cd90b194937d9424fd28b6b1b125a9e0788cd416ac5aa6d6f",
+    "worlds_v1.json": "2b80324fad442942d2d03f08c3c72e8b74fb663a4edd380cc56cb6cb769fa4e0",
+    "harness/generate_corpus.py": "e7cd562874d81d645078c405317c98d451b00a1f767710f70d4f2f89d62fe1ab",
+    "harness/arm_harness.py": "4a102cbf3f64b5078c5274b70f168da7f87b827120623a34414b498d40d7294c",
+    "arm_a_output.json": "cde05cde9da877346edd4edcbe37bf51fae0555431031a2198856113b39c9475",
+    "arm_b_output.json": "9198f48276cb0354816e0afb6dd1c90ede1452995a81578153b6493f73b90435",
+    "evaluator_report.json": "0142c319d272f64492034a16b9a094dc06aad3f023edaf507c90fff31728db4a",
+    "AUDIT_RECEIPT.json": "790dac5e730117611f49aa65bd7952389f6df515fd10881069a40a53f33b5426"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T13:06:47Z",
+    "corpus_frozen_at": "2026-08-14T13:06:47Z",
+    "audit_performed_at": "2026-08-14T13:07:44Z",
+    "arm_run_started_at": "2026-08-14T13:08:13Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:edf5f97c5b7b8f44",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l0-fcr-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs) — mechanically valid per the receipt fields, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer corpus; the registered follow-ups (LLM arm, natural corpus) remain open.",
+    "C2-DISTRACTOR-MISS: arm B structurally withholds all C2 true contradictions (TCR_B=0.75). Pre-registered lever if this must close: per-facet load-bearing-coordinate relevance map (comparison layer narrower than the full tuple) via the mechanism-invention workflow — an L0-machinery extension, not a patch to rakl/core.py."
+  ],
+  "grants_scientific_authority": false
+}

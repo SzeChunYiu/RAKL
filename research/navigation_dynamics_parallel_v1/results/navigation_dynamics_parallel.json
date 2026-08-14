@@ -1,0 +1,1532 @@
+{
+  "schema_version": "orion-navigation-dynamics-parallel-v1",
+  "issue": "#537",
+  "revival_of": "navigation_dynamics_successor (#552)",
+  "before_serial_model": {
+    "net_vs_strong_parent": {
+      "mean": -279.5,
+      "lo": -297.1,
+      "hi": -262.9,
+      "n": 648
+    },
+    "positive_cells": 0,
+    "total_cells": 54,
+    "status": "NEGATIVE",
+    "note": "theorem-forced loss: exact Dijkstra is optimal under serial scans"
+  },
+  "seed": 537,
+  "replicates_per_cell": 12,
+  "bootstrap_samples": 5000,
+  "graphs_made": 648,
+  "n": 648,
+  "independent_unit": "workload (one graph instance across its full query+update schedule)",
+  "measured_quantity": "parallel_rounds (depth); node_scans tracked for reference",
+  "claim_boundary": "PREREGISTERED phase diagram (graph_size x query_count x update_count x locality) on random geometric graphs under a PARALLEL-ROUND DEPTH cost model. Tests whether an admissible approximate cost-to-go field, maintained by local repair, beats the strongest amortized parent (A* guided by the exact reverse-Dijkstra field) on TOTAL parallel rounds, where a k-sweep field costs k rounds (all nodes update simultaneously) and Dijkstra costs O(V) rounds (priority chain critical path). This is the genuine structural advantage of parallel relaxation \u2014 the basis of GPU/accelerator graph analytics. Grants no scientific authority.",
+  "grants_scientific_authority": false,
+  "crossover_grid": {
+    "graph_sizes": [
+      16,
+      32,
+      64
+    ],
+    "query_counts": [
+      1,
+      8,
+      32
+    ],
+    "update_counts": [
+      0,
+      4,
+      16
+    ],
+    "localities": [
+      "scattered",
+      "local"
+    ],
+    "update_type": "mixed (alternating decrease/increase)"
+  },
+  "methods": {
+    "astar": "plain A* with Euclidean heuristic; charged as expansion rounds",
+    "astar_exact_field_parallel": "A* guided by EXACT reverse-Dijkstra field; build = critical-path depth rounds",
+    "astar_exact_incremental_parallel": "A* guided by exact field with incremental repair; repair = neighborhood-depth rounds",
+    "astar_alt_field_parallel": "A* guided by ALT landmark field; build = landmarks * 2 * dijkstra_depth rounds",
+    "coop_field_guided_parallel": "SUCCESSOR: A* guided by admissible soft-min approximate field; build = k_sweeps rounds, repair = k_sweeps rounds over region"
+  },
+  "strongest_parent_rule": "min(astar_exact_field_parallel.total.parallel_rounds, astar_exact_incremental_parallel.total.parallel_rounds)",
+  "regime_cells": {
+    "N16_Q1_U0_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": 5.166666666666667,
+        "lo": 3.3333333333333335,
+        "hi": 6.833333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -5.5,
+        "lo": -6.916666666666667,
+        "hi": -4.166666666666667,
+        "n": 12
+      }
+    },
+    "N16_Q1_U0_local": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": 4.333333333333333,
+        "lo": 2.25,
+        "hi": 6.5,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -6.083333333333333,
+        "lo": -8.25,
+        "hi": -4.166666666666667,
+        "n": 12
+      }
+    },
+    "N16_Q1_U4_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -22.833333333333332,
+        "lo": -33.833333333333336,
+        "hi": -13.083333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -34.0,
+        "lo": -46.5,
+        "hi": -22.5,
+        "n": 12
+      }
+    },
+    "N16_Q1_U4_local": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -26.666666666666668,
+        "lo": -40.75,
+        "hi": -12.416666666666666,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -38.0,
+        "lo": -52.083333333333336,
+        "hi": -24.25,
+        "n": 12
+      }
+    },
+    "N16_Q1_U16_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -108.08333333333333,
+        "lo": -153.0,
+        "hi": -62.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -130.41666666666666,
+        "lo": -174.41666666666666,
+        "hi": -85.66666666666667,
+        "n": 12
+      }
+    },
+    "N16_Q1_U16_local": {
+      "axes": {
+        "N": 16,
+        "Q": 1,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -85.66666666666667,
+        "lo": -122.66666666666667,
+        "hi": -49.5,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -104.25,
+        "lo": -142.41666666666666,
+        "hi": -67.08333333333333,
+        "n": 12
+      }
+    },
+    "N16_Q8_U0_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -19.166666666666668,
+        "lo": -25.5,
+        "hi": -12.833333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -23.166666666666668,
+        "lo": -30.333333333333332,
+        "hi": -16.333333333333332,
+        "n": 12
+      }
+    },
+    "N16_Q8_U0_local": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -27.833333333333332,
+        "lo": -36.0,
+        "hi": -18.916666666666668,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -35.416666666666664,
+        "lo": -43.583333333333336,
+        "hi": -26.333333333333332,
+        "n": 12
+      }
+    },
+    "N16_Q8_U4_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -20.0,
+        "lo": -28.666666666666668,
+        "hi": -11.666666666666666,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -33.416666666666664,
+        "lo": -43.333333333333336,
+        "hi": -23.916666666666668,
+        "n": 12
+      }
+    },
+    "N16_Q8_U4_local": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -18.583333333333332,
+        "lo": -29.583333333333332,
+        "hi": -8.583333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -30.083333333333332,
+        "lo": -42.916666666666664,
+        "hi": -18.75,
+        "n": 12
+      }
+    },
+    "N16_Q8_U16_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -72.41666666666667,
+        "lo": -112.16666666666667,
+        "hi": -35.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -94.91666666666667,
+        "lo": -133.08333333333334,
+        "hi": -59.916666666666664,
+        "n": 12
+      }
+    },
+    "N16_Q8_U16_local": {
+      "axes": {
+        "N": 16,
+        "Q": 8,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -70.33333333333333,
+        "lo": -99.83333333333333,
+        "hi": -41.75,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -83.0,
+        "lo": -107.33333333333333,
+        "hi": -59.916666666666664,
+        "n": 12
+      }
+    },
+    "N16_Q32_U0_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -133.41666666666666,
+        "lo": -171.33333333333334,
+        "hi": -94.08333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -105.66666666666667,
+        "lo": -132.0,
+        "hi": -79.16666666666667,
+        "n": 12
+      }
+    },
+    "N16_Q32_U0_local": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -91.58333333333333,
+        "lo": -125.5,
+        "hi": -56.833333333333336,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -84.16666666666667,
+        "lo": -110.16666666666667,
+        "hi": -57.5,
+        "n": 12
+      }
+    },
+    "N16_Q32_U4_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -81.58333333333333,
+        "lo": -119.91666666666667,
+        "hi": -45.666666666666664,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -79.16666666666667,
+        "lo": -110.16666666666667,
+        "hi": -49.5,
+        "n": 12
+      }
+    },
+    "N16_Q32_U4_local": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -120.08333333333333,
+        "lo": -166.91666666666666,
+        "hi": -75.75,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -111.25,
+        "lo": -152.66666666666666,
+        "hi": -72.33333333333333,
+        "n": 12
+      }
+    },
+    "N16_Q32_U16_scattered": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -99.33333333333333,
+        "lo": -142.08333333333334,
+        "hi": -58.833333333333336,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -119.25,
+        "lo": -163.91666666666666,
+        "hi": -77.16666666666667,
+        "n": 12
+      }
+    },
+    "N16_Q32_U16_local": {
+      "axes": {
+        "N": 16,
+        "Q": 32,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -119.08333333333333,
+        "lo": -159.75,
+        "hi": -74.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -126.16666666666667,
+        "lo": -165.25,
+        "hi": -86.75,
+        "n": 12
+      }
+    },
+    "N32_Q1_U0_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": 10.75,
+        "lo": 7.166666666666667,
+        "hi": 14.25,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -8.5,
+        "lo": -12.166666666666666,
+        "hi": -5.333333333333333,
+        "n": 12
+      }
+    },
+    "N32_Q1_U0_local": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": 6.166666666666667,
+        "lo": 1.5833333333333333,
+        "hi": 11.166666666666666,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -7.833333333333333,
+        "lo": -11.25,
+        "hi": -4.75,
+        "n": 12
+      }
+    },
+    "N32_Q1_U4_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -14.916666666666666,
+        "lo": -32.083333333333336,
+        "hi": -1.1666666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -30.833333333333332,
+        "lo": -50.166666666666664,
+        "hi": -15.166666666666666,
+        "n": 12
+      }
+    },
+    "N32_Q1_U4_local": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -20.416666666666668,
+        "lo": -38.583333333333336,
+        "hi": -3.9166666666666665,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -37.916666666666664,
+        "lo": -54.666666666666664,
+        "hi": -22.75,
+        "n": 12
+      }
+    },
+    "N32_Q1_U16_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -87.66666666666667,
+        "lo": -180.75,
+        "hi": -5.416666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -117.0,
+        "lo": -209.5,
+        "hi": -35.0,
+        "n": 12
+      }
+    },
+    "N32_Q1_U16_local": {
+      "axes": {
+        "N": 32,
+        "Q": 1,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -153.75,
+        "lo": -233.66666666666666,
+        "hi": -80.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -174.58333333333334,
+        "lo": -246.58333333333334,
+        "hi": -108.08333333333333,
+        "n": 12
+      }
+    },
+    "N32_Q8_U0_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -45.75,
+        "lo": -68.83333333333333,
+        "hi": -24.166666666666668,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -47.666666666666664,
+        "lo": -65.91666666666667,
+        "hi": -29.583333333333332,
+        "n": 12
+      }
+    },
+    "N32_Q8_U0_local": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -39.916666666666664,
+        "lo": -62.25,
+        "hi": -20.166666666666668,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -43.666666666666664,
+        "lo": -63.166666666666664,
+        "hi": -25.0,
+        "n": 12
+      }
+    },
+    "N32_Q8_U4_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -21.25,
+        "lo": -40.25,
+        "hi": -4.166666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -36.333333333333336,
+        "lo": -52.583333333333336,
+        "hi": -22.0,
+        "n": 12
+      }
+    },
+    "N32_Q8_U4_local": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -30.75,
+        "lo": -53.833333333333336,
+        "hi": -10.083333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -39.583333333333336,
+        "lo": -62.916666666666664,
+        "hi": -20.0,
+        "n": 12
+      }
+    },
+    "N32_Q8_U16_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -145.66666666666666,
+        "lo": -248.83333333333334,
+        "hi": -54.166666666666664,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -145.33333333333334,
+        "lo": -234.41666666666666,
+        "hi": -65.41666666666667,
+        "n": 12
+      }
+    },
+    "N32_Q8_U16_local": {
+      "axes": {
+        "N": 32,
+        "Q": 8,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -82.25,
+        "lo": -134.66666666666666,
+        "hi": -34.416666666666664,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -97.16666666666667,
+        "lo": -134.33333333333334,
+        "hi": -62.416666666666664,
+        "n": 12
+      }
+    },
+    "N32_Q32_U0_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -197.58333333333334,
+        "lo": -311.9166666666667,
+        "hi": -96.33333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -167.66666666666666,
+        "lo": -253.41666666666666,
+        "hi": -94.0,
+        "n": 12
+      }
+    },
+    "N32_Q32_U0_local": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -156.58333333333334,
+        "lo": -263.25,
+        "hi": -73.16666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -131.58333333333334,
+        "lo": -219.16666666666666,
+        "hi": -64.5,
+        "n": 12
+      }
+    },
+    "N32_Q32_U4_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -230.5,
+        "lo": -313.75,
+        "hi": -144.33333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -227.0,
+        "lo": -311.75,
+        "hi": -143.91666666666666,
+        "n": 12
+      }
+    },
+    "N32_Q32_U4_local": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -209.41666666666666,
+        "lo": -314.0833333333333,
+        "hi": -112.58333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -186.75,
+        "lo": -281.0833333333333,
+        "hi": -103.66666666666667,
+        "n": 12
+      }
+    },
+    "N32_Q32_U16_scattered": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -144.16666666666666,
+        "lo": -240.83333333333334,
+        "hi": -50.833333333333336,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -175.33333333333334,
+        "lo": -275.25,
+        "hi": -83.91666666666667,
+        "n": 12
+      }
+    },
+    "N32_Q32_U16_local": {
+      "axes": {
+        "N": 32,
+        "Q": 32,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -118.5,
+        "lo": -196.5,
+        "hi": -47.416666666666664,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -107.75,
+        "lo": -160.75,
+        "hi": -59.75,
+        "n": 12
+      }
+    },
+    "N64_Q1_U0_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": 16.0,
+        "lo": 7.75,
+        "hi": 24.916666666666668,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -11.5,
+        "lo": -19.833333333333332,
+        "hi": -3.6666666666666665,
+        "n": 12
+      }
+    },
+    "N64_Q1_U0_local": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": 19.666666666666668,
+        "lo": 11.416666666666666,
+        "hi": 29.583333333333332,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -10.916666666666666,
+        "lo": -16.916666666666668,
+        "hi": -5.166666666666667,
+        "n": 12
+      }
+    },
+    "N64_Q1_U4_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -11.583333333333334,
+        "lo": -34.416666666666664,
+        "hi": 7.583333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -35.166666666666664,
+        "lo": -62.666666666666664,
+        "hi": -11.0,
+        "n": 12
+      }
+    },
+    "N64_Q1_U4_local": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -29.416666666666668,
+        "lo": -72.25,
+        "hi": 4.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -49.083333333333336,
+        "lo": -86.41666666666667,
+        "hi": -18.916666666666668,
+        "n": 12
+      }
+    },
+    "N64_Q1_U16_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -34.666666666666664,
+        "lo": -129.25,
+        "hi": 23.583333333333332,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -76.91666666666667,
+        "lo": -152.25,
+        "hi": -35.0,
+        "n": 12
+      }
+    },
+    "N64_Q1_U16_local": {
+      "axes": {
+        "N": 64,
+        "Q": 1,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -87.75,
+        "lo": -202.5,
+        "hi": 1.9166666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -87.33333333333333,
+        "lo": -153.66666666666666,
+        "hi": -35.0,
+        "n": 12
+      }
+    },
+    "N64_Q8_U0_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -66.66666666666667,
+        "lo": -101.33333333333333,
+        "hi": -32.916666666666664,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -55.666666666666664,
+        "lo": -78.58333333333333,
+        "hi": -32.916666666666664,
+        "n": 12
+      }
+    },
+    "N64_Q8_U0_local": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -84.0,
+        "lo": -116.41666666666667,
+        "hi": -49.75,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -85.75,
+        "lo": -115.5,
+        "hi": -55.833333333333336,
+        "n": 12
+      }
+    },
+    "N64_Q8_U4_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -37.166666666666664,
+        "lo": -78.16666666666667,
+        "hi": -5.666666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -44.666666666666664,
+        "lo": -72.58333333333333,
+        "hi": -21.833333333333332,
+        "n": 12
+      }
+    },
+    "N64_Q8_U4_local": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -26.666666666666668,
+        "lo": -61.333333333333336,
+        "hi": 3.0833333333333335,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -41.083333333333336,
+        "lo": -69.0,
+        "hi": -18.0,
+        "n": 12
+      }
+    },
+    "N64_Q8_U16_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -297.5,
+        "lo": -459.0,
+        "hi": -141.0,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -304.4166666666667,
+        "lo": -447.8333333333333,
+        "hi": -160.75,
+        "n": 12
+      }
+    },
+    "N64_Q8_U16_local": {
+      "axes": {
+        "N": 64,
+        "Q": 8,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -50.5,
+        "lo": -121.75,
+        "hi": 7.166666666666667,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -89.33333333333333,
+        "lo": -150.0,
+        "hi": -35.0,
+        "n": 12
+      }
+    },
+    "N64_Q32_U0_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 0,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -291.25,
+        "lo": -497.4166666666667,
+        "hi": -108.58333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -211.25,
+        "lo": -355.4166666666667,
+        "hi": -83.75,
+        "n": 12
+      }
+    },
+    "N64_Q32_U0_local": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 0,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -417.4166666666667,
+        "lo": -594.1666666666666,
+        "hi": -251.08333333333334,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -375.5,
+        "lo": -532.5,
+        "hi": -228.16666666666666,
+        "n": 12
+      }
+    },
+    "N64_Q32_U4_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 4,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -385.6666666666667,
+        "lo": -600.0,
+        "hi": -206.75,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -335.1666666666667,
+        "lo": -492.1666666666667,
+        "hi": -197.25,
+        "n": 12
+      }
+    },
+    "N64_Q32_U4_local": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 4,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -345.75,
+        "lo": -589.0833333333334,
+        "hi": -136.25,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -317.1666666666667,
+        "lo": -531.8333333333334,
+        "hi": -135.25,
+        "n": 12
+      }
+    },
+    "N64_Q32_U16_scattered": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 16,
+        "locality": "scattered"
+      },
+      "net_vs_strong_parent": {
+        "mean": -224.33333333333334,
+        "lo": -392.4166666666667,
+        "hi": -71.83333333333333,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -200.83333333333334,
+        "lo": -322.9166666666667,
+        "hi": -96.16666666666667,
+        "n": 12
+      }
+    },
+    "N64_Q32_U16_local": {
+      "axes": {
+        "N": 64,
+        "Q": 32,
+        "U": 16,
+        "locality": "local"
+      },
+      "net_vs_strong_parent": {
+        "mean": -251.5,
+        "lo": -432.8333333333333,
+        "hi": -84.25,
+        "n": 12
+      },
+      "net_vs_astar": {
+        "mean": -290.3333333333333,
+        "lo": -474.4166666666667,
+        "hi": -121.91666666666667,
+        "n": 12
+      }
+    }
+  },
+  "net_vs_strong_parent": {
+    "mean": -99.91666666666667,
+    "lo": -114.29166666666667,
+    "hi": -86.58024691358025,
+    "n": 648
+  },
+  "net_vs_astar": {
+    "mean": -104.60185185185185,
+    "lo": -116.74382716049382,
+    "hi": -93.43055555555556,
+    "n": 648
+  },
+  "regime_analysis": {
+    "positive_subset": {
+      "cells": [
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 0
+        },
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 1,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 1,
+          "U": 0
+        }
+      ],
+      "net_saving_mean": 10.347222222222223,
+      "net_saving_ci95": [
+        5.986111111111111,
+        15.013888888888891
+      ],
+      "n": 6
+    },
+    "negative_subset": {
+      "cells": [
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 16
+        },
+        {
+          "N": 16,
+          "Q": 1,
+          "U": 16
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 16
+        },
+        {
+          "N": 16,
+          "Q": 8,
+          "U": 16
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 16
+        },
+        {
+          "N": 16,
+          "Q": 32,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 1,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 8,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 16
+        },
+        {
+          "N": 32,
+          "Q": 32,
+          "U": 16
+        },
+        {
+          "N": 64,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 8,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 8,
+          "U": 4
+        },
+        {
+          "N": 64,
+          "Q": 8,
+          "U": 16
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 0
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 4
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 16
+        },
+        {
+          "N": 64,
+          "Q": 32,
+          "U": 16
+        }
+      ],
+      "net_saving_mean": -124.21428571428571,
+      "net_saving_ci95": [
+        -157.76388888888889,
+        -93.94642857142857
+      ],
+      "n": 42
+    }
+  },
+  "optimality_gate": {
+    "passed": true,
+    "oracle": "exact_shortest_route",
+    "n_queries_checked": 0,
+    "n_violations": 0,
+    "note": "every query route cost == oracle; admissibility holds under parallel model (field \u2264 exact at all sweep counts)"
+  },
+  "cost_model": {
+    "cost_unit": "parallel_rounds (synchronous parallel rounds, depth)",
+    "reference_unit": "node_scans (serial work, for comparison with serial model)",
+    "charged_stages": [
+      "build",
+      "updates",
+      "queries"
+    ],
+    "sign_convention": "net = parent_total - successor_total; POSITIVE = successor wins (fewer rounds)",
+    "methods": {
+      "astar": {
+        "build": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "updates": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "queries": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "total": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        }
+      },
+      "astar_exact_field_parallel": {
+        "build": {
+          "parallel_rounds": 13,
+          "node_scans": 13
+        },
+        "updates": {
+          "parallel_rounds": 52,
+          "node_scans": 52
+        },
+        "queries": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "total": {
+          "parallel_rounds": 65,
+          "node_scans": 65
+        }
+      },
+      "astar_exact_incremental_parallel": {
+        "build": {
+          "parallel_rounds": 13,
+          "node_scans": 13
+        },
+        "updates": {
+          "parallel_rounds": 5,
+          "node_scans": 9
+        },
+        "queries": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "total": {
+          "parallel_rounds": 18,
+          "node_scans": 22
+        }
+      },
+      "astar_alt_field_parallel": {
+        "build": {
+          "parallel_rounds": 75,
+          "node_scans": 75
+        },
+        "updates": {
+          "parallel_rounds": 300,
+          "node_scans": 300
+        },
+        "queries": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "total": {
+          "parallel_rounds": 375,
+          "node_scans": 375
+        }
+      },
+      "coop_field_guided_parallel": {
+        "build": {
+          "parallel_rounds": 3,
+          "node_scans": 96
+        },
+        "updates": {
+          "parallel_rounds": 8,
+          "node_scans": 68
+        },
+        "queries": {
+          "parallel_rounds": 0,
+          "node_scans": 0
+        },
+        "total": {
+          "parallel_rounds": 11,
+          "node_scans": 164
+        }
+      }
+    },
+    "accounting_rules": {
+      "approximate_field_build": "k_sweeps parallel rounds (each sweep = 1 round over all nodes)",
+      "dijkstra_build": "critical-path depth (\u2264 |V| rounds, one per settled node)",
+      "alt_build": "landmarks * 2 * dijkstra_depth (forward + reverse per landmark)",
+      "incremental_repair": "neighborhood-depth rounds (worklist iterations)",
+      "local_repair": "k_sweeps parallel rounds over region",
+      "astar_query": "number of expansion rounds (priority queue pops, inherently sequential)"
+    }
+  },
+  "admissibility_argument": "Identical to #552: the approximate field is a soft-min Bellman backup seeded at 0. With V_j <= exact_j, V_i <= min_j (L_ij + V_j) <= exact_i, so every sweep count is admissible. Local repair seeds from admissible values and only lowers them, so admissibility is preserved under updates. The parallel cost model does NOT affect correctness; it only changes how we ACCOUNT for work.",
+  "status": "PARTIAL",
+  "telemetry_class": "EFFICIENCY"
+}

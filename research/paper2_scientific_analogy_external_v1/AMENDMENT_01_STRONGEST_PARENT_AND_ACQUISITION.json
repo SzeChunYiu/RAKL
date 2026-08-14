@@ -1,0 +1,46 @@
+{
+  "schema_version": "paper2-scientific-analogy-external-amendment-v1",
+  "date": "2026-08-14",
+  "chronology": "PRE_MODEL_OUTCOME",
+  "reason": "Post-freeze parent audit of the original SCAR publication/repository showed that a background-aware structure-abduction prompt is a stronger fair parent than a bare direct mapping prompt. No P2 model outputs or full-corpus confirmatory results were accessed before this amendment.",
+  "strongest_parent_update": {
+    "P1_DIRECT_MODEL": "same qualified model, exact direct decision/mapping prompt",
+    "P2_PUBLISHED_STYLE_STRUCTURE_ABDUCTION": "same qualified model, asks it to infer the cross-system relational/process structure before deciding/mapping, but does not supply ORION's typed applicability, source-span, boundary/QoI or fail-closed witness schema",
+    "C1_GROUNDED_STRUCTURAL_WITNESS": "same qualified model, explicit ORION directional applicability and exact source-span grounding schema",
+    "comparison_rule": "C1 must clear its hard safety/grounding gates and show its primary residual against max(P1,P2) on each relevant quality coordinate. A win over P1 alone is insufficient if P2 matches or wins.",
+    "published_parent_anchors": {
+      "SCAR_repository_direct_template_blob": "5bc03bac47fcd315bac58a5f856c0178cf634c93",
+      "SCAR_paper_claim": "The SCAR publication reports that background/explanation and chain-of-thought style structure abduction can improve analogy mapping, so this mechanism class must be represented in the parent set rather than attributed to ORION."
+    }
+  },
+  "matched_resource_contract": {
+    "same_model_revision_interface": true,
+    "same_input_text_bytes_per_case": true,
+    "same_max_new_tokens": 512,
+    "same_decoding_and_sampling": true,
+    "same_tool_access": "none",
+    "same_retry_policy": "one syntax-only retry if and only if #447 qualified interface itself permits it; otherwise zero",
+    "candidate_extra_structure_is_counted_in_output_tokens": true
+  },
+  "acquisition_and_case_order": {
+    "acquisition_must_complete_before_any_model_call": true,
+    "SCAR_preview_quarantine_ids": [1,2,3,4,5,6,7,8,9,10],
+    "ProParaLogy_preview_quarantine_csv_indices": [0,1,2,3,4,5,6,7,8,9,10],
+    "opaque_case_order_seed": 202608141701,
+    "SCAR_case_rule": "one non-quarantined English system analogy -> one positive mapping case",
+    "ProParaLogy_case_rule": "one non-quarantined row -> a paired block containing true target, challenging distractor and random target; role identity remains protected evaluator state and never candidate-visible",
+    "missing_evidence_controls": {
+      "n": 50,
+      "selection": "lowest 50 SHA-256 ranks of non-quarantined ProPara source-row identities under seed 202608141701",
+      "construction": "retain source text but replace target paragraph with a fixed statement that the target mechanism evidence is unavailable",
+      "gold": "CANNOT_CHECK"
+    },
+    "manifest_outputs": [
+      "EXTERNAL_CORPUS_BINDING.json",
+      "PUBLIC_CASE_MANIFEST.jsonl",
+      "PROTECTED_GOLD_MANIFEST.jsonl"
+    ],
+    "manifest_binding": "All three outputs must be SHA-256 recorded before any model call. Public cases contain opaque ids/text only; protected gold contains source row, role and mappings/decision."
+  },
+  "grants_scientific_authority": false
+}

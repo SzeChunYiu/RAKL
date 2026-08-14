@@ -1,0 +1,112 @@
+{
+  "schema_version": "rakl-paper4-phase2-freeze-v3",
+  "date": "2026-08-14",
+  "supersedes_preoutcome_protocol": "research/paper4_phase2_v1/PROTOCOL_V2.json",
+  "supersession_reason": "Pre-outcome implementation audit against experiments/training_ladder/exposure_executor.py found V2 described 4-bit NF4 and LoRA dropout 0.05, whereas the corrected Phase-1 executor used AutoModelForCausalLM.from_pretrained without a quantization override and LoraConfig(r=8, alpha=16, dropout=0.0, bias=none, task_type=CAUSAL_LM). No Phase-2 model output had been accessed. V3 binds the actual Phase-1-equivalent training semantics and is the only outcome-authorizing protocol.",
+  "preoutcome_schema_alias_repair": {
+    "original_bytes_preserved_at": "research/paper4_phase2_v1/PROTOCOL_V3_ORIGINAL_PREEXEC.json",
+    "reason": "The frozen runner expects training.model_revision while V3 named the identical pinned value training.revision. Before any Phase-2 model output, add the redundant alias only; no scientific value, task, arm, seed, MDE, harm bound or training semantics changes.",
+    "outcomes_accessed_before_repair": false
+  },
+  "outcomes_accessed_before_v3_freeze": false,
+  "paper": "Paper IV — Structural Learning Mechanics",
+  "issue": 466,
+  "gate_issue": 462,
+  "authorizing_phase1": {
+    "artifact": "research/paper4_phase1_results_v2/7b/run_manifest_v2.json",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "family": "state_reachability",
+    "terminal": "MECHANISM_SIGNAL_PRESENT",
+    "principle_mastered_at_exposure": 2,
+    "same_structure_late_gain": 0.0,
+    "unsaturated_coord_late_gain": 0.25,
+    "v1_generator_negative_preserved": true
+  },
+  "training": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "loading_semantics": "AutoModelForCausalLM.from_pretrained on the exact pinned revision/snapshot with no post-freeze quantization or dtype policy change. If the exact model cannot fit the available accelerator, emit RESOURCE_BLOCKED.",
+    "tokenizer_semantics": "AutoTokenizer.from_pretrained exact pinned revision; pad token set to eos only if absent",
+    "lora": {"r":8,"alpha":16,"dropout":0.0,"bias":"none","task_type":"CAUSAL_LM","target_modules":["q_proj","v_proj"]},
+    "target_modules_note": "Explicit q_proj/v_proj binding is the version-stable Qwen2 specialization of the Phase-1 PEFT CAUSAL_LM default; changing it requires a new protocol before outcomes.",
+    "epochs": 12,
+    "learning_rate": 0.0003,
+    "optimizer": "torch.optim.AdamW over trainable LoRA parameters",
+    "loss": "causal-LM gold-token loss with prompt tokens masked exactly as exposure_executor.py v2",
+    "training_seed": 46601,
+    "determinism": "python/numpy/torch seeds fixed; deterministic algorithms warn_only=True as in Phase-1 executor",
+    "final_checkpoint_rule": "Each arm final checkpoint is trained from the same frozen base on exactly its final 48 selected examples for 12 epochs. C/E intermediate selection checkpoints are independently retrained from the same base on their cumulative selected examples; intermediate checkpoints do not enter confirmatory outcome statistics except through the preregistered selection rule.",
+    "no_model_or_hyperparameter_substitution": true
+  },
+  "data": {
+    "generator_module": "experiments/training_ladder/generator_v2.py",
+    "training_family": "state_reachability",
+    "development_seed": 4661001,
+    "selection_probe_seed": 4661002,
+    "fresh_assurance_seed": 4661003,
+    "exposure_types": ["SAME_STRUCTURE","NEW_COMPOSITION","NEW_BOUNDARY","NEW_REPRESENTATION","NEW_DOMAIN","HOSTILE_NEAR_MISS"],
+    "batch_size": 8,
+    "rounds": 6,
+    "final_examples_per_arm": 48,
+    "candidate_pool_per_coordinate": 96,
+    "selection_probe_n_per_coordinate": 16,
+    "fresh_assurance_n_per_coordinate": 64,
+    "adaptive_repetition_floor": 0.125,
+    "static_counts": {"SAME_STRUCTURE":8,"NEW_COMPOSITION":8,"NEW_BOUNDARY":8,"NEW_REPRESENTATION":8,"NEW_DOMAIN":8,"HOSTILE_NEAR_MISS":8},
+    "no_train_selection_assurance_overlap": true
+  },
+  "arms": {
+    "A_UNIFORM_RANDOM": "48 examples sampled without replacement from the union of equal-size exposure pools with seed 46601; selection does not inspect exposure label, gold, verifier or model state.",
+    "B_SEMANTIC_DIVERSITY": "Greedy farthest-first prompt selection by token-set Jaccard distance only, deterministic case-id tie break; no gold, verifier, model loss or mastery state.",
+    "C_STRONGEST_MODEL_AWARE_PARENT": "Round 1 uses a pre-frozen balanced seed batch. At rounds 2-6, retrain a cumulative selection checkpoint and evaluate the shared selection probes; choose the next exposure group with the largest mean binary-label negative log likelihood, deterministic tie break by exposure order. This parent sees learner loss but no RAKL mastery threshold, protected safety vector or novelty semantics.",
+    "D_STATIC_RAKL_STRUCTURAL": "Exactly 8 examples from each exposure type, selected by pre-frozen seed; no learner state changes allocation.",
+    "E_ADAPTIVE_RAKL_STRUCTURAL": "Round 1 uses the same balanced seed batch as C. At rounds 2-6, retrain/evaluate a cumulative selection checkpoint, form the six-coordinate accuracy vector, reserve one SAME_STRUCTURE slot per batch, prioritize PRINCIPLE until >=0.90, prioritize RETENTION if <0.80, otherwise target the lowest measured non-principle coordinate. A coordinate is blocked if the previous-round drop in SAME_STRUCTURE or HOSTILE_NEAR_MISS exceeds 0.10 after selecting it; deterministic coordinate and case-id ties. No scalar utility may compensate a blocked safety coordinate."
+  },
+  "exposure_order_for_ties": ["SAME_STRUCTURE","NEW_COMPOSITION","NEW_BOUNDARY","NEW_REPRESENTATION","NEW_DOMAIN","HOSTILE_NEAR_MISS"],
+  "fairness": {
+    "same_base_revision": true,
+    "same_final_examples": 48,
+    "same_final_training_algorithm": true,
+    "same_fresh_assurance": true,
+    "fresh_assurance_hidden_from_selection": true,
+    "C_and_E_share_selection_probes_and_round_cadence": true,
+    "all_selection_and_intermediate_training_overhead_counted": true,
+    "no_cross_arm_state": true
+  },
+  "primary_estimand": "E-D fresh balanced accuracy across the six equal fresh-assurance strata",
+  "confirmatory_contrasts": ["E-D","E-C","D-B"],
+  "descriptive_contrast": "E-A",
+  "statistics": {
+    "independent_unit": "fresh assurance case",
+    "mde_primary": 0.05,
+    "confidence": 0.95,
+    "paired_bootstrap_repetitions": 10000,
+    "bootstrap_seed": 46699,
+    "multiplicity": "Holm over E-D, E-C and D-B",
+    "hard_harm_coordinates": ["SAME_STRUCTURE","NEW_COMPOSITION","NEW_BOUNDARY","HOSTILE_NEAR_MISS"],
+    "hard_harm_boundary_E_minus_D": -0.05,
+    "parent_noninferiority_E_minus_C": -0.02,
+    "success": "E-D point >=0.05 and paired CI lower>0; Holm-adjusted E-D significant; E-C CI lower>=-0.02; every hard-harm E-D CI lower>-0.05; full selection/training/probe resource accounting reported.",
+    "fixed_stopping": "6 rounds, 48 examples; no outcome-dependent extension",
+    "missing_invalid": "count incorrect; retain in safety and cost accounting"
+  },
+  "resource_envelope": {
+    "accelerator": "A100-class or other accelerator able to run the exact pinned unmodified loading/training semantics",
+    "max_gpu_hours": 12,
+    "max_wall_hours": 12,
+    "failure_terminal": "RESOURCE_BLOCKED",
+    "forbidden_repair_after_outcomes": "smaller model, changed quantization, reduced epochs, changed MDE, changed panel or changed parent"
+  },
+  "decision_tree": {
+    "ADAPTIVE_RESIDUAL_SUPPORTED": "all success conditions pass",
+    "PARENT_MATCHES_OR_BEATS": "E-C violates -0.02 noninferiority or C is distinguishably better",
+    "STATIC_EQUALS_ADAPTIVE": "E-D precision excludes +0.05 while including 0 and no hard harm",
+    "ADAPTIVE_HARMS_COMPOSITION_OR_RETENTION": "any registered hard-harm boundary fails",
+    "UNDERPOWERED": "registered MDE cannot be adjudicated",
+    "RESOURCE_BLOCKED": "exact 7B Phase-2 cannot execute under the frozen resource envelope",
+    "INVALID_CONTAMINATED": "data overlap, label leakage, cross-arm state, or post-outcome protocol/evaluator mutation"
+  },
+  "authority_boundary": "Training allocation only. No theorem/scientific authority. Paper IV standalone authorization remains issue #462 and depends on the terminal produced by this exact frozen protocol."
+}

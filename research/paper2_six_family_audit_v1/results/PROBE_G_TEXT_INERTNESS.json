@@ -1,0 +1,305 @@
+{
+  "grants_scientific_authority": false,
+  "interpretation": "If gold and all six coordinates are unchanged when every source_text and target_text is replaced by noise, the natural-language surface carries no information used by any arm except the lexical diagnostic. The benchmark then contains no extraction problem: the applicability coordinates are read directly from pre-parsed structured fields in task.public. The 'which coordinates a fail-closed gate must enforce' result reduces to the observation that checking one of six independent conditions misses violations of the other five.",
+  "n": 810,
+  "per_family_text_inertness": {
+    "algorithm_invariants": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    },
+    "causal_transport": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    },
+    "linear_systems": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    },
+    "local_global_gluing": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    },
+    "optimization": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    },
+    "pgm_dseparation": {
+      "components_unchanged": 135,
+      "gold_unchanged": 135,
+      "n": 135
+    }
+  },
+  "public_field_shapes": {
+    "algorithm_invariants": {
+      "components": {
+        "boundary": "ACCEPT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "REJECT",
+        "qoi": "ACCEPT",
+        "relation": "ACCEPT"
+      },
+      "gold": "REJECT",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "algorithm": "binary_search",
+          "direction": "source_to_target"
+        },
+        "source": {
+          "algorithm": "binary_search",
+          "boundary": "ascending_total_order",
+          "qoi": "find_target"
+        },
+        "target": {
+          "boundary": "ascending_total_order",
+          "comparator_consistent": true,
+          "qoi": "find_target",
+          "target": 7,
+          "values": [
+            13,
+            1,
+            11,
+            7,
+            3,
+            9,
+            5
+          ]
+        }
+      }
+    },
+    "causal_transport": {
+      "components": {
+        "boundary": "ACCEPT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "ACCEPT",
+        "qoi": "ACCEPT",
+        "relation": "ACCEPT"
+      },
+      "gold": "ACCEPT",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "direction": "source_to_target",
+          "roles_complete": true
+        },
+        "source": {
+          "boundary": "observational_adjustment_transport",
+          "qoi": "total_intervention_effect"
+        },
+        "target": {
+          "adjustment": [
+            "U"
+          ],
+          "boundary": "observational_adjustment_transport",
+          "edges": [
+            [
+              "U",
+              "X"
+            ],
+            [
+              "U",
+              "Y"
+            ],
+            [
+              "X",
+              "Y"
+            ]
+          ],
+          "positivity": true,
+          "qoi": "total_intervention_effect",
+          "transport_invariant": true,
+          "x": "X",
+          "y": "Y"
+        }
+      }
+    },
+    "linear_systems": {
+      "components": {
+        "boundary": "ACCEPT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "ACCEPT",
+        "qoi": "ACCEPT",
+        "relation": "CANNOT_CHECK"
+      },
+      "gold": "CANNOT_CHECK",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "direction": "source_to_target",
+          "rank": null,
+          "required_rank": 2
+        },
+        "source": {
+          "boundary": "discrete_time_lti",
+          "dimension": 2,
+          "qoi": "asymptotic_stability"
+        },
+        "target": {
+          "boundary": "discrete_time_lti",
+          "lti_assumption": true,
+          "qoi": "asymptotic_stability",
+          "spectral_radius": 0.72
+        }
+      }
+    },
+    "local_global_gluing": {
+      "components": {
+        "boundary": "ACCEPT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "ACCEPT",
+        "qoi": "ACCEPT",
+        "relation": "ACCEPT"
+      },
+      "gold": "ACCEPT",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "chart_mapping_complete": true,
+          "direction": "source_to_target"
+        },
+        "source": {
+          "boundary": "exact_overlap",
+          "qoi": "global_section"
+        },
+        "target": {
+          "boundary": "exact_overlap",
+          "equations": [
+            [
+              "x",
+              "y",
+              0
+            ],
+            [
+              "y",
+              "z",
+              0
+            ],
+            [
+              "x",
+              "z",
+              0
+            ]
+          ],
+          "interface_complete": true,
+          "qoi": "global_section"
+        }
+      }
+    },
+    "optimization": {
+      "components": {
+        "boundary": "REJECT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "ACCEPT",
+        "qoi": "ACCEPT",
+        "relation": "ACCEPT"
+      },
+      "gold": "REJECT",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "direction": "source_to_target",
+          "variable_mapping_complete": true
+        },
+        "source": {
+          "boundary": "convex_box_constrained",
+          "qoi": "global_minimum"
+        },
+        "target": {
+          "a": 2.0,
+          "b": -4.0,
+          "boundary": "nonconvex_unregistered",
+          "candidate": 2.0,
+          "constraint_qualification": true,
+          "lower": 0.0,
+          "qoi": "global_minimum",
+          "upper": 4.0
+        }
+      }
+    },
+    "pgm_dseparation": {
+      "components": {
+        "boundary": "ACCEPT",
+        "direction": "ACCEPT",
+        "effect": "ACCEPT",
+        "precondition": "ACCEPT",
+        "qoi": "REJECT",
+        "relation": "ACCEPT"
+      },
+      "gold": "REJECT",
+      "public_keys": [
+        "map",
+        "source",
+        "target"
+      ],
+      "public_sample": {
+        "map": {
+          "direction": "source_to_target",
+          "role_map_complete": true
+        },
+        "source": {
+          "boundary": "observational_dag",
+          "qoi": "conditional_independence"
+        },
+        "target": {
+          "boundary": "observational_dag",
+          "conditioned": [
+            "M"
+          ],
+          "edges": [
+            [
+              "X",
+              "M"
+            ],
+            [
+              "M",
+              "Y"
+            ]
+          ],
+          "qoi": "interventional_effect",
+          "x": "X",
+          "y": "Y"
+        }
+      }
+    }
+  },
+  "schema": "paper2-six-family-audit-probe-g-v1",
+  "status": "AUXILIARY_DIAGNOSTIC_ONLY__NOT_PART_OF_FROZEN_REGISTRATION",
+  "text_inertness": {
+    "components_unchanged_after_text_scramble": "810/810",
+    "gold_unchanged_after_text_scramble": "810/810",
+    "lexical_arm_changed": "762/810",
+    "mechanism_arm_unchanged": "810/810",
+    "natural_language_surface_is_inert": true,
+    "relational_arm_unchanged": "810/810"
+  }
+}

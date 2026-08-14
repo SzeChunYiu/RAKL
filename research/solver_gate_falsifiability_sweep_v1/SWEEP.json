@@ -1,0 +1,1166 @@
+{
+  "schema_version": "rakl-solver-gate-falsifiability-sweep-v1",
+  "plan_item": "research/orion_architecture_audit_v1/PLAN.md P0.2",
+  "battery": "src/rakl/gate_falsifiability.py",
+  "trials_per_probe": 32,
+  "seeds": [
+    20260814,
+    20260815
+  ],
+  "skipped_steps": {
+    "transport": "under repair in parallel branch (P0.1)",
+    "saturation": "already audited FALSIFIABLE (research/orion_architecture_audit_v1/AUDIT.md row 5)"
+  },
+  "steps": {
+    "1_problem_contract": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "hard_gates.evaluate_hard_gates",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := HardGateReport.state is PASS for exact candidate cand-1",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "drop_half_observations": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "randomize_observation_states": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "relabel_candidate_identity": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_gate_ids": {
+                  "outcome": "INSENSITIVE",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "strip_evidence_ids": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_contract_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "drop_half_observations": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "randomize_observation_states": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "relabel_candidate_identity": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_gate_ids": {
+                  "outcome": "INSENSITIVE",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "strip_evidence_ids": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_contract_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [
+            "shuffle_gate_ids"
+          ],
+          "sensitive_probes": [
+            "drop_half_observations",
+            "randomize_observation_states",
+            "relabel_candidate_identity",
+            "strip_evidence_ids",
+            "unfreeze_contract_chronology"
+          ],
+          "probe_diagnoses": {
+            "shuffle_gate_ids": "INSENSITIVE verified as a structural no-op, not a blind spot beyond known semantics: the verdict depends only on gate-id coverage, per-row state, and evidence presence; a permutation of gate_ids over homogeneous all-PASS rows preserves all three. Underlying limitation reproduced twice (reproduce_insensitive_findings.py finding-1): the gate checks evidence *presence*, never gate<->evidence binding \u2014 swapping evidence ids between gates keeps PASS. Binding is owned by evidence_binding_certificate; recorded as scope note, not defect."
+          }
+        },
+        {
+          "gate_id": "framework_candidate_freeze.gate_candidate_materialization_framework_subject",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := report.licenses_candidate_materialization with required=True. Battery run in the registered (required) mode.",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "advance_sha_diff_unobserved": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "advance_sha_protected_diff": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "advance_sha_unclassified_diff": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_binding": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_observation": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "nonempty_diff_same_sha": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "advance_sha_diff_unobserved": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "advance_sha_protected_diff": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "advance_sha_unclassified_diff": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_binding": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_observation": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "nonempty_diff_same_sha": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "advance_sha_diff_unobserved",
+            "advance_sha_protected_diff",
+            "advance_sha_unclassified_diff",
+            "drop_binding",
+            "drop_observation",
+            "nonempty_diff_same_sha"
+          ],
+          "directed_checks": {
+            "inactive_mode_licenses_unconditionally": {
+              "call": "gate(None, None, required=False)",
+              "licenses_candidate_materialization": true,
+              "verdict_value": "CURRENT_UNCHANGED",
+              "assessment": "By-design inactive path (free-form brainstorming). Black-box fact: with required=False, deleting binding+observation yields licensed=True. Live call site (math_research_runtime.py:314-321) activates the gate whenever a binding exists or require_framework_subject_gate is set; risk is confined to callers that leave both unset."
+            }
+          }
+        }
+      ]
+    },
+    "2_decomposition": {
+      "gate_status": "NO_REGISTERED_GATE",
+      "classification": "NO_REGISTERED_GATE",
+      "evidence": "src/rakl/recursive_solver.py solve_recursive (lines 149-252) is a solver loop, not a verdict-returning gate. Gating is inline: research-saturation check (AtomFiber.research_saturated), match licensing delegated to structure_space.match, LIFT precondition len(failed_attempts)>=2 at line 234. No function maps decomposition evidence to PASS/FAIL/CANNOT_CHECK. Concurs with research/orion_architecture_audit_v1/AUDIT.md row 2 ('no audited decomposition-quality gate')."
+    },
+    "3_structuralization": {
+      "gate_status": "REGISTERED_GATE_PARTIAL",
+      "gates": [
+        {
+          "gate_id": "structure_space.match",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := candidate structure S1 LICENSED for the problem. Reduction-fidelity (does ReducedStructure faithfully represent its source?) has NO registered gate; this battery covers admission only.",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "claim_relation_without_both_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "degrade_establishment_authority": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_candidate_structure_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_problem_required_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_role_alignment_across_structures": {
+                  "outcome": "SENSITIVE",
+                  "flips": 16,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "claim_relation_without_both_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "degrade_establishment_authority": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_candidate_structure_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_problem_required_roles": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_role_alignment_across_structures": {
+                  "outcome": "SENSITIVE",
+                  "flips": 14,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "claim_relation_without_both_roles",
+            "degrade_establishment_authority",
+            "scramble_candidate_structure_roles",
+            "scramble_problem_required_roles",
+            "shuffle_role_alignment_across_structures"
+          ]
+        }
+      ],
+      "sub_finding": {
+        "reduction_fidelity": "NO_REGISTERED_GATE",
+        "evidence": "No function checks that a ReducedStructure faithfully represents its source (AUDIT.md row 3: 'no reduction-fidelity gate at all'; PLAN P1.6 is the registered closure item). structure_space.match gates admission only."
+      }
+    },
+    "4_knowledge_space": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "atlas_gluing.evaluate_atlas_gluing",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := GLUED_GLOBAL_PORTRAIT_PROPOSAL_ONLY on the consistent triangle atlas",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_cycle_consistency": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_two_of_three_transitions": {
+                  "outcome": "INSENSITIVE",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "empty_regime_overlap": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "expose_hidden_labels": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_transition_endpoints": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "skip_global_existence_check": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_transition_family": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_cycle_consistency": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_two_of_three_transitions": {
+                  "outcome": "INSENSITIVE",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "empty_regime_overlap": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "expose_hidden_labels": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_transition_endpoints": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "skip_global_existence_check": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_transition_family": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [
+            "drop_two_of_three_transitions"
+          ],
+          "sensitive_probes": [
+            "break_cycle_consistency",
+            "empty_regime_overlap",
+            "expose_hidden_labels",
+            "scramble_transition_endpoints",
+            "skip_global_existence_check",
+            "unfreeze_transition_family"
+          ],
+          "probe_diagnoses": {
+            "drop_two_of_three_transitions": "INSENSITIVE verified as a REAL blind spot (declared-topology trust), reproduced twice (reproduce_insensitive_findings.py finding-2): evaluate_atlas_gluing validates each declared transition individually but never recomputes cover connectivity / cycle structure from the transition set; cover_connected, cover_has_cycles, cycle_basis_complete and cycle-witness consistency are caller-declared booleans (atlas_gluing.py:463-528). A single-transition atlas with intact declarations still returns GLUED. Follow-up work, not patched here (sweep modifies no gate implementations)."
+          }
+        },
+        {
+          "gate_id": "typed_lattice.construct_paths",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := at least one admissible constructive path for (OBSERVABLE, ASSUMPTION) with allow_unknown=False. Identity-immutability and unknown-atom admission checks are exception-channel invariants on add_atom/add_witness, covered by unit tests, not by this battery.",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "delete_compatibility_witness": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_atom_kinds": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "witness_incompatible": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "witness_relation_unknown": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "delete_compatibility_witness": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_atom_kinds": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "witness_incompatible": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "witness_relation_unknown": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "delete_compatibility_witness",
+            "scramble_atom_kinds",
+            "witness_incompatible",
+            "witness_relation_unknown"
+          ]
+        }
+      ]
+    },
+    "5_retrieval": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "semantic_shortcut.audit_obstruction_transformation_review",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := ShortcutReviewVerdict.PASS on a valid SEARCH-mode review. JUMP/GLUE/LIFT ladder-order preconditions are separately covered by tests/test_semantic_shortcut.py hostile cases.",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "invert_direct_search_status": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "remove_claimed_episode_from_memory": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_context_binding": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_memory_snapshot_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "select_unwitnessed_episode": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unmatched_source_precondition": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "invert_direct_search_status": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "remove_claimed_episode_from_memory": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_context_binding": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_memory_snapshot_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "select_unwitnessed_episode": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unmatched_source_precondition": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "invert_direct_search_status",
+            "remove_claimed_episode_from_memory",
+            "scramble_context_binding",
+            "scramble_memory_snapshot_hash",
+            "select_unwitnessed_episode",
+            "unmatched_source_precondition"
+          ]
+        }
+      ]
+    },
+    "6_composition": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "bridge_composition.evaluate_bridge_path",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY on the valid two-hop path",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_carried_invariant": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_handoffs": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "fail_role_compatibility": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "inflate_hop_error_bounds": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "mismatch_error_semantics": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "posthoc_path_declaration": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_junction_identity": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_carried_invariant": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_handoffs": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "fail_role_compatibility": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "inflate_hop_error_bounds": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "mismatch_error_semantics": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "posthoc_path_declaration": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_junction_identity": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "break_carried_invariant",
+            "drop_handoffs",
+            "fail_role_compatibility",
+            "inflate_hop_error_bounds",
+            "mismatch_error_semantics",
+            "posthoc_path_declaration",
+            "scramble_junction_identity"
+          ]
+        },
+        {
+          "gate_id": "solution_assembly.validate_solution_assembly",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := READY_FOR_EXTERNAL_AUTHORITY_GATE on the verified two-node DAG",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "drop_dependency_from_selection": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "mismatch_statement_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_proof_dag_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unbind_certificate_artifact": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unverify_root_node": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "verified_refutation_conflict": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "drop_dependency_from_selection": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "mismatch_statement_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_proof_dag_hash": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unbind_certificate_artifact": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unverify_root_node": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "verified_refutation_conflict": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "drop_dependency_from_selection",
+            "mismatch_statement_hash",
+            "scramble_proof_dag_hash",
+            "unbind_certificate_artifact",
+            "unverify_root_node",
+            "verified_refutation_conflict"
+          ]
+        }
+      ]
+    },
+    "7_navigation": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "support_solver.solve",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := Outcome.REACHED on the licensed 3-edge chain. Obstruction rejection confirmed applied on the assembled atom set inside _cheapest_route (route acceptance is obstruction-aware).",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "degrade_edge_licensing_below_target": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_random_edge": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "obstruct_the_route_cover": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "retarget_edges_away_from_goal": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_goal_atom": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "degrade_edge_licensing_below_target": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_random_edge": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "obstruct_the_route_cover": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "retarget_edges_away_from_goal": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_goal_atom": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "degrade_edge_licensing_below_target",
+            "drop_random_edge",
+            "obstruct_the_route_cover",
+            "retarget_edges_away_from_goal",
+            "scramble_goal_atom"
+          ],
+          "probe_diagnoses": {
+            "retarget_edges_away_from_goal": "v2 probe. v1 (rewire_edge_targets: permute target multiset over sources) came back INSENSITIVE; exhaustive enumeration of all 6 permutations (reproduce_insensitive_findings.py finding-3) showed every permutation keeps goal reachable in this fixture \u2014 a probe artifact, not a gate defect. Probe corrected to delete goal from the retarget codomain; v1 result preserved here as negative history."
+          }
+        }
+      ]
+    },
+    "8_verification_meta": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "evidence_binding_certificate.evaluate_evidence_binding_for_promotion",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := VALID_FOR_PROMOTION_CHALLENGER on the reviewed exact-support fixture",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_registered_content_hash": {
+                  "outcome": "CANNOT_CHECK",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "drop_all_bindings": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "flip_reviewed_relation_to_refutes": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "rebind_as_experience_object": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_proposal_evidence_ids": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_binding_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unreview_semantics": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "break_registered_content_hash": {
+                  "outcome": "CANNOT_CHECK",
+                  "flips": 0,
+                  "trials": 32
+                },
+                "drop_all_bindings": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "flip_reviewed_relation_to_refutes": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "rebind_as_experience_object": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_proposal_evidence_ids": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_binding_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unreview_semantics": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "drop_all_bindings",
+            "flip_reviewed_relation_to_refutes",
+            "rebind_as_experience_object",
+            "scramble_proposal_evidence_ids",
+            "unfreeze_binding_chronology",
+            "unreview_semantics"
+          ]
+        }
+      ]
+    },
+    "9_residual": {
+      "gate_status": "REGISTERED_GATE",
+      "gates": [
+        {
+          "gate_id": "epistemic_trajectory.evaluate_epistemic_trajectory",
+          "adapter": "",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := TrajectoryVerdict.PASS on the clean three-step known-answer case",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "delete_negative_history": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_observed_step": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "inject_unlicensed_authority_change": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "reorder_step_sequence": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_actions": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_evidence_bindings": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_gold_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "delete_negative_history": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "drop_observed_step": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "inject_unlicensed_authority_change": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "reorder_step_sequence": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "scramble_actions": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "shuffle_evidence_bindings": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unfreeze_gold_chronology": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "delete_negative_history",
+            "drop_observed_step",
+            "inject_unlicensed_authority_change",
+            "reorder_step_sequence",
+            "scramble_actions",
+            "shuffle_evidence_bindings",
+            "unfreeze_gold_chronology"
+          ]
+        },
+        {
+          "gate_id": "diagnosis_state_machine.resolve_discriminator",
+          "adapter": "exception-channel gate: reject channel is ValueError; adapter maps a raise to gate=False (refusal), MECHANIC_GAP_IDENTIFIED to True",
+          "no_alarm_control": {
+            "intact_evidence_passes": true,
+            "checked_before_probes": true
+          },
+          "notes": "pass := valid discriminator resolution reaching MECHANIC_GAP_IDENTIFIED",
+          "per_seed": {
+            "20260814": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "alien_surviving_cause": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "empty_evidence_receipt": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "promote_unknown_cause": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "resolve_without_discriminator_required_state": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unregistered_discriminator": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            },
+            "20260815": {
+              "verdict": "FALSIFIABLE",
+              "probes": {
+                "alien_surviving_cause": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "empty_evidence_receipt": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "promote_unknown_cause": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "resolve_without_discriminator_required_state": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                },
+                "unregistered_discriminator": {
+                  "outcome": "SENSITIVE",
+                  "flips": 32,
+                  "trials": 32
+                }
+              }
+            }
+          },
+          "classification": "FALSIFIABLE",
+          "insensitive_probes": [],
+          "sensitive_probes": [
+            "alien_surviving_cause",
+            "empty_evidence_receipt",
+            "promote_unknown_cause",
+            "resolve_without_discriminator_required_state",
+            "unregistered_discriminator"
+          ]
+        }
+      ]
+    }
+  },
+  "grants_scientific_authority": false,
+  "note": "FALSIFIABLE means only that the gate can fail under evidence perturbation; it never certifies that a PASS is correct. Same-context audit, not independent review."
+}

@@ -1,0 +1,86 @@
+{
+  "schema_version": "representation-tournament-protocol-v1",
+  "protocol_id": "REP-TOURNAMENT-V1",
+  "freeze_date": "2026-08-14",
+  "base_commit": "08169241",
+  "authority": "Frozen design. Same-context analysis. Grants no scientific or promotion authority.",
+  "grants_scientific_authority": false,
+  "provenance": "Operator addendum 2026-08-14 to the programme question audit: 'is the Papers 1-2 mechanics the best representation of the problem?' is answered by tournament, not argument.",
+  "object": "The representation choice underlying the Papers I-II mechanics (route graphs, hypergraphs, signature spaces), treated as a mutation family.",
+  "doctrine": {
+    "bounded_only": "RaklFormal.open_world_not_finitely_certifiable applies to representation space itself: no finite tournament certifies a 'best representation'. Every verdict is scoped to the declared contest basis, problem set and budget. The registered claim form is 'representation A dominates/loses-to/is-incomparable-with B on THIS frontier', never 'best'.",
+    "no_scalar_winner": "Endpoints are reported as a vector (solve-rate, false-derivation rate, cost, auditability); no fused score, mirroring MECH-NO-SCALAR-COLLAPSE.",
+    "budget_matching": "Both arms of a contest receive the same problem set and the same TOTAL budget (node/edge expansions and wall-time cap, both recorded). Unequal budget voids the contest.",
+    "chronology": "Problem set, arms, endpoints and budgets are frozen before either arm runs. No post-result basis expansion; a new candidate representation is a new versioned contest."
+  },
+  "endpoints": {
+    "solve_rate": "MEASURED - fraction of problems solved correctly against the contest's external ground truth.",
+    "false_derivation_rate": "MEASURED - fraction of accepted solutions contradicting ground truth.",
+    "cost": "MEASURED - expansions and wall time per solved problem (CostBreakdown coordinates of src/rakl/amortization.py where applicable).",
+    "auditability": "MEASURED but typed, not graded: does a failure output mechanically name what is missing (missing premises / obstruction / blocked edge), checkable against ground truth?",
+    "conformance_cells": "Any cell true by construction is declared CONFORMANCE_not_evidence up front (SRSU-P6-CLASSIFICATION-CORRECTION-V1 precedent)."
+  },
+  "contest_1": {
+    "contest_id": "REP-C1-OR-VS-HYPERGRAPH",
+    "status": "FROZEN - runnable now, CPU-only",
+    "question": "What does the AND-hypergraph representation buy over OR-route-only on proof-shaped problems, and at what cost?",
+    "arms": {
+      "A_or_route_only": "support_solver-style binary edges; every hyperedge (P1..Pn -> C) is OR-lowered to n binary edges Pi -> C. This is the representation the implementation actually had before src/rakl/derivation.py ('the implementation only had binary edges').",
+      "B_and_hypergraph": "derivation.py forward closure over multi-premise hyperedges, as shipped."
+    },
+    "problem_set": "Every theorem with >= 1 dependency in the mechanical parse of formal/RaklFormal.lean (the parse of tests/test_end_to_end_real_problem.py), derived from the axiom-free base. Frozen at commit 08169241.",
+    "ground_truth": "Kernel-checked dependency closure of the Lean development - external to both arms (the Lean kernel and axiom-freedom CI define it, the arms do not).",
+    "held_qualitative_prior": "OR is provably the wrong shape for multi-premise lemmas (a lemma needs ALL premises; derivation.py docstring), and pairwise-only distillation cannot decide global realizability (RaklFormal.no_pairwise_predicate_decides_global_realizability, bound in src/rakl/support_solver.py). The tournament does not re-litigate this; it QUANTIFIES the frontier on real data.",
+    "measured_endpoints": [
+      "false-derivation rate of arm A: fraction of targets arm A accepts from a proper subset of true premises. NOT known in advance - it depends on how much of the real Lean graph is genuinely multi-premise, which is exactly the quantity of interest.",
+      "multi-premise fraction of the substrate (descriptive covariate).",
+      "cost overhead of arm B vs arm A per solved target (expansions, wall time).",
+      "auditability: does each arm's failure name the missing premise set, checked against ground truth?"
+    ],
+    "conformance_cells": [
+      "Arm B derives every target in the kernel closure and blocks on planted certificate corruption (already asserted in tests/test_end_to_end_real_problem.py) - CONFORMANCE, not a result of this contest."
+    ],
+    "sign_robustness": "Robust: a LOW false-derivation rate for OR (mostly single-premise substrate) is as publishable as a high one - it bounds what the hypergraph buys HERE and motivates richer substrates; a high rate quantifies the representation's necessity.",
+    "runnability": "CPU-only, minutes on laptop billy (87 nodes). Not executed inside this audit fiber; frozen for the owning lane (paper56-frontier for the Lean substrate, or main)."
+  },
+  "contest_2": {
+    "contest_id": "REP-C2-EXACT-SIGNATURE-VS-GRADED-METRIC",
+    "status": "DESIGN-ONLY - registered, blocked",
+    "question": "Does a graded structural metric retrieve analogy candidates that exact shape-signature matching (analogy_retrieval v1) misses, at acceptable false-accept cost?",
+    "arms": {
+      "A_exact_signature": "src/rakl/analogy_retrieval.py v1: propose only on exact (relation count, degree multiset) equality.",
+      "B_graded_metric": "the best Stage-A-validated graded candidate from metric_open_problem/PROTOCOL_METRIC_V1.json."
+    },
+    "blocker": "The outcome measure requires external analogy labels on natural text, which requires an admissible capable reducer (the executed Paper II negative, research/paper2_external_corpus_v1/: the current deterministic reducer is at chance). Execution is licensed only after a reducer clears admit_reducer at capability; this is the same shared blocker as Paper II's staircase and metric Stage B.",
+    "registered_not_executed": true
+  },
+  "registered_non_candidates": [
+    {
+      "representation": "full categorification of the mechanics",
+      "reason": "No forcing theorem: no identified residual that categorical machinery closes and the current typed representation cannot. Costume risk under the understand-before-fitting doctrine - a borrowed formalism must earn its keep against the null. Re-entry condition: a concrete residual whose closure provably requires functorial structure."
+    },
+    {
+      "representation": "full sheaf machinery for gluing",
+      "reason": "Not currently forced: finite obstruction covers (atlas_gluing) have not been shown to LOSE information that descent data preserves. RE-ENTRY CONDITION (flagged as a potential major result): exhibit a concrete gluing problem in this programme where the finite obstruction-cover representation returns the wrong verdict and sheaf descent data returns the right one. Anyone who finds such a case should document it as a first-class result, not as a footnote."
+    },
+    {
+      "representation": "embedding-only similarity space for JUMP",
+      "reason": "Violates the witness requirements of docs/SIMILARITY_ANALOGY_ALGEBRA.md (lexical/embedding closeness is not a structural witness; DISTANCE_GAMING failure mode) and the manifest invariant semantic_shortcut_is_structural_not_lexical."
+    }
+  ],
+  "must_not_be_claimed": [
+    "'Best representation' in any unbounded sense (open-world theorem applies to representation space).",
+    "Arm B's conformance cells as contest results.",
+    "Contest 1 results as evidence about natural-language or non-proof-shaped problems (substrate is one small kernel-checked graph).",
+    "Any Contest 2 result before the reducer blocker clears."
+  ],
+  "files_bound": [
+    "src/rakl/derivation.py",
+    "src/rakl/support_solver.py",
+    "src/rakl/analogy_retrieval.py",
+    "src/rakl/amortization.py",
+    "tests/test_end_to_end_real_problem.py",
+    "formal/RaklFormal.lean",
+    "research/programme_question_audit_v1/metric_open_problem/PROTOCOL_METRIC_V1.json"
+  ]
+}

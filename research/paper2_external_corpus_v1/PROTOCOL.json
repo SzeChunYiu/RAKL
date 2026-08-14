@@ -1,0 +1,109 @@
+{
+  "schema_version": "paper2-external-corpus-protocol-v1",
+  "freeze_date": "2026-08-14",
+  "confirmatory_outcomes_accessed": false,
+  "dataset_contact_before_freeze": false,
+  "grants_scientific_authority": false,
+  "purpose": "Discharge or precisely bound the external-label residual of Paper II using a PUBLISHED third-party-labelled corpus, so that label author-independence holds mechanically. Every terminal below, including the negative and infeasibility terminals, is a first-class outcome; no terminal may be converted into another after outcome access.",
+  "corpus": {
+    "name": "ARN: Analogical Reasoning on Narratives",
+    "citation": "Sourati, Ilievski, Sommerauer, Jiang. TACL 12:1063-1086, 2024. doi:10.1162/tacl_a_00688",
+    "source_record": "https://zenodo.org/records/11044026",
+    "doi": "10.5281/zenodo.11044026",
+    "license": "CC BY 4.0",
+    "label_authors": "Sourati, Ilievski, Sommerauer, Jiang (ARN authors; system mappings derived from crowdworked ePiC proverb identity; RA validation on 120 items)",
+    "label_author_independence": "Mechanical: none of the label authors is the reducer author. Recorded in SEARCH_LEDGER.md with provenance caveats (near analogies partially GPT-3.5-generated then author-edited).",
+    "contamination_note": "Corpus public since 2023-10. The registered reducer is deterministic with no trained weights, so training contamination is not applicable. Author-knowledge channel mitigated by freezing the reducer before first dataset contact; the reducer contains no ARN-specific vocabulary."
+  },
+  "chronology": {
+    "order": [
+      "freeze this protocol, the reducer module, the runner and their tests (this commit; before any dataset download on any host)",
+      "acquire the CSV on laptop billy; record sha256, byte size, header and first 3 rows verbatim in ACQUISITION_RECEIPT.json; bind column mapping per the frozen contingency table into MAPPING.json; no arm may be scored before MAPPING.json is written",
+      "run reducer admission (admit_reducer) on the frozen sample sources",
+      "run the falsifiability battery",
+      "run the confirmatory gates",
+      "write RESULT.json with the terminal; commit receipts unmodified"
+    ],
+    "header_inspection_is_not_outcome_access": "Reading the header and first 3 rows is schema binding, recorded verbatim; arm scores and gold-aggregate statistics are outcome access and occur only after admission and battery stages are configured."
+  },
+  "schema_contingency": {
+    "M1_one_row_per_triple": "columns resolvable for query text, analogous-narrative text, distractor-narrative text, and near/far band(s) -> each row yields (query, analogy, ACCEPT) and (query, distractor, REJECT)",
+    "M2_one_row_per_pair": "columns resolvable for source text, candidate text, and an analogy/distractor label -> one labelled pair per row",
+    "column_resolution": "case-insensitive substring match over frozen keyword lists: query=['query'], analogy=['analog'], distractor=['distract','disanalog'], band=['near','far','distance','category','type'], group_id=['proverb','system','query_id','source_id']; ambiguous or unresolvable -> terminal CANNOT_CHECK__SCHEMA_MISMATCH with the header recorded verbatim",
+    "fail_closed": true
+  },
+  "reducer": {
+    "module": "src/rakl/narrative_reducer.py",
+    "callable": "reduce_narrative",
+    "author": "RAKL programme (same-context; LLM-assisted)",
+    "external_label_author": "Sourati, Ilievski, Sommerauer, Jiang (ARN, TACL 2024)",
+    "deterministic": true,
+    "description": "Stopword-filtered content tokens ranked by frequency (top 12, alphabetical tie-break) as roles; within-sentence consecutive role co-occurrence (window <= 4 tokens) as relations; sentences containing a frozen negation/contrast marker and >= 2 role tokens emit obstructions covering those roles; atoms = roles; edges from relations at cost 1.0, licensed_at 0.",
+    "admission": {
+      "gate": "src/rakl/reduction_validation.py::admit_reducer",
+      "sample_sources": "the query texts of the first 8 groups in frozen split order (recorded in the receipt)",
+      "seed": 20260814,
+      "required_verdict": "ADMITTED at CertificateKind.EXTERNAL_LABEL; REJECTED -> terminal ADMISSION_REJECTED; ADMITTED_AT_FLOOR is impossible by construction here and would indicate a profile defect -> terminal ADMISSION_REJECTED"
+    }
+  },
+  "pair_construction": {
+    "accept_pairs": "(query, analogous narrative), gold ACCEPT; band metadata retained (far-analogy pairs are the Q2 analogue)",
+    "reject_pairs": "(query, distractor narrative), gold REJECT; band metadata retained (near-distractor pairs are the Q3 analogue)",
+    "minimum_usable_pairs": 48
+  },
+  "split": {
+    "grouping": "by group_id column when resolvable, else by sha256(query text); groups sorted by sha256(group_key + ':20260814')",
+    "dev_fraction": 0.25,
+    "dev_use": "threshold fitting only (theta_w, theta_l) and strongest-control selection",
+    "confirm_use": "all battery probes and confirmatory gates; no threshold may be refit on confirm"
+  },
+  "arms": {
+    "witness": "reduce query -> ProblemStructure(required_roles, required_relations, qoi='analogical_support'); reduce candidate -> singleton StructureSpace; run src/rakl/structure_space.py::match. CANNOT_CHECK iff either side has < 2 roles or 0 relations (insufficient extraction evidence). REJECT iff match verdict is REJECTED. Else coverage_ratio = (|covered_roles| + 2*|covered_relations|) / (|required_roles| + 2*|required_relations|); ACCEPT iff coverage_ratio >= theta_w else REJECT. theta_w fit on DEV over grid 0.05..0.95 step 0.05 maximizing decidable exact accuracy, frozen before confirm scoring.",
+    "lexical_control": "Jaccard over stopword-filtered content tokens; ACCEPT iff >= theta_l (DEV grid 0.02..0.98 step 0.02); never abstains",
+    "band_control": "ACCEPT iff the pair's band metadata is 'near' (dataset-author surface-similarity annotation used as a predictor; context arm)",
+    "trivial": ["always_accept", "always_reject", "always_cannot_check"],
+    "strongest_control_rule": "the non-witness arm with maximum DEV decidable exact accuracy; selected on DEV, frozen, then used as the paired comparator on CONFIRM",
+    "gold_isolation": "no arm receives the gold field; the runner passes texts and band metadata only, asserted at call time"
+  },
+  "scoring": {
+    "binary_probability": {"ACCEPT": 0.98, "REJECT": 0.02, "CANNOT_CHECK": 0.5},
+    "primary_statistic": "mean per-pair binary Brier(strongest control) minus mean per-pair binary Brier(witness) over all CONFIRM pairs",
+    "mde": 0.05,
+    "bootstrap": {"resamples": 10000, "seed": 20260814, "ci": [0.025, 0.975], "unit": "pair"}
+  },
+  "battery": {
+    "B1_gold_arm_distinctness": "runtime assertion that arm callables never receive the gold field; any violation -> BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "B2_text_destruction": "character-scramble both texts of every CONFIRM pair (seed 20260814): the witness arm's (decision, structure-signature) must change on >= 50% of pairs, and scrambled witness exact accuracy must be <= the upper edge of the shuffled-gold null band; scramble-invariance -> BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "B3_shuffled_gold_negative_control": "shuffle gold labels over CONFIRM (seed 20260815) and rerun G1: it must FAIL (CI includes 0 or advantage < MDE); if it passes -> BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "B4_trivial_arm_floor": "no trivial arm may attain the G2 joint property; if one does -> BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "B5_paired_variance": "per-pair Brier loss variance must be > 0 in both compared arms; else BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "probe_H_matched_pair": "NOT APPLICABLE: no self-authored renderer; all surfaces are third-party. Recorded as N/A with this reason."
+  },
+  "gates": {
+    "G1_advantage": "primary statistic >= MDE with bootstrap CI excluding zero",
+    "G2_joint_property": "witness valid_accept >= 0.60 AND invalid_false_accept <= 0.20 on CONFIRM, reported as a pair, with per-quadrant breakdown (far-analogy retention = Q2 analogue; near-distractor false-accept = Q3 analogue) always reported together",
+    "G3_abstention_accounting": "witness CANNOT_CHECK rate on CONFIRM reported; if > 0.50 the epoch terminal is NEGATIVE__CAPABILITY_ABSENT with reason ABSTENTION_DOMINANT (an honest incapacity measurement, not a gate rescue)"
+  },
+  "terminals": [
+    "CANNOT_CHECK__ACQUISITION",
+    "CANNOT_CHECK__SCHEMA_MISMATCH",
+    "ADMISSION_REJECTED",
+    "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "POSITIVE_SCOPED__EXTERNAL_LABEL",
+    "NEGATIVE__CAPABILITY_ABSENT",
+    "INDETERMINATE__CI_STRADDLES_MDE"
+  ],
+  "terminal_rules": {
+    "POSITIVE_SCOPED__EXTERNAL_LABEL": "admission ADMITTED, battery pass, G1 pass, G2 pass, G3 <= 0.50",
+    "NEGATIVE__CAPABILITY_ABSENT": "admission ADMITTED, battery pass, and (G1 CI upper bound < MDE, or G2 fail, or G3 > 0.50)",
+    "INDETERMINATE__CI_STRADDLES_MDE": "admission ADMITTED, battery pass, G1 CI contains MDE without the advantage clearing it",
+    "no_post_result_rescue": "thresholds, arms, gates and terminals may not be modified after outcome access; a successor epoch is a new versioned object"
+  },
+  "execution_host": "laptop billy, ~/rakl-verify worktree, .venv/bin/python 3.11",
+  "nonclaims": [
+    "universal cross-domain transfer law",
+    "frontier LLM structural extraction",
+    "independent review (this epoch is same-context analysis over third-party labels)",
+    "scientific authority"
+  ]
+}

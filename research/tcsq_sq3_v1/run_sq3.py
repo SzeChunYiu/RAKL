@@ -473,7 +473,11 @@ def class_key(task: dict[str, object], preserved: tuple[str, ...]) -> str:
 def run_raw(tasks: list[dict[str, object]]) -> dict[str, object]:
     meter = Meter()
     answers = [solve(task, meter) for task in tasks]
-    return {"meter": meter, "answers": answers, "extra": {}}
+    return {
+        "meter": meter,
+        "answers": answers,
+        "extra": {"stage_costs": meter.snapshot()},
+    }
 
 
 def run_hash_cache(tasks: list[dict[str, object]], mode: str) -> dict[str, object]:
@@ -500,7 +504,15 @@ def run_hash_cache(tasks: list[dict[str, object]], mode: str) -> dict[str, objec
         answer = solve(task, meter)
         cache[key] = answer
         answers.append(answer)
-    return {"meter": meter, "answers": answers, "extra": {"cache_hits": hits, "classes": len(cache)}}
+    return {
+        "meter": meter,
+        "answers": answers,
+        "extra": {
+            "cache_hits": hits,
+            "classes": len(cache),
+            "stage_costs": meter.snapshot(),
+        },
+    }
 
 
 def run_quotient_arm(
@@ -579,6 +591,7 @@ def run_quotient_arm(
         cache[class_key(task, preserved)] = (answer, task)
         answers.append(answer)
 
+    stage_costs = meter.snapshot()
     return {
         "meter": meter,
         "answers": answers,
@@ -593,6 +606,7 @@ def run_quotient_arm(
             "promoted_coordinates": sorted(set(promotions)),
             "recovered_oracle_ledger": tuple(sorted(initial_preserved)) == ORACLE_PRESERVED,
             "cost_without_verification": verification_free_ops,
+            "stage_costs": stage_costs,
         },
     }
 
@@ -696,6 +710,10 @@ def summarise_cell(rows: list[dict[str, object]], n_tasks: int, n_distinct: int,
             "original_problem_success_mean": statistics.fmean(accs),
             "original_problem_success_min": min(accs),
         }
+        
+        # Add stage_costs from the first row (same across replicates for a given cell)
+        if "stage_costs" in rows[0]["arms"][arm]:
+            arms_summary[arm]["stage_costs"] = rows[0]["arms"][arm]["stage_costs"]
 
     tcsq_costs = [float(row["arms"]["TCSQ_VALIDATED_QUOTIENT"]["total_cost"]) for row in rows]  # type: ignore[index]
     net: dict[str, object] = {}
@@ -720,6 +738,26 @@ def summarise_cell(rows: list[dict[str, object]], n_tasks: int, n_distinct: int,
     failures = [int(row["arms"]["TCSQ_VALIDATED_QUOTIENT"]["verification_failures"]) for row in rows]  # type: ignore[index]
     hits = [int(row["arms"]["TCSQ_VALIDATED_QUOTIENT"]["cache_hits"]) for row in rows]  # type: ignore[index]
     recovered = [bool(row["arms"]["TCSQ_VALIDATED_QUOTIENT"]["recovered_oracle_ledger"]) for row in rows]  # type: ignore[index]
+    
+    # Cost decomposition by stage (root cause analysis)
+    stage_decomposition: dict[str, object] = {}
+    for arm in ARMS:
+        arm_stages: dict[str, list[float]] = {}
+        for row in rows:
+            stage_costs = row["arms"][arm].get("extra", {}).get("stage_costs", {})
+            for stage, cost in stage_costs.items():
+                if stage not in arm_stages:
+                    arm_stages[stage] = []
+                arm_stages[stage].append(float(cost))
+        
+        stage_decomposition[arm] = {
+            stage: {
+                "mean": statistics.fmean(costs),
+                "total": sum(costs) / len(costs),
+            }
+            for stage, costs in arm_stages.items()
+        }
+    
     return {
         "n_tasks": n_tasks,
         "n_distinct_essential_structures": n_distinct,
@@ -738,6 +776,7 @@ def summarise_cell(rows: list[dict[str, object]], n_tasks: int, n_distinct: int,
                 [float(row["guard_binding_fraction"]) for row in rows]
             ),
         },
+        "cost_decomposition": stage_decomposition,
     }
 
 

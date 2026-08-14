@@ -1,0 +1,202 @@
+{
+  "schema_version": "p4-instrument-admissibility-assurance-v1",
+  "date": "2026-08-14",
+  "kind": "FRESH_ASSURANCE_KNOWN_ANSWER_BATTERY",
+  "benchmark_id": "P4_INSTRUMENT_ADMISSIBILITY_FRESH_ASSURANCE_V1",
+  "seed": 202608141101,
+  "seed_disjoint_from": [
+    202608140601
+  ],
+  "cases": [
+    {
+      "case_id": "FRESH_DEGENERATE_ZERO_HEADROOM",
+      "expected_verdict": "INADMISSIBLE",
+      "decision": {
+        "verdict": "INADMISSIBLE",
+        "instrument_id": "FRESH_DEGENERATE_ZERO_HEADROOM",
+        "registered_primary_metric": "balanced_mastery_advantage_over_static",
+        "registered_minimum_detectable_effect": 0.05,
+        "frozen_kappa": 1.2,
+        "declaration_sha256": "21f8ad3e205997c4a0ab3bdaf4438b36fc4cb1bb1bb7343a562621a22558933b",
+        "oracle_computability_status": "COMPUTABLE",
+        "equal_budget_verified": true,
+        "reference_parent_arm_id": "D_STATIC_STRUCTURAL",
+        "licensing_bound_id": "singleton_allocation_space",
+        "licensing_bound_kind": "EXACT",
+        "best_lower_bound": 0.0,
+        "least_upper_bound": 0.0,
+        "verdict_kappa_range": "holds_for_all_kappa_greater_than_0.000000",
+        "reasons": [
+          "least_upper_bound_below_threshold",
+          "least_upper=0.0",
+          "threshold=kappa*mde=0.06",
+          "licensed_by_upper_bound:singleton_allocation_space",
+          "verdict_may_never_be_upgraded_by_arm_outcome_access"
+        ],
+        "grants_scientific_authority": false,
+        "licenses_comparison_execution": false,
+        "upgradeable_by_outcome_access": false
+      },
+      "match": true,
+      "detail": {
+        "construction": "singleton allocation space"
+      }
+    },
+    {
+      "case_id": "FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM",
+      "expected_verdict": "ADMISSIBLE",
+      "decision": {
+        "verdict": "ADMISSIBLE",
+        "instrument_id": "FRESH_STATE_DIVERGENT_INITIAL_MASTERY_HIGH_HEADROOM",
+        "registered_primary_metric": "balanced_mastery_advantage_over_static",
+        "registered_minimum_detectable_effect": 0.05,
+        "frozen_kappa": 1.2,
+        "declaration_sha256": "4dcb3747be0b8795f96dcc8bfb5e1885e3b52afeceb1f3abfcf18eb4b594893e",
+        "oracle_computability_status": "COMPUTABLE",
+        "equal_budget_verified": true,
+        "reference_parent_arm_id": "STATIC_UNIFORM_8",
+        "licensing_bound_id": "tier2_constructive",
+        "licensing_bound_kind": "LOWER_BOUND",
+        "best_lower_bound": 0.08232237744796767,
+        "least_upper_bound": 0.10541248110586388,
+        "verdict_kappa_range": "holds_for_all_kappa_up_to_1.646448",
+        "reasons": [
+          "best_lower_bound_at_or_above_threshold",
+          "best_lower=0.08232237744796767",
+          "threshold=kappa*mde=0.06",
+          "licensed_by_achievability_bound:tier2_constructive",
+          "admissibility_grants_no_expectation_that_any_policy_wins"
+        ],
+        "grants_scientific_authority": false,
+        "licenses_comparison_execution": true,
+        "upgradeable_by_outcome_access": false
+      },
+      "match": true,
+      "detail": {
+        "construction": "two deficient coordinates at ~0.10, four near-saturated at ~0.96",
+        "static_score": 0.8444849159973038,
+        "constructive_minus_static": 0.08232237744796767,
+        "upper_bound_minus_static": 0.10541248110586388
+      }
+    },
+    {
+      "case_id": "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY",
+      "expected_verdict": "ADMISSIBLE",
+      "decision": {
+        "verdict": "ADMISSIBLE",
+        "instrument_id": "FRESH_NONSEPARABLE_CROSS_COORDINATE_SYNERGY",
+        "registered_primary_metric": "balanced_mastery_advantage_over_static",
+        "registered_minimum_detectable_effect": 0.05,
+        "frozen_kappa": 1.2,
+        "declaration_sha256": "a4889c4aafa8dd59df85d299ad1837c3cd983617fd4009f404e69ab9e75605c8",
+        "oracle_computability_status": "COMPUTABLE",
+        "equal_budget_verified": true,
+        "reference_parent_arm_id": "STATIC_UNIFORM_10",
+        "licensing_bound_id": "tier2_constructive",
+        "licensing_bound_kind": "LOWER_BOUND",
+        "best_lower_bound": 0.10779147962129654,
+        "least_upper_bound": null,
+        "verdict_kappa_range": "holds_for_all_kappa_up_to_2.155830",
+        "reasons": [
+          "best_lower_bound_at_or_above_threshold",
+          "best_lower=0.10779147962129654",
+          "threshold=kappa*mde=0.06",
+          "licensed_by_achievability_bound:tier2_constructive",
+          "admissibility_grants_no_expectation_that_any_policy_wins"
+        ],
+        "grants_scientific_authority": false,
+        "licenses_comparison_execution": true,
+        "upgradeable_by_outcome_access": false
+      },
+      "match": true,
+      "detail": {
+        "construction": "mutually-partnered deficits, multiplicative synergy strength 1.0",
+        "static_score": 0.8493743516608939,
+        "constructive_minus_static": 0.10779147962129654
+      }
+    },
+    {
+      "case_id": "FRESH_UNCOMPUTABLE_ORACLE_STUB",
+      "expected_verdict": "CANNOT_CHECK",
+      "decision": {
+        "verdict": "CANNOT_CHECK",
+        "instrument_id": "FRESH_UNCOMPUTABLE_ORACLE_STUB",
+        "registered_primary_metric": "balanced_mastery_advantage_over_static",
+        "registered_minimum_detectable_effect": 0.05,
+        "frozen_kappa": 1.2,
+        "declaration_sha256": "29c9fe643dcb24d61ac56df23c7b678723e78ba88ef09aa0aac7ccb96b2fa8ac",
+        "oracle_computability_status": "UNCOMPUTABLE",
+        "equal_budget_verified": true,
+        "reference_parent_arm_id": "STATIC_PARENT",
+        "licensing_bound_id": null,
+        "licensing_bound_kind": null,
+        "best_lower_bound": null,
+        "least_upper_bound": null,
+        "verdict_kappa_range": "CANNOT_CHECK_is_kappa_independent",
+        "reasons": [
+          "oracle_not_computable:fail_closed",
+          "an_uncomputable_oracle_never_yields_ADMISSIBLE"
+        ],
+        "grants_scientific_authority": false,
+        "licenses_comparison_execution": false,
+        "upgradeable_by_outcome_access": false
+      },
+      "match": true,
+      "detail": {
+        "construction": "generative parameters withheld"
+      }
+    },
+    {
+      "case_id": "FRESH_CEILING_MARGINALLY_ABOVE_MDE",
+      "expected_verdict": "INADMISSIBLE",
+      "decision": {
+        "verdict": "INADMISSIBLE",
+        "instrument_id": "FRESH_CEILING_MARGINALLY_ABOVE_MDE",
+        "registered_primary_metric": "balanced_mastery_advantage_over_static",
+        "registered_minimum_detectable_effect": 0.05,
+        "frozen_kappa": 1.2,
+        "declaration_sha256": "029a528b18c88672454c5c908f2fe31daa8deab5273366583816ab8759fb1161",
+        "oracle_computability_status": "COMPUTABLE",
+        "equal_budget_verified": true,
+        "reference_parent_arm_id": "STATIC_UNIFORM_5",
+        "licensing_bound_id": "exact_enumeration",
+        "licensing_bound_kind": "EXACT",
+        "best_lower_bound": 0.05010156875085747,
+        "least_upper_bound": 0.05010156875085747,
+        "verdict_kappa_range": "holds_for_all_kappa_greater_than_1.002031",
+        "reasons": [
+          "least_upper_bound_below_threshold",
+          "least_upper=0.05010156875085747",
+          "threshold=kappa*mde=0.06",
+          "licensed_by_upper_bound:exact_enumeration",
+          "verdict_may_never_be_upgraded_by_arm_outcome_access"
+        ],
+        "grants_scientific_authority": false,
+        "licenses_comparison_execution": false,
+        "upgradeable_by_outcome_access": false
+      },
+      "match": true,
+      "detail": {
+        "construction": "deficient initial mastery swept to 0.432",
+        "exact_advantage": 0.05010156875085747,
+        "band": [
+          0.05,
+          0.06
+        ],
+        "static_score": 0.8043042537036
+      }
+    }
+  ],
+  "all_expectations_met": true,
+  "falsifiability_audit": "GATE_FALSIFIABILITY_AUDIT.json",
+  "falsifiability_all_conditions_pass": true,
+  "same_system_ablation": {
+    "obligation": "same_system_ablation from PACKET_oracle_ceiling_calibration_gate_v1",
+    "implementation": "drop_upper_bounds probe on the reference instrument: evidence reduced to implementable policy scores (tier 1 greedy, tier 2 constructive) with the tier-3 upper bound removed",
+    "verdict_changed": true,
+    "flips": 32,
+    "trials": 32,
+    "reading": "the INADMISSIBLE verdict is carried by the upper-bound component; without it the gate fails closed to CANNOT_CHECK rather than reducing to strongest-parent reporting \u2014 the novelty residual is not withdrawn"
+  },
+  "grants_scientific_authority": false
+}

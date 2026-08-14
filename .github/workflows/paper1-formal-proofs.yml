@@ -1,0 +1,184 @@
+name: paper1-formal-proofs
+
+on:
+  push:
+    paths:
+      - 'formal/**'
+      - 'research/paper1_formal_closure/**'
+      - '.github/workflows/paper1-formal-proofs.yml'
+  pull_request:
+    paths:
+      - 'formal/**'
+      - 'research/paper1_formal_closure/**'
+      - '.github/workflows/paper1-formal-proofs.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lean:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o elan-init.sh
+          sh elan-init.sh -y --default-toolchain "$(cat formal/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Typecheck the Paper I development
+        run: |
+          cd formal
+          lean RaklFormal.lean
+
+      # A green check that cannot go red proves nothing. This asserts the kernel
+      # actually rejects a bad proof, so the step above is load-bearing.
+      - name: Negative control - a false lemma must be rejected
+        run: |
+          cd formal
+          cp RaklFormal.lean /tmp/neg.lean
+          cat >> /tmp/neg.lean <<'EOF'
+          namespace RaklFormal
+          theorem deliberately_false {A : Type} (X Y : Sub A) : X ⊑ Y := by
+            intro a ha
+            exact ha
+          end RaklFormal
+          EOF
+          if lean /tmp/neg.lean; then
+            echo "::error::negative control PASSED typechecking - the proof checker is not actually checking"
+            exit 1
+          fi
+          echo "negative control correctly rejected"
+
+      - name: Axiom audit - mechanized theorems must depend on no axioms
+        run: |
+          cd formal
+          lean --root=. -o /tmp/RaklFormal.olean RaklFormal.lean
+          cat > /tmp/ax.lean <<'EOF'
+          import RaklFormal
+          #print axioms RaklFormal.Incl.refl
+          #print axioms RaklFormal.Incl.trans
+          #print axioms RaklFormal.no_faithful_scalarization
+          #print axioms RaklFormal.projection_collision
+          #print axioms RaklFormal.open_world_not_finitely_certifiable
+          #print axioms RaklFormal.iInter_closed
+          #print axioms RaklFormal.iInter_lower
+          #print axioms RaklFormal.iInter_greatest
+          #print axioms RaklFormal.cl_iUnion_closed
+          #print axioms RaklFormal.cl_iUnion_upper
+          #print axioms RaklFormal.cl_iUnion_least
+          #print axioms RaklFormal.iter_below_prefixed
+          #print axioms RaklFormal.stabilized_is_fixed
+          #print axioms RaklFormal.stabilized_is_least
+          #print axioms RaklFormal.runAll_preserves_canon
+          #print axioms RaklFormal.no_uncertified_composition_changes_canon
+          #print axioms RaklFormal.certified_operator_may_change_canon
+          #print axioms RaklFormal.negative_history_monotone
+          #print axioms RaklFormal.symmetric_compat_not_antisymmetric
+          #print axioms RaklFormal.below_is_partial_order
+          #print axioms RaklFormal.pairwise_witnesses_but_no_join
+          #print axioms RaklFormal.parity_restrictions_are_total
+          #print axioms RaklFormal.parity_overlaps_agree
+          #print axioms RaklFormal.parity_no_global_section
+          #print axioms RaklFormal.parity_charts_have_no_global_section
+          #print axioms RaklFormal.coactivation_not_compatibility
+          #print axioms RaklFormal.coactivation_witness
+          #print axioms RaklFormal.workspace_preserves_authority
+          #print axioms RaklFormal.workspace_cannot_increase_authority
+          #print axioms RaklFormal.workspace_transition_changes_access
+          #print axioms RaklFormal.proposalGen_preserves_canon
+          #print axioms RaklFormal.proposal_non_sovereignty
+          #print axioms RaklFormal.proposalGen_changes_proposals
+          #print axioms RaklFormal.experienceUpdate_preserves_canon
+          #print axioms RaklFormal.experience_routing_non_escalation
+          #print axioms RaklFormal.experienceUpdate_changes_routing
+          #print axioms RaklFormal.derivedView_preserves_source
+          #print axioms RaklFormal.derived_view_non_escalation
+          #print axioms RaklFormal.derived_view_cannot_increase_authority
+          #print axioms RaklFormal.derivedView_changes_view
+          #print axioms RaklFormal.trainStep_preserves_canon
+          #print axioms RaklFormal.training_update_non_sovereignty
+          #print axioms RaklFormal.trainStep_changes_params
+          #print axioms RaklFormal.flatness_is_non_compensatory
+          #print axioms RaklFormal.growth_reopens_saturation
+          #print axioms RaklFormal.mem_take_append_left
+          #print axioms RaklFormal.le_length_append
+          #print axioms RaklFormal.saturation_returns_after_required_flat_rounds
+          #print axioms RaklFormal.freshness_expiry
+          #print axioms RaklFormal.freshness_not_compensable_by_flat_rounds
+          #print axioms RaklFormal.freshness_rerun_restores
+          #print axioms RaklFormal.freshness_expiry_witness
+          #print axioms RaklFormal.length_dropOne
+          #print axioms RaklFormal.mem_dropOne
+          #print axioms RaklFormal.distinct_length_le
+          #print axioms RaklFormal.mem_keep
+          #print axioms RaklFormal.length_keep_add_not
+          #print axioms RaklFormal.iter_within_univ
+          #print axioms RaklFormal.iter_index_monotone
+          #print axioms RaklFormal.length_witnesses
+          #print axioms RaklFormal.mem_witnesses
+          #print axioms RaklFormal.distinct_witnesses
+          #print axioms RaklFormal.finite_basis_strict_growth_bound
+          #print axioms RaklFormal.le_sub_of_add_le
+          #print axioms RaklFormal.finite_basis_strict_growth_bound_sub
+          #print axioms RaklFormal.finite_basis_bound_is_attained
+          #print axioms RaklFormal.mem_of_memB
+          #print axioms RaklFormal.memB_of_mem
+          #print axioms RaklFormal.sumU_dropOne
+          #print axioms RaklFormal.sum_swap_ge
+          #print axioms RaklFormal.sumU_keep_split
+          #print axioms RaklFormal.mem_of_mem_dropOne
+          #print axioms RaklFormal.distinct_dropOne
+          #print axioms RaklFormal.not_mem_dropOne_self
+          #print axioms RaklFormal.sumU_congr_mem
+          #print axioms RaklFormal.mem_of_mem_keep
+          #print axioms RaklFormal.distinct_keep
+          #print axioms RaklFormal.length_congr_mem
+          #print axioms RaklFormal.sum_le_of_pointwise_dominated
+          #print axioms RaklFormal.le_of_add_le_add_right
+          #print axioms RaklFormal.top_subset_optimal
+          #print axioms RaklFormal.subset_or_witness
+          #print axioms RaklFormal.distinct_subset_exhausts
+          #print axioms RaklFormal.exchange_partner_exists
+          #print axioms RaklFormal.covers_agree_on_pairwise_data
+          #print axioms RaklFormal.covers_differ_on_global_realizability
+          #print axioms RaklFormal.no_pairwise_predicate_decides_global_realizability
+          EOF
+          LEAN_PATH=/tmp lean /tmp/ax.lean | tee /tmp/ax.out
+          expected=87
+          total=$(grep -c . /tmp/ax.out)
+          clean=$(grep -c 'does not depend on any axioms' /tmp/ax.out)
+          echo "reported=$total axiom-free=$clean expected=$expected"
+          if [ "$clean" -ne "$expected" ] || [ "$total" -ne "$expected" ]; then
+            echo "::error::expected $expected axiom-free theorems, got $clean clean of $total reported"
+            exit 1
+          fi
+
+      - name: Inventory must not overstate mechanization
+        run: |
+          python3 - <<'EOF'
+          import json, pathlib, re, sys
+          inv = json.loads(pathlib.Path("research/paper1_formal_closure/theorem_inventory.json").read_text())
+          lean_src = pathlib.Path("formal/RaklFormal.lean").read_text()
+          declared = set(re.findall(r'^theorem\s+([A-Za-z_][A-Za-z0-9_.\']*)', lean_src, re.M))
+          bad = []
+          for claim in inv["claims"]:
+              # Every declared Lean name must resolve, whatever the claim's status.
+              # A claim that is NOT mechanized may still cite machine-checked lemmas
+              # (see P1-T-GREEDY-OPTIMALITY); those names must be real too, or the
+              # inventory overstates without tripping any status check.
+              names = [n.strip().removeprefix("RaklFormal.") for n in claim.get("lean_names", "").split(",")]
+              for name in filter(None, names):
+                  if name not in declared:
+                      bad.append(f"{claim['id']} claims Lean theorem {name!r}, which does not exist")
+              # A MECHANIZED claim with no Lean names would be an unbacked assertion.
+              if claim["status"] == "MECHANIZED" and not list(filter(None, names)):
+                  bad.append(f"{claim['id']} is MECHANIZED but names no Lean theorem")
+          if inv["review_provenance"]["independent"] is not False:
+              bad.append("inventory must not claim independent review")
+          if bad:
+              print("\n".join(bad)); sys.exit(1)
+          print(f"inventory consistent: {sum(c['status'].endswith('MECHANIZED') for c in inv['claims'])} mechanized claims resolve to real Lean theorems")
+          EOF

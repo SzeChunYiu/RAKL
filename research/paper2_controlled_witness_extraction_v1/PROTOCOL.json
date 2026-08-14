@@ -1,0 +1,47 @@
+{
+  "schema_version": "paper2-controlled-witness-extraction-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper II — Structural Mechanics",
+  "base_main_sha": "60654878bf69ade0e585a6cf087094a917ba50a9",
+  "question": "Can a bounded scientific-prose interface be compiled into the exact directional applicability state without losing mapping, QoI, boundary, precondition, direction or unknown-state information?",
+  "scope": "CONTROLLED_SCIENTIFIC_PROSE_OVER_EXISTING_SIX_EXACT_VERIFIER_FAMILIES",
+  "families": ["flow", "logic", "units", "state", "sched", "stat"],
+  "fresh_seed": 202608140801,
+  "n_per_cell": 24,
+  "text_variants_per_case": 2,
+  "parents": {
+    "SEMANTIC_SURFACE": "existing source/target lexical similarity surface",
+    "QOI_BOUNDARY_ONLY": "extract family/QoI/boundary but ignore mapping, relations, preconditions and unknowns",
+    "NO_UNKNOWN_STATE": "full extraction except coerces unknown/missing values to negative",
+    "FULL_CONTROLLED_EXTRACTOR": "extract all registered coordinates then call the unchanged exact family verifier"
+  },
+  "hard_gates": {
+    "full_exact_decision_min": 0.99,
+    "full_invalid_false_accept_max": 0.0,
+    "full_cannot_check_recall_min": 0.99,
+    "full_valid_accept_min": 0.99,
+    "strongest_parent_exact_max": 0.95,
+    "all_mutations_caught": true
+  },
+  "mutations": [
+    "DROP_MAPPING",
+    "DROP_QOI",
+    "DROP_BOUNDARY",
+    "DROP_PRECONDITION",
+    "DROP_RELATION_OR_DIRECTION",
+    "UNKNOWN_AS_REJECT",
+    "UNKNOWN_AS_ACCEPT",
+    "IGNORE_TARGET_VALUE",
+    "IGNORE_SOURCE_REQUIREMENT",
+    "DROP_SOURCE_SPAN_BINDING"
+  ],
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_CONTROLLED_TEXT_STRUCTURAL_WITNESS_EXTRACTION",
+  "next_if_green": "freeze real scientific-paper excerpt/source-span extraction benchmark; do not generalize controlled-prose success to arbitrary natural language",
+  "nonclaims": [
+    "arbitrary scientific prose extraction solved",
+    "frontier LLM structural extraction solved",
+    "independent natural-domain validation complete",
+    "universal cross-domain transfer law",
+    "scientific authority"
+  ]
+}

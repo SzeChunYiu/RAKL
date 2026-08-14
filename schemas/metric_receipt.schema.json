@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/metric_receipt.schema.json",
+  "title": "MetricReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["metric_id", "metric_name", "definition_hash", "epoch_id", "value", "unit", "sample_n", "candidate_hash", "dataset_hash", "evaluator_hash", "resource_profile_hash", "authority", "sequence_index", "source_receipt_ids"],
+  "properties": {
+    "metric_id": {"type": "string", "minLength": 1},
+    "metric_name": {"type": "string", "minLength": 1},
+    "definition_hash": {"$ref": "#/$defs/sha256"},
+    "epoch_id": {"type": "string", "minLength": 1},
+    "value": {"type": "number"},
+    "unit": {"type": "string", "minLength": 1},
+    "sample_n": {"type": "integer", "minimum": 1},
+    "candidate_hash": {"$ref": "#/$defs/sha256"},
+    "dataset_hash": {"$ref": "#/$defs/sha256"},
+    "evaluator_hash": {"$ref": "#/$defs/sha256"},
+    "resource_profile_hash": {"$ref": "#/$defs/sha256"},
+    "authority": {"enum": ["DESCRIPTIVE", "CONTROL_INPUT", "EVOLUTION_EVIDENCE", "HARD_PROTECTED"]},
+    "sequence_index": {"type": "integer", "minimum": 0},
+    "ci_low": {"type": ["number", "null"]},
+    "ci_high": {"type": ["number", "null"]},
+    "source_receipt_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

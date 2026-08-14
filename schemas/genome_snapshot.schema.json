@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/genome_snapshot.schema.json",
+  "title": "GenomeSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["variant_id", "genome_hash", "parent_ids", "surfaces", "resource_profile"],
+  "properties": {
+    "variant_id": {"type": "string", "minLength": 1},
+    "genome_hash": {"$ref": "#/$defs/sha256"},
+    "parent_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "surfaces": {"type": "array", "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "string"}], "minItems": 2, "maxItems": 2}},
+    "resource_profile": {"type": "array", "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "number", "minimum": 0}], "minItems": 2, "maxItems": 2}}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

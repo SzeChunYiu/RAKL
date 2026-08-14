@@ -1,0 +1,26 @@
+{
+  "schema_version": "orion-p4-adaptive-development-stress-result-v1",
+  "date": "2026-08-14",
+  "scope": "MODEL_FREE_DEVELOPMENT_STRESS_NOT_7B_CONFIRMATORY",
+  "n_world_replicates": 384,
+  "worlds": ["EARLY_PRINCIPLE_SATURATION", "COMPOSITION_LAG", "BOUNDARY_LAG", "REPRESENTATION_LAG", "TRANSFER_LAG", "RETENTION_SENSITIVE"],
+  "equal_examples_per_arm": 48,
+  "arms": {
+    "A_UNIFORM_RANDOM": {"balanced_mastery_mean": 0.7904905930, "hard_safety_min_mean": 0.7566114409},
+    "B_DIVERSITY": {"balanced_mastery_mean": 0.7963393807, "hard_safety_min_mean": 0.7695806586},
+    "C_SCALAR_LOSS_AWARE": {"balanced_mastery_mean": 0.7986935897, "hard_safety_min_mean": 0.7545174223},
+    "D_STATIC_STRUCTURAL": {"balanced_mastery_mean": 0.7962389479, "hard_safety_min_mean": 0.7696931893},
+    "E_VECTOR_ADAPTIVE_V1": {"balanced_mastery_mean": 0.7796305309, "hard_safety_min_mean": 0.7193648374}
+  },
+  "primary_development_contrasts": {
+    "E_minus_D_balanced_mastery": {"mean": -0.0166084170, "bootstrap_95ci": [-0.0173962962, -0.0158334440]},
+    "E_minus_C_balanced_mastery": {"mean": -0.0190630588, "bootstrap_95ci": [-0.0200620274, -0.0180646843]},
+    "E_minus_D_hard_safety_min": {"mean": -0.0503283519, "bootstrap_95ci": [-0.0578152116, -0.0431101561]}
+  },
+  "terminal": "DEVELOPMENT_NEGATIVE_ADAPTIVE_OVERCONCENTRATES__STATIC_PARENT_RETAINS_DEFAULT",
+  "root_cause": "The v1 adaptive batch commits all non-repetition slots to one weakest coordinate for an entire round. In saturation/forgetting worlds this creates concentration-induced principle/retention erosion while the static parent preserves structural coverage.",
+  "repair": "Revoke active-default authority from unvalidated adaptive scheduling. STATIC_STRUCTURAL remains the active training policy unless a fresh frozen receipt explicitly emits ADAPTIVE_RESIDUAL_SUPPORTED and independently satisfies strongest-parent residual, hard-harm and full-overhead gates.",
+  "changes_7b_phase2_evaluator": false,
+  "historical_allocator_code_preserved": true,
+  "grants_scientific_authority": false
+}

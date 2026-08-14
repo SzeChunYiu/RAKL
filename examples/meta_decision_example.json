@@ -1,0 +1,41 @@
+{
+  "decision_id": "meta-decision-044-001",
+  "self_model_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "evaluation_epoch_id": "epoch-rshea-v1",
+  "candidate_actions": ["SEARCH_REPRESENTATION", "SEARCH_OPERATOR_BASIS"],
+  "status": "SELECTED",
+  "selected_action": "SEARCH_REPRESENTATION",
+  "components": [
+    {
+      "name": "information_gain",
+      "normalized_desirability": 0.78,
+      "uncertainty": 0.08,
+      "weight": 1.0,
+      "contribution": 0.70,
+      "normalization_definition_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "metric_receipt_ids": ["control-ig-044"]
+    },
+    {
+      "name": "transfer_gain",
+      "normalized_desirability": 0.67,
+      "uncertainty": 0.10,
+      "weight": 1.0,
+      "contribution": 0.57,
+      "normalization_definition_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "metric_receipt_ids": ["control-transfer-044"]
+    }
+  ],
+  "total_expected_utility": 1.27,
+  "runner_up_action": "SEARCH_OPERATOR_BASIS",
+  "runner_up_utility": 0.91,
+  "hard_gate_observations": [
+    {
+      "gate_id": "authority_leakage_zero",
+      "status": "PASS",
+      "metric_receipt_ids": ["protected-authority-leakage-044"],
+      "reason": "protected gate passed"
+    }
+  ],
+  "metric_receipt_ids": ["control-ig-044", "control-transfer-044", "protected-authority-leakage-044"],
+  "reasons": ["selected_under_frozen_policy_after_hard_gate_and_uncertainty_checks"]
+}

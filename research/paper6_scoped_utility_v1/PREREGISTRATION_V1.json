@@ -1,0 +1,149 @@
+{
+  "schema_version": "paper6-scoped-utility-prereg-v1",
+  "packet_id": "SRSU-P6-GOVERNED-ACCEPTANCE-V1",
+  "paper": "VI",
+  "issue_lineage": [525, 588],
+  "frozen_utc": "2026-08-14",
+  "frozen_before_outcome_access": true,
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "permits_scalar_ranking": false,
+
+  "object": "The ORION/RAKL governed-acceptance layer: the rule that a candidate may be promoted only when every frozen hard gate is PASS with evidence bound to the exact candidate, and that an unresolved gate blocks promotion (fail-closed).",
+
+  "question": "What does fail-closed governed acceptance cost, and what does it buy, on a population of candidate-promotion decisions under an externally anchored evidence-availability regime?",
+
+  "claim_class_split": {
+    "rationale": "The false-promotion rate on defects drawn from RAKL's own invariant list is determined by the gate definitions. Arm A catching them is a wiring check, not a utility measurement. It is reported under CONFORMANCE and may not carry any headline claim.",
+    "CONFORMANCE_not_evidence": [
+      "false_promotion_rate_on_planted_invariant_defects",
+      "receipt_completeness_of_accepted_candidates",
+      "arm_A_vs_arm_C_difference"
+    ],
+    "MEASURED_evidence": [
+      "fail_closed_tax = P(reject | candidate is sound), arm A",
+      "true_promotion_rate (throughput) under matched decision budget",
+      "governance cost: gate evaluations per decision, wall time per decision",
+      "arm_A_vs_arm_D_difference (fail-closed rule isolated: identical gates, CANNOT_CHECK coerced to PASS in D)"
+    ]
+  },
+
+  "primary_measured_quantity": "fail_closed_tax",
+  "primary_measured_definition": "Fraction of ground-truth-sound candidates that arm A refuses to promote solely because one or more required gate observations are CANNOT_CHECK for lack of available evidence.",
+
+  "population": {
+    "unit": "one candidate-promotion decision",
+    "n_episodes_per_cell": 400,
+    "seeds": [11, 12, 13, 14, 15],
+    "ground_truth_sound_fraction": 0.5,
+    "generator": "experiments/paper6/run_governed_acceptance.py, deterministic, seeded, no LLM in the loop"
+  },
+
+  "evidence_availability_anchor": {
+    "source": "arXiv:2608.05179 verification-gap survey",
+    "evidence_grade": "PRIMARY_ABSTRACT",
+    "registry": "research/external_research_agents/registry.json @ branch research/issue-588-external-agent-registry (PR #591)",
+    "registry_basis_fingerprint": "a0565504e70eacf6e0b44bb4a7ff2c0d5eacfb88bc533a75e121c7b702c4a946",
+    "recorded_rates": {
+      "code_released": 0.83,
+      "seeds_or_traces_released": 0.38,
+      "novelty_verification_reported": 0.38
+    },
+    "use": "Per-gate evidence availability is drawn Bernoulli at the rate of the gate's evidence class. INTRINSIC=1.00, CODE=0.83, SEEDS_TRACES=0.38, NOVELTY_VERIFICATION=0.38.",
+    "known_limitation": "The survey gives class rates but not the composition of a promotion contract. Composition is therefore NOT authored at one point: n_repro (the number of the 12 gates in the reproducibility classes) is swept over 0..12 and the whole curve is reported."
+  },
+
+  "hard_gate_contract": {
+    "contract_id": "paper6-scoped-utility-promotion-gates-v1",
+    "frozen_before_candidate_results": true,
+    "gate_ids": [
+      "TYPED_CANDIDATE_IDENTITY",
+      "THRESHOLDS_FROZEN_PRE_RESULT",
+      "EVIDENCE_LINEAGE",
+      "NO_TARGET_LEAKAGE",
+      "MULTIPLICITY_ACCOUNTED",
+      "FALSIFIERS_EXECUTED",
+      "REPLAY_REPRODUCIBLE",
+      "SEED_AND_TRACE_BOUND",
+      "NOVELTY_BOUNDED",
+      "MECHANISM_ANCESTRY",
+      "EXACT_CANDIDATE_BINDING",
+      "INDEPENDENT_REVIEW"
+    ]
+  },
+
+  "arms": [
+    {
+      "arm_id": "A_ORION_GOVERNED",
+      "kind": "SYSTEM_UNDER_TEST",
+      "rule": "rakl.hard_gates.evaluate_full_positive_goal; accept iff verdict == GOAL_ACHIEVED. Unresolved gate => CANNOT_CHECK => reject (fail-closed)."
+    },
+    {
+      "arm_id": "B_GREEDY_HELDOUT_SCALAR",
+      "kind": "REIMPLEMENTATION_CONTROL_ARM",
+      "source_mechanic": "MEC-GREEDY_ACCEPT_ON_HELD_OUT_SCALAR",
+      "source_system_note": "Registry transfer obligation registers this mechanic as the ungoverned control arm. This arm is OUR reimplementation of the mechanic under matched resources. It is NOT the Karpathy autoresearch system and no result here may be reported as a comparison against that system.",
+      "steelman_spec": "held-out split not used for candidate construction; best-of-k over k=5 seeds; accept iff best held-out scalar strictly exceeds the running incumbent. Cost charged for all k evaluations.",
+      "rule": "ignore all gates; accept on held-out scalar improvement only."
+    },
+    {
+      "arm_id": "C_GATES_LOGGED_NOT_EXECUTED",
+      "kind": "ABLATION",
+      "rule": "evaluate gates (cost charged, report emitted) but accept on the numeric goal contract alone."
+    },
+    {
+      "arm_id": "D_FAIL_OPEN",
+      "kind": "ABLATION_ISOLATING_THE_FAIL_CLOSED_RULE",
+      "rule": "identical gate contract and identical observations to arm A, except CANNOT_CHECK observations are coerced to PASS. A-vs-D is the only arm pair that isolates the fail-closed rule with everything else held fixed."
+    },
+    {
+      "arm_id": "E_LLM_JUDGE_FITNESS",
+      "kind": "BLOCKED",
+      "source_mechanic": "MEC-DARWINIAN_WORKFLOW_EVOLUTION",
+      "state": "CANNOT_CHECK",
+      "reason": "Requires an LLM judge under matched budget. No LLM budget in this fiber. A simulated judge with an assumed error model would be a sensitivity model, not a measurement, and is therefore NOT run."
+    }
+  ],
+
+  "matched_resource_contract": {
+    "decision_budget": "one promotion decision per episode per arm; identical episode population, identical seeds, identical candidate scores across arms",
+    "cost_accounting": "gate_evaluations and scalar_evaluations counted per arm; arm B charged for all k=5 best-of-k evaluations; wall time measured per arm",
+    "no_arm_sees_ground_truth": true
+  },
+
+  "qoi_vector_no_scalar": [
+    "false_promotion_rate",
+    "true_promotion_rate",
+    "fail_closed_tax",
+    "gate_evaluations_per_decision",
+    "wall_time_per_decision_s",
+    "receipt_completeness_of_accepted"
+  ],
+
+  "reporting_rule": "Pareto/frontier reporting only. No weighted aggregate. No ORION_SCORE. Componentwise comparison at each swept n_repro.",
+
+  "falsifiers": [
+    "F1: If arm A's fail_closed_tax is ~0 across the whole n_repro sweep, the fail-closed rule costs nothing measurable in this population and the price-of-governance claim is vacuous.",
+    "F2: If arm A and arm D have identical false_promotion_rate across the sweep, the fail-closed rule buys nothing here and the claim is unsupported.",
+    "F3: If arm B's false_promotion_rate is not higher than arm A's, the ungoverned control arm is not actually worse on integrity and no governance benefit is demonstrated.",
+    "F4: If arm A's governance cost is not measurably above arm B's, the cost side of the frontier is unmeasured and only a one-sided claim is licensed."
+  ],
+
+  "permitted_claim_if_supported": "Scoped price-of-governance statement: on this frozen synthetic promotion population under the anchored evidence-availability rates, fail-closed governed acceptance reduces false promotion by X at a throughput cost of Y and a compute cost of Z. Scoped to this population and these rates only.",
+
+  "forbidden_claims": [
+    "ORION architecture > any named external system",
+    "any weighted ORION_SCORE",
+    "generalization of the fail-closed tax to real research populations",
+    "treating arm B results as evidence about the Karpathy autoresearch system",
+    "treating CONFORMANCE coordinates as utility evidence"
+  ],
+
+  "generalization_status": {
+    "held_out_defect_families": "CANNOT_CHECK",
+    "reason": "The advisor-required externally-anchored held-out defect families cannot be constructed. The registry asserts 'five failure modes named in the open-ended-research case studies' (research/external_research_agents/README.md line 107; mechanics/mechanics.json line 121 names one, 'instruction drift') but does not record the list as data. Authoring the held-out families myself would make their freshness fictional. Blocked on RES-EXT-001.",
+    "consequence": "Every defect family in this run is drawn from RAKL's own invariant list and is therefore CONFORMANCE only. No out-of-family generalization is claimed."
+  },
+
+  "substrate": "laptop billy (ssh billy-laptop), /home/billy/rakl-verify, .venv/bin/python 3.11.14. No compute on the Mac."
+}

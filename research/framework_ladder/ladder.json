@@ -1,0 +1,320 @@
+{
+  "schema_version": "framework-ladder-v1",
+  "freeze_date": "2026-08-14",
+  "grants_scientific_authority": false,
+  "purpose": "Make the framework's progressive build explicit. Each layer introduces atoms and becomes able to express something the layers below cannot. A layer may depend only on layers beneath it.",
+  "provenance": "NOT a new taxonomy. The ladder is read off docs/FORMAL_SYSTEM_SPECIFICATION.md, whose 14 sections are already ordered by dependency (charts -> transitions -> gluing -> authority -> verification -> reachability -> saturation -> method acquisition -> assimilation). The papers were carved by THEME on top of a spec already ordered by DEPENDENCY, which is why they do not build on each other.",
+  "measured_paper_coupling": {
+    "note": "Cross-paper references, self excluded, measured 2026-08-14 over all .tex.",
+    "edges": {
+      "I": {
+        "II": 1
+      },
+      "II": {
+        "III": 1
+      },
+      "III": {
+        "I": 1
+      },
+      "IV": {
+        "I": 2,
+        "II": 1,
+        "III": 4,
+        "V": 1,
+        "VI": 1
+      },
+      "V": {},
+      "VI": {
+        "I": 1,
+        "II": 2,
+        "III": 1,
+        "IV": 5,
+        "V": 3
+      }
+    },
+    "finding": "Hub-and-spoke, not a chain. IV and VI reference all five others; I, II, III have exactly one cross-reference each and V has none. Paper II contains ZERO references to Paper I by any phrasing, though it sits directly above it on the ladder."
+  },
+  "layers": [
+    {
+      "layer_id": "L0-OBJECT",
+      "name": "Objects, facets, projections, contexts",
+      "spec_sections": [
+        "ARCHITECTURE.md 1",
+        "FORMAL_SYSTEM_SPECIFICATION.md 2-3"
+      ],
+      "atoms_introduced": [
+        "object",
+        "facet",
+        "projection",
+        "context",
+        "local chart",
+        "measurement"
+      ],
+      "expresses": "That two sources describe the same object through different projection operators under different contexts. Without this layer, disagreement cannot be distinguished from difference-of-view.",
+      "depends_on": [],
+      "papers_covering": [
+        "I"
+      ],
+      "benefit_obligation": "Does context-aligned projection reduce false contradiction rate versus naive text comparison? Observable: FCR from the quantitative evaluation model.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "MECHANIZED",
+        "gate_falsifiable": "NOT_APPLICABLE",
+        "benefit_measured": false,
+        "evidence": ""
+      }
+    },
+    {
+      "layer_id": "L1-TRANSITION",
+      "name": "Typed transitions and relation algebra",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 4"
+      ],
+      "atoms_introduced": [
+        "typed transition",
+        "relation type",
+        "evidence lineage",
+        "composition rule"
+      ],
+      "expresses": "That a step from one object to another has a type, and that composing steps is licensed or not. Without it, any two claims can be chained.",
+      "depends_on": [
+        "L0-OBJECT"
+      ],
+      "papers_covering": [
+        "I",
+        "II"
+      ],
+      "benefit_obligation": "Does typed composition prevent unsupported chains a untyped baseline admits? Observable: unsupported-composition rate.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "PROVED_ON_PAPER",
+        "gate_falsifiable": "NOT_AUDITED",
+        "benefit_measured": false,
+        "evidence": ""
+      }
+    },
+    {
+      "layer_id": "L2-GLUING",
+      "name": "Context alignment, contradiction and gluing",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 5"
+      ],
+      "atoms_introduced": [
+        "compatibility witness",
+        "obstruction",
+        "global section",
+        "cover"
+      ],
+      "expresses": "That locally consistent pieces may have no global section. This is the layer where obstructions become first-class, and Paper I's three-context parity construction lives here.",
+      "depends_on": [
+        "L0-OBJECT",
+        "L1-TRANSITION"
+      ],
+      "papers_covering": [
+        "I",
+        "II"
+      ],
+      "benefit_obligation": "Does retaining obstructions prevent wrong gluings that a pairwise-only representation admits? This is exactly Proposition prop:obstruction-blind, and it is currently proved but not measured.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "MECHANIZED",
+        "gate_falsifiable": "NOT_AUDITED",
+        "benefit_measured": false,
+        "evidence": ""
+      }
+    },
+    {
+      "layer_id": "L3-AUTHORITY",
+      "name": "Scientific authority as a partial order",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 6-7"
+      ],
+      "atoms_introduced": [
+        "authority coordinate",
+        "certificate",
+        "proposal/canonical separation",
+        "negative history"
+      ],
+      "expresses": "That a claim's evidential standing is multi-coordinate and that only certified transitions may change it. Without it, fluency substitutes for evidence.",
+      "depends_on": [
+        "L2-GLUING"
+      ],
+      "papers_covering": [
+        "I"
+      ],
+      "benefit_obligation": "Does the authority boundary reduce unsupported authority upgrades versus an ungoverned arm? Observable: ALR. NOT YET MEASURED - see mechanism_benefit_ledger.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "MECHANIZED",
+        "gate_falsifiable": "FAIL_OPEN_FOUND",
+        "benefit_measured": false,
+        "evidence": "assess_transfer_v2 returns LICENSED with zero reasons for wholly disjoint structures (reproduced 2026-08-14)."
+      }
+    },
+    {
+      "layer_id": "L4-NAVIGATION",
+      "name": "Goal-conditioned reachability and support structure",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 8",
+        "docs/EPISTEMIC_PATHFINDING_AND_GAP_COMPLETION.md"
+      ],
+      "atoms_introduced": [
+        "target contract tau",
+        "support hypergraph",
+        "path corridor",
+        "epistemic cut",
+        "residual routing"
+      ],
+      "expresses": "That solving is search for an authority-valid support structure reaching the target, and that FAILING is informative: the min-cost cut names what would have to be established. This is the framework's verb.",
+      "depends_on": [
+        "L3-AUTHORITY"
+      ],
+      "papers_covering": [
+        "I (only as of PR #623)"
+      ],
+      "benefit_obligation": "Does navigating a distilled support structure solve more than reading raw sources at matched total budget? This is arm C of the benefit experiment and the load-bearing open question.",
+      "defect_note": "This layer had NO paper home until 2026-08-14. Its specification sat in a doc marked research-only, and its three appearances in the papers were all CONSTRAINING (Paper I's is inside a noninterference section). The framework's central verb was present only where it was being restrained.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "MECHANIZED",
+        "gate_falsifiable": "NOT_AUDITED",
+        "benefit_measured": false,
+        "evidence": ""
+      }
+    },
+    {
+      "layer_id": "L5-SATURATION",
+      "name": "Bounded epistemic saturation",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 12"
+      ],
+      "atoms_introduced": [
+        "saturation basis",
+        "marginal growth vector",
+        "flat round",
+        "freshness horizon"
+      ],
+      "expresses": "When search may stop. Requires L4 because saturation is relative to a declared route family, and requires a finite basis to be certifiable rather than merely bounded.",
+      "depends_on": [
+        "L4-NAVIGATION"
+      ],
+      "papers_covering": [
+        "I"
+      ],
+      "benefit_obligation": "Does stopping on this rule beat stopping arbitrarily at matched budget? External observable available: set-completeness IoU. NOT YET MEASURED.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "MECHANIZED",
+        "gate_falsifiable": "FALSIFIABLE",
+        "benefit_measured": false,
+        "evidence": "audit_bounded_epistemic_saturation confirmed FALSIFIABLE by the gate battery, control asserted first."
+      }
+    },
+    {
+      "layer_id": "L6-METHOD-EVOLUTION",
+      "name": "Experience, challenge learning and method acquisition",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 13",
+        "docs/CHALLENGE_LEARNING_LOOP.md"
+      ],
+      "atoms_introduced": [
+        "episode",
+        "experience-conditioned routing",
+        "method candidate",
+        "promotion gate"
+      ],
+      "expresses": "That the method itself is an object the system can revise. Requires L5: you cannot tell whether a method change helped until you can say when search was done.",
+      "depends_on": [
+        "L5-SATURATION"
+      ],
+      "papers_covering": [
+        "III",
+        "IV"
+      ],
+      "benefit_obligation": "Fresh-task lift versus a static-method parent. Currently BLOCKED_ON_CAPABILITY_QUALIFICATION, explicitly not a null.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "PROVED_ON_PAPER",
+        "gate_falsifiable": "NON_FALSIFIABLE",
+        "benefit_measured": false,
+        "evidence": "Four of six Paper III gate conditions NON_FALSIFIABLE; gold label is the prediction (same pure function, same argument). Registered thresholds sit exactly at the ceilings."
+      }
+    },
+    {
+      "layer_id": "L7-ASSIMILATION",
+      "name": "External method assimilation and constructive invention",
+      "spec_sections": [
+        "FORMAL_SYSTEM_SPECIFICATION.md 14",
+        "research/external_research_agents/"
+      ],
+      "atoms_introduced": [
+        "mechanic candidate",
+        "faithful vs repaired challenger",
+        "transfer obligation",
+        "difference witness"
+      ],
+      "expresses": "That a competitor's mechanism can be absorbed under RAKL conditions. Requires L6: assimilation is a method change, so it inherits the method-evolution gate.",
+      "depends_on": [
+        "L6-METHOD-EVOLUTION"
+      ],
+      "papers_covering": [
+        "III",
+        "VI"
+      ],
+      "benefit_obligation": "Measured transfer under RAKL conditions, not feature parity. One instance now exists: MEC-DERIVATION_QUANTIFIED_REFUSAL transferred in adapted form; the faithful import was refuted by measurement.",
+      "readiness": {
+        "spec_present": true,
+        "paper_home": true,
+        "soundness": "PROVED_ON_PAPER",
+        "gate_falsifiable": "NOT_AUDITED",
+        "benefit_measured": false,
+        "evidence": ""
+      }
+    }
+  ],
+  "ladder_violations_in_current_carve": [
+    {
+      "violation": "Paper II covers L1-TRANSITION and L2-GLUING, both of which depend on L0-OBJECT which Paper I owns - yet Paper II contains zero references to Paper I.",
+      "consequence": "The dependency is real but invisible. A reader of Paper II cannot see what it is built on, and Paper I's results are not available to justify Paper II's constructions."
+    },
+    {
+      "violation": "L4-NAVIGATION had no paper home until PR #623, despite being specified in FORMAL_SYSTEM_SPECIFICATION.md section 8.",
+      "consequence": "The framework's central verb was unclaimed. Papers are carved by mechanism TYPE (nouns); the loop is a VERB, so it had nowhere to land."
+    },
+    {
+      "violation": "Papers IV and VI reference all five others while I, II, III, V reference at most one each.",
+      "consequence": "Composition happens only in IV and VI - which are precisely the two papers reporting REFUTED and COST_ONLY benefit. The papers that never compose report success about their own layer in isolation."
+    }
+  ],
+  "open_residuals": [
+    {
+      "residual_id": "RES-LADDER-001",
+      "statement": "The layer-to-paper mapping is authored from section headings and cross-reference counts, not from a claim-by-claim audit.",
+      "closure_action": "Map every theorem-like claim in each paper to a layer, and flag any claim that uses an atom from a higher layer."
+    },
+    {
+      "residual_id": "RES-LADDER-002",
+      "statement": "Six of eight layers have an unmeasured benefit obligation.",
+      "closure_action": "Each layer's obligation names an observable; execute them in ladder order, since a higher layer's benefit is not interpretable if a lower one is unmeasured."
+    }
+  ],
+  "readiness_policy": {
+    "criteria": [
+      "spec_present",
+      "paper_home",
+      "soundness in {MECHANIZED, PROVED_ON_PAPER}",
+      "gate_falsifiable not in {NON_FALSIFIABLE, FAIL_OPEN_FOUND}",
+      "benefit_measured"
+    ],
+    "non_compensatory": true,
+    "rule": "A layer is READY only when every criterion holds. The FRONTIER is the lowest layer that is not READY. Work at the frontier; a higher layer's benefit is not interpretable while a lower layer's is unmeasured.",
+    "why_non_compensatory": "Mirrors the framework's own no-scalarization result: a strong soundness coordinate cannot offset an absent benefit coordinate, exactly as blocking validity violations are never offset by high scores elsewhere."
+  }
+}

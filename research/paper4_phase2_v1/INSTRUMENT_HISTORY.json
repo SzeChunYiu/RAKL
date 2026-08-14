@@ -1,0 +1,40 @@
+{
+  "schema_version": "rakl-paper4-phase2-instrument-history-v1",
+  "date": "2026-08-14",
+  "outcome_bearing_model_runs_accessed": false,
+  "history": [
+    {
+      "version": "PROTOCOL_V1",
+      "terminal": "PREOUTCOME_FREEZE_INCOMPLETE",
+      "diagnosis": "epochs/LR/LoRA configuration, repetition floor and exact static/adaptive policies were not fully bound",
+      "action": "preserved; superseded before outcome access"
+    },
+    {
+      "version": "PROTOCOL_V2",
+      "terminal": "PREOUTCOME_TRAINING_SEMANTICS_MISMATCH",
+      "diagnosis": "described 4-bit NF4 and LoRA dropout 0.05, inconsistent with the corrected Phase-1 executor used to authorize the mechanism signal",
+      "action": "preserved; superseded by V3 before outcome access"
+    },
+    {
+      "version": "PROTOCOL_V3_INITIAL_READER",
+      "terminal": "INSTRUMENT_DEFECT_SCHEMA_ALIAS",
+      "diagnosis": "runner expected training.model_revision while V3 named the same exact pinned value training.revision",
+      "evidence": "GitHub Actions test epoch before 71028eb7 repair",
+      "action": "original V3 bytes preserved at PROTOCOL_V3_ORIGINAL_PREEXEC.json; only redundant alias added before model outcomes"
+    },
+    {
+      "version": "PHASE2_DATA_CONSTRUCTOR_V1",
+      "terminal": "INSTRUMENT_DEFECT_PROMPT_OVERLAP",
+      "diagnosis": "case IDs were disjoint but generator_v2 tag did not enter prompt bytes, permitting exact rendered prompt collisions across train/selection/assurance",
+      "evidence": "GitHub Actions test epoch 31772761898: 5 protocol tests failed while 3370 others passed",
+      "action": "do not relax leakage guard; Phase-2-only opaque deterministic nonce added to rendered prompts, with historical/non-Phase-2 generator bytes unchanged"
+    }
+  ],
+  "current_outcome_authorizing_subject": {
+    "protocol": "research/paper4_phase2_v1/PROTOCOL_V3.json",
+    "inference": "research/paper4_phase2_v1/INFERENCE_PLAN.json",
+    "runner": "experiments/training_ladder/phase2_adaptive_v1.py",
+    "generator": "experiments/training_ladder/generator_v2.py phase2-tagged nonce path"
+  },
+  "authority_boundary": "Instrument repair history only; no result or promotion is inferred from pre-outcome CI."
+}

@@ -36,7 +36,7 @@ The third separation concerns geometric growth and scientific progress. Adding a
 
 \subsection{Contributions and claim boundary}
 
-The paper makes seven contributions.
+The paper makes eight contributions.
 
 \begin{enumerate}[leftmargin=*]
 \item It formalizes a typed scientific state in which claims, evidence, context, uncertainty, obstructions, negative history and authority certificates have distinct roles.
@@ -46,7 +46,10 @@ The paper makes seven contributions.
 \item It formulates the transient workspace as a capacity-constrained selection problem, proves optimality of the implemented reservation-first greedy rule under its explicit unit-cost/additive-utility assumptions, and proves that workspace-only transitions do not create authority or compatibility certificates.
 \item It develops Open-World Mechanism Discovery (OWMD), in which unowned functions are inverted into vocabulary-independent signatures and searched through heterogeneous route families. A finite transcript can certify bounded closure but not unrestricted open-world completeness.
 \item It introduces bounded epistemic saturation as the release/stopping criterion for both research and manuscript construction. The criterion requires repeated zero substantive gain under a stable basis, stable route coverage, closed blocking fibers, omission and nearest-work audits, and an explicit freshness horizon. Any new substantive object reopens the state.
+\item It states what the accumulated structure is \emph{for}: navigation of a minimal, obstruction-preserving support structure toward a registered target contract. A distillation that retains only pairwise compatibility data provably cannot decide global realizability, so obstruction objects must travel with the retained cores; failed navigation returns an epistemic cut naming what would have to be established rather than a bare failure.
 \end{enumerate}
+
+Seventeen of the paper's eighteen numbered formal claims are machine-checked in a dependency-free Lean development included in the public artifact; the kernel reports every theorem in that development as axiom-free. The remaining claim, the reservation-first greedy optimality theorem, has its key proof ingredients machine-checked but not their assembly, and machine-checking is not claimed for it. The mechanization posture is summarized in the reproducibility appendix (Appendix~\ref{app:reproducibility}). A machine-checked proof removes dependence on any human reviewer's line-by-line judgement; it is not independent peer review of the paper.
 
 The scope is deliberately narrower than the ambition of autonomous science. We do not claim that these structures make a model conscious, that a finite process can exhaust the scientific literature, or that the current implementation improves real scientific outcomes. The paper provides formal and executable governance mechanics. Empirical superiority requires matched experiments; external credibility requires independent review; and unrestricted completeness is excluded by construction.
 
@@ -170,7 +173,7 @@ K_{t+1}=\mathcal U(K_t,p,e,\gamma,\chi),
 \]
 where \(\chi\) is the authority/governance certificate required for that transition type.
 
-\begin{proposition}[Proposal non-sovereignty]
+\begin{proposition}[Proposal non-sovereignty]\label{prop:proposal-non-sovereignty}
 If the codomain of every proposal-generating operator excludes canonical state and every canonical update requires a certificate \(\chi\) unavailable to proposal generators, then no finite composition of proposal generators alone can change \(K_t\).
 \end{proposition}
 

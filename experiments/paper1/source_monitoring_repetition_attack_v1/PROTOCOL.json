@@ -1,0 +1,42 @@
+{
+  "schema_version": "paper1-source-monitoring-repetition-attack-v1",
+  "date": "2026-08-14",
+  "owner_issue": 687,
+  "base_main_sha": "9052b523",
+  "parent_terminal": "PROMOTE_CONDITIONALLY_SOURCE_MONITORING_REPETITION_ATTACK",
+  "scientific_question": "Can the authority ledger detect a repetition attack where the same evidence is submitted multiple times with slight variations to manufacture apparent support for a claim?",
+  "attack_model": {
+    "base_evidence_id": "doi:10.1038/s41586-019-1234-5",
+    "attack_variations": 10,
+    "variation_types": [
+      "exact_duplicate",
+      "query_parameter_variant",
+      "arxiv_variant",
+      "prefix_variant"
+    ]
+  },
+  "preoutcome_metrics": {
+    "attack_detected": "boolean",
+    "distinct_evidence_count": "integer",
+    "total_submissions": "integer",
+    "repetition_ratio": "float between 0 and 1"
+  },
+  "hard_gate": {
+    "attack_detected": true,
+    "repetition_ratio_min": 0.5
+  },
+  "decision_terminals": {
+    "pass": "PROMOTE_CONDITIONALLY_SOURCE_MONITORING_REPETITION_ATTACK",
+    "fail": "NEGATIVE_SOURCE_MONITORING_REPETITION_ATTACK_NOT_DETECTED"
+  },
+  "claim_boundary": {
+    "if_pass": "Scoped to this exact attack model and evidence normalization; shows that the authority ledger can detect repetition attacks when distinct evidence is normalized.",
+    "forbidden": [
+      "all repetition attacks are detectable",
+      "evidence normalization is complete",
+      "no false positives on legitimate multiple citations"
+    ]
+  },
+  "no_optional_stopping": true,
+  "grants_scientific_authority": false
+}

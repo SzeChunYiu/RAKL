@@ -1,0 +1,38 @@
+{
+  "schema_version": "external-agent-mechanics-v1",
+  "freeze_date": "2026-08-14",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "note": "Compiled for issue #609 follow-on. The source here is a formal parent (a mathematical result), not a competitor agent system, so 'independent_evidence' refers to whether the TRANSFER into ORION has been independently reproduced -- not to whether the source theorem is true. The source theorem is published and peer-reviewed; the transfer is not. Frozen before implementation. See SOURCE_VERIFICATION.json for the verbatim primary-source basis of every claim below.",
+  "mechanics": [
+    {
+      "mechanic_id": "MEC-DERIVATION_QUANTIFIED_REFUSAL",
+      "source_system_ids": ["SYS-BAREINBOIM_PEARL_SID"],
+      "process_surface": "transfer/applicability gate -- the negative verdict",
+
+      "preconditions": "Three, all load-bearing. (1) A COMPLETE DECLARATION of the objects the verdict ranges over: sID requires the selection diagram D as a hard input (V1), and the authors place the case of unavailable knowledge outside the formalism entirely (V8, V9, V10). (2) A COMPLETE underlying calculus: refusal upgrades from 'search failed' to 'nothing exists' only because do-calculus plus standard probability manipulations are complete for this class (V5). (3) A DECIDABLE exhaustion of the derivation space, so that 'no derivation succeeded' is established rather than assumed.",
+
+      "mechanism": "Split the negative verdict by what it quantifies over. A gate that evaluates one supplied derivation and fails reports only that THAT derivation failed. sID instead fixes the input tuple <P*, I, D> and quantifies over ALL derivations: on failure it returns FAIL(F, F') carrying an s-hedge -- a structural object witnessing the obstruction (V3). The underlying impossibility is proved not by exhausting a search but by an INDISTINGUISHABILITY CONSTRUCTION: two causal models M_1, M_2 agreeing on every declared input yet disagreeing on the QoI (V7). No function of the inputs can separate them, hence no method can succeed. The transferable move is therefore: derive the refusal from properties that are INVARIANT under every admissible presentation of the query, and emit those properties as the certificate.",
+
+      "claimed_benefit": "The source claims (V4, V5, V6) that failure of the exhaustive application of the rules implies the inexistence of a mapping from the available data to the target relation, independently of the method used to obtain such mapping. Precisely scoped: this is non-existence relative to the FIXED input tuple <P*, I, D>, not absolute impossibility -- enlarging I or refining D can flip FAIL to a transport formula (V7). The operator brief's 'no estimator exists' is correct about method-independence and overstated about absoluteness; the corrected reading is what is carried forward.",
+
+      "cost": "In the source: CANNOT_CHECK -- no complexity bound was located in the primary pages read (CC1), so none is inherited. In the ORION analogue the cost is explicit and must be measured, not assumed: quantifying over role mappings is |target_roles|^|source_roles| in the worst case. This is the single largest transfer risk and it is why the adapted challenger must carry a search budget whose exhaustion produces the WEAK verdict, never the strong one.",
+
+      "failure_modes": [
+        "PRIMARY: importing the verdict form without precondition (1) manufactures false impossibility certificates. A refusal caused by a repairable defect in the supplied presentation is relabelled as proof that no presentation can work. This is the exact surface-analogy forcing the RAKL method forbids, and it is what challenger A is built to expose.",
+        "The source formalism has no third verdict: its output type is a transport formula or FAIL (V12). Missing knowledge is a user obligation discharged before the call, never a returned value. An importer that also needs a returned CANNOT_CHECK cannot get it from this mechanic and must supply it separately.",
+        "Scope creep across the sibling algorithms: sID covers two domains only. Multiple sources require muSID; limited experiments require TR_z. Citing sID's completeness for a multi-source or limited-experiment problem is a scope error.",
+        "In ORION specifically: the certificate can only be as good as the completeness of the target declaration. An open-world target -- one where absence of a relation means 'not recorded' rather than 'not present' -- cannot support any impossibility certificate, no matter how exhaustive the search.",
+        "Budget-exhaustion leakage: if an unfinished exhaustion is allowed to emit the strong verdict, the mechanic silently degrades into challenger A."
+      ],
+
+      "scope": "Source scope, verified: recursive semi-Markovian structural causal models; non-parametric identification; QoI of the form P*_x(y); selection diagram D with S-nodes supplied as a hard input; exactly two domains (Pi source, Pi* target). ORION holds none of these -- it has no causal diagram, and its QoI is not a probabilistic causal quantity. The mechanic therefore transfers, if at all, at the level of the QUANTIFICATION STRUCTURE of the refusal, never at the level of the causal machinery.",
+
+      "independent_evidence": "NONE - no independent reproduction of the TRANSFER has been attempted. The source theorem is peer-reviewed and was read from primary text in this run (SOURCE_VERIFICATION.json V1-V12); that establishes the source claim, not the transfer claim. Same-session implementation and testing is not independent review.",
+
+      "rakl_analogue": "ORION's applicability gate assess_transfer in src/rakl/structural_transfer.py, returning LICENSED / REJECTED / CANNOT_CHECK, together with its use-site wrapper assess_transfer_for_use in src/rakl/structural_transfer_use.py. ORION's REJECTED quantifies over NOTHING: it evaluates exactly one supplied StructuralWitness and reports that this witness failed. It therefore cannot distinguish 'no witness can license this' from 'this particular witness is defective'. Note the obligation-form gate assess_transfer_v2 in src/rakl/structural_transport_v2.py is a DIFFERENT case: there the witness supplies its own obligation list, so the query and the derivation are bundled into one object and no completeness statement is even well-formed until they are separated. v1 is the correct transfer site precisely because its obligation set is determined by the source object.",
+
+      "candidate_transfer_obligation": "Split ORION's REJECTED into CERTIFIABLY_IMPOSSIBLE and MERELY_UNLICENSED. Derive CERTIFIABLY_IMPOSSIBLE ONLY from witness-independent structure, and only when (i) the target carries an explicit closed-world completeness declaration -- the honest analogue of the fully specified selection diagram -- and (ii) a bounded exhaustion over the presentation space actually completes. Budget exhaustion, an open-world target, or any witness-local defect must yield MERELY_UNLICENSED. Build BOTH the faithful import (every REJECTED relabelled CERTIFIABLY_IMPOSSIBLE, assumptions unchecked) and the adapted version; the contrast between them is the experiment. FALSIFIER, any one of which kills the transfer: (a) the adapted gate emits a single false impossibility certificate on a case where a licensing witness demonstrably exists; (b) the adapted gate never fires CERTIFIABLY_IMPOSSIBLE on cases that are genuinely impossible under a closed-world declaration, making it vacuous; (c) the adapted gate never differs from the faithful import on any case, making the distinction empty."
+    }
+  ]
+}

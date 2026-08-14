@@ -1,0 +1,198 @@
+{
+  "all_gates_pass": false,
+  "arm_scores": {
+    "FULL_PROSE_EXTRACTOR": {
+      "cannot_check_recall": 1.0,
+      "exact": 0.9722222222222222,
+      "invalid_false_accept": 0.0,
+      "valid_accept": 0.8958333333333334
+    },
+    "P_ALWAYS_ACCEPT": {
+      "cannot_check_recall": 0.0,
+      "exact": 0.25,
+      "invalid_false_accept": 1.0,
+      "valid_accept": 1.0
+    },
+    "P_ALWAYS_CANNOT_CHECK": {
+      "cannot_check_recall": 1.0,
+      "exact": 0.25,
+      "invalid_false_accept": 0.0,
+      "valid_accept": 0.0
+    },
+    "P_ALWAYS_REJECT": {
+      "cannot_check_recall": 0.0,
+      "exact": 0.5,
+      "invalid_false_accept": 0.0,
+      "valid_accept": 0.0
+    },
+    "P_KEYWORD_POLARITY": {
+      "cannot_check_recall": 0.20833333333333334,
+      "exact": 0.4600694444444444,
+      "invalid_false_accept": 0.09722222222222222,
+      "valid_accept": 0.08333333333333333
+    },
+    "P_LEXICAL": {
+      "cannot_check_recall": 0.0,
+      "exact": 0.4982638888888889,
+      "invalid_false_accept": 0.003472222222222222,
+      "valid_accept": 0.0
+    },
+    "P_PRIOR_MAJORITY": {
+      "cannot_check_recall": 0.0,
+      "exact": 0.5,
+      "invalid_false_accept": 0.0,
+      "valid_accept": 0.0
+    }
+  },
+  "authority": "same-context analysis; not independent review",
+  "config": {
+    "bank": "heldout",
+    "confirmatory_seed": 20260814907,
+    "dev_majority_class": "REJECT",
+    "dev_seed": 20260814001,
+    "lexical_threshold_fitted_on_dev": 0.51,
+    "n": 576,
+    "n_per_cell": 24
+  },
+  "confirmatory_outcomes_accessed": true,
+  "coordinate_errors_by_coord_and_mode": {
+    "effect:E_QUALITATIVE": 2,
+    "relation:E_QUALITATIVE": 53
+  },
+  "gates": {
+    "G1": {
+      "advantage": 0.4722222222222222,
+      "bootstrap95": [
+        0.4322916666666667,
+        0.515625
+      ],
+      "mcnemar_n01": 273,
+      "mcnemar_n10": 1,
+      "mcnemar_p": 1.811940271492746e-80,
+      "passes": true
+    },
+    "G2": {
+      "full_exact": 0.9722222222222222,
+      "passes": true
+    },
+    "G3": {
+      "classes_with_errors": [
+        "E_QUALITATIVE"
+      ],
+      "errors_by_class": {
+        "E_QUALITATIVE": 55
+      },
+      "passes": false,
+      "totals_by_class": {
+        "E_DISTRACTOR": 872,
+        "E_ELISION": 78,
+        "E_HEDGE": 66,
+        "E_LITERAL": 864,
+        "E_NEGATION": 981,
+        "E_QUALITATIVE": 379,
+        "E_UNIT": 216
+      }
+    },
+    "G4": {
+      "full_invalid_false_accept": 0.0,
+      "full_valid_accept": 0.8958333333333334,
+      "passes": true,
+      "trivial_arms_attaining_both": {
+        "P_ALWAYS_ACCEPT": false,
+        "P_ALWAYS_CANNOT_CHECK": false,
+        "P_ALWAYS_REJECT": false
+      }
+    },
+    "G5": {
+      "full_loss_variance": 0.02700617283950617,
+      "parent_loss_variance": 0.25,
+      "passes": true
+    },
+    "G6": {
+      "distinct_advantage_values": 9,
+      "max_advantage": 0.4809027777777778,
+      "min_advantage": 0.4652777777777778,
+      "passes": true,
+      "seeds": 12
+    },
+    "G7": {
+      "NC1_SCRAMBLED_TEXT_fails_G1": true,
+      "NC1_detail": {
+        "advantage": -0.25,
+        "bootstrap95": [
+          -0.3194444444444444,
+          -0.18055555555555555
+        ],
+        "mcnemar_n01": 144,
+        "mcnemar_n10": 288,
+        "mcnemar_p": 3.80714958257502e-12,
+        "passes": false
+      },
+      "NC2_SHUFFLED_GOLD_fails_G1": true,
+      "NC2_detail": {
+        "advantage": -0.11631944444444442,
+        "bootstrap95": [
+          -0.16493055555555555,
+          -0.0642361111111111
+        ],
+        "mcnemar_n01": 77,
+        "mcnemar_n10": 144,
+        "mcnemar_p": 7.748401780737213e-06,
+        "passes": false
+      },
+      "NC3_TRIVIAL_ARMS_fail_G4": true,
+      "NC3_detail": {
+        "P_ALWAYS_ACCEPT": false,
+        "P_ALWAYS_CANNOT_CHECK": false,
+        "P_ALWAYS_REJECT": false
+      },
+      "passes": true
+    }
+  },
+  "gold_counts": {
+    "ACCEPT": 144,
+    "CANNOT_CHECK": 144,
+    "REJECT": 288
+  },
+  "grants_scientific_authority": false,
+  "nonclaims": [
+    "arbitrary scientific prose extraction solved",
+    "real primary-source span extraction solved",
+    "natural-domain transfer validated",
+    "frontier LLM structural extraction measured",
+    "independent human or scientific authority",
+    "any Paper II generalization beyond synthetic prose"
+  ],
+  "probe_g_acceptance_test": {
+    "clean_full_exact": 0.9722222222222222,
+    "collapsed_into_null_95": false,
+    "full_arm_changed_by_scramble": "416/576",
+    "gold_unchanged_by_construction": true,
+    "scrambled_full_exact": 0.25,
+    "scrambling_destroys_performance": true,
+    "surface_changed": "576/576"
+  },
+  "protocol": "research/paper2_prose_transfer_v1/PROTOCOL.json",
+  "residual_left_open": {
+    "binding_constraint": "a natural-domain packet at n~48 with EXTERNAL labels",
+    "current_state": "prose-extraction natural-domain items sit at n=16 with internally authored coordinates (see #608)",
+    "explicitly_not_addressed_by_this_epoch": "a synthetic-prose instrument cannot discharge the natural-domain external-label residual, and probe-G collapse on a self-authored renderer must not be read as natural-language extraction capability",
+    "issue_608_boundary_preserved": "INSTRUMENT_ONLY__NO_EMPIRICAL_EXTRACTION_CLAIM"
+  },
+  "schema_version": "paper2-prose-transfer-confirmatory-result-v1",
+  "shuffle_equal_n_null": {
+    "hi95": 0.4149305555555556,
+    "lo95": 0.3385416666666667,
+    "mean": 0.3754270833333333
+  },
+  "sole_discriminator_coverage": {
+    "boundary": 44,
+    "direction": 43,
+    "effect": 52,
+    "precondition": 43,
+    "qoi": 54,
+    "relation": 52
+  },
+  "strongest_non_extraction_parent": "P_PRIOR_MAJORITY",
+  "terminal": "INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION"
+}

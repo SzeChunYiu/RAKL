@@ -1,0 +1,48 @@
+{
+  "schema_version": "orion-p4-instrument-ceiling-bounds-v1",
+  "date": "2026-08-14",
+  "kind": "INSTRUMENT_CEILING_BOUND_DIAGNOSTIC",
+  "instrument": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+  "reference_parent": "D_STATIC_STRUCTURAL",
+  "frozen_hard_gate_E_minus_D_balanced_mean_min": 0.05,
+  "bounds_on_achievable_advantage_over_static": {
+    "tier_1_greedy_oracle_policy_stochastic_mean": 0.0014800462509455123,
+    "tier_2_constructive_best_found_expected_dynamics_mean": 0.004456878205336338,
+    "tier_3_rigorous_upper_bound_harm_free_relaxation_mean": 0.024570935346802252,
+    "tier_3_rigorous_upper_bound_worst_world": 0.03895478756843085
+  },
+  "per_world": {
+    "EARLY_PRINCIPLE_SATURATION": {
+      "constructive_best_minus_static": 0.00528854276160895,
+      "rigorous_upper_bound_minus_static": 0.020817772217697428
+    },
+    "COMPOSITION_LAG": {
+      "constructive_best_minus_static": 0.0037553749121135294,
+      "rigorous_upper_bound_minus_static": 0.02085210499701673
+    },
+    "BOUNDARY_LAG": {
+      "constructive_best_minus_static": 0.004233747480667849,
+      "rigorous_upper_bound_minus_static": 0.024635917131514473
+    },
+    "REPRESENTATION_LAG": {
+      "constructive_best_minus_static": 0.004449643664051983,
+      "rigorous_upper_bound_minus_static": 0.02133580403751756
+    },
+    "TRANSFER_LAG": {
+      "constructive_best_minus_static": 0.0040037342542951215,
+      "rigorous_upper_bound_minus_static": 0.02082922612863647
+    },
+    "RETENTION_SENSITIVE": {
+      "constructive_best_minus_static": 0.005010226159280595,
+      "rigorous_upper_bound_minus_static": 0.03895478756843085
+    }
+  },
+  "gate_margin": {
+    "rigorous_upper_bound_vs_gate_ratio": 2.034924568164931,
+    "constructive_vs_gate_ratio": 11.218614845730736
+  },
+  "self_correction": "The greedy oracle is a POLICY and therefore only a lower bound on the ceiling. It understated the constructively achievable advantage by roughly a factor of three (0.00148 versus 0.00446 mean). The load-bearing claim is carried by tier 3.",
+  "conclusion": "A rigorous upper bound on ANY equal-budget allocation policy's mean advantage over the static parent lies below the instrument's own frozen promotion gate, so the instrument cannot reach its own registered gate and INSTRUMENT_CANNOT_DISCRIMINATE stands on an upper bound rather than on a myopic policy.",
+  "bound_tightness_caveat": "Tier 3 is LOOSE by construction: the relaxation drops every harm term, including the terms that make RETENTION_SENSITIVE hard. Tier 2 and tier 3 differ by about 5.5x, so the true optimum sits in a wide interval whose upper end is only 2.03x under the gate. The verdict is supported, but the margin is a factor of two on a loose bound and should not be described as airtight. A tighter relaxation would strengthen it.",
+  "grants_scientific_authority": false
+}

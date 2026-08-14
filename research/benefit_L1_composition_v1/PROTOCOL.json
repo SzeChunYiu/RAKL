@@ -1,0 +1,134 @@
+{
+  "protocol_id": "BENEFIT-L1-COMPOSITION-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@f6c3bda7",
+  "ladder_obligation": {
+    "layer_id": "L1-TRANSITION",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does typed composition prevent unsupported chains an untyped baseline admits? Observable: unsupported-composition rate.",
+    "frontier_rationale": "Next unmeasured benefit obligation after the executed L0 run (PLAN.md P1.2, research/orion_architecture_audit_v1/PLAN.md); L1 sits directly above the promoted L0 rung and every higher layer composes transitions."
+  },
+  "hypothesis": {
+    "statement": "On known-answer composition chains with generator-known ground truth of supportedness, the L1 typed transition algebra (the six licensing conditions of FORMAL_SYSTEM_SPECIFICATION.md section 4, exercised through rakl.bridge_composition.evaluate_bridge_path) yields a lower unsupported-composition rate than untyped chaining, and the reduction is attributable to genuine chain-contract binding rather than to refusing to compose everything.",
+    "direction": "UCR_A - UCR_B >= 0.10 absolute",
+    "known_at_design_time": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized contract realization, separation from both nulls, the over-refusal guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_untyped_chaining": {
+      "definition": "For each chain, declare COMPOSED iff endpoint identifiers connect syntactically (hop i target_id == hop i+1 source_id for every consecutive pair). This is the strongest honest untyped arm: it refuses syntactically disconnected chains (class D7) rather than composing everything, but ignores relation types, invariants, regimes, evidence lineage, role handoffs, and error semantics. The full contract block is present in the input record and deliberately ignored.",
+      "inputs_visible": ["skeleton (hop source_id/target_id pairs)", "contract (per-hop licensing fields, handoffs, invariants, error data) - present and ignored", "surface_text"],
+      "implementation": "Deterministic function frozen in the execution-run harness; must match EVALUATOR.py arm_a_rule verbatim (executable drift check, CANNOT_CHECK on mismatch)."
+    },
+    "B_typed_transition_algebra": {
+      "definition": "Encode each chain as a rakl.bridge_composition.BridgePath (hops = SimilarityWitness-backed BridgeHop, handoffs = BridgeHandoff, chain-level ErrorCompositionRule). Declare COMPOSED iff evaluate_bridge_path returns COMPOSABLE_TRANSFER_HYPOTHESIS_ONLY; NAVIGABLE_ONLY, REJECT, TRIAL_INVALID and CANNOT_CHECK all map to REFUSED (fail-closed; a refusal's sub-verdict is retained in the arm output for the per-class read).",
+      "exact_functions": [
+        "rakl.bridge_composition.BridgePath",
+        "rakl.bridge_composition.BridgeHop",
+        "rakl.bridge_composition.BridgeHandoff",
+        "rakl.bridge_composition.ErrorCompositionRule",
+        "rakl.bridge_composition.evaluate_bridge_path",
+        "rakl.similarity.SimilarityWitness",
+        "rakl.similarity.validate_similarity_witness"
+      ],
+      "module_pins": {
+        "src/rakl/bridge_composition.py_sha256": "11a5368dccbdf10dac505915193e7c3f0e830d71cd514aa40889383ffbd47302",
+        "src/rakl/similarity.py_sha256": "97dedb16784866649ff01e80075b32d65593788d0455e2179728062e0aeb546e",
+        "pin_rule": "The run receipt must record the content sha256 of both modules in the run environment; a mismatch with these pins is CANNOT_CHECK unless the protocol is re-frozen as V2 against the changed semantics BEFORE any result access."
+      },
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md section 4: T_ik = T_jk o T_ij is licensed only if (1) codomain/domain interfaces match; (2) the relation algebra licenses the type composition; (3) the global scope intersection is non-empty; (4) invariant/role handoffs are preserved; (5) evidence lineage remains traceable; (6) approximation/error semantics possess a declared composition rule. Condition (2) is exercised through the invariant-preservation channel: mixed weaker relations cannot silently mint a stronger relation, realized as a claimed end-to-end invariant that some hop's witness lists as not_preserved.",
+      "known_limitation_frozen_in_advance": "Mechanical arm B fails closed on ANY incomplete record, including chains the hidden world says are genuinely supported but whose record omits one licensing field (class D2). Corpus class D2 exists to charge this cost; it appears in VCA_B, not hidden."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical input records for every chain; neither arm performs retrieval, network access, or LLM calls (token budget 0 for both).",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "The UCR denominator is all N chains, fixed by the corpus and identical across arms; refusals still count in the denominator."
+    }
+  },
+  "estimator": {
+    "ucr_definition_source": "research/framework_ladder/ladder.json L1-TRANSITION benefit_obligation (unsupported-composition rate). Not yet a named coordinate in docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md; registered here as UCR pending a separate quant-model extension.",
+    "ucr": "UCR_arm = |{i : declaration_arm(i) = COMPOSED and gold(i) = UNSUPPORTED}| / N",
+    "chain": "An ordered sequence of 2-4 candidate transitions between named objects, with a machine-readable skeleton (endpoint identifiers) and contract (licensing fields).",
+    "primary_contrast": "delta_UCR = UCR_A - UCR_B, paired on identical chains; McNemar exact test on chain-level unsupported-composition indicators (two-sided, exact binomial on discordant pairs).",
+    "over_refusal_guard": "VCA_arm = valid-composition acceptance = |{i : declaration = COMPOSED and gold = SUPPORTED}| / |{i : gold = SUPPORTED}|. Guards against winning UCR by refusing to compose (selectivity is not edge; the L1 analogue of the L0 TCR floor).",
+    "evaluator_file": "research/benefit_L1_composition_v1/EVALUATOR.py",
+    "evaluator_sha256": "f206d15610afc7fbd0cbc86e1d131f477fa4d02f638a783607b2afe45e3f580c",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ on 2026-08-14 (greps for unsupported_composition, composition corpus, chain corpus): no labeled composition-chain corpus exists. tests/test_bridge_composition.py holds worked unit fixtures only; no corpus binds the L1 observable.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_chains": 400,
+    "composition": {
+      "D1_supported_complete": 120,
+      "D2_supported_record_incomplete": 40,
+      "D3_unsupported_invariant_broken": 60,
+      "D4_unsupported_regime_disjoint": 60,
+      "D5_unsupported_role_handoff_broken": 40,
+      "D6_unsupported_error_overflow": 40,
+      "D7_unsupported_disconnected": 40
+    },
+    "gold_supported_total": 160,
+    "gold_unsupported_total": 240,
+    "labeling_procedure": "Gold labels are minted by the generator from the hidden world state at generation time (which transitions genuinely hold, which invariants genuinely survive each hop, which regimes genuinely overlap, what the true accumulated error is). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold labels and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_label field stripped; the evaluator joins on chain_id.",
+      "Human/oracle audit: 40 chains (10%) sampled by seed, audited by a reviewer shown ONLY the rendered chain description and the gold label, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Paired McNemar design, mirroring BENEFIT-L0-FCR-V1. For discordant-pair probabilities p10 = 0.12 (A-only unsupported composition) and p01 = 0.02, detecting delta_UCR = 0.10 at two-sided alpha = 0.05 with 80% power needs approximately n = (1.96*sqrt(0.14) + 0.84*sqrt(0.14 - 0.01))^2 / 0.10^2 ~= 107 chains. N = 400 gives >= 3x margin, supports per-class reads (>= 40 per class), and keeps the audit sample (40) at 10%. The margin is deliberate so the same corpus size remains adequately powered for the pre-registered LLM-arm follow-up where effects will be smaller and noisier."
+  },
+  "nulls": {
+    "null_1_equal_n_suppression": "Draw 1000 seeded size-K_B subsets of arm A's COMPOSED set, where K_B is arm B's COMPOSED count; compute the UCR distribution. Arm B must satisfy UCR_B < 5th percentile. Directly tests that B's UCR advantage is not reproducible by blind refusal at equal n (clean-baseline + shuffle-equal-n discipline from research/orion_architecture_audit_v1/PLAN.md Phase 1). If K_B >= K_A the null is degenerate and recorded NOT_APPLICABLE (it cannot count as passed).",
+    "null_2_contract_permutation": "Permute contract blocks (per-hop licensing fields, handoff roles/compatibility, chain-level invariants, error data) across chains with equal hop count (1000 seeded stratified permutations), keeping skeletons and junction identities fixed; re-run arm B's frozen decision-equivalent rule; collect the UCR distribution; require UCR_B < 5th percentile. Tests that the advantage requires genuine chain-contract binding rather than refusal at the observed base rate."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "delta_UCR >= 0.10",
+        "McNemar exact p < 0.001",
+        "VCA_B >= 0.70",
+        "UCR_B < 5th percentile of null 1 (when applicable) AND of null 2",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid",
+        "no rule drift between either arm's declarations and the frozen decision-equivalent rules"
+      ],
+      "justification": "0.10 absolute = 40 avoided unsupported compositions per 400 chains, an order of magnitude above the tolerated label-noise ceiling; p < 0.001 because the design is heavily powered and a single primary contrast is registered; VCA floor 0.70 because losing more than ~30% of genuinely supported compositions would gut the constrained-global-path function that licensed compositions feed (workflow.md section J) - the mechanical arm's designed-in D2 miss (40/160 = 25%) sits above the floor only if it accepts essentially all fully licensed chains, so the floor also detects unexpected refusal."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "delta_UCR <= 0.02",
+        "null 1 applicable and UCR_B >= its 5th percentile",
+        "UCR_B >= null 2's 5th percentile"
+      ],
+      "justification": "A reduction indistinguishable from blind refusal or from contract-decoupled behavior means the L1 composition-licensing mechanism specifically is not the source of the benefit."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. delta_UCR in (0.02, 0.10), or nulls beaten but VCA_B < 0.70, or benefit concentrated in a strict subset of corpus classes.",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: mechanical L1 composition licensing on a synthetic known-answer corpus reduces unsupported-composition rate versus untyped chaining without null-equivalent refusal. ladder.json L1 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no LLM-arm generalization, no natural-corpus generalization; both are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (corpus contract realization / licensing-condition subset / null design / decision rule / arm-A strength), apply the single matching lever, re-freeze as BENEFIT-L1-COMPOSITION-V2, re-run against the strongest parent. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: the D2 record-incompleteness miss - score arm B's CANNOT_CHECK-driven refusals separately from REJECT-driven refusals and add a typed record-repair step (a bounded re-query for the missing licensing field, its cost charged to arm B). That is an L1-machinery extension and MUST enter via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch to src/rakl/bridge_composition.py."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}
