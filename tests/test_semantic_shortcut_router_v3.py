@@ -13,6 +13,7 @@ from rakl.semantic_shortcut import (
     build_transformation_memory,
 )
 from rakl.semantic_shortcut_router_v2 import (
+    _residual_memory,
     resolve_obstruction_transformation_route_with_rejections,
 )
 from rakl.semantic_shortcut_router_v3 import (
@@ -461,10 +462,13 @@ def test_negative_history_retains_search_jump_and_glue_rejections_before_lift():
     assert [c.candidate_key for c in result.composition_rejection_certificates] == [
         "A+B"
     ]
-    residual_memory = _memory(
-        _episode("A", "biology", effects=("global_object_exposed",)),
-        _episode("B", "engineering", effects=("search_reduced",)),
-    )
+    residual_memory = memory
+    for certificate in result.candidate_rejection_certificates:
+        residual_memory = _residual_memory(
+            residual_memory,
+            rejected_episode_id=certificate.candidate_episode_id,
+            certificate_id=certificate.certificate_id,
+        )
     assert validate_composition_rejection_chain(
         result.composition_rejection_certificates,
         memory=residual_memory,
