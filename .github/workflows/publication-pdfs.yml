@@ -241,3 +241,6 @@ jobs:
             build/publication/paper-06/main.txt
             build/publication/paper-06/renders/*.png
           if-no-files-found: error
+          # Every PR run uploads ~100 MB of rendered pages; without a retention
+          # cap this accumulates without bound (~25 GB/day under the merge train).
+          retention-days: 1
