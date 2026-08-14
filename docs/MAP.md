@@ -166,6 +166,7 @@ held the framework's generative half, including the navigation loop and the meas
 
 ## Status artifacts (point-in-time, not framework)
 
+- [`EVALUATOR_INTEGRITY_MERGE_ORDER_INCIDENT_710.md`](EVALUATOR_INTEGRITY_MERGE_ORDER_INCIDENT_710.md) — Evaluator Integrity Merge-Order Incident (PR #710) — incident record + binding process correction
 - [`PAPER5_IMPLEMENTATION_STATUS.md`](PAPER5_IMPLEMENTATION_STATUS.md) — Paper 5 implementation status
 - [`VTG_MATHEMATICAL_CLOSURE_AUDIT.md`](VTG_MATHEMATICAL_CLOSURE_AUDIT.md) — VTG Mathematical Closure Audit — 2026-08-13
 - [`ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md`](ORION_UNIFIED_FRAMEWORK_VERIFICATION_LEDGER.md) — Orion Unified Problem-Solving Framework — Verification Ledger
