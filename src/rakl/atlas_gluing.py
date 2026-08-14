@@ -322,12 +322,136 @@ def validate_overlap_transition(
     )
 
 
+@dataclass(frozen=True)
+class _CoverTopology:
+    """Topology facts recomputed from the validated transition set.
+
+    The declared cover graph has the charts as vertices and one edge per
+    distinct (unordered chart pair, overlap_id). Two transitions witnessing the
+    same overlap in opposite directions are one edge; distinct overlaps between
+    the same chart pair are parallel edges.
+    """
+
+    connected: bool
+    independent_cycle_count: int
+    undirected_edges: frozenset[frozenset[str]]
+    has_parallel_overlap_edges: bool
+
+
+def _recompute_cover_topology(
+    chart_ids: Tuple[str, ...],
+    transitions: Tuple[OverlapTransition, ...],
+) -> _CoverTopology:
+    vertices = set(chart_ids)
+    overlap_edges: set[Tuple[frozenset[str], str]] = set()
+    undirected_edges: set[frozenset[str]] = set()
+    adjacency: dict[str, set[str]] = {chart_id: set() for chart_id in vertices}
+    for transition in transitions:
+        pair = frozenset((transition.source_chart_id, transition.target_chart_id))
+        overlap_edges.add((pair, transition.overlap_id))
+        undirected_edges.add(pair)
+        adjacency[transition.source_chart_id].add(transition.target_chart_id)
+        adjacency[transition.target_chart_id].add(transition.source_chart_id)
+
+    components = 0
+    seen: set[str] = set()
+    for vertex in sorted(vertices):
+        if vertex in seen:
+            continue
+        components += 1
+        stack = [vertex]
+        seen.add(vertex)
+        while stack:
+            current = stack.pop()
+            for neighbour in adjacency[current]:
+                if neighbour not in seen:
+                    seen.add(neighbour)
+                    stack.append(neighbour)
+
+    return _CoverTopology(
+        connected=components == 1,
+        independent_cycle_count=len(overlap_edges) - len(vertices) + components,
+        undirected_edges=frozenset(undirected_edges),
+        has_parallel_overlap_edges=len(overlap_edges) > len(undirected_edges),
+    )
+
+
+def _witness_path_in_transition_graph(
+    witness: CycleConsistencyWitness,
+    chart_ids: Tuple[str, ...],
+    undirected_edges: frozenset[frozenset[str]],
+) -> bool:
+    path = witness.chart_path
+    if path[0] != path[-1]:
+        return False
+    if any(chart_id not in chart_ids for chart_id in path):
+        return False
+    for source, target in zip(path, path[1:]):
+        if source == target or frozenset((source, target)) not in undirected_edges:
+            return False
+    return True
+
+
+def _witness_cycle_space_rank(
+    witnesses: Tuple[CycleConsistencyWitness, ...],
+    undirected_edges: frozenset[frozenset[str]],
+) -> int:
+    """GF(2) rank of the witness cycles in the cover graph's cycle space.
+
+    Only meaningful when the cover graph has no parallel overlap edges, because
+    a chart path cannot disambiguate which of two parallel overlaps it uses.
+    """
+
+    edge_index = {
+        edge: index
+        for index, edge in enumerate(
+            sorted(tuple(sorted(edge)) for edge in undirected_edges)
+        )
+    }
+    basis: dict[int, int] = {}
+    for witness in witnesses:
+        vector = 0
+        for source, target in zip(witness.chart_path, witness.chart_path[1:]):
+            vector ^= 1 << edge_index[tuple(sorted((source, target)))]
+        while vector:
+            leading_bit = vector.bit_length() - 1
+            if leading_bit in basis:
+                vector ^= basis[leading_bit]
+            else:
+                basis[leading_bit] = vector
+                break
+    return len(basis)
+
+
+def _declared_topology_mismatch_report(
+    mismatched_fields: Tuple[str, ...],
+    transition_reports: Tuple[TransitionReport, ...],
+) -> AtlasGluingReport:
+    return AtlasGluingReport(
+        AtlasGluingVerdict.CANNOT_CHECK,
+        tuple(f"declared_topology_mismatch:{field}" for field in mismatched_fields),
+        (),
+        transition_reports,
+    )
+
+
 def evaluate_atlas_gluing(trial: AtlasGluingTrial) -> AtlasGluingReport:
     """Fail-closed local-to-global synthesis diagnostic.
 
     Pairwise compatibility is never promoted to a global scientific object by
     itself. A global portrait requires explicit global-existence and uniqueness
     evidence in addition to overlap/cycle checks. The result remains proposal-only.
+
+    Declared topology coordinates (cover connectivity, cycle existence, cycle
+    basis completeness, cycle witnesses) are never trusted blindly: they are
+    recomputed from the validated transition set, and a declaration refuted by
+    recomputation yields ``CANNOT_CHECK`` with a typed
+    ``declared_topology_mismatch:<field>`` reason. Recomputation can refute an
+    optimistic declaration but cannot verify semantic sufficiency, so a
+    pessimistic declaration (e.g. ``cover_connected=False`` on a syntactically
+    connected graph) keeps its fail-closed verdict. A coordinate that cannot be
+    recomputed from the available inputs is marked
+    ``declared_topology_untrusted:<field>`` instead of being assumed true.
     """
 
     empty_report = AtlasGluingReport
@@ -460,6 +584,9 @@ def evaluate_atlas_gluing(trial: AtlasGluingTrial) -> AtlasGluingReport:
             transition_reports,
         )
 
+    topology = _recompute_cover_topology(chart_ids, trial.transitions)
+    declared_topology_mismatches: list[str] = []
+
     if trial.cover_connected is None:
         return empty_report(
             AtlasGluingVerdict.CANNOT_CHECK,
@@ -474,13 +601,25 @@ def evaluate_atlas_gluing(trial: AtlasGluingTrial) -> AtlasGluingReport:
             (),
             transition_reports,
         )
+    if not topology.connected:
+        declared_topology_mismatches.append("cover_connected")
 
     if trial.cover_has_cycles is None:
+        if declared_topology_mismatches:
+            return _declared_topology_mismatch_report(
+                tuple(declared_topology_mismatches), transition_reports
+            )
         return empty_report(
             AtlasGluingVerdict.CANNOT_CHECK,
             ("cover_cycle_structure_unknown",),
             (),
             transition_reports,
+        )
+    if bool(trial.cover_has_cycles) != (topology.independent_cycle_count > 0):
+        declared_topology_mismatches.append("cover_has_cycles")
+    if declared_topology_mismatches:
+        return _declared_topology_mismatch_report(
+            tuple(declared_topology_mismatches), transition_reports
         )
 
     if trial.cover_has_cycles:
@@ -506,6 +645,19 @@ def evaluate_atlas_gluing(trial: AtlasGluingTrial) -> AtlasGluingReport:
                     (),
                     transition_reports,
                 )
+            if not _witness_path_in_transition_graph(
+                witness, chart_ids, topology.undirected_edges
+            ):
+                return empty_report(
+                    AtlasGluingVerdict.CANNOT_CHECK,
+                    (
+                        "declared_topology_mismatch:cycle_witnesses",
+                        "cycle_witness_path_not_in_declared_transition_graph:"
+                        + witness.cycle_id,
+                    ),
+                    (),
+                    transition_reports,
+                )
             if witness.composition_consistent is None:
                 return empty_report(
                     AtlasGluingVerdict.CANNOT_CHECK,
@@ -526,6 +678,28 @@ def evaluate_atlas_gluing(trial: AtlasGluingTrial) -> AtlasGluingReport:
                     (obstruction,),
                     transition_reports,
                 )
+
+        if topology.has_parallel_overlap_edges:
+            return empty_report(
+                AtlasGluingVerdict.CANNOT_CHECK,
+                (
+                    "declared_topology_untrusted:cycle_basis_complete",
+                    "parallel_overlap_edges_make_cycle_basis_completeness"
+                    "_unrecomputable_from_chart_paths",
+                ),
+                (),
+                transition_reports,
+            )
+        witness_rank = _witness_cycle_space_rank(
+            trial.cycle_witnesses, topology.undirected_edges
+        )
+        if witness_rank < topology.independent_cycle_count:
+            return empty_report(
+                AtlasGluingVerdict.CANNOT_CHECK,
+                ("declared_topology_mismatch:cycle_basis_complete",),
+                (),
+                transition_reports,
+            )
 
     if trial.global_existence_checked is None:
         return empty_report(
