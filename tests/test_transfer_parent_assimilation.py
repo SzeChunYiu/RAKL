@@ -90,6 +90,33 @@ def test_bare_out_of_scope_label_cannot_bypass_parent():
     assert not result.orion_residual_eligible
 
 
+def test_string_disposition_cannot_fall_through_to_orion_delegation():
+    parent = FormalParentResult(
+        method_id="bareinboim-pearl-sid-family",
+        method_version="transportability-parent-boundary-v1",
+        subject_sha256=SUBJECT,
+        disposition="OUT_OF_SCOPE",  # type: ignore[arg-type]
+        derivation_sha256=DERIVATION,
+    )
+    result = arbitrate_transfer(parent, TransferVerdict.LICENSED, expected_subject_sha256=SUBJECT)
+    assert result.verdict is TransferVerdict.CANNOT_CHECK
+    assert result.authority_source == "BOUNDARY_VALIDATION_FAILURE"
+    assert "formal_parent_disposition_type_invalid" in result.reasons
+    assert not result.orion_residual_eligible
+
+
+def test_string_orion_verdict_cannot_escape_type_boundary():
+    result = arbitrate_transfer(
+        _parent(FormalParentDisposition.OUT_OF_SCOPE),
+        "LICENSED",  # type: ignore[arg-type]
+        expected_subject_sha256=SUBJECT,
+    )
+    assert result.verdict is TransferVerdict.CANNOT_CHECK
+    assert result.authority_source == "BOUNDARY_VALIDATION_FAILURE"
+    assert "orion_verdict_type_invalid" in result.reasons
+    assert not result.orion_residual_eligible
+
+
 def test_stale_subject_fails_closed_before_arbitration():
     result = arbitrate_transfer(
         _parent(FormalParentDisposition.LICENSED, subject_sha256="c" * 64),
