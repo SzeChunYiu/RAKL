@@ -1,0 +1,113 @@
+{
+  "schema": "paper2-six-family-governance-defect-v1",
+  "status": "DEFECT_REPORTED__NO_VERDICT_REWRITTEN",
+  "authority": "same-context analysis; not independent review; proposes corrections only",
+  "grants_scientific_authority": false,
+  "date": "2026-08-14",
+  "repo_commit": "60654878",
+  "summary": "Two promotion records for the Paper II six-family claim rest on evidence that disclaims them, and the registered falsifier is unreachable.",
+  "defects": [
+    {
+      "id": "D1_PROMOTION_GATE_CITES_WRONG_FAMILY_SET",
+      "severity": "HIGH",
+      "record": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
+      "record_path": "candidates.six_family_law",
+      "recorded_verdict": "PROMOTE_TO_MECHANIC",
+      "recorded_p": 0.03125,
+      "recorded_reason": "sign_test_significant_count_met",
+      "cited_artifact": "research/six_family_extension_v1/results/six_family.json",
+      "findings": [
+        {
+          "issue": "cited artifact is self-declared development-only",
+          "evidence": "artifact field status == 'DEVELOPMENT_KNOWN_WORLD_SIX_FAMILY_SIGN_INSTRUMENT_ONLY' and grants_scientific_authority == false"
+        },
+        {
+          "issue": "cited artifact uses the wrong family set",
+          "evidence": "artifact families are flow, logic, units, state, sched, stat. The preregistered extension families in ROBUSTNESS_REGISTRATION_V1.md are linear_systems_invariant_maps, probabilistic_graphical_models, algorithm_datastructure_invariants, synthetic_causal_graphs_interventions, optimization_feasibility_obligations, local_global_gluing_interfaces.",
+          "source_of_truth": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_REGISTRATION_V1.md"
+        },
+        {
+          "issue": "sign-test independence assumption violated",
+          "evidence": "four of the six cited families (flow, logic, units, state) are the primary confirmatory families already known positive before this artifact was produced. Their signs are not independent draws, so the exact binomial sign test does not apply.",
+          "cross_reference": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/FAMILY_ROBUSTNESS.json reports all_four_full_vs_mechanism_residual_positive == true"
+        },
+        {
+          "issue": "post-outcome enlargement of the primary benchmark",
+          "evidence": "ROBUSTNESS_REGISTRATION_V1.md states the extension 'is a new evidence epoch, not a post-outcome enlargement of the successful primary benchmark'. Reusing the four primary families plus two new ones is exactly the enlargement the registration forbids."
+        }
+      ]
+    },
+    {
+      "id": "D2_DEPENDENCY_GRAPH_PROMOTES_ON_DEVELOPMENT_EVIDENCE",
+      "severity": "HIGH",
+      "record": "research/orion_p1_p4_closure_v2/DEPENDENCY_GRAPH.json",
+      "record_path": "P2.nodes[P2_SIX_FAMILY_APPLICABILITY]",
+      "recorded_terminal": "PROMOTE_TO_MECHANIC",
+      "recorded_evidence": "1,296-case heterogeneous successor; FULL exact3=1; six-family residual",
+      "findings": [
+        {
+          "issue": "the cited 1,296-case run is the DEVELOPMENT run, whose own receipt disclaims the claim",
+          "evidence": "ROBUSTNESS_DEVELOPMENT_RECEIPT_V1.json has development_n == 1296, development_seed == 2026081211, confirmatory_outcomes_accessed == false, and claim_boundary == 'Development results choose only preregistered confirmatory sample size/lexical threshold and authorize a new fresh confirmatory seed. They do not establish the six-family robustness claim.'",
+          "source_of_truth": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_DEVELOPMENT_RECEIPT_V1.json"
+        },
+        {
+          "issue": "FULL exact3=1 is cited as evidence but is tautological",
+          "evidence": "scripts/paper2_robustness_confirmatory.py binds the full arm to `verify`, which is the gold function. exact3 == 1.0 holds by construction and carries no evidential weight."
+        }
+      ]
+    },
+    {
+      "id": "D3_REGISTERED_FALSIFIER_IS_UNREACHABLE",
+      "severity": "HIGH",
+      "record": "tools/build_atomic_claim_registry.py",
+      "record_path": "six_family_law",
+      "claim_id": "EMP-SIXFAMILY-GENERALIZATION",
+      "recorded_claim": "The structural law generalizes across at least 6 independent families in the predicted direction (cross-family sign test).",
+      "recorded_baseline": "random direction (p=0.5 per family)",
+      "recorded_falsifier": "sign-test p >= 0.05 (too few families in the predicted direction).",
+      "recorded_terminal_state": "SUPPORTED",
+      "findings": [
+        {
+          "issue": "the stated baseline is empirically false",
+          "evidence": "the family sign is not a p=0.5 coin flip. It is determined by generator construction: mechanism_only IS the `effect` coordinate, and the frozen strata BOUNDARY_QOI_MISMATCH and DIRECTION_REVERSED_INVALID are built so the discriminating coordinate is not `effect`. Measured mechanism exact3 on those strata is exactly 0.000.",
+          "measurement": "research/paper2_six_family_audit_v1/results/SIX_FAMILY_AUDIT.json probe F"
+        },
+        {
+          "issue": "the falsifier cannot be reached on any seed",
+          "evidence": "re-running the frozen summarize() on 12 arbitrary non-registered seeds (101, 202, 303, 404, 505, 606, 707, 808, 909, 1010, 1111, 1212) yields positive_families == 6/6 and exact_two_sided_p == 0.03125 on every seed. p >= 0.05 is unreachable.",
+          "measurement": "research/paper2_six_family_audit_v1/results/SIX_FAMILY_AUDIT.json probe B"
+        },
+        {
+          "issue": "internal inconsistency between record and cited artifact",
+          "evidence": "terminal_scope says '(5/5 tested families positive)' while the cited artifact six_family.json reports n_positive == 6 and all_six_positive == true. The record was not reconciled with its own evidence."
+        },
+        {
+          "issue": "the word 'independent' in the claim is not satisfied by the cited artifact",
+          "evidence": "see D1: four of six cited families are reused from the primary epoch."
+        }
+      ]
+    }
+  ],
+  "proposed_corrections": [
+    {
+      "target": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
+      "proposal": "repoint candidates.six_family_law at the executed confirmatory receipt research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_RESULT_V1.json (registered families, seed 2026081212, n=810), and downgrade the verdict from PROMOTE_TO_MECHANIC to a scoped state, because the executed confirmatory is shown non-falsifiable for generality.",
+      "authority_note": "NOT APPLIED in this change. Promotion criteria must not be edited by the analysis that found the defect."
+    },
+    {
+      "target": "research/orion_p1_p4_closure_v2/DEPENDENCY_GRAPH.json",
+      "proposal": "replace the P2_SIX_FAMILY_APPLICABILITY evidence string so it cites the confirmatory receipt rather than the development run, and drop 'FULL exact3=1' as evidence since it is tautological.",
+      "authority_note": "NOT APPLIED in this change."
+    },
+    {
+      "target": "tools/build_atomic_claim_registry.py six_family_law",
+      "proposal": "restate the claim as coordinate necessity on synthetic exact-verifier worlds rather than cross-family generalization; replace the unreachable sign-test falsifier with one that can fail, e.g. 'a full arm distinct from the gold function fails to exceed the mechanism arm on held-out families', and correct the 5/5 vs 6/6 inconsistency.",
+      "authority_note": "NOT APPLIED in this change."
+    }
+  ],
+  "what_must_not_be_promoted_from_this_report": [
+    "any claim that the six-family extension is refuted; it is executed and passes its registered gates, but the gates are non-falsifiable",
+    "any replacement promotion verdict authored by this analysis",
+    "any claim of independent review"
+  ]
+}
