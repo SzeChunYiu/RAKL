@@ -44,6 +44,18 @@ statistics, every one surfaced by falsifiability-style audit rather than by outc
 anomaly. This corpus motivates measuring evaluator integrity as a first-class axis of
 the tradeoff below; it is not evidence about pipelines in general.
 
+\paragraph{The Goodhart reading, stated as measured evidence.}
+Each of these four gates was authored by a process that knew Goodhart's law and acted
+on that knowledge at the intention level: registered thresholds, preregistration,
+frozen protocols. Knowing was insufficient --- all four decayed anyway, silently,
+while green. What caught them was in every case a structure \emph{outside the
+gate-authoring process's write-access}: a black-box perturbation battery, an
+independently implemented oracle with post-freeze gold, a fail-closed contract on
+empty obligations, an interpretation audit against the serialization interface. This
+is the receipted form of the paper's thesis (\S\ref{sec:nested-loops}):
+intention-level Goodhart-knowledge fails; boundary-level compilation of that same
+knowledge works. Observed in this programme; not a universal law.
+
 \subsection{A completed local-loop cycle through a licensed instrument}
 \label{sec:local-cycle}
 
@@ -138,6 +150,24 @@ lucky in outcome while blind in process. The false-promotion failure mode presum
 requires a noisier or looser environment; that regime was not exercised, and no claim
 is made about it.
 
+\paragraph{The decay-detector reading.} Under the Goodhart framing
+(\S\ref{sec:nested-loops}) the arms are self-evolution \emph{without} and \emph{with}
+Goodhart-as-architecture, and the end-state battery on each acceptance signal is the
+decay detector. The predicted --- but deliberately not presumed --- signature was that
+the ungoverned arm wins the raw development scalar while its scalar decays toward
+non-falsifiability. The measurement came out differently, and both cells are reported
+as the empirical answer: on the \emph{raw-gain axis} the ungoverned arm did not even
+win by its own meter ($+0.0025$ against the governed $+0.0781$), because its
+unqualified instrument could not express the available improvements at all; on the
+\emph{evaluator-integrity axis} its signal's measured end-state failure is
+expressiveness collapse --- verdict inversion on ten true positives and a $30\times$
+understatement --- rather than optimizable-target capture, while the governed
+acceptance signal remains FALSIFIABLE under the battery. Proxy capture and proxy
+starvation are evidently two ends of the same defect --- an acceptance signal whose
+relation to the target quantity has silently broken --- and which end manifests
+depends on the instrument's ceiling relative to its noise, a regime distinction this
+experiment exercised on one side only.
+
 \paragraph{What governance measurably bought and cost here.} Bought: the licensed
 comparison existing at all (instrument qualification), development/truth agreement,
 refusal receipts on $14/14$ broken comparisons, and falsifiable end-state gates.
@@ -197,3 +227,21 @@ validated generational improvement. The global loop's remaining stages (construc
 a next-generation solver from the surfaced patterns, and cross-family fresh
 validation of that generation) are prospective, unexecuted, and carry registered
 gates of their own before any claim can exist.
+
+\subsection{Limits of the Goodhart claim}
+\label{sec:goodhart-limits}
+
+Three limits bound the thesis, and each is load-bearing. First, the decay detector
+carries its own who-audits-the-auditor question; the answer here is grounding, not
+recursion --- the battery's verdicts rest on external anchors (perturbations of
+evidence, independently implemented oracles, post-freeze gold), and a battery audited
+only by itself would reproduce the defect it hunts. Second, designer-level iteration
+re-imports Goodhart at the meta-level: the humans and agents who choose protocols can
+drift toward protocols that pass. The countermeasure exercised in this paper is
+freeze-before-outcome plus preserved negatives, and the paper's \emph{own} falsified
+predictions --- P1, P6, and three of the five tradeoff predictions, all reported as
+falsified rather than absorbed --- are the working demonstration that the
+countermeasure binds its authors. Third, no finite audit certifies
+non-Goodhartedness; the open-world theorem applies. What the battery certifies is
+bounded non-decay \emph{relative to the declared probes}, and a probe family that
+nothing in the evidence can move would itself be the next dead gate.
