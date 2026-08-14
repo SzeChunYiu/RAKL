@@ -1,0 +1,58 @@
+name: failure-analysis-absorption
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact subject
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install package and tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[test]'
+
+      - name: Core failure minimization and conflict semantics
+        run: pytest -q tests/test_failure_analysis.py
+
+      - name: Deterministic receipt projection
+        run: pytest -q tests/test_failure_analysis_io.py
+
+      - name: Failure minimization packet integrity
+        run: pytest -q tests/test_p5_p6_saturation_round007.py::test_failure_condition_minimization_packet_is_valid_and_unassessed
+
+      - name: Conflict correction packet integrity
+        run: pytest -q tests/test_p5_p6_saturation_round008.py::test_minimal_conflict_correction_packet_is_valid_and_unassessed
+
+      - name: Frozen development terminal
+        run: pytest -q tests/test_failure_analysis_development.py
+
+      - name: Execute deterministic development harness
+        run: |
+          python research/p5_p6_operator_absorption_v1/run_development.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('research/p5_p6_operator_absorption_v1/DEVELOPMENT_RESULT.json')
+          d = json.loads(p.read_text())
+          assert d['terminal'] == 'PARENT_SEMANTICS_ABSORBED', d
+          assert d['hard_gates_pass'] is True, d
+          assert d['performance_claim_against_quickxplain_or_marco'] is False, d
+          assert d['grants_scientific_authority'] is False, d
+          assert d['grants_promotion_authority'] is False, d
+          print('PARENT_SEMANTICS_ABSORBED')
+          PY
