@@ -14,6 +14,14 @@ Design guards against the v1 artifacts:
   * train and probe instances are DISJOINT by construction.
   * gold is recomputed from the rule for every instance and the pool is balanced.
 
+Paper-IV Phase-2 adds one narrowly scoped rendering guard: callers whose tag begins
+``phase2-`` receive an opaque per-instance nonce in the rendered prompt.  The nonce is
+a deterministic SHA-256 prefix over the already-frozen generation key plus the case
+index; it contains no gold, exposure, arm or outcome semantics.  This makes prompt-byte
+identity disjoint across frozen train/selection/assurance partitions even if the small
+random graph/value generator happens to draw the same structural instance twice.
+Historical/non-Phase-2 callers are byte-for-byte unchanged.
+
 No scientific authority is granted by anything here; this is an instrument.
 """
 from __future__ import annotations
@@ -39,6 +47,13 @@ class V2Case:
 
 def _wrap(body: str) -> str:
     return f"{_INSTRUCTION}\nStructure:\n{body}\nAnswer:"
+
+
+def _with_phase2_nonce(prompt: str, nonce: str) -> str:
+    marker = "\nAnswer:"
+    if marker not in prompt:
+        raise ValueError("phase2 prompt missing answer marker")
+    return prompt.replace(marker, f"\n- instance nonce: {nonce}{marker}", 1)
 
 
 # --------------------------------------------------------------------------- #
@@ -144,9 +159,17 @@ def generate(family: str, n: int, *, seed: int, regime: str = "base", style: str
     """Balanced list of n varied cases for a family (deterministic from seed)."""
     # Stable across processes: sha256 of the parameter string (tuple.__hash__ of strings
     # is PYTHONHASHSEED-salted -> non-reproducible pools; found in hostile engineering audit).
-    key = f"{seed}|{family}|{regime}|{style}|{tag}".encode("utf-8")
+    key_text = f"{seed}|{family}|{regime}|{style}|{tag}"
+    key = key_text.encode("utf-8")
     rng = random.Random(int.from_bytes(hashlib.sha256(key).digest()[:8], "big"))
     gen = _GEN[family]
     cases = [gen(rng, i, regime=regime, style=style) for i in range(n)]
-    # rename ids to be unique per (regime, tag) so train/probe pools never collide
-    return [V2Case(f"{c.case_id}-{tag}", c.family, c.prompt, c.gold) for c in cases]
+    out: list[V2Case] = []
+    for i, c in enumerate(cases):
+        prompt = c.prompt
+        if tag.startswith("phase2-"):
+            nonce = hashlib.sha256(f"{key_text}|{i}".encode("utf-8")).hexdigest()[:16]
+            prompt = _with_phase2_nonce(prompt, nonce)
+        # rename ids to be unique per (regime, tag) so train/probe pools never collide
+        out.append(V2Case(f"{c.case_id}-{tag}", c.family, prompt, c.gold))
+    return out
