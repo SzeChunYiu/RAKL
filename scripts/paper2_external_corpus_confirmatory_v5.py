@@ -115,24 +115,62 @@ def masked(text: str) -> str:
     return " ".join(out)
 
 
+def obstructed_lemmas(text: str) -> set[str]:
+    """Lemmas lying under a negation or contrast in their own sentence.
+
+    AMENDMENT_02. The first surface used only spaCy's ``neg`` dependency and was
+    rejected by the admission gate's obstruction harvest: on the frozen parity
+    calibration source the negations are a determiner ("no assignment satisfies
+    all three") and a contrast verb ("x differs from z"), neither of which
+    carries a ``neg`` arc, so the reducer surfaced no obstruction and the gate
+    fail-closed. That is the gate doing its job -- an obstruction-blind reducer
+    produces spaces that are unsound to navigate.
+
+    The repair reuses the negation/contrast marker lexicon already frozen in this
+    lineage (``narrative_reducer_v2.NEGATION_MARKERS``, used unchanged by v1-v4)
+    in union with the ``neg`` arc, so the obstruction coordinate is continuous
+    with the parent chain rather than newly invented here.
+    """
+    nlp, _ = _models()
+    from rakl.narrative_reducer_v2 import NEGATION_MARKERS
+
+    out: set[str] = set()
+    for sent in nlp(text).sents:
+        marked = any(t.lower_ in NEGATION_MARKERS for t in sent) or any(
+            c.dep_ == "neg" for t in sent for c in t.children
+        )
+        if not marked:
+            continue
+        for tok in sent:
+            if tok.pos_ in ("NOUN", "PROPN", "VERB") and not tok.is_stop:
+                out.add(tok.lemma_.lower())
+    return out
+
+
 def reduce_narrative_v5(text: str) -> ReducedStructure:
     """Reducer surface for the admission gate.
 
     Roles are the triple arguments; relations are the subject/object pairs;
-    obstructions come from negated predicates, so a source with a known
-    obstruction surfaces one.
+    obstructions cover the lemmas under a negation or contrast.
     """
     tr = triples(text)
     roles = frozenset(t for (s, v, o, _) in tr for t in (s, o) if t != "_")
     relations = frozenset((s, o) for (s, v, o, _) in tr if s != "_" and o != "_")
-    atoms = tuple(Atom(identifier=r) for r in sorted(roles))
+    atoms = tuple(Atom(atom_id=r) for r in sorted(roles))
     edges = tuple(
         SupportEdge(source=s, target=o, cost=1.0, licensed_at=0)
         for (s, o) in sorted(relations)
     )
-    obstructed = sorted({t for (s, v, o, neg) in tr if neg for t in (s, o) if t != "_"})
+    # An obstruction may only cover atoms the structure declares.
+    obstructed = sorted(obstructed_lemmas(text) & set(roles))
     obstructions = (
-        (Obstruction(identifier="negated-predicate", covered=frozenset(obstructed)),)
+        (
+            Obstruction(
+                obstruction_id="negation-or-contrast",
+                cover=frozenset(obstructed),
+                detail="lemmas in a sentence carrying a frozen negation/contrast marker or a `neg` arc",
+            ),
+        )
         if obstructed
         else ()
     )
@@ -140,10 +178,9 @@ def reduce_narrative_v5(text: str) -> ReducedStructure:
         structure_id="arn-v5", atoms=atoms, edges=edges, obstructions=obstructions
     )
     return ReducedStructure(
-        structure_id="arn-v5",
-        atoms=atoms,
-        edges=edges,
-        obstructions=obstructions,
+        structure=structure,
+        roles=roles,
+        relations=relations,
         provenance="narrative_reducer_v5",
     )
 
