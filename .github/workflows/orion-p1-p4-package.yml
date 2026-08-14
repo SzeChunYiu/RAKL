@@ -1,0 +1,66 @@
+name: orion-p1-p4-package
+
+on:
+  push:
+    branches:
+      - automation/orion-p1-p4-closure-v2-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Install TeX for Paper III release candidate
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Compile Paper III exact head
+        working-directory: publication/papers/paper-03-method-evolution-mechanics
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+          test -s main.pdf
+          ! grep -E 'Overfull \\[hv]box|Undefined control sequence|LaTeX Warning: Citation .* undefined|LaTeX Warning: Reference .* undefined' main.log
+      - name: Build strict closure package
+        run: |
+          set -euo pipefail
+          ROOT="RAKL_P1_P4_STRICT_ORION_CLOSURE_V2_${GITHUB_SHA:0:12}"
+          mkdir -p "$ROOT/00_CLOSURE" "$ROOT/01_PAPER_I" "$ROOT/02_PAPER_II" "$ROOT/03_PAPER_III" "$ROOT/04_PAPER_IV" "$ROOT/05_RUNTIME" "$ROOT/06_REPRODUCTION"
+          cp -a research/orion_p1_p4_closure_v2/. "$ROOT/00_CLOSURE/"
+          cp research/receipts/RAKL_V3_NONINTERFERENCE_INTEGRATION_20260811.json "$ROOT/01_PAPER_I/"
+          cp -a research/empirical_10_of_10_v1/PAPER3/OBJECTIVE "$ROOT/02_PAPER_II/OBJECTIVE"
+          cp -a publication/papers/paper-03-method-evolution-mechanics "$ROOT/03_PAPER_III/source"
+          cp publication/papers/paper-03-method-evolution-mechanics/main.pdf "$ROOT/03_PAPER_III/Paper_III_Method_Evolution_Mechanics.pdf"
+          cp -a publication/papers/paper-04-structural-learning-mechanics "$ROOT/04_PAPER_IV/publication_source"
+          cp -a research/paper4_phase1_results_v2 "$ROOT/04_PAPER_IV/phase1_results_v2"
+          cp -a research/paper4_phase2_v1 "$ROOT/04_PAPER_IV/phase2_v1"
+          cp experiments/training_ladder/run_phase2_v1_lunarc.sbatch "$ROOT/04_PAPER_IV/"
+          cp experiments/training_ladder/submit_phase2_v1_lunarc.sh "$ROOT/04_PAPER_IV/"
+          cp src/rakl/authority_ledger.py src/rakl/epistemic_noninterference.py src/rakl/v3_scientific_authority.py "$ROOT/05_RUNTIME/"
+          cp src/rakl/objective_transfer_benchmark.py src/rakl/objective_transfer_benchmark_v2.py "$ROOT/05_RUNTIME/"
+          cp src/rakl/semantic_shortcut_router.py src/rakl/semantic_shortcut_router_v2.py src/rakl/semantic_shortcut_router_v3.py src/rakl/semantic_shortcut_consolidation.py "$ROOT/05_RUNTIME/"
+          cp src/rakl/training_projection.py src/rakl/training_scheduler.py src/rakl/training_policy_authority.py "$ROOT/05_RUNTIME/"
+          cp experiments/orion_closure/run_p3_structured_experience_action.py "$ROOT/06_REPRODUCTION/"
+          cp experiments/orion_closure/run_p4_adaptive_development_stress.py "$ROOT/06_REPRODUCTION/"
+          printf '%s\n' "$GITHUB_SHA" > "$ROOT/EXACT_HEAD_SHA.txt"
+          find "$ROOT" -type f -print0 | sort -z | xargs -0 sha256sum > "$ROOT/SHA256SUMS.txt"
+          zip -qr "${ROOT}.zip" "$ROOT"
+          sha256sum "${ROOT}.zip" > "${ROOT}.zip.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: orion-p1-p4-strict-closure-v2
+          path: |
+            RAKL_P1_P4_STRICT_ORION_CLOSURE_V2_*.zip
+            RAKL_P1_P4_STRICT_ORION_CLOSURE_V2_*.zip.sha256
+          if-no-files-found: error
