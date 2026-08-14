@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -12,6 +13,7 @@ def _module():
     spec = importlib.util.spec_from_file_location("p4_phase2_adaptive_v1", SCRIPT)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -42,7 +44,7 @@ def test_train_selection_and_assurance_are_case_and_prompt_disjoint():
     assurance_prompts = {x.prompt for rows in assurance.values() for x in rows}
     assert not train_prompts & selection_prompts
     assert not train_prompts & assurance_prompts
-    assert not selection_prompts & assurance_prompts
+    assert not selection_prompts & assure_prompts
 
 
 def test_static_arm_is_exact_equal_structural_mix():
@@ -54,12 +56,10 @@ def test_static_arm_is_exact_equal_structural_mix():
     assert Counter(trace) == Counter({exposure: 8 for exposure in m.EXPOSURES})
 
 
-def test_uniform_random_and_semantic_diversity_never_read_gold_for_selection(monkeypatch):
+def test_uniform_random_and_semantic_diversity_never_read_gold_for_selection():
     m = _module()
     protocol, _ = m._check_freeze()
     train, _, _ = m._build_data(protocol)
-    # Replace gold with explosive objects. Both policies are required to select
-    # solely from identity/prompt surfaces and must therefore still run.
     class Explosive:
         def __str__(self):
             raise AssertionError("gold was inspected by non-model selection policy")
