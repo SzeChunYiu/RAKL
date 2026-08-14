@@ -42,7 +42,11 @@ from rakl.prose_transfer_instrument_v1 import COORDINATES, ProseTask, merge_deci
 # General cue vocabulary
 # ---------------------------------------------------------------------------
 
-NEGATION_CUES = ("no ", "not ", "never", "nothing", "none", "without", "n't")
+# Cues are matched at word boundaries. A trailing "*" marks a morphological
+# stem (prefix match); everything else must match a whole word. Substring
+# matching is wrong here: "over" occurs inside "cover" and "overlap", which
+# silently tied the threshold-direction vote for a whole family.
+NEGATION_CUES = ("no", "not", "never", "nothing", "none", "without")
 
 # Threshold direction.
 BELOW_CUES = (
@@ -59,37 +63,35 @@ ABOVE_CUES = (
     "above",
     "over",
     "past",
-    "exceed",
+    "exceed*",
     "beyond",
     "outside",
-    "breach",
-    "overshoot",
+    "breach*",
+    "overshoot*",
     "greater than",
     "larger than",
-    "reach",
+    "reach*",
 )
 
-# Completeness of a correspondence. Note that "unmatched"/"unpaired" are
-# *deficiency* words: they assert incompleteness on their own, and only mean
-# completeness under negation ("leaves no required X unpaired"), which the
-# negation-parity rule already handles. "not all" is likewise left out, because
-# its "not" is counted once by the parity rule against the " all " cue.
+# Completeness of a correspondence. "unmatched"/"unpaired" are *deficiency*
+# words: they assert incompleteness on their own and mean completeness only
+# under negation ("leaves no required X unpaired"), which the negation-parity
+# rule already handles. "not all" is likewise absent, so its "not" is counted
+# once, by parity, against the "all" cue.
 COMPLETE_CUES = (
     "every",
-    " all ",
+    "all",
     "in full",
     "fully",
-    "entire",
+    "entire*",
     "without exception",
 )
 INCOMPLETE_CUES = (
     "some",
-    "part",
-    "partial",
-    "partly",
+    "part*",
     "short",
-    "omit",
-    "miss",
+    "omit*",
+    "miss*",
     "incomplete",
     "few",
     "unpaired",
@@ -97,31 +99,46 @@ INCOMPLETE_CUES = (
     "left out",
 )
 
-# Report / epistemic verbs. A clause whose predicate is one of these is not an
-# assertion about the coordinate's value, so the coordinate is CANNOT_CHECK.
-# This is general hedge (evidentiality) detection, and it is what lets the
-# extractor work without the hedge lexicon, which is dev/heldout-disjoint.
+# Whether a stated precondition holds.
+HOLDS_CUES = ("hold*", "maintain*", "uphold", "upheld", "satisf*", "met", "preserv*")
+FAILS_CUES = (
+    "break*",
+    "broke*",
+    "lost",
+    "lose",
+    "fail*",
+    "violat*",
+    "ceas*",
+    "gives way",
+    "give way",
+    "disturb*",
+)
+
+# Report / epistemic verbs. A clause whose predicate is one of these asserts no
+# value for the coordinate, so the coordinate is CANNOT_CHECK. This is general
+# evidentiality detection, and it is what lets the extractor work without the
+# hedge lexicon, which is dev/heldout-disjoint.
 EPISTEMIC_CUES = (
-    "assess",
-    "report",
-    "determin",
-    "examin",
-    "evaluat",
-    "ascertain",
-    "verif",
-    "quantif",
-    "characteris",
-    "characteriz",
-    "specif",
+    "assess*",
+    "report*",
+    "determin*",
+    "examin*",
+    "evaluat*",
+    "ascertain*",
+    "verif*",
+    "quantif*",
+    "characteri*",
     "unclear",
     "unknown",
     "left open",
     "not stated",
 )
 
-# Whether a stated precondition holds.
-HOLDS_CUES = ("hold", "maintain", "uphold", "upheld", "satisfie", "satisfy", "met", "preserv")
-FAILS_CUES = ("break", "lost", "lose", "fail", "violat", "ceas", "gives way", "give way", "disturb")
+
+def _has_cue(low: str, cue: str) -> bool:
+    if cue.endswith("*"):
+        return re.search(r"\b" + re.escape(cue[:-1]), low) is not None
+    return re.search(r"\b" + re.escape(cue) + r"\b", low) is not None
 
 
 def _sentences(text: str) -> list[str]:
@@ -135,20 +152,22 @@ def _operative(sentence: str) -> str:
 
 def _is_epistemic(text: str) -> bool:
     """A clause reporting that something was (not) measured asserts no value."""
-    low = " " + text.lower() + " "
-    return low.lstrip().startswith("whether ") or any(cue in low for cue in EPISTEMIC_CUES)
+    low = text.lower()
+    return low.lstrip().startswith("whether ") or any(
+        _has_cue(low, cue) for cue in EPISTEMIC_CUES
+    )
 
 
 def _negations(text: str) -> int:
-    low = " " + text.lower() + " "
-    return sum(low.count(cue) for cue in NEGATION_CUES)
+    low = text.lower()
+    return sum(1 for cue in NEGATION_CUES if _has_cue(low, cue))
 
 
 def _polarity(text: str, positive: tuple[str, ...], negative: tuple[str, ...]) -> bool | None:
     """True if `positive` cues win, False if `negative` do, None if undecidable."""
-    low = " " + text.lower() + " "
-    pos = sum(1 for cue in positive if cue in low)
-    neg = sum(1 for cue in negative if cue in low)
+    low = text.lower()
+    pos = sum(1 for cue in positive if _has_cue(low, cue))
+    neg = sum(1 for cue in negative if _has_cue(low, cue))
     if pos == neg:
         return None
     verdict = pos > neg
