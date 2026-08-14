@@ -1,0 +1,88 @@
+{
+  "schema_version": "paper2-external-corpus-result-v2",
+  "protocol": "research/paper2_external_corpus_v1/PROTOCOL_V2_REDUCER.json",
+  "parent_protocol": "research/paper2_external_corpus_v1/PROTOCOL.json",
+  "grants_scientific_authority": false,
+  "acquisition": {
+    "file": "arn.csv",
+    "sha256": "a866fe5341ce4a29f00f24987a12278303b2b8ad788352f549b0fe051ad4a7a8",
+    "bytes": 1256913,
+    "n_rows": 1095
+  },
+  "mapping": {
+    "mode": "M3",
+    "query": "query_narrative",
+    "first": "first_choice",
+    "second": "second_choice",
+    "answer": "correct_answer",
+    "analogy_band": "analogy_level",
+    "distractor_band": "distractor_similarity",
+    "group": "proverb"
+  },
+  "skipped_rows": 0,
+  "pairs": {
+    "total": 2190,
+    "dev": 648,
+    "confirm": 1542
+  },
+  "admission": {
+    "verdict": "ADMITTED",
+    "admitted_kind": "EXTERNAL_LABEL",
+    "reasons": [],
+    "n_sample_sources": 8
+  },
+  "dev_fit": {
+    "theta_w": 0.05,
+    "theta_l": 0.08,
+    "control_dev_exact": {
+      "lexical": 0.5015432098765432,
+      "band": 0.5462962962962963,
+      "always_accept": 0.5,
+      "always_reject": 0.5,
+      "always_cannot_check": 0.0
+    },
+    "strongest_control": "band"
+  },
+  "battery": {
+    "probe_H": "N/A: no self-authored renderer; third-party surfaces",
+    "B1_gold_arm_distinctness": "pass (arms receive texts/band only by signature)",
+    "B2_text_destruction": {
+      "changed_fraction": 1.0,
+      "scrambled_exact": 0.0,
+      "null_upper_975": 0.2503242542153048,
+      "pass": true
+    },
+    "B3_shuffled_gold": {
+      "advantage": 0.12092762645914396,
+      "ci": [
+        0.09134319066147856,
+        0.14976498054474707
+      ],
+      "g1_fails_as_required": false
+    },
+    "B4_trivial_floor": {
+      "always_accept": {
+        "valid_accept": 1.0,
+        "invalid_false_accept": 1.0,
+        "attains_G2": false
+      },
+      "always_reject": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      },
+      "always_cannot_check": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      }
+    },
+    "B4_pass": true,
+    "B5_paired_variance": {
+      "witness_var": 0.12139017821556722,
+      "control_var": 0.23036124089690982,
+      "pass": true
+    }
+  },
+  "terminal": "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE"
+}
