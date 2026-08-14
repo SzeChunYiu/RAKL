@@ -1,0 +1,51 @@
+{
+  "schema_version": "rakl-paper3-route-resolver-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "parent_negative_preserved": {
+    "issue": 401,
+    "terminal": "CANNOT_EXECUTE_MATCHED_EVAL",
+    "superseded": false,
+    "reason": "model-level matched evaluation remains blocked by CAPABLE_MODEL_AVAILABLE=NO_REFUTED"
+  },
+  "prior_successor": {
+    "terminal": "PROMOTE_CONDITIONALLY_STRUCTURED_ROUTE_GOVERNANCE",
+    "limitation_discovered_this_round": "the generated-state benchmark established state sufficiency, but production semantic_shortcut.py exposes discovery + audit and accepts a prebuilt ObstructionTransformationReview; it does not itself construct/select the review mode"
+  },
+  "frozen_base_main_sha": "d5917714b6ebf7b263d59b8d462b1ba1d304f1b5",
+  "production_audit_blob_sha": "b6632d388dc2d75813c9de519b0012a4c4ddef0b",
+  "successor_branch": "automation/p3-route-resolver-v1-20260814",
+  "successor_contract": {
+    "module": "src/rakl/semantic_shortcut_router.py",
+    "entrypoint": "resolve_obstruction_transformation_route",
+    "rule": "choose the first SEARCH/JUMP/GLUE/LIFT route whose supplied artifacts pass the existing canonical audit; unresolved earlier structural candidates force CANNOT_CHECK rather than bypass",
+    "lift_boundary": "LIFT is attempted only when discover_shortcut_candidates returns no SEARCH/JUMP/GLUE structural candidates; rejected-candidate fallthrough requires a future typed rejection witness and is not invented here",
+    "authority": "proposal/routing only; no theorem, novelty, scientific, or method-promotion authority"
+  },
+  "frozen_tests": [
+    "SEARCH wins over JUMP when a direct witnessed route exists",
+    "an unresolved direct route blocks JUMP and returns CANNOT_CHECK",
+    "JUMP passes only when no direct candidate exists and a mapping witness passes audit",
+    "unwitnessed JUMP returns CANNOT_CHECK",
+    "GLUE passes only for complementary partial effects with mappings and interface witness",
+    "unsafe GLUE returns CANNOT_CHECK",
+    "LIFT passes only with no structural routes plus valid bounded exhaustion and missing-transformation specification",
+    "missing cross-problem coverage blocks LIFT",
+    "proposal-only episodes cannot create a route",
+    "forbidden-loss episodes cannot create a route"
+  ],
+  "hard_gates": {
+    "new_router_tests_all_pass": true,
+    "existing_semantic_shortcut_tests_all_pass": true,
+    "existing_math_research_runtime_tests_all_pass": true,
+    "full_repository_protected_ci_not_weakened": true,
+    "no_existing_negative_or_evaluator_rewritten": true
+  },
+  "promotion_if_green": "PROMOTE_CONDITIONALLY_PRODUCTION_ROUTE_RESOLVER",
+  "remaining_nonclaims": [
+    "natural-language obstruction/witness extraction",
+    "model-level continual-research performance lift",
+    "proof or scientific authority",
+    "fallthrough across structurally found but later rejected routes without a typed rejection witness"
+  ]
+}

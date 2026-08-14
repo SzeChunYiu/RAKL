@@ -1,0 +1,24 @@
+{
+  "schema_version": "p3-publication-validation-freeze-v2",
+  "date": "2026-08-14",
+  "repo_main_sha": "d7aa764e1ccf2eedca7e81ec827bbb355376ab04",
+  "production_candidates": {
+    "route_resolver_pr": {"number": 565, "head_sha": "f72e366b0fed949f4ffe28fecc49af6ba187c86c"},
+    "typed_rejection_pr": {"number": 567, "head_sha": "13688283a169e39171e5498032a51f9799b24ba1"},
+    "glue_rejection_pr": {"number": 568, "head_sha": "c0078d63bc39165f2a70edec374fa4349a051ee9"}
+  },
+  "seed": 202608140502,
+  "pairs_per_family": 64,
+  "question": "Does the typed method-evolution route state preserve decision-critical distinctions that strong simpler projections erase, while preserving fail-closed behavior and negative-history requirements?",
+  "families": ["DIRECT_SEARCH_VALID","CROSS_DOMAIN_JUMP_VALID","SEMANTIC_NEAR_MISS_MAPPING_INVALID","PARTIAL_NEEDS_GLUE","GLUE_INCOMPATIBLE","FORBIDDEN_LOSS","PRECONDITION_MISMATCH","BOUNDED_EXHAUSTION_LIFT","INSUFFICIENT_COVERAGE","REPEATED_RESIDUAL_LIFT","SINGLE_FAILURE_NO_LIFT","UNACCOUNTED_CANDIDATE","NEGATIVE_HISTORY_REQUIRED","PROPOSAL_ONLY_NOT_AUTHORITY","REJECTED_SEARCH_JUMP_VALID","REJECTED_JUMP_GLUE_VALID","UNCERTAIN_SEARCH_BLOCKS_JUMP","STALE_REJECTION_BLOCKS_FALLTHROUGH","WRONG_TARGET_REJECTION_BLOCKS","CURRENT_PASS_OVERRIDES_OLD_REJECTION","ALL_STRUCTURAL_REJECTED_LIFT"],
+  "gold_routes": ["SEARCH","JUMP","GLUE","LIFT","CANNOT_CHECK"],
+  "parents": ["SEMANTIC_ONLY","STRUCTURAL_RANK_ONLY","FAIL_MEANS_FALLTHROUGH","COMPOSITE_SIMPLE_PARENT","STRICT_TYPED_ROUTER"],
+  "registered_mutations": ["IGNORE_MAPPING","IGNORE_PRECONDITIONS","IGNORE_FORBIDDEN_LOSS","PARTIAL_COUNTS_AS_COMPLETE","ONE_FAILURE_LIFT","IGNORE_COVERAGE","IGNORE_ACCOUNTING","FAIL_WITHOUT_TYPED_REJECTION","CANNOT_CHECK_AS_REJECTED","IGNORE_REJECTION_REVISION","IGNORE_REJECTION_TARGET","DROP_NEGATIVE_HISTORY"],
+  "gate": {"strict_exact_min":1.0,"strict_unsafe_max":0.0,"strict_cannot_check_recall_min":1.0,"strict_legal_route_recall_min":1.0,"composite_information_ceiling_max":0.95,"all_mutations_caught":true},
+  "scope": "generated structured-state method-governance; not natural-language/model efficacy",
+  "parent_v1_terminal": "INSTRUMENT_DEFECT_TWO_MUTATIONS_NOT_EXERCISED",
+  "repairs": [
+    "PARTIAL_NEEDS_GLUE now includes a GLUE-positive control and an unresolved partial JUMP twin that is incorrectly promoted only by PARTIAL_COUNTS_AS_COMPLETE.",
+    "NEGATIVE_HISTORY_REQUIRED added so a valid typed rejection differs from an otherwise-identical certificate whose negative history is not retained."
+  ]
+}
