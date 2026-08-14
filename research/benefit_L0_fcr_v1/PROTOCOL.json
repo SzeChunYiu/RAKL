@@ -1,0 +1,126 @@
+{
+  "protocol_id": "BENEFIT-L0-FCR-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@5d224734",
+  "ladder_obligation": {
+    "layer_id": "L0-OBJECT",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does context-aligned projection reduce false contradiction rate versus naive text comparison? Observable: FCR from the quantitative evaluation model.",
+    "frontier_rationale": "Lowest unmeasured benefit obligation; non-compensatory readiness policy makes every higher layer's benefit uninterpretable until this runs (PLAN.md P1.1)."
+  },
+  "hypothesis": {
+    "statement": "On comparable claim pairs with generator-known ground truth, the L0 context-aligned projection machinery (Contradict = Overlap AND Align AND NOT Compatible, FORMAL_SYSTEM_SPECIFICATION.md section 5) yields a lower false contradiction rate than naive text comparison, and the reduction is attributable to genuine context-claim alignment rather than to declaring fewer contradictions.",
+    "direction": "FCR_A - FCR_B >= 0.10 absolute",
+    "known_at_design_time": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized surface realization, separation from both nulls, the suppression guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_naive_text_comparison": {
+      "definition": "For each comparable pair, compare the canonical value strings for the shared facet only. Declare CONTRADICTION iff facet_left == facet_right and value_left != value_right. All context fields are present in the input record and deliberately ignored; no context extraction, alignment, or unit normalization is performed.",
+      "inputs_visible": ["facet_left", "facet_right", "value_left", "value_right", "surface_text_left", "surface_text_right", "context_left", "context_right"],
+      "implementation": "Deterministic function frozen in the execution-run harness; must match this definition verbatim."
+    },
+    "B_context_aligned_projection": {
+      "definition": "Represent each claim as rakl.core.Projection with a rakl.core.Context. For each comparable pair: (1) require facet overlap; (2) compute rakl.core.compare_contexts(left_ctx, right_ctx) over the frozen field list [population, scale, horizon, observation_model, units, assumptions, intervention] (the default comparable_key fields of rakl.core.Context); (3) if differences are non-empty, the pair is not aligned: declare NO_CONTRADICTION (classified internally as CONTEXT_DEPENDENT_DIFFERENCE candidate per Relationship.CONTEXT_DEPENDENT_DIFFERENCE); (4) if aligned and values differ, declare CONTRADICTION; (5) if aligned and values equal, declare NO_CONTRADICTION.",
+      "exact_functions": [
+        "rakl.core.Context",
+        "rakl.core.Context.comparable_key",
+        "rakl.core.compare_contexts",
+        "rakl.core.Projection",
+        "rakl.core.KnowledgeFiber.add_projection",
+        "rakl.core.KnowledgeFiber.unresolved_pairs",
+        "rakl.core.KnowledgeFiber.add_relation",
+        "rakl.core.KnowledgeFiber.contradictions"
+      ],
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md section 5: Contradict_l(Ci,Cj) = Overlap AND Align_l AND NOT Compatible_l, with Align_l instantiated as the full standard context tuple (comparison layer l = all seven fields).",
+      "known_limitation_frozen_in_advance": "Mechanical arm B withholds CONTRADICTION whenever ANY context field differs, including non-load-bearing (distractor) differences. Corpus class C2 exists to charge this cost; it appears in TCR_B, not hidden."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical input records for every pair; neither arm performs retrieval, network access, or LLM calls (token budget 0 for both).",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "The FCR denominator is all N comparable pairs, fixed by the corpus and identical across arms; withheld declarations still count in the denominator."
+    }
+  },
+  "estimator": {
+    "fcr_definition_source": "docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md section 2, coordinate V: FCR = false contradictions / comparable claim pairs.",
+    "fcr": "FCR_arm = |{i : declaration_arm(i) = CONTRADICTION and gold(i) != CONTRADICTION}| / N",
+    "comparable_pair": "Two claims about the same object sharing at least one canonical facet after the corpus's facet canonicalization.",
+    "primary_contrast": "delta_FCR = FCR_A - FCR_B, paired on identical pairs; McNemar exact test on pair-level false-contradiction indicators (two-sided, exact binomial on discordant pairs).",
+    "suppression_guard": "TCR_arm = true-contradiction recall = |{i : declaration = CONTRADICTION and gold = CONTRADICTION}| / |{i : gold = CONTRADICTION}|. Guards against winning FCR by refusing to declare (selectivity is not edge).",
+    "evaluator_file": "research/benefit_L0_fcr_v1/EVALUATOR.py",
+    "evaluator_sha256": "536ba0e21899207449de8333446fa9c67ed50b51f048f93ac68f2ba8d4afb273",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ for FCR / false_contradiction / contradiction corpora on 2026-08-14: no labeled comparable-claim-pair corpus exists. tests/test_core.py holds a 2-item worked example; research/RAKL_DUAL_HEADLINE_PREREGISTRATION_034.json registers false_contradiction_rate as a metric with no bound corpus.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_pairs": 400,
+    "composition": {
+      "C1_true_contradiction_aligned": 90,
+      "C2_true_contradiction_distractor_context": 30,
+      "C3_context_dependent_difference": 120,
+      "C4_equivalent_under_unit_transform": 80,
+      "C5_same_value_restated": 80
+    },
+    "gold_contradictions_total": 120,
+    "labeling_procedure": "Gold labels are minted by the generator from the hidden world state at generation time (which regime holds, which coordinate is load-bearing, which observation is corrupted). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold labels and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_label field stripped; the evaluator joins on pair_id.",
+      "Human/oracle audit: 40 pairs (10%) sampled by seed, audited by a reviewer shown ONLY the two rendered claim texts and the gold label, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK. This is the structural counter to the defect that invalidated the L6 gates (labels derived from predictions)."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Paired McNemar design. For discordant-pair probabilities p10 = 0.12 (A-only false contradiction) and p01 = 0.02, detecting delta_FCR = 0.10 at two-sided alpha = 0.05 with 80% power needs approximately n = (1.96*sqrt(0.14) + 0.84*sqrt(0.14 - 0.01))^2 / 0.10^2 ~= 107 pairs. N = 400 gives >= 3x margin, supports per-class reads (>= 30 per class), and keeps the audit sample (40) at 10%. The margin is deliberate so the same corpus size remains adequately powered for the pre-registered LLM-arm follow-up where effects will be smaller and noisier."
+  },
+  "nulls": {
+    "null_1_equal_n_suppression": "Draw 1000 seeded size-K_B subsets of arm A's declared-contradiction set, where K_B is arm B's declaration count; compute the FCR distribution. Arm B must satisfy FCR_B < 5th percentile. Directly tests that B's FCR advantage is not reproducible by blind suppression at equal n (clean-baseline + shuffle-equal-n discipline from research/orion_architecture_audit_v1/PLAN.md Phase 1). If K_B >= K_A the null is degenerate and recorded NOT_APPLICABLE (it cannot count as passed).",
+    "null_2_context_permutation": "Permute right-hand context tuples across all pairs (1000 seeded permutations), re-run arm B's frozen rule, collect the FCR distribution; require FCR_B < 5th percentile. Tests that the advantage requires genuine context-claim binding rather than any-context-difference excusal at the observed base rate."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "delta_FCR >= 0.10",
+        "McNemar exact p < 0.001",
+        "TCR_B >= 0.70",
+        "FCR_B < 5th percentile of null 1 (when applicable) AND of null 2",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid"
+      ],
+      "justification": "0.10 absolute = 40 avoided false contradictions per 400 pairs, an order of magnitude above the tolerated label-noise ceiling (0.05 audit bound implies expected label error contribution to FCR well under 0.05 x contradiction-declaration base rate); p < 0.001 because the design is heavily powered and a single primary contrast is registered; TCR floor 0.70 because losing more than ~30% of true contradictions would gut the discriminator-generation function that contradictions feed (workflow.md section N) - the mechanical arm's designed-in C2 miss (30/120 = 25%) sits above the floor only if it catches essentially all aligned contradictions, so the floor also detects unexpected suppression."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "delta_FCR <= 0.02",
+        "null 1 applicable and FCR_B >= its 5th percentile",
+        "FCR_B >= null 2's 5th percentile"
+      ],
+      "justification": "A reduction indistinguishable from blind suppression or from context-decoupled behavior means the L0 alignment mechanism specifically is not the source of the benefit."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. delta_FCR in (0.02, 0.10), or nulls beaten but TCR_B < 0.70, or benefit concentrated in a strict subset of corpus classes.",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: mechanical L0 machinery on a synthetic known-answer corpus reduces FCR versus naive comparison without null-equivalent suppression. ladder.json L0 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no LLM-arm generalization, no natural-corpus generalization; both are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (corpus surface realization / alignment field set / comparison-layer choice / null design / decision rule), apply the single matching lever, re-freeze as BENEFIT-L0-FCR-V2, re-run against the strongest parent. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: the C2 distractor miss - extend Align_l with a per-facet load-bearing-coordinate relevance map (comparison layer l narrower than the full tuple). That is an L0-machinery extension and MUST enter via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch to rakl/core.py."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}
