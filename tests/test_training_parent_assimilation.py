@@ -1,7 +1,11 @@
 from dataclasses import replace
 
+import pytest
+
 from rakl.structural_types import BoundaryCondition, StructuralObject, StructuralRelation, StructuralRole
 from rakl.training_parent_assimilation import (
+    MAX_FORGETTING_RISK,
+    MAX_NEGATIVE_TRANSFER_RISK,
     ParentAssimilationVerdict,
     build_parent_selection_bundle,
     select_with_parent_assimilation,
@@ -125,6 +129,18 @@ def test_structural_veto_is_stable_and_cannot_be_compensated_by_parent_priority(
     assert decision.verdict is ParentAssimilationVerdict.SELECT_PROPOSAL
     assert decision.rejected_candidate_ids == ("cand-2", "cand-4")
     assert decision.selected_candidate_ids == ("cand-5", "cand-1", "cand-3")
+
+
+def test_harm_veto_thresholds_are_frozen_not_call_time_tunable():
+    assert MAX_FORGETTING_RISK == 0.10
+    assert MAX_NEGATIVE_TRANSFER_RISK == 0.10
+    with pytest.raises(TypeError):
+        select_with_parent_assimilation(
+            _snapshot(),
+            _bundle(),
+            batch_size=3,
+            max_forgetting_risk=0.50,
+        )
 
 
 def test_confirmatory_target_leak_invalidates_selection_before_parent_order_use():
