@@ -154,7 +154,7 @@ def parse_source(text: str) -> SourceReference:
 
     m = re.search(
         r"Working in (?P<regime>.+?), we establish (?P<qoi>.+?) for (?P<noun>the [^,]+?) "
-        r"whenever the (?P<quantity>.+?) stays below the stated bound of (?P<bound>[0-9.]+)",
+        r"whenever the (?P<quantity>.+?) stays below the stated bound of (?P<bound>[0-9]+(?:\.[0-9]+)?)",
         text,
     )
     if m:
@@ -235,7 +235,7 @@ def _extract_relation(sents: list[str], ref: SourceReference) -> tuple[Decision,
         m = re.search(r"covers (?P<k>\d+) of (?:the )?(?P<m>\d+)", clause)
         if m:
             return _status(int(m.group("k")) >= int(m.group("m"))), True
-        m = re.search(r"(?P<pct>[0-9.]+)% of the required", clause)
+        m = re.search(r"(?P<pct>[0-9]+(?:\.[0-9]+)?)% of the required", clause)
         if m:
             return _status(float(m.group("pct")) >= 100.0), True
         verdict = _polarity(clause, COMPLETE_CUES, INCOMPLETE_CUES)
@@ -270,16 +270,16 @@ def _extract_effect(sents: list[str], ref: SourceReference) -> Decision:
         clause = _operative(sentence)
         if key not in clause.lower():
             continue
-        m = re.search(r"reaches (?P<pct>[0-9.]+)% of the stated bound", clause)
+        m = re.search(r"reaches (?P<pct>[0-9]+(?:\.[0-9]+)?)% of the stated bound", clause)
         if m:
             return _status(float(m.group("pct")) < 100.0)
-        m = re.search(rf"{re.escape(key)} of .+? is (?P<v>[0-9.]+)", clause.lower())
+        m = re.search(rf"{re.escape(key)} of .+? is (?P<v>[0-9]+(?:\.[0-9]+)?)", clause.lower())
         if m:
             return _status(float(m.group("v")) < ref.threshold)
-        m = re.search(rf"{re.escape(key)} of .+? records (?P<v>[0-9.]+)", clause.lower())
+        m = re.search(rf"{re.escape(key)} of .+? records (?P<v>[0-9]+(?:\.[0-9]+)?)", clause.lower())
         if m:
             return _status(float(m.group("v")) < ref.threshold)
-        m = re.search(r"records (?P<v>[0-9.]+)", clause.lower())
+        m = re.search(r"records (?P<v>[0-9]+(?:\.[0-9]+)?)", clause.lower())
         if m:
             return _status(float(m.group("v")) < ref.threshold)
         verdict = _polarity(clause, BELOW_CUES, ABOVE_CUES)
