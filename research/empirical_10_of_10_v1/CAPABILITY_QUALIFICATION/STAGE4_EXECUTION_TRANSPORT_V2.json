@@ -14,7 +14,8 @@
     "experiments/paper3/run_capability_stage4_v1.py": "9bec8e081226d5d69a9c21a5f7b3fab0f5c63bf7",
     "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_SCORING_HARDENING_V2.json": "4dd7f541fbd31fc484b1d4813c3ed9053b5bdce9",
     "experiments/paper3/run_capability_stage4_v2.py": "4276be7f4796541f91cbd82da0c1ed427c729c86",
-    "experiments/paper3/run_capability_stage4_v2_lunarc.sbatch": "38f4c2e8886e174884959ffed080e6d505a33aa9"
+    "experiments/paper3/validate_capability_stage4_v2_terminal.py": "c775e39521d4dd4e503fa9c5f24a7751e799009e",
+    "experiments/paper3/run_capability_stage4_v2_lunarc.sbatch": "a02e994d88c0923be66a580f699101dc4389b250"
   },
   "fixed_scientific_subject": {
     "model_id": "Qwen/Qwen2.5-7B-Instruct",
@@ -43,6 +44,17 @@
     "sbatch_must_export_subject_sha": true,
     "submission_receipt_must_bind_job_id_subject_and_blob_contract": true
   },
+  "scheduler_scientific_terminal_separation": {
+    "principle": "SLURM process health and the registered Stage-5 scientific terminal are separate coordinates. A complete valid receipt is harvested even when the model runner used a nonzero local code for a scientific negative/resource/degenerate terminal.",
+    "runner_code_to_terminal": {
+      "0": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+      "1": "DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+      "2": "CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE",
+      "3": "QUALIFICATION_BENCHMARK_DEGENERATE"
+    },
+    "wrapper_rule": "The sbatch wrapper captures the runner code, validates code-to-terminal consistency against the v2 receipt, then exits successfully so a valid scientific terminal is not relabelled as scheduler failure.",
+    "pre_receipt_infrastructure_failure": "A failure before a valid v2 receipt exists remains non-COMPLETED scheduler state and is classified as execution/resource failure, never model capability."
+  },
   "harvest_contract": {
     "slurm_job_state_must_be_observed": true,
     "only_COMPLETED_jobs_may_be_interpreted_as_scientific_stage5_outputs": true,
@@ -60,7 +72,7 @@
     "CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE",
     "QUALIFICATION_BENCHMARK_DEGENERATE"
   ],
-  "claim_boundary": "EXECUTION_PROVENANCE_ONLY__SCORING_V2_REQUIRED__NO_CAPABILITY_RESULT_UNTIL_EXTERNAL_JOB_COMPLETES_AND_IS_HARVESTED__NO_RAKL_TREATMENT_CLAIM",
+  "claim_boundary": "EXECUTION_PROVENANCE_ONLY__SCORING_V2_REQUIRED__SCHEDULER_STATE_SEPARATE_FROM_SCIENTIFIC_TERMINAL__NO_CAPABILITY_RESULT_UNTIL_EXTERNAL_JOB_COMPLETES_AND_IS_HARVESTED__NO_RAKL_TREATMENT_CLAIM",
   "forbidden_changes_after_freeze": [
     "model or revision substitution",
     "task or panel regeneration rule changes",
@@ -68,6 +80,7 @@
     "numeric threshold or family-gate changes",
     "decoding changes",
     "return to scoring-v1 for an outcome-bearing run",
+    "reinterpret scientific negative as infrastructure failure or vice versa",
     "outcome-dependent retry with modified scientific settings"
   ],
   "grants_scientific_authority": false,
