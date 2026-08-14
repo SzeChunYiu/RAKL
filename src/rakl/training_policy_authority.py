@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Tuple
+from typing import Mapping, Sequence, Tuple
 
 
 class TrainingPolicyMode(str, Enum):
@@ -14,10 +14,12 @@ class TrainingPolicyMode(str, Enum):
 
 @dataclass(frozen=True)
 class AdaptivePolicyAuthorization:
-    """External evidence needed before adaptive allocation can become active default.
+    """Legacy external evidence summary used by the v1 policy chooser.
 
-    The scheduler being evaluated cannot mint this object from its own telemetry.
-    This is training-policy authority only and grants no scientific authority.
+    This type is retained for compatibility and negative-history tests.  New
+    production activation must use choose_active_training_policy_from_phase2_bundle,
+    which independently admits the frozen Phase-2 evidence bundle instead of
+    trusting caller-asserted summary booleans.
     """
 
     receipt_id: str
@@ -51,16 +53,11 @@ _REQUIRED_ADAPTIVE_TERMINAL = "ADAPTIVE_RESIDUAL_SUPPORTED"
 def choose_active_training_policy(
     authorization: AdaptivePolicyAuthorization | None = None,
 ) -> TrainingPolicyDecision:
-    """Choose the active ORION training policy fail-safely.
+    """Legacy v1 chooser retained byte-semantically for compatibility.
 
-    Static structural allocation is the authoritative default.  Merely having a
-    learner-state vector or an adaptive scheduler implementation does not authorize
-    adaptive training.  Adaptive becomes active only after a fresh external receipt
-    establishes the preregistered E-D residual, the strongest-parent residual, hard
-    safety gates and full selection/training/probe overhead.
-
-    Negative, null, underpowered and RESOURCE_BLOCKED receipts are therefore useful
-    RSHEA evidence but never active failed dependencies: they retain the static parent.
+    Static structural allocation is the authoritative default.  This historical
+    entry point accepts a summarized AdaptivePolicyAuthorization and therefore is
+    not the canonical admission path for new adaptive activation.
     """
 
     if authorization is None:
@@ -101,4 +98,42 @@ def choose_active_training_policy(
             "hard_harms_and_full_overhead_passed",
         ),
         authorization.receipt_id,
+    )
+
+
+def choose_active_training_policy_from_phase2_bundle(
+    *,
+    final_receipt: Mapping[str, object] | None = None,
+    data_manifest: Mapping[str, object] | None = None,
+    assurance_by_arm: Mapping[str, Sequence[Mapping[str, object]]] | None = None,
+) -> TrainingPolicyDecision:
+    """Canonical v2 Paper-IV policy activation path.
+
+    Unlike the legacy summarized authorization object, this entry point derives
+    the activation gates from the frozen Phase-2 artifact bundle.  Missing,
+    malformed, stale or nonpositive evidence always retains STATIC_STRUCTURAL.
+    """
+
+    from rakl.phase2_adaptive_receipt_admission import admit_phase2_adaptive_result_bundle
+
+    admission = admit_phase2_adaptive_result_bundle(
+        final_receipt=final_receipt,
+        data_manifest=data_manifest,
+        assurance_by_arm=assurance_by_arm,
+    )
+    if not admission.admitted:
+        return TrainingPolicyDecision(
+            TrainingPolicyMode.STATIC_STRUCTURAL,
+            (
+                "canonical_phase2_admission_not_satisfied_static_parent_retained",
+                *admission.reasons,
+            ),
+        )
+    return TrainingPolicyDecision(
+        TrainingPolicyMode.ADAPTIVE_STRUCTURAL,
+        (
+            "canonical_phase2_bundle_admitted",
+            *admission.reasons,
+        ),
+        admission.receipt_id,
     )
