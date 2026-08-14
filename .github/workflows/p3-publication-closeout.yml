@@ -1,0 +1,40 @@
+name: p3-publication-closeout
+
+on:
+  push:
+    branches:
+      - automation/p3-publication-closeout-v1-20260814
+  pull_request:
+    branches:
+      - automation/p3-glue-rejection-v1-20260814
+
+permissions:
+  contents: read
+
+jobs:
+  paper3-pdf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - name: Bind exact manuscript subject
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Install TeX
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Compile canonical Paper III
+        working-directory: publication/papers/paper-03-method-evolution-mechanics
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Enforce warning and identity gates
+        working-directory: publication/papers/paper-03-method-evolution-mechanics
+        run: |
+          test -s main.pdf
+          ! grep -E 'Overfull \\[hv]box|Undefined control sequence|LaTeX Warning: Citation .* undefined|LaTeX Warning: Reference .* undefined' main.log
+          grep -F 'Method-Evolution Mechanics' main.tex
+          grep -F 'P3_STRUCTURED_METHOD_GOVERNANCE_VALIDATED_FOR_SCOPED_PREPRINT' ../../../research/paper3_publication_closeout_v1/FINAL_RECEIPT.json
+      - name: Hash release subject
+        working-directory: publication/papers/paper-03-method-evolution-mechanics
+        run: sha256sum main.tex main.pdf
