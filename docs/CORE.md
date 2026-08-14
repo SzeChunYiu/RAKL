@@ -53,6 +53,23 @@ layer's benefit is not interpretable while a lower layer's is unmeasured.
 python -m rakl.framework_ladder      # prints readiness and the current frontier
 ```
 
+## The assimilation stance
+
+Nearest and prior work is **food, never a threat**. The working loop — the same one the
+framework implements — applies to the framework's own construction: *see a lot, saturate
+the knowledge space, absorb every strong parent, synthesize the unique fibre.*
+
+Absorbing a parent means chewing it: compile its mechanic in RAKL vocabulary
+(`research/external_research_agents/mechanics/`), design faithful-vs-adapted challengers,
+and measure the transfer. Uniqueness comes from the synthesis plus the delta organs —
+authority transport, fail-closed refusal, obstruction preservation — not from avoiding
+overlap. If a parent already has one of those organs, record it and eat that too.
+
+Never lead with threat language ("RED", "occupies our signature") — a superior parent is a
+map of the mechanism space. Measured precedent: the causal-transportability parent was
+rated RED, absorbed instead of defended against, and its adapted transfer became Paper II's
+strongest result.
+
 ## Two standing hazards
 
 **Soundness is not benefit.** Every non-interference theorem in this programme is satisfied by
