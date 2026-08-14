@@ -1,0 +1,48 @@
+{
+  "schema_version": "p5-p6-saturation-amendment-v1",
+  "round": 4,
+  "parent_round_head": "81e3dce33e197c85b709b5ec827ea4320e80a959",
+  "saturation_verdict": "NOT_SATURATED",
+  "basis_expanded_before_execution": {
+    "navigation_dynamic_parallel_portfolio_v3": {
+      "required_new_parents": [
+        "self_adjusting_computation_dynamic_dependence_graph",
+        "Adapton_demand_driven_incremental_computation"
+      ],
+      "required_new_cost_coordinates": [
+        "dependency_graph_build",
+        "dependency_graph_memory",
+        "invalidation_precision",
+        "change_propagation_work"
+      ],
+      "next_packet_family": "navigation_dependency_tracked_incremental_v4"
+    },
+    "verified_solver_compilation_snapshot_v2": {
+      "required_new_parents": [
+        "self_adjusting_computation",
+        "Adapton_demand_driven_incremental_computation"
+      ],
+      "required_new_hard_gate": "DEPENDENCY_COMPLETE_INVALIDATION",
+      "next_packet_family": "verified_solver_compilation_incremental_v3"
+    },
+    "path_equivalence_stateful_por_v3": {
+      "required_new_parent_or_complement": [
+        "planning_state_space_nogood_learning",
+        "conflict_driven_clause_learning"
+      ],
+      "next_packet_family": "path_reduction_with_verified_nogoods_v4"
+    },
+    "mechanic_predictive_hierarchical_controller_v3": {
+      "required_new_action_type": [
+        "compile_verified_failure_to_scoped_constraint"
+      ],
+      "next_packet_family": "mechanic_controller_with_failure_constraints_v4"
+    }
+  },
+  "new_candidate_packets": [
+    "verified_failure_constraint_compilation_v1"
+  ],
+  "critical_authority_boundary": "Descriptive failure memory and executable pruning authority are distinct. Only a machine-verified refutation/conflict with exact scope/precondition/revision binding may become a pruning constraint. Failed attempts, timeouts, heuristic dead ends and CANNOT_CHECK remain non-blocking history.",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false
+}
