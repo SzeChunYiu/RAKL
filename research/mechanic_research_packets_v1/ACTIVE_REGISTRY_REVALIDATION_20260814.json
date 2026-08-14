@@ -1,9 +1,9 @@
 {
   "schema_version": "rshea-active-packet-registry-revalidation-v1",
   "original_registry_subject_sha": "b7747f21b58e8f827b1dab1a487739b83722af28",
-  "observed_current_main_sha": "26ea4507d052e3e928265ed3881a7eeffaa3169e",
+  "observed_current_main_sha": "3f472e6de80595579717a9a65efa3ec3464a00a6",
   "compare_status": "ahead",
-  "commits_since_original_subject": 62,
+  "commits_since_original_subject": 127,
   "relevant_subject_paths": [
     "research/mechanic_research_packets_v1/PAPER5_PAPER6_SUCCESSORS.json",
     "research/p5_p6_saturation_v1/",
@@ -11,10 +11,14 @@
     "src/rakl/mechanic_research_packet_io.py",
     "scripts/promotion_gate.py"
   ],
-  "relevant_path_changes": [],
-  "other_changes_classification": "62 commits of Paper I-IV formalization, claim-frontier, benefit-ledger, authority, research-machine and solver-loop work; no change to the tracked Paper V-VI packet, saturation, packet-validator or promotion-gate basis",
-  "verdict": "NO_PACKET_OR_SATURATION_SUBJECT_DRIFT",
-  "consequence": "The registry status facts frozen against b7747f21 remain semantically valid for main@26ea4507. This revalidation does not itself make the challenger active or promoted. The exact-head drift preflight now fails closed if any tracked knowledge-basis path changes after this reconstruction, so a later saturation round cannot silently leave stale ACTIVE statuses eligible.",
+  "relevant_path_changes": [
+    "research/p5_p6_saturation_v1/ROUND_004.md",
+    "research/p5_p6_saturation_v1/ROUND_004_AMENDMENTS.json",
+    "research/p5_p6_saturation_v1/packets/verified_failure_constraint_compilation_v1.json"
+  ],
+  "other_changes_classification": "127 commits of Paper I-IV formalization, claim-frontier, benefit-ledger, authority, research-machine and solver-loop work plus round004 saturation; the only tracked knowledge-basis changes are the three round004 saturation artifacts enumerated above (verified by git diff b7747f21..3f472e6d restricted to relevant_subject_paths)",
+  "verdict": "ROUND004_BASIS_EXPANSION_REVIEWED_REGISTRY_UPDATED",
+  "consequence": "Round004 (merged as PR #590, ccfebab3) expanded the basis of navigation_dynamic_parallel_portfolio_v3 and path_equivalence_stateful_por_v3 before execution and introduced the new candidate packet verified_failure_constraint_compilation_v1. This revalidation moves the drift anchor to main@3f472e6d and applies exactly the status transitions the ROUND_004_AMENDMENTS demand: both basis-expanded packets are BLOCKED_BASIS_EXPANDED with their replacement families (navigation_dependency_tracked_incremental_v4, path_reduction_with_verified_nogoods_v4) and the new candidate packet is ACTIVE. The other two round004 basis expansions (verified_solver_compilation_snapshot_v2, mechanic_predictive_hierarchical_controller_v3) name packets not present in this registry, so no registry entry exists to update for them. This revalidation grants no benefit, promotion or scientific authority; ACTIVE only means the ordinary promotion gate may evaluate evidence. The exact-head drift preflight fails closed if any tracked knowledge-basis path changes after this anchor, so a later saturation round cannot silently leave stale ACTIVE statuses eligible.",
   "grants_scientific_authority": false,
   "grants_promotion_authority": false
 }
