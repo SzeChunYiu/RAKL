@@ -225,11 +225,20 @@ def phase_probe(rows: list[dict[str, Any]], outdir: Path) -> int:
                 resp = answer(arm, [], q, gold=gold)
                 records.append({"uid": row["uid"], "dim": dim, "arm": arm, "query": q,
                                 "gold": gold, "response": resp, "verdict": judge(q, gold, resp)})
-        # judge known-answer controls on dim1
+        # judge known-answer controls on dim1 (v1.1: natural answer phrasing —
+        # see PROBE_V1_DIAGNOSIS.json; judge/prompt/threshold unchanged)
         q1 = queries_of(row)["dim1"]
-        pro = f"Consistent with the update: {row['M_new']}"
-        anti = f"Yes — the user's earlier state still holds: {row['M_old']}"
-        controls.append({"uid": row["uid"], "pro_scored_correct": judge(q1, gold, pro),
+        pro = (
+            "Based on the conversation history, that earlier state is no longer current. "
+            f"The user recently shared: \"{row['M_new']}\" — so the answer reflects this updated state."
+        )
+        anti = (
+            "Yes, that is still the case. "
+            f"The user said: \"{row['M_old']}\" and nothing has changed since."
+        )
+        controls.append({"uid": row["uid"], "query": q1,
+                         "pro_text": pro, "anti_text": anti,
+                         "pro_scored_correct": judge(q1, gold, pro),
                          "anti_scored_incorrect": not judge(q1, gold, anti)})
 
     def acc(arm: str, dim: str) -> float:
@@ -255,6 +264,7 @@ def phase_probe(rows: list[dict[str, Any]], outdir: Path) -> int:
         "grants_scientific_authority": False,
     }
     (outdir / "PROBE_ROWS.jsonl").write_text("\n".join(json.dumps(r) for r in records) + "\n")
+    (outdir / "CONTROLS.jsonl").write_text("\n".join(json.dumps(c) for c in controls) + "\n")
     (outdir / "PROBE_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(json.dumps(receipt, indent=2))
     return 0 if receipt["terminal"] == "PROBE_GREEN" else 4
