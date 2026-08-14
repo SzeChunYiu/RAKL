@@ -64,7 +64,8 @@ class EntityType(str, Enum):
 #: Negation/contrast markers (same as parent, expanded)
 NEGATION_MARKERS: frozenset[str] = frozenset(
     {"no", "not", "never", "cannot", "cannot", "neither", "nothing", "none",
-     "without", "fails", "lacks", "nowhere", "nor", "hardly", "scarcely", "barely"}
+     "without", "fails", "lacks", "nowhere", "nor", "hardly", "scarcely", "barely",
+     "differs"}
 )
 
 #: Verb-like tokens (for object heuristic)
