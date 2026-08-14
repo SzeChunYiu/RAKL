@@ -38,6 +38,26 @@ jobs:
           tests/test_semantic_shortcut_consolidation.py
           tests/test_training_scheduler.py
           tests/test_phase2_adaptive_protocol.py
+      - name: Reproduce new P3 and P4 RSHEA receipts exactly
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/orion-p3-repro /tmp/orion-p4-repro
+          python experiments/orion_closure/run_p3_structured_experience_action.py \
+            --protocol research/orion_p1_p4_closure_v2/P3_EXPERIENCE_PROTOCOL_FREEZE.json \
+            --outdir /tmp/orion-p3-repro >/dev/null
+          python experiments/orion_closure/run_p4_adaptive_development_stress.py \
+            --protocol research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json \
+            --outdir /tmp/orion-p4-repro >/dev/null
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          prov = json.loads(Path('research/orion_p1_p4_closure_v2/RUNNER_REPRODUCTION_PROVENANCE.json').read_text())
+          p3 = hashlib.sha256(Path('/tmp/orion-p3-repro/FINAL_RECEIPT.json').read_bytes()).hexdigest()
+          p4 = hashlib.sha256(Path('/tmp/orion-p4-repro/FINAL_DEVELOPMENT_RECEIPT.json').read_bytes()).hexdigest()
+          assert p3 == prov['paper3']['original_receipt_sha256'], (p3, prov['paper3']['original_receipt_sha256'])
+          assert p4 == prov['paper4']['original_receipt_sha256'], (p4, prov['paper4']['original_receipt_sha256'])
+          print('P3/P4 exact receipt reproduction: PASS')
+          PY
       - name: Validate closure receipts and LUNARC successor shell
         run: |
           python - <<'PY'
