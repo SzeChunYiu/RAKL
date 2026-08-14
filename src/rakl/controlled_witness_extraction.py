@@ -54,12 +54,11 @@ def _line(label: str, value: Any) -> str:
 def render_controlled_task(task: Task, *, variant: int = 0) -> str:
     """Render a candidate-visible controlled scientific-text interface.
 
-    This is deliberately *not* arbitrary natural language.  The surface is a
+    This is deliberately *not* arbitrary natural language. The surface is a
     bounded prose/record bridge whose role labels are explicit while values are
-    carried as JSON literals.  Its purpose is to make the text-to-typed-state
+    carried as JSON literals. Its purpose is to make the text-to-typed-state
     boundary executable before attempting open-ended paper-text extraction.
     """
-
     labels = _LABELS[variant]
     public = task.public
     lines = [
@@ -85,15 +84,36 @@ def _known_labels() -> Mapping[str, str]:
     return out
 
 
-def extract_controlled_task(text: str) -> ControlledExtraction:
+def controlled_span_manifest(text: str) -> Tuple[Tuple[str, str], ...]:
+    """Return exact per-field text bindings for a frozen controlled packet."""
+    surfaces = _known_labels()
+    out: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for raw in text.splitlines():
+        if not raw.strip() or " :: " not in raw:
+            continue
+        label, _ = raw.split(" :: ", 1)
+        canonical = surfaces.get(label)
+        if canonical is None or canonical in seen:
+            continue
+        seen.add(canonical)
+        out.append((canonical, sha256(raw.encode("utf-8")).hexdigest()))
+    return tuple(sorted(out))
+
+
+def extract_controlled_task(
+    text: str,
+    *,
+    expected_span_sha256: Mapping[str, str] | None = None,
+) -> ControlledExtraction:
     """Parse the bounded textual bridge, failing closed on omission/ambiguity.
 
-    The parser refuses duplicate semantic fields and missing mandatory fields.
-    It does not infer unknown values, repair mappings, or use hidden item type /
-    perturbation metadata.  Exact target semantics are evaluated later by the
-    unchanged family verifier.
+    When ``expected_span_sha256`` is supplied, every extracted semantic field is
+    content-bound to the exact frozen source line. A changed value, label or
+    source record therefore cannot be silently accepted under a stale packet
+    manifest. The parser does not infer unknown values, repair mappings, or use
+    hidden item-type / perturbation metadata.
     """
-
     surfaces = _known_labels()
     parsed: dict[str, Any] = {}
     spans: list[tuple[str, str]] = []
@@ -112,18 +132,29 @@ def extract_controlled_task(text: str) -> ControlledExtraction:
         if canonical in parsed:
             reasons.append(f"duplicate_field:{canonical}")
             continue
+        digest = sha256(raw.encode("utf-8")).hexdigest()
+        if expected_span_sha256 is not None:
+            expected = expected_span_sha256.get(canonical)
+            if expected is None:
+                reasons.append(f"unbound_source_span:{canonical}")
+            elif expected != digest:
+                reasons.append(f"source_span_hash_mismatch:{canonical}")
         try:
             value = json.loads(payload)
         except json.JSONDecodeError:
             reasons.append(f"invalid_json:{canonical}")
             continue
         parsed[canonical] = value
-        spans.append((canonical, sha256(raw.encode("utf-8")).hexdigest()))
+        spans.append((canonical, digest))
 
     mandatory = ("item_id", "family", "source_text", "target_text", "source", "target")
     for field in mandatory:
         if field not in parsed:
             reasons.append(f"missing_field:{field}")
+    if expected_span_sha256 is not None:
+        for field in expected_span_sha256:
+            if field not in parsed:
+                reasons.append(f"bound_source_span_missing:{field}")
 
     if reasons:
         return ControlledExtraction(None, tuple(sorted(set(reasons))), tuple(sorted(spans)))
@@ -134,8 +165,6 @@ def extract_controlled_task(text: str) -> ControlledExtraction:
     if "candidate_actions" in parsed:
         public["candidate_actions"] = parsed["candidate_actions"]
 
-    # Family-specific mandatory carrier checks. Missing information stays
-    # missing/CANNOT_CHECK rather than being guessed from surface words.
     family = str(parsed["family"])
     if family in {"flow", "logic", "state", "sched", "stat"} and "mapping" not in public:
         reasons.append("missing_field:mapping")
@@ -158,7 +187,14 @@ def extract_controlled_task(text: str) -> ControlledExtraction:
 
 def drop_semantic_field(text: str, field: str) -> str:
     """Registered mutation helper used only by adversarial tests/experiments."""
-    labels = {surface for labels in _LABELS.values() for key, surface in labels.items() if key == field}
+    labels = {
+        surface
+        for labels in _LABELS.values()
+        for key, surface in labels.items()
+        if key == field
+    }
     return "\n".join(
-        line for line in text.splitlines() if not any(line.startswith(label + " :: ") for label in labels)
+        line
+        for line in text.splitlines()
+        if not any(line.startswith(label + " :: ") for label in labels)
     ) + "\n"
