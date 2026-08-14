@@ -35,6 +35,13 @@
     "classification": "PREOUTCOME_EXECUTION_RUNTIME_NOT_FROZEN",
     "scientific_interpretation": "instrument/runtime portability defect only; not evidence for or against Adaptive-vs-Static"
   },
+  "authority_integration_defect": {
+    "source": "rakl.training_policy_authority.choose_active_training_policy_from_phase2_bundle",
+    "finding": "The current canonical positive-bundle admission independently recomputes the statistical result and resource gates but has no runtime-freeze coordinate. Therefore a mathematically positive bundle produced under an unfrozen/floating execution environment could still reach ADAPTIVE_STRUCTURAL.",
+    "classification": "RUNTIME_FREEZE_NOT_LOAD_BEARING_IN_POLICY_AUTHORITY",
+    "required_interim_rule": "Until a committed approved RUNTIME_FREEZE_V1 exists, canonical Phase-2 activation must retain STATIC_STRUCTURAL even for an otherwise admissible positive synthetic/raw bundle.",
+    "required_final_rule": "After RUNTIME_FREEZE_V1 is committed, activation must also bind a matching runtime execution receipt to that exact approved freeze digest."
+  },
   "two_stage_gate": {
     "stage_R0_capture": {
       "purpose": "Run no training and access no Phase-2 model outcomes. On the intended LUNARC A100 path, capture exact Python, CUDA, GPU, module environment, selected critical package versions and a full sorted pip-freeze digest from a pre-existing environment.",
@@ -69,14 +76,21 @@
     "loaded_modules": true,
     "full_pip_freeze_sha256": true
   },
+  "interim_activation_gate": {
+    "approved_runtime_freeze_sha256": null,
+    "adaptive_activation_allowed": false,
+    "static_parent_retained": true,
+    "reason": "No accepted LUNARC runtime capture has yet been committed. This is an execution-readiness gap, not a Phase-2 outcome."
+  },
   "forbidden_after_runtime_capture": [
     "select a different runtime because Adaptive/Static outcomes are unfavorable",
     "install a newer package after seeing any Phase-2 model output",
     "switch CUDA/PyTorch/Transformers/PEFT semantics without a new pre-outcome protocol version",
     "reinterpret runtime failure as model/policy efficacy failure",
-    "change protocol, inference plan, arms, seeds, MDE, harm gates or parent after runtime capture"
+    "change protocol, inference plan, arms, seeds, MDE, harm gates or parent after runtime capture",
+    "activate Adaptive from a positive result bundle that lacks the approved runtime-freeze binding"
   ],
-  "claim_boundary": "PREOUTCOME_RUNTIME_IDENTITY_GATE_ONLY__NO_PHASE2_RESULT__NO_PAPER_IV_STANDALONE_AUTHORIZATION__NO_SCIENTIFIC_AUTHORITY",
+  "claim_boundary": "PREOUTCOME_RUNTIME_IDENTITY_AND_ACTIVATION_GATE_ONLY__NO_PHASE2_RESULT__NO_PAPER_IV_STANDALONE_AUTHORIZATION__NO_SCIENTIFIC_AUTHORITY",
   "grants_scientific_authority": false,
   "grants_adaptive_efficacy": false
 }
