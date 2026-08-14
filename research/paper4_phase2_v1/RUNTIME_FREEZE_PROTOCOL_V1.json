@@ -1,0 +1,82 @@
+{
+  "schema_version": "rakl-paper4-phase2-runtime-freeze-protocol-v1",
+  "date": "2026-08-14",
+  "owner_issue": 466,
+  "claim_frontier_issue": 592,
+  "parent_main_sha": "5d224734e50d4b0f7d0978246c97e6c63bf72c91",
+  "chronology": {
+    "phase2_outcomes_accessed_before_runtime_freeze_protocol": false,
+    "reason": "Pre-outcome runtime audit found the current LUNARC Phase-2 wrapper creates a venv on demand and installs unpinned current packages (torch, transformers, huggingface_hub, peft>=0.10, accelerate>=0.27). That makes an otherwise frozen five-arm experiment depend on execution-day package resolution. Runtime identity must be frozen before the first outcome-bearing Phase-2 model call."
+  },
+  "scientific_subject_unchanged": {
+    "protocol_blob": "0ca5aa15dc078ec92e82ab4aff94e5ffcf16b0af",
+    "inference_blob": "2d31897ea6441d280519276e0f1fb3323bf03f99",
+    "phase2_runner_blob": "5ade3b9fea3fc029870782d1157a867bc4feb700",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "arms": [
+      "A_UNIFORM_RANDOM",
+      "B_SEMANTIC_DIVERSITY",
+      "C_STRONGEST_MODEL_AWARE_PARENT",
+      "D_STATIC_RAKL_STRUCTURAL",
+      "E_ADAPTIVE_RAKL_STRUCTURAL"
+    ],
+    "primary_estimand": "E-D",
+    "numeric_gates_changed": false,
+    "data_or_seed_changed": false,
+    "training_semantics_changed": false
+  },
+  "identified_runtime_defect": {
+    "source": "experiments/training_ladder/run_phase2_v1_lunarc.sbatch",
+    "source_blob": "2515153fa8e4f85ae30d5e164c330580e6d35621",
+    "floating_install_surface": [
+      "python -m pip install --upgrade pip",
+      "python -m pip install torch transformers huggingface_hub peft>=0.10 accelerate>=0.27"
+    ],
+    "classification": "PREOUTCOME_EXECUTION_RUNTIME_NOT_FROZEN",
+    "scientific_interpretation": "instrument/runtime portability defect only; not evidence for or against Adaptive-vs-Static"
+  },
+  "two_stage_gate": {
+    "stage_R0_capture": {
+      "purpose": "Run no training and access no Phase-2 model outcomes. On the intended LUNARC A100 path, capture exact Python, CUDA, GPU, module environment, selected critical package versions and a full sorted pip-freeze digest from a pre-existing environment.",
+      "required_environment": "pre-existing venv only; no package installation or upgrade inside capture job",
+      "output": "RUNTIME_CAPTURE_<job>.json",
+      "failure_if_venv_absent": "RESOURCE_BLOCKED_PHASE2_RUNTIME_NOT_STAGED"
+    },
+    "stage_R1_commit": {
+      "purpose": "Review the R0 capture and commit a separate immutable RUNTIME_FREEZE_V1.json containing the exact accepted runtime values and capture hash before any outcome-bearing model call.",
+      "must_precede_phase2_outcome_execution": true,
+      "outcome_dependent_runtime_selection_forbidden": true
+    },
+    "stage_R2_execute": {
+      "purpose": "Outcome-bearing Phase-2 execution may use only a pre-existing environment exactly matching committed RUNTIME_FREEZE_V1.json. No network, pip install, package upgrade, model/runtime substitution or fallback environment is allowed.",
+      "runtime_mismatch_terminal": "RESOURCE_BLOCKED_PHASE2_RUNTIME_MISMATCH",
+      "missing_committed_runtime_freeze_terminal": "RESOURCE_BLOCKED_PHASE2_RUNTIME_FREEZE_MISSING"
+    }
+  },
+  "runtime_coordinates_to_freeze": {
+    "python": true,
+    "torch": true,
+    "torch_cuda_build": true,
+    "cuda_runtime_visible": true,
+    "gpu_name": true,
+    "transformers": true,
+    "tokenizers": true,
+    "huggingface_hub": true,
+    "peft": true,
+    "accelerate": true,
+    "safetensors": true,
+    "numpy": true,
+    "loaded_modules": true,
+    "full_pip_freeze_sha256": true
+  },
+  "forbidden_after_runtime_capture": [
+    "select a different runtime because Adaptive/Static outcomes are unfavorable",
+    "install a newer package after seeing any Phase-2 model output",
+    "switch CUDA/PyTorch/Transformers/PEFT semantics without a new pre-outcome protocol version",
+    "reinterpret runtime failure as model/policy efficacy failure",
+    "change protocol, inference plan, arms, seeds, MDE, harm gates or parent after runtime capture"
+  ],
+  "claim_boundary": "PREOUTCOME_RUNTIME_IDENTITY_GATE_ONLY__NO_PHASE2_RESULT__NO_PAPER_IV_STANDALONE_AUTHORIZATION__NO_SCIENTIFIC_AUTHORITY",
+  "grants_scientific_authority": false,
+  "grants_adaptive_efficacy": false
+}
