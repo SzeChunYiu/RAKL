@@ -128,6 +128,28 @@ The gate discriminated. It just did not pass. **The 0.9722 is therefore not a
 result about extraction**, and G1's large, highly significant advantage does not
 rescue it — that is precisely why the gate was registered two-sided.
 
+## 4b. Matched-pair lexicon control (auxiliary — not part of the frozen registration)
+
+`matched_pair_lexicon_control.py` renders the **same seed** through both banks.
+Because the latent draw is seed-determined, this holds the structural content
+fixed and varies only the wording.
+
+| | |
+| --- | --- |
+| identical latent spec across banks | 192 / 192 |
+| identical gold across banks | 192 / 192 |
+| **different rendered target text** | **192 / 192** |
+| extractor on the dev surface | **1.0000** |
+| extractor on the heldout surface | **0.9792** |
+
+On items whose structure is identical, the extractor inverts its own
+development wording perfectly and loses ground only where the wording was made
+disjoint. The entire measured error is attributable to surface lexicon, not to
+structural difficulty.
+
+This is the cleanest statement of the terminal: what the instrument currently
+measures is how much of the surface its author templated.
+
 ## 5. What this run does and does not establish
 
 **Establishes.** An instrument in which destroying the text destroys
