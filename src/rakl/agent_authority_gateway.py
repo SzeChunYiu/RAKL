@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from typing import Any, Mapping, Tuple
 
 from .authority_ledger import AuthorityAxis, AuthorityProposal, VerificationOutcome
@@ -21,6 +22,8 @@ _FORBIDDEN_CONTROL_FIELDS = frozenset({
     "subject_hash",
     "grants_authority",
 })
+_MAX_RAW_BYTES = 16_384
+_MAX_RAW_DEPTH = 4
 
 
 @dataclass(frozen=True)
@@ -92,6 +95,59 @@ def parse_untrusted_agent_authority_payload(
     return AgentAuthorityProposalResult(proposal, ())
 
 
+def _reject_nonfinite(value: str):
+    raise ValueError(f"nonfinite_json_constant:{value}")
+
+
+def _duplicate_safe_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError(f"duplicate_json_key:{key}")
+        out[key] = value
+    return out
+
+
+def _json_depth(value: Any) -> int:
+    if isinstance(value, Mapping):
+        return 1 + max((_json_depth(item) for item in value.values()), default=0)
+    if isinstance(value, (list, tuple)):
+        return 1 + max((_json_depth(item) for item in value), default=0)
+    return 0
+
+
+def parse_raw_untrusted_agent_authority_json(raw: str) -> AgentAuthorityProposalResult:
+    """Parse raw model JSON without allowing parser ambiguity to mint authority.
+
+    Duplicate keys are rejected instead of using last-key-wins semantics. BOM,
+    NUL, non-finite constants, oversized/deep structures and non-object roots
+    fail closed. The resulting object still traverses the stricter mapping-level
+    gateway, so nested/lookalike/unknown fields cannot become a hidden control
+    channel.
+    """
+    if not isinstance(raw, str):
+        return AgentAuthorityProposalResult(None, ("agent_raw_payload_not_text",))
+    if raw.startswith("\ufeff"):
+        return AgentAuthorityProposalResult(None, ("agent_raw_payload_bom_forbidden",))
+    if "\x00" in raw:
+        return AgentAuthorityProposalResult(None, ("agent_raw_payload_nul_forbidden",))
+    if len(raw.encode("utf-8")) > _MAX_RAW_BYTES:
+        return AgentAuthorityProposalResult(None, ("agent_raw_payload_too_large",))
+    try:
+        value = json.loads(
+            raw,
+            object_pairs_hook=_duplicate_safe_object,
+            parse_constant=_reject_nonfinite,
+        )
+    except (json.JSONDecodeError, ValueError) as exc:
+        return AgentAuthorityProposalResult(None, (f"agent_raw_json_invalid:{exc}",))
+    if not isinstance(value, Mapping):
+        return AgentAuthorityProposalResult(None, ("agent_raw_json_root_not_object",))
+    if _json_depth(value) > _MAX_RAW_DEPTH:
+        return AgentAuthorityProposalResult(None, ("agent_raw_json_too_deep",))
+    return parse_untrusted_agent_authority_payload(value)
+
+
 def submit_untrusted_agent_authority_payload(
     state,
     payload: Mapping[str, Any],
@@ -110,6 +166,29 @@ def submit_untrusted_agent_authority_payload(
     attestation to :func:`promote_scientific_authority`.
     """
     parsed = parse_untrusted_agent_authority_payload(payload)
+    if not parsed.accepted_to_proposal_plane or parsed.proposal is None:
+        return ScientificTransitionOutcome(state, False, parsed.reasons)
+    return promote_scientific_authority(
+        state,
+        parsed.proposal,
+        certificate_id=certificate_id,
+        outcome=verification_outcome,
+        authority_context=authority_context,
+        attestation_id=attestation_id,
+    )
+
+
+def submit_raw_untrusted_agent_authority_json(
+    state,
+    raw: str,
+    *,
+    certificate_id: str,
+    verification_outcome: VerificationOutcome,
+    authority_context: ProtectedAuthorityContext | None = None,
+    attestation_id: str | None = None,
+) -> ScientificTransitionOutcome:
+    """Raw-text sibling of :func:`submit_untrusted_agent_authority_payload`."""
+    parsed = parse_raw_untrusted_agent_authority_json(raw)
     if not parsed.accepted_to_proposal_plane or parsed.proposal is None:
         return ScientificTransitionOutcome(state, False, parsed.reasons)
     return promote_scientific_authority(
