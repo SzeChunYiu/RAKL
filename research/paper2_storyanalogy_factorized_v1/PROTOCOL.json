@@ -1,0 +1,107 @@
+{
+  "schema_version": "rakl-paper2-storyanalogy-factorized-v1",
+  "date": "2026-08-14",
+  "owner_issue": 592,
+  "base_head_sha": "b22b7d205bc6eaeb66680ea29803a2ae3af43841",
+  "predecessor": {
+    "artifact": "research/paper2_external_corpus_v1/results/RESULT.json",
+    "terminal": "NEGATIVE__CAPABILITY_ABSENT",
+    "preserved_interpretation": "The ARN third-party-label instrument is valid; the registered deterministic narrative reducer failed. This successor does not rescore or relabel that negative.",
+    "root_cause": "The deterministic reducer exposes mostly surface-role cues and does not recover cross-domain relational alignment. The successor changes the extraction representation while preserving an externally authored label source."
+  },
+  "chronology": {
+    "storyanalogy_row_level_data_or_labels_accessed_before_freeze": false,
+    "accessed_before_freeze": [
+      "publication-level description of StoryAnalogy",
+      "dataset repository metadata and filename only",
+      "published annotation semantics EntSim and RelSim on a 0-3 scale",
+      "published positive-pair filter EntSim <= 1.0 and RelSim >= 2.0"
+    ],
+    "confirmatory_outcomes_accessed_before_freeze": false
+  },
+  "external_source": {
+    "dataset_id": "JoeyCheng/story_analogy",
+    "file": "StoryAnalogy.csv",
+    "paper": "StoryAnalogy: Deriving Story-level Analogies from Large Language Models to Unlock Analogical Understanding",
+    "venue": "EMNLP 2023",
+    "doi": "10.18653/v1/2023.emnlp-main.706",
+    "arxiv": "2310.12874",
+    "expected_scale": "approximately 24K human-annotated story pairs",
+    "license_claim_from_dataset_card": "MIT",
+    "label_authors_independent_of_reducer_author": true,
+    "pretrained_model_contamination_policy": "No pretrained model weights are permitted in v1; all learned parameters are fit only on the frozen development partition."
+  },
+  "schema_resolution": {
+    "rule": "After acquisition, before any arm fitting or label-dependent analysis, resolve exact story1/story2/EntSim/RelSim fields using field names only. If the released schema cannot be mapped unambiguously without inspecting label values, terminal SCHEMA_INCOMPATIBLE_CANNOT_CHECK. A schema-name-only amendment is allowed before any label-dependent computation and must preserve every scientific gate below.",
+    "hidden_gold_from_candidate": true
+  },
+  "gold_contract": {
+    "ACCEPT": "EntSim <= 1.0 AND RelSim >= 2.0",
+    "REJECT": "EntSim >= 2.0 OR RelSim <= 1.0",
+    "CANNOT_CHECK": "all remaining annotation combinations",
+    "rationale": "The ACCEPT region follows the paper's published high-relation/low-entity structural-analogy filter. The middle band is retained as CANNOT_CHECK rather than thresholded post hoc.",
+    "candidate_never_receives_EntSim_or_RelSim": true
+  },
+  "leakage_safe_split": {
+    "normalization": "Unicode text unchanged except strip and collapse ASCII whitespace",
+    "grouping": "Build an undirected graph whose nodes are exact normalized story-text SHA-256 values and whose edges are released story pairs. Every connected component is indivisible so an exact story cannot appear across partitions.",
+    "assignment": "Let h be SHA-256 of the lexicographically smallest story hash in the component; int(h[:8],16) mod 100 assigns DEV=0..59, CALIBRATION=60..79, CONFIRMATORY=80..99.",
+    "no_confirmatory_access_until": "all feature definitions, models, hyperparameters, calibration search, parent selection rule and falsifiability probes have completed on DEV/CALIBRATION"
+  },
+  "arms": {
+    "P0_LEXICAL": "Untrained lexical-overlap/Jaccard family; threshold and abstention band fit on DEV/CALIBRATION only.",
+    "P1_DIRECT_TEXT": "Direct three-way text classifier using only development-fitted sparse word/character n-gram features; no EntSim/RelSim factorization.",
+    "E_FACTORISED_STRUCTURAL": "Two independently trained text heads estimate REL_HIGH=(RelSim>=2) and ENT_LOW=(EntSim<=1). A deterministic calibrated decision layer emits ACCEPT only when both heads clear their positive margins, REJECT when either registered negative condition clears its margin, and CANNOT_CHECK otherwise.",
+    "TRIVIAL_CONTROLS": ["always_accept", "always_reject", "always_cannot_check"]
+  },
+  "implementation_freeze": {
+    "library": "scikit-learn CPU only",
+    "features": "TfidfVectorizer over pair text with word 1-2 grams and character 3-5 grams combined by FeatureUnion; min_df=2; sublinear_tf=true; max_features is fixed at 120000 per channel",
+    "direct_parent": "SGDClassifier(loss=log_loss, alpha=1e-5, max_iter=2000, tol=1e-4, random_state=20260814) one-vs-rest three-way",
+    "factorised_heads": "two SGDClassifier(loss=log_loss, alpha=1e-5, max_iter=2000, tol=1e-4, random_state=20260814/20260815) binary heads",
+    "calibration_grid": "probability thresholds in {0.50,0.55,...,0.90}; choose lexicographically first tuple maximizing calibration exact3 subject to invalid_false_accept<=0.15 and valid_accept>=0.50; if no tuple satisfies constraints, terminal DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD",
+    "parent_selection": "Select the strongest of P0_LEXICAL and P1_DIRECT_TEXT by calibration exact3, ties broken toward P0 as the simpler parent. Confirmatory parent identity is frozen before confirmatory labels are read."
+  },
+  "preconfirmatory_falsifiability": {
+    "must_pass": true,
+    "probes": [
+      "TEXT_DESTRUCTION: independently permute story texts across calibration rows while retaining row identities; E_FACTORISED_STRUCTURAL exact3 must drop by at least 0.10",
+      "RELATION_HEAD_SHUFFLE: permute relation-head probabilities across rows; the candidate decision vector must materially change",
+      "ENTITY_HEAD_SHUFFLE: permute entity-head probabilities across rows; the candidate decision vector must materially change",
+      "HEAD_SWAP: swap relation and entity-head probabilities; the candidate decision vector must materially change",
+      "GOLD_SHUFFLE: calibration labels permuted after fitting must destroy the registered benefit gate",
+      "TRIVIAL_CONTROLS: no constant arm may satisfy valid-retention and false-accept jointly"
+    ],
+    "failure_terminal": "INSTRUMENT_NOT_FALSIFIABLE"
+  },
+  "confirmatory_metrics": {
+    "primary": "paired exact3 difference E_FACTORISED_STRUCTURAL - strongest reproducible parent",
+    "safety": ["valid_accept", "invalid_false_accept", "CANNOT_CHECK_recall", "CANNOT_CHECK_precision"],
+    "uncertainty": "10000 paired item bootstraps with seed 20260814991; report point estimate and 95% percentile CI",
+    "domain_breakdown": "If the released domain field can be resolved by name only, report every domain separately; no domain may be dropped after outcomes."
+  },
+  "promotion_gate": {
+    "minimum_confirmatory_n": 1000,
+    "all_three_gold_classes_present": true,
+    "candidate_minus_parent_point_min": 0.02,
+    "candidate_minus_parent_ci_lower_gt": 0.0,
+    "valid_accept_min": 0.65,
+    "invalid_false_accept_max": 0.15,
+    "cannot_check_recall_min": 0.40,
+    "text_destruction_and_all_registered_probes_pass": true,
+    "positive_terminal": "PROMOTE_CONDITIONALLY_EXTERNAL_HUMAN_STRUCTURAL_ANALOGY_FACTORISATION_V1"
+  },
+  "negative_terminals": [
+    "NEGATIVE_FACTORISATION_NO_RESIDUAL_OVER_STRONGEST_TEXT_PARENT",
+    "NEGATIVE_FACTORISATION_UNSAFE_FALSE_ACCEPT",
+    "NEGATIVE_FACTORISATION_OVERREFUSES_VALID_ANALOGIES",
+    "DEVELOPMENT_NEGATIVE_NO_SAFE_THRESHOLD",
+    "INSTRUMENT_NOT_FALSIFIABLE",
+    "SCHEMA_INCOMPATIBLE_CANNOT_CHECK",
+    "RESOURCE_BLOCKED"
+  ],
+  "claim_boundary": "A positive establishes only that explicit relation/entity factorization improves externally human-annotated story-analogy discrimination over the strongest registered reproducible text parent on this frozen corpus split. It does not establish source-span witness extraction, universal cross-domain transfer, end-to-end ORION utility, scientific authority, or superiority to unpublished/proprietary frontier models.",
+  "next_if_positive": "Bind predicted factorized coordinates to exact source spans and test downstream fail-closed transfer utility on a separately frozen real-source benchmark.",
+  "next_if_negative": "Preserve this result and move to a materially different learned representation (capable-model structured extraction under the independently qualified #447 interface, or a separately frozen scientific-analogy corpus), not threshold tuning on the confirmatory split.",
+  "grants_scientific_authority": false
+}
