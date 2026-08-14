@@ -1,0 +1,63 @@
+{
+  "schema_version": "paper3-trajectory-lesson-induction-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "base_main_sha": "321f3f72c82e33c8129dddc51bca926ec306f0b8",
+  "question": "Can immutable typed task trajectories be compiled into a bounded candidate lesson without discarding verification, context, residual/boundary or contradictory history, before the separately governed consolidation gate?",
+  "scope": "TYPED_TASK_EPISODE_SEQUENCE_TO_CANDIDATE_LESSON_ONLY",
+  "seed": 202608141101,
+  "pairs_per_family": 64,
+  "families": [
+    "CONSISTENT_VERIFIED_SUCCESS_INDUCES_CANDIDATE",
+    "SAME_ACTION_UNVERIFIED_BLOCKS",
+    "MIXED_ACTIONS_BLOCK",
+    "SAME_ACTION_FAILURE_CONTRADICTS",
+    "CONTEXT_MISMATCH_BLOCK",
+    "PROBLEM_SIGNATURE_MISMATCH_BLOCK",
+    "RESIDUAL_BOUNDARY_SPLITS_SCOPE",
+    "STALE_ARTIFACT_IDENTITY_BLOCK",
+    "MISSING_VERIFICATION_ID_BLOCK",
+    "NEGATIVE_HISTORY_MUST_BE_RETAINED",
+    "SUCCESSOR_ACTION_AFTER_FAILURE",
+    "SINGLE_SUCCESS_INSUFFICIENT",
+    "PARTIAL_SUCCESS_NOT_FULL_SUPPORT",
+    "BLOCKED_EPISODE_NOT_NEGATIVE_PROOF",
+    "MULTIPLE_CONTEXTS_REQUIRE_CANNOT_CHECK"
+  ],
+  "parents": {
+    "LAST_SUCCESS": "use most recent successful action only",
+    "MAJORITY_ACTION": "choose most frequent action regardless of verification/context/residual",
+    "OUTCOME_FREQUENCY": "choose candidate if successes outnumber failures",
+    "UNTYPED_COMMON_ACTION": "common action plus context string, without verification/residual/negative-history semantics",
+    "TYPED_TRAJECTORY_INDUCTION": "verification-aware, exact-context/problem-bound, residual/boundary-aware, negative-history-retaining candidate induction"
+  },
+  "hard_gates": {
+    "typed_exact_min": 1.0,
+    "unsafe_candidate_max": 0.0,
+    "cannot_check_recall_min": 1.0,
+    "negative_history_recall_min": 1.0,
+    "strongest_parent_information_ceiling_max": 0.95,
+    "all_mutations_caught": true
+  },
+  "mutations": [
+    "IGNORE_VERIFICATION",
+    "IGNORE_CONTEXT",
+    "IGNORE_PROBLEM_SIGNATURE",
+    "IGNORE_RESIDUAL_BOUNDARY",
+    "IGNORE_CONTRADICTION",
+    "ALLOW_SINGLE_SUCCESS",
+    "COUNT_PARTIAL_AS_SUCCESS",
+    "COUNT_BLOCKED_AS_REFUTATION",
+    "DROP_NEGATIVE_HISTORY",
+    "OLD_FAILURE_SUPPRESSES_VERIFIED_SUCCESSOR"
+  ],
+  "promotion_if_green": "PROMOTE_TO_MECHANIC_TYPED_TRAJECTORY_TO_CANDIDATE_LESSON",
+  "composition_rule": "A promoted result only creates LessonAuthority.CANDIDATE. Reuse still requires existing assess_lesson_consolidation verification/fresh-transfer/proof gates.",
+  "nonclaims": [
+    "raw natural-language trajectory extraction solved",
+    "candidate lesson is verified",
+    "model-level fresh-task lift established",
+    "scientific authority"
+  ],
+  "grants_scientific_authority": false
+}
