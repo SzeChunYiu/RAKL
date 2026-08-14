@@ -1181,4 +1181,410 @@ theorem finite_basis_bound_is_attained :
 
 end Finiteness
 
+/-! ## Ingredients of: Optimality of reservation-first greedy selection
+
+Paper I, `03_workspace.tex:48`.
+
+**This section does NOT prove the theorem.** It proves three ingredients its
+proof uses — the exchange step (`sum_swap_ge`), the existence of a swap partner
+(`exchange_partner_exists`), and top-`k` optimality (`top_subset_optimal`). The
+assembly — iterating the exchange across reserved partitions while carrying
+feasibility, then splitting the objective across the reserved/fill boundary — is
+not mechanized, so no part of the optimality *statement* is machine-checked here.
+The claim accordingly stays `PAPER_PROOF_COMPLETE` in the inventory rather than
+being upgraded on the strength of its lemmas.
+
+Utilities are `Nat`. That is a real restriction and is recorded in the inventory
+rather than glossed: the paper states `u_i ≥ 0` over the reals. `Nat` supplies
+non-negativity — assumption (iii) — for free, and the argument below uses only
+`+`, `≤`, transitivity and `add_le_add`, so nothing depends on `Nat` beyond
+those. The statement as mechanized is nonetheless a special case.
+
+"The top `r_p` candidates" is not well defined under utility ties, and the
+implementation picks *some* tie-broken set. `IsTopSubset` therefore quantifies
+over **any** maximal `k`-subset rather than a unique one. That is the precision
+point recorded against the paper's statement. -/
+
+section Greedy
+
+variable {I : Type u}
+
+/-- Additive utility of a selection — assumption (iii), and unit costs are the
+fact that each member contributes exactly one term. -/
+def sumU (u : I → Nat) : List I → Nat
+  | [] => 0
+  | x :: xs => u x + sumU u xs
+
+/-- Boolean membership. Defined here because core's `List.elem`/`Mem` bridge
+depends on `propext`, which the axiom audit forbids. -/
+def memB [DecidableEq I] (a : I) : List I → Bool
+  | [] => false
+  | x :: xs => if x = a then true else memB a xs
+
+theorem mem_of_memB [DecidableEq I] (a : I) : ∀ l : List I, memB a l = true → a ∈ l := by
+  intro l
+  induction l with
+  | nil => intro h; exact Bool.noConfusion h
+  | cons x xs ih =>
+    intro h
+    revert h
+    show (if x = a then true else memB a xs) = true → a ∈ x :: xs
+    split
+    · next heq => intro _; exact heq ▸ List.Mem.head _
+    · intro h; exact List.Mem.tail _ (ih h)
+
+theorem memB_of_mem [DecidableEq I] (a : I) : ∀ l : List I, a ∈ l → memB a l = true := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    show (if x = a then true else memB a xs) = true
+    split
+    · rfl
+    · next hne =>
+      cases h with
+      | head => exact absurd rfl hne
+      | tail _ h' => exact ih h'
+
+/-- Removing a member and adding back its utility recovers the original sum. -/
+theorem sumU_dropOne [DecidableEq I] (u : I → Nat) :
+    ∀ (l : List I) (j : I), j ∈ l → u j + sumU u (dropOne j l) = sumU u l := by
+  intro l
+  induction l with
+  | nil => intro j h; cases h
+  | cons x xs ih =>
+    intro j h
+    show u j + sumU u (if x = j then xs else x :: dropOne j xs) = u x + sumU u xs
+    split
+    · next heq => rw [heq]
+    · next hne =>
+      have hmem : j ∈ xs := by
+        cases h with
+        | head => exact absurd rfl hne
+        | tail _ h' => exact h'
+      show u j + (u x + sumU u (dropOne j xs)) = u x + sumU u xs
+      rw [← ih j hmem, ← Nat.add_assoc, ← Nat.add_assoc, Nat.add_comm (u j) (u x)]
+
+/-- **The exchange step.** Swapping a selected `j` for an unselected `i` of at
+least equal utility never decreases the objective. This is the single move the
+paper's first stage iterates. -/
+theorem sum_swap_ge [DecidableEq I] (u : I → Nat) (sel : List I) (i j : I)
+    (hj : j ∈ sel) (hle : u j ≤ u i) :
+    sumU u sel ≤ sumU u (i :: dropOne j sel) := by
+  show sumU u sel ≤ u i + sumU u (dropOne j sel)
+  rw [← sumU_dropOne u sel j hj]
+  exact Nat.add_le_add_right hle _
+
+/-- A predicate and its negation split the utility of a selection. -/
+theorem sumU_keep_split (u : I → Nat) (q : I → Bool) :
+    ∀ l : List I, sumU u (keep q l) + sumU u (keep (fun a => !q a) l) = sumU u l := by
+  intro l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    show sumU u (if q x then x :: keep q xs else keep q xs)
+        + sumU u (if !q x then x :: keep (fun a => !q a) xs else keep (fun a => !q a) xs)
+        = u x + sumU u xs
+    cases hx : q x with
+    | true =>
+      show u x + sumU u (keep q xs) + sumU u (keep (fun a => !q a) xs) = u x + sumU u xs
+      rw [Nat.add_assoc, ih]
+    | false =>
+      show sumU u (keep q xs) + (u x + sumU u (keep (fun a => !q a) xs)) = u x + sumU u xs
+      rw [← Nat.add_assoc, Nat.add_comm (sumU u (keep q xs)) (u x), Nat.add_assoc, ih]
+
+theorem mem_of_mem_dropOne [DecidableEq I] (a b : I) :
+    ∀ l : List I, b ∈ dropOne a l → b ∈ l := by
+  intro l
+  induction l with
+  | nil => intro h; cases h
+  | cons x xs ih =>
+    intro h
+    revert h
+    show b ∈ (if x = a then xs else x :: dropOne a xs) → b ∈ x :: xs
+    split
+    · intro h; exact List.Mem.tail _ h
+    · intro h
+      cases h with
+      | head => exact List.Mem.head _
+      | tail _ h' => exact List.Mem.tail _ (ih h')
+
+theorem distinct_dropOne [DecidableEq I] (a : I) :
+    ∀ l : List I, Distinct l → Distinct (dropOne a l) := by
+  intro l
+  induction l with
+  | nil => intro _; exact Distinct.nil
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show Distinct (if x = a then xs else x :: dropOne a xs)
+      split
+      · exact hxs
+      · exact Distinct.cons (fun hmem => hx (mem_of_mem_dropOne a x xs hmem)) (ih hxs)
+
+theorem not_mem_dropOne_self [DecidableEq I] (a : I) :
+    ∀ l : List I, Distinct l → ¬ a ∈ dropOne a l := by
+  intro l
+  induction l with
+  | nil => intro _ h; cases h
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show ¬ a ∈ (if x = a then xs else x :: dropOne a xs)
+      split
+      · next heq => exact heq ▸ hx
+      · next hne =>
+        intro hmem
+        cases hmem with
+        | head => exact hne rfl
+        | tail _ h' => exact ih hxs h'
+
+/-- Utility depends only on the *set* of selected items, not on their order.
+Needed because the greedy output and a competing selection agree as sets on
+their shared part but not as lists. -/
+theorem sumU_congr_mem [DecidableEq I] (u : I → Nat) :
+    ∀ (l m : List I), Distinct l → Distinct m → (∀ a, a ∈ l ↔ a ∈ m) →
+      sumU u l = sumU u m := by
+  intro l
+  induction l with
+  | nil =>
+    intro m _ _ hiff
+    cases m with
+    | nil => rfl
+    | cons y ys => cases (hiff y).mpr (List.Mem.head _)
+  | cons x xs ih =>
+    intro m hdl hdm hiff
+    cases hdl with
+    | cons hx hxs =>
+      have hxm : x ∈ m := (hiff x).mp (List.Mem.head _)
+      have hiff' : ∀ a, a ∈ xs ↔ a ∈ dropOne x m := by
+        intro a
+        constructor
+        · intro ha
+          exact mem_dropOne x a m ((hiff a).mp (List.Mem.tail _ ha)) (fun heq => hx (heq ▸ ha))
+        · intro ha
+          have ham : a ∈ m := mem_of_mem_dropOne x a m ha
+          cases (hiff a).mpr ham with
+          | head => exact absurd ha (not_mem_dropOne_self _ m hdm)
+          | tail _ h' => exact h'
+      have heq : sumU u xs = sumU u (dropOne x m) :=
+        ih (dropOne x m) hxs (distinct_dropOne x m hdm) hiff'
+      show u x + sumU u xs = sumU u m
+      rw [heq]
+      exact sumU_dropOne u m x hxm
+
+theorem mem_of_mem_keep (q : I → Bool) :
+    ∀ (l : List I) (a : I), a ∈ keep q l → a ∈ l ∧ q a = true := by
+  intro l
+  induction l with
+  | nil => intro a h; cases h
+  | cons x xs ih =>
+    intro a h
+    revert h
+    show a ∈ (if q x then x :: keep q xs else keep q xs) → a ∈ x :: xs ∧ q a = true
+    split
+    · next hqx =>
+      intro h
+      cases h with
+      | head => exact ⟨List.Mem.head _, hqx⟩
+      | tail _ h' => exact ⟨List.Mem.tail _ (ih a h').1, (ih a h').2⟩
+    · intro h
+      exact ⟨List.Mem.tail _ (ih a h).1, (ih a h).2⟩
+
+theorem distinct_keep (q : I → Bool) : ∀ l : List I, Distinct l → Distinct (keep q l) := by
+  intro l
+  induction l with
+  | nil => intro _; exact Distinct.nil
+  | cons x xs ih =>
+    intro hd
+    cases hd with
+    | cons hx hxs =>
+      show Distinct (if q x then x :: keep q xs else keep q xs)
+      split
+      · exact Distinct.cons (fun hmem => hx (mem_of_mem_keep q xs x hmem).1) (ih hxs)
+      · exact ih hxs
+
+/-- Duplicate-free lists with the same members have the same length. -/
+theorem length_congr_mem [DecidableEq I] (l m : List I)
+    (hdl : Distinct l) (hdm : Distinct m) (hiff : ∀ a, a ∈ l ↔ a ∈ m) :
+    l.length = m.length :=
+  Nat.le_antisymm
+    (distinct_length_le l m hdl (fun a ha => (hiff a).mp ha))
+    (distinct_length_le m l hdm (fun a ha => (hiff a).mpr ha))
+
+/-- If every member of `X` is dominated by every member of `Y` and `Y` is at
+least as long, then `X` is worth no more. Non-negativity is what lets the extra
+slots of `Y` only help — this is where assumption (iii) does its work. -/
+theorem sum_le_of_pointwise_dominated (u : I → Nat) :
+    ∀ (X Y : List I), X.length ≤ Y.length → (∀ a ∈ X, ∀ b ∈ Y, u a ≤ u b) →
+      sumU u X ≤ sumU u Y := by
+  intro X
+  induction X with
+  | nil => intro _ _ _; exact Nat.zero_le _
+  | cons x xs ih =>
+    intro Y hlen hdom
+    cases Y with
+    | nil => exact absurd hlen (Nat.not_succ_le_zero _)
+    | cons y ys =>
+      have h1 : u x ≤ u y := hdom x (List.Mem.head _) y (List.Mem.head _)
+      have h2 : sumU u xs ≤ sumU u ys :=
+        ih ys (Nat.le_of_succ_le_succ hlen)
+          (fun a ha b hb => hdom a (List.Mem.tail _ ha) b (List.Mem.tail _ hb))
+      show u x + sumU u xs ≤ u y + sumU u ys
+      exact Nat.add_le_add h1 h2
+
+/-- Cancellation on the right. Proved here because core's
+`Nat.le_of_add_le_add_left` and `Nat.le_of_add_le_add_right` both depend on
+`propext` — the third such leak the axiom audit has caught in this development. -/
+theorem le_of_add_le_add_right : ∀ (a b c : Nat), b + a ≤ c + a → b ≤ c := by
+  intro a
+  induction a with
+  | zero => intro _ _ h; exact h
+  | succ k ih => intro b c h; exact ih b c (Nat.le_of_succ_le_succ h)
+
+/-- A maximal `k`-element selection of `q`-eligible pool members: every eligible
+candidate left out is worth no more than every one taken.
+
+This is the **tie-safe** reading of "the top `k`". It quantifies over any maximal
+subset rather than a unique one, and — crucially for the reserved stage —
+maximality is relative to the eligibility predicate `q`, not to the whole pool.
+Whole-pool maximality would be false for a reserved partition, since a reserved
+item may be worth less than an unselected item of another partition. -/
+structure IsTopSubset (u : I → Nat) (q : I → Bool) (pool sel : List I) (k : Nat) : Prop where
+  distinct : Distinct sel
+  inPool : ∀ i ∈ sel, i ∈ pool
+  eligible : ∀ i ∈ sel, q i = true
+  card : sel.length = k
+  maximal : ∀ a ∈ pool, q a = true → ¬ a ∈ sel → ∀ b ∈ sel, u a ≤ u b
+
+/-- **Top-`k` optimality.** Any admissible selection of at most `k` eligible
+candidates is worth no more than a maximal `k`-subset.
+
+Applied to the whole eligible pool this is the paper's second stage — the
+residual, once every lower bound is already met, is ordinary top-`k`. Applied per
+partition it is what the first-stage exchange establishes: the reserved slots of
+a partition may be taken by that partition's top `r_p`. -/
+theorem top_subset_optimal [DecidableEq I]
+    (u : I → Nat) (q : I → Bool) (pool sel cand : List I) (k : Nat)
+    (htop : IsTopSubset u q pool sel k)
+    (hcd : Distinct cand) (hcp : ∀ i ∈ cand, i ∈ pool) (hce : ∀ i ∈ cand, q i = true)
+    (hck : cand.length ≤ k) :
+    sumU u cand ≤ sumU u sel := by
+  have hb1t1 : ∀ a, a ∈ keep (fun i => memB i sel) cand ↔ a ∈ keep (fun i => memB i cand) sel := by
+    intro a
+    constructor
+    · intro ha
+      have h := mem_of_mem_keep _ cand a ha
+      exact mem_keep _ sel a (mem_of_memB a sel h.2) (memB_of_mem a cand h.1)
+    · intro ha
+      have h := mem_of_mem_keep _ sel a ha
+      exact mem_keep _ cand a (mem_of_memB a cand h.2) (memB_of_mem a sel h.1)
+  have hsum1 : sumU u (keep (fun i => memB i sel) cand)
+      = sumU u (keep (fun i => memB i cand) sel) :=
+    sumU_congr_mem u _ _ (distinct_keep _ cand hcd) (distinct_keep _ sel htop.distinct) hb1t1
+  have hlen1 : (keep (fun i => memB i sel) cand).length
+      = (keep (fun i => memB i cand) sel).length :=
+    length_congr_mem _ _ (distinct_keep _ cand hcd) (distinct_keep _ sel htop.distinct) hb1t1
+  have hlen2 : (keep (fun i => !memB i sel) cand).length
+      ≤ (keep (fun i => !memB i cand) sel).length := by
+    have hc := length_keep_add_not (fun i => memB i sel) cand
+    have hs := length_keep_add_not (fun i => memB i cand) sel
+    have key : (keep (fun i => memB i sel) cand).length
+             + (keep (fun i => !memB i sel) cand).length
+           ≤ (keep (fun i => memB i cand) sel).length
+             + (keep (fun i => !memB i cand) sel).length := by
+      rw [hc, hs, htop.card]
+      exact hck
+    rw [hlen1] at key
+    rw [Nat.add_comm (keep (fun i => memB i cand) sel).length
+          (keep (fun i => !memB i sel) cand).length] at key
+    rw [Nat.add_comm (keep (fun i => memB i cand) sel).length
+          (keep (fun i => !memB i cand) sel).length] at key
+    exact le_of_add_le_add_right _ _ _ key
+  have hdom : sumU u (keep (fun i => !memB i sel) cand)
+      ≤ sumU u (keep (fun i => !memB i cand) sel) := by
+    refine sum_le_of_pointwise_dominated u _ _ hlen2 ?_
+    intro a ha b hb
+    have ha' := mem_of_mem_keep _ cand a ha
+    have hb' := mem_of_mem_keep _ sel b hb
+    refine htop.maximal a (hcp a ha'.1) (hce a ha'.1) ?_ b hb'.1
+    intro hmem
+    have : memB a sel = true := memB_of_mem a sel hmem
+    rw [this] at ha'
+    exact Bool.noConfusion ha'.2
+  have hc := sumU_keep_split u (fun i => memB i sel) cand
+  have hs := sumU_keep_split u (fun i => memB i cand) sel
+  rw [← hc, ← hs, hsum1]
+  exact Nat.add_le_add_left hdom _
+
+/-- Either a list is contained in `T`, or it exhibits a member outside `T`.
+Decided rather than assumed: `memB` keeps this constructive, where the usual
+"not a subset, therefore there exists a counterexample" step would need
+classical logic. -/
+theorem subset_or_witness [DecidableEq I] (T : List I) :
+    ∀ l : List I, (∀ j ∈ l, j ∈ T) ∨ (∃ j, j ∈ l ∧ ¬ j ∈ T) := by
+  intro l
+  induction l with
+  | nil => exact Or.inl (fun j hj => nomatch hj)
+  | cons x xs ih =>
+    cases hx : memB x T with
+    | false =>
+      refine Or.inr ⟨x, List.Mem.head _, ?_⟩
+      intro hc
+      rw [memB_of_mem x T hc] at hx
+      exact Bool.noConfusion hx
+    | true =>
+      cases ih with
+      | inl hsub =>
+        refine Or.inl (fun j hj => ?_)
+        cases hj with
+        | head => exact mem_of_memB x T hx
+        | tail _ h' => exact hsub j h'
+      | inr hw =>
+        rcases hw with ⟨j, hj, hnj⟩
+        exact Or.inr ⟨j, List.Mem.tail _ hj, hnj⟩
+
+/-- A duplicate-free list contained in a no-longer list exhausts it. -/
+theorem distinct_subset_exhausts [DecidableEq I] (l m : List I)
+    (hdl : Distinct l) (hsub : ∀ a ∈ l, a ∈ m) (hcard : m.length ≤ l.length) :
+    ∀ a ∈ m, a ∈ l := by
+  intro a ha
+  cases hmb : memB a l with
+  | true => exact mem_of_memB a l hmb
+  | false =>
+    exfalso
+    have hnl : ¬ a ∈ l := by
+      intro hc
+      rw [memB_of_mem a l hc] at hmb
+      exact Bool.noConfusion hmb
+    have hsub' : ∀ b ∈ l, b ∈ dropOne a m := fun b hb =>
+      mem_dropOne a b m (hsub b hb) (fun heq => hnl (heq ▸ hb))
+    have h1 : l.length ≤ (dropOne a m).length := distinct_length_le l _ hdl hsub'
+    have h2 : (dropOne a m).length + 1 = m.length := length_dropOne a m ha
+    have h3 : l.length + 1 ≤ m.length := by rw [← h2]; exact Nat.succ_le_succ h1
+    exact Nat.not_succ_le_self l.length (Nat.le_trans h3 hcard)
+
+/-- **The swap partner always exists.** This is the counting step the paper
+compresses into "suppose `S*` contains a reserved-slot candidate `j` whose
+utility is lower than an unselected candidate `i`". If the selection already
+meets partition `p`'s reservation but misses one of `p`'s top `r_p` candidates,
+then it must contain some candidate of `p` outside that top set — which is
+precisely the element the exchange swaps out.
+
+Without this the exchange argument would be an assertion that a swap partner is
+available; here its availability is derived from feasibility. -/
+theorem exchange_partner_exists [DecidableEq I]
+    (top selp : List I) (hsel : Distinct selp)
+    (hcard : top.length ≤ selp.length)
+    (i : I) (hitop : i ∈ top) (hisel : ¬ i ∈ selp) :
+    ∃ j, j ∈ selp ∧ ¬ j ∈ top := by
+  rcases subset_or_witness top selp with hsub | hw
+  · exact absurd (distinct_subset_exhausts selp top hsel hsub hcard i hitop) hisel
+  · exact hw
+
+end Greedy
+
 end RaklFormal
