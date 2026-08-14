@@ -13,6 +13,10 @@ from .training_projection import (
 )
 
 
+MAX_FORGETTING_RISK = 0.10
+MAX_NEGATIVE_TRANSFER_RISK = 0.10
+
+
 class ParentAssimilationVerdict(str, Enum):
     SELECT_PROPOSAL = "SELECT_PROPOSAL"
     CANNOT_CHECK = "CANNOT_CHECK"
@@ -24,7 +28,7 @@ class ParentSelectionBundle:
     """Exact frozen strongest-parent proposal order.
 
     The Phase-2 strongest model-aware parent owns its NLL scoring, exposure
-    tie-breaking and frozen queue order.  This bundle transports that exact
+    tie-breaking and frozen queue order. This bundle transports that exact
     proposed candidate order without asking RAKL to reconstruct or rescore it.
     It is proposal-side only and carries no authority.
     """
@@ -125,15 +129,10 @@ def build_parent_selection_bundle(
     )
 
 
-def _safe_candidate(
-    candidate: TrainingAllocationCandidate,
-    *,
-    max_forgetting_risk: float,
-    max_negative_transfer_risk: float,
-) -> bool:
+def _safe_candidate(candidate: TrainingAllocationCandidate) -> bool:
     return (
-        candidate.utility.forgetting_risk <= max_forgetting_risk
-        and candidate.utility.negative_transfer_risk <= max_negative_transfer_risk
+        candidate.utility.forgetting_risk <= MAX_FORGETTING_RISK
+        and candidate.utility.negative_transfer_risk <= MAX_NEGATIVE_TRANSFER_RISK
         and not candidate.confirmatory_target_leak
     )
 
@@ -143,25 +142,18 @@ def select_with_parent_assimilation(
     parent_selection: ParentSelectionBundle,
     *,
     batch_size: int,
-    max_forgetting_risk: float = 0.10,
-    max_negative_transfer_risk: float = 0.10,
 ) -> ParentAssimilationDecision:
-    """Stable-filter a strongest-parent proposal through ORION hard gates.
+    """Stable-filter a strongest-parent proposal through frozen ORION hard gates.
 
-    No new learner-value heuristic is defined here.  For an all-safe candidate
-    set, the returned order is exactly the parent's supplied order.  When an
+    No new learner-value heuristic is defined here. For an all-safe candidate
+    set, the returned order is exactly the parent's supplied order. When an
     existing noncompensatory structural gate vetoes a candidate, the relative
-    order of every surviving parent candidate is preserved.
+    order of every surviving parent candidate is preserved. The harm thresholds
+    are protocol constants and cannot be weakened by callers.
     """
 
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
-    for name, value in (
-        ("max_forgetting_risk", max_forgetting_risk),
-        ("max_negative_transfer_risk", max_negative_transfer_risk),
-    ):
-        if not 0.0 <= value <= 1.0:
-            raise ValueError(f"{name} must be in [0,1]")
 
     assessment = assess_training_projection(snapshot)
     if assessment.verdict is ProjectionVerdict.INVALID:
@@ -263,11 +255,7 @@ def select_with_parent_assimilation(
     rejected: list[str] = []
     for candidate_id in order:
         candidate = candidate_by_id[candidate_id]
-        if _safe_candidate(
-            candidate,
-            max_forgetting_risk=max_forgetting_risk,
-            max_negative_transfer_risk=max_negative_transfer_risk,
-        ):
+        if _safe_candidate(candidate):
             if len(selected) < batch_size:
                 selected.append(candidate_id)
         else:
@@ -293,6 +281,7 @@ def select_with_parent_assimilation(
         (
             "strongest_parent_relative_order_preserved_exactly",
             "forgetting_and_negative_transfer_are_noncompensatory_vetoes",
+            "frozen_harm_thresholds:forgetting<=0.10;negative_transfer<=0.10",
             "proposal_only_no_training_or_scientific_authority",
         ),
     )
