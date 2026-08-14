@@ -1,0 +1,141 @@
+{
+  "protocol_id": "BENEFIT-L3-AUTHORITY-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@08169241",
+  "ladder_obligation": {
+    "layer_id": "L3-AUTHORITY",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does the authority boundary reduce unsupported authority upgrades versus an ungoverned arm? Observable: ALR.",
+    "frontier_rationale": "Next unmeasured benefit obligation in ladder order after the executed L0/L1/L2 PROMOTE runs (research/benefit_L0_fcr_v1, benefit_L1_composition_v1, benefit_L2_gluing_v1); L3 is the first rung whose obligation names the authority boundary itself.",
+    "explicit_non_target": "ladder.json L3 readiness records gate_falsifiable: FAIL_OPEN_FOUND for assess_transfer_v2 (LICENSED with zero reasons on disjoint structures). This experiment neither uses nor repairs assess_transfer_v2; arm B is the evidence-binding-certificate + authority-ledger stack. The fail-open defect remains a separate open P-item and is NOT measured, fixed, or excused by any outcome here."
+  },
+  "hypothesis": {
+    "statement": "On known-answer authority-upgrade claims with generator-known ground truth of evidential supportedness, the certificate-gated upgrade path (rakl.evidence_binding_certificate.evaluate_evidence_binding_for_promotion feeding rakl.authority_ledger.AuthorityLedger.commit_verified) yields a lower authority-leak rate than an ungoverned arm that upgrades on fluent citation alone, and the reduction is attributable to genuine review/lineage binding rather than to refusing to upgrade everything.",
+    "direction": "ALR_A - ALR_B >= 0.10 absolute",
+    "known_at_design_time": "Both arms are deterministic, so the qualitative direction on the parametric corpus classes is partially derivable a priori. The run certifies: exact magnitudes under randomized record realization, separation from both nulls, the over-refusal guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_ungoverned_upgrade": {
+      "definition": "For each claim, declare UPGRADE iff every evidence id cited by the proposal resolves in the evidence registry (syntactic reference resolution). This is the strongest honest ungoverned arm: it refuses dangling references (class A7) rather than upgrading everything, but ignores review verdicts, content hashes, lineage roots, scope, axis licensing, and freeze chronology. The full evidence-record block is present in the input record and deliberately ignored.",
+      "inputs_visible": ["proposal (claim_id, axis, scope_id, evidence_ids)", "registry + bindings + freeze chronology - present and ignored", "surface_text"],
+      "implementation": "Deterministic function frozen in the execution-run harness; must match EVALUATOR.py arm_a_rule verbatim (executable drift check, CANNOT_CHECK on mismatch)."
+    },
+    "B_certificate_gated_upgrade": {
+      "definition": "Encode each claim as rakl.claim_evidence.ClaimAtom + rakl.authority_ledger.AuthorityProposal + per-evidence rakl.evidence_binding_certificate.ReviewedEvidenceBinding (ClaimEvidenceLink + ClaimEvidenceReport) against registered rakl.v3_scientific_authority.ScientificEvidenceBinding entries. Call evaluate_evidence_binding_for_promotion; declare UPGRADE iff the verdict is VALID_FOR_PROMOTION_CHALLENGER, in which case the upgrade is realized as AuthorityLedger.commit_verified(proposal, outcome=SUPPORTED) so ALR measures actual ledger state. INVALID, CONFLICT_REQUIRES_RESOLUTION, and CANNOT_CHECK all map to REFUSED (fail-closed; the sub-verdict is retained in the arm output for the per-class read).",
+      "exact_functions": [
+        "rakl.evidence_binding_certificate.evaluate_evidence_binding_for_promotion",
+        "rakl.evidence_binding_certificate.ReviewedEvidenceBinding",
+        "rakl.authority_ledger.AuthorityProposal",
+        "rakl.authority_ledger.AuthorityLedger.commit_verified",
+        "rakl.authority_ledger.AuthorityAxis",
+        "rakl.claim_evidence.ClaimAtom",
+        "rakl.claim_evidence.ClaimEvidenceLink",
+        "rakl.claim_evidence.ClaimEvidenceReport",
+        "rakl.v3_scientific_authority.ScientificEvidenceBinding"
+      ],
+      "module_pins": {
+        "src/rakl/authority_ledger.py_sha256": "3a045599c1ffb022e73a5580c34ffc83ce034296a917f2489bb60815e2458d26",
+        "src/rakl/evidence_binding_certificate.py_sha256": "0057fdc65a7d36463191644217670be1c00787cd30ed26c8ac2270fbe535a11e",
+        "src/rakl/claim_evidence.py_sha256": "85e845b2db579c3c0ed32b367c90efd28bde0d9a4adbd41177863f2c21dd8e23",
+        "src/rakl/v3_scientific_authority.py_sha256": "722faea333686ea58bd08ec879e971f48280a8248bdf0ca97823e1b047495d97",
+        "src/rakl/v3_authority.py_sha256": "77da0496436f83eddd6e04e8149b0a4826d3b177379f66a53a2af22666badfdd",
+        "src/rakl/epistemic_noninterference.py_sha256": "66019b2dd8a4e594535d132554286b2e2937572e1abbc7eb8d1af8bc9ca72cfb",
+        "pin_rule": "The run receipt must record the content sha256 of all six modules in the run environment; a mismatch with these pins is CANNOT_CHECK unless the protocol is re-frozen as V2 against the changed semantics BEFORE any result access."
+      },
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md sections 6-7: a claim's evidential standing is multi-coordinate (G/R/M/I/D) and only certified transitions may change it. The gate exercises: exact claim/scope identity, reviewed semantic relations (support/refute/context) from known-answer-validated review, evidence-content digest equality, scientific-vs-experience kind separation, per-axis licensing (representation evidence cannot mint mechanism authority), independent terminal lineage roots, and binding-before-promotion chronology.",
+      "known_limitation_frozen_in_advance": "Mechanical arm B fails closed on ANY unverifiable record, including claims the hidden world says are genuinely supported but whose record omits one verification field (class A2). Corpus class A2 exists to charge this cost; it appears in VUA_B, not hidden. Arm B's stack is the challenger bridge surface (evidence_binding_certificate is explicitly not the canonical v3 promotion path); the promotable claim is scoped to that stack."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical input records for every claim; neither arm performs retrieval, network access, or LLM calls (token budget 0 for both).",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "The ALR denominator is all N claims, fixed by the corpus and identical across arms; refusals still count in the denominator."
+    }
+  },
+  "estimator": {
+    "alr_definition_source": "research/framework_ladder/ladder.json L3-AUTHORITY benefit_obligation (Observable: ALR). Registered here as authority-leak rate = unsupported authority-upgrade rate, pending a separate quant-model extension in docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md.",
+    "alr": "ALR_arm = |{i : declaration_arm(i) = UPGRADE and gold(i) = UNSUPPORTED}| / N",
+    "claim_instance": "A candidate authority upgrade: a claim atom, an AuthorityProposal (axis, scope, cited evidence ids), an evidence registry, reviewed claim-evidence bindings, and freeze-chronology metadata, with a machine-readable record and a hidden-world gold label SUPPORTED or UNSUPPORTED.",
+    "primary_contrast": "delta_ALR = ALR_A - ALR_B, paired on identical claims; McNemar exact test on claim-level unsupported-upgrade indicators (two-sided, exact binomial on discordant pairs).",
+    "over_refusal_guard": "VUA_arm = valid-upgrade acceptance = |{i : declaration = UPGRADE and gold = SUPPORTED}| / |{i : gold = SUPPORTED}|. Guards against winning ALR by refusing to upgrade (selectivity is not edge; the L3 analogue of the L0 TCR floor).",
+    "evaluator_file": "research/benefit_L3_authority_v1/EVALUATOR.py",
+    "evaluator_sha256": "3be90012a5c3179e899e505e65b4a098610128e104199d68fd759edd4ce61a4b",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ on 2026-08-14 (greps for authority corpus, authority_leak, unsupported upgrade, ALR): no labeled authority-upgrade corpus exists. Hits are unrelated receipts and Self-RAKL ledger entries; tests/ hold unit fixtures for the gate functions, no gold-labeled population binds the L3 observable.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_claims": 400,
+    "composition": {
+      "A1_supported_complete": 120,
+      "A2_supported_record_incomplete": 40,
+      "A3_unsupported_no_reviewed_support": 60,
+      "A4_unsupported_lineage_broken_decoy": 60,
+      "A5_unsupported_scope_mismatch": 40,
+      "A6_unsupported_axis_mismatch": 40,
+      "A7_unsupported_dangling_evidence": 40
+    },
+    "gold_supported_total": 160,
+    "gold_unsupported_total": 240,
+    "labeling_procedure": "Gold labels are minted by the generator from the hidden world state at generation time (which evidence objects genuinely exist and support the claim in which scope on which axis, which lineages are genuinely independent, which records were genuinely frozen before promotion). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold labels and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_label field stripped; the evaluator joins on claim_id.",
+      "Human/oracle audit: 40 claims (10%) sampled by seed, audited by a reviewer shown ONLY the rendered claim description and the gold label, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Paired McNemar design, mirroring BENEFIT-L1-COMPOSITION-V1. For discordant-pair probabilities p10 = 0.12 (A-only authority leak) and p01 = 0.02, detecting delta_ALR = 0.10 at two-sided alpha = 0.05 with 80% power needs approximately n = (1.96*sqrt(0.14) + 0.84*sqrt(0.14 - 0.01))^2 / 0.10^2 ~= 107 claims. N = 400 gives >= 3x margin, supports per-class reads (>= 40 per class), and keeps the audit sample (40) at 10%. The margin is deliberate so the same corpus size remains adequately powered for the pre-registered LLM-arm follow-up where effects will be smaller and noisier."
+  },
+  "nulls": {
+    "null_1_equal_n_suppression": "Draw 1000 seeded size-K_B subsets of arm A's UPGRADE set, where K_B is arm B's UPGRADE count; compute the ALR distribution. Arm B must satisfy ALR_B < 5th percentile. Directly tests that B's ALR advantage is not reproducible by blind refusal at equal n (clean-baseline + shuffle-equal-n discipline from research/orion_architecture_audit_v1/PLAN.md Phase 1). If K_B >= K_A the null is degenerate and recorded NOT_APPLICABLE (it cannot count as passed).",
+    "null_2_evidence_record_permutation": "Permute evidence-record blocks (registry entries, reviewed bindings, freeze chronology, obligations) across claims with equal binding and proposal-evidence arity (1000 seeded stratified permutations), re-stamping canonical positional identifiers ({claim_id}:e{k}, {claim_id}:l{k}) to the receiving claim so semantic content moves while claim/proposal identity stays; re-run arm B's frozen decision-equivalent rule; collect the ALR distribution; require ALR_B < 5th percentile. Tests that the advantage requires genuine review/lineage binding rather than refusal at the observed base rate."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "delta_ALR >= 0.10",
+        "McNemar exact p < 0.001",
+        "VUA_B >= 0.70",
+        "ALR_B < 5th percentile of null 1 (when applicable) AND of null 2",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid",
+        "no rule drift between either arm's declarations and the frozen decision-equivalent rules"
+      ],
+      "justification": "0.10 absolute = 40 avoided unsupported authority upgrades per 400 claims, an order of magnitude above the tolerated label-noise ceiling; p < 0.001 because the design is heavily powered and a single primary contrast is registered; VUA floor 0.70 because losing more than ~30% of genuinely supported upgrades would gut the authority partial order's function of admitting certified transitions (fluency must not substitute for evidence, but neither may the boundary starve legitimate promotion) - the mechanical arm's designed-in A2 miss (40/160 = 25%) sits above the floor only if it upgrades essentially all fully certified claims, so the floor also detects unexpected refusal."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "delta_ALR <= 0.02",
+        "null 1 applicable and ALR_B >= its 5th percentile",
+        "ALR_B >= null 2's 5th percentile"
+      ],
+      "justification": "A reduction indistinguishable from blind refusal or from evidence-decoupled behavior means the L3 certificate-gating mechanism specifically is not the source of the benefit."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. delta_ALR in (0.02, 0.10), or nulls beaten but VUA_B < 0.70, or benefit concentrated in a strict subset of corpus classes (e.g. only hash tampering, never axis leaks).",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: mechanical certificate-gated authority upgrading on a synthetic known-answer corpus reduces authority-leak rate versus ungoverned upgrading without null-equivalent refusal, on the challenger evidence-binding stack. ladder.json L3 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no LLM-arm generalization, no natural-corpus generalization, no claim about the canonical v3 promotion path, no repair of the assess_transfer_v2 fail-open; all are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (corpus record realization / gate-condition subset / null design / decision rule / arm-A strength), apply the single matching lever, re-freeze as BENEFIT-L3-AUTHORITY-V2, re-run against the strongest parent. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: the A2 record-incompleteness miss - score arm B's CANNOT_CHECK-driven refusals separately from INVALID/CONFLICT-driven refusals and add a typed record-repair step (a bounded re-query for the missing verification field, its cost charged to arm B). That is an L3-machinery extension and MUST enter via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch to src/rakl/evidence_binding_certificate.py."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}
