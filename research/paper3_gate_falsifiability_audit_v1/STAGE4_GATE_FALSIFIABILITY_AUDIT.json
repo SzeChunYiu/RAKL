@@ -1,0 +1,76 @@
+{
+  "schema_version": "rakl-stage4-gate-falsifiability-audit-v1",
+  "audited_subject": {
+    "gate": "experiments/paper3/run_capability_stage4_v1.py :: _score -> all_vector_gates_pass",
+    "freeze": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json",
+    "panel": "experiments/paper3/build_capability_stage4_panel_v1.py",
+    "battery": "src/rakl/gate_falsifiability.py"
+  },
+  "n_tasks": 132,
+  "audited_surface": {
+    "covered": "_score and the vector-gate conjunction downstream of it",
+    "NOT_covered": "_parse \u2014 the path from raw model text to a parsed answer",
+    "why": "Every probe operates on already-parsed dicts constructed by oracle_records, so _parse never executes. make_10pct_unparseable sets parsed=None directly rather than emitting malformed text through _parse. parse_validity is a registered gate dimension with a 0.98 floor, so the parser is load-bearing and remains unaudited.",
+    "consequence": "FALSIFIABLE applies to the scoring and gating surface. It does not certify that a real model's raw output is parsed correctly, and a parser defect would not be caught by this audit."
+  },
+  "controls": {
+    "oracle_responder_passes": true,
+    "shipped_shortcut_audit_clean": true,
+    "constant_responder_results": {
+      "ALWAYS_SUPPORT": false,
+      "ALWAYS_REFUTE": false,
+      "ALWAYS_CANNOT_CHECK": false,
+      "ALWAYS_CONTEXT_MISALIGNED": false
+    }
+  },
+  "verdict": "FALSIFIABLE",
+  "supports_confirmatory_use": true,
+  "sensitive_probes": [
+    "make_10pct_unparseable",
+    "shuffle_rejected_evidence_ids",
+    "shuffle_selected_evidence_ids",
+    "shuffle_task_id",
+    "shuffle_verdicts_across_tasks",
+    "swap_selected_and_rejected"
+  ],
+  "probes": {
+    "corrupt_a_single_verdict": {
+      "outcome": "INSENSITIVE",
+      "flips": 0,
+      "trials": 16
+    },
+    "make_10pct_unparseable": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    },
+    "shuffle_rejected_evidence_ids": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    },
+    "shuffle_selected_evidence_ids": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    },
+    "shuffle_task_id": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    },
+    "shuffle_verdicts_across_tasks": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    },
+    "swap_selected_and_rejected": {
+      "outcome": "SENSITIVE",
+      "flips": 16,
+      "trials": 16
+    }
+  },
+  "reasons": [],
+  "interpretation": "A FALSIFIABLE verdict means only that this gate is capable of failing. It does not qualify any model, does not authorize Stage 4 execution, and says nothing about whether a PASS would be correct.",
+  "grants_scientific_authority": false
+}
