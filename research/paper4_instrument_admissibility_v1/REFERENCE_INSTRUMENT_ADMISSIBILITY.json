@@ -1,0 +1,36 @@
+{
+  "schema_version": "p4-reference-instrument-admissibility-v1",
+  "date": "2026-08-14",
+  "kind": "FORMAL_ADMISSIBILITY_VERDICT_ON_PRESERVED_REFERENCE_INSTRUMENT",
+  "evidence_source": "research/paper4_allocator_attribution_v1/CEILING_BOUNDS.json",
+  "kappa_freeze": "research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json",
+  "chronology": "ceiling computed before this freeze; verdict is a formalization of a preserved finding and is kappa-insensitive for kappa > 0.4914 (see KAPPA_FREEZE_V1 chronology_disclosure)",
+  "decision": {
+    "verdict": "INADMISSIBLE",
+    "instrument_id": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+    "registered_primary_metric": "E_minus_D_balanced_mastery",
+    "registered_minimum_detectable_effect": 0.05,
+    "frozen_kappa": 1.2,
+    "declaration_sha256": "e4f11c41c60338d63f9777835a5cb093ec4459f31e24e5cff738661bb74bf950",
+    "oracle_computability_status": "COMPUTABLE",
+    "equal_budget_verified": true,
+    "reference_parent_arm_id": "D_STATIC_STRUCTURAL",
+    "licensing_bound_id": "tier3_harm_free_relaxation",
+    "licensing_bound_kind": "UPPER_BOUND",
+    "best_lower_bound": 0.004456878205336338,
+    "least_upper_bound": 0.024570935346802252,
+    "verdict_kappa_range": "holds_for_all_kappa_greater_than_0.491419",
+    "reasons": [
+      "least_upper_bound_below_threshold",
+      "least_upper=0.024570935346802252",
+      "threshold=kappa*mde=0.06",
+      "licensed_by_upper_bound:tier3_harm_free_relaxation",
+      "verdict_may_never_be_upgraded_by_arm_outcome_access"
+    ],
+    "grants_scientific_authority": false,
+    "licenses_comparison_execution": false,
+    "upgradeable_by_outcome_access": false
+  },
+  "consequence": "the frozen development-stress comparison would not have been licensed for confirmatory execution; the preserved adaptive-v1 negative and every existing terminal remain byte-unchanged",
+  "grants_scientific_authority": false
+}
