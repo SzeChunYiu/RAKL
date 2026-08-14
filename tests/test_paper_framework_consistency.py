@@ -1,8 +1,14 @@
 """Tests for the paper-to-framework consistency checks.
 
-The live bindings all pass, which is necessary but proves nothing on its own. The
-bulk of these tests inject divergence and assert it is *caught* — a checker that
-can only return CONSISTENT would satisfy the happy path while being useless.
+Four bindings are CONSISTENT and one is a genuine, independently verified
+DIVERGENT finding on the live tree — which is the strongest evidence that the
+checker works, since a checker validated only against fixtures can miss whole
+classes of defect.
+
+The rest of these tests inject divergence and assert it is *caught*: a checker
+that could only ever return CONSISTENT would satisfy the happy path while being
+useless. Acceptance of a known divergence is tested too — it must never soften
+the verdict, and an acceptance with no closure action must not silence anything.
 """
 
 from __future__ import annotations
@@ -15,10 +21,64 @@ from rakl import paper_framework_consistency as pfc
 from rakl.paper_framework_consistency import ConsistencyVerdict
 
 
-def test_live_bindings_are_all_consistent():
+def test_no_blocking_divergences_on_the_live_tree():
+    """Unaccepted divergences block. Accepted ones are still reported (see below)."""
     results = pfc.run_all()
     assert results, "no bindings evaluated"
-    assert pfc.divergences(results) == ()
+    blocking = pfc.blocking_divergences(results)
+    assert blocking == (), f"unaccepted divergence: {[(r.binding_id, r.detail) for r in blocking]}"
+
+
+def test_checker_finds_the_known_real_divergence():
+    """Validated against REAL data, not just fixtures: this check must actually fire.
+
+    Both symbols declare themselves a production path while only tests reference
+    them. If this ever stops firing it means either the divergence was repaired
+    (then drop the acceptance) or the check silently stopped working.
+    """
+    results = {r.binding_id: r for r in pfc.run_all()}
+    result = results["PFC-PRODUCTION-PATH-IS-LIVE"]
+    assert result.verdict is ConsistencyVerdict.DIVERGENT
+    assert "assured_compile_problem_fibre_with_quotient" in result.detail
+
+
+def test_acceptance_does_not_soften_the_verdict():
+    """Acceptance records a decision; it never turns DIVERGENT into CONSISTENT."""
+    results = pfc.run_all()
+    accepted = [r for r in pfc.divergences(results)
+                if r not in pfc.blocking_divergences(results)]
+    assert accepted, "expected at least one accepted divergence"
+    for item in accepted:
+        assert item.verdict is ConsistencyVerdict.DIVERGENT
+
+
+def test_acceptance_without_closure_action_still_blocks(tmp_path, monkeypatch):
+    """An acceptance that does not say what will be done cannot silence a finding."""
+    bindings = {"bindings": [{
+        "binding_id": "PFC-BAD-ACCEPT",
+        "accepted_divergence": {"status": "OPEN_DIVERGENCE", "closure_action": "   "},
+    }]}
+    path = tmp_path / "bindings.json"
+    path.write_text(json.dumps(bindings), encoding="utf-8")
+    monkeypatch.setitem(pfc.CHECKS, "PFC-BAD-ACCEPT",
+                        lambda: (ConsistencyVerdict.DIVERGENT, "injected"))
+    results = pfc.run_all(path)
+    assert len(pfc.blocking_divergences(results, path)) == 1
+
+
+def test_narrow_production_rule_avoids_false_positives():
+    """Only first-line 'Production' declarations count.
+
+    A looser rule matching any mention of the word fires on six further symbols
+    that merely discuss production, and a checker that cries wolf on its first
+    real run gets switched off.
+    """
+    symbols = pfc._production_claiming_symbols()
+    names = {name for _, name in symbols}
+    assert names == {
+        "assured_compile_problem_fibre_with_quotient",
+        "TypedShortcutResolutionV3",
+    }, f"production-claim detection drifted: {sorted(names)}"
 
 
 def test_no_binding_is_silently_unchecked():

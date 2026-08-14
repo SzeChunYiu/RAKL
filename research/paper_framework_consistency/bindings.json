@@ -6,7 +6,8 @@
   "verdicts": {
     "CONSISTENT": "The framework was executed and behaved as the paper claim requires.",
     "DIVERGENT": "The framework does not do what the paper says. Blocks publication of that claim.",
-    "CANNOT_CHECK": "The binding could not be evaluated. Explicitly NOT 'checked and fine'."
+    "CANNOT_CHECK": "The binding could not be evaluated. Explicitly NOT 'checked and fine'.",
+    "accepted_divergence": "A DIVERGENT binding whose resolution has been decided and recorded. The verdict stays DIVERGENT - acceptance never makes the code consistent, it only records that a human chose the repair. Requires a closure_action, so it cannot silence a finding without saying what will be done."
   },
   "bindings": [
     {
@@ -63,6 +64,26 @@
       ],
       "check_kind": "BEHAVIOURAL",
       "check_note": "Executes the eligibility function over the live registry and cross-references availability. Guards the exact error issue #588 forbids: writing 'ORION architecture > System X architecture' from a confounded comparison."
+    },
+    {
+      "binding_id": "PFC-PRODUCTION-PATH-IS-LIVE",
+      "paper": "Paper V",
+      "claim_id": "P5-PREMISE-III-DISCHARGE-STATUS",
+      "paper_location": "publication/papers/paper-05-verified-discovery-in-mathematics/sections/11_verified_transformation_geometry.tex:139",
+      "claim_text": "The companion gate assured_materialize_validated_quotient 'is a dormant sidecar with no production caller'; 'wiring this gate into the call graph is registered open work'.",
+      "framework_obligation": "A symbol whose docstring declares it a production path must be reachable from something other than a test.",
+      "enforcement_points": [
+        "src/rakl/semantic_quotient_runtime.py:107 assured_compile_problem_fibre_with_quotient",
+        "src/rakl/semantic_shortcut_router_v3.py TypedShortcutResolutionV3"
+      ],
+      "check_kind": "BEHAVIOURAL",
+      "check_note": "Scans src/rakl for docstrings whose FIRST LINE begins 'Production', then requires a non-test referrer. Deliberately narrow: matching any mention of 'production' fires on six further symbols that merely discuss it, and a checker that cries wolf on its first real run gets switched off.",
+      "accepted_divergence": {
+        "status": "OPEN_DIVERGENCE",
+        "finding": "BOTH SIDES MISDESCRIBE. (a) The paper is STALE: it says the gate has no production caller and that wiring is open work, but src/rakl/semantic_quotient_runtime.py:107 is exactly that wiring layer and calls the gate at 132-134. (b) The CODE OVERSTATES: its docstring calls itself the 'Production quotient-consumption path', yet its only referrers are tests/test_integration_epoch_wiring.py and tests/test_semantic_quotient_runtime.py. TypedShortcutResolutionV3 has the same defect. The paper's CONCLUSION survives - premise (iii) is still not machine-enforced on a live path - but its stated REASON is wrong.",
+        "closure_action": "Operator decision, two independent repairs. CODE: soften both docstrings to describe a gated entry point consumers must use, not one that is currently used - or wire a real caller. PAPER: replace 'dormant sidecar with no production caller / wiring is registered open work' with the accurate reason - a wiring layer exists but its call chain terminates in tests, so the premise is still not enforced on a live path. Not done unilaterally: this edits a premise-discharge claim in a manuscript that concurrent sessions are actively editing.",
+        "verified_independently": true
+      }
     }
   ],
   "open_residuals": [
@@ -75,6 +96,11 @@
       "residual_id": "RES-PFC-002",
       "statement": "Bindings are hand-authored, so a paper claim with no binding is invisible to this checker rather than reported as unbound.",
       "closure_action": "Cross-reference the Paper I theorem inventory so every theorem-like claim is either bound, or explicitly recorded as not-framework-bearing."
+    },
+    {
+      "residual_id": "RES-PFC-003",
+      "statement": "PFC-PRODUCTION-PATH-IS-LIVE is DIVERGENT on two symbols and is accepted pending an operator decision on both the code docstrings and the Paper V sentence.",
+      "closure_action": "Apply both repairs in accepted_divergence.closure_action, then remove the acceptance so the binding must go CONSISTENT."
     }
   ]
 }
