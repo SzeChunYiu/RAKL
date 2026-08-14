@@ -383,7 +383,7 @@ def run(csv_path: Path, out_dir: Path) -> dict:
         author="RAKL programme (same-context; LLM-assisted)",
         external_label_author="Sourati, Ilievski, Sommerauer, Jiang (ARN, TACL 2024)",
     )
-    admission = admit_reducer(profile, reduce_narrative_v2, sample_sources, seed=SEED_SCRAMBLE)
+    admission = admit_reducer(profile, reduce_narrative_v3, sample_sources, seed=SEED_SCRAMBLE)
     result["admission"] = {
         "verdict": admission.verdict.value,
         "admitted_kind": admission.admitted_kind.value if admission.admitted_kind else None,
