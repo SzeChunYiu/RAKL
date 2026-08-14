@@ -144,6 +144,50 @@ narrows the defensible claim from "six coordinates are necessary" to "five
 coordinates carry the fail-closed behaviour on these six families; `relation`
 is not separately load-bearing here."
 
+## 5b. The benchmark contains no extraction problem (probe G)
+
+`probe_g_text_inertness.py` replaces every `source_text` and `target_text` in the
+confirmatory packet with random noise and recomputes everything.
+
+| quantity | result |
+| --- | --- |
+| gold unchanged after text scramble | **810 / 810** |
+| all six coordinates unchanged | **810 / 810** |
+| mechanism arm unchanged | 810 / 810 |
+| relational arm unchanged | 810 / 810 |
+| lexical diagnostic changed | 762 / 810 |
+
+The natural-language surface is **inert**. No arm except the lexical diagnostic
+reads it.
+
+`components()` reads only `task.public`, which holds the answer in pre-parsed
+form. For `linear_systems` the six coordinates are literally:
+
+```
+qoi          target["qoi"] == source["qoi"]              # string equality
+boundary     target["boundary"] == source["boundary"]    # string equality
+direction    map["direction"] == "source_to_target"      # string equality
+relation     map["rank"] >= map["required_rank"]         # integer comparison
+precondition target["lti_assumption"]                    # already a boolean
+effect       target["spectral_radius"] < 1.0             # float comparison
+```
+
+Two consequences.
+
+1. The result cannot support any claim about recovering applicability from
+   research prose. Paper II already says this in §03c; probe G shows the
+   stronger fact that the benchmark contains *zero* extraction signal, not
+   merely insufficient signal.
+
+2. The "which applicability coordinates a fail-closed gate must enforce"
+   finding reduces to: checking one of six independent conditions misses
+   violations of the other five. That is arithmetic, not an empirical result.
+
+This also makes registration development gate 2 ("within-family semantic
+similarity ACCEPT-vs-REJECT differences small / permutation non-significant")
+non-informative: the semantic text is uncorrelated with gold **by construction**
+because nothing reads it.
+
 ## 6. Residual
 
 The six-family extension is **executed but non-probative for generality**. To
@@ -153,7 +197,10 @@ make it probative the registration would need, in a new versioned epoch:
    primary statistic is genuinely paired;
 2. item strata whose discriminating coordinate is sampled rather than assigned
    per stratum, so control-arm failure is measured rather than constructed;
-3. a registered gate that some seed can fail, demonstrated by exhibiting one.
+3. a registered gate that some seed can fail, demonstrated by exhibiting one;
+4. a task surface where the applicability coordinates must be *recovered* rather
+   than read from pre-parsed public fields — otherwise no arm is solving a
+   transfer problem.
 
 Until then the honest verdict is `SCOPED`, not `BROAD_GENERALIZATION`.
 
