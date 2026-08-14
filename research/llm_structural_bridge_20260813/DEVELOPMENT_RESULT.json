@@ -1,0 +1,58 @@
+{
+  "schema": "rakl.neural_bridge.known_world.development.v1",
+  "status": "FEASIBILITY_SUPPORTED_RAKL_SPECIFIC_RESIDUAL_NOT_ESTABLISHED",
+  "date": "2026-08-13",
+  "development_script_blob_sha": "dba43e60275fbccd9be241eafafbb72b3038d66f",
+  "runtime_observed": {
+    "torch": "2.10.0+cpu",
+    "seeds": 5,
+    "training_steps_per_neural_arm": 150,
+    "note": "Executed locally as a development screen before this result was committed. The committed script is the cleaned research-local reproduction harness; no LLM/GPU model was used."
+  },
+  "arms": {
+    "raw": {
+      "triplet_acc": {"mean": 0.0, "sd": 0.0, "values": [0.0, 0.0, 0.0, 0.0, 0.0]},
+      "retrieval_acc": {"mean": 0.38, "sd": 0.0363984296228882, "values": [0.39166666666666666, 0.34444444444444444, 0.3388888888888889, 0.41944444444444445, 0.40555555555555556]},
+      "qoi_flip_success": {"mean": 0.0, "sd": 0.0, "values": [0.0, 0.0, 0.0, 0.0, 0.0]},
+      "boundary_acc": {"mean": 0.00840000002644956, "sd": 0.007668115616673048, "values": [0.0, 0.014000000432133675, 0.0020000000949949026, 0.00800000037997961, 0.017999999225139618]},
+      "boundary_gap": {"mean": -0.5583928167819977, "sd": 0.05987392650741315}
+    },
+    "unconditioned_structural": {
+      "triplet_acc": {"mean": 0.6315000176429748, "sd": 0.03672532706099055, "values": [0.6575000286102295, 0.6000000238418579, 0.625, 0.6800000071525574, 0.5950000286102295]},
+      "retrieval_acc": {"mean": 0.5555555555555556, "sd": 0.07913010851802287, "values": [0.5638888888888889, 0.6333333333333333, 0.5166666666666666, 0.44166666666666665, 0.6222222222222222]},
+      "qoi_flip_success": {"mean": 0.0, "sd": 0.0, "values": [0.0, 0.0, 0.0, 0.0, 0.0]},
+      "boundary_acc": {"mean": 1.0, "sd": 0.0, "values": [1.0, 1.0, 1.0, 1.0, 1.0]},
+      "boundary_gap": {"mean": 0.9064661264419556, "sd": 0.05580859170103132}
+    },
+    "conditional_metric": {
+      "triplet_acc": {"mean": 0.9490000009536743, "sd": 0.016259616280645418, "values": [0.9700000286102295, 0.9325000047683716, 0.9399999976158142, 0.9624999761581421, 0.9399999976158142]},
+      "retrieval_acc": {"mean": 0.8366666666666667, "sd": 0.044418395143909606, "values": [0.8388888888888889, 0.8083333333333333, 0.7805555555555556, 0.8944444444444444, 0.8611111111111112]},
+      "qoi_flip_success": {"mean": 0.9400000095367431, "sd": 0.07572774978156296, "values": [0.9971428513526917, 0.9457142949104309, 0.977142870426178, 0.9714285731315613, 0.808571457862854]},
+      "qoi_gap": {"mean": 0.7373492598533631, "sd": 0.04287621741747593},
+      "boundary_acc": {"mean": 0.9983999967575073, "sd": 0.0035777160144337032, "values": [1.0, 0.9919999837875366, 1.0, 1.0, 1.0]},
+      "boundary_gap": {"mean": 0.6739681005477905, "sd": 0.1074043885322408}
+    },
+    "explicit_rakl": {
+      "triplet_acc": {"mean": 1.0, "sd": 0.0, "values": [1.0, 1.0, 1.0, 1.0, 1.0]},
+      "retrieval_acc": {"mean": 0.9994444444444445, "sd": 0.0012422599874998789, "values": [1.0, 0.9972222222222222, 1.0, 1.0, 1.0]},
+      "qoi_flip_success": {"mean": 1.0, "sd": 0.0, "values": [1.0, 1.0, 1.0, 1.0, 1.0]},
+      "qoi_gap": {"mean": 0.7805170536041259, "sd": 0.033148137574012554},
+      "boundary_acc": {"mean": 1.0, "sd": 0.0, "values": [1.0, 1.0, 1.0, 1.0, 1.0]},
+      "boundary_gap": {"mean": 0.6122423410415649, "sd": 0.04467680100419498}
+    }
+  },
+  "development_contrasts": {
+    "explicit_minus_conditional_metric_triplet": 0.0509999990463257,
+    "explicit_minus_conditional_metric_retrieval": 0.1627777777777778,
+    "explicit_minus_conditional_metric_qoi_flip": 0.0599999904632569,
+    "interpretation": "Positive development point differences exist, but the experiment was not preregistered/powered to identify an RAKL-specific residual and the generic conditional-metric parent already explains most of the mechanism. Do not promote these point differences as confirmatory evidence."
+  },
+  "claim_boundary": [
+    "Synthetic development known-world only; not LLM or natural-domain evidence.",
+    "QoI-conditioned metric learning is a strong parent and explains most of the learned-geometry gain.",
+    "Explicit RAKL structural auxiliary supervision is not established as a distinct causal advantage by this experiment.",
+    "The result supports feasibility of a QoI-conditioned embedding reused for fresh-domain retrieval and boundary-aware matching.",
+    "No scientific-authority transition is licensed by this result."
+  ],
+  "grants_scientific_authority": false
+}
