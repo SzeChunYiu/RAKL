@@ -4,55 +4,29 @@
   "parent": "PROMOTE_CONDITIONALLY_CONTROLLED_TEXT_STRUCTURAL_WITNESS_EXTRACTION",
   "question": "Can an extractor recover a grounded structural descriptor from short real external technical/scientific source spans while explicitly leaving application-specific mapping/precondition coordinates unknown?",
   "scope": "REAL_EXTERNAL_SOURCE_SPANS__SOURCE_DESCRIPTOR_ONLY",
+  "execution_subject": {
+    "requires_terminal": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "capability_owner": "issue #447 / Paper III shared model-interface qualification",
+    "required_model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "required_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "selection_independent_of_p2_outcomes": true,
+    "reason": "P2 may not select a model because it performs favorably on the extraction pilot. Capability must be authorized independently first."
+  },
+  "output_schema": {
+    "family": "one of flow|logic|units|state|sched|stat",
+    "qoi": "registered descriptor token",
+    "boundary_markers": "array of registered source-bound markers",
+    "mapping_status": "UNKNOWN",
+    "application_preconditions_status": "UNKNOWN",
+    "source_span_sha256": "exact bound span digest"
+  },
   "sources": [
-    {
-      "family": "flow",
-      "source_ref": "arXiv:0905.0451",
-      "title": "Maximum Flow in Directed Planar Graphs with Vertex Capacities",
-      "span": "In this paper we present an O(n log n) algorithm for finding a maximum flow in a directed planar graph.",
-      "span_sha256": "a74a579bae06626fd4b1985285c44ebfe05df9595274ab388838bee07fff461f",
-      "gold": {"qoi": "maximum_flow", "boundary_markers": ["directed", "planar_graph"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    },
-    {
-      "family": "logic",
-      "source_ref": "arXiv:1604.04114",
-      "title": "Operational Semantics of Resolution and Productivity in Horn Clause Logic",
-      "span": "This paper presents a study of operational and type-theoretic properties of different resolution strategies in Horn clause logic.",
-      "span_sha256": "be86e53f4dc4628d9e448fb61f71c257455a0392a19bc85538963b67d32a1428",
-      "gold": {"qoi": "resolution_semantics", "boundary_markers": ["Horn_clause_logic"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    },
-    {
-      "family": "units",
-      "source_ref": "arXiv:1408.5024",
-      "title": "Quantities, Dimensions and Dimensional Analysis",
-      "span": "Formal definitions of quantities, quantity spaces, dimensions and dimension groups are introduced.",
-      "span_sha256": "062300341d5e9706f69aac189c81cf78f075fc2ba335f7520e84adc261d012d8",
-      "gold": {"qoi": "dimensional_analysis", "boundary_markers": ["dimensions", "quantity_spaces"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    },
-    {
-      "family": "state",
-      "source_ref": "arXiv:cs/0306121",
-      "title": "Reachability problems for communicating finite state machines",
-      "span": "The paper deals with the verification of reachability properties in a commonly used state transition model of communication protocols.",
-      "span_sha256": "10755d3cab08bf0a92080ea1ed9f4d482d63ba29c2324ab49c7a58eb55d4c95a",
-      "gold": {"qoi": "reachability", "boundary_markers": ["state_transition_model", "communication_protocols"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    },
-    {
-      "family": "sched",
-      "source_ref": "arXiv:1507.00748",
-      "title": "Approximate Deadline-Scheduling with Precedence Constraints",
-      "span": "We consider the classic problem of scheduling a set of n jobs non-preemptively on a single machine.",
-      "span_sha256": "8ae6e2d7e430d447eb86d792321e2d5b543bd77df37b7d14a4ebbbc14381d74c",
-      "gold": {"qoi": "single_machine_scheduling", "boundary_markers": ["non_preemptive", "single_machine"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    },
-    {
-      "family": "stat",
-      "source_ref": "arXiv:2007.13046",
-      "title": "Derivation of Generalized Equations for the Predictive Value of Sequential Screening Tests",
-      "span": "Using Bayes' Theorem, we derive generalized equations to determine the positive and negative predictive value of screening tests undertaken sequentially.",
-      "span_sha256": "19c45af99d4bd494ff236dc5416b74c1defea4273e6541dd05ab726e11af2721",
-      "gold": {"qoi": "predictive_value", "boundary_markers": ["sequential_screening"], "mapping_status": "UNKNOWN", "application_preconditions_status": "UNKNOWN"}
-    }
+    {"family":"flow","source_ref":"arXiv:0905.0451","title":"Maximum Flow in Directed Planar Graphs with Vertex Capacities","span":"In this paper we present an O(n log n) algorithm for finding a maximum flow in a directed planar graph.","span_sha256":"a74a579bae06626fd4b1985285c44ebfe05df9595274ab388838bee07fff461f","gold":{"qoi":"maximum_flow","boundary_markers":["directed","planar_graph"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}},
+    {"family":"logic","source_ref":"arXiv:1604.04114","title":"Operational Semantics of Resolution and Productivity in Horn Clause Logic","span":"This paper presents a study of operational and type-theoretic properties of different resolution strategies in Horn clause logic.","span_sha256":"be86e53f4dc4628d9e448fb61f71c257455a0392a19bc85538963b67d32a1428","gold":{"qoi":"resolution_semantics","boundary_markers":["Horn_clause_logic"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}},
+    {"family":"units","source_ref":"arXiv:1408.5024","title":"Quantities, Dimensions and Dimensional Analysis","span":"Formal definitions of quantities, quantity spaces, dimensions and dimension groups are introduced.","span_sha256":"062300341d5e9706f69aac189c81cf78f075fc2ba335f7520e84adc261d012d8","gold":{"qoi":"dimensional_analysis","boundary_markers":["dimensions","quantity_spaces"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}},
+    {"family":"state","source_ref":"arXiv:cs/0306121","title":"Reachability problems for communicating finite state machines","span":"The paper deals with the verification of reachability properties in a commonly used state transition model of communication protocols.","span_sha256":"10755d3cab08bf0a92080ea1ed9f4d482d63ba29c2324ab49c7a58eb55d4c95a","gold":{"qoi":"reachability","boundary_markers":["state_transition_model","communication_protocols"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}},
+    {"family":"sched","source_ref":"arXiv:1507.00748","title":"Approximate Deadline-Scheduling with Precedence Constraints","span":"We consider the classic problem of scheduling a set of n jobs non-preemptively on a single machine.","span_sha256":"8ae6e2d7e430d447eb86d792321e2d5b543bd77df37b7d14a4ebbbc14381d74c","gold":{"qoi":"single_machine_scheduling","boundary_markers":["non_preemptive","single_machine"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}},
+    {"family":"stat","source_ref":"arXiv:2007.13046","title":"Derivation of Generalized Equations for the Predictive Value of Sequential Screening Tests","span":"Using Bayes' Theorem, we derive generalized equations to determine the positive and negative predictive value of screening tests undertaken sequentially.","span_sha256":"19c45af99d4bd494ff236dc5416b74c1defea4273e6541dd05ab726e11af2721","gold":{"qoi":"predictive_value","boundary_markers":["sequential_screening"],"mapping_status":"UNKNOWN","application_preconditions_status":"UNKNOWN"}}
   ],
   "development_rule": "The six spans are a source-grounding pilot only. They may develop schema/parsing but cannot support a broad natural-domain result.",
   "fresh_successor_if_schema_works": "freeze a larger disjoint set of real source/target excerpts before model outcomes, with exact source locators/spans, independent annotation and a downstream transfer decision",
