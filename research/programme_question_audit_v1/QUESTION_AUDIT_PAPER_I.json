@@ -1,0 +1,102 @@
+{
+  "schema_version": "programme-question-audit-v1",
+  "paper": "Paper I - Epistemic Mechanics (publication/papers/paper-01-epistemic-mechanics)",
+  "audit_date": "2026-08-14",
+  "base_commit": "08169241",
+  "authority": "Same-context analysis. Not independent review. Grants no scientific or promotion authority.",
+  "grants_scientific_authority": false,
+  "object": "The headline QUESTION of Paper I, not its answers.",
+  "qoi": "Which question maximizes (a) support from receipts on main, (b) sign-robustness, (c) field need, (d) consistency with the no-scalarization theorem and the benefit ledger.",
+  "current_question": {
+    "statement": "Which generated statements are licensed to change a scientific record - what discipline must an evidence-governed agent obey?",
+    "source": "publication/papers/paper-01-epistemic-mechanics/main.tex abstract",
+    "character": "Soundness/definitional. Already answered at MECHANIZED strength for 3 mechanics (MECH-AUTHORITY-NON-ESCALATION, MECH-BOUNDED-SATURATION, MECH-NO-SCALAR-COLLAPSE per research/mechanism_benefit_ledger/ledger.json); 87 theorem heads in formal/RaklFormal.lean, axiom-audited in CI (.github/workflows/paper1-formal-proofs.yml) with a planted-failure negative control; 18 paper claims mapped (17 FULL, 1 PARTIAL) in research/paper1_formal_closure/theorem_inventory.json."
+  },
+  "candidate_questions": [
+    {
+      "id": "PI-Q1",
+      "question": "What discipline must an evidence-governed agent obey so that generation cannot silently change a scientific record? (incumbent)",
+      "receipt_support": "STRONG - fully mechanized, CI-enforced, inventory-mapped.",
+      "sign_robustness": "N/A - already answered; as a headline going forward it is definitional, not falsifiable.",
+      "field_need": "Partially occupied: the abstract already carves position against transactional-state, contested-knowledge and agent-publishing nearest work (sections 01b-01e, 04c, 04f). CANNOT_CHECK for post-cutoff entrants without a fresh nearest-work pass (nearest-work lane active).",
+      "ledger_consistency": "Consistent but confined to the soundness column; the ledger's own finding is that soundness cannot carry the programme (it is satisfied by a system that never acts)."
+    },
+    {
+      "id": "PI-Q2",
+      "question": "Which hypotheses of the mechanized discipline are individually NECESSARY, and which can be dropped without losing the guarantee? (minimal-discipline frontier)",
+      "receipt_support": "STRONG and specifically enabled by the formalization style: formal/RaklFormal.lean deliberately passes every hypothesis as an explicit argument ('making each hypothesis an explicit argument is the faithful formalization', file header). CI already has the two ingredients a necessity audit needs: a compile gate and a planted-failure control. Exemplar necessity witnesses already exist in-file (certified_operator_may_change_canon witnesses that the certification hypothesis of no_uncertified_composition_changes_canon is load-bearing; ledger RES-MBL-002 demands exactly this class of witness).",
+      "sign_robustness": "SIGN-ROBUST. Every hypothesis of every headline theorem lands in one of three publishable cells: (i) necessity countermodel exists (component is load-bearing - strengthens the discipline claim), (ii) theorem survives hypothesis removal (discipline simplifies - also a result), (iii) proof-necessary but no countermodel found (honest CANNOT_CHECK cell). No outcome is a loss.",
+      "field_need": "Minimality analyses of mechanized hypothesis sets are routine inside formal mathematics but not, to this audit's in-repo knowledge, for agent-governance developments; that novelty wording is CANNOT_CHECK until a primary-source nearest-work pass - route to the nearest-work lane.",
+      "ledger_consistency": "Directly services RES-MBL-002 (four mechanics lack non-vacuity witnesses). Non-compensatory by construction: each hypothesis gets its own cell; no aggregate score."
+    },
+    {
+      "id": "PI-Q3",
+      "question": "Which discipline components carry measured weight on outcomes the mechanism does not define? (benefit column)",
+      "receipt_support": "PARTIAL - the ledger names the tractable external anchor for MECH-BOUNDED-SATURATION (set-completeness IoU against an external wide-research benchmark) but no such arm exists on main. The benefit_L0/L1/L2 receipts (research/benefit_L0_fcr_v1, benefit_L1_composition_v1, benefit_L2_gluing_v1; all typed PROMOTE on synthetic known-answer corpora, ladder flips pending external GovernanceSignOff) cover ladder layers whose atoms Paper I co-owns, so the column is no longer empty at mechanical-arm grade.",
+      "sign_robustness": "Robust if framed as a buy-and-cost frontier (the Paper 3 audit precedent); sign-risky if framed as 'governance wins'.",
+      "field_need": "High - benefit accounting for governance layers is the programme's own declared gap.",
+      "ledger_consistency": "This IS the ledger's empty column. Ownership note: the benefit-saturation lane is executing this ladder; a Paper I audit should consume its receipts, not duplicate arms."
+    },
+    {
+      "id": "PI-Q4",
+      "question": "Which projections of epistemic state are decision-sufficient for which task families? (representation-bound frontier)",
+      "receipt_support": "STRONG for the existing 15-family minimal-twin audit (representation bounds, per abstract); incremental beyond it.",
+      "sign_robustness": "Robust (bounds are bounds either way) but marginal information from new families is diminishing.",
+      "field_need": "Moderate; the twin audit already stakes this ground.",
+      "ledger_consistency": "Consistent; soundness-adjacent."
+    },
+    {
+      "id": "PI-Q5",
+      "question": "Does typed epistemic governance make agents better than ungoverned agents? (victory question - REJECTED)",
+      "receipt_support": "NONE at causal grade - external comparison is blocked at evidence grade (research/p6_external_comparison_readiness_v1: all 4 ARCHITECTURE_CAUSAL_ELIGIBLE systems read CANNOT_CHECK on matched-resource fields).",
+      "sign_robustness": "SIGN-RISKY and outcome-provenance-risky (self-authored-outcome trap; see the retracted Paper VI 3.31x headline in the ledger's structural_trap note).",
+      "field_need": "High demand, but unanswerable honestly now.",
+      "ledger_consistency": "Violates the ledger's structural-trap warning if run with mechanism-defined outcomes."
+    },
+    {
+      "id": "PI-Q6",
+      "question": "Where does the reasoning live in an evidence-governed substrate - what is compiled into the space, what is governed at the interfaces, and what is located by failure analysis? (reasoning-location frame; operator addendum 2026-08-14)",
+      "receipt_support": "STRONG for the articulation itself: the compiled-reasoning claim is stated in shipped code (src/rakl/derivation.py: 'no reasoning engine in the loop, only traversal'), certificates are use-time-re-verified (src/rakl/certificates.py), interfaces are fail-closed (admit_reducer, LIFT specification), and failure analysis mechanically names the missing lemma (DerivationReport.missing; UNDERIVABLE_IN_PRINCIPLE vs AUTHORITY_BLOCKED). Articulated in docs/REASONING_LOCATION.md.",
+      "sign_robustness": "The frame's falsifiable projection is the AMORTIZATION THESIS - 'saturation = enough compiled reasoning that solving becomes traversal' - which is exactly what the benefit ladder tests; that projection is sign-robust because it is a frontier claim tested layer by layer, and its negatives (a layer whose compiled mechanism fails to beat the naive arm) are first-class. As a standalone headline it is an articulation, so its empirical content lives entirely in experiments owned elsewhere (benefit lane) or in the representation tournaments.",
+      "field_need": "Overlaps knowledge compilation, proof-assistant lemma amortization and case-based reasoning; the claimed delta (use-time certificates, typed fail-closed refusal, obstruction preservation, governed authority transport) is CANNOT_CHECK at nearest-work grade until the nearest-work lane verifies primaries - recorded honestly in docs/REASONING_LOCATION.md.",
+      "ledger_consistency": "Strengthens the ledger's structure: the benefit column IS the amortization thesis's payoff column; the frame explains WHY soundness alone cannot carry the programme."
+    }
+  ],
+  "recommended_headline_question": {
+    "id": "PI-Q6+PI-Q2 (composed)",
+    "statement": "Where does the reasoning live, and which of its compiled obligations are load-bearing? PI-Q6 supplies the paper's question FRAME (reasoning relocated to compiled space / governed interfaces / failure analysis); PI-Q2's hypothesis-necessity audit is that frame's first executable instantiation at theorem level (which compiled obligations are individually necessary), and the representation tournament (REPRESENTATION_TOURNAMENT_PROTOCOL_V1.json, Contest 1) is its second at space level (is the compiled form the right container).",
+    "selection_basis": "Weighed per the operator addendum rather than appended: PI-Q6 alone is an articulation whose empirical content is owned by other lanes; PI-Q2 alone is executable but under-motivated as a headline. Composed, the frame supplies the field-facing question and PI-Q2/REP-C1 supply the sign-robust receipts this paper can execute itself. Non-compensatory reasoning; no scalar ranking. Weakness preserved honestly: the composed headline's nearest-work delta is CANNOT_CHECK until primary verification."
+  },
+  "concrete_evidence_delta": {
+    "name": "hypothesis-necessity audit of formal/RaklFormal.lean",
+    "design": [
+      "Tier A (mechanical, cheap): per headline theorem, per explicit hypothesis, generate a mutant file with the hypothesis removed from the signature; expect compile FAILURE (proof-necessity). A mutant that still compiles is a discovered simplification and promotes to Tier B immediately.",
+      "Tier B (mathematical): for each proof-necessary hypothesis, author an in-file countermodel lemma (same dependency-free style) exhibiting a model where the remaining hypotheses hold and the conclusion fails (statement-necessity). Follow the existing exemplar pattern (certified_operator_may_change_canon).",
+      "Tier C (report): a per-theorem, per-hypothesis necessity table appended under research/paper1_formal_closure/, cells NECESSARY_WITNESSED / DROPPABLE / PROOF_NECESSARY_ONLY.",
+      "Scope control: start with the headline set (no_faithful_scalarization, projection_collision, open_world_not_finitely_certifiable, no_uncertified_composition_changes_canon, stabilized_is_fixed/stabilized_is_least, the parity family) before sweeping all 87."
+    ],
+    "runnability": "CPU-only. Lean pin formal/lean-toolchain (leanprover/lean4:v4.14.0); CI installs elan on ubuntu-24.04 in minutes; the file is dependency-free (no mathlib) so each mutant compile is seconds. Tens of mutants for the headline set; hundreds for the full sweep. Feasible on laptop billy or as a CI job.",
+    "chronology_rule": "Freeze the theorem list and hypothesis enumeration before running any mutant; a mutant that unexpectedly compiles is recorded, never silently absorbed."
+  },
+  "must_not_be_claimed": [
+    "Proof-necessity (this proof breaks without hypothesis H) is NOT statement-necessity (the theorem is false without H). Only a countermodel earns 'necessary'.",
+    "Minimality of the formalization is NOT minimality of the deployed discipline; runtime gates may not be weakened on the basis of a DROPPABLE cell without separate governed review.",
+    "No benefit claim follows from any necessity result; the benefit column remains governed by the ledger and the benefit-saturation lane.",
+    "The 87-theorem count is a file count at commit 08169241, not a claim inventory; the claim-level mapping remains research/paper1_formal_closure/theorem_inventory.json (18 claims, 17 FULL / 1 PARTIAL)."
+  ],
+  "files_used": [
+    "publication/papers/paper-01-epistemic-mechanics/main.tex (abstract)",
+    "formal/RaklFormal.lean (header, headline theorem statements, ^theorem count = 87)",
+    "src/rakl/derivation.py (compiled-reasoning docstring)",
+    "docs/REASONING_LOCATION.md (created by this audit per operator addendum)",
+    "research/programme_question_audit_v1/REPRESENTATION_TOURNAMENT_PROTOCOL_V1.json",
+    "formal/lean-toolchain",
+    ".github/workflows/paper1-formal-proofs.yml",
+    "research/paper1_formal_closure/theorem_inventory.json",
+    "research/mechanism_benefit_ledger/ledger.json",
+    "research/p6_external_comparison_readiness_v1/README.md",
+    "research/benefit_L0_fcr_v1/results_v1/RESULTS.json",
+    "research/benefit_L1_composition_v1/results_v1/RESULTS.json",
+    "research/benefit_L2_gluing_v1/results_v1/RESULTS.json"
+  ]
+}

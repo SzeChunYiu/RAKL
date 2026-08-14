@@ -1,0 +1,93 @@
+{
+  "schema_version": "programme-question-audit-v1",
+  "paper": "Paper V - Verified Discovery in Mathematics (publication/papers/paper-05-verified-discovery-in-mathematics)",
+  "audit_date": "2026-08-14",
+  "base_commit": "08169241",
+  "authority": "Same-context analysis. Not independent review. Grants no scientific or promotion authority.",
+  "grants_scientific_authority": false,
+  "object": "The headline QUESTION of Paper V, not its answers.",
+  "qoi": "Which question maximizes receipt support, sign-robustness, field need and ledger consistency - given that the current discovery-performance question is prospective.",
+  "current_question": {
+    "statement": "Can an assurance architecture (five authority coordinates; fail-closed updates; statement-hash-bound proofs; bounded defeasible novelty) make LLM-mediated mathematical research auditable - and does verified checkpointing convert generator error into search cost rather than logical debt?",
+    "source": "publication/papers/paper-05-verified-discovery-in-mathematics/main.tex abstract",
+    "character": "Architecture + three paper-proved results + a PREREGISTERED but unexecuted evaluation suite. Ledger row MECH-VERIFIED-DISCOVERY: soundness ASSERTED, benefit NOT_ATTEMPTED; premise (iii) of the transformation-geometry proposition is not machine-enforced on a live path (the gate's call chain terminates in tests)."
+  },
+  "candidate_questions": [
+    {
+      "id": "PV-Q1",
+      "question": "Can the architecture make LLM math research auditable? (incumbent)",
+      "receipt_support": "MODERATE: architecture and theory written; typed state machine implemented; but the ledger grades soundness ASSERTED (not MECHANIZED, not PROVED_ON_PAPER at inventory grade) and the live-path gap is open.",
+      "sign_robustness": "N/A - architecture claim.",
+      "field_need": "The paper's own nearest-work paragraph (verified in-repo: jiang2026frontier on open-ended formal-math agents; pu2026maproof MA-ProofBench with independent expert review) supports the solving-vs-research gap; beyond those two anchors, CANNOT_CHECK without a fresh nearest-work pass.",
+      "ledger_consistency": "Consistent but soundness-column-only."
+    },
+    {
+      "id": "PV-Q2",
+      "question": "What does kernel-verification buy per unit cost in the solving loop? (verified-vs-unverified-edges frontier)",
+      "receipt_support": "STRONG receipted substrate on main: src/rakl/certificates.py (certificate-derived edge authority; checker runs NOW; CANNOT_CHECK distinct from FAILED) and tests/test_end_to_end_real_problem.py (the repository's own 87-theorem Lean dependency hypergraph parsed mechanically; deterministic certified derivation; one poisoned-certificate world already asserted AUTHORITY_BLOCKED on exactly the corrupted edge). The gold dependency structure is enforced by the Lean axiom-freedom CI - an outcome the experiment does not define.",
+      "sign_robustness": "SIGN-ROBUST as a cost/exposure frontier: measure (i) clean-world overhead of certificate re-verification (throughput tax - real measurement either way), (ii) the unverified arm's false-derivation acceptance rate under planted corruption (the exposure term), (iii) blocking localization precision in the verified arm (could fail: an implementation may over-block). Mirrors the Paper VI fail-closed cost framing: an honest tax is load-bearing even if no benefit is shown.",
+      "field_need": "The 0.99^100 long-horizon argument is widely invoked (and the paper argues it is the wrong end-to-end model under checkpointing); a measured overhead/exposure frontier on a real kernel-checked substrate would ground that argument. Nearest-work occupancy CANNOT_CHECK without a fresh pass.",
+      "ledger_consistency": "Fills the MECH-VERIFIED-DISCOVERY benefit row at mechanical-arm grade, same scope class as the benefit_L0-L2 receipts. Endpoint classification MUST follow the SRSU-P6-CLASSIFICATION-CORRECTION-V1 precedent: 'verified arm catches planted corruption' is CONFORMANCE_not_evidence (true by construction); MEASURED_evidence is only the clean-world overhead, the unverified-arm exposure rate, and localization precision."
+    },
+    {
+      "id": "PV-Q3",
+      "question": "Does verified checkpointing improve discovery performance with a live generator? (incumbent prospective arm)",
+      "receipt_support": "NONE executed; preregistered suite exists.",
+      "sign_robustness": "SIGN-RISKY (verified discovery may simply be slower with no found-theorem gain at current model capability) and resource-blocked: requires an LLM generator; the GPU and held worktrees are occupied by other lanes.",
+      "field_need": "High, but premature before PV-Q2's cost baseline exists - a performance result is uninterpretable without the verification tax measured.",
+      "ledger_consistency": "Consistent as a registered follow-up, not as the headline."
+    },
+    {
+      "id": "PV-Q4",
+      "question": "Is the assurance layer actually on the live path? (premise (iii) wiring gap)",
+      "receipt_support": "The ledger records the gap: the transformation-geometry gate's call chain terminates in tests.",
+      "sign_robustness": "Engineering conformance, not a research question.",
+      "field_need": "Internal.",
+      "ledger_consistency": "MUST be closed before any Paper V benefit claim; a verifier not on the live path cannot carry one. Queue as a concrete fix, not a headline."
+    },
+    {
+      "id": "PV-Q5",
+      "question": "How non-monotone is novelty in practice as the literature world expands? (certificate-churn measurement)",
+      "receipt_support": "The order-theoretic result is paper-proved; no churn measurement exists.",
+      "sign_robustness": "Robust (any churn rate is a result) but niche.",
+      "field_need": "Moderate; defeasible-novelty accounting is distinctive but secondary.",
+      "ledger_consistency": "Consistent."
+    }
+  ],
+  "recommended_headline_question": {
+    "id": "PV-Q2",
+    "statement": "What does kernel-verification buy per unit cost in the solving loop - overhead on clean derivations, exposure caught under corruption, and localization precision - on the programme's own kernel-checked hypergraph?",
+    "selection_basis": "Non-compensatory: PV-Q2 is the only candidate with a fully receipted, CPU-only substrate on main whose every endpoint is publishable. It converts Paper V's prospective victory question into the cost-frontier form that survived audit in Papers III and VI. PV-Q4 is a blocking prerequisite fix for any live-path claim and should be queued regardless."
+  },
+  "concrete_evidence_delta": {
+    "name": "verified-vs-unverified derivation frontier on the real Lean hypergraph",
+    "design": [
+      "Substrate: the mechanical parse of formal/RaklFormal.lean from tests/test_end_to_end_real_problem.py (87 theorem nodes, dependency hyperedges, kernel-grade certificates).",
+      "Targets: every theorem with at least one dependency (sweep, not just the single test target).",
+      "Worlds: clean (no corruption) and planted (k in 1..K certificates corrupted to unresolvable subjects, seeded, multiple draws per k).",
+      "Arm A (unverified): derivation over the same hyperedges with certificate checking disabled (licensed_at asserted, the pre-certificates behavior the module documents as the dead-gate shape).",
+      "Arm B (verified): certified_hyperedge + verify_derivation as shipped.",
+      "MEASURED endpoints: clean-world wall-time and edges-fired overhead of B vs A; A's false-derivation acceptance rate under corruption; B's localization precision (blocked edge set == planted set) and clean-world non-suppression (B must still derive every clean target - the null-equivalent-refusal guard from the benefit_L* protocols).",
+      "CONFORMANCE endpoints (declared, not evidence): B blocks on planted corruption (true by construction).",
+      "Chronology: protocol + evaluator frozen and committed before any sweep result is observed; RSHEA binding as in research/benefit_L0_fcr_v1/README.md if run as a benefit arm."
+    ],
+    "runnability": "HONEST ASSESSMENT: CPU-only and small - pure Python + regex parse, 87 nodes; a full sweep (all targets x k x seeds) is minutes on laptop billy. Statistical power is bounded by the single small graph: report per-world exact counts, no asymptotic claims. NOT executed in this audit: Paper V execution belongs to the paper56-frontier lane; this audit contributes the framing, the endpoint classification and the runnability verdict.",
+    "what_it_does_not_test": "No LLM anywhere in the loop; nothing about generator quality, proof search, autoformalization or discovery performance. It prices the verification layer; it does not vindicate it."
+  },
+  "must_not_be_claimed": [
+    "No discovery-performance claim (PV-Q3 remains prospective and resource-blocked).",
+    "'Verified arm catches planted corruption' is conformance by construction - never reportable as a measured benefit (dead-gate precedent).",
+    "Planted-corruption worlds are known-answer instrument worlds, not external benchmarks; scope matches benefit_L0-L2, not natural mathematical practice.",
+    "No live-path assurance claim while the premise (iii) call chain terminates in tests.",
+    "The 2343-test / implementation-SHA figures in the manuscript are repository facts, not evidence for any benefit."
+  ],
+  "files_used": [
+    "publication/papers/paper-05-verified-discovery-in-mathematics/main.tex (abstract, nearest-work paragraph)",
+    "src/rakl/certificates.py",
+    "tests/test_end_to_end_real_problem.py",
+    "formal/RaklFormal.lean (^theorem count)",
+    "research/mechanism_benefit_ledger/ledger.json",
+    "research/paper6_scoped_utility_v1/CLASSIFICATION_CORRECTION_V1.json (endpoint-classification precedent)",
+    "research/benefit_L0_fcr_v1/README.md (RSHEA binding + null-equivalent-refusal guard pattern)"
+  ]
+}

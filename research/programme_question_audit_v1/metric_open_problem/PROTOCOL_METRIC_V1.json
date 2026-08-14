@@ -1,0 +1,73 @@
+{
+  "schema_version": "metric-open-problem-protocol-v1",
+  "protocol_id": "METRIC-NEAR-V1",
+  "freeze_date": "2026-08-14",
+  "base_commit": "08169241",
+  "authority": "Frozen design + instrument validation. Same-context analysis. Grants no scientific or promotion authority.",
+  "grants_scientific_authority": false,
+  "object": "The declared open mathematics of the framework: the graded metric on structure space - what does NEAR mean for relation structures (docs/SIMILARITY_ANALOGY_ALGEBRA.md; src/rakl/analogy_retrieval.py v1 refuses to rank by any tunable similarity score).",
+  "qoi": "What would a principled graded metric require; what validates it; can ARN's third-party labels serve as its first external validation set.",
+  "requirements_for_a_principled_graded_metric": [
+    "R1 TYPED, NOT FUSED: distances are per-coordinate on the signature (relation-graph coordinate first); any single fused similarity score is a diagnostic projection only. Consistency note: the no-scalarization theorem (RaklFormal.no_faithful_scalarization) forbids faithful total-ordering of AUTHORITY; retrieval ranking is routing, not authority, so a graded retrieval distance is PERMITTED - but the algebra's Scientific Jump Vector + Pareto frontier (SIMILARITY_ANALOGY_ALGEBRA.md section 8) still applies, so candidate ordering across coordinates stays a frontier, never one number.",
+    "R2 TIERED ZERO-SET: the cheap tier's zero-set must coincide with the v1 necessary condition (shape-signature equality); the exact tier's zero-set with relation-graph isomorphism. The graded value interpolates between tiers; the witness obligation (injective role map, transport S3) is discharged at the exact tier only - a small distance NEVER discharges it.",
+    "R3 LABEL-FREE: JUMP candidates are vocabulary-disjoint by definition, so the metric may use only unlabeled directed-graph structure.",
+    "R4 NO POST-HOC THRESHOLDS: any accept/propose threshold is frozen before result access; the metric itself carries no tunable trained parameters in v1 candidates.",
+    "R5 FAIL-CLOSED: empty relation structure returns REFUSED (CANNOT_CHECK), never distance zero.",
+    "R6 EXTERNAL VALIDATION ONLY: the metric's semantic claim ('small distance tracks analogy') is validated exclusively against labels whose authors are independent of this programme. Self-authored similarity judgments are the known trap (the Paper II six-family gate was self-authored and non-falsifiable)."
+  ],
+  "candidate_metrics_frozen": {
+    "M0_exact_signature_v1": "incumbent baseline: 0 iff (relation count, degree multiset) equal, else 1 (binary; src/rakl/analogy_retrieval.py semantics reimplemented).",
+    "M1_signature_l1": "graded on signature space only: normalized |relation-count diff| + L1 between sorted padded degree sequences (declared quasi-metric).",
+    "M2_wl3": "depth-3 Weisfeiler-Leman refinement on digraphs; distance = 1 - mean multiset-Jaccard of label multisets across depths.",
+    "M3_ged_exact": "exact normalized graph edit distance via brute-force injection (feasible at n<=7).",
+    "M_refuse_all_planted_fail": "planted-fail candidate for validating the evaluator itself (always 1.0); the evaluator must reject it."
+  },
+  "stage_A_instrument_validation": {
+    "status_at_freeze": "FROZEN BEFORE EXECUTION - no Stage A result has been observed at protocol freeze time.",
+    "evaluator": "EVALUATOR_STAGE_A.py, sha256 beb4b6303147f889b2d9284f9074c1de080b058ccf19b6fe458071ef8a2fa355; deterministic, stdlib-only; self-test includes a hand-computed GED case, iso-zero checks, refusal on empty structures, degenerate-Spearman convention, determinism, and rejection of the planted-fail candidate. Exit codes: 0 evaluated, 2 self-test failure, 3 CANNOT_CHECK.",
+    "worlds": "40 base digraphs (5-7 nodes, 6-10 edges, seeded); per base: one vocabulary-disjoint isomorphic pair and k=1..4 cumulative-edit graded pairs; 20 signature-equal brute-force-verified non-isomorphic decoy pairs.",
+    "endpoint_classification": {
+      "MEASURED_evidence": [
+        "graded_spearman_mean_k1_4 for M1, M2, M3 (edits can cancel; degree-preserving rewires are invisible to M1; genuinely can fail)",
+        "decoy_sep_rate for M2 (WL has known non-iso blind spots; genuinely can fail)"
+      ],
+      "CONFORMANCE_not_evidence": [
+        "iso_zero_rate = 1.0 for M0-M3 (signature/WL/GED invariance under isomorphism is a theorem)",
+        "decoy_sep_rate = 0.0 for M0 and M1 (decoys are signature-equal by construction; these metrics are functions of the signature)",
+        "decoy_sep_rate = 1.0 for M3 (shares the brute-force isomorphism oracle used to construct decoys - same code, definitionally true)",
+        "empty_refused = true for all candidates",
+        "planted-fail candidate rejected by the evaluator"
+      ]
+    },
+    "frozen_thresholds": "TRACKS_GRADED iff mean Spearman (k=1..4) >= 0.80; TIER_DISCRIMINATES iff measured decoy separation >= 0.50.",
+    "frozen_predictions": "M0: Spearman 0.0 (binary blindness - the motivating constraint exhibited); M1: positive but below M3; M2: >= 0.80 and decoy separation >= 0.50; M3: highest Spearman.",
+    "licensed_claim_if_pass": "ONLY that graded structural distance tracking planted edit distance is implementable within R1-R5 (instrument grade). Nothing about analogy semantics.",
+    "execution_host_rule": "laptop billy, fresh isolated checkout; results committed as a separate commit AFTER this freeze commit."
+  },
+  "stage_B_external_validation": {
+    "status": "FROZEN DESIGN - BLOCKED, not executable now",
+    "question": "Does the graded structural distance between reduced structures of (query, candidate) narrative pairs rank third-party-labelled analogies above distractors?",
+    "external_labels": "ARN (research/paper2_external_corpus_v1/data/arn.csv, sha-pinned, CC BY 4.0; labels authored by Sourati/Ilievski/Sommerauer/Jiang + validators - mechanically independent of this programme). Primary endpoint: per-query paired comparison (distance(query, analogy) < distance(query, distractor)), reported as paired accuracy with CI; secondary: near/far quadrant breakdown against distractor_similarity/analogy_level columns.",
+    "blocker_and_why_not_executed_now": "The metric consumes STRUCTURES; ARN ships prose without gold structures (verified: vendored CSV has no role/relation annotations). Any Stage B run therefore requires a reducer, and the executed Paper II negative (NEGATIVE__CAPABILITY_ABSENT: registered deterministic reducer at chance, witness exact 0.490, retention 0.023) means running Stage B through the current admissible reducer would measure extraction noise, not the metric - an attribution-confounded negative. Executing it anyway would violate the attribute-failure-to-one-stage rule. Stage B is licensed only after a reducer clears admit_reducer at capability (with contamination declaration; ARN public since 2023-10).",
+    "verdict_on_the_mission_question": "YES, ARN can serve as the metric's first external validation set - but only JOINTLY with an admissible capable reducer. This is the same shared blocker as the Paper II capability staircase and representation-tournament Contest 2; one admitted reducer unlocks all three.",
+    "controls_frozen": "lexical-distance arm; band arm; B2 text-destruction battery on the reducer; shuffled-gold null; trivial-floor check - inherited verbatim from research/paper2_external_corpus_v1/PROTOCOL.json patterns.",
+    "graded_label_successor": "StoryAnalogy (SEARCH_LEDGER.md reserve; 24K pairs, human 0-3 relation-similarity ratings) is the better-matched corpus for a GRADED metric (rank correlation against graded human ratings instead of binary accept/reject), at the declared cost of a thresholding degree of freedom and LLM-generated candidate stories (provenance note). Registered as successor, not selected."
+  },
+  "must_not_be_claimed": [
+    "No Stage A pass means the metric captures NEAR in any semantic sense; planted worlds validate instruments, not analogy.",
+    "A small graded distance never discharges the witness obligation (injective role map, obstruction check, authority path - analogy_retrieval verification_obligations remain mandatory).",
+    "No fused cross-coordinate similarity score may be reported as THE metric.",
+    "Stage B may not run through the current deterministic reducer; a Stage B negative under a chance-level reducer would be an apparatus artifact, not a measurement.",
+    "M3's decoy separation and all iso_zero rates are conformance cells, never reportable as findings."
+  ],
+  "files_bound": [
+    "docs/SIMILARITY_ANALOGY_ALGEBRA.md",
+    "src/rakl/analogy_retrieval.py",
+    "src/rakl/reduction_validation.py",
+    "research/paper2_external_corpus_v1/README.md",
+    "research/paper2_external_corpus_v1/PROTOCOL.json",
+    "research/paper2_external_corpus_v1/SEARCH_LEDGER.md",
+    "research/paper2_external_corpus_v1/data/arn.csv",
+    "formal/RaklFormal.lean (no_faithful_scalarization)"
+  ]
+}
