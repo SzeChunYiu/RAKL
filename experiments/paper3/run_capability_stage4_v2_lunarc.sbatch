@@ -21,8 +21,8 @@ module purge 2>/dev/null || true
 module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1
 
 if [ ! -d "$VENV_DIR" ]; then
-  echo "RESOURCE_BLOCKED: required frozen venv missing: $VENV_DIR" >&2
-  exit 2
+  echo "RESOURCE_BLOCKED: required frozen venv missing before runner can emit a receipt: $VENV_DIR" >&2
+  exit 20
 fi
 source "$VENV_DIR/bin/activate"
 
@@ -54,8 +54,20 @@ python experiments/paper3/run_capability_stage4_v2.py \
 # The denominator-evasion falsifier must fail closed before any model output.
 python -m pytest -q tests/test_p3_capability_scoring_hardening_v2.py
 
+# The model runner deliberately uses distinct process codes for scientific
+# PASS/FAIL/resource/degenerate terminals. Capture that code rather than letting
+# `set -e` convert a valid scientific negative into scheduler failure.
+set +e
 python experiments/paper3/run_capability_stage4_v2.py \
   --outdir "$OUT_DIR" \
   --model-path "$MODEL_PATH"
+RUNNER_CODE=$?
+set -e
+
+# A complete registered Stage-5 receipt means the scheduled execution attempt
+# itself completed. This validator checks that runner code and terminal agree;
+# only then does the wrapper exit 0 so harvest reads the scientific terminal.
+python experiments/paper3/validate_capability_stage4_v2_terminal.py \
+  "$OUT_DIR/FINAL_CAPABILITY_RECEIPT.json" "$RUNNER_CODE"
 
 echo "qualification receipt: $OUT_DIR/FINAL_CAPABILITY_RECEIPT.json"
