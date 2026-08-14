@@ -1,0 +1,120 @@
+{
+  "protocol_id": "BENEFIT-L2-GLUING-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "headline": {
+    "wgr_a": 0.25,
+    "wgr_b": 0.0,
+    "delta_wgr": 0.25,
+    "gca_a": 1.0,
+    "gca_b": 0.8333333333333334,
+    "mcnemar": {"b": 100, "c": 0, "p_two_sided": 1.5777218104420236e-30},
+    "null_1_equal_n_suppression": {
+      "applicable": true,
+      "k_b": 200,
+      "k_a": 340,
+      "q05": 0.13,
+      "mean": 0.14690999999999999,
+      "observed_wgr_b": 0.0,
+      "beaten": true
+    },
+    "null_2_obstruction_permutation": {
+      "q05": 0.0875,
+      "mean": 0.10417,
+      "observed_wgr_b": 0.0,
+      "beaten": true
+    },
+    "twin_bound": {
+      "n_twin_pairs": 100,
+      "twin_invariant_verified_byte_level": true,
+      "bound_holds_for_arm_a": true,
+      "note": "Every one of the 100 twin pairs (60 k=3 + 40 k=4..6) has a byte-identical canonical pairwise record across the parity/solvable pair (covers_agree_on_pairwise_data), and the pairwise-only arm erred exactly once per pair — wrong gluing on the parity row in all 100 cases, wrong refusal in none (GCA_A=1.0). This is the mechanized impossibility bound (no_pairwise_predicate_decides_global_realizability, formal/RaklFormal.lean) realized as data at its theoretical floor."
+    },
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "delta_wgr_ge_0.10": true,
+    "mcnemar_p_lt_0.001": true,
+    "gca_b_ge_0.70": true,
+    "wgr_b_below_null1_q05": true,
+    "wgr_b_below_null2_q05": true,
+    "twin_invariant_verified_and_bound_holds_for_arm_a": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true,
+    "no_rule_drift_either_arm": true,
+    "repaired_atlas_semantics_pin_satisfied": true
+  },
+  "module_pin_verification": {
+    "EVALUATOR.py": "b237ca0c5d75d51571b6aa272e1b8dfa43e35e60b4ceda74bd035dfdabfb33dc (MATCH, verified before any execution and inside every step)",
+    "src/rakl/atlas_gluing.py": "f6f00fceda0628422d597bce06679baf872c207b922e5acac1aea86f2ca12aac (MATCH — the PR #649 repaired module, now on origin/main; _recompute_cover_topology present, verified at every step)"
+  },
+  "per_class": {
+    "arm_A_pairwise_only_compatibility": {
+      "G1": {"n": 100, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 1.0},
+      "G2": {"n": 100, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 1.0},
+      "G3": {"n": 60, "wrong_gluings": 60, "wgr_within_class": 1.0, "gca_within_class": null},
+      "G4": {"n": 40, "wrong_gluings": 40, "wgr_within_class": 1.0, "gca_within_class": null},
+      "G5": {"n": 60, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": null},
+      "G6": {"n": 40, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 1.0}
+    },
+    "arm_B_obstruction_retaining_gluing": {
+      "G1": {"n": 100, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 1.0, "sub_verdicts": {"GLOBAL_EXISTS_UNIQUENESS_UNPROVEN": 100}},
+      "G2": {"n": 100, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 1.0, "sub_verdicts": {"GLOBAL_EXISTS_UNIQUENESS_UNPROVEN": 100}},
+      "G3": {"n": 60, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": null, "sub_verdicts": {"OBSTRUCTED_ATLAS": 60}},
+      "G4": {"n": 40, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": null, "sub_verdicts": {"OBSTRUCTED_ATLAS": 40}},
+      "G5": {"n": 60, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": null, "sub_verdicts": {"OBSTRUCTED_ATLAS": 60}},
+      "G6": {"n": 40, "wrong_gluings": 0, "wgr_within_class": 0.0, "gca_within_class": 0.0, "sub_verdicts": {"CANNOT_CHECK": 40}}
+    },
+    "note": "Arm A's WGR is driven entirely by G3+G4 (the mechanized parity families — obstruction data invisible to a pairwise record); G5 confirms arm A is an honest baseline (it refuses every locally visible conflict). Arm B's designed-in G6 miss (all 40 supported-but-witness-incomplete atlases refused via CANNOT_CHECK, GCA_B = 200/240 ≈ 0.83) is charged, visible, and sits above the frozen 0.70 floor exactly as PROTOCOL.json anticipated. Arm B's refusal sub-verdicts separate cleanly: genuine obstructions surface as OBSTRUCTED_ATLAS (cycle holonomy for G3/G4, pairwise conflict for G5), record incompleteness as CANNOT_CHECK (G6); every glueable acceptance is GLOBAL_EXISTS_UNIQUENESS_UNPROVEN (existence-level only, uniqueness recorded unchecked per the protocol's spec binding)."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic and the parity construction is proved, so the qualitative direction on the parametric corpus classes is derivable a priori - for the twinned classes it is a theorem. The run certifies: exact magnitudes under randomized world realization, separation from both nulls, the over-refusal guard (which the theorem does NOT fix), and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "Mechanical obstruction-retaining gluing (the repaired rakl.atlas_gluing.evaluate_atlas_gluing semantics) on a synthetic known-answer corpus (including the mechanized parity family) reduces wrong-gluing rate versus pairwise-only compatibility without null-equivalent refusal.",
+  "negative_scope_line_verbatim_from_protocol": "Note a NEGATIVE here would NOT refute the Lean theorems (they are about representability, not about these arms); it would refute the claim that the shipped machinery converts the theorem into measured benefit.",
+  "explicit_non_claims": [
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus generalization (registered follow-up)",
+    "no uniqueness/identifiability claim (existence-level gluing only; registered follow-up)",
+    "ladder.json L2 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "09c91e502997c526a8a0dd0ef42c067a4d4985742ef6cf1e62781dd05d70ab15",
+    "corpus_v1_stripped.json": "12963ac4edcc3b25fe65a8d2f088300722a2309dfa54ecdae45672078ef3644c",
+    "audit_sample.json": "0d3f4371e0cbcd20534ec2f94cc4305e247559a76bb21232d41eaafa34e1462e",
+    "worlds_v1.json": "497b304da549f3e0833b6eec939c7ddc13d25ef89696cdbc2ff1530fbf950d81",
+    "harness/generate_corpus.py": "e6b839179b4a9eeafee8efb33f680f611f502929ddc001de80db7751970be28a",
+    "harness/arm_harness.py": "837d4781b626a60210a85c52df14223d11ddcf2e56c8eeb825aa123769be05ac",
+    "arm_a_output.json": "c1e0ce46d8c72566e69f57c78c115b80c2b6f320d449274e334042c6ee32968d",
+    "arm_b_output.json": "5ebfb00fd9125fae509e3a31137a0227d7da8b20fb9e8b44ba2e411a3de13c7a",
+    "evaluator_report.json": "3ed7cf97fe8db0d0261aa58997dfd4ce3f41d49a7b34a474614299d4b025c112",
+    "AUDIT_RECEIPT.json": "c0a2b5e924aced055001b2f61e92ffd4f1de0173ab6e47fe2eaa3cd0679cc624"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T17:13:00Z",
+    "corpus_frozen_at": "2026-08-14T17:13:00Z",
+    "audit_performed_at": "2026-08-14T17:13:52Z",
+    "arm_run_started_at": "2026-08-14T17:14:08Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:f12417658669d881",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l2-gluing-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs; every checked assignment/conflict/parity claim verified against the printed tables) — mechanically valid per the receipt fields, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer corpus; the registered follow-ups (LLM arm, natural corpus, uniqueness layer) remain open.",
+    "G6-RECORD-INCOMPLETENESS-MISS: arm B structurally withholds all 40 supported-but-witness-incomplete atlases via fail-closed CANNOT_CHECK (GCA_B≈0.83). Pre-registered lever if this must close: score CANNOT_CHECK-driven refusals separately from OBSTRUCTED-driven refusals and add a typed record-repair step (bounded re-query for the missing witness evidence, cost charged to arm B); any change touching src/rakl/atlas_gluing.py must enter via the mechanism-invention workflow, not as a quiet patch.",
+    "MODULE-STRICTER-THAN-REPLICA-BOUNDARY: on degenerate back-and-forth cycle-witness walks (e.g. XY->YZ->XY) the repaired module's GF(2) rank check refuses while the frozen evaluator replica's simpler path check glues. Found by the pre-freeze fixture sweep; the generator enforces simple closed cycle paths so the divergence cannot occur on any corpus row (decision-equivalence confirmed by the evaluator's drift check on all 400). A V2 protocol should tighten the replica's path check to the rank semantics."
+  ],
+  "grants_scientific_authority": false
+}
