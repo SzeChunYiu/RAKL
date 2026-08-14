@@ -22,7 +22,11 @@ from rakl.reduction_validation import (
     ReducerProfile,
     admit_reducer,
 )
-from scripts.paper2_external_corpus_confirmatory import bind_mapping, run
+from scripts.paper2_external_corpus_confirmatory import (
+    bind_mapping,
+    build_pairs_m3,
+    run,
+)
 
 
 def test_reducer_surfaces_parity_obstruction() -> None:
@@ -50,6 +54,38 @@ def test_reducer_is_admitted_with_arn_label_author() -> None:
     ]
     report = admit_reducer(profile, reduce_narrative, sources)
     assert report.verdict is AdmissionVerdict.ADMITTED
+
+
+def test_m3_binding_and_pair_construction() -> None:
+    header = [
+        "id", "proverb", "query_narrative", "first_choice", "second_choice",
+        "distractor_similarity", "analogy_level", "correct_answer",
+    ]
+    mapping = bind_mapping(header)
+    assert mapping is not None and mapping["mode"] == "M3"
+    rows = [
+        {"id": "1", "proverb": "p1", "query_narrative": "q one",
+         "first_choice": "the analogy", "second_choice": "the decoy",
+         "distractor_similarity": "high", "analogy_level": "far",
+         "correct_answer": "1"},
+        {"id": "2", "proverb": "p2", "query_narrative": "q two",
+         "first_choice": "the decoy", "second_choice": "the analogy",
+         "distractor_similarity": "low", "analogy_level": "near",
+         "correct_answer": "2"},
+        {"id": "3", "proverb": "p3", "query_narrative": "q three",
+         "first_choice": "a", "second_choice": "b",
+         "distractor_similarity": "high", "analogy_level": "far",
+         "correct_answer": "weird"},
+    ]
+    pairs, skipped = build_pairs_m3(rows, mapping)
+    assert skipped == 1
+    assert [(p.gold, p.candidate_text, p.band) for p in pairs] == [
+        ("ACCEPT", "the analogy", "far"),
+        ("REJECT", "the decoy", "near"),
+        ("ACCEPT", "the analogy", "near"),
+        ("REJECT", "the decoy", "far"),
+    ]
+    assert {p.group for p in pairs} == {"p1", "p2"}
 
 
 def _planted_row(index: int, hard: bool) -> dict[str, str]:
