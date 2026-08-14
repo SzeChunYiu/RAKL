@@ -37,6 +37,9 @@ jobs:
           ACTIVE_PACKET_REGISTRY_TARGET_REF: origin/main
         run: python scripts/active_packet_registry_drift.py
 
+      - name: Prove live-target drift and missing-target controls fail closed
+        run: pytest -q tests/test_active_packet_registry_drift.py
+
       - name: Validate frozen active set
         run: pytest -q tests/test_active_mechanic_packet_registry.py::test_current_active_set_matches_frozen_challenger_expectation
 
