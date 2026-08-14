@@ -361,12 +361,23 @@ def evidence_from_rows(rows, template: CeilingEvidence) -> CeilingEvidence:
 
 
 def _map_bounds(fn):
+    """Perturb every bound value with ONE shared draw per trial.
+
+    The draw is shared deliberately: an earlier version drew an independent
+    factor per bound row, which sometimes scaled a lower bound above an upper
+    bound — genuinely inconsistent evidence that the gate correctly refuses as
+    CANNOT_CHECK.  Those flips were false alarms of the probe harness, not gate
+    sensitivity; a shared draw preserves bound ordering.  The correction is a
+    probe repair made after observing the first audit run and is recorded here
+    rather than hidden; the gate itself was not changed.
+    """
     def perturb(evidence_rows, rng):
+        draw = rng.random()
         out = []
         for row in evidence_rows:
             row = dict(row)
             if row.get("row") == "bound":
-                row["value"] = fn(row["value"], rng)
+                row["value"] = fn(row["value"], draw)
             out.append(row)
         return out
     return perturb
@@ -392,9 +403,9 @@ def _drop_kind(kind):
 
 
 PROBES = {
-    "attenuate_bounds": _map_bounds(lambda v, rng: v * rng.uniform(1e-4, 1e-2)),
-    "inflate_bounds": _map_bounds(lambda v, rng: v * rng.uniform(20.0, 100.0)),
-    "add_headroom": _map_bounds(lambda v, rng: v + rng.uniform(0.2, 1.0)),
+    "attenuate_bounds": _map_bounds(lambda v, u: v * (1e-4 + u * (1e-2 - 1e-4))),
+    "inflate_bounds": _map_bounds(lambda v, u: v * (20.0 + u * 80.0)),
+    "add_headroom": _map_bounds(lambda v, u: v + 0.2 + u * 0.8),
     "mark_oracle_uncomputable": _set_status(oracle_computability="UNCOMPUTABLE"),
     "mark_oracle_computable": _set_status(oracle_computability="COMPUTABLE"),
     "unset_equal_budget": _set_status(equal_budget_verified=False),
