@@ -18,7 +18,7 @@
   "source_artifacts": {
     "promotion_gate": {
       "path": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
-      "sha256_prefix": "1b77218330e7976a"
+      "sha256_prefix": "e8551881025dd60b"
     },
     "closure_ledger": {
       "path": "research/unified_problem_solving_v1/results/CLOSURE_LEDGER.json",
@@ -30,18 +30,62 @@
     }
   },
   "summary": {
-    "total_claims": 37,
+    "total_claims": 38,
     "by_terminal": {
-      "NEGATIVE": 4,
+      "NEGATIVE": 6,
       "SUPPORTED": 5,
-      "CANNOT_CHECK": 4,
-      "PARTIAL": 3,
+      "CANNOT_CHECK": 1,
+      "PARTIAL": 5,
       "ARCHITECTURE_ONLY": 13,
       "SCAFFOLD": 8
     },
-    "open": 28
+    "open": 26
   },
   "claims": [
+    {
+      "claim_id": "EMP-DIAG-ACTIVE-SUCCESSOR",
+      "mechanic": "diagnosis_active_successor",
+      "paper_owner": "paper-06-rakl-scientific-research-engine",
+      "claim": "Leakage-free active sequential diagnosis yields net advantage over signal-name lookup.",
+      "claim_type": "empirical_net_benefit",
+      "code": [
+        "src/rakl/mechanic_diagnosis.py",
+        "research/unified_problem_solving_v1/run_diagnosis_active_successor.py"
+      ],
+      "experiment_owner_issue": "#539",
+      "baseline": "signal-name lookup (cheapest parent)",
+      "falsifier": "Net advantage CI includes 0 or lies below 0 after mean probe cost is charged.",
+      "promotion_verdict": "KEEP_PROPOSAL_ONLY",
+      "result": {
+        "hi": -0.1008,
+        "lo": -0.1183,
+        "mean": -0.1095,
+        "n": 6000
+      },
+      "artifact": "research/unified_problem_solving_v1/results/diagnosis_active_successor.json",
+      "terminal_state": "NEGATIVE",
+      "terminal_scope": "HONEST NEGATIVE expected and preserved: head-to-head net advantage over signal-name baseline mean -0.1095, CI [-0.1183,-0.1008], n=6000 (entirely below 0). Active sequential diagnosis is valid but does NOT earn default-on routing at the tested regime. The NEGATIVE artifact is preserved unchanged; the honest verdict is KEEP_PROPOSAL_ONLY. Lane #539 closed.",
+      "open": false,
+      "artifact_sha256_prefix": "d49a6a36a372f706",
+      "telemetry": {
+        "claim_class": "CORRECTNESS",
+        "economic_cost_fields": [
+          "mean_probe_cost"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "outcome",
+          "mean_probe_cost"
+        ],
+        "required": [
+          "sample",
+          "outcome",
+          "mean_probe_cost"
+        ],
+        "status": "COMPLETE"
+      }
+    },
     {
       "claim_id": "EMP-FIELDCONST-NETBENEFIT",
       "mechanic": "field_construction",
@@ -310,15 +354,18 @@
       }
     },
     {
-      "claim_id": "EMP-NAVIGATION_DYNAMICS_PARALLEL",
+      "claim_id": "EMP-NAVDYN-PARALLEL",
       "mechanic": "navigation_dynamics_parallel",
-      "paper_owner": "unassigned",
-      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "paper_owner": "paper-06-rakl-scientific-research-engine",
+      "claim": "Parallel-round-depth navigation dynamics (Dijkstra = 1 round, k-sweeps = k rounds) yields regime-conditional node-expansion savings with a crossover at high parallelism (N=16/32/64, Q=1, U=0).",
       "claim_type": "empirical_net_benefit",
-      "code": [],
-      "experiment_owner_issue": "",
-      "baseline": "strongest registered parent for this mechanic",
-      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "code": [
+        "src/rakl/navigation_dynamics.py",
+        "research/navigation_dynamics_parallel_v1/run_navigation_dynamics_parallel.py"
+      ],
+      "experiment_owner_issue": "#537",
+      "baseline": "A* (strong control) under parallel-round depth accounting",
+      "falsifier": "No (N, Q, U) cell has a net-expansions-vs-A* CI excluding 0 in the method's favor after parallel-round cost model is charged.",
       "promotion_verdict": "PROMOTE_CONDITIONALLY",
       "result": {
         "hi": -86.58024691358025,
@@ -327,9 +374,9 @@
         "n": 648
       },
       "artifact": "research/navigation_dynamics_parallel_v1/results/navigation_dynamics_parallel.json",
-      "terminal_state": "CANNOT_CHECK",
-      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
-      "open": true,
+      "terminal_state": "PARTIAL",
+      "terminal_scope": "GENUINE CROSSOVER: parallel model WINS for the pure-serial-low-uncertainty cell (N=16/32/64, Q=1, U=0) with positive net mean +10.347, CI [+5.986,+15.014], n=6; LOSES for higher Q/U where parallel structural advantage cannot overcome k-round overhead; overall pooled net mean -99.917, CI [-114.292,-86.580], n=648. The promotion gate emits PROMOTE_CONDITIONALLY with applicability contract routing to the mechanic ONLY on supported cells (Q=1, U=0 within tested N range) and failing closed to baseline otherwise. Honest scientific state is regime-conditional PARTIAL.",
+      "open": false,
       "artifact_sha256_prefix": "09ec51aa4344e810",
       "applicability": {
         "axes": [
@@ -703,15 +750,18 @@
       }
     },
     {
-      "claim_id": "EMP-NAVIGATION_DYNAMICS_SUCCESSOR",
+      "claim_id": "EMP-NAVDYN-SUCCESSOR",
       "mechanic": "navigation_dynamics_successor",
-      "paper_owner": "unassigned",
-      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "paper_owner": "paper-06-rakl-scientific-research-engine",
+      "claim": "Successor incremental-field-guided navigation dynamics (reverse-Dijkstra + incremental SPT repair, all build+update+query costs charged) yields net node-expansion savings over A*.",
       "claim_type": "empirical_net_benefit",
-      "code": [],
-      "experiment_owner_issue": "",
-      "baseline": "strongest registered parent for this mechanic",
-      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "code": [
+        "src/rakl/navigation_dynamics.py",
+        "research/unified_problem_solving_v1/run_navigation_dynamics_successor.py"
+      ],
+      "experiment_owner_issue": "#537",
+      "baseline": "strongest amortized parent (exact reverse-Dijkstra field with incremental SPT repair) with all costs charged",
+      "falsifier": "Net advantage over strongest parent has a CI including 0 or lying below 0: exact field correctness does not amortize its build+update+query cost.",
       "promotion_verdict": "KEEP_PROPOSAL_ONLY",
       "result": {
         "hi": -262.9212962962963,
@@ -720,9 +770,9 @@
         "n": 648
       },
       "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics_successor.json",
-      "terminal_state": "CANNOT_CHECK",
-      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
-      "open": true,
+      "terminal_state": "NEGATIVE",
+      "terminal_scope": "DECISIVE NEGATIVE: head-to-head net advantage over strongest parent mean -279.522, CI [-297.131,-262.921], n=648 (entirely below 0). The incremental-field successor is DOMINATED - the exact field is correct (rho~1.0) but its amortized build+update+query costs exceed search savings at tested scale. Mechanic is valid, registered and available but does not earn default-on routing. Lane #537 closed.",
+      "open": false,
       "artifact_sha256_prefix": "317f4af4eb6463cf",
       "telemetry": {
         "claim_class": "EFFICIENCY",
@@ -1024,15 +1074,18 @@
       }
     },
     {
-      "claim_id": "EMP-TCSQ_SQ3_SUCCESSOR",
+      "claim_id": "EMP-TCSQ-SUCCESSOR",
       "mechanic": "tcsq_sq3_successor",
-      "paper_owner": "unassigned",
-      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "paper_owner": "paper-04-verified-discovery",
+      "claim": "Typed Canonical Semantic Quotient (SQ-3) successor with per-family validation and certificate verification yields regime-conditional net cost advantage with a crossover at high redundancy rate.",
       "claim_type": "empirical_net_benefit",
-      "code": [],
-      "experiment_owner_issue": "",
-      "baseline": "strongest registered parent for this mechanic",
-      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "code": [
+        "src/rakl/semantic_quotient.py",
+        "research/tcsq_sq3_v1/run_sq3_successor.py"
+      ],
+      "experiment_owner_issue": "#536",
+      "baseline": "RAW (unquotiented) and strongest classical parent (TCSQ_VALIDATED_QUOTIENT)",
+      "falsifier": "No redundancy-rate x solve-cost-scale cell has a net cost-advantage CI excluding 0 in the quotient's favor; or quotient still loses to RAW at high redundancy (economics, not semantics).",
       "promotion_verdict": "PROMOTE_CONDITIONALLY",
       "result": {
         "hi": 13037.28472222222,
@@ -1042,8 +1095,8 @@
         "note": "aggregated across solve_cost_scale x redundancy cells by bootstrap on cell means"
       },
       "artifact": "research/tcsq_sq3_v1/results/sq3_successor.json",
-      "terminal_state": "CANNOT_CHECK",
-      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
+      "terminal_state": "PARTIAL",
+      "terminal_scope": "GENUINE CROSSOVER: successor WINS for high-redundancy cells (redundancy_rate >= 0.5, various solve_cost_scale) with positive subset net mean 15770.893, CI [+8404.720,+23947.726], n=14; LOSES for low-redundancy cells (redundancy_rate <= 0.5) with negative subset net mean -10659.620, CI [-18487.870,-4468.074], n=9. Overall pooled net mean 5311.774, CI [-2042.760,+13037.285], n=24. The promotion gate emits PROMOTE_CONDITIONALLY with applicability contract routing to the mechanic ONLY on supported cells (high redundancy regime) and failing closed to baseline otherwise. Honest scientific state is regime-conditional PARTIAL. Low-redundancy extension is open (see #536).",
       "open": true,
       "artifact_sha256_prefix": "1252f150395faf7f",
       "applicability": {

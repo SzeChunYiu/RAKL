@@ -1,0 +1,29 @@
+\section{Executor independence and the justification boundary}\label{sec:executor-independence}
+
+The mechanics in this paper are not defined by the use of a large language model. They are conditions on scientific state transitions. We therefore distinguish the \emph{mechanic} from the \emph{executor} that proposes or computes a transition. An executor may be a human researcher, a deterministic program, a theorem prover, a learned model, a large language model (LLM), or a hybrid workflow. This distinction matters because the same epistemic error can arise under any executor: provenance can be lost, incompatible contexts can be merged, an obstruction can be discarded, or an unsupported proposal can be mistaken for an authority-bearing update.
+
+Let a mechanic be a typed partial transition
+\[
+M:(S,I)\rightharpoonup(S',O,R),
+\]
+where $S$ is research state, $I$ is an input object, $O$ is an output, and $R$ is a receipt containing the declared evidence and transition provenance. Different implementations may realize the same abstract mechanic,
+\[
+M_{\rm human},\qquad M_{\rm symbolic},\qquad M_{\rm prover},\qquad M_{\rm LLM},\qquad M_{\rm hybrid}.
+\]
+Implementation identity belongs in provenance and cost accounting, but it does not by itself change the scientific-authority coordinates. The non-escalation results in this paper therefore apply to classes of transitions rather than to a model family. If an operator has no certified authority effect, finite compositions of that operator class leave the canonical scientific projection unchanged.
+
+This framing has two practical consequences. First, the framework admits fully non-neural executions. The current reference system already contains LLM-free paths for finite-basis saturation, support-hypergraph traversal, obstruction checking, certificate validation and theorem-kernel discharge. Classical knowledge-representation systems offer further algorithmic parents: assumption-based truth maintenance maintains multiple assumption environments rather than collapsing inconsistent hypotheses into one world \cite{dekleer1986}; abstract argumentation separates attacks, defence and acceptability \cite{dung1995}; abstract interpretation reasons over sound approximations and fixpoints \cite{cousot1977}; and proof assistants such as Lean separate extensible automation from a small proof-checking kernel \cite{demoura2021lean}. These examples motivate a useful engineering rule for Orion: use an LLM only where a learned generative adapter is actually needed, and prefer a deterministic checker when the relevant relation is already formal.
+
+Second, LLM output is treated as a proposal surface, not a privileged epistemic channel. This is compatible with recent scientific-agent systems in which language models coordinate search, tool use or experimental planning \cite{boiko2023,bran2024,gottweis2026coscientist}. Such systems demonstrate that LLMs can be productive research executors, but they do not eliminate the distinction between generation and justification. In Orion, an LLM may propose a claim, a representation, an analogy, a search action or a mechanic revision. The proposal is then subject to the same provenance, compatibility, evidence and authority rules that would apply if the proposal came from a human or a symbolic program.
+
+\subsection{Source, familiarity and repeated exposure}
+
+Executor independence also clarifies a failure mode that is easy to misread as specifically neural. Repetition can make a statement familiar without adding an independent evidence root. Source-monitoring research shows that judgments about the origin of remembered information are reconstructive and can misattribute familiarity \cite{johnson1993source}. Work on learning from testimony likewise shows that source competence and reliability are task- and context-dependent rather than interchangeable with the content of a claim \cite{harris2018testimony}. We therefore treat retrieval count, repetition and source familiarity as authority-inert metadata. A source may be a useful routing prior, but repeated exposure is not new evidence.
+
+The first Paper-I repetition-attack experiment tests this separation rather than assuming it. Under its frozen attack model, ten submitted identifiers collapsed to only eight normalized identities, giving a repetition ratio of $0.2$ against a registered $0.5$ gate. The terminal is therefore negative. That result is retained as a negative epoch and motivates a materially different identity-and-lineage mechanism; it is not evidence that the source-monitoring firewall is already solved.
+
+\subsection{Decision-relative views and bounded stopping}
+
+The executor-independent view also narrows two other claims. First, a task-conditioned projection is justified only relative to a declared decision or query class. Blackwell's comparison of experiments provides the classical decision-theoretic precedent for comparing information structures by the decisions they support rather than by raw descriptive richness \cite{blackwell1953}. Paper~I's projection-collision theorem is the local obstruction: if two worlds are identified by a projection but require different registered actions, that projection is insufficient for the task.
+
+Second, saturation is necessarily scoped. A finite transcript cannot establish that no undiscovered mechanism exists in an unrestricted open world. The strongest legitimate stopping claim is therefore relative to a declared search/action basis, budget and expiry condition. When statistical successors are launched adaptively, programme-level evidence also needs to account for optional continuation; anytime-valid inference provides one principled family of tools for doing so \cite{ramdas2023}. These qualifications do not weaken the framework. They define the exact object that can be checked by humans, algorithms or learned executors alike.

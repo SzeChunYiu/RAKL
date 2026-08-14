@@ -1,0 +1,88 @@
+{
+  "$schema": "paper2-governed-proposal-v1",
+  "schema": "paper2-governed-proposal-v1",
+  "proposal_id": "proposal:six_family_governance:paper2-six-famil",
+  "evaluation_epoch_id": "epoch:defect:paper2-six-famil",
+  "defect_id": "paper2-six-family-governance-defect-v1",
+  "governed_proposal_hash": "8586099b82ce1190c62b6f6ae48ab19f8b17915ee788a1c7dce58be3df6cc9a5",
+  "sign_off_status": "PENDING_EXTERNAL",
+  "external_governance_sign_off": null,
+  "proposed_actions": [
+    {
+      "target": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
+      "action": "repoint candidates.six_family_law to research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_RESULT_V1.json (n=810, seed 2026081212)",
+      "rationale": "D1: cited artifact is DEVELOPMENT-only and uses wrong family set; ROBUSTNESS_CONFIRMATORY_RESULT_V1.json is the executed confirmatory receipt with registered families",
+      "authority_required": "external_governance_sign_off"
+    },
+    {
+      "target": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
+      "action": "downgrade verdict from PROMOTE_TO_MECHANIC to scoped state (e.g. CONDITIONAL_POSITIVE or PASSED_FALSIFIABILITY_AUDIT)",
+      "rationale": "D1-D3: the confirmatory passes its registered gates but the gates are non-falsifiable for generality (p=0.03125 fixed by generator construction); PROMOTE_TO_MECHANIC overstates the evidential support",
+      "authority_required": "external_governance_sign_off"
+    },
+    {
+      "target": "research/orion_p1_p4_closure_v2/DEPENDENCY_GRAPH.json",
+      "action": "replace P2_SIX_FAMILY_APPLICABILITY evidence string to cite confirmatory receipt; drop 'FULL exact3=1' (tautological)",
+      "rationale": "D2: cited 1,296-case DEVELOPMENT run disclaims the claim; FULL exact3=1 is tautological (full arm bind to verify by construction)",
+      "authority_required": "external_governance_sign_off"
+    },
+    {
+      "target": "tools/build_atomic_claim_registry.py (claim_id: EMP-SIXFAMILY-GENERALIZATION)",
+      "action": "register construction-aware falsifier SPEC: baseline is 'generator-strata null' (mechanism_only IS effect coordinate), not p=0.5",
+      "rationale": "D3: registered falsifier 'p >= 0.05' is unreachable; correct baseline is generator construction (mechanism exact3=0.000 on BOUNDARY_QOI_MISMATCH and DIRECTION_REVERSED_INVALID)",
+      "authority_required": "external_governance_sign_off"
+    },
+    {
+      "target": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/",
+      "action": "register falsifier SPEC artifact: 'generator-strata null baseline; falsifier is mechanism arm fails to exceed full arm on held-out synthetic strata'",
+      "rationale": "D3: this spec can actually fail; p=0.03125 is fixed by construction, not empirical evidence of generality",
+      "authority_required": "external_governance_sign_off"
+    }
+  ],
+  "defect_evidence": {
+    "defect_id": "paper2-six-family-governance-defect-v1",
+    "summary": "Two promotion records for the Paper II six-family claim rest on evidence that disclaims them, and the registered falsifier is unreachable.",
+    "severity_counts": [
+      3,
+      0,
+      0
+    ],
+    "defects": [
+      {
+        "id": "D1_PROMOTION_GATE_CITES_WRONG_FAMILY_SET",
+        "severity": "HIGH"
+      },
+      {
+        "id": "D2_DEPENDENCY_GRAPH_PROMOTES_ON_DEVELOPMENT_EVIDENCE",
+        "severity": "HIGH"
+      },
+      {
+        "id": "D3_REGISTERED_FALSIFIER_IS_UNREACHABLE",
+        "severity": "HIGH"
+      }
+    ]
+  },
+  "controller_receipt": {
+    "decision_id": "decision:defect:paper2-six-famil",
+    "status": "SELECTED",
+    "reasons": [
+      "selected_under_frozen_policy_after_hard_gate_and_uncertainty_checks"
+    ]
+  },
+  "bridge_verdict": {
+    "runtime_decision": "OBJECT_SEARCH_READY",
+    "controller_endorsed": true,
+    "acted_upon": false,
+    "reasons": [
+      "controller_selected_status_quo_no_hard_gate_failed",
+      "controller_endorsement_is_not_promotion"
+    ]
+  },
+  "metadata": {
+    "issue_reference": "#683",
+    "creation_date": "2026-08-14",
+    "authority_boundary": "external_governance_only; this proposal is not actionable until GovernanceSignOff authorizes continuation (sign-off never grants promotion/resume authority)",
+    "what_this_proposes": "governed intervention through RSHEA P5; corrections are PROPOSED actions awaiting sign-off, not applied changes",
+    "what_must_not_happen": "self-promotion, verdict rewrite by this analysis, or any claim that the six-family extension is refuted (it passes its registered gates; the gates are non-falsifiable)"
+  }
+}
