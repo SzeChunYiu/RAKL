@@ -1,0 +1,53 @@
+name: p1-authority-chokepoint
+
+on:
+  push:
+    branches:
+      - automation/p1-authority-chokepoint-v1-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - name: Audit complete production source tree
+        run: python scripts/check_authority_chokepoints.py | tee /tmp/p1-authority-chokepoint.json
+      - name: Adversarial checker mutations and strongest-parent controls
+        run: >-
+          pytest -q
+          tests/test_authority_chokepoint.py
+          tests/test_agent_authority_gateway.py
+          tests/test_raw_agent_authority_gateway.py
+          tests/test_v3_scientific_authority_noninterference.py
+          tests/test_epistemic_noninterference.py
+      - name: Enforce frozen claim boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('research/paper1_authority_chokepoint_v1/PROTOCOL.json').read_text())
+          assert p['base_main_sha']=='321f3f72c82e33c8129dddc51bca926ec306f0b8'
+          assert p['promotion_if_green']=='PROMOTE_CONDITIONALLY_PRODUCTION_AUTHORITY_CHOKEPOINT'
+          assert p['grants_scientific_authority'] is False
+          assert p['historical_negatives_retained'] is True
+          print('P1 production authority choke-point boundary: PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p1-authority-chokepoint-v1
+          path: /tmp/p1-authority-chokepoint.json
