@@ -29,14 +29,32 @@ def test_active_registry_is_content_valid_and_non_authoritative() -> None:
 def test_current_active_set_matches_frozen_challenger_expectation() -> None:
     registry = _registry()
     active = {entry.variant_id for entry in registry.entries if entry.status is PacketRegistryStatus.ACTIVE}
+    # navigation_dynamic_parallel_portfolio_v3 and path_equivalence_stateful_por_v3
+    # left this set at the 20260815 revalidation: RSHEA saturation round 004
+    # expanded their required-parent basis (dependency-tracked incremental
+    # recomputation; conflict/nogood learning), so their eligibility was demoted
+    # to BLOCKED_BASIS_EXPANDED. See
+    # research/mechanic_research_packets_v1/ACTIVE_REGISTRY_REVALIDATION_20260815.json.
     assert active == {
-        "navigation_dynamic_parallel_portfolio_v3",
-        "path_equivalence_stateful_por_v3",
         "operational_map_belief_v1",
         "path_cost_algebra_v1",
         "trajectory_to_certificate_assembly_v1",
         "verification_scheduler_v1",
     }
+
+
+def test_round004_expanded_variants_are_no_longer_eligible() -> None:
+    """The demotion itself, asserted rather than left implicit in a set difference."""
+    registry = _registry()
+    by_id = {entry.variant_id: entry for entry in registry.entries}
+    for variant_id, family in (
+        ("navigation_dynamic_parallel_portfolio_v3", "navigation_dependency_tracked_incremental_v4"),
+        ("path_equivalence_stateful_por_v3", "path_reduction_with_verified_nogoods_v4"),
+    ):
+        entry = by_id[variant_id]
+        assert entry.status is PacketRegistryStatus.BLOCKED_BASIS_EXPANDED
+        assert entry.replacement_family == family
+        assert "round004" in entry.reason
 
 
 def test_superseded_packet_stays_valid_history_but_is_not_eligible() -> None:
@@ -56,8 +74,10 @@ def test_structurally_valid_packet_is_blocked_when_basis_expanded() -> None:
 
 
 def test_active_replacement_packet_is_eligible_for_ordinary_gate_only() -> None:
+    # Exemplar of a still-ACTIVE packet; see the note in
+    # test_current_active_set_matches_frozen_challenger_expectation.
     report = resolve_packet_eligibility(
-        "navigation_dynamic_parallel_portfolio_v3", _registry(), repo_root=ROOT
+        "verification_scheduler_v1", _registry(), repo_root=ROOT
     )
     assert report.status is PacketRegistryStatus.ACTIVE, (report.status, report.reasons)
     assert report.eligible_for_existing_promotion_gate is True, report.reasons

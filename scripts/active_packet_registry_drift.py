@@ -26,7 +26,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "research/mechanic_research_packets_v1/ACTIVE_PACKET_REGISTRY.json"
-REVALIDATION = ROOT / "research/mechanic_research_packets_v1/ACTIVE_REGISTRY_REVALIDATION_20260814.json"
+#: The current revalidation receipt. Receipts are dated, superseding artifacts:
+#: a later one advances the freshness anchor after explicitly reviewing the
+#: tracked drift, and the superseded receipt stays on disk as history. Repoint
+#: this constant when a new receipt lands; never edit a receipt in place.
+REVALIDATION = ROOT / "research/mechanic_research_packets_v1/ACTIVE_REGISTRY_REVALIDATION_20260815.json"
 TARGET_REF_ENV = "ACTIVE_PACKET_REGISTRY_TARGET_REF"
 
 TRACKED_BASIS_PATHS = (

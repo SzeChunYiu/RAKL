@@ -67,6 +67,9 @@ def test_future_candidate_bound_to_blocked_capstone_packet_is_blocked() -> None:
 
 def test_future_candidate_bound_to_active_packet_passes_preflight() -> None:
     synthetic = copy.deepcopy(CANDIDATES)
-    synthetic["future_candidate"] = _synthetic_spec("navigation_dynamic_parallel_portfolio_v3")
+    # Exemplar of a still-ACTIVE packet. It was navigation_dynamic_parallel_portfolio_v3
+    # until the 20260815 revalidation demoted that variant; the assertion is about
+    # ACTIVE status passing preflight, not about which variant happens to hold it.
+    synthetic["future_candidate"] = _synthetic_spec("verification_scheduler_v1")
     registry = load_active_packet_registry(REGISTRY_PATH)
     assert active_registration_problems(candidates=synthetic, registry=registry) == ()

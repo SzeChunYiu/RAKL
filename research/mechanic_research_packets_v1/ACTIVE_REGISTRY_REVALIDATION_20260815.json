@@ -1,0 +1,69 @@
+{
+  "schema_version": "rshea-active-packet-registry-revalidation-v1",
+  "supersedes": "research/mechanic_research_packets_v1/ACTIVE_REGISTRY_REVALIDATION_20260814.json",
+  "original_registry_subject_sha": "b7747f21b58e8f827b1dab1a487739b83722af28",
+  "observed_current_main_sha": "4eebbbef004107564c3ffffa6190b7d91e894fa9",
+  "compare_status": "ahead",
+  "commits_since_original_subject": 132,
+  "relevant_subject_paths": [
+    "research/mechanic_research_packets_v1/PAPER5_PAPER6_SUCCESSORS.json",
+    "research/p5_p6_saturation_v1/",
+    "src/rakl/mechanic_research_packet.py",
+    "src/rakl/mechanic_research_packet_io.py",
+    "scripts/promotion_gate.py"
+  ],
+  "relevant_path_changes": [
+    "research/p5_p6_saturation_v1/ROUND_004.md",
+    "research/p5_p6_saturation_v1/ROUND_004_AMENDMENTS.json",
+    "research/p5_p6_saturation_v1/packets/verified_failure_constraint_compilation_v1.json"
+  ],
+  "other_changes_classification": "70 further commits since the 20260814 anchor, covering Paper I-IV formalization, the L0-L5 benefit ladder, ORION closure and claim-frontier work, and publication packaging. None of them touch the tracked Paper V-VI packet, saturation, packet-validator or promotion-gate basis. The three enumerated paths are the whole of the tracked drift and are all pure additions (91 insertions, 0 deletions): no existing packet was rewritten.",
+
+  "verdict": "PACKET_BASIS_DRIFT_CONFIRMED",
+
+  "review": {
+    "question": "Does RSHEA saturation round 004 invalidate any eligibility status frozen against b7747f21?",
+    "answer": "Yes, for exactly two entries.",
+    "evidence": {
+      "round_004_verdict": "NOT_SATURATED (research/p5_p6_saturation_v1/ROUND_004.md)",
+      "round_004_self_declaration": "ROUND_004_AMENDMENTS.json carries a basis_expanded_before_execution block naming four variants, and closes with 'Implementation remains blocked until the new parent/candidate basis is packet-bound.'",
+      "affected_and_currently_ACTIVE": [
+        {
+          "variant_id": "navigation_dynamic_parallel_portfolio_v3",
+          "packet_id": "MRP-P6-NAV-DYNAMIC-V3",
+          "prior_status": "ACTIVE",
+          "prior_reason": "explicitly unaffected by round002 and round003",
+          "round_004_expansion": "required_new_parents self_adjusting_computation_dynamic_dependence_graph and Adapton_demand_driven_incremental_computation; required_new_cost_coordinates dependency_graph_build, dependency_graph_memory, invalidation_precision, change_propagation_work; next_packet_family navigation_dependency_tracked_incremental_v4",
+          "new_status": "BLOCKED_BASIS_EXPANDED"
+        },
+        {
+          "variant_id": "path_equivalence_stateful_por_v3",
+          "packet_id": "MRP-P5P6-PATHQ-POR-V3",
+          "prior_status": "ACTIVE",
+          "prior_reason": "explicitly unaffected by round002 and round003",
+          "round_004_expansion": "required_new_parent_or_complement planning_state_space_nogood_learning and conflict_driven_clause_learning; next_packet_family path_reduction_with_verified_nogoods_v4",
+          "new_status": "BLOCKED_BASIS_EXPANDED"
+        }
+      ],
+      "affected_but_not_in_the_registry": [
+        "verified_solver_compilation_snapshot_v2",
+        "mechanic_predictive_hierarchical_controller_v3"
+      ],
+      "not_affected": "The remaining four ACTIVE entries (operational_map_belief_v1, path_cost_algebra_v1, trajectory_to_certificate_assembly_v1, verification_scheduler_v1) are not named in round 004's basis_expanded_before_execution block and are left ACTIVE."
+    },
+    "scope_of_this_review": "The affected set is taken from round 004's OWN enumeration in basis_expanded_before_execution, not from an independent re-derivation of which variants its new parents could touch. That enumeration is the round's scoped judgement and is the auditable object; substituting a broader same-session judgement for it would be unreviewable. If a later reader concludes round 004's parents also bear on one of the four entries left ACTIVE, that is a further revalidation, not a defect in this one.",
+    "independence": "Same-context review. This is not independent review and does not become independent by being written into a receipt."
+  },
+
+  "consequence": "Two entries move ACTIVE -> BLOCKED_BASIS_EXPANDED in ACTIVE_PACKET_REGISTRY.json, matching the round002 precedent exactly (six entries already carry that status with 'roundNNN <parent> discovered' reasons). This revalidation DEMOTES; it promotes nothing and makes no challenger active. Packet content is untouched -- status is a later eligibility fact and never rewrites preregistration history. The freshness anchor advances to 4eebbbef so that CI stops blocking on drift that has now been reviewed; every open branch must contain that anchor for the gate's ancestry checks to pass.",
+
+  "what_this_does_not_license": [
+    "It does not make navigation_dependency_tracked_incremental_v4 or path_reduction_with_verified_nogoods_v4 exist, active, or eligible. Those are named successor families, nothing more.",
+    "It does not evaluate any mechanic outcome. Round 004 generated none.",
+    "It does not grant scientific or promotion authority.",
+    "It does not certify saturation. Round 004's verdict is NOT_SATURATED and stands."
+  ],
+
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false
+}
