@@ -1,0 +1,36 @@
+name: p4-scheduler-promotion
+
+on:
+  push:
+    branches:
+      - automation/p4-phase2-v1-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  scheduler-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - name: Run allocator and projection hard gates
+        run: >-
+          pytest -q
+          tests/test_training_scheduler.py
+          tests/test_training_projection.py
+          tests/test_training_projection_guards.py
+          tests/test_v3_and_training_commitment.py
+      - name: Verify Phase-2 freeze and Phase-1 authorization
+        run: python -c "import json,pathlib; p=json.loads(pathlib.Path('research/paper4_phase2_v1/PROTOCOL.json').read_text()); assert p['authorizing_phase1']['terminal']=='MECHANISM_SIGNAL_PRESENT'; assert p['primary_estimand'].startswith('E_ADAPTIVE_RAKL_STRUCTURAL minus D_STATIC_RAKL_STRUCTURAL'); assert p['decision_tree']['RESOURCE_BLOCKED']; print('P4 allocator boundary: PASS')"
