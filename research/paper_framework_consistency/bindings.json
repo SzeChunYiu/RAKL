@@ -1,0 +1,80 @@
+{
+  "schema_version": "paper-framework-bindings-v1",
+  "freeze_date": "2026-08-14",
+  "grants_scientific_authority": false,
+  "purpose": "Bind manuscript claims to the framework behaviour that realizes them, so the two cannot drift apart silently. Every check is BEHAVIOURAL - it executes the framework and observes what it does - because a grep for a guard cannot distinguish live code from a comment or a dead branch.",
+  "verdicts": {
+    "CONSISTENT": "The framework was executed and behaved as the paper claim requires.",
+    "DIVERGENT": "The framework does not do what the paper says. Blocks publication of that claim.",
+    "CANNOT_CHECK": "The binding could not be evaluated. Explicitly NOT 'checked and fine'."
+  },
+  "bindings": [
+    {
+      "binding_id": "PFC-OPEN-WORLD-NO-ABSOLUTE-COMPLETE",
+      "paper": "Paper I",
+      "claim_id": "P1-T-OPEN-WORLD-NOT-CERTIFIABLE",
+      "paper_location": "publication/papers/paper-01-epistemic-mechanics/sections/04_owmd.tex:95",
+      "claim_text": "Unrestricted open-world completeness is not finitely certifiable, so the software has no ABSOLUTELY_COMPLETE success state and can report only BOUNDED_CLOSED relative to a declared search world.",
+      "framework_obligation": "No saturation run may ever report absolute completeness, however many conditions are satisfied.",
+      "enforcement_points": [
+        "schemas/epistemic-saturation.schema.json:properties/absolute_complete (const false)",
+        "src/rakl/epistemic_saturation.py:SaturationReport.absolute_complete"
+      ],
+      "check_kind": "BEHAVIOURAL",
+      "check_note": "Constructs a maximally-satisfied saturation run - five fully-flat, fully-audited rounds with a distant freshness cutoff - and asserts absolute_complete is still False. The schema pin alone would not catch a code path that bypassed it."
+    },
+    {
+      "binding_id": "PFC-SATURATION-REOPENS-ON-GROWTH",
+      "paper": "Paper I",
+      "claim_id": "P1-T-NEW-KNOWLEDGE-REOPENS",
+      "paper_location": "publication/papers/paper-01-epistemic-mechanics/sections/04_owmd.tex:193",
+      "claim_text": "If a bounded-saturated state is followed by a round with non-zero marginal epistemic growth, the state is no longer saturated until the required number of subsequent flat rounds is observed again.",
+      "framework_obligation": "Appending one substantive-growth round to a saturated sequence must drop the verdict out of BOUNDED_SATURATED.",
+      "enforcement_points": [
+        "src/rakl/epistemic_saturation.py:audit_bounded_epistemic_saturation"
+      ],
+      "check_kind": "BEHAVIOURAL",
+      "check_note": "Two-part probe with its own control: first establish that an all-flat sequence DOES saturate (otherwise the reopening test is vacuous and returns CANNOT_CHECK), then append one growth round and require the verdict to change."
+    },
+    {
+      "binding_id": "PFC-NO-SCALAR-RANKING",
+      "paper": "Paper I",
+      "claim_id": "P1-T-NO-SCALARIZATION",
+      "paper_location": "publication/papers/paper-01-epistemic-mechanics/sections/02_compatibility_authority.tex:139",
+      "claim_text": "No real-valued score can faithfully represent a partial order containing incomparable elements; a scalar can be a policy projection but cannot preserve the epistemic structure.",
+      "framework_obligation": "Comparison surfaces must refuse to emit an aggregate score. This is the machine-checked theorem RaklFormal.no_faithful_scalarization applied to the shipped comparison machinery.",
+      "enforcement_points": [
+        "schemas/external-research-agent-registry-v1.schema.json:properties/permits_scalar_ranking (const false)",
+        "src/rakl/external_agent_registry.py:LandscapeAudit"
+      ],
+      "check_kind": "BEHAVIOURAL",
+      "check_note": "Schema pin plus inspection of the audit dataclass surface for any score/rank/composite field. Ties Paper I's order-theoretic result to issue #588's no-ORION_SCORE rule."
+    },
+    {
+      "binding_id": "PFC-PROPRIETARY-NOT-CAUSAL",
+      "paper": "Paper VI",
+      "claim_id": "P6-EXTERNAL-COMPARISON-DISCIPLINE",
+      "paper_location": "research/external_research_agents/TAXONOMY.md",
+      "claim_text": "A comparison that confounds model, tool access, hidden retrieval corpus, evaluator or budget is a system-level observation and never licenses an architecture-level claim.",
+      "framework_obligation": "No proprietary system may be marked eligible for a causal architecture arm.",
+      "enforcement_points": [
+        "src/rakl/external_agent_registry.py:architecture_causal_eligible",
+        "research/external_research_agents/registry.json"
+      ],
+      "check_kind": "BEHAVIOURAL",
+      "check_note": "Executes the eligibility function over the live registry and cross-references availability. Guards the exact error issue #588 forbids: writing 'ORION architecture > System X architecture' from a confounded comparison."
+    }
+  ],
+  "open_residuals": [
+    {
+      "residual_id": "RES-PFC-001",
+      "statement": "Only 4 bindings exist, covering Papers I and VI. Papers II, III, IV and V have no claim-to-framework bindings yet.",
+      "closure_action": "Add bindings per paper as each paper's load-bearing claims are settled. Coverage is not completeness: an unbound claim is unchecked, not consistent."
+    },
+    {
+      "residual_id": "RES-PFC-002",
+      "statement": "Bindings are hand-authored, so a paper claim with no binding is invisible to this checker rather than reported as unbound.",
+      "closure_action": "Cross-reference the Paper I theorem inventory so every theorem-like claim is either bound, or explicitly recorded as not-framework-bearing."
+    }
+  ]
+}
