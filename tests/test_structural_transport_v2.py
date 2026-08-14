@@ -229,6 +229,133 @@ def test_direction_specific_violation_rejects() -> None:
     assert assess_transfer_v2(source, target, witness).decision is TransferDecision.REJECTED
 
 
+def _disjoint_target(structure_id: str, context_id: str) -> StructuralObject:
+    """A structure sharing no roles, relations, invariants, or QoI with _object()."""
+    return StructuralObject(
+        structure_id=structure_id,
+        domain="unrelated-domain",
+        qoi="throughput",
+        context_id=context_id,
+        roles=(StructuralRole("x", "field"), StructuralRole("y", "operator")),
+        relations=(StructuralRelation("x", "commutes_with", "y"),),
+        invariants=frozenset({"totally_unrelated_invariant"}),
+        boundaries=(BoundaryCondition("regime", "adiabatic"),),
+        evidence_ids=(f"evidence:{structure_id}",),
+    )
+
+
+def test_empty_obligation_set_fails_closed_on_disjoint_structures() -> None:
+    """The 2026-08-14 fail-open defect: wholly disjoint structures with an empty
+    obligation set were LICENSED with zero reasons. They must not be."""
+    source = _object("source", "source-context")
+    target = _disjoint_target("target", "target-context")
+    witness = StructuralWitnessV2(
+        witness_id="w",
+        source_structure_id=source.structure_id,
+        target_structure_id=target.structure_id,
+        source_context_id=source.context_id,
+        target_context_id=target.context_id,
+        qoi="stability",
+        role_mapping=(),
+        obligations=(),
+    )
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is not TransferDecision.LICENSED
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "empty_load_bearing_obligation_set" in assessment.reasons
+
+
+def test_optional_only_obligations_fail_closed() -> None:
+    """OPTIONAL-only obligations leave the load-bearing set empty: still not licensable."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    witness = _witness(
+        source,
+        target,
+        [
+            TransferObligation(
+                "qoi-optional",
+                ObligationKind.QOI,
+                "stability",
+                "stability",
+                requirement=ObligationRequirement.OPTIONAL,
+                evidence_ids=("evidence:qoi",),
+            )
+        ],
+    )
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is TransferDecision.CANNOT_CHECK
+    assert "empty_load_bearing_obligation_set" in assessment.reasons
+
+
+def test_licensed_always_carries_a_satisfied_load_bearing_obligation() -> None:
+    """The LICENSED-with-zero-reasons path is dead: any LICENSED assessment must
+    trace at least one satisfied load-bearing obligation."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    licensed_witness = _witness(
+        source,
+        target,
+        [
+            TransferObligation(
+                "qoi",
+                ObligationKind.QOI,
+                "stability",
+                "stability",
+                evidence_ids=("evidence:qoi",),
+            )
+        ],
+    )
+    empty_witness = _witness(source, target, [])
+    for witness in (licensed_witness, empty_witness):
+        assessment = assess_transfer_v2(source, target, witness)
+        load_bearing_ids = {
+            obligation.obligation_id
+            for obligation in witness.obligations
+            if obligation.requirement
+            in {ObligationRequirement.REQUIRED, ObligationRequirement.FORBIDDEN}
+        }
+        satisfied_load_bearing = [
+            trace
+            for trace in assessment.traces
+            if trace.obligation_id in load_bearing_ids
+            and trace.status is ObligationStatus.SATISFIED
+        ]
+        if assessment.decision is TransferDecision.LICENSED:
+            assert len(satisfied_load_bearing) >= 1
+    assert assess_transfer_v2(source, target, licensed_witness).decision is TransferDecision.LICENSED
+    assert assess_transfer_v2(source, target, empty_witness).decision is TransferDecision.CANNOT_CHECK
+
+
+def test_no_alarm_legitimate_licensing_unchanged() -> None:
+    """No-alarm control: a real satisfied-obligation case still returns LICENSED
+    with satisfied traces and no reasons, exactly as before the repair."""
+    source, target = _object("source", "source-context"), _object("target", "target-context")
+    witness = _witness(
+        source,
+        target,
+        [
+            TransferObligation(
+                "qoi",
+                ObligationKind.QOI,
+                "stability",
+                "stability",
+                evidence_ids=("evidence:qoi",),
+            ),
+            TransferObligation(
+                "invariant",
+                ObligationKind.INVARIANT,
+                "arrival_gt_service_implies_growth",
+                "arrival_gt_service_implies_growth",
+                evidence_ids=("evidence:invariant",),
+            ),
+        ],
+    )
+    assessment = assess_transfer_v2(source, target, witness)
+    assert assessment.decision is TransferDecision.LICENSED
+    assert assessment.reasons == ()
+    assert all(trace.status is ObligationStatus.SATISFIED for trace in assessment.traces)
+    assert len(assessment.traces) == 2
+
+
 def test_content_hash_is_deterministic() -> None:
     source, target = _object("source", "source-context"), _object("target", "target-context")
     witness = _witness(
