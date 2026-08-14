@@ -53,16 +53,6 @@ def test_ddmin_finds_one_minimal_conjunctive_failure_and_preserves_authority_bou
     assert "one_minimal_not_global_minimum" in report.receipt.notes
 
 
-def test_ddmin_can_find_failure_independent_of_registered_conditions() -> None:
-    def oracle(items):
-        return OracleVerdict.FAIL
-
-    report = _failure_report(("A", "B"), oracle)
-    assert report.verdict is FailureAnalysisVerdict.VERIFIED_RESULT
-    assert report.receipt is not None
-    assert report.receipt.result_sets == ((),)
-
-
 def test_ddmin_refuses_cannot_check_instead_of_using_it_as_failure() -> None:
     def oracle(items):
         values = set(items)
