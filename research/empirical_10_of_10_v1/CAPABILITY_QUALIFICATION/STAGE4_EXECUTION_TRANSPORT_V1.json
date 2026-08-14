@@ -1,0 +1,66 @@
+{
+  "schema_version": "rakl-capability-stage4-execution-transport-v1",
+  "date": "2026-08-14",
+  "owner_issue": 447,
+  "parent_main_sha": "57dd353a32a58fdea76920a704c4bf22f6e57aa0",
+  "purpose": "Bind submission and harvest of the already-frozen Stage 3-5 capability qualification without changing any scientific protocol, model, prompt, panel, evaluator, threshold or decoding setting.",
+  "frozen_blob_contract": {
+    "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json": "29c3a5afbfbf199b5ac80f02f1f8b04b716b3094",
+    "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/FRESH_TASK_MANIFEST_V1.json": "1542c8cb13173b361b6a5037dc0e029d140a0da3",
+    "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/SYSTEM_PROMPT.txt": "87b4a90b79ce65eb798fdce4519de779d4572921",
+    "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/RUNNER_INSTRUCTION_BLOCK.txt": "4a1c74eb7bdbe24dfeaf9153e7913dc45dbb39e0",
+    "experiments/paper3/build_capability_stage4_panel_v1.py": "abbfe3bf5501c39a1162b397853e7211ce3b5aaf",
+    "experiments/paper3/run_capability_stage4_v1.py": "9bec8e081226d5d69a9c21a5f7b3fab0f5c63bf7",
+    "experiments/paper3/run_capability_stage4_v1_lunarc.sbatch": "919bd13f2d3e10214ccec37f1864a07710961d06"
+  },
+  "fixed_scientific_subject": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "panel_sha256": "0ab994fb0f8f3523014023ff703151afe4c66e86a8f030435f509d141055cc0e",
+    "panel_n": 132,
+    "interface_semantics": "LICENSES_VERDICT",
+    "repair_passes": 0,
+    "decoding": "greedy",
+    "temperature": 0.0,
+    "max_new_tokens": 256,
+    "batch_size": 1,
+    "runtime_partition": "gpua100",
+    "gpu": "a100:1",
+    "wall_time_hours": 2,
+    "model_substitution_allowed": false
+  },
+  "submission_contract": {
+    "repository_subject_sha_must_be_explicit": true,
+    "repository_checkout_must_equal_subject_sha": true,
+    "repository_checkout_must_be_clean": true,
+    "all_frozen_blobs_must_match_before_sbatch": true,
+    "sbatch_must_export_subject_sha": true,
+    "submission_receipt_must_bind_job_id_subject_and_blob_contract": true
+  },
+  "harvest_contract": {
+    "slurm_job_state_must_be_observed": true,
+    "only_COMPLETED_jobs_may_be_interpreted_as_scientific_stage5_outputs": true,
+    "missing_or_nonterminal_scheduler_state": "CANNOT_CHECK_EXECUTION_STATE",
+    "noncompleted_job": "CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE",
+    "raw_stage5_receipt_must_be_hash_bound": true,
+    "pass_or_fail_receipt_requires_all_132_cases_completed": true,
+    "model_revision_panel_hash_and_no_substitution_must_match_freeze": true
+  },
+  "allowed_raw_terminals": [
+    "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+    "CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE",
+    "QUALIFICATION_BENCHMARK_DEGENERATE"
+  ],
+  "claim_boundary": "EXECUTION_PROVENANCE_ONLY__NO_CAPABILITY_RESULT_UNTIL_EXTERNAL_JOB_COMPLETES_AND_IS_HARVESTED__NO_RAKL_TREATMENT_CLAIM",
+  "forbidden_changes_after_freeze": [
+    "model or revision substitution",
+    "task or panel regeneration rule changes",
+    "prompt/interface semantic changes",
+    "threshold or family-gate changes",
+    "decoding changes",
+    "outcome-dependent retry with modified scientific settings"
+  ],
+  "grants_scientific_authority": false,
+  "grants_model_level_efficacy": false
+}
