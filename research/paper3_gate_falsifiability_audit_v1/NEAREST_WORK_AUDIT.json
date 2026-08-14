@@ -69,9 +69,25 @@
       "verification": "SEARCH_SURFACED_PDF_LOCATED_EXACT_VENUE_STRING_NOT_VERIFIED",
       "url": "https://citeseerx.ist.psu.edu/document?doi=ca9a2d326b9de48c095a6cb5912e1990d2c5ab46&repid=rep1&type=pdf",
       "cannot_check": "The exact venue/year string was not confirmed against the publisher record. It must be verified before appearing in a bibliography.",
-      "occupies": "S2 — the NARROWED claim — directly and classically",
-      "threat_level": "RED_FOR_THE_NARROWED_CLAIM",
-      "why": "Paper III's surviving result is that grouping cases on a field subset and taking the majority label yields an information ceiling below 1.0 for named projections and exactly 1.0 for the full coordinate set. That is structurally a state-abstraction sufficiency argument: which aggregations of state preserve the optimal action. Li, Walsh and Littman formalize exactly this, giving five abstraction classes (model-irrelevance through policy-irrelevance) and analyzing which preserve optimality. RAKL's information_ceiling over a field subset is a finite-case instance of that family.",
+      "occupies": "S2 — the NARROWED claim — closely and classically",
+      "threat_level": "AMBER_CLOSELY_ADJACENT_EXACT_CORRESPONDENCE_CANNOT_CHECK",
+      "threat_level_history": "First recorded as RED_FOR_THE_NARROWED_CLAIM, then softened after measuring the grouping key — see exact_correspondence_qualifier below. The original assessment is preserved rather than overwritten.",
+      "why": "Paper III's surviving result is that grouping cases on a field subset and taking the majority label yields an information ceiling below 1.0 for named projections and exactly 1.0 for the full coordinate set. That is structurally a state-abstraction sufficiency argument: which aggregations of state preserve the optimal action. Li, Walsh and Littman formalize this family, giving five abstraction classes (model-irrelevance through policy-irrelevance) and analyzing which preserve optimality.",
+      "exact_correspondence_qualifier": {
+        "finding": "information_ceiling groups on (family,) + projected_fields. `family` is the generator's construction label, not part of any parent's declared visible state, so every parent projection is granted information it would not actually have. The grouping is therefore a family-conditioned abstraction, not a clean state-only policy-irrelevance abstraction, and the correspondence to the classical result is close but not exact.",
+        "measured_direction": "CONSERVATIVE — removing `family` from the key LOWERS every parent ceiling, so the reported lossiness understates the real gap.",
+        "measured_ceilings_with_family_vs_state_only": {
+          "RESET": [0.5357, 0.5],
+          "FAILURE_MEMORY_ONLY": [0.6071, 0.5],
+          "SCALAR_CONFIDENCE": [0.5357, 0.5151],
+          "PROVENANCE_ONLY": [0.6071, 0.5357],
+          "WHOLE_STATE_UNTYPED": [0.6071, 0.5636],
+          "COMPOSITE_SIMPLE_PARENT": [0.7143, 0.6562],
+          "TYPED_SELECTIVE_EXPERIENCE": [1.0, 1.0]
+        },
+        "corroborating_detail": "The typed arm's ceiling is unchanged at 1.0 with or without `family`, which independently confirms that strict_action is a pure function of the state coordinates alone — the same fact that makes the four typed metrics a self-identity.",
+        "consequence_for_the_claim": "The projection-lossiness result survives and is in fact stronger than reported (1.0 versus 0.656, not 1.0 versus 0.714). What must be qualified is the mapping onto the classical theorem, not the measurement."
+      },
       "what_this_does_not_do": "It does not refute the Paper III result. The classical setting has no CANNOT_CHECK action, no negative-history block, no successor-lineage semantics and no notion of an authority-bearing versus proposal-only decision. Those are genuine additions.",
       "obligation": "CITE_AND_STATE_THE_DELTA. The narrowed claim cannot be published as novel without positioning against this parent. The defensible delta is the governance semantics — CANNOT_CHECK as a first-class action and refusal-preserving abstraction — not the sufficiency analysis itself.",
       "status_of_obligation": "OPEN_NOT_DISCHARGED"
@@ -80,7 +96,7 @@
 
   "verdict_on_signature_occupancy": {
     "S1_original": "OCCUPIED. CoEvoSkills occupies the self-evolving verified method-library architecture; ConsistencyGate occupies the admission gate. Paper III's method-evolution signature is contested, in the same way causal transportability contested Paper II's.",
-    "S2_narrowed": "OCCUPIED BY A CLASSICAL PARENT. The information-sufficiency argument is a finite instance of MDP state abstraction. The surviving novelty is narrower still: refusal-preserving and negative-history-preserving abstraction, where CANNOT_CHECK is an action the abstraction must not erase.",
+    "S2_narrowed": "CLOSELY ADJACENT TO A CLASSICAL PARENT. The information-sufficiency argument sits in the MDP state-abstraction family, though the exact correspondence is qualified because the grouping key includes the generator's family label. The surviving novelty is narrower still: refusal-preserving and negative-history-preserving abstraction, where CANNOT_CHECK is an action the abstraction must not erase.",
     "consequence": "Neither occupancy is a reason to retreat. Both are absorbable, and in each case the discriminator is the same one: RAKL's promotion signal is evidence-bound and admits CANNOT_CHECK, where every parent found uses a learned or model-derived score with no refusal semantics. That single axis is now the load-bearing novelty claim for Paper III and it is currently untested against any of these parents."
   },
 

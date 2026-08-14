@@ -202,6 +202,22 @@ def main() -> int:
             "battery": "src/rakl/gate_falsifiability.py",
         },
         "n_tasks": len(tasks),
+        "audited_surface": {
+            "covered": "_score and the vector-gate conjunction downstream of it",
+            "NOT_covered": "_parse — the path from raw model text to a parsed answer",
+            "why": (
+                "Every probe operates on already-parsed dicts constructed by oracle_records, "
+                "so _parse never executes. make_10pct_unparseable sets parsed=None directly "
+                "rather than emitting malformed text through _parse. parse_validity is a "
+                "registered gate dimension with a 0.98 floor, so the parser is load-bearing "
+                "and remains unaudited."
+            ),
+            "consequence": (
+                "FALSIFIABLE applies to the scoring and gating surface. It does not certify "
+                "that a real model's raw output is parsed correctly, and a parser defect "
+                "would not be caught by this audit."
+            ),
+        },
         "controls": {
             "oracle_responder_passes": True,
             "shipped_shortcut_audit_clean": shortcut["clean"],
