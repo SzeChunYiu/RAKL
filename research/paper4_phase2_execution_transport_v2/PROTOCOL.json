@@ -1,0 +1,61 @@
+{
+  "schema_version": "paper4-phase2-execution-transport-v2",
+  "date": "2026-08-14",
+  "owner_issue": 466,
+  "gate_issue": 462,
+  "base_main_sha": "aea2217dfd184eb70a32a6b26dffcb55b4e642a6",
+  "parent": {
+    "pull_request": 664,
+    "terminal": "PROMOTE_CONDITIONALLY_P4_PHASE2_EXECUTION_PROVENANCE",
+    "parent_protocol_git_blob": "c7c9f6cf558a90c3b913f707ef0fbdd6afc79bdf",
+    "preserved_value": "exact preflight/submission subject binding, compute-side subject receipt, runner-code/scientific-terminal separation, scheduler-observed harvest structure, canonical positive admission and standalone/scientific-authority refusal",
+    "newly_localized_residual": "harvest mode does not force the repository/interpreter back to the submitted subject; the Python harvester can import post-submission admission/authority code from a later clean checkout"
+  },
+  "chronology": {
+    "phase2_model_outputs_accessed_before_v2_freeze": false,
+    "phase2_job_submitted_before_v2_freeze": false,
+    "v1_terminal_rewritten": false,
+    "scientific_protocol_or_threshold_changed": false
+  },
+  "strongest_parent_counterexample": {
+    "construction": "Submit subject S with the v1 transport receipt. Before harvest, move the repository to a clean later commit S2 that changes harvest_phase2_v1.py, phase2_adaptive_receipt_admission.py or training_policy_authority.py but leaves the stored submission receipt and completed raw A100 output unchanged. Invoke v1 harvest mode with JOB_ID and SUBJECT_SHA=S from S2.",
+    "v1_gap": "The shell checks scheduler state but does not detach/check HEAD at harvest; the Python harvester validates the stored compute blobs against the frozen protocol but never verifies that its own interpreter/imported modules are the submitted subject or that the current transport protocol SHA matches the submission receipt.",
+    "risk": "Post-outcome interpretation drift: canonical admission/cost/authority semantics can change after model outcomes exist, violating freeze-before-outcome and exact-subject evidence rules even though raw output bytes are unchanged."
+  },
+  "frozen_v1_and_authority_blobs": {
+    "research/paper4_phase2_execution_transport_v1/PROTOCOL.json": "c7c9f6cf558a90c3b913f707ef0fbdd6afc79bdf",
+    "experiments/training_ladder/submit_and_harvest_phase2_v1_transport.sh": "db9a237f61979f744de3c888a049307f913c5b64",
+    "experiments/training_ladder/harvest_phase2_v1.py": "e43c8a03cb1f8d3b147af39f92129b8c9ec448f0",
+    "experiments/training_ladder/validate_phase2_v1_terminal.py": "11ee599cf07ebf22ad4e2212f4b2900c23832878",
+    "experiments/training_ladder/run_phase2_v1_lunarc_transport_v1.sbatch": "8a0c556ae141e649e422c7905607037f65e53281",
+    "src/rakl/phase2_adaptive_receipt_admission.py": "9f7ab272ee69d920608c1c15c7205db7932fe4ba",
+    "src/rakl/training_policy_authority.py": "021514aa383031d147943acd7eb993d84a27cf4b"
+  },
+  "v2_hard_requirements": {
+    "submission_receipt_binds_v2_harvester_validator_shell_and_sbatch_git_blobs": true,
+    "harvest_requires_exact_submitted_subject_checkout": true,
+    "harvest_requires_clean_tracked_checkout": true,
+    "python_harvester_independently_verifies_git_HEAD_equals_subject_sha": true,
+    "python_harvester_verifies_current_transport_protocol_sha256_equals_submission_receipt": true,
+    "python_harvester_verifies_current_interpreter_and_imported_authority_git_blobs_equal_submission_bound_blobs": true,
+    "scheduler_COMPLETED_and_raw_bundle_hash_rules_unchanged": true,
+    "ordinary_positive_canonical_admission_and_cost_gate_unchanged": true,
+    "negative_resource_terminal_preservation_unchanged": true,
+    "standalone_paper4_authorized": false,
+    "grants_scientific_authority": false
+  },
+  "scientific_subject_unchanged": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "arms": ["A_UNIFORM_RANDOM", "B_SEMANTIC_DIVERSITY", "C_STRONGEST_MODEL_AWARE_PARENT", "D_STATIC_RAKL_STRUCTURAL", "E_ADAPTIVE_RAKL_STRUCTURAL"],
+    "primary_contrast": "E-D",
+    "strongest_parent_contrast": "E-C",
+    "mde": 0.05,
+    "parent_noninferiority": -0.02,
+    "hard_harm_boundary": -0.05,
+    "changed_from_v1": false
+  },
+  "allowed_terminal_if_exact_head_green": "PROMOTE_CONDITIONALLY_P4_PHASE2_HARVEST_SUBJECT_BINDING_V2",
+  "claim_boundary": "Execution/harvest provenance repair only. No Phase-2 model outcome, Adaptive efficacy, standalone Paper-IV authorization, fresh-family/multi-checkpoint generalization or scientific authority.",
+  "grants_scientific_authority": false
+}
