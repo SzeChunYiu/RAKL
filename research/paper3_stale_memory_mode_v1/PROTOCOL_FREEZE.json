@@ -1,0 +1,64 @@
+{
+  "schema_version": "rakl-p3-stale-memory-mode-protocol-freeze-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "lane": "external non-self-generated evaluation surface — STALE memory-system mode",
+  "relation_to_prior_freezes": "NEW protocol with its own falsifiers. The frozen 7B/A100 four-arm protocol and its BLOCKED_ON_CAPABILITY_QUALIFICATION terminal remain on record verbatim and are not substituted into. The published STALE full-context protocol is separately receipted infeasible (research/paper3_stale_feasibility_v1/FEASIBILITY_RECEIPT.json).",
+
+  "question": "On externally constructed staleness scenarios ingested incrementally, does typed invalidation governance with refusal semantics (ON) over an identical extracted memory store change judge-scored answer correctness versus naive retrieval (OFF) at matched answer-time budget?",
+
+  "claim_boundary": "ON_VS_OFF_GOVERNANCE_CONTRAST_ONLY__LOCAL_SUBJECT__LOCAL_JUDGE__NEVER_COMPARABLE_TO_PUBLISHED_55_2_CEILING__NOT_FRESH_RESEARCH_TASK_LIFT__NOT_SCIENTIFIC_AUTHORITY",
+
+  "subject_selection_rule": {
+    "rule": "largest Qwen2.5 instruct model whose Q4_K_M weights plus an 8,192-token KV cache and runtime overhead fit the sanctioned 6 GB RTX A3000 with deterministic decoding, serving as both target and arm-blind judge without reload",
+    "selected": "qwen2.5:3b-instruct-q4_K_M (ollama)",
+    "rejected_alternative": "qwen2.5:7b-instruct-q4_K_M (~4.7 GB weights) rejected in advance: weights + 8K KV + CUDA overhead runs at the VRAM boundary and an OOM fallback to CPU offload mid-run would silently unmatch the arms' budgets",
+    "quantization_declared": "Q4_K_M",
+    "decoding": {"temperature": 0.0, "seed": 20260814, "num_ctx": 8192, "max_answer_tokens": 256}
+  },
+
+  "dataset": {
+    "source": "huggingface.co/datasets/STALEproj/STALE refs/convert/parquet train shard (288,947,099 bytes, 400 rows, CC BY 4.0), already on billy-laptop at ~/stale-feas/stale_train.parquet",
+    "split_rule": "rows ordered by sha256(uid) ascending; probe subset = first 8 rows; confirmatory subset = next 40 rows; remaining 352 rows untouched",
+    "inference_time_visible_fields": ["haystack_session", "timestamps", "probing_queries"],
+    "forbidden_candidate_inputs": ["M_old", "M_new", "explanation", "relevant_session_index", "type"],
+    "judge_gold_reference": "the judge (scorer, not candidate) sees M_new and explanation as gold reference; the judge never sees which arm produced a response"
+  },
+
+  "arms": {
+    "shared_ingestion": "one extraction pass per scenario: each haystack session is passed to the subject model with a fixed fact-extraction prompt producing (attribute, value) records tagged with session index and timestamp; the identical store feeds both arms — extraction quality is held fixed so exactly one dimension (governance) varies",
+    "TYPED_ON": "attributes canonicalized; per-attribute chains ordered by session time; a later different value invalidates predecessors (version_current=false); answers are generated from current-valid relevant facts only, with a fixed instruction that earlier contradicting states are invalidated and stale premises must be corrected; no relevant valid fact => the answer must state the information is not known (refusal semantics)",
+    "NAIVE_OFF": "top-k retrieval over all extracted facts by the same lexical scorer, no chains, no invalidation, no staleness instruction, direct answer",
+    "matched_budget": "same retrieval k=8, same model, same decoding limits, exactly one model call per query per arm"
+  },
+
+  "admissibility_probe_before_confirmatory": {
+    "mechanic": "oracle-ceiling admissibility (absorbed Paper IV mechanic) applied prospectively",
+    "SKYLINE": "answers generated with gold explanation visible to the responder",
+    "FLOOR": "answers generated with no memory and no haystack",
+    "gate": "on the 8-scenario probe subset, judge-scored dim1 accuracy must satisfy SKYLINE - FLOOR >= 0.30 and SKYLINE >= 0.60, else terminal INSTRUMENT_INADMISSIBLE_CEILING_BELOW_GATE and the confirmatory subset is not spent",
+    "judge_control": "on every probe scenario the judge must score the SKYLINE answer pattern correct and a planted anti-gold answer incorrect; judge known-answer agreement must be >= 0.90 or the terminal is JUDGE_UNRELIABLE_CANNOT_CHECK"
+  },
+
+  "falsifiability_audit_before_confirmatory_outcome_access": "every registered confirmatory gate condition is audited per condition with src/rakl/gate_falsifiability.py over the probe-set evidence rows (perturbations include judge-verdict shuffle, gold-reference shuffle, dimension drops, response/row misalignment); any NON_FALSIFIABLE condition disqualifies the gate before the confirmatory subset is read",
+
+  "confirmatory_gates": {
+    "G1_coverage": "every dimension has >= 30 scorable queries per arm",
+    "G2_judge_known_answer": "judge known-answer agreement >= 0.90 on planted controls",
+    "G3_primary_contrast": "ON - OFF overall judge accuracy reported with sign and bootstrap 95% CI",
+    "positive_terminal_requires": "ON - OFF >= +0.10 overall AND CI excluding 0 AND no dimension where ON < OFF - 0.05",
+    "positive_terminal": "TYPED_GOVERNANCE_EXTERNAL_SURFACE_SUPPORTED_IN_ENVELOPE",
+    "negative_terminal": "TYPED_GOVERNANCE_EXTERNAL_SURFACE_NOT_SUPPORTED_IN_ENVELOPE — files with single-stage attribution and exactly one registered revival attempt (global-recovery doctrine); the revival lever must be named from the attribution, not tuned post hoc",
+    "null_terminal": "CI includes 0 => INCONCLUSIVE_IN_ENVELOPE, reported as such"
+  },
+
+  "honesty_clauses": [
+    "the published 55.2% ceiling is never a comparator; no leaderboard claim of any kind",
+    "a floor-regime result (both arms near 0) after a passed admissibility probe is reported as measured, not suppressed",
+    "no threshold, subset, prompt or judge change after first confirmatory outcome access",
+    "all prompts are frozen in the harness at the registration commit; the harness commit precedes probe execution in branch history"
+  ],
+
+  "grants_scientific_authority": false,
+  "grants_model_level_efficacy": false
+}
