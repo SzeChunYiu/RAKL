@@ -38,6 +38,21 @@ jobs:
           tests/test_semantic_shortcut_consolidation.py
           tests/test_training_scheduler.py
           tests/test_phase2_adaptive_protocol.py
+      - name: Verify byte-identical P3/P4 protocol freezes
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          p = Path('research/orion_p1_p4_closure_v2')
+          for proto_name, manifest_name in (
+              ('P3_EXPERIENCE_PROTOCOL_FREEZE.json', 'P3_EXPERIENCE_FREEZE_MANIFEST.json'),
+              ('P4_ADAPTIVE_PROTOCOL_FREEZE.json', 'P4_ADAPTIVE_FREEZE_MANIFEST.json'),
+          ):
+              expected = json.loads((p/manifest_name).read_text())['protocol_sha256']
+              observed = hashlib.sha256((p/proto_name).read_bytes()).hexdigest()
+              assert observed == expected, (proto_name, observed, expected)
+          print('P3/P4 pre-outcome protocol bytes: PASS')
+          PY
       - name: Reproduce new P3 and P4 RSHEA receipts exactly
         run: |
           set -euo pipefail
