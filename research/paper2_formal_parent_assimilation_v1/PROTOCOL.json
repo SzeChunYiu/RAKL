@@ -18,7 +18,7 @@
       "load_bearing_fact": "selection diagrams encode cross-population differences and the formalism decides whether a causal effect can be transported"
     }
   ],
-  "question": "Can ORION safely assimilate a complete formal causal-transfer parent so that formal LICENSED/REJECTED decisions dominate inside that parent's registered scope, formal CANNOT_CHECK fails closed, and ORION is consulted only when the formal parent is explicitly OUT_OF_SCOPE?",
+  "question": "Can ORION safely assimilate a complete formal causal-transfer parent so that formal LICENSED/REJECTED decisions dominate inside that parent's registered scope, formal CANNOT_CHECK fails closed, and ORION is consulted only after an evidence-bound formal OUT_OF_SCOPE result?",
   "claim_scope": "ROUTING_AND_NOVELTY_BOUNDARY_ONLY__NOT_CAUSAL_TRANSPORTABILITY_EFFICACY",
   "formal_parent": {
     "method_id": "bareinboim-pearl-sid-family",
@@ -28,28 +28,30 @@
   },
   "orion_child": {
     "terminals": ["LICENSED", "REJECTED", "CANNOT_CHECK"],
-    "allowed_only_after_parent_out_of_scope": true
+    "allowed_only_after_parent_out_of_scope": true,
+    "out_of_scope_requires_bound_derivation_digest": true
   },
   "frozen_arbitration_rules": [
     "formal LICENSED dominates any ORION disagreement inside the exact bound subject",
     "formal REJECTED dominates any ORION disagreement inside the exact bound subject",
     "formal CANNOT_CHECK returns CANNOT_CHECK and cannot be overridden by ORION",
-    "formal OUT_OF_SCOPE delegates to ORION",
+    "formal OUT_OF_SCOPE delegates to ORION only when backed by a bound formal scope/derivation artifact digest",
     "subject/method/version/hash mismatch returns CANNOT_CHECK",
-    "decisive formal parent results require a bound proof/derivation artifact digest",
+    "formal LICENSED, REJECTED and OUT_OF_SCOPE results require a bound derivation/scope artifact digest",
     "no arbitration result grants scientific authority"
   ],
   "strongest_parent_counterexamples": [
     "ORION_LICENSED_vs_FORMAL_REJECTED_must_reject",
     "ORION_REJECTED_vs_FORMAL_LICENSED_must_license",
     "ORION_LICENSED_vs_FORMAL_CANNOT_CHECK_must_abstain",
+    "bare_OUT_OF_SCOPE_label_must_not_delegate",
     "stale_subject_must_abstain",
     "decisive_parent_without_proof_digest_must_abstain"
   ],
   "promotion_if_green": "PROMOTE_CONDITIONALLY_FORMAL_PARENT_ASSIMILATION_BOUNDARY",
   "promotion_gate": [
     "all strongest-parent counterexamples pass",
-    "OUT_OF_SCOPE delegation preserves ORION three-way verdict",
+    "evidence-bound OUT_OF_SCOPE delegation preserves ORION three-way verdict",
     "formal-parent decisive decisions cannot be overridden",
     "malformed/stale/unbound parent evidence fails closed",
     "existing P2 exact-verifier/downstream-routing parents remain green"
