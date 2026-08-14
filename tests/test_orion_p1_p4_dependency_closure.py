@@ -9,7 +9,7 @@ from rakl.objective_transfer_benchmark_v2 import FAMILIES
 from rakl.semantic_shortcut_router import resolve_obstruction_transformation_route
 from rakl.semantic_shortcut_router_v2 import CandidateRejectionCertificate
 from rakl.semantic_shortcut_router_v3 import CompositionRejectionCertificate
-from rakl.semantic_shortcut_consolidation import ConsolidationDecision
+from rakl.semantic_shortcut_consolidation import StructuralConsolidationVerdict
 from rakl.training_policy_authority import TrainingPolicyMode, choose_active_training_policy
 from rakl.training_scheduler import choose_adaptive_training_batch
 
@@ -69,5 +69,5 @@ def test_paper_runtime_surfaces_import_together():
     assert resolve_obstruction_transformation_route is not None
     assert CandidateRejectionCertificate is not None
     assert CompositionRejectionCertificate is not None
-    assert ConsolidationDecision is not None
+    assert StructuralConsolidationVerdict is not None
     assert choose_adaptive_training_batch is not None
