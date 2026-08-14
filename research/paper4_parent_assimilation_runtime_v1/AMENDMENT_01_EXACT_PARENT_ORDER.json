@@ -1,0 +1,36 @@
+{
+  "schema_version": "orion-paper4-parent-assimilation-runtime-amendment-01",
+  "date": "2026-08-14",
+  "amends": "research/paper4_parent_assimilation_runtime_v1/PROTOCOL.json",
+  "original_protocol_preserved": true,
+  "outcome_accessed_before_amendment": false,
+  "trigger": "Exact review of research/paper4_phase2_v1/PROTOCOL_V3.json and experiments/training_ladder/phase2_adaptive_v1.py after the initial freeze showed that C_STRONGEST_MODEL_AWARE_PARENT is groupwise rather than a generic per-candidate scalar ranker: rounds 2-6 score shared selection probes by exposure group mean binary-label negative log likelihood, choose the highest-NLL exposure with frozen exposure-order tie-breaking, then consume the already-frozen queue within that exposure.",
+  "localized_defect": "The initial protocol's opaque per-candidate scalar contract plus candidate-id tie-breaking was an over-generalization and could change the strongest parent's within-group order. That would fail the registered parent-fidelity objective even if every test on the generic contract passed.",
+  "repair_before_outcome": {
+    "parent_input": "Consume the strongest parent's exact ordered candidate proposal as an opaque, content-hashed bundle produced under a frozen provider/checkpoint identity. The provider remains responsible for its groupwise NLL scoring, exposure-order tie-breaking and queue order.",
+    "orion_operation": "Stable fail-closed filtering only: preserve the relative order of every surviving parent-proposed candidate; ORION may remove candidates only for pre-existing projection invalidity, confirmatory-target leakage, forgetting-risk hard veto, negative-transfer-risk hard veto, stale checkpoint, provenance/hash failure or incomplete/ambiguous candidate coverage.",
+    "forbidden": [
+      "recompute or replace the parent's NLL score",
+      "candidate-id re-ranking of equal parent values",
+      "RAKL utility scalarization",
+      "post-outcome threshold changes",
+      "training-policy activation",
+      "scientific-authority movement"
+    ]
+  },
+  "development_gate_delta": [
+    "SAFE_PARENT_FIDELITY now means exact preservation of the parent's supplied candidate order, not reconstruction from scalar scores.",
+    "STRUCTURAL_VETO must be stable: removing an unsafe candidate cannot reorder the remaining parent proposal.",
+    "COVERAGE_FAIL_CLOSED now binds the exact parent candidate order to the exact snapshot candidate set with no missing, extra or duplicate identities."
+  ],
+  "unchanged": [
+    "all preserved negative predecessors",
+    "STATIC_STRUCTURAL active default",
+    "0.10 forgetting and negative-transfer hard-veto defaults",
+    "proposal-only authority boundary",
+    "exact frozen 7B five-arm Phase-2 efficacy study",
+    "fresh-family and multi-checkpoint requirements"
+  ],
+  "grants_scientific_authority": false,
+  "grants_training_policy_authority": false
+}
