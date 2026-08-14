@@ -1,0 +1,15 @@
+{
+  "protocol_id": "BENEFIT-L4-NAVIGATION-V1",
+  "audit_sample_file": "audit_sample.json",
+  "sample_seed": 20260814,
+  "n_audited": 40,
+  "n_disagreements": 0,
+  "disagreement_rate": 0.0,
+  "auditor_saw_arm_outputs": false,
+  "audit_performed_before_any_arm_execution": true,
+  "auditor_identity": "same-context session agent (run executor), acting as the oracle auditor; shown ONLY world_id, surface_text, gold_label per world (no class field, no S*, no machine fields)",
+  "independence_caveat": "This is a same-context oracle audit, NOT independent human review. It satisfies the receipt's mechanical constraints (no arm outputs existed at audit time) and checks rendering/label integrity, but auditor and generator author share a context. Independent re-audit is a registered residual for any governance continuation.",
+  "method": "Each of the 40 seed-sampled worlds was read in full; the auditor judged solvability implied by the rendered world description alone (a fully licensed chain across buried sources, or an admissible detour avoiding a declared obstruction cover, implies SOLVABLE; a goal with no incoming edge anywhere in the full fact set, or a chain whose only route contains an edge licensed below demand, implies UNSOLVABLE; budget class and distractor pressure affect arms, never world solvability) and compared it to gold.",
+  "audited_at": "2026-08-14T18:36:24Z",
+  "per_world_verdicts": "all 40 AGREE; no world required interpretation beyond the rendered text (sampled: 38 SOLVABLE — licensed chains or admissible detours; 2 UNSOLVABLE — both goal-disconnected N7 rows)"
+}

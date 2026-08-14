@@ -1,0 +1,106 @@
+{
+  "protocol_id": "BENEFIT-L5-SATURATION-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "headline": {
+    "completeness_a": 1.0,
+    "completeness_b": 1.0,
+    "mean_iou_a": 1.0,
+    "mean_iou_b": 1.0,
+    "mean_savings_b": 0.3528125,
+    "frac_worlds_saved_b": 0.7925,
+    "noninferiority": {"b": 0, "c": 0, "n": 400, "p_one_sided": 1.2286894111517744e-09, "loss_rate": 0.0},
+    "conjunction_terms": {
+      "completeness_term": "non-inferiority holds with ZERO completeness losses (b_obs=0; exact one-sided p = 1.23e-9 against the 0.05 margin) and mean IoU deficit 0.0 (1.0 vs 1.0)",
+      "saving_term": "mean budget saved 0.3528 of T_MAX (>= 0.10) with 79.25% of worlds strictly saving (>= 0.50); mean stop round 15.53 vs 24",
+      "equal_budget_superiority": "C_B = 1.0 > null-1 q95 = 0.645 (arm B's own stop-round multiset arbitrarily reallocated loses ~35% completeness) and > null-2 q95 = 0.355 (signal-blind stopping loses ~65%)"
+    },
+    "late_floor_b_S3": 1.0,
+    "guard_class_early_stops_b_S6": 0,
+    "attribution_delta_trap_S4": 1.0,
+    "null_1_budget_permutation": {"q95": 0.645, "mean": 0.62199, "observed_c_b": 1.0, "beaten": true},
+    "null_2_signal_permutation": {"q95": 0.355, "mean": 0.3301975, "observed_c_b": 1.0, "beaten": true},
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "noninferiority_exact_p_lt_0.001": true,
+    "mean_iou_b_ge_mean_iou_a_minus_0.02": true,
+    "mean_savings_ge_0.10": true,
+    "frac_saved_ge_0.50": true,
+    "late_floor_S3_ge_0.70": true,
+    "zero_early_stops_S6": true,
+    "attribution_delta_S4_ge_0.10": true,
+    "c_b_above_null1_q95": true,
+    "c_b_above_null2_q95": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true,
+    "no_rule_drift_either_arm": true
+  },
+  "module_pin_verification": {
+    "EVALUATOR.py": "b3e739d8b8a02121d11568f2de718bea6cdacbbbb888d8f0e074db49b83fec7f (MATCH, verified before any execution and inside every step)",
+    "src/rakl/epistemic_saturation.py": "aac384c41999c44facc526a9a32a306ac71eeab9d008fe5248500fcddb423546 (MATCH)"
+  },
+  "per_class": {
+    "arm_A_budget_exhaustion_stopping": {
+      "all_classes": {"completeness": 1.0, "mean_iou": 1.0, "mean_stop_round": 24.0, "mean_savings": 0.0}
+    },
+    "arm_B_saturation_stopping": {
+      "S1": {"n": 140, "completeness": 1.0, "mean_stop_round": 14.09, "mean_savings": 0.413, "early_stops": 140},
+      "S2": {"n": 60, "completeness": 1.0, "mean_stop_round": 6.35, "mean_savings": 0.735, "early_stops": 60},
+      "S3": {"n": 60, "completeness": 1.0, "mean_stop_round": 23.72, "mean_savings": 0.0118, "early_stops": 17},
+      "S4": {"n": 60, "completeness": 1.0, "mean_stop_round": 17.15, "mean_savings": 0.285, "early_stops": 60},
+      "S5": {"n": 40, "completeness": 1.0, "mean_stop_round": 11.2, "mean_savings": 0.533, "early_stops": 40},
+      "S6": {"n": 40, "completeness": 1.0, "mean_stop_round": 24.0, "mean_savings": 0.0, "early_stops": 0}
+    },
+    "note": "Savings are earned exactly where the world affords them (S1/S2/S5, and S4 after surviving the trap) and honestly refused where they cannot be earned: S3 late-complete saves ~0 while keeping the full basis (floor 1.0 >= 0.70), and S6 uncertifiable-basis worlds produce ZERO early stops (the audit never certifies while bounded discovery is genuinely open). The S4 attribution delta is 1.0: bare flat-counting stops inside every trap window and loses the basis on all 60 trap worlds, while the full audit conjunction (bounded-discovery/route-coverage/omission/nearest-work/operator-order/blocking-fiber conjuncts) survives every trap — the L5 mechanism specifically, not flatness, carries the benefit."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic, so qualitative behavior on the parametric classes is partially derivable a priori (budget exhaustion is complete whenever the stream delivers the basis; the saturation rule's risk is concentrated in the false-flat trap and late-complete classes, which exist to price it). The run certifies exact magnitudes under randomized stream realization, separation from both nulls, the premature-stop floor, the uncertifiable-basis guard, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "On synthetic known-answer streams over a finite basis, flat-round saturation stopping (the full rakl.epistemic_saturation.audit_bounded_epistemic_saturation conjunction, required_consecutive_flat_rounds=2) retains non-inferior set-completeness while strictly saving budget, and beats arbitrary equal-budget stopping.",
+  "explicit_non_claims": [
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus (real literature stream) generalization (registered follow-up)",
+    "no infinite-basis claim (S6 behavior is refusal, not capability)",
+    "ladder.json L5 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "8e8c2955b895e42179332ff56fdbcafcff1972da0fd3f03dfb1417e9d8efaa22",
+    "corpus_v1_stripped.json": "7e14c9632d05c8d750d8654e7d6ba3f2d493283a5d27dbbc9b55d0ca55bb7cbb",
+    "audit_sample.json": "72271ea517b3546f68b6e1d354560d19725b30acfad800133c4ca5ca735d8ea0",
+    "worlds_v1.json": "cc0a1ba7765bcd3428ce5ab87f038070f97a175a8d17aabab66f6f25583ce0ac",
+    "harness/generate_corpus.py": "158d01b397b2cda79cfd296661bdc1ecac75d1c1c69ec0522d851fe1d5c2223a",
+    "harness/arm_harness.py": "78794670b0691431ef69fbe22245fccdc6d6cb929fb862afa226fc0920df0a27",
+    "arm_a_output.json": "e59efa5c4808ed130fe4bc27dad04fb1b190f8146ab1ccf1498fa5c339218e52",
+    "arm_b_output.json": "1a1100e797c76b299d0f213e0c45ad2a7601e18fe058d39953edd4f266353f49",
+    "evaluator_report.json": "e813728f18b9b8056623af5a62c218399e334b10750439f4c5897c9f1b19101a",
+    "AUDIT_RECEIPT.json": "967f73ba0247bce7ba6694b5088f68d027ab44a1f726c15cbaebf3987a3ed47b"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T18:44:22Z",
+    "corpus_frozen_at": "2026-08-14T18:44:22Z",
+    "audit_performed_at": "2026-08-14T18:44:47Z",
+    "arm_run_started_at": "2026-08-14T18:45:04Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:993a9c4d39c806bd",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l5-saturation-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs), partially machine-assisted per the receipt's method field — mechanically valid, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer streams; the registered follow-ups (LLM arm, real literature streams) remain open.",
+    "FRESHNESS-CHANNEL-UNEXERCISED: the audit's required_freshness_cutoff channel was not exercised (as frozen); the pre-registered CONDITIONAL lever (typed freshness-horizon extension via the mechanism-invention workflow) remains available but was not needed at this outcome.",
+    "GATE-FACT-PROVENANCE: rendered per-round gate facts are truthful projections of the synthetic hidden world by construction; on natural streams the audit's gate inputs would themselves need evidence discipline — a scope note carried forward to the registered natural-corpus follow-up."
+  ],
+  "grants_scientific_authority": false
+}

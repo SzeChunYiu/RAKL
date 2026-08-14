@@ -1,0 +1,15 @@
+{
+  "protocol_id": "BENEFIT-L5-SATURATION-V1",
+  "audit_sample_file": "audit_sample.json",
+  "sample_seed": 20260814,
+  "n_audited": 40,
+  "n_disagreements": 0,
+  "disagreement_rate": 0.0,
+  "auditor_saw_arm_outputs": false,
+  "audit_performed_before_any_arm_execution": true,
+  "auditor_identity": "same-context session agent (run executor), acting as the oracle auditor; shown ONLY world_id, surface_text, the rendered 24-round stream, gold_basis and t_complete per world (per PROTOCOL.json label_independence_safeguards[2]; no class field, no arm outputs exist yet)",
+  "independence_caveat": "This is a same-context oracle audit, NOT independent human review. It satisfies the receipt's mechanical constraints (no arm outputs existed at audit time) and checks rendering/label integrity, but auditor and generator author share a context. Independent re-audit is a registered residual for any governance continuation.",
+  "method": "For each of the 40 seed-sampled worlds the auditor checked the gold labels against the rendered stream: (a) the union of per-round newly-retained fact ids equals the gold basis exactly, with no fact first-arriving twice; (b) the last first-arrival round equals t_complete, and the bounded-discovery closure gate first turns true exactly at t_complete (for null-t_complete worlds: closure never true and facts still arriving in the late rounds); (c) the rendered surface description (arrival schedule, completion/closure round, trap window, 'Completion round: none') agrees with both. Per-row checks executed with auditor tooling over the audit sample only; representative rows additionally read in full.",
+  "audited_at": "2026-08-14T18:44:47Z",
+  "per_world_verdicts": "all 40 AGREE on all three checks; no world required interpretation beyond the rendered stream"
+}
