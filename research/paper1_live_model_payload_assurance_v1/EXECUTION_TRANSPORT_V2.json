@@ -1,0 +1,86 @@
+{
+  "schema_version": "paper1-live-model-payload-execution-transport-v2",
+  "date": "2026-08-14",
+  "owner_issue": 592,
+  "parent_main_sha": "6c94030f92af8ca6d88c30e19218d176a471a99e",
+  "predecessor": {
+    "branch": "automation/p1-live-payload-execution-transport-v1-20260814",
+    "head_sha": "3f3c45a6c51d1764afddab8c1dc6fe31a08d96e3",
+    "transport_blob": "9b1945ac96457c08ec37be988967650c0e588759",
+    "retained_value": "exact submit/harvest provenance, scheduler-state observation, panel/model/protocol/raw-result binding and hostile harvest mutations",
+    "residual_defect": "v1 froze experiment/protocol blobs but not the production ingress/chokepoint/runtime source whose live-model authority isolation is the scientific subject. A clean later commit could alter that production mechanism while preserving every v1 frozen experiment blob."
+  },
+  "chronology": {
+    "live_model_outputs_accessed_before_v2_freeze": false,
+    "reason_for_v2": "close production-subject identity before the first outcome-bearing A100 model call; no prompt, panel, model, decoding, gate or production implementation is changed"
+  },
+  "frozen_experiment_blobs": {
+    "experiments/paper1/build_live_model_payload_panel_v1.py": "9fc9434aa6e4cbb797265c350371ee3f9eddedcf",
+    "experiments/paper1/run_live_model_payload_assurance_v1.py": "8a902d236ba9d1869f9292ca00c6d6f5bdda98e3",
+    "experiments/paper1/run_live_model_payload_assurance_v1_lunarc.sbatch": "5024bbe77776e8a06fc32165e025a4897630d453",
+    "research/paper1_live_model_payload_assurance_v1/PROTOCOL.json": "2e7f37d6a3524870af8d439147a5bc1a4646734b",
+    "research/paper1_live_model_payload_assurance_v1/FREEZE_HARDENING_V2.json": "e4b1d32718b4fb95c7816e01caacdf5f681647c9"
+  },
+  "frozen_production_subject_blobs": {
+    "src/rakl/driver_learning.py": "baabf31d256198aade187a89e07b4c5ce271eda4",
+    "src/rakl/agent_authority_gateway.py": "b0494bb7ca2cf880e3fe3e502204fc5b5f1423c0",
+    "src/rakl/authority_chokepoint.py": "26c5859d9ae7bfbf98ea70748f1665d76a05917e",
+    "src/rakl/v3_runtime.py": "79195eafd60c791feaa89da82aaecde5f6d92cd6"
+  },
+  "fixed_subject": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "model_path": "/projects/hep/fs9/users/scyiu/RAKL-paper2/assets/paper2-model-qwen25-7b-v1/model/Qwen--Qwen2.5-7B-Instruct/a09a35458c702b33eeacc393d103063234e8bc28",
+    "panel_sha256": "5af33abe503d0531f933a37f769932510c76c6144be3d23fc241bd670645ff81",
+    "panel_bytes": 148332,
+    "panel_n": 96,
+    "decoding": "greedy",
+    "temperature": 0.0,
+    "max_new_tokens": 384,
+    "runtime_partition": "gpua100",
+    "gpu": "a100:1",
+    "wall_time_hours": 2,
+    "transformers_version": "4.55.0",
+    "model_substitution_allowed": false,
+    "scientific_settings_changed_from_v1": false
+  },
+  "submission_contract": {
+    "explicit_repository_subject_sha": true,
+    "exact_clean_checkout": true,
+    "all_experiment_blobs_reproduced_before_sbatch": true,
+    "all_production_subject_blobs_reproduced_before_sbatch": true,
+    "exact_panel_bytes_and_hash_reproduced_before_sbatch": true,
+    "deterministic_production_ingress_harness_passes_before_sbatch": true,
+    "authority_parent_tests_pass_before_sbatch": true,
+    "exact_model_path_forced_at_submission": true,
+    "submission_receipt_binds_subject_job_model_and_production_blobs": true
+  },
+  "harvest_contract": {
+    "scheduler_state_observed": true,
+    "scientific_result_requires_COMPLETED": true,
+    "raw_receipt_hash_bound": true,
+    "subject_git_sha_must_match": true,
+    "protocol_sha256_must_match_original_protocol": true,
+    "panel_sha256_and_n_must_match": true,
+    "raw_result_row_count_must_equal_96": true,
+    "model_revision_must_match": true,
+    "allowed_terminals_only": true,
+    "production_subject_blobs_in_submission_must_match_v2_freeze": true
+  },
+  "required_adversarial_falsifier": {
+    "name": "CLEAN_COMMIT_PRODUCTION_INGRESS_DRIFT",
+    "construction": "create a clean successor commit that changes driver_learning.py or agent_authority_gateway.py while leaving every v1 frozen experiment/protocol blob unchanged",
+    "v1_expected": "experiment-blob identity alone cannot reject this clean production-subject drift",
+    "v2_required": "preflight fails on the production-subject blob contract before any model call"
+  },
+  "allowed_terminals": [
+    "PROMOTE_CONDITIONALLY_LIVE_MODEL_PAYLOAD_AUTHORITY_ASSURANCE_QWEN25_7B_V1",
+    "NEGATIVE_LIVE_MODEL_PAYLOAD_AUTHORITY_LEAKAGE",
+    "NEGATIVE_LIVE_MODEL_HOSTILE_PAYLOAD_NOT_FAIL_CLOSED",
+    "NEGATIVE_LIVE_MODEL_GATEWAY_USABILITY_TOO_LOW",
+    "MODEL_CORPUS_UNDERSTRESSES_GATEWAY__NO_LIVE_HOSTILE_ASSURANCE",
+    "RESOURCE_BLOCKED_LIVE_MODEL_PAYLOAD_ASSURANCE"
+  ],
+  "claim_boundary": "EXECUTION_PROVENANCE_AND_PRODUCTION_SUBJECT_IDENTITY_ONLY__NO_LIVE_MODEL_ASSURANCE_RESULT_UNTIL_EXTERNAL_A100_JOB_COMPLETES_AND_IS_HARVESTED__NO_SCIENTIFIC_AUTHORITY",
+  "grants_scientific_authority": false
+}
