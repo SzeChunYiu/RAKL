@@ -1,0 +1,981 @@
+{
+  "audited_subject": {
+    "battery": "src/rakl/gate_falsifiability.py",
+    "candidate": "experiments/orion_closure/run_p3_structured_experience_action.py::strict_action",
+    "harness": "experiments/paper3/run_independent_oracle_action_v1.py",
+    "oracle": "experiments/paper3/independent_action_oracle_v1.py",
+    "protocol": "research/paper3_independent_oracle_action_v1/PROTOCOL.json",
+    "receipt": "research/paper3_independent_oracle_action_v1/FINAL_RECEIPT.json"
+  },
+  "cannot_check_conditions": [],
+  "controls": {
+    "C1_baseline_reproduces_recorded_receipt": {
+      "checks": {
+        "all_gates_pass": true,
+        "cannot_check_recall": true,
+        "composite_ceiling": true,
+        "exact_action_accuracy": true,
+        "gold_outcome_counts": true,
+        "legitimate_apply_recall": true,
+        "mutations_caught": true,
+        "n_cases": true,
+        "unsafe_apply_rate": true
+      },
+      "pass": true,
+      "reproduced": {
+        "all_gates_pass": true,
+        "cannot_check_recall": 1.0,
+        "composite_simple_parent_information_ceiling": 0.43333333333333335,
+        "exact_action_accuracy": 1.0,
+        "gold_outcome_counts": {
+          "APPLY_SUCCESSOR": 600,
+          "APPLY_VERIFIED_LESSON": 600,
+          "CANNOT_CHECK": 600,
+          "FALLBACK_SEARCH": 600
+        },
+        "legitimate_apply_recall": 1.0,
+        "mutations_caught": "12/12",
+        "n_cases": 2400,
+        "terminal": "PROMOTE_CONDITIONALLY_STRUCTURED_EXPERIENCE_ACTION_CONFORMANCE_INDEPENDENT_ORACLE_V1",
+        "unsafe_apply_rate": 0.0
+      }
+    },
+    "C2_planted_self_grading_is_NON_FALSIFIABLE": {
+      "pass": true,
+      "per_condition": {
+        "candidate_cannot_check": "NON_FALSIFIABLE",
+        "candidate_exact": "NON_FALSIFIABLE",
+        "candidate_legitimate_apply": "NON_FALSIFIABLE",
+        "candidate_unsafe": "NON_FALSIFIABLE"
+      }
+    },
+    "C3_doctored_oracle_fails_independence_audit": {
+      "doctored_hits": [
+        "strict_action"
+      ],
+      "pass": true
+    }
+  },
+  "controls_pass": true,
+  "evidence_model": {
+    "primary": "FROZEN_GOLD \u2014 the confirmatory evidence object is the frozen (case, gold) panel; gold is post-freeze oracle-assigned data and probes may break coordinate<->gold alignment.",
+    "registered_limit": "Input perturbation with REGENERATED gold cannot distinguish extensionally-agreeing independent implementations from self-grading; that mode is used only as the planted-defect control below."
+  },
+  "expectation_misses": [],
+  "falsifiable_conditions": [
+    "all_candidate_metric_gates_demonstrably_falsifiable",
+    "all_mutants_change_candidate_metric",
+    "all_outcomes_present",
+    "candidate_cannot_check",
+    "candidate_exact",
+    "candidate_legitimate_apply",
+    "candidate_unsafe",
+    "composite_parent_residual"
+  ],
+  "grants_scientific_authority": false,
+  "independence_condition_note": "The 'independent_oracle' gate condition consumes source code, not the case panel; its falsifiability is demonstrated by control C3 (doctored-source known-answer FAIL world), not by case-panel perturbation.",
+  "non_falsifiable_conditions": [],
+  "per_condition": {
+    "all_candidate_metric_gates_demonstrably_falsifiable": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 3,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "drop_one_gold_outcome_class"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "all_mutants_change_candidate_metric": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 7,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 29,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "drop_one_gold_outcome_class",
+        "randomize_all_decision_fields"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "all_outcomes_present": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "drop_one_gold_outcome_class",
+        "gold_from_composite_projection"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "candidate_cannot_check": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "randomize_all_decision_fields",
+        "shuffle_candidate_present",
+        "shuffle_gold_action",
+        "shuffle_validity_known"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "candidate_exact": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "randomize_all_decision_fields",
+        "shuffle_candidate_present",
+        "shuffle_failure_signature_match",
+        "shuffle_gold_action",
+        "shuffle_lesson_verified",
+        "shuffle_lineage_valid",
+        "shuffle_negative_history_block",
+        "shuffle_not_refuted",
+        "shuffle_scope_match",
+        "shuffle_strategy_family_match",
+        "shuffle_successor_current",
+        "shuffle_successor_scope_match",
+        "shuffle_successor_verified",
+        "shuffle_target_context_match",
+        "shuffle_validity_known",
+        "shuffle_version_current"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "candidate_legitimate_apply": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "randomize_all_decision_fields",
+        "shuffle_candidate_present",
+        "shuffle_failure_signature_match",
+        "shuffle_gold_action",
+        "shuffle_lesson_verified",
+        "shuffle_lineage_valid",
+        "shuffle_negative_history_block",
+        "shuffle_not_refuted",
+        "shuffle_scope_match",
+        "shuffle_strategy_family_match",
+        "shuffle_successor_current",
+        "shuffle_successor_scope_match",
+        "shuffle_successor_verified",
+        "shuffle_target_context_match",
+        "shuffle_validity_known",
+        "shuffle_version_current"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "candidate_unsafe": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 0,
+          "outcome": "CANNOT_CHECK",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 27,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "randomize_all_decision_fields",
+        "shuffle_candidate_present",
+        "shuffle_failure_signature_match",
+        "shuffle_gold_action",
+        "shuffle_lesson_verified",
+        "shuffle_lineage_valid",
+        "shuffle_negative_history_block",
+        "shuffle_not_refuted",
+        "shuffle_scope_match",
+        "shuffle_strategy_family_match",
+        "shuffle_target_context_match",
+        "shuffle_validity_known",
+        "shuffle_version_current"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    },
+    "composite_parent_residual": {
+      "matches_registered_expectation": true,
+      "probes": {
+        "drop_half_the_cases": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "drop_one_gold_outcome_class": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "gold_from_composite_projection": {
+          "flips": 32,
+          "outcome": "SENSITIVE",
+          "trials": 32
+        },
+        "randomize_all_decision_fields": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_candidate_present": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_failure_signature_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_gold_action": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lesson_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_lineage_valid": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_negative_history_block": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_not_refuted": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_strategy_family_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_scope_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_successor_verified": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_target_context_match": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_validity_known": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        },
+        "shuffle_version_current": {
+          "flips": 0,
+          "outcome": "INSENSITIVE",
+          "trials": 32
+        }
+      },
+      "sensitive_probes": [
+        "gold_from_composite_projection"
+      ],
+      "supports_confirmatory_use": true,
+      "verdict": "FALSIFIABLE"
+    }
+  },
+  "predecessor_audit": "research/paper3_gate_falsifiability_audit_v1/GATE_FALSIFIABILITY_AUDIT.json",
+  "registered_expectations": {
+    "all_candidate_metric_gates_demonstrably_falsifiable": "SENSITIVE",
+    "all_mutants_change_candidate_metric": "SENSITIVE",
+    "all_outcomes_present": "SENSITIVE",
+    "candidate_cannot_check": "SENSITIVE",
+    "candidate_exact": "SENSITIVE",
+    "candidate_legitimate_apply": "SENSITIVE",
+    "candidate_unsafe": "SENSITIVE",
+    "composite_parent_residual": "SENSITIVE"
+  },
+  "schema_version": "rakl-p3-repaired-gate-falsifiability-audit-v1",
+  "seed": 20260814,
+  "trials_per_probe": 32
+}

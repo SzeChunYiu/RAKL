@@ -1,0 +1,151 @@
+{
+  "protocol_id": "BENEFIT-L2-GLUING-V1",
+  "status": "FROZEN_DESIGN_NO_RESULTS",
+  "freeze_date": "2026-08-14",
+  "frozen_from": "origin/main@f6c3bda7",
+  "ladder_obligation": {
+    "layer_id": "L2-GLUING",
+    "source": "research/framework_ladder/ladder.json",
+    "benefit_obligation": "Does retaining obstructions prevent wrong gluings that a pairwise-only representation admits? This is exactly Proposition prop:obstruction-blind, and it is currently proved but not measured.",
+    "frontier_rationale": "Second half of PLAN.md P1.2 (research/orion_architecture_audit_v1/PLAN.md): the proposition is machine-checked in formal/RaklFormal.lean but has never been instantiated as measured cases."
+  },
+  "mechanized_backing": {
+    "file": "formal/RaklFormal.lean @ origin/main@f6c3bda7",
+    "theorems": [
+      "ParityObstruction.parity_restrictions_are_total",
+      "ParityObstruction.parity_overlaps_agree",
+      "ParityObstruction.parity_no_global_section",
+      "ParityObstruction.parity_charts_have_no_global_section",
+      "PairwiseNotLattice.pairwise_witnesses_but_no_join",
+      "ObstructionBlindness.covers_agree_on_pairwise_data",
+      "ObstructionBlindness.covers_differ_on_global_realizability",
+      "ObstructionBlindness.no_pairwise_predicate_decides_global_realizability"
+    ],
+    "instantiation": "Corpus classes G3/G4 are parityCover-family instances and every one carries a consistentCover-family twin (twin_id) with a byte-identical canonical pairwise record. The evaluator verifies the twin invariant and the impossibility bound: a pairwise-only arm must err at least once per twin pair (wrong gluing on the parity row or wrong refusal on the solvable twin). The experiment therefore measures the proved identifiability gap as an error rate rather than re-deriving it.",
+    "note": "The Lean proofs establish impossibility for ANY pairwise-only predicate; the experiment measures the realized cost for the specific frozen arms and charges the obstruction arm's over-refusal, which the theorem is silent about."
+  },
+  "hypothesis": {
+    "statement": "On known-answer atlas instances with generator-known global realizability, obstruction-retaining gluing (the repaired rakl.atlas_gluing.evaluate_atlas_gluing semantics: pairwise checks + recomputed cover topology + cycle-holonomy witnesses + explicit global-existence check) yields a lower wrong-gluing rate than pairwise-only compatibility, and the reduction is attributable to genuine obstruction-instance binding rather than to refusing to glue everything.",
+    "direction": "WGR_A - WGR_B >= 0.10 absolute",
+    "known_at_design_time": "Both arms are deterministic and the parity construction is proved, so the qualitative direction on the parametric corpus classes is derivable a priori - for the twinned classes it is a theorem. The run certifies: exact magnitudes under randomized world realization, separation from both nulls, the over-refusal guard (which the theorem does NOT fix), and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior."
+  },
+  "arms": {
+    "A_pairwise_only_compatibility": {
+      "definition": "For each atlas, declare GLUE iff every overlap transition passes its pairwise checks (pairwise_pass) with a complete pairwise record (fields_complete_pairwise). Cycle witnesses, cover topology, and per-chart constraint tables are present in the input record and deliberately ignored. This is the pairwise-witness store semantics of rakl.compatibility_complex.TypedCompatibilityComplex (atoms + pairwise CompatibilityWitness entries, no global structure), i.e. the PairwiseRealizable record of the Lean construction.",
+      "inputs_visible": ["transitions (pairwise pass/complete flags, overlap restrictions)", "charts, variables, constraint_tables, cycle_witnesses - present and ignored", "surface_text"],
+      "implementation": "Deterministic function frozen in the execution-run harness; must match EVALUATOR.py arm_a_rule verbatim (executable drift check, CANNOT_CHECK on mismatch)."
+    },
+    "B_obstruction_retaining_gluing": {
+      "definition": "Encode each atlas as a rakl.atlas_gluing.AtlasGluingTrial (charts, overlap transitions, truthfully declared topology, cycle witnesses whose composition_consistent is the arm's own holonomy computation over the rendered transition data, and an explicit global-existence check the arm computes by exhaustive assignment search over the rendered constraint tables - never by reading the gold label). Declare GLUE iff evaluate_atlas_gluing returns GLUED_GLOBAL_PORTRAIT_PROPOSAL_ONLY or GLOBAL_EXISTS_UNIQUENESS_UNPROVEN (both entail global existence, which is what the gold label concerns); every other verdict (PAIRWISE_COMPATIBLE_GLOBAL_UNPROVEN, OBSTRUCTED_ATLAS, PARTIAL_ATLAS_ONLY, IDENTIFIED_SET_ONLY, TRIAL_INVALID, CANNOT_CHECK, GLOBAL_PROPOSAL_REFUTED_OBSTRUCTION_HISTORY_PRESERVED) maps to REFUSE, with the sub-verdict retained in the arm output for the per-class read.",
+      "exact_functions": [
+        "rakl.atlas_gluing.AtlasChart",
+        "rakl.atlas_gluing.OverlapTransition",
+        "rakl.atlas_gluing.CycleConsistencyWitness",
+        "rakl.atlas_gluing.AtlasGluingTrial",
+        "rakl.atlas_gluing.evaluate_atlas_gluing"
+      ],
+      "module_pins": {
+        "src/rakl/atlas_gluing.py_sha256": "f6f00fceda0628422d597bce06679baf872c207b922e5acac1aea86f2ca12aac",
+        "pin_provenance": "Content hash of src/rakl/atlas_gluing.py at solver/atlas-topology-recompute@05a846e7 (PR #649, declared-topology recomputation repair; research/atlas_topology_trust_repair_v1/RECEIPT.md). NOT yet on origin/main at freeze time.",
+        "pin_rule": "The run requires the repaired semantics: the run-environment module must contain _recompute_cover_topology and its content sha256 must be recorded in the run receipt. Running against the pre-repair module (which trusts declared topology and is exactly the defect the P0.2 sweep found) is CANNOT_CHECK. If PR #649 lands with a different final content hash, the changed hash must be recorded and the semantic preconditions re-verified BEFORE any result access; a semantic change beyond the receipt's described repair requires a V2 re-freeze."
+      },
+      "spec_binding": "FORMAL_SYSTEM_SPECIFICATION.md section 5: a gluing trial tests separately (1) overlap compatibility, (2) path/cycle coherence, (3) existence of a global object, (4) uniqueness/identifiability. Pairwise agreement does not imply unique global identifiability. Arm A implements only test (1); arm B implements (1)-(3) with (4) recorded but not required for GLUE, because the gold label concerns existence.",
+      "known_limitation_frozen_in_advance": "Mechanical arm B fails closed on ANY incomplete obstruction record, including atlases the hidden world says are genuinely glueable but whose record omits a cycle-witness evidence field (class G6, a field arm A never reads). Class G6 exists to charge this cost; it appears in GCA_B, not hidden."
+    },
+    "cost_matching": {
+      "identical_inputs": "Both arms receive byte-identical input records for every atlas; neither arm performs retrieval, network access, or LLM calls (token budget 0 for both). Arm B's extra computation (holonomy composition, exhaustive existence search over <= 6 binary variables, <= 64 assignments) is the treatment under test and is charged in wall-clock/RSS receipts.",
+      "charged_costs": "Wall-clock time and peak RSS recorded per arm in the run receipt; corpus construction cost is charged to the corpus, not to either arm.",
+      "denominator_rule": "The WGR denominator is all N atlases, fixed by the corpus and identical across arms; refusals still count in the denominator."
+    }
+  },
+  "estimator": {
+    "wgr_definition_source": "research/framework_ladder/ladder.json L2-GLUING benefit_obligation (wrong-gluing rate). Not yet a named coordinate in docs/RAKL_QUANTITATIVE_EVALUATION_MODEL.md; registered here as WGR pending a separate quant-model extension.",
+    "wgr": "WGR_arm = |{i : declaration_arm(i) = GLUE and gold(i) = NOT_GLUEABLE}| / N",
+    "atlas_instance": "A cover of 3-6 charts over <= 6 binary variables, with machine-readable overlap transitions, per-chart constraint tables, cycle witnesses, and a hidden-world gold label GLUEABLE (a global section exists) or NOT_GLUEABLE.",
+    "primary_contrast": "delta_WGR = WGR_A - WGR_B, paired on identical atlases; McNemar exact test on atlas-level wrong-gluing indicators (two-sided, exact binomial on discordant pairs).",
+    "over_refusal_guard": "GCA_arm = glueable-case acceptance = |{i : declaration = GLUE and gold = GLUEABLE}| / |{i : gold = GLUEABLE}|. Guards against winning WGR by refusing to glue (selectivity is not edge; the L2 analogue of the L0 TCR floor).",
+    "structural_check": "Twin-bound check (see mechanized_backing): corpus twin invariant verified byte-level; arm A must err on every twin pair or the run is CANNOT_CHECK.",
+    "evaluator_file": "research/benefit_L2_gluing_v1/EVALUATOR.py",
+    "evaluator_sha256": "b237ca0c5d75d51571b6aa272e1b8dfa43e35e60b4ceda74bd035dfdabfb33dc",
+    "evaluator_seed_default": 20260814
+  },
+  "corpus": {
+    "reuse_decision": "CONSTRUCT. Scanned research/, src/, tests/ on 2026-08-14 (greps for wrong_gluing, gluing corpus, parity corpus): no labeled atlas-gluing corpus exists. tests/test_atlas_gluing.py holds unit fixtures (including the P0.2 hostile cases) but no labeled corpus binds the L2 observable.",
+    "source": "Seeded parametric known-answer generator (no network); procedure frozen in CORPUS_PLAN.md.",
+    "n_atlases": 400,
+    "composition": {
+      "G1_glueable_acyclic": 100,
+      "G2_glueable_cyclic_twins": 100,
+      "G3_parity_obstruction_k3": 60,
+      "G4_parity_obstruction_k4_to_k6": 40,
+      "G5_pairwise_incompatible": 60,
+      "G6_glueable_obstruction_record_incomplete": 40
+    },
+    "twin_structure": "Every G3 row has a G2 twin (60) and every G4 row has a G2 twin (40); twin pairs share a byte-identical canonical pairwise record (transitions + overlap restrictions) and differ only in constraint tables and cycle-holonomy facts - the exact data a pairwise-only representation discards. Verified by the evaluator (twin invariant; CANNOT_CHECK on violation).",
+    "gold_glueable_total": 240,
+    "gold_not_glueable_total": 160,
+    "labeling_procedure": "Gold labels are minted by the generator from the hidden world at generation time via exact exhaustive global-section search over the world's constraint structure (<= 6 binary variables). Labels are a function of the hidden world only; no arm, model, or human prediction participates in labeling. A rendering-faithfulness check re-verifies at generation time that the rendered constraint tables have the same satisfiability as the hidden world; a mismatch drops the row before freeze.",
+    "label_independence_safeguards": [
+      "Corpus file (including gold labels and per-row label_minted_at timestamps) is written and sha256-committed into the RSHEA receipt chain BEFORE either arm executes; EVALUATOR.py hard-fails CANNOT_CHECK if any label timestamp is not strictly before arm_run_started_at.",
+      "Arm harnesses receive records with the gold_label field stripped; the evaluator joins on atlas_id.",
+      "Human/oracle audit: 40 atlases (10%) sampled by seed, audited by a reviewer shown ONLY the rendered atlas description and the gold label, never any arm output (audit receipt field auditor_saw_arm_outputs must be false); disagreement >= 0.05 is CANNOT_CHECK."
+    ]
+  },
+  "sample_size": {
+    "n": 400,
+    "power_sketch": "Paired McNemar design, mirroring BENEFIT-L0-FCR-V1. For discordant-pair probabilities p10 = 0.12 (A-only wrong gluing) and p01 = 0.02, detecting delta_WGR = 0.10 at two-sided alpha = 0.05 with 80% power needs approximately n = (1.96*sqrt(0.14) + 0.84*sqrt(0.14 - 0.01))^2 / 0.10^2 ~= 107 atlases. N = 400 gives >= 3x margin, supports per-class reads (>= 40 per class), keeps the audit sample (40) at 10%, and gives the twin bound 100 mechanized pairs. The margin is deliberate so the same corpus size remains adequately powered for the pre-registered LLM-arm follow-up where effects will be smaller and noisier."
+  },
+  "nulls": {
+    "null_1_equal_n_suppression": "Draw 1000 seeded size-K_B subsets of arm A's GLUE set, where K_B is arm B's GLUE count; compute the WGR distribution. Arm B must satisfy WGR_B < 5th percentile. Directly tests that B's WGR advantage is not reproducible by blind refusal at equal n (clean-baseline + shuffle-equal-n discipline from research/orion_architecture_audit_v1/PLAN.md Phase 1). If K_B >= K_A the null is degenerate and recorded NOT_APPLICABLE (it cannot count as passed).",
+    "null_2_obstruction_permutation": "Permute the obstruction-relevant block (cycle-witness consistency values + constraint tables) across atlases with identical topology signature (chart count, variable count, edge pair set; 1000 seeded stratified permutations); re-run arm B's frozen decision-equivalent rule; collect the WGR distribution; require WGR_B < 5th percentile. Tests that the advantage requires genuine obstruction-instance binding rather than refusing a fixed fraction of cyclic covers."
+  },
+  "decision_thresholds": {
+    "frozen": true,
+    "no_post_result_rescue": "Thresholds, corpus composition, arms, nulls, and evaluator are frozen at this commit; any change after result access voids the run (invariant no_post_result_threshold_rescue).",
+    "PROMOTE": {
+      "all_of": [
+        "delta_WGR >= 0.10",
+        "McNemar exact p < 0.001",
+        "GCA_B >= 0.70",
+        "WGR_B < 5th percentile of null 1 (when applicable) AND of null 2",
+        "twin invariant verified and twin bound holds for arm A",
+        "audit disagreement < 0.05",
+        "EVALUATOR.py --selftest PASS in the run environment and receipt chain valid",
+        "no rule drift between either arm's declarations and the frozen decision-equivalent rules",
+        "repaired atlas semantics pin satisfied (module hash recorded, _recompute_cover_topology present)"
+      ],
+      "justification": "0.10 absolute = 40 avoided wrong gluings per 400 atlases, an order of magnitude above the tolerated label-noise ceiling; p < 0.001 because the design is heavily powered and a single primary contrast is registered; GCA floor 0.70 because losing more than ~30% of genuinely glueable atlases would gut the local-to-global synthesis function gluing feeds (workflow.md sections J and R) - the mechanical arm's designed-in G6 miss (40/240 ~= 17%) sits above the floor only if it glues essentially all fully witnessed solvable covers, so the floor also detects unexpected refusal."
+    },
+    "NEGATIVE": {
+      "any_of": [
+        "delta_WGR <= 0.02",
+        "null 1 applicable and WGR_B >= its 5th percentile",
+        "WGR_B >= null 2's 5th percentile"
+      ],
+      "justification": "A reduction indistinguishable from blind refusal or from obstruction-decoupled behavior means the L2 obstruction-retention mechanism specifically is not the source of the benefit. Note a NEGATIVE here would NOT refute the Lean theorems (they are about representability, not about these arms); it would refute the claim that the shipped machinery converts the theorem into measured benefit."
+    },
+    "CONDITIONAL": {
+      "definition": "Everything not PROMOTE and not NEGATIVE, e.g. delta_WGR in (0.02, 0.10), or nulls beaten but GCA_B < 0.70, or benefit concentrated in a strict subset of corpus classes (e.g. only k=3 parity).",
+      "note": "CONDITIONAL is intermediate, never terminal (global-recovery doctrine)."
+    }
+  },
+  "typed_outcomes_follow_up": {
+    "PROMOTE": "Scope of the promotable claim: mechanical obstruction-retaining gluing on a synthetic known-answer corpus (including the mechanized parity family) reduces wrong-gluing rate versus pairwise-only compatibility without null-equivalent refusal. ladder.json L2 benefit_measured may then be set true ONLY via a separate governed PR carrying the RSHEA receipts; this protocol run itself edits nothing. Explicit non-claims: no LLM-arm generalization, no natural-corpus generalization, no uniqueness/identifiability claim (existence-level gluing only); all are registered follow-ups.",
+    "NEGATIVE": "One attributed revival iteration (feedback-global-recovery-doctrine): attribute the failure to exactly ONE stage (corpus parity realization / topology-declaration honesty / witness-basis construction / null design / decision rule / arm-A strength), apply the single matching lever, re-freeze as BENEFIT-L2-GLUING-V2, re-run against the strongest parent. The V1 negative receipt is preserved verbatim and never rewritten.",
+    "CONDITIONAL": "One attributed revival iteration. Pre-registered most-likely lever: the G6 record-incompleteness miss - score arm B's CANNOT_CHECK-driven refusals separately from OBSTRUCTED-driven refusals and add a typed record-repair step (a bounded re-query for the missing witness evidence, its cost charged to arm B). Any change touching src/rakl/atlas_gluing.py MUST enter via the mechanism-invention workflow with its own typed delta and falsifiers, not as a quiet patch."
+  },
+  "execution_binding": {
+    "design_only_here": true,
+    "execution_precondition": "PR #649 (solver/atlas-topology-recompute) merged to main, or the run environment pinned to the receipted module content hash; either way the recorded module hash and semantic preconditions gate the run (see arms.B.module_pins.pin_rule).",
+    "rshea_pipeline": [
+      "process_telemetry_to_receipts (src/rakl/observability_adapters.py) over corpus-freeze, arm-run, and evaluator events",
+      "MetricLedger (src/rakl/evolution_trace.py) + build_evaluation_epoch + process_outcome_gate (src/rakl/observability_adapters.py) - hard gates executed, not logged",
+      "shadow_decide (src/rakl/shadow_controller.py)",
+      "interpret_controller_for_runtime (src/rakl/self_hosting_bridge.py) - SELECTED maps to OBJECT_SEARCH_READY, never authority",
+      "surface_governed_proposal (src/rakl/governed_intervention.py) - not actionable without external GovernanceSignOff; sign-off is continuation, never promotion",
+      "serialize_resumable_state / restore_resumable_state (src/rakl/runtime_resumption.py) - content_hash tamper-evident",
+      "assess_resume_readiness (src/rakl/self_hosting_runtime.py) holds authority"
+    ]
+  },
+  "grants_scientific_authority": false
+}
