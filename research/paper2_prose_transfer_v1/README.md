@@ -81,7 +81,7 @@ tied with `P_ALWAYS_REJECT` (0.500) — **not** the text-reading parent. So the
 registered 0.4722 advantage is measured against a constant arm.
 
 The advantage over the text-reading parent `P_KEYWORD_POLARITY` (exact 0.4601)
-is 0.5121, so the comparison also holds against a baseline that reads the text
+is 0.5122, so the comparison also holds against a baseline that reads the text
 but parses no structure. Both numbers are stated because the gate as frozen
 picked the trivial one.
 
