@@ -424,17 +424,47 @@ def run(csv_path: Path, out_dir: Path) -> dict:
     sc_pairs = [_P(q, c, p.band, p.gold, p.group)
                 for (q, c), p in zip(scrambled_pairs, confirm)]
     ssc = Scores(sc_pairs)
+    def signature(scores_obj, q: str, c: str) -> tuple:
+        """(query roles, candidate roles) — the parent's structure signature."""
+        return (
+            tuple(sorted({t for (s, v, o, _) in scores_obj.trip[q] for t in (s, o) if t != "_"})),
+            tuple(sorted({t for (s, v, o, _) in scores_obj.trip[c] for t in (s, o) if t != "_"})),
+        )
+
     battery["B2_text_destruction"] = {}
+    b2_pass = True
     for w, fn, th in (("witness_structural_v5", "structural", theta_struct),
                       ("witness_masked_v5", "masked_cos", theta_mask)):
         sc_scores = [getattr(ssc, fn)(p.query_text, p.candidate_text) for p in sc_pairs]
         sc_dec = [threshold_decision(v, th) for v in sc_scores]
-        changed = sum(1 for a, b in zip(sc_dec, arms[w]) if a != b) / len(confirm)
+        # The parent probe compares the PAIR (decision, structure-signature), not
+        # the decision alone: a degenerate operating point holds the decision
+        # constant under any perturbation, so a decision-only comparison would
+        # report scramble-invariance for an extractor that plainly reads the text.
+        real_sig = [signature(sconf, p.query_text, p.candidate_text) for p in confirm]
+        scr_sig = [signature(ssc, p.query_text, p.candidate_text) for p in sc_pairs]
+        changed = sum(
+            1 for i in range(len(confirm))
+            if (sc_dec[i], scr_sig[i]) != (arms[w][i], real_sig[i])
+        ) / len(confirm)
+        decision_only_changed = sum(1 for a, b in zip(sc_dec, arms[w]) if a != b) / len(confirm)
         sc_exact = H.exact(sc_dec, gold)
+        null_upper = 0.5 + 1.96 * (0.25 / len(confirm)) ** 0.5
+        ok = changed >= 0.50 and sc_exact <= null_upper
+        b2_pass = b2_pass and ok
         battery["B2_text_destruction"][w] = {
-            "decision_changed_fraction": changed, "scrambled_exact": sc_exact,
+            "changed_fraction": changed,
+            "decision_only_changed_fraction": decision_only_changed,
+            "scrambled_exact": sc_exact,
+            "null_upper_975": null_upper,
             "scrambled_auc": auc(sc_scores, gold),
+            "pass": ok,
         }
+    battery["B2_pass"] = b2_pass
+    if not b2_pass:
+        result["battery"] = battery
+        return {**result, "terminal": "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+                "reason": "B2 text-destruction failed; stopped before confirmatory gates"}
 
     battery["B4_trivial_floor"] = {}
     for t in ("always_accept", "always_reject", "always_cannot_check"):
@@ -447,8 +477,12 @@ def run(csv_path: Path, out_dir: Path) -> dict:
         w: statistics.pvariance([H.brier(d, g) for d, g in zip(arms[w], gold)])
         for w in witnesses + [strongest]
     }
+    battery["B5_pass"] = all(v > 0 for v in battery["B5_paired_variance"].values())
     battery["probe_H_matched_pair"] = "N/A: no self-authored renderer; third-party surfaces"
     result["battery"] = battery
+    if not (battery["B4_pass"] and battery["B5_pass"]):
+        return {**result, "terminal": "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+                "reason": f"B4_pass={battery['B4_pass']} B5_pass={battery['B5_pass']}"}
 
     # --- confirmatory gates ----------------------------------------------------
     gates: dict = {}
