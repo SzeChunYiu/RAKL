@@ -200,10 +200,17 @@ claims = []
 for key, cand in gate["candidates"].items():
     meta = NETBEN.get(key)
     if not meta:
-        meta = {"claim_id": "EMP-" + key.upper(), "claim": "[unmapped candidate - add judgement]",
+        # #538: a gate-tracked candidate with no NETBEN entry gets an HONEST
+        # placeholder (non-empty falsifier, valid terminal_state) so a full regen
+        # never emits an invariant-violating record. The lane that owns the
+        # candidate should replace this with a real judgement (add a NETBEN key).
+        meta = {"claim_id": "EMP-" + key.upper(),
+                "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
                 "terminal_state": "CANNOT_CHECK", "open": True, "paper_owner": "unassigned",
-                "baseline": "", "falsifier": "", "code": [], "owner_issue": "",
-                "terminal_scope": ""}
+                "baseline": "strongest registered parent for this mechanic",
+                "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+                "code": [], "owner_issue": "",
+                "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing)."}
     rec = {
         "claim_id": meta["claim_id"], "mechanic": key, "paper_owner": meta["paper_owner"],
         "claim": meta["claim"], "claim_type": "empirical_net_benefit",

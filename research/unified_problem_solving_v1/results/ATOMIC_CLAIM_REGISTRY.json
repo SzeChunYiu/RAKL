@@ -18,7 +18,7 @@
   "source_artifacts": {
     "promotion_gate": {
       "path": "research/unified_problem_solving_v1/results/PROMOTION_GATE.json",
-      "sha256_prefix": "798ae00a326aea9f"
+      "sha256_prefix": "1b77218330e7976a"
     },
     "closure_ledger": {
       "path": "research/unified_problem_solving_v1/results/CLOSURE_LEDGER.json",
@@ -30,16 +30,16 @@
     }
   },
   "summary": {
-    "total_claims": 34,
+    "total_claims": 37,
     "by_terminal": {
       "NEGATIVE": 4,
       "SUPPORTED": 5,
-      "CANNOT_CHECK": 1,
+      "CANNOT_CHECK": 4,
       "PARTIAL": 3,
       "ARCHITECTURE_ONLY": 13,
       "SCAFFOLD": 8
     },
-    "open": 25
+    "open": 28
   },
   "claims": [
     {
@@ -112,7 +112,7 @@
       "terminal_state": "NEGATIVE",
       "terminal_scope": "HONEST DECISIVE: the exact goal-set field is a CORRECT oracle (rho~1.000, false-descent 0, correctness hard gate passes, does save search vs BFS) but is DOMINATED by cheaper parents -- symdiff_proxy achieves rho 0.994 at ~1/5 the build cost (49.6 vs 230.1 node-equiv); pdb_target_aware rho~0.97 at build cost 5.0. Head-to-head net advantage over strongest parent mean -1.8046, CI [-2.4502,-1.1661], n=41 (entirely below 0). Boundary (shallow random) regime likewise dominated mean -2.717 n=40. Mechanic is valid, registered and available but does not earn default-on routing. Lane #538 honest KEEP_PROPOSAL_ONLY; historical field_construction.json NEGATIVE preserved unchanged.",
       "open": false,
-      "artifact_sha256_prefix": "5a243795a262800c",
+      "artifact_sha256_prefix": "fa32467e10de4f87",
       "telemetry": {
         "claim_class": "EFFICIENCY",
         "economic_cost_fields": [
@@ -307,6 +307,442 @@
           "measured_quantity"
         ],
         "status": "PARTIAL"
+      }
+    },
+    {
+      "claim_id": "EMP-NAVIGATION_DYNAMICS_PARALLEL",
+      "mechanic": "navigation_dynamics_parallel",
+      "paper_owner": "unassigned",
+      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "claim_type": "empirical_net_benefit",
+      "code": [],
+      "experiment_owner_issue": "",
+      "baseline": "strongest registered parent for this mechanic",
+      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "promotion_verdict": "PROMOTE_CONDITIONALLY",
+      "result": {
+        "hi": -86.58024691358025,
+        "lo": -114.29166666666667,
+        "mean": -99.91666666666667,
+        "n": 648
+      },
+      "artifact": "research/navigation_dynamics_parallel_v1/results/navigation_dynamics_parallel.json",
+      "terminal_state": "CANNOT_CHECK",
+      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
+      "open": true,
+      "artifact_sha256_prefix": "09ec51aa4344e810",
+      "applicability": {
+        "axes": [
+          {
+            "name": "N",
+            "tested_values": [
+              16,
+              32,
+              64
+            ],
+            "type": "int"
+          },
+          {
+            "name": "Q",
+            "tested_values": [
+              1,
+              8,
+              32
+            ],
+            "type": "int"
+          },
+          {
+            "name": "U",
+            "tested_values": [
+              0,
+              4,
+              16
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              32.0
+            ],
+            "U": [
+              0.0,
+              16.0
+            ]
+          },
+          "overlap": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          },
+          "positive": {
+            "N": [
+              16.0,
+              64.0
+            ],
+            "Q": [
+              1.0,
+              1.0
+            ],
+            "U": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 16,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 32,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 8,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 4
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            },
+            {
+              "N": 64,
+              "Q": 32,
+              "U": 16
+            }
+          ],
+          "n": 42,
+          "net_saving_ci95": [
+            -157.76388888888889,
+            -93.94642857142857
+          ],
+          "net_saving_mean": -124.21428571428571
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 16,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 32,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            },
+            {
+              "N": 64,
+              "Q": 1,
+              "U": 0
+            }
+          ],
+          "n": 6,
+          "net_saving_ci95": [
+            5.986111111111111,
+            15.013888888888891
+          ],
+          "net_saving_mean": 10.347222222222223
+        }
+      },
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [
+          "measured_quantity"
+        ],
+        "present": [
+          "sample",
+          "seed",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "PARTIAL"
+      }
+    },
+    {
+      "claim_id": "EMP-NAVIGATION_DYNAMICS_SUCCESSOR",
+      "mechanic": "navigation_dynamics_successor",
+      "paper_owner": "unassigned",
+      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "claim_type": "empirical_net_benefit",
+      "code": [],
+      "experiment_owner_issue": "",
+      "baseline": "strongest registered parent for this mechanic",
+      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "promotion_verdict": "KEEP_PROPOSAL_ONLY",
+      "result": {
+        "hi": -262.9212962962963,
+        "lo": -297.1311728395062,
+        "mean": -279.5216049382716,
+        "n": 648
+      },
+      "artifact": "research/unified_problem_solving_v1/results/navigation_dynamics_successor.json",
+      "terminal_state": "CANNOT_CHECK",
+      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
+      "open": true,
+      "artifact_sha256_prefix": "317f4af4eb6463cf",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
       }
     },
     {
@@ -566,6 +1002,234 @@
       "terminal_scope": "Strongly negative in tested regime (mean -4074, CI [-5333,-2879], n=6 cells). Root-cause in flight (#521): stage-cost decomposition plus an oracle-quotient test to separate quotient semantics from verification/bookkeeping overhead.",
       "open": true,
       "artifact_sha256_prefix": "a345ccf3dbf06c04",
+      "telemetry": {
+        "claim_class": "EFFICIENCY",
+        "economic_cost_fields": [
+          "cost_model"
+        ],
+        "missing": [],
+        "present": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "required": [
+          "sample",
+          "seed",
+          "measured_quantity",
+          "cost_model"
+        ],
+        "status": "COMPLETE"
+      }
+    },
+    {
+      "claim_id": "EMP-TCSQ_SQ3_SUCCESSOR",
+      "mechanic": "tcsq_sq3_successor",
+      "paper_owner": "unassigned",
+      "claim": "Gate-tracked candidate awaiting a registered net-benefit judgement by its lane.",
+      "claim_type": "empirical_net_benefit",
+      "code": [],
+      "experiment_owner_issue": "",
+      "baseline": "strongest registered parent for this mechanic",
+      "falsifier": "No NETBEN entry registered for this candidate in build_atomic_claim_registry.py; the claim cannot be promoted or falsified until its owner lane registers a concrete claim and falsifier.",
+      "promotion_verdict": "PROMOTE_CONDITIONALLY",
+      "result": {
+        "hi": 13037.28472222222,
+        "lo": -2042.760416666667,
+        "mean": 5311.774305555556,
+        "n": 24,
+        "note": "aggregated across solve_cost_scale x redundancy cells by bootstrap on cell means"
+      },
+      "artifact": "research/tcsq_sq3_v1/results/sq3_successor.json",
+      "terminal_state": "CANNOT_CHECK",
+      "terminal_scope": "Placeholder pending lane judgement (NETBEN entry missing).",
+      "open": true,
+      "artifact_sha256_prefix": "1252f150395faf7f",
+      "applicability": {
+        "axes": [
+          {
+            "name": "redundancy_rate",
+            "tested_values": [
+              0.0,
+              0.25,
+              0.5,
+              0.75,
+              0.9,
+              0.9583
+            ],
+            "type": "float"
+          },
+          {
+            "name": "solve_cost_scale",
+            "tested_values": [
+              16,
+              48,
+              128,
+              256
+            ],
+            "type": "int"
+          }
+        ],
+        "boxes": {
+          "boxes_disjoint": false,
+          "negative": {
+            "redundancy_rate": [
+              0.0,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "overlap": {
+            "redundancy_rate": [
+              0.5,
+              0.5
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          },
+          "positive": {
+            "redundancy_rate": [
+              0.5,
+              0.9583
+            ],
+            "solve_cost_scale": [
+              16.0,
+              256.0
+            ]
+          }
+        },
+        "issue": "#543",
+        "kind": "regime_crossover_applicability",
+        "negative_regime_significant": true,
+        "negative_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.0,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.25,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 9,
+          "net_saving_ci95": [
+            -18487.870370370372,
+            -4468.074074074074
+          ],
+          "net_saving_mean": -10659.620370370372
+        },
+        "opposing_sign": true,
+        "policy": {
+          "NEGATIVE": "exact match of a negative cell, OR a point inside the negative box that is also outside the positive box",
+          "SUPPORTED": "exact match of a positive cell, OR a point inside the positive box that is also outside the negative box (clean interpolation only)",
+          "UNKNOWN": "any point a tested axis cannot classify: missing axis value, inside the box overlap region without an exact cell, or outside both boxes",
+          "baseline": "naive / raw unquotiented path enumeration",
+          "routing_rule": "route to the mechanic ONLY on SUPPORTED; NEGATIVE and UNKNOWN both fall back to baseline",
+          "unknown_action": "fail_closed_to_baseline"
+        },
+        "positive_regime_significant": true,
+        "positive_subset": {
+          "cells": [
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 16
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 48
+            },
+            {
+              "redundancy_rate": 0.5,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 128
+            },
+            {
+              "redundancy_rate": 0.75,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9,
+              "solve_cost_scale": 256
+            },
+            {
+              "redundancy_rate": 0.9583,
+              "solve_cost_scale": 256
+            }
+          ],
+          "n": 14,
+          "net_saving_ci95": [
+            8404.720238095239,
+            23947.72619047619
+          ],
+          "net_saving_mean": 15770.892857142857
+        }
+      },
       "telemetry": {
         "claim_class": "EFFICIENCY",
         "economic_cost_fields": [
