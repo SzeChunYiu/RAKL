@@ -99,7 +99,7 @@
       "lean_file": "formal/RaklFormal.lean",
       "axiom_dependencies": "none",
       "not_mechanized": "The SHARED PRINCIPLE behind all four non-escalation propositions is machine-checked: no finite composition of uncertified operators moves the canonical projection. What is NOT mechanized is this proposition's own instantiation - mapping the paper's specific state space, canonical projection and certificate predicate onto OperatorClass. Recorded as PARTIAL rather than MECHANIZED because proving the general lemma is not the same as discharging this instance.",
-      "repair_status": "REPAIRED IN THE FORMALIZATION. The prose proof restated its hypothesis ('can inherit but cannot mint'). That hypothesis is now the explicit OperatorClass field uncertified_preserves, which every instantiation must discharge - the type checker enforces what was previously an assertion. The PAPER TEXT still carries the circular proof and should be updated to cite the general principle; not done here because concurrent sessions are editing the manuscript.",
+      "repair_status": "REPAIRED ON BOTH SIDES. (1) Formalization: the previously-implicit hypothesis is now the explicit OperatorClass field uncertified_preserves, which the type checker forces every instantiation to discharge. (2) Manuscript (2026-08-14): the circular proof is replaced \u2014 the inheritance condition chi(Z) subseteq chi(P) is stated as an explicit premise and named load-bearing, the claim is derived as an instance of Proposition prop:proposal-non-sovereignty, and an added remark records the mechanization including the non-vacuity witness. PDF rebuilt: latexmk rc=0, zero unresolved references.",
       "lean_names_note": "The third name is a non-vacuity witness: it proves a certified operator genuinely CAN move canonical state, ruling out the degenerate reading where non-escalation holds because the system never updates anything."
     },
     {
@@ -242,11 +242,6 @@
       "closure_action": "Read each proof line by line and assign a status."
     },
     {
-      "residual_id": "RES-P1F-002",
-      "statement": "P1-T-DERIVED-VIEW-NON-ESCALATION's circular prose proof is repaired in the formalization but the PAPER TEXT still carries it.",
-      "closure_action": "Update the manuscript to cite the general non-escalation principle and state the certificate-inheritance hypothesis explicitly. Operator decision - concurrent sessions are editing the paper."
-    },
-    {
       "residual_id": "RES-P1F-004",
       "statement": "Independent formal-proof review (issue #216) is not addressed by this inventory and cannot be addressed from inside this session.",
       "closure_action": "External reviewer. Mechanization reduces but does not eliminate this obligation."
@@ -255,6 +250,12 @@
       "residual_id": "RES-P1F-003",
       "statement": "6 claims remain UNREVIEWED; 5 are PARTIAL (4 awaiting per-proposition instantiation, 1 awaiting the finite-basis cardinality bound).",
       "closure_action": "Instantiate each non-escalation proposition against OperatorClass; add a finiteness development for the counting bound; read and mechanize the remaining 6."
+    },
+    {
+      "residual_id": "RES-P1F-002",
+      "statement": "CLOSED 2026-08-14. The derived-view circular proof is repaired in both the formalization and the manuscript.",
+      "closure_action": "None. Retained as history rather than deleted, per the repository rule against rewriting negative history.",
+      "status": "CLOSED"
     }
   ],
   "mechanization": {
