@@ -4,6 +4,10 @@ from dataclasses import dataclass, replace
 from hashlib import sha256
 from typing import Callable, Iterable, Protocol, Tuple
 
+from .agent_authority_gateway import (
+    AgentAuthorityProposalResult,
+    parse_raw_untrusted_agent_authority_json,
+)
 from .breakthrough_learning import ExpertiseChunk
 from .core import KnowledgeFiber
 from .experience_substrate import EpisodeOutcome, TaskEpisode, episode_content_bytes
@@ -49,6 +53,8 @@ class DriverResult:
     evidence_pointers: Tuple[str, ...]
     artifact_hash: str
     cost: float = 0.0
+    authority_proposal_json: str | None = None
+    authority_proposal_sha256: str | None = None
 
     def __post_init__(self) -> None:
         if not self.action_trace:
@@ -59,6 +65,16 @@ class DriverResult:
             raise ValueError("driver result cost cannot be negative")
         if self.outcome in {EpisodeOutcome.FAILURE, EpisodeOutcome.PARTIAL_SUCCESS, EpisodeOutcome.BLOCKED} and not self.residual_signature:
             raise ValueError("non-success driver result requires a residual signature")
+        has_payload = self.authority_proposal_json is not None
+        has_digest = self.authority_proposal_sha256 is not None
+        if has_payload != has_digest:
+            raise ValueError("authority proposal output requires both exact JSON text and SHA-256 binding")
+        if has_payload:
+            if not isinstance(self.authority_proposal_json, str):
+                raise TypeError("authority proposal output must be text")
+            expected = sha256(self.authority_proposal_json.encode("utf-8")).hexdigest()
+            if self.authority_proposal_sha256 != expected:
+                raise ValueError("authority proposal output SHA-256 binding mismatch")
 
 
 class LearningDriver(Protocol):
@@ -73,6 +89,7 @@ class LearningTurnReport:
     driver_result: DriverResult
     chronology_binding: PreActionBindingReport
     execution_gate: OperatorExecutionGateReport | None = None
+    authority_proposal: AgentAuthorityProposalResult | None = None
 
 
 def _resolve_intended_operator_id(
@@ -123,6 +140,16 @@ def run_learning_turn(
     frozen into a TaskEpisode before any consolidation.  Optional failure
     projection occurs only after the observed result exists.  Existing RAKL
     `KnowledgeFiber` objects can be supplied directly and are adapted read-only.
+
+    A driver may additionally expose one exact, hash-bound raw JSON authority
+    proposal channel.  ``run_learning_turn`` sends that channel through the
+    fail-closed raw-agent gateway and returns only its inert proposal-plane
+    result.  The learning turn never supplies verification outcome, certificate,
+    protected authority context or attestation identifiers and therefore cannot
+    mint scientific authority from model output.  Invalid/hostile authority JSON
+    is rejected independently of the ordinary experience path: the task episode
+    may still be learned, with the exact raw-output digest retained as an
+    experience-side evidence pointer.
 
     Pre-action fibre / consequential-operator gate (issue #123)
     ----------------------------------------------------------
@@ -181,7 +208,17 @@ def run_learning_turn(
             )
 
     result = driver(DriverRequest(task=task, fibre=fibre))
+    authority_proposal: AgentAuthorityProposalResult | None = None
+    if result.authority_proposal_json is not None:
+        authority_proposal = parse_raw_untrusted_agent_authority_json(
+            result.authority_proposal_json
+        )
+
     evidence_pointers = result.evidence_pointers
+    if result.authority_proposal_sha256 is not None:
+        pointer = "agent-authority-output-sha256:" + result.authority_proposal_sha256
+        if pointer not in evidence_pointers:
+            evidence_pointers = evidence_pointers + (pointer,)
     if pre_action_receipt is not None:
         pointer = pre_action_receipt.episode_pointer
         if pointer not in evidence_pointers:
@@ -222,4 +259,5 @@ def run_learning_turn(
         result,
         chronology_binding=chronology_binding,
         execution_gate=execution_gate,
+        authority_proposal=authority_proposal,
     )
