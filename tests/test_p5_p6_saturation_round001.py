@@ -30,8 +30,13 @@ EXPECTED_SUPERSESSIONS = {
 }
 
 
-def _packet_docs() -> list[dict]:
+def _all_packet_docs() -> list[dict]:
     return [json.loads(path.read_text(encoding="utf-8")) for path in sorted(PACKETS.glob("*.json"))]
+
+
+def _round001_packet_docs() -> list[dict]:
+    by_variant = {doc["variant_id"]: doc for doc in _all_packet_docs()}
+    return [by_variant[variant_id] for variant_id in sorted(EXPECTED_NEW)]
 
 
 def test_round001_is_explicitly_not_saturated() -> None:
@@ -42,7 +47,7 @@ def test_round001_is_explicitly_not_saturated() -> None:
 
 
 def test_every_round001_successor_packet_is_content_valid_and_unassessed() -> None:
-    docs = _packet_docs()
+    docs = _round001_packet_docs()
     assert {doc["variant_id"] for doc in docs} == EXPECTED_NEW
     for doc in docs:
         packet = packet_from_dict(doc)
@@ -56,18 +61,23 @@ def test_every_round001_successor_packet_is_content_valid_and_unassessed() -> No
         assert packet.grants_promotion_authority is False
 
 
+def test_shared_packet_directory_is_append_only_and_has_unique_variant_ids() -> None:
+    variants = [doc["variant_id"] for doc in _all_packet_docs()]
+    assert len(variants) == len(set(variants))
+    assert EXPECTED_NEW <= set(variants)
+
+
 def test_supersession_map_is_exact_and_replacements_are_present() -> None:
     supersession = json.loads(SUPERSESSION.read_text(encoding="utf-8"))
     assert supersession["superseded_before_execution"] == EXPECTED_SUPERSESSIONS
     replacements = set(supersession["superseded_before_execution"].values())
-    packet_variants = {doc["variant_id"] for doc in _packet_docs()}
+    packet_variants = {doc["variant_id"] for doc in _all_packet_docs()}
     assert replacements <= packet_variants
     assert set(supersession["new_variants"]) == {"mechanic_value_of_computation_controller_v1"}
 
 
-def test_round_does_not_rewrite_old_packets_or_claim_outcomes() -> None:
-    for doc in _packet_docs():
-        # All round-001 packets are genuinely fresh proposals, not result records.
+def test_round001_packets_do_not_claim_outcomes() -> None:
+    for doc in _round001_packet_docs():
         assert doc["frozen_before_implementation"] is True
         assert doc["frozen_before_outcome_access"] is True
         assert doc["mechanism_gate_state"] == "UNASSESSED"
@@ -78,7 +88,7 @@ def test_round_does_not_rewrite_old_packets_or_claim_outcomes() -> None:
 
 def test_value_of_computation_controller_keeps_do_nothing_and_authority_boundaries() -> None:
     controller = next(
-        doc for doc in _packet_docs()
+        doc for doc in _round001_packet_docs()
         if doc["variant_id"] == "mechanic_value_of_computation_controller_v1"
     )
     joined = " ".join(controller["assumptions"] + controller["hard_gate_obligations"] + controller["minimal_counterexamples"])
@@ -89,7 +99,7 @@ def test_value_of_computation_controller_keeps_do_nothing_and_authority_boundari
 
 def test_path_por_packet_records_lower_bound_not_as_positive_authority() -> None:
     pathq = next(
-        doc for doc in _packet_docs()
+        doc for doc in _round001_packet_docs()
         if doc["variant_id"] == "path_equivalence_stateful_por_v3"
     )
     assert "P=NP" in pathq["oracle_or_lower_bound"]
