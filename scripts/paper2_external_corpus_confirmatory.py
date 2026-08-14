@@ -79,8 +79,24 @@ def _resolve(header: list[str], keys: tuple[str, ...], *, exclude: tuple[str, ..
     return out
 
 
+#: AMENDMENT_01: the ARN release is a multiple-choice CSV whose band columns
+#: would collide with the M1 keyword table. Exact-name binding, frozen in
+#: research/paper2_external_corpus_v1/AMENDMENT_01.json before any arm scoring.
+M3_COLUMNS = {
+    "query": "query_narrative",
+    "first": "first_choice",
+    "second": "second_choice",
+    "answer": "correct_answer",
+    "analogy_band": "analogy_level",
+    "distractor_band": "distractor_similarity",
+    "group": "proverb",
+}
+
+
 def bind_mapping(header: list[str]) -> dict | None:
-    """Frozen keyword resolution (protocol schema_contingency). None = mismatch."""
+    """Frozen resolution: exact M3 binding first, then M1 keywords. None = mismatch."""
+    if set(M3_COLUMNS.values()) <= set(header):
+        return {"mode": "M3", **M3_COLUMNS}
     query_cols = _resolve(header, QUERY_KEYS, exclude=("id",))
     analogy_cols = _resolve(header, ANALOGY_KEYS, exclude=DISTRACTOR_KEYS + ("id",))
     distractor_cols = _resolve(header, DISTRACTOR_KEYS, exclude=("id",))
@@ -112,6 +128,50 @@ def _band_of(column_name: str, row: dict) -> str:
     if "far" in value:
         return "far"
     return "unknown"
+
+
+def build_pairs_m3(rows: list[dict], mapping: dict) -> tuple[list[Pair], int]:
+    """AMENDMENT_01 multiple-choice binding. Returns (pairs, skipped_rows)."""
+    band_map = {"high": "near", "low": "far"}
+    pairs: list[Pair] = []
+    skipped = 0
+    for index, row in enumerate(rows):
+        answer = str(row.get(mapping["answer"], "")).strip()
+        query = str(row.get(mapping["query"], "")).strip()
+        first = str(row.get(mapping["first"], "")).strip()
+        second = str(row.get(mapping["second"], "")).strip()
+        if answer not in {"1", "2"} or not query or not first or not second:
+            skipped += 1
+            continue
+        analogy, distractor = (first, second) if answer == "1" else (second, first)
+        group = str(row.get(mapping["group"], "")).strip() or hashlib.sha256(
+            query.encode()
+        ).hexdigest()
+        analogy_band = str(row.get(mapping["analogy_band"], "")).strip().lower()
+        distractor_band = band_map.get(
+            str(row.get(mapping["distractor_band"], "")).strip().lower(), "unknown"
+        )
+        pairs.append(
+            Pair(
+                pair_id=f"r{index}:analogy",
+                group=group,
+                query_text=query,
+                candidate_text=analogy,
+                band=analogy_band if analogy_band in {"near", "far"} else "unknown",
+                gold="ACCEPT",
+            )
+        )
+        pairs.append(
+            Pair(
+                pair_id=f"r{index}:distractor",
+                group=group,
+                query_text=query,
+                candidate_text=distractor,
+                band=distractor_band,
+                gold="REJECT",
+            )
+        )
+    return pairs, skipped
 
 
 def build_pairs(rows: list[dict], mapping: dict) -> list[Pair]:
@@ -290,7 +350,15 @@ def run(csv_path: Path, out_dir: Path) -> dict:
     (out_dir / "MAPPING.json").write_text(json.dumps(mapping, indent=2))
     result["mapping"] = mapping
 
-    pairs = build_pairs(rows, mapping)
+    if mapping["mode"] == "M3":
+        pairs, skipped = build_pairs_m3(rows, mapping)
+        result["skipped_rows"] = skipped
+        if rows and skipped / len(rows) > 0.05:
+            result["terminal"] = "CANNOT_CHECK__SCHEMA_MISMATCH"
+            result["reason"] = f"{skipped}/{len(rows)} rows outside the AMENDMENT_01 domain"
+            return result
+    else:
+        pairs = build_pairs(rows, mapping)
     if len(pairs) < MIN_USABLE_PAIRS:
         result["terminal"] = "CANNOT_CHECK__SCHEMA_MISMATCH"
         result["reason"] = f"only {len(pairs)} usable pairs (< {MIN_USABLE_PAIRS})"
