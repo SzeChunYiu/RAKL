@@ -198,6 +198,51 @@ def test_mechanics_claim_no_authority_and_no_independent_evidence_yet():
         assert mechanic["candidate_transfer_obligation"].strip()
 
 
+def test_claimed_audit_without_digests_is_rejected(tmp_path, registry, rounds_payload):
+    """audit_performed=true with no digests must fail, not quietly count as audited."""
+    payload = copy.deepcopy(rounds_payload)
+    for entry in payload["rounds"]:
+        entry["audit_performed"] = True
+        entry.pop("operator_order_digest", None)
+        entry.pop("operator_order_swapped_digest", None)
+    reg_path, rounds_path = _write(tmp_path, registry, payload)
+    with pytest.raises(RegistryError, match="digests are incomplete"):
+        audit_landscape(reg_path, rounds_path)
+
+
+def test_claimed_audit_with_identical_digests_is_rejected(tmp_path, registry, rounds_payload):
+    """Identical endpoints mean no perturbation was applied - not a performed audit."""
+    payload = copy.deepcopy(rounds_payload)
+    for entry in payload["rounds"]:
+        entry["audit_performed"] = True
+        entry["operator_order_digest"] = "d" * 64
+        entry["operator_order_swapped_digest"] = "d" * 64
+    reg_path, rounds_path = _write(tmp_path, registry, payload)
+    with pytest.raises(RegistryError, match="no perturbation"):
+        audit_landscape(reg_path, rounds_path)
+
+
+def test_undetermined_is_a_strict_subset_of_non_causal():
+    """SYSTEM_LEVEL_ONLY is a determined verdict and must not be reported as unassessed."""
+    audit = audit_landscape()
+    assert set(audit.undetermined_comparator_ids) <= set(audit.non_causal_comparator_ids)
+    registry = load_registry()
+    by_id = {s["system_id"]: s["comparator_class"] for s in registry["systems"]}
+    for system_id in audit.undetermined_comparator_ids:
+        assert by_id[system_id] == "UNDETERMINED"
+    for system_id in audit.non_causal_comparator_ids:
+        assert by_id[system_id] != "ARCHITECTURE_CAUSAL_ELIGIBLE"
+
+
+def test_result_without_anchor_ids_does_not_crash(registry):
+    """anchor_ids is optional in the schema; absence is legal, not an exception."""
+    trimmed = copy.deepcopy(registry)
+    for system in trimmed["systems"]:
+        for result in system.get("reported_results", []):
+            result.pop("anchor_ids", None)
+    assert anchor_integrity_problems(trimmed) == ()
+
+
 def test_anchor_integrity_holds():
     assert anchor_integrity_problems() == ()
 

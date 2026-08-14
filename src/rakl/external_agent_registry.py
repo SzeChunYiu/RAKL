@@ -60,6 +60,10 @@ class LandscapeAudit:
     registry_declared_status: str
     audits_performed: bool
     weak_evidence_ids: tuple[str, ...]
+    #: Systems ineligible for a Phase 4 causal arm, for any reason.
+    non_causal_comparator_ids: tuple[str, ...]
+    #: Systems whose comparator class has not been assessed yet. A strict subset of the
+    #: above: SYSTEM_LEVEL_ONLY is a *determined* verdict and does not belong here.
     undetermined_comparator_ids: tuple[str, ...]
     flagged_chronology_anchor_ids: tuple[str, ...]
 
@@ -108,8 +112,18 @@ def _build_round(entry: dict[str, Any], *, fingerprint: str) -> SaturationRound:
 
     performed = bool(entry.get("audit_performed", False))
     if performed:
-        digest = entry.get("operator_order_digest", AUDIT_NOT_PERFORMED)
-        swapped = entry.get("operator_order_swapped_digest", digest)
+        digest = entry.get("operator_order_digest")
+        swapped = entry.get("operator_order_swapped_digest")
+        if not digest or not swapped:
+            raise RegistryError(
+                f"{entry['round_id']}: audit_performed is true but the operator-order digests "
+                "are incomplete; a claimed audit must record both endpoints"
+            )
+        if digest == swapped:
+            raise RegistryError(
+                f"{entry['round_id']}: operator-order digests are identical, so no perturbation "
+                "was applied; this cannot count as a performed audit"
+            )
     else:
         digest = swapped = AUDIT_NOT_PERFORMED
     audit = OperatorOrderAudit(
@@ -183,10 +197,15 @@ def audit_landscape(
         for item in (*registry["systems"], *registry["benchmarks"])
         if item["evidence_grade"] in WEAK_EVIDENCE_GRADES
     )
-    undetermined = tuple(
+    non_causal = tuple(
         item["system_id"]
         for item in registry["systems"]
         if item["comparator_class"] != "ARCHITECTURE_CAUSAL_ELIGIBLE"
+    )
+    undetermined = tuple(
+        item["system_id"]
+        for item in registry["systems"]
+        if item["comparator_class"] == "UNDETERMINED"
     )
     # Anchor ids are shared across entries, so deduplicate: one flagged paper is one
     # chronology problem, not one per citing entry.
@@ -202,6 +221,7 @@ def audit_landscape(
         registry_declared_status=registry["saturation_status"],
         audits_performed=audits_performed,
         weak_evidence_ids=weak,
+        non_causal_comparator_ids=non_causal,
         undetermined_comparator_ids=undetermined,
         flagged_chronology_anchor_ids=flagged,
     )
@@ -274,7 +294,8 @@ def anchor_integrity_problems(registry: dict[str, Any] | None = None) -> tuple[s
             if previous != encoded:
                 problems.append(f"{owner}: anchor {anchor['anchor_id']} has divergent content")
         for result in item.get("reported_results", ()):
-            for ref in result["anchor_ids"]:
+            # anchor_ids is optional in the schema, so absence is legal, not a crash.
+            for ref in result.get("anchor_ids", ()):
                 if ref not in defined:
                     problems.append(f"{owner}: result cites undefined anchor {ref}")
     return tuple(problems)
