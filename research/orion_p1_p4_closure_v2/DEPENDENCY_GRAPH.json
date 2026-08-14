@@ -2,10 +2,11 @@
   "schema_version": "orion-p1-p4-dependency-graph-v2",
   "date": "2026-08-14",
   "base_main_sha": "dff6c494f8e667c0299e158d0ee9c910c2c0d267",
+  "last_governance_reconciliation_sha": "5110f1c7aa809d83a3c6fade6f3ef79a75e13665",
   "strict_invariant": {
     "rule": "Every runtime_required ORION node must be promotion-grade. Historical NEGATIVE/CANNOT_CHECK/RESOURCE_BLOCKED/PROPOSAL_ONLY/CANNOT_IDENTIFY receipts are immutable evidence but cannot be active implementation authority.",
     "forbidden_active_terminals": ["NEGATIVE", "CANNOT_CHECK", "RESOURCE_BLOCKED", "PROPOSAL_ONLY", "CANNOT_IDENTIFY", "KEEP_PROPOSAL_ONLY", "BLOCKED_CAPABILITY"],
-    "replacement_rule": "If a required hypothesis fails, either promote a versioned successor/alternative or remove that hypothesis from runtime_required."
+    "replacement_rule": "If a required hypothesis fails or later audit shows its promotion evidence is non-probative, either promote a versioned successor/alternative or remove that hypothesis from runtime_required."
   },
   "papers": {
     "P1": {
@@ -13,16 +14,18 @@
       "nodes": [
         {"id": "P1_TYPED_AUTHORITY_LEDGER", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "P1 approval receipt plus exact blob transport"},
         {"id": "P1_EPISTEMIC_NONINTERFERENCE", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "70-test runtime receipt + 6/6 integration mutations + exact blob transport"},
-        {"id": "P1_PROJECTION_SUFFICIENCY", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "final 1,920-case closure + exact projection-benchmark blob transport"}
+        {"id": "P1_PROJECTION_SUFFICIENCY", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "final 1,920-case closure + exact projection-benchmark blob transport"},
+        {"id": "P1_PRODUCTION_AUTHORITY_CHOKEPOINT", "runtime_required": false, "terminal": "PROMOTE_CONDITIONALLY_PRODUCTION_AUTHORITY_CHOKEPOINT", "evidence": "PR #601 exact-head source-tree/AST bypass gate plus raw-agent and authority/noninterference parent suites; framework conformance only"}
       ],
       "active_negative_required_nodes": []
     },
     "P2": {
       "title": "Structural Mechanics",
       "nodes": [
-        {"id": "P2_DIRECTIONAL_EXACT_VERIFIER", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "576-case preregistered confirmatory result + exact blob transport"},
-        {"id": "P2_SIX_FAMILY_APPLICABILITY", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "1,296-case heterogeneous successor; FULL exact3=1; six-family residual"},
-        {"id": "P2_FAIL_CLOSED_DOWNSTREAM_ROUTING", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "1,296 disjoint downstream cases; zero invalid FULL transfers; bounded operational-cost model"}
+        {"id": "P2_DIRECTIONAL_EXACT_VERIFIER", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "576-case preregistered primary confirmatory result: full directional applicability contract vs mechanism-only residual 0.12, bootstrap 95% CI [0.09375,0.148125], within stated known-world four-family scope"},
+        {"id": "P2_SIX_FAMILY_APPLICABILITY", "runtime_required": false, "terminal": "SCOPED_ASSURANCE__REGISTERED_PASS_NONPROBATIVE_FOR_BROAD_GENERALIZATION", "evidence": "frozen 810-case extension reported its registered pass, but later same-context audit showed full==gold verifier and 12/12 arbitrary seeds force 6/6 signs; preserved as scoped coordinate/contract diagnostic, never active implementation authority"},
+        {"id": "P2_FAIL_CLOSED_DOWNSTREAM_ROUTING", "runtime_required": true, "terminal": "PROMOTE_TO_MECHANIC", "evidence": "1,296 disjoint downstream cases; zero invalid FULL transfers; bounded operational-cost model"},
+        {"id": "P2_CONTROLLED_TEXT_TO_WITNESS", "runtime_required": false, "terminal": "PROMOTE_CONDITIONALLY_CONTROLLED_TEXT_TO_WITNESS", "evidence": "fresh controlled-text gate: 1,296 base tasks / 2,592 surfaces; exact decision 1.0, false accept 0, CANNOT_CHECK recall 1.0, valid accept 1.0, strongest simple parent 0.8889, 10/10 mutations caught; does not establish real scientific-text extraction"}
       ],
       "active_negative_required_nodes": []
     },
@@ -50,9 +53,20 @@
       "active_negative_required_nodes": []
     }
   },
+  "governance_corrections": [
+    {
+      "id": "P2_SIX_FAMILY_20260814",
+      "historical_state_preserved": true,
+      "trigger": "research/paper2_six_family_governance_defect_v1/DEFECT.json",
+      "confirmatory": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/ROBUSTNESS_CONFIRMATORY_RESULT_V1.json",
+      "audit": "research/paper2_six_family_audit_v1/results/SIX_FAMILY_AUDIT.json",
+      "effect": "broad six-family assurance is non-sovereign; core runtime authority remains the primary exact verifier plus fail-closed routing"
+    }
+  ],
   "all_runtime_required_nodes_promotion_grade": true,
   "historical_negatives_retained": true,
   "open_empirical_assurance_successors": [
+    "P2 real scientific-source-span extraction plus failable robustness-v2 with a candidate arm distinct from gold and strongest formal parents",
     "P3 #447 fresh discriminating model/interface qualification",
     "P4 #466 exact 7B Adaptive-vs-Static execution/generalization"
   ],
