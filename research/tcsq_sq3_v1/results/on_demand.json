@@ -1,0 +1,4329 @@
+{
+  "adversarial_invalid_certificate_gate": {
+    "all_invalid_certificates_rejected": true,
+    "attempts": 107,
+    "failure_detail": [],
+    "hard_gate": "never_accept_an_invalid_reused_certificate",
+    "rejection_rate": 1.0,
+    "rejections": 107
+  },
+  "arms": {
+    "FAMILY_CERTIFICATE_QUOTIENT": "sq3_successor: per-family validation + certificate verification with retained witnesses",
+    "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": "SUCCESSOR: adaptive construction; observe hit rate, activate only if threshold exceeded",
+    "ORACLE_QUOTIENT": "generator-supplied erasure, zero construction cost (upper bound parent)",
+    "RAW_NO_QUOTIENT": "solve every task (parent control)",
+    "STRUCTURE_NO_ERASURE": "cache keyed on canonical 12-coordinate record (parent control)",
+    "SURFACE_HASH_DEDUP": "cache keyed on rendered surface string (parent control)",
+    "TCSQ_VALIDATED_QUOTIENT": "historical per-instance quotient + full-re-solve refusals (strongest classical parent)"
+  },
+  "bootstrap_resamples": 4000,
+  "cells": [
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2317,
+            "family_validation": 17,
+            "projection": 1200,
+            "solve": 5808,
+            "verify": 315
+          },
+          "total_cost": {
+            "hi": 10134.25,
+            "lo": 9521.25,
+            "mean": 9813.25,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2361,
+            "family_validation": 17,
+            "key": 24,
+            "projection": 1195,
+            "solve": 5808,
+            "threshold_check": 1,
+            "verify": 315
+          },
+          "total_cost": {
+            "hi": 10179.25,
+            "lo": 9571.0,
+            "mean": 9870.083333333334,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 5808,
+            "verify": 351
+          },
+          "total_cost": {
+            "hi": 10797.916666666666,
+            "lo": 10397.666666666666,
+            "mean": 10597.416666666666,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 6748
+          },
+          "total_cost": {
+            "hi": 7073.666666666667,
+            "lo": 6605.0,
+            "mean": 6839.666666666667,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 5808
+          },
+          "total_cost": {
+            "hi": 11934.333333333334,
+            "lo": 11541.0,
+            "mean": 11742.333333333334,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 5808
+          },
+          "total_cost": {
+            "hi": 9047.0,
+            "lo": 8658.0,
+            "mean": 8862.333333333334,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1890,
+            "ledger": 2880,
+            "projection": 1200,
+            "solve": 5808,
+            "verify": 351
+          },
+          "total_cost": {
+            "hi": 12669.916666666666,
+            "lo": 12026.5,
+            "mean": 12340.083333333334,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 240,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 946.1666666666666,
+          "lo": 518.0,
+          "mean": 727.3333333333334,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2803.0833333333335,
+          "lo": -3241.5,
+          "mean": -3030.4166666666665,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 2088.5833333333335,
+          "lo": 1667.5833333333333,
+          "mean": 1872.25,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -791.4166666666666,
+          "lo": -1212.4166666666667,
+          "mean": -1007.75,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 2506.25,
+          "lo": 2435.9166666666665,
+          "mean": 2470.0,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2814.8333333333335,
+          "lo": -3234.5,
+          "mean": -3030.4166666666665,
+          "n": 12,
+          "relative_to_best_control": -0.4430649641795409
+        }
+      },
+      "redundancy_rate": 0.0,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 29.0,
+        "mean_certificate_replays": 25.833333333333332,
+        "mean_full_resolve_verifications": 3.1666666666666665,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2420,
+            "family_validation": 17,
+            "projection": 1200,
+            "solve": 4576,
+            "verify": 510
+          },
+          "total_cost": {
+            "hi": 9700.833333333334,
+            "lo": 9038.416666666666,
+            "mean": 9381.75,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2428,
+            "family_validation": 17,
+            "key": 24,
+            "projection": 1195,
+            "solve": 4576,
+            "threshold_check": 1,
+            "verify": 510
+          },
+          "total_cost": {
+            "hi": 9754.083333333334,
+            "lo": 9085.666666666666,
+            "mean": 9429.333333333334,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 4576,
+            "verify": 666
+          },
+          "total_cost": {
+            "hi": 10196.0,
+            "lo": 9915.25,
+            "mean": 10055.75,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 6952
+          },
+          "total_cost": {
+            "hi": 7442.666666666667,
+            "lo": 7203.333333333333,
+            "mean": 7316.333333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 6064
+          },
+          "total_cost": {
+            "hi": 12263.666666666666,
+            "lo": 12049.333333333334,
+            "mean": 12151.0,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 6064
+          },
+          "total_cost": {
+            "hi": 9381.666666666666,
+            "lo": 9171.0,
+            "mean": 9271.0,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2116,
+            "ledger": 2880,
+            "projection": 1200,
+            "solve": 4576,
+            "verify": 666
+          },
+          "total_cost": {
+            "hi": 12567.583333333334,
+            "lo": 11891.5,
+            "mean": 12238.083333333334,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 180,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 930.1666666666666,
+          "lo": 351.3333333333333,
+          "mean": 626.4166666666666,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -1838.5833333333333,
+          "lo": -2382.25,
+          "mean": -2113.0,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3007.4166666666665,
+          "lo": 2438.3333333333335,
+          "mean": 2721.6666666666665,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.4166666666666667,
+          "hi": 127.41666666666667,
+          "lo": -441.6666666666667,
+          "mean": -158.33333333333334,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 2879.5,
+          "lo": 2740.0833333333335,
+          "mean": 2808.75,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -1842.6666666666667,
+          "lo": -2385.75,
+          "mean": -2113.0,
+          "n": 12,
+          "relative_to_best_control": -0.28880586814889064
+        }
+      },
+      "redundancy_rate": 0.25,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 76.5,
+        "mean_certificate_replays": 70.0,
+        "mean_full_resolve_verifications": 6.5,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1825,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 3540,
+            "verify": 950
+          },
+          "total_cost": {
+            "hi": 8118.916666666667,
+            "lo": 7631.75,
+            "mean": 7866.916666666667,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1873,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 3540,
+            "threshold_check": 1,
+            "verify": 950
+          },
+          "total_cost": {
+            "hi": 8187.083333333333,
+            "lo": 7682.25,
+            "mean": 7918.0,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 3540,
+            "verify": 1105
+          },
+          "total_cost": {
+            "hi": 9261.75,
+            "lo": 8938.0,
+            "mean": 9097.75,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 7132
+          },
+          "total_cost": {
+            "hi": 7469.666666666667,
+            "lo": 7065.666666666667,
+            "mean": 7265.333333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 6388
+          },
+          "total_cost": {
+            "hi": 12308.0,
+            "lo": 11941.0,
+            "mean": 12128.666666666666,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 6388
+          },
+          "total_cost": {
+            "hi": 9435.333333333334,
+            "lo": 9062.333333333334,
+            "mean": 9248.666666666666,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1578,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 3540,
+            "verify": 1105
+          },
+          "total_cost": {
+            "hi": 11328.083333333334,
+            "lo": 10742.166666666666,
+            "mean": 11015.5,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 120,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1334.6666666666667,
+          "lo": 1015.5833333333334,
+          "mean": 1179.75,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -408.9166666666667,
+          "lo": -900.0,
+          "mean": -652.6666666666666,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 4448.416666666667,
+          "lo": 3960.9166666666665,
+          "mean": 4210.666666666667,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1568.4166666666667,
+          "lo": 1080.9166666666667,
+          "mean": 1330.6666666666667,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3193.0,
+          "lo": 2985.8333333333335,
+          "mean": 3097.5,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -412.25,
+          "lo": -928.0,
+          "mean": -652.6666666666666,
+          "n": 12,
+          "relative_to_best_control": -0.0898329968801615
+        }
+      },
+      "redundancy_rate": 0.5,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 125.33333333333333,
+        "mean_certificate_replays": 114.58333333333333,
+        "mean_full_resolve_verifications": 10.75,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2500,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 1852,
+            "verify": 1212
+          },
+          "total_cost": {
+            "hi": 7009.25,
+            "lo": 6327.416666666667,
+            "mean": 6682.833333333333,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2540,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 1852,
+            "threshold_check": 1,
+            "verify": 1212
+          },
+          "total_cost": {
+            "hi": 7068.333333333333,
+            "lo": 6377.5,
+            "mean": 6738.25,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 1852,
+            "verify": 2550
+          },
+          "total_cost": {
+            "hi": 8216.416666666666,
+            "lo": 7512.833333333333,
+            "mean": 7877.083333333333,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 7380
+          },
+          "total_cost": {
+            "hi": 7299.0,
+            "lo": 6529.0,
+            "mean": 6927.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 6480
+          },
+          "total_cost": {
+            "hi": 12106.333333333334,
+            "lo": 11428.0,
+            "mean": 11790.333333333334,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 6480
+          },
+          "total_cost": {
+            "hi": 9232.0,
+            "lo": 8550.333333333334,
+            "mean": 8910.333333333334,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 2367,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 1852,
+            "verify": 2550
+          },
+          "total_cost": {
+            "hi": 10557.666666666666,
+            "lo": 9642.25,
+            "mean": 10128.25,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 60,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1470.0833333333333,
+          "lo": 800.0,
+          "mean": 1138.8333333333333,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.6666666666666666,
+          "hi": 460.25,
+          "lo": -161.75,
+          "mean": 188.75,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 5321.583333333333,
+          "lo": 4702.583333333333,
+          "mean": 5052.083333333333,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 2441.5833333333335,
+          "lo": 1822.5833333333333,
+          "mean": 2172.0833333333335,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3592.8333333333335,
+          "lo": 3203.9166666666665,
+          "mean": 3390.0,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.6666666666666666,
+          "hi": 467.1666666666667,
+          "lo": -156.66666666666666,
+          "mean": 188.75,
+          "n": 12,
+          "relative_to_best_control": 0.0272484481016313
+        }
+      },
+      "redundancy_rate": 0.75,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 180.41666666666666,
+        "mean_certificate_replays": 165.66666666666666,
+        "mean_full_resolve_verifications": 14.75,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 942,
+            "family_validation": 17,
+            "projection": 1200,
+            "solve": 644,
+            "verify": 1780
+          },
+          "total_cost": {
+            "hi": 6008.75,
+            "lo": 4820.5,
+            "mean": 5358.75,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 942,
+            "family_validation": 17,
+            "key": 24,
+            "projection": 1195,
+            "solve": 644,
+            "threshold_check": 1,
+            "verify": 1780
+          },
+          "total_cost": {
+            "hi": 6042.583333333333,
+            "lo": 4852.416666666667,
+            "mean": 5399.583333333333,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 644,
+            "verify": 1956
+          },
+          "total_cost": {
+            "hi": 7503.666666666667,
+            "lo": 6530.0,
+            "mean": 7013.166666666667,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 6512
+          },
+          "total_cost": {
+            "hi": 7146.333333333333,
+            "lo": 6357.333333333333,
+            "mean": 6726.666666666667,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 5932
+          },
+          "total_cost": {
+            "hi": 12020.0,
+            "lo": 11386.333333333334,
+            "mean": 11690.333333333334,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 5932
+          },
+          "total_cost": {
+            "hi": 9128.333333333334,
+            "lo": 8503.0,
+            "mean": 8810.333333333334,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 901,
+            "ledger": 2880,
+            "projection": 1200,
+            "solve": 644,
+            "verify": 1956
+          },
+          "total_cost": {
+            "hi": 9676.75,
+            "lo": 8193.416666666666,
+            "mean": 8909.333333333334,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 24,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1863.5833333333333,
+          "lo": 1341.3333333333333,
+          "mean": 1613.5833333333333,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1676.0833333333333,
+          "lo": 980.5,
+          "mean": 1327.0833333333333,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 6704.75,
+          "lo": 5849.833333333333,
+          "mean": 6290.75,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3824.75,
+          "lo": 2969.8333333333335,
+          "mean": 3410.75,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3754.5833333333335,
+          "lo": 3259.5,
+          "mean": 3509.75,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 1654.8333333333333,
+          "lo": 979.75,
+          "mean": 1327.0833333333333,
+          "n": 12,
+          "relative_to_best_control": 0.19728691774033694
+        }
+      },
+      "redundancy_rate": 0.9,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 216.0,
+        "mean_certificate_replays": 200.08333333333334,
+        "mean_full_resolve_verifications": 15.916666666666666,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1954,
+            "family_validation": 17,
+            "projection": 1200,
+            "solve": 240,
+            "verify": 2722
+          },
+          "total_cost": {
+            "hi": 6288.833333333333,
+            "lo": 4879.416666666667,
+            "mean": 5606.416666666667,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1994,
+            "family_validation": 17,
+            "key": 24,
+            "projection": 1195,
+            "solve": 240,
+            "threshold_check": 1,
+            "verify": 2722
+          },
+          "total_cost": {
+            "hi": 6331.25,
+            "lo": 4858.083333333333,
+            "mean": 5652.166666666667,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 240,
+            "verify": 4022
+          },
+          "total_cost": {
+            "hi": 7857.75,
+            "lo": 6767.75,
+            "mean": 7286.083333333333,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 6028
+          },
+          "total_cost": {
+            "hi": 7196.333333333333,
+            "lo": 5816.666666666667,
+            "mean": 6543.333333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 5264
+          },
+          "total_cost": {
+            "hi": 12141.666666666666,
+            "lo": 10902.0,
+            "mean": 11556.333333333334,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 5264
+          },
+          "total_cost": {
+            "hi": 9280.0,
+            "lo": 8035.666666666667,
+            "mean": 8676.333333333334,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 1939,
+            "ledger": 2880,
+            "projection": 1200,
+            "solve": 240,
+            "verify": 4022
+          },
+          "total_cost": {
+            "hi": 9732.333333333334,
+            "lo": 8315.583333333334,
+            "mean": 9044.5,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 10,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 2153.8333333333335,
+          "lo": 1112.0833333333333,
+          "mean": 1633.9166666666667,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.8333333333333334,
+          "hi": 1212.75,
+          "lo": 536.6666666666666,
+          "mean": 891.1666666666666,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 6239.75,
+          "lo": 5533.0,
+          "mean": 5904.166666666667,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3359.75,
+          "lo": 2653.0,
+          "mean": 3024.1666666666665,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3759.4166666666665,
+          "lo": 3029.5,
+          "mean": 3392.3333333333335,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.8333333333333334,
+          "hi": 1207.3333333333333,
+          "lo": 555.75,
+          "mean": 891.1666666666666,
+          "n": 12,
+          "relative_to_best_control": 0.13619460010188486
+        }
+      },
+      "redundancy_rate": 0.9583,
+      "replicates": 12,
+      "solve_cost_scale": 16,
+      "successor_diagnostics": {
+        "mean_cache_hits": 230.0,
+        "mean_certificate_replays": 195.16666666666666,
+        "mean_full_resolve_verifications": 34.833333333333336,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6447,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 19320,
+            "verify": 271
+          },
+          "total_cost": {
+            "hi": 30368.75,
+            "lo": 27822.583333333332,
+            "mean": 29104.0,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6623,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 19320,
+            "threshold_check": 1,
+            "verify": 271
+          },
+          "total_cost": {
+            "hi": 30531.5,
+            "lo": 27902.833333333332,
+            "mean": 29225.833333333332,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 19320,
+            "verify": 1066
+          },
+          "total_cost": {
+            "hi": 25783.25,
+            "lo": 24899.583333333332,
+            "mean": 25326.083333333332,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 21860
+          },
+          "total_cost": {
+            "hi": 22863.0,
+            "lo": 21901.333333333332,
+            "mean": 22374.666666666668,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 19320
+          },
+          "total_cost": {
+            "hi": 25713.666666666668,
+            "lo": 24987.333333333332,
+            "mean": 25329.0,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 19320
+          },
+          "total_cost": {
+            "hi": 22818.666666666668,
+            "lo": 22113.0,
+            "mean": 22449.0,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 5806,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 19320,
+            "verify": 1066
+          },
+          "total_cost": {
+            "hi": 33360.75,
+            "lo": 31025.916666666668,
+            "mean": 32220.333333333332,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 240,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2819.3333333333335,
+          "lo": -4898.083333333333,
+          "mean": -3899.75,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -5818.25,
+          "lo": -7821.666666666667,
+          "mean": -6851.166666666667,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2855.1666666666665,
+          "lo": -4921.583333333333,
+          "mean": -3896.8333333333335,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -5735.166666666667,
+          "lo": -7801.583333333333,
+          "mean": -6776.833333333333,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 3204.4166666666665,
+          "lo": 2794.5,
+          "mean": 2994.5,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -5917.0,
+          "lo": -8037.0,
+          "mean": -6979.5,
+          "n": 12,
+          "relative_to_best_control": -0.313737095251652
+        }
+      },
+      "redundancy_rate": 0.0,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 29.0,
+        "mean_certificate_replays": 26.416666666666668,
+        "mean_full_resolve_verifications": 2.5833333333333335,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 5226,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 14444,
+            "verify": 1215
+          },
+          "total_cost": {
+            "hi": 26198.583333333332,
+            "lo": 23804.25,
+            "mean": 24960.666666666668,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 5274,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 14444,
+            "threshold_check": 1,
+            "verify": 1215
+          },
+          "total_cost": {
+            "hi": 26332.333333333332,
+            "lo": 23920.166666666668,
+            "mean": 25087.0,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 14444,
+            "verify": 3419
+          },
+          "total_cost": {
+            "hi": 23822.166666666668,
+            "lo": 22426.0,
+            "mean": 23131.666666666668,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 20720
+          },
+          "total_cost": {
+            "hi": 22797.0,
+            "lo": 21366.666666666668,
+            "mean": 22115.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 18700
+          },
+          "total_cost": {
+            "hi": 25844.0,
+            "lo": 24696.333333333332,
+            "mean": 25278.333333333332,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 18700
+          },
+          "total_cost": {
+            "hi": 22945.666666666668,
+            "lo": 21829.333333333332,
+            "mean": 22398.333333333332,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 4705,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 14444,
+            "verify": 3419
+          },
+          "total_cost": {
+            "hi": 31271.333333333332,
+            "lo": 28402.333333333332,
+            "mean": 29748.583333333332,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 180,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -1211.0833333333333,
+          "lo": -2688.5,
+          "mean": -1955.3333333333333,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2270.5833333333335,
+          "lo": -3702.1666666666665,
+          "mean": -2972.0,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.5833333333333334,
+          "hi": 1024.9166666666667,
+          "lo": -619.3333333333334,
+          "mean": 191.33333333333334,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -1855.0833333333333,
+          "lo": -3499.3333333333335,
+          "mean": -2688.6666666666665,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 4988.75,
+          "lo": 4367.25,
+          "mean": 4661.583333333333,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -2335.6666666666665,
+          "lo": -3756.9166666666665,
+          "mean": -2997.6666666666665,
+          "n": 12,
+          "relative_to_best_control": -0.1357065250196173
+        }
+      },
+      "redundancy_rate": 0.25,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 76.33333333333333,
+        "mean_certificate_replays": 69.41666666666667,
+        "mean_full_resolve_verifications": 6.916666666666667,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6605,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 11728,
+            "verify": 4233
+          },
+          "total_cost": {
+            "hi": 22177.5,
+            "lo": 20273.75,
+            "mean": 21226.833333333332,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6681,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 11728,
+            "threshold_check": 1,
+            "verify": 4233
+          },
+          "total_cost": {
+            "hi": 22272.25,
+            "lo": 20386.166666666668,
+            "mean": 21332.583333333332,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 11728,
+            "verify": 8736
+          },
+          "total_cost": {
+            "hi": 22610.5,
+            "lo": 20415.0,
+            "mean": 21492.083333333332,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 25976
+          },
+          "total_cost": {
+            "hi": 23455.0,
+            "lo": 21237.333333333332,
+            "mean": 22314.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 23000
+          },
+          "total_cost": {
+            "hi": 26359.333333333332,
+            "lo": 24495.666666666668,
+            "mean": 25352.666666666668,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 23000
+          },
+          "total_cost": {
+            "hi": 23505.666666666668,
+            "lo": 21623.0,
+            "mean": 22472.666666666668,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6279,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 11728,
+            "verify": 8736
+          },
+          "total_cost": {
+            "hi": 29310.25,
+            "lo": 26784.416666666668,
+            "mean": 28048.416666666668,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 120,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.6666666666666666,
+          "hi": 518.3333333333334,
+          "lo": -244.5,
+          "mean": 159.5,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.8333333333333334,
+          "hi": 1447.5,
+          "lo": 481.0833333333333,
+          "mean": 981.4166666666666,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 4440.75,
+          "lo": 3521.0,
+          "mean": 4020.0833333333335,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.8333333333333334,
+          "hi": 1560.75,
+          "lo": 641.0,
+          "mean": 1140.0833333333333,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 7196.166666666667,
+          "lo": 6218.833333333333,
+          "mean": 6715.833333333333,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 1331.3333333333333,
+          "lo": 433.3333333333333,
+          "mean": 895.0833333333334,
+          "n": 12,
+          "relative_to_best_control": 0.04026888412338977
+        }
+      },
+      "redundancy_rate": 0.5,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 127.41666666666667,
+        "mean_certificate_replays": 116.0,
+        "mean_full_resolve_verifications": 11.416666666666666,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6741,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 5464,
+            "verify": 3747
+          },
+          "total_cost": {
+            "hi": 19010.166666666668,
+            "lo": 15806.25,
+            "mean": 17310.916666666668,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6785,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 5464,
+            "threshold_check": 1,
+            "verify": 3747
+          },
+          "total_cost": {
+            "hi": 19186.083333333332,
+            "lo": 15918.833333333334,
+            "mean": 17438.333333333332,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 5464,
+            "verify": 8066
+          },
+          "total_cost": {
+            "hi": 21259.666666666668,
+            "lo": 18665.333333333332,
+            "mean": 19975.916666666668,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 21696
+          },
+          "total_cost": {
+            "hi": 24312.333333333332,
+            "lo": 22143.0,
+            "mean": 23161.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 18628
+          },
+          "total_cost": {
+            "hi": 27157.0,
+            "lo": 25086.333333333332,
+            "mean": 26071.666666666668,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 18628
+          },
+          "total_cost": {
+            "hi": 24231.666666666668,
+            "lo": 22241.0,
+            "mean": 23191.666666666668,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6559,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 5464,
+            "verify": 8066
+          },
+          "total_cost": {
+            "hi": 28443.25,
+            "lo": 24796.666666666668,
+            "mean": 26528.666666666668,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 60,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 3987.5833333333335,
+          "lo": 933.6666666666666,
+          "mean": 2537.5833333333335,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 7132.25,
+          "lo": 4210.416666666667,
+          "mean": 5722.666666666667,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 10023.666666666666,
+          "lo": 7135.5,
+          "mean": 8633.333333333334,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 7143.666666666667,
+          "lo": 4255.5,
+          "mean": 5753.333333333333,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 10167.833333333334,
+          "lo": 7896.75,
+          "mean": 9090.333333333334,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 6935.083333333333,
+          "lo": 4132.583333333333,
+          "mean": 5572.666666666667,
+          "n": 12,
+          "relative_to_best_control": 0.24217403270899426
+        }
+      },
+      "redundancy_rate": 0.75,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 180.5,
+        "mean_certificate_replays": 162.75,
+        "mean_full_resolve_verifications": 17.75,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6617,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 2436,
+            "verify": 3186
+          },
+          "total_cost": {
+            "hi": 15601.75,
+            "lo": 12881.916666666666,
+            "mean": 14279.666666666666,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6701,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 2436,
+            "threshold_check": 1,
+            "verify": 3186
+          },
+          "total_cost": {
+            "hi": 15763.583333333334,
+            "lo": 13063.916666666666,
+            "mean": 14414.75,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 2436,
+            "verify": 8969
+          },
+          "total_cost": {
+            "hi": 18328.916666666668,
+            "lo": 16351.0,
+            "mean": 17294.666666666668,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 23892
+          },
+          "total_cost": {
+            "hi": 23969.333333333332,
+            "lo": 21297.333333333332,
+            "mean": 22668.333333333332,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 20976
+          },
+          "total_cost": {
+            "hi": 26747.333333333332,
+            "lo": 24591.0,
+            "mean": 25686.333333333332,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 20976
+          },
+          "total_cost": {
+            "hi": 23867.333333333332,
+            "lo": 21701.666666666668,
+            "mean": 22806.333333333332,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 6542,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 2436,
+            "verify": 8969
+          },
+          "total_cost": {
+            "hi": 25871.75,
+            "lo": 22758.916666666668,
+            "mean": 24289.916666666668,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 24,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 4115.083333333333,
+          "lo": 1648.4166666666667,
+          "mean": 2879.9166666666665,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 9477.833333333334,
+          "lo": 7054.0,
+          "mean": 8253.583333333334,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 12307.166666666666,
+          "lo": 10210.166666666666,
+          "mean": 11271.583333333334,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 9427.166666666666,
+          "lo": 7330.166666666667,
+          "mean": 8391.583333333334,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 10999.083333333334,
+          "lo": 8717.916666666666,
+          "mean": 9875.166666666666,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 9198.583333333334,
+          "lo": 6960.5,
+          "mean": 8105.916666666667,
+          "n": 12,
+          "relative_to_best_control": 0.3599323584263343
+        }
+      },
+      "redundancy_rate": 0.9,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 216.0,
+        "mean_certificate_replays": 198.08333333333334,
+        "mean_full_resolve_verifications": 17.916666666666668,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 4644,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 892,
+            "verify": 3703
+          },
+          "total_cost": {
+            "hi": 15442.333333333334,
+            "lo": 11189.75,
+            "mean": 13258.083333333334,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 4736,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 892,
+            "threshold_check": 1,
+            "verify": 3703
+          },
+          "total_cost": {
+            "hi": 15512.583333333334,
+            "lo": 11297.25,
+            "mean": 13362.916666666666,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 892,
+            "verify": 11011
+          },
+          "total_cost": {
+            "hi": 20208.583333333332,
+            "lo": 15008.166666666666,
+            "mean": 17681.833333333332,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 19508
+          },
+          "total_cost": {
+            "hi": 25674.333333333332,
+            "lo": 21637.333333333332,
+            "mean": 23614.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 17564
+          },
+          "total_cost": {
+            "hi": 28264.333333333332,
+            "lo": 24830.0,
+            "mean": 26477.333333333332,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 17564
+          },
+          "total_cost": {
+            "hi": 25367.666666666668,
+            "lo": 21917.0,
+            "mean": 23597.333333333332,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 4618,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 892,
+            "verify": 11011
+          },
+          "total_cost": {
+            "hi": 26169.75,
+            "lo": 20635.833333333332,
+            "mean": 23503.75,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 10,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 5940.916666666667,
+          "lo": 2744.0833333333335,
+          "mean": 4318.916666666667,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 12402.25,
+          "lo": 8073.0,
+          "mean": 10251.083333333334,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 15134.0,
+          "lo": 10994.083333333334,
+          "mean": 13114.416666666666,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 12254.0,
+          "lo": 8114.083333333333,
+          "mean": 10234.416666666666,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 11596.5,
+          "lo": 8731.083333333334,
+          "mean": 10140.833333333334,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 12076.833333333334,
+          "lo": 7887.166666666667,
+          "mean": 9993.083333333334,
+          "n": 12,
+          "relative_to_best_control": 0.427859365188103
+        }
+      },
+      "redundancy_rate": 0.9583,
+      "replicates": 12,
+      "solve_cost_scale": 48,
+      "successor_diagnostics": {
+        "mean_cache_hits": 230.0,
+        "mean_certificate_replays": 203.0,
+        "mean_full_resolve_verifications": 27.0,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 17511,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 55788,
+            "verify": 1468
+          },
+          "total_cost": {
+            "hi": 73615.41666666667,
+            "lo": 68866.83333333333,
+            "mean": 71276.08333333333,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18003,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 55788,
+            "threshold_check": 1,
+            "verify": 1468
+          },
+          "total_cost": {
+            "hi": 73993.08333333333,
+            "lo": 69163.25,
+            "mean": 71593.16666666667,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 55788,
+            "verify": 5661
+          },
+          "total_cost": {
+            "hi": 63611.333333333336,
+            "lo": 60068.166666666664,
+            "mean": 61818.416666666664,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 63460
+          },
+          "total_cost": {
+            "hi": 61312.0,
+            "lo": 57958.0,
+            "mean": 59663.666666666664,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 55788
+          },
+          "total_cost": {
+            "hi": 60160.333333333336,
+            "lo": 57203.0,
+            "mean": 58565.666666666664,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 55788
+          },
+          "total_cost": {
+            "hi": 57221.333333333336,
+            "lo": 54284.666666666664,
+            "mean": 55685.666666666664,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 16637,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 55788,
+            "verify": 5661
+          },
+          "total_cost": {
+            "hi": 79613.08333333333,
+            "lo": 74602.16666666667,
+            "mean": 77118.25,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 240,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -8576.166666666666,
+          "lo": -11153.583333333334,
+          "mean": -9774.75,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -10779.75,
+          "lo": -13292.666666666666,
+          "mean": -11929.5,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -11570.25,
+          "lo": -14693.166666666666,
+          "mean": -13027.5,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -14450.25,
+          "lo": -17573.166666666668,
+          "mean": -15907.5,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 5921.666666666667,
+          "lo": 5136.916666666667,
+          "mean": 5525.083333333333,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -14430.166666666666,
+          "lo": -17556.583333333332,
+          "mean": -15907.5,
+          "n": 12,
+          "relative_to_best_control": -0.28566597029756313
+        }
+      },
+      "redundancy_rate": 0.0,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 29.0,
+        "mean_certificate_replays": 27.25,
+        "mean_full_resolve_verifications": 1.75,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 17841,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 40888,
+            "verify": 2844
+          },
+          "total_cost": {
+            "hi": 66871.5,
+            "lo": 61695.833333333336,
+            "mean": 64396.083333333336,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18177,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 40888,
+            "threshold_check": 1,
+            "verify": 2844
+          },
+          "total_cost": {
+            "hi": 67267.16666666667,
+            "lo": 62066.083333333336,
+            "mean": 64732.5,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 40888,
+            "verify": 13288
+          },
+          "total_cost": {
+            "hi": 60593.666666666664,
+            "lo": 57482.916666666664,
+            "mean": 59091.416666666664,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 59072
+          },
+          "total_cost": {
+            "hi": 62041.666666666664,
+            "lo": 59349.0,
+            "mean": 60787.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 53264
+          },
+          "total_cost": {
+            "hi": 60166.0,
+            "lo": 58037.0,
+            "mean": 59148.333333333336,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 53264
+          },
+          "total_cost": {
+            "hi": 57287.333333333336,
+            "lo": 55221.0,
+            "mean": 56268.333333333336,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 17179,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 40888,
+            "verify": 13288
+          },
+          "total_cost": {
+            "hi": 79352.58333333333,
+            "lo": 73130.66666666667,
+            "mean": 76343.5,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 180,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.08333333333333333,
+          "hi": -3394.8333333333335,
+          "lo": -7867.5,
+          "mean": -5641.083333333333,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.25,
+          "hi": -1951.9166666666667,
+          "lo": -5819.166666666667,
+          "mean": -3945.5,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.16666666666666666,
+          "hi": -3223.0,
+          "lo": -7845.833333333333,
+          "mean": -5584.166666666667,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -6103.0,
+          "lo": -10725.833333333334,
+          "mean": -8464.166666666666,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 12343.75,
+          "lo": 10838.083333333334,
+          "mean": 11611.0,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -6127.0,
+          "lo": -10749.833333333334,
+          "mean": -8464.166666666666,
+          "n": 12,
+          "relative_to_best_control": -0.15042504665146172
+        }
+      },
+      "redundancy_rate": 0.25,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 75.75,
+        "mean_certificate_replays": 68.66666666666667,
+        "mean_full_resolve_verifications": 7.083333333333333,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 8539,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 28088,
+            "verify": 2962
+          },
+          "total_cost": {
+            "hi": 52101.5,
+            "lo": 45986.0,
+            "mean": 49114.166666666664,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 8547,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 28088,
+            "threshold_check": 1,
+            "verify": 2962
+          },
+          "total_cost": {
+            "hi": 52514.25,
+            "lo": 46276.083333333336,
+            "mean": 49409.25,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 28088,
+            "verify": 19193
+          },
+          "total_cost": {
+            "hi": 54714.916666666664,
+            "lo": 51739.833333333336,
+            "mean": 53155.083333333336,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 57488
+          },
+          "total_cost": {
+            "hi": 59112.0,
+            "lo": 56151.0,
+            "mean": 57588.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 51280
+          },
+          "total_cost": {
+            "hi": 58258.666666666664,
+            "lo": 55483.0,
+            "mean": 56758.333333333336,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 51280
+          },
+          "total_cost": {
+            "hi": 55383.0,
+            "lo": 52593.333333333336,
+            "mean": 53878.333333333336,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 8061,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 28088,
+            "verify": 19193
+          },
+          "total_cost": {
+            "hi": 71142.25,
+            "lo": 64148.333333333336,
+            "mean": 67662.75,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 120,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 5906.583333333333,
+          "lo": 1745.1666666666667,
+          "mean": 3745.8333333333335,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 10830.5,
+          "lo": 5772.583333333333,
+          "mean": 8178.75,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 10186.916666666666,
+          "lo": 4712.5,
+          "mean": 7349.083333333333,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 7306.916666666667,
+          "lo": 1832.5,
+          "mean": 4469.083333333333,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 19293.916666666668,
+          "lo": 17158.166666666668,
+          "mean": 18253.5,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 7368.916666666667,
+          "lo": 1871.6666666666667,
+          "mean": 4469.083333333333,
+          "n": 12,
+          "relative_to_best_control": 0.08294769078479289
+        }
+      },
+      "redundancy_rate": 0.5,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 125.83333333333333,
+        "mean_certificate_replays": 117.25,
+        "mean_full_resolve_verifications": 8.583333333333334,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18398,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 13960,
+            "verify": 6863
+          },
+          "total_cost": {
+            "hi": 45844.0,
+            "lo": 39216.416666666664,
+            "mean": 42548.083333333336,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18878,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 13960,
+            "threshold_check": 1,
+            "verify": 6863
+          },
+          "total_cost": {
+            "hi": 46095.416666666664,
+            "lo": 39555.833333333336,
+            "mean": 42845.083333333336,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 13960,
+            "verify": 30549
+          },
+          "total_cost": {
+            "hi": 52369.0,
+            "lo": 48329.75,
+            "mean": 50304.416666666664,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 58856
+          },
+          "total_cost": {
+            "hi": 61098.0,
+            "lo": 56854.0,
+            "mean": 59017.333333333336,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 50824
+          },
+          "total_cost": {
+            "hi": 59157.0,
+            "lo": 55555.0,
+            "mean": 57326.333333333336,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 50824
+          },
+          "total_cost": {
+            "hi": 56242.666666666664,
+            "lo": 52781.0,
+            "mean": 54446.333333333336,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18177,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 13960,
+            "verify": 30549
+          },
+          "total_cost": {
+            "hi": 71573.16666666667,
+            "lo": 65039.0,
+            "mean": 68333.16666666667,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 60,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 10586.75,
+          "lo": 4750.416666666667,
+          "mean": 7459.333333333333,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 18544.75,
+          "lo": 13875.166666666666,
+          "mean": 16172.25,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 16956.25,
+          "lo": 12143.166666666666,
+          "mean": 14481.25,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 14076.25,
+          "lo": 9263.166666666666,
+          "mean": 11601.25,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 26822.166666666668,
+          "lo": 24054.5,
+          "mean": 25488.083333333332,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 14085.583333333334,
+          "lo": 9110.75,
+          "mean": 11601.25,
+          "n": 12,
+          "relative_to_best_control": 0.21307679121336606
+        }
+      },
+      "redundancy_rate": 0.75,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 180.25,
+        "mean_certificate_replays": 162.75,
+        "mean_full_resolve_verifications": 17.5,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 19435,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 7916,
+            "verify": 17377
+          },
+          "total_cost": {
+            "hi": 36793.25,
+            "lo": 28202.583333333332,
+            "mean": 32152.5,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 19627,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 7916,
+            "threshold_check": 1,
+            "verify": 17377
+          },
+          "total_cost": {
+            "hi": 36870.833333333336,
+            "lo": 28179.833333333332,
+            "mean": 32373.25,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 7916,
+            "verify": 55240
+          },
+          "total_cost": {
+            "hi": 53098.166666666664,
+            "lo": 43999.416666666664,
+            "mean": 48131.75,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 79148
+          },
+          "total_cost": {
+            "hi": 61760.666666666664,
+            "lo": 53096.666666666664,
+            "mean": 56732.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 70580
+          },
+          "total_cost": {
+            "hi": 60628.333333333336,
+            "lo": 52623.0,
+            "mean": 55949.333333333336,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 70580
+          },
+          "total_cost": {
+            "hi": 57435.0,
+            "lo": 49830.333333333336,
+            "mean": 53069.333333333336,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 19344,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 7916,
+            "verify": 55240
+          },
+          "total_cost": {
+            "hi": 70390.25,
+            "lo": 58007.5,
+            "mean": 63903.75,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 24,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 18146.666666666668,
+          "lo": 13375.0,
+          "mean": 15758.5,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 27212.083333333332,
+          "lo": 21268.166666666668,
+          "mean": 24358.75,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 26175.916666666668,
+          "lo": 20690.333333333332,
+          "mean": 23576.083333333332,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 23295.916666666668,
+          "lo": 17810.333333333332,
+          "mean": 20696.083333333332,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 34678.083333333336,
+          "lo": 28576.583333333332,
+          "mean": 31530.5,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 23352.333333333332,
+          "lo": 17734.083333333332,
+          "mean": 20696.083333333332,
+          "n": 12,
+          "relative_to_best_control": 0.389981973267675
+        }
+      },
+      "redundancy_rate": 0.9,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 216.0,
+        "mean_certificate_replays": 195.91666666666666,
+        "mean_full_resolve_verifications": 20.083333333333332,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 16327,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 2864,
+            "verify": 1003
+          },
+          "total_cost": {
+            "hi": 42003.333333333336,
+            "lo": 21738.166666666668,
+            "mean": 30383.666666666668,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 16407,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 2864,
+            "threshold_check": 1,
+            "verify": 1003
+          },
+          "total_cost": {
+            "hi": 41447.5,
+            "lo": 22157.5,
+            "mean": 30609.333333333332,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 2864,
+            "verify": 52177
+          },
+          "total_cost": {
+            "hi": 60571.75,
+            "lo": 38935.833333333336,
+            "mean": 48469.416666666664,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 68224
+          },
+          "total_cost": {
+            "hi": 67964.66666666667,
+            "lo": 51613.0,
+            "mean": 58855.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 60404
+          },
+          "total_cost": {
+            "hi": 65634.33333333333,
+            "lo": 51334.0,
+            "mean": 57638.333333333336,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 60404
+          },
+          "total_cost": {
+            "hi": 62838.666666666664,
+            "lo": 47973.0,
+            "mean": 54758.333333333336,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 16284,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 2864,
+            "verify": 52177
+          },
+          "total_cost": {
+            "hi": 79150.58333333333,
+            "lo": 51779.416666666664,
+            "mean": 64030.75,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 10,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 23914.583333333332,
+          "lo": 12538.333333333334,
+          "mean": 17860.083333333332,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 34321.833333333336,
+          "lo": 22348.5,
+          "mean": 28245.666666666668,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 33202.666666666664,
+          "lo": 20936.583333333332,
+          "mean": 27029.0,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 30322.666666666668,
+          "lo": 18056.583333333332,
+          "mean": 24149.0,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 40301.5,
+          "lo": 27315.0,
+          "mean": 33421.416666666664,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 30333.25,
+          "lo": 17659.083333333332,
+          "mean": 24149.0,
+          "n": 12,
+          "relative_to_best_control": 0.4410105006848273
+        }
+      },
+      "redundancy_rate": 0.9583,
+      "replicates": 12,
+      "solve_cost_scale": 128,
+      "successor_diagnostics": {
+        "mean_cache_hits": 230.0,
+        "mean_certificate_replays": 206.91666666666666,
+        "mean_full_resolve_verifications": 23.083333333333332,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 33762,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 101796,
+            "verify": 1740
+          },
+          "total_cost": {
+            "hi": 148790.5,
+            "lo": 140317.58333333334,
+            "mean": 144600.08333333334,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 34030,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 101796,
+            "threshold_check": 1,
+            "verify": 1740
+          },
+          "total_cost": {
+            "hi": 149292.58333333334,
+            "lo": 140881.58333333334,
+            "mean": 145099.41666666666,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 101796,
+            "verify": 10735
+          },
+          "total_cost": {
+            "hi": 125877.91666666667,
+            "lo": 119957.91666666667,
+            "mean": 122925.08333333333,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 116984
+          },
+          "total_cost": {
+            "hi": 124695.33333333333,
+            "lo": 119181.0,
+            "mean": 122022.66666666667,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 101796
+          },
+          "total_cost": {
+            "hi": 114787.33333333333,
+            "lo": 111054.0,
+            "mean": 112984.66666666667,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 101796
+          },
+          "total_cost": {
+            "hi": 111937.0,
+            "lo": 108178.33333333333,
+            "mean": 110104.66666666667,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 32844,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 101796,
+            "verify": 10735
+          },
+          "total_cost": {
+            "hi": 159867.75,
+            "lo": 150199.83333333334,
+            "mean": 155261.25,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 240,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -19502.333333333332,
+          "lo": -24526.5,
+          "mean": -22174.333333333332,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -20614.0,
+          "lo": -25375.5,
+          "mean": -23076.75,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -28830.5,
+          "lo": -34915.5,
+          "mean": -32114.75,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -31710.5,
+          "lo": -37795.5,
+          "mean": -34994.75,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 11173.333333333334,
+          "lo": 8955.333333333334,
+          "mean": 10161.833333333334,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.0,
+          "hi": -31789.0,
+          "lo": -37722.583333333336,
+          "mean": -34994.75,
+          "n": 12,
+          "relative_to_best_control": -0.3178316692601585
+        }
+      },
+      "redundancy_rate": 0.0,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 29.0,
+        "mean_certificate_replays": 26.083333333333332,
+        "mean_full_resolve_verifications": 2.9166666666666665,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18575,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 74888,
+            "verify": 7208
+          },
+          "total_cost": {
+            "hi": 125312.66666666667,
+            "lo": 112747.08333333333,
+            "mean": 118759.5,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 18623,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 74888,
+            "threshold_check": 1,
+            "verify": 7208
+          },
+          "total_cost": {
+            "hi": 125655.66666666667,
+            "lo": 112783.33333333333,
+            "mean": 119070.5,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 74888,
+            "verify": 30263
+          },
+          "total_cost": {
+            "hi": 119000.0,
+            "lo": 110537.25,
+            "mean": 114920.25,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 112084
+          },
+          "total_cost": {
+            "hi": 122367.66666666667,
+            "lo": 113668.0,
+            "mean": 118320.33333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 98712
+          },
+          "total_cost": {
+            "hi": 113476.66666666667,
+            "lo": 106090.33333333333,
+            "mean": 109865.66666666667,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 98712
+          },
+          "total_cost": {
+            "hi": 110526.66666666667,
+            "lo": 103168.66666666667,
+            "mean": 106985.66666666667,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 17847,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 74888,
+            "verify": 30263
+          },
+          "total_cost": {
+            "hi": 152271.66666666666,
+            "lo": 137219.41666666666,
+            "mean": 144732.08333333334,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 180,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.25,
+          "hi": 1074.5833333333333,
+          "lo": -9571.0,
+          "mean": -4150.25,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.3333333333333333,
+          "hi": 4120.166666666667,
+          "lo": -6125.75,
+          "mean": -750.1666666666666,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.16666666666666666,
+          "hi": -4328.166666666667,
+          "lo": -14495.083333333334,
+          "mean": -9204.833333333334,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.08333333333333333,
+          "hi": -7208.166666666667,
+          "lo": -17375.083333333332,
+          "mean": -12084.833333333334,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 28008.833333333332,
+          "lo": 23128.833333333332,
+          "mean": 25661.583333333332,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.08333333333333333,
+          "hi": -6953.333333333333,
+          "lo": -16953.5,
+          "mean": -12084.833333333334,
+          "n": 12,
+          "relative_to_best_control": -0.11295749897961409
+        }
+      },
+      "redundancy_rate": 0.25,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 76.0,
+        "mean_certificate_replays": 69.75,
+        "mean_full_resolve_verifications": 6.25,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 29846,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 56008,
+            "verify": 4892
+          },
+          "total_cost": {
+            "hi": 104833.33333333333,
+            "lo": 92992.58333333333,
+            "mean": 98632.91666666667,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 30318,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 56008,
+            "threshold_check": 1,
+            "verify": 4892
+          },
+          "total_cost": {
+            "hi": 105323.58333333333,
+            "lo": 93311.08333333333,
+            "mean": 99225.25,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 56008,
+            "verify": 56874
+          },
+          "total_cost": {
+            "hi": 111804.75,
+            "lo": 101353.0,
+            "mean": 106373.0,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 119696
+          },
+          "total_cost": {
+            "hi": 121640.33333333333,
+            "lo": 112661.66666666667,
+            "mean": 116896.33333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 104608
+          },
+          "total_cost": {
+            "hi": 112552.33333333333,
+            "lo": 104808.33333333333,
+            "mean": 108534.66666666667,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 104608
+          },
+          "total_cost": {
+            "hi": 109833.66666666667,
+            "lo": 101901.0,
+            "mean": 105654.66666666667,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 29294,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 56008,
+            "verify": 56874
+          },
+          "total_cost": {
+            "hi": 143988.16666666666,
+            "lo": 130943.5,
+            "mean": 137932.08333333334,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 120,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 13887.166666666666,
+          "lo": 229.75,
+          "mean": 7147.75,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 23027.583333333332,
+          "lo": 11951.5,
+          "mean": 17671.083333333332,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 14561.416666666666,
+          "lo": 3557.0,
+          "mean": 9309.416666666666,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 11681.416666666666,
+          "lo": 677.0,
+          "mean": 6429.416666666667,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 43409.083333333336,
+          "lo": 34445.75,
+          "mean": 38706.833333333336,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 0.75,
+          "hi": 11693.75,
+          "lo": 579.0833333333334,
+          "mean": 6429.416666666667,
+          "n": 12,
+          "relative_to_best_control": 0.06085312527605659
+        }
+      },
+      "redundancy_rate": 0.5,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 124.58333333333333,
+        "mean_certificate_replays": 115.91666666666667,
+        "mean_full_resolve_verifications": 8.666666666666666,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 25486,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 26268,
+            "verify": 5348
+          },
+          "total_cost": {
+            "hi": 84593.0,
+            "lo": 69077.33333333333,
+            "mean": 76575.83333333333,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 25714,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 26268,
+            "threshold_check": 1,
+            "verify": 5348
+          },
+          "total_cost": {
+            "hi": 85126.75,
+            "lo": 69459.41666666667,
+            "mean": 76989.83333333333,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 26268,
+            "verify": 60167
+          },
+          "total_cost": {
+            "hi": 113048.33333333333,
+            "lo": 98285.58333333333,
+            "mean": 105471.75,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 107984
+          },
+          "total_cost": {
+            "hi": 129073.0,
+            "lo": 117766.0,
+            "mean": 123594.0,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 97692
+          },
+          "total_cost": {
+            "hi": 119506.33333333333,
+            "lo": 109882.33333333333,
+            "mean": 114827.0,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 97692
+          },
+          "total_cost": {
+            "hi": 116778.66666666667,
+            "lo": 106967.0,
+            "mean": 111947.0,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 25218,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 26268,
+            "verify": 60167
+          },
+          "total_cost": {
+            "hi": 146272.83333333334,
+            "lo": 126870.08333333333,
+            "mean": 136063.66666666666,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 60,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 33162.583333333336,
+          "lo": 23141.5,
+          "mean": 28481.916666666668,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 51647.083333333336,
+          "lo": 40996.666666666664,
+          "mean": 46604.166666666664,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 42466.75,
+          "lo": 32762.583333333332,
+          "mean": 37837.166666666664,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 39586.75,
+          "lo": 29882.583333333332,
+          "mean": 34957.166666666664,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 63490.666666666664,
+          "lo": 54197.416666666664,
+          "mean": 59073.833333333336,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 39696.0,
+          "lo": 29758.916666666668,
+          "mean": 34957.166666666664,
+          "n": 12,
+          "relative_to_best_control": 0.312265327937923
+        }
+      },
+      "redundancy_rate": 0.75,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 180.41666666666666,
+        "mean_certificate_replays": 165.58333333333334,
+        "mean_full_resolve_verifications": 14.833333333333334,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 36611,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 11544,
+            "verify": 1063
+          },
+          "total_cost": {
+            "hi": 73546.58333333333,
+            "lo": 59286.083333333336,
+            "mean": 66293.91666666667,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 36987,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 11544,
+            "threshold_check": 1,
+            "verify": 1063
+          },
+          "total_cost": {
+            "hi": 73612.33333333333,
+            "lo": 59549.25,
+            "mean": 66769.66666666667,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 11544,
+            "verify": 52763
+          },
+          "total_cost": {
+            "hi": 109948.16666666667,
+            "lo": 83254.16666666667,
+            "mean": 96532.33333333333,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 110576
+          },
+          "total_cost": {
+            "hi": 129603.33333333333,
+            "lo": 107668.33333333333,
+            "mean": 119000.33333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 97988
+          },
+          "total_cost": {
+            "hi": 118718.33333333333,
+            "lo": 100640.33333333333,
+            "mean": 109836.0,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 97988
+          },
+          "total_cost": {
+            "hi": 116037.33333333333,
+            "lo": 97754.0,
+            "mean": 106956.0,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 36489,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 11544,
+            "verify": 52763
+          },
+          "total_cost": {
+            "hi": 144332.16666666666,
+            "lo": 116679.08333333333,
+            "mean": 130483.75,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 24,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 38547.25,
+          "lo": 22016.083333333332,
+          "mean": 29762.666666666668,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 59515.916666666664,
+          "lo": 45741.833333333336,
+          "mean": 52230.666666666664,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 49131.5,
+          "lo": 37592.166666666664,
+          "mean": 43066.333333333336,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 46251.5,
+          "lo": 34712.166666666664,
+          "mean": 40186.333333333336,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 73178.83333333333,
+          "lo": 55460.0,
+          "mean": 63714.083333333336,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 46205.333333333336,
+          "lo": 34916.833333333336,
+          "mean": 40186.333333333336,
+          "n": 12,
+          "relative_to_best_control": 0.37572771357692264
+        }
+      },
+      "redundancy_rate": 0.9,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 216.0,
+        "mean_certificate_replays": 195.08333333333334,
+        "mean_full_resolve_verifications": 20.916666666666668,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    },
+    {
+      "arms": {
+        "FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 31384,
+            "family_validation": 18,
+            "projection": 1440,
+            "solve": 4844,
+            "verify": 1032
+          },
+          "total_cost": {
+            "hi": 55756.0,
+            "lo": 39974.166666666664,
+            "mean": 47826.833333333336,
+            "n": 12
+          }
+        },
+        "ON_DEMAND_FAMILY_CERTIFICATE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 32292,
+            "family_validation": 18,
+            "key": 24,
+            "projection": 1434,
+            "solve": 4844,
+            "threshold_check": 1,
+            "verify": 1032
+          },
+          "total_cost": {
+            "hi": 56155.333333333336,
+            "lo": 40235.583333333336,
+            "mean": 48247.583333333336,
+            "n": 12
+          }
+        },
+        "ORACLE_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 4844,
+            "verify": 87412
+          },
+          "total_cost": {
+            "hi": 106088.5,
+            "lo": 85257.33333333333,
+            "mean": 95885.33333333333,
+            "n": 12
+          }
+        },
+        "RAW_NO_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "solve": 122696
+          },
+          "total_cost": {
+            "hi": 128237.0,
+            "lo": 106780.66666666667,
+            "mean": 116503.33333333333,
+            "n": 12
+          }
+        },
+        "STRUCTURE_NO_ERASURE": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 5760,
+            "solve": 106960
+          },
+          "total_cost": {
+            "hi": 117764.33333333333,
+            "lo": 99414.33333333333,
+            "mean": 107646.0,
+            "n": 12
+          }
+        },
+        "SURFACE_HASH_DEDUP": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "key": 2880,
+            "solve": 106960
+          },
+          "total_cost": {
+            "hi": 115124.0,
+            "lo": 96442.66666666667,
+            "mean": 104766.0,
+            "n": 12
+          }
+        },
+        "TCSQ_VALIDATED_QUOTIENT": {
+          "original_problem_success_mean": 1.0,
+          "original_problem_success_min": 1.0,
+          "stage_costs": {
+            "construction": 31339,
+            "ledger": 2880,
+            "projection": 1440,
+            "solve": 4844,
+            "verify": 87412
+          },
+          "total_cost": {
+            "hi": 139413.58333333334,
+            "lo": 115722.91666666667,
+            "mean": 126691.41666666667,
+            "n": 12
+          }
+        }
+      },
+      "n_distinct_essential_structures": 10,
+      "n_tasks": 240,
+      "net_advantage": {
+        "net_vs_ORACLE_QUOTIENT": {
+          "fraction_replicates_positive": 0.9166666666666666,
+          "hi": 60583.416666666664,
+          "lo": 32344.333333333332,
+          "mean": 47637.75,
+          "n": 12
+        },
+        "net_vs_RAW_NO_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 80659.66666666667,
+          "lo": 55461.333333333336,
+          "mean": 68255.75,
+          "n": 12
+        },
+        "net_vs_STRUCTURE_NO_ERASURE": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 70333.5,
+          "lo": 47095.916666666664,
+          "mean": 59398.416666666664,
+          "n": 12
+        },
+        "net_vs_SURFACE_HASH_DEDUP": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 67453.5,
+          "lo": 44215.916666666664,
+          "mean": 56518.416666666664,
+          "n": 12
+        },
+        "net_vs_TCSQ_VALIDATED_QUOTIENT": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 91374.58333333333,
+          "lo": 64536.25,
+          "mean": 78443.83333333333,
+          "n": 12
+        },
+        "net_vs_best_control": {
+          "fraction_replicates_positive": 1.0,
+          "hi": 67482.08333333333,
+          "lo": 44280.916666666664,
+          "mean": 56518.416666666664,
+          "n": 12,
+          "relative_to_best_control": 0.5394728887870747
+        }
+      },
+      "redundancy_rate": 0.9583,
+      "replicates": 12,
+      "solve_cost_scale": 256,
+      "successor_diagnostics": {
+        "mean_cache_hits": 230.0,
+        "mean_certificate_replays": 219.25,
+        "mean_full_resolve_verifications": 10.75,
+        "mean_invalid_certificate_rejections": 0.0,
+        "original_problem_success_mean": 1.0
+      }
+    }
+  ],
+  "claim_boundary": "development known-world instrument; one synthetic bounded-planning generator, one hand-registered coordinate schema, one hand-registered intervention family, and a hand-specified operation-count cost model. It does NOT settle whether family-certificate quotients reduce cost on natural problems, with LLM solvers, on unseen coordinate schemas, or under any other distribution. Grants no scientific or method-promotion authority.",
+  "coordinate_schema": {
+    "all": [
+      "author",
+      "budget",
+      "forbidden_actions",
+      "goal",
+      "notes",
+      "overflow_guard",
+      "render_style",
+      "schema_rev",
+      "start",
+      "submitted_at",
+      "title",
+      "transitions"
+    ],
+    "generator_conditionally_essential": [
+      "overflow_guard"
+    ],
+    "generator_essential": [
+      "budget",
+      "forbidden_actions",
+      "goal",
+      "start",
+      "transitions"
+    ],
+    "generator_nuisance": [
+      "author",
+      "notes",
+      "render_style",
+      "schema_rev",
+      "submitted_at",
+      "title"
+    ],
+    "oracle_preserved": [
+      "budget",
+      "forbidden_actions",
+      "goal",
+      "overflow_guard",
+      "start",
+      "transitions"
+    ]
+  },
+  "cost_model": {
+    "construction": "intervention audit + witness path reconstruction (charged)",
+    "family_validation": "one library materialisation per family (ledger+projection, charged once)",
+    "maintenance": "one solve per re-probed coordinate plus |preserved| re-projection ops per cached entry",
+    "projection": "|preserved| ops per task to form the class key",
+    "solve": "one op per (state, action) transition evaluated by exact BFS",
+    "unit": "one counted operation",
+    "verify_refusal_unreachable": "a genuinely-unreachable negative has no compact witness -> full re-solve, charged",
+    "verify_replay": "one op per replayed action of a reused certificate"
+  },
+  "grants_method_promotion": false,
+  "grants_scientific_authority": false,
+  "historical_parent": "research/tcsq_sq3_v1/results/sq3_successor.json (PROMOTE_CONDITIONALLY, regime-conditional positive at high redundancy only)",
+  "mechanisms": {
+    "A_lazy_observation": "observe first N tasks with simple structure-keyed caching; no construction cost during observation",
+    "B_adaptive_activation": "trigger full intervention audit + family validation + certificates only if observed hit rate exceeds threshold (35%)",
+    "C_certificate_reuse": "when activated, retained witness plans enable cheap replay (plan-length ops) instead of full re-solve",
+    "target_regime": "low-redundancy regimes where fixed construction cost would dominate benefit; lazy activation avoids paying cost when reuse is unlikely"
+  },
+  "n_tasks_per_replicate": 240,
+  "net_advantage": {
+    "hi": 13761.90972222222,
+    "lo": -1277.6284722222222,
+    "mean": 5781.5,
+    "n": 24,
+    "note": "aggregated across solve_cost_scale x redundancy cells by bootstrap on cell means"
+  },
+  "paper2_confirmatory_seed_used": false,
+  "probe_budget": 8,
+  "regime_analysis": {
+    "all_cells": {
+      "n": 24,
+      "net_saving_ci95": [
+        -1389.9444444444446,
+        13838.413194444445
+      ],
+      "net_saving_mean": 5781.5
+    },
+    "negative_subset": {
+      "cells": [
+        {
+          "redundancy_rate": 0.0,
+          "solve_cost_scale": 16
+        },
+        {
+          "redundancy_rate": 0.25,
+          "solve_cost_scale": 16
+        },
+        {
+          "redundancy_rate": 0.5,
+          "solve_cost_scale": 16
+        },
+        {
+          "redundancy_rate": 0.0,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.25,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.0,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.25,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.0,
+          "solve_cost_scale": 256
+        },
+        {
+          "redundancy_rate": 0.25,
+          "solve_cost_scale": 256
+        }
+      ],
+      "description": "solve_cost_scale x redundancy cells whose successor net CI excludes zero from below",
+      "n": 9,
+      "net_saving_ci95": [
+        -17045.25,
+        -4304.231481481481
+      ],
+      "net_saving_mean": -9691.611111111111
+    },
+    "positive_subset": {
+      "cells": [
+        {
+          "redundancy_rate": 0.9,
+          "solve_cost_scale": 16
+        },
+        {
+          "redundancy_rate": 0.9583,
+          "solve_cost_scale": 16
+        },
+        {
+          "redundancy_rate": 0.5,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.75,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.9,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.9583,
+          "solve_cost_scale": 48
+        },
+        {
+          "redundancy_rate": 0.5,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.75,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.9,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.9583,
+          "solve_cost_scale": 128
+        },
+        {
+          "redundancy_rate": 0.5,
+          "solve_cost_scale": 256
+        },
+        {
+          "redundancy_rate": 0.75,
+          "solve_cost_scale": 256
+        },
+        {
+          "redundancy_rate": 0.9,
+          "solve_cost_scale": 256
+        },
+        {
+          "redundancy_rate": 0.9583,
+          "solve_cost_scale": 256
+        }
+      ],
+      "description": "solve_cost_scale x redundancy cells whose successor net CI excludes zero from above",
+      "n": 14,
+      "net_saving_ci95": [
+        8319.511904761905,
+        25119.791666666664
+      ],
+      "net_saving_mean": 16127.982142857143
+    }
+  },
+  "replicates_per_cell": 12,
+  "schema_version": "rakl.tcsq.on_demand.v1",
+  "seed": 462,
+  "status": "DEVELOPMENT_KNOWN_WORLD_NET_COST_INSTRUMENT_ONLY",
+  "unfilled_gate_arms": [
+    "INCUMBENT_RAKL"
+  ]
+}
