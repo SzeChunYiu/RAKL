@@ -139,6 +139,7 @@ of the broader canonical research state. A literature discovery may change \(K\)
 This projection prevents a perverse interpretation of ``accumulate until nothing grows.'' A paper need not contain every object in the project archive. It must contain every object required to make its own claims, derivations, boundaries and nearest-work relationships defensible under the registered scope.
 
 \section{Reproducibility and implementation correspondence}
+\label{app:reproducibility}
 
 This appendix carries implementation metadata so the main scientific argument does not contain a numbered chapter devoted to repository bookkeeping.
 
@@ -153,7 +154,8 @@ The formalism is accompanied by a reference implementation whose principal compo
 \item a lattice-metrology component: basis-bound geometric metrics and target-conditioned epistemic gain;
 \item a workspace component: capacity gate, reservation policy, broadcast, interventions and cognitive/evidential provenance types;
 \item an open-world-discovery component: functional signatures, capability owners, route records, audit provenance, bounded discovery closure, discovery workspace and hidden-name benchmark;
-\item an epistemic-saturation component: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry; and
+\item an epistemic-saturation component: basis fingerprints, marginal epistemic growth vectors, repeated-flat-round saturation and freshness expiry;
+\item a support-structure navigation unit: obstruction-preserving distilled structures, authority-licensed route search with epistemic-cut and minimal-repair reporting, hyperedge derivation and use-time certificate verification (Section~\ref{sec:support-structure}); and
 \item the corresponding test modules: executable regression contracts for these invariants.
 \end{itemize}
 
@@ -165,7 +167,14 @@ The exact public build of this manuscript is bound to:
 
 The same checkout reports \SoftwareTests{} passing software tests. Those tests establish reference-mechanics behavior and release reproducibility. They are not an empirical validation of scientific superiority.
 
-\subsection{Release preflight}
+\subsection{Machine-checked formalization}
+\label{app:mechanization}
+
+The artifact includes a Lean~4 development (\path{RaklFormal.lean}, toolchain 4.14.0) that machine-checks seventeen of the paper's eighteen numbered formal claims in full. The development is deliberately dependency-free --- no \texttt{mathlib} --- and fully constructive: the kernel's axiom audit reports \emph{does not depend on any axioms} for every one of its 87 theorems at the archival revision, so no proof rests on classical choice, \texttt{propext} or \texttt{funext}. The audit covers all theorems in the file rather than a selected subset, so a theorem cannot be added without being audited, and continuous integration additionally checks a negative control: a deliberately false lemma is rejected by the kernel, confirming that the build is capable of failing. One near-miss during development is worth recording rather than hiding: a witness lemma initially proved by \texttt{decide} was found to route through \texttt{propext} via the core decidability instance for list membership, and was replaced by an explicit membership term.
+
+The one exception is the reservation-first greedy optimality theorem of Section~\ref{sec:workspace}, whose machine-checked ingredients and unmechanized assembly are stated in the remark accompanying it; no part of that theorem's own statement is machine-checked, and its status rests on the paper proof.
+
+These statuses are reported precisely because they license different confidence. A kernel-accepted proof does not rest on the judgement of whoever wrote it; a paper proof read line-by-line in the same working context does. Neither constitutes independent peer review of this paper, and none is represented as such.
 
 The continuous-integration workflow reconstructs deterministic receipts and publication figures, stages the framework manuscripts and this paper, compiles all PDFs, fails on overfull boxes or unresolved citations/references, renders every PDF page to raster images and uploads the complete publication-review artifact. For this long-form paper the workflow additionally requires at least 20 PDF pages and requires the number of rendered page images to match the PDF page count.
 
@@ -186,7 +195,8 @@ Workspace selection changes access, not authority & Proposition in Section~\ref{
 Coactivation does not imply compatibility & Explicit contradictory-selection countermodel & \path{coactivation_pairs}; workspace tests \\
 Current atom/witness/path object is not itself a lattice & Lattice-definition audit; absent order/meet/join obligations & \path{compatibility_complex.py}; terminology tests \\
 Closed states of a valid closure operator form a complete lattice & Closure-system theorem in Section~\ref{sec:compatibility} & Formal result; universal closure operator not yet implemented \\
-Pairwise compatibility need not glue globally & Three-context parity obstruction & Formal result; higher-order solver remains an open implementation fiber \\
+Pairwise compatibility need not glue globally & Three-context parity obstruction & Formal result; obstruction objects are first-class in \path{support_solver.py}, which refuses routes realizing a registered obstructed cover; deciding realizability of new covers remains open \\
+Obstruction-blind distillation is unsound for navigation & Machine-checked countermodel pair in Section~\ref{sec:support-structure} & \path{support_solver.py}, \path{derivation.py}, \path{certificates.py}; solver-unit tests \\
 Authority cannot be faithfully represented by one scalar when incomparability exists & Total-order contradiction theorem in Section~\ref{sec:authority} & Authority remains coordinate-typed in framework design \\
 OWMD can issue only bounded closure & Finite-transcript non-certifiability theorem & \path{open_world_discovery.py}; closure tests \\
 Hidden-name retrieval must be ontology-independent & GWT-OMISSION-01 definition & hidden-name benchmark tests \\
