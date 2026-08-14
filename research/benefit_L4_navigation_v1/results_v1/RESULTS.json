@@ -1,0 +1,143 @@
+{
+  "protocol_id": "BENEFIT-L4-NAVIGATION-V1",
+  "run_id": "results_v1",
+  "run_date": "2026-08-14",
+  "typed_outcome": "PROMOTE",
+  "typed_outcome_source": "frozen EVALUATOR.py verdict function, exit code 0; no threshold, estimator, or sample-size change",
+  "execution_binding_determination": {
+    "binding_text": "PROTOCOL.json execution_binding.execution_precondition: the separate L4 gate-falsifiability audit of src/rakl/support_solver.py SHOULD land before the execution run; if it has not landed, the verdict is capped at CONDITIONAL regardless of metrics.",
+    "determination": "SATISFIED AS WRITTEN — no CONDITIONAL cap applies.",
+    "evidence": "research/solver_gate_falsifiability_sweep_v1/SWEEP.json (merged PR #645, commit f6c3bda7, on origin/main before this run's base 9052b523), step 7_navigation: gate_id support_solver.solve, classification FALSIFIABLE, no-alarm control OK (intact_evidence_passes=true, checked_before_probes=true), 5/5 probes SENSITIVE at both seeds (degrade_edge_licensing_below_target, drop_random_edge, obstruct_the_route_cover, retarget_edges_away_from_goal, scramble_goal_atom), zero insensitive probes.",
+    "module_content_identity": "src/rakl/support_solver.py at the sweep commit f6c3bda7 has sha256 180548b10a4465194c0aefd458a55e78dd23e00a9d8a7e4eb64ca6bd4fd374c6 — byte-identical to this protocol's module pin and to the run environment's working tree, so the landed audit covers exactly the pinned module semantics."
+  },
+  "headline": {
+    "sr_a": 0.3225806451612903,
+    "sr_b": 1.0,
+    "delta_sr": 0.6774193548387097,
+    "n_primary": 310,
+    "fsr_a": 0.0,
+    "fsr_b": 0.0,
+    "fsr_b_exactly_zero_verified": true,
+    "sfh_b": 1.0,
+    "sfh_a": 1.0,
+    "sr_a_loose": 1.0,
+    "sr_b_loose": 1.0,
+    "sr_a_tight": 0.0,
+    "sr_b_tight": 0.0,
+    "mcnemar": {"b": 210, "c": 0, "p_two_sided": 1.2154326714572542e-63},
+    "null_1_random_acquisition": {
+      "q95": 0.2967741935483871,
+      "mean": 0.2607258064516129,
+      "observed_sr_b": 1.0,
+      "beaten": true
+    },
+    "null_2_index_permutation": {
+      "q95": 0.2903225806451613,
+      "mean": 0.2603838709677419,
+      "observed_sr_b": 1.0,
+      "beaten": true
+    },
+    "audit": {"n_audited": 40, "n_disagreements": 0, "disagreement": 0.0}
+  },
+  "frozen_threshold_checks": {
+    "delta_sr_ge_0.10_primary": true,
+    "mcnemar_p_lt_0.001": true,
+    "sfh_b_ge_0.70": true,
+    "fsr_b_eq_0": true,
+    "loose_noninferiority_sr_b_ge_sr_a_minus_0.02": true,
+    "sr_b_above_null1_q95": true,
+    "sr_b_above_null2_q95": true,
+    "audit_disagreement_lt_0.05": true,
+    "evaluator_selftest_pass_in_run_environment": true,
+    "receipt_chain_valid": true,
+    "no_rule_drift_either_arm": true
+  },
+  "module_pin_verification": {
+    "EVALUATOR.py": "2dd3726fc99354c1fe70704843ac628946cb00eeb15955747fcb8494eebe418d (MATCH, verified before any execution and inside every step)",
+    "src/rakl/support_solver.py": "180548b10a4465194c0aefd458a55e78dd23e00a9d8a7e4eb64ca6bd4fd374c6 (MATCH)"
+  },
+  "per_class": {
+    "arm_A_budgeted_raw_reading": {
+      "N1": {"n": 120, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0},
+      "N2": {"n": 60, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0},
+      "N3": {"n": 60, "verified_solved": 60, "sr_within": 1.0, "false_solves": 0},
+      "N4": {"n": 40, "verified_solved": 40, "sr_within": 1.0, "false_solves": 0},
+      "N5": {"n": 60, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0},
+      "N6": {"n": 30, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0},
+      "N7": {"n": 30, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0}
+    },
+    "arm_B_distil_and_navigate": {
+      "N1": {"n": 120, "verified_solved": 120, "sr_within": 1.0, "false_solves": 0},
+      "N2": {"n": 60, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0},
+      "N3": {"n": 60, "verified_solved": 60, "sr_within": 1.0, "false_solves": 0},
+      "N4": {"n": 40, "verified_solved": 40, "sr_within": 1.0, "false_solves": 0},
+      "N5": {"n": 60, "verified_solved": 60, "sr_within": 1.0, "false_solves": 0},
+      "N6": {"n": 30, "verified_solved": 30, "sr_within": 1.0, "false_solves": 0},
+      "N7": {"n": 30, "verified_solved": 0, "sr_within": 0.0, "false_solves": 0}
+    },
+    "per_budget_class": {
+      "arm_A": {
+        "TIGHT": {"n": 60, "verified_solved": 0, "sr_within": 0.0},
+        "MEDIUM": {"n": 280, "verified_solved": 40, "sr_within": 0.14285714285714285},
+        "LOOSE": {"n": 60, "verified_solved": 60, "sr_within": 1.0}
+      },
+      "arm_B": {
+        "TIGHT": {"n": 60, "verified_solved": 0, "sr_within": 0.0},
+        "MEDIUM": {"n": 280, "verified_solved": 250, "sr_within": 0.8928571428571429},
+        "LOOSE": {"n": 60, "verified_solved": 60, "sr_within": 1.0}
+      }
+    },
+    "note": "Arm B's benefit spans every deep/mechanism class at MEDIUM budget (N1 buried chains, N5 distractor-heavy, N6 obstructed decoy — where only obstruction-aware navigation redirects budget to the admissible detour), while paying the registered honest costs: TIGHT (N2) is 0/60 for both arms exactly as the budget-conditional scope anticipated (the 2x distillation overhead cannot amortize at 2*S*), the shallow floor N4 is 40/40 (SFH_B=1.0, distillation overhead does not gut the easy regime), LOOSE (N3) saturates for both arms (non-inferiority holds with equality), and N7 unsolvable worlds produce zero false solves in either arm (FSR_A=FSR_B=0; every declared route was verified edge-by-edge against the full world including unread obstructions). Arm A is an honest baseline, not a straw man: it shares arm B's connect rule and solves N3/N4 perfectly; its failures are purely acquisition-ordering failures under the lexical trap."
+  },
+  "known_at_design_time_declaration_verbatim": "Both arms are deterministic policies, so qualitative behavior on the parametric classes is partially derivable a priori (e.g. B pays double per source and must recover via cut/frontier-directed acquisition; both arms honestly fall for a lexical decoy on their first acquisition). The run certifies exact magnitudes under randomized world realization, separation from both nulls, the honest-cost floor, and label-integrity receipts. This is a known-answer-world mechanism measurement (principles.md 18), not a claim about LLM behavior.",
+  "promotable_claim_scope": "On synthetic known-answer multi-hop worlds, distil-and-navigate (rakl.support_solver: distil -> saturate -> navigate -> connect, with repair/frontier-directed acquisition) solves more than budgeted lexical raw reading at matched total budget with ALL distillation cost charged at 2x, FOR BUDGETS >= 4 * S* ONLY.",
+  "explicit_non_claims": [
+    "no claim at TIGHT budgets (SR_B = SR_A = 0 on N2; the registered honest-cost read)",
+    "no LLM-arm generalization (registered follow-up)",
+    "no natural-corpus generalization (registered follow-up)",
+    "no claim that the acquisition policy is optimal",
+    "ladder.json L4 benefit_measured is NOT flipped by this run; that requires a separate governed PR carrying the RSHEA receipts with external GovernanceSignOff"
+  ],
+  "corpus_hash_receipts": {
+    "corpus_v1.json": "beed0eebbe7753f3718f87078b278133b79f8327b5c5bd0c8a5ad7272edadbc1",
+    "corpus_v1_stripped.json": "fdb41ef0f426603a05b1532600f2289df3209ba32ccbfb6de8953fb3c31e25d0",
+    "audit_sample.json": "d5d1f3dc423874849f001ae840f512d38410740aa1ac871e089b503fb910ad22",
+    "worlds_v1.json": "0c93090bc6716ab25fe3b81bb14aed205c26dc397019f0439461a5a416420be6",
+    "harness/generate_corpus.py": "1e078ed1280de1c11bffbedd1c977f2febc51c42d96155454f39451f50b2e2e7",
+    "harness/arm_harness.py": "c7a16951f462ec2d956b47bc408ca39db2949ed65fafa6233af2b6a147f72a8f",
+    "arm_a_output.json": "0f5489d980a7911274a7bb032223c9c8920da08f851da6471d7eb5418fbe9160",
+    "arm_b_output.json": "f30af12490d40ba4354b3752084404cf7452aa6af02fae1b3ee23c438eb77501",
+    "evaluator_report.json": "10389460120ffc9503c15ea5f8855bb37e8b0cbe9f06a44a22de54d6861117d3",
+    "AUDIT_RECEIPT.json": "f35abf5e8579e205e8dfb3d227b4ca78bd9ec628326fcbf2838d050a5bd34c72"
+  },
+  "chronology": {
+    "labels_minted_at": "2026-08-14T18:36:10Z",
+    "corpus_frozen_at": "2026-08-14T18:36:10Z",
+    "audit_performed_at": "2026-08-14T18:36:24Z",
+    "arm_run_started_at": "2026-08-14T18:36:39Z",
+    "label_before_arm_enforced_by_evaluator": true,
+    "audit_before_arms": true
+  },
+  "rshea_binding": {
+    "epoch_id": "epoch:bc8cd601c2278c86",
+    "ledger_receipt_count": 12,
+    "hard_gates": "4/4 PASS (corpus-freeze, arm A, arm B, evaluator) — executed, not logged",
+    "shadow_decision": "SELECTED (acted_upon=false)",
+    "bridge_verdict": "OBJECT_SEARCH_READY (grants_authority=false, governance_required_for_promotion=true)",
+    "governed_proposal": "proposal:benefit-l4-navigation-v1-run-1 — NOT actionable (no external GovernanceSignOff exists)",
+    "resumable_state_roundtrip": "ok (content-hash verified)",
+    "authority_note": "assess_resume_readiness holds resume/promotion authority; not invoked (no resume attempted)"
+  },
+  "deviations": [],
+  "prose_vs_executable_notes": [
+    "PRIMARY-SET ARITHMETIC: PROTOCOL.json corpus.primary_set_size records 270 (= N1+N3+N5+N6), but the frozen EVALUATOR.py primary_set() — the executable definition the estimator hash-binds — selects ALL gold-SOLVABLE worlds at MEDIUM/LOOSE budget, which includes N4 (n_primary = 310). The executable definition governs (no_post_result_threshold_rescue forbids re-deriving either after result access). The verdict is invariant: on the 270-world subset delta_SR = 1.0 - 60/270 = 0.778, on the 310-world executable set delta_SR = 0.677; both clear the 0.10 threshold with the same discordant structure.",
+    "CUT-WITH-NO-REPAIR GUIDANCE: PROTOCOL.json arm B prose offers 'the EpistemicCut' as guidance when no unobstructed relaxed route exists, but cut elements in that state are obstruction ids (no endpoints, matching no index tokens); the frozen executable replica (EVALUATOR.py need_atoms, enforced by the declaration drift check) uses the frontier construction. The harness follows the executable rule and realizes it from the module's SolveReport (CUT with repair=None -> frontier); recorded here, not silently reconciled."
+  ],
+  "residuals": [
+    "AUDIT-INDEPENDENCE: the 10% label audit was performed by the same-context session agent (before arms ran, never seeing arm outputs) — mechanically valid per the receipt fields, but NOT independent human review; independent re-audit is recommended before governance continuation.",
+    "SYNTHETIC-SCOPE: benefit is certified only on the seeded known-answer corpus; the registered follow-ups (LLM arm, natural corpus) remain open.",
+    "TIGHT-BUDGET-SCOPE: no benefit exists at TIGHT budgets (both arms 0/60 on N2); the promotable claim is budget-conditional (>= 4*S*) exactly as frozen. The pre-registered lever if TIGHT must be addressed: measure guidance quality at COST_DISTIL = 1.0 as a V2 re-freeze, never a post-hoc rescue.",
+    "GATE-FALSIFIABILITY-CLOSED: the execution precondition's audit obligation is closed by the merged sweep receipt (see execution_binding_determination); the remaining solver-step gates outside support_solver.solve keep their own open items in research/solver_gate_falsifiability_sweep_v1/SWEEP.json."
+  ],
+  "grants_scientific_authority": false
+}
