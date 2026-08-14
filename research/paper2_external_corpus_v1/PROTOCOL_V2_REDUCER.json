@@ -1,0 +1,136 @@
+{
+  "schema_version": "paper2-external-corpus-protocol-v2-reducer",
+  "freeze_date": "2026-08-14",
+  "purpose": "Pre-register the ARN v2 deterministic reducer successor before touching confirmatory data. All parameters, thresholds, and abstention rules are frozen here.",
+  "parent_protocol": "research/paper2_external_corpus_v1/PROTOCOL.json",
+  "parent_result": "research/paper2_external_corpus_v1/results/RESULT.json",
+  "parent_verdict": "NEGATIVE__CAPABILITY_ABSENT",
+  "parent_attribution": {
+    "extraction": "TOO_SPARSE",
+    "abstraction": "NONE",
+    "mapping": "FAILED",
+    "abstention": "NOT_USED"
+  },
+  "successor_description": "ARN v2 deterministic reducer with typed extraction, partial-credit mapping, and principled abstention. NO language model, NO network, deterministic rules only.",
+  "module": "src/rakl/narrative_reducer_v2.py",
+  "callable": "reduce_narrative_v2",
+  "author": "RAKL programme (same-context; LLM-assisted)",
+  "external_label_author": "Sourati, Ilievski, Sommerauer, Jiang (ARN, TACL 2024)",
+  "deterministic": true,
+  "extraction": {
+    "role_selection": {
+      "method": "top-k by frequency, with syntactic role typing",
+      "max_roles": 12,
+      "selection_criteria": "frequency (primary), alphabetical tie-break (secondary), same as parent"
+    },
+    "syntactic_roles": {
+      "subject_heuristic": "First capitalized token in sentence (position 0 or first after sentence-start punctuation) that passes content-token filter",
+      "object_heuristic": "Content token within distance 2 of verb-like tokens (verbs: copulas, action markers) and not at sentence start",
+      "oblique_heuristic": "Content token following prepositions (after, in, on, at, by, for, with, from, to, under, over, between, against, during, without)",
+      "default_role": "If no heuristic matches, token is untyped (role_type = null)"
+    },
+    "role_types": {
+      "SUBJ": "subject (heuristic: first capitalized content token)",
+      "OBJ": "object (heuristic: near verb-like tokens)",
+      "OBL": "oblique (heuristic: after prepositions)",
+      "NONE": "untyped (default)"
+    },
+    "entity_type_hints": {
+      "PERSON": "Capitalized token matching person pronouns (he, she, him, her, his, their, who, someone, anyone) or near person markers (man, woman, person, people, child, boy, girl)",
+      "PLACE": "Content token near place markers (here, there, where, city, country, house, room, place, location, area, region)",
+      "THING": "Default entity type (no special markers)"
+    },
+    "relation_typing": {
+      "CAUSAL": "Markers: because, therefore, thus, hence, so, consequently, as a result",
+      "ENABLE": "Markers: if, when, whenever, provided that, assuming",
+      "TEMPORAL": "Markers: before, after, while, during, until, since, as soon as, once",
+      "SIMILARITY": "Markers: like, similar to, unlike, compared to, resembles",
+      "PLAIN": "Default relation type (no special markers)"
+    },
+    "negation_scope": {
+      "markers": ["no", "not", "never", "cannot", "cannot", "neither", "nothing", "none", "without", "fails", "lacks"],
+      "scope_rule": "A relation is negated if any negation marker appears between the two role tokens in the sentence (inclusive window). Relations extracted from sentences containing negation markers are marked with negated=true, obstructions cover the involved roles.",
+      "obstruction_rule": "Same as parent: sentence with >=2 role tokens and any negation marker emits obstruction covering those roles."
+    },
+    "co_occurrence_window": 4,
+    "sentence_split_pattern": "[.!?;]+"
+  },
+  "abstraction": {
+    "levels": 1,
+    "description": "No additional abstraction level beyond flat SupportStructure (same as parent). Relation typing provides lightweight semantic structure without full hierarchical abstraction."
+  },
+  "mapping": {
+    "method": "type_preserving_correlation",
+    "description": "Type-preserving correspondence score with bonus for matching role types and penalty for type mismatches. Score is normalized to [0, 1].",
+    "score_components": {
+      "role_coverage": "C(query_roles ∩ candidate_roles)",
+      "relation_coverage": "C(query_relations ∩ candidate_relations)",
+      "type_bonus": "0.2 per role where both query and candidate have same non-NONE role_type",
+      "type_penalty": "-0.1 per role where role_type mismatch (both non-NONE but different)",
+      "relation_type_bonus": "0.15 per relation where both have same non-PLAIN relation_type"
+    },
+    "score_formula": "score = (role_coverage + 2*relation_coverage + type_bonus + type_penalty + relation_type_bonus) / (|query_roles| + 2*|query_relations| + max_possible_bonus)",
+    "max_possible_bonus": "0.2 * |query_roles| (all roles type-matched) + 0.15 * |query_relations| (all relations type-matched)",
+    "theta_w_fit": "DEV grid 0.05..0.95 step 0.05, maximize decidable exact accuracy (same as parent)",
+    "acceptance_rule": "ACCEPT iff normalized_score >= theta_w, else REJECT"
+  },
+  "abstention": {
+    "CANNOT_CHECK_conditions": [
+      {
+        "condition": "insufficient_extraction_evidence",
+        "rule": "query has < 2 roles OR 0 relations OR candidate has < 2 roles OR 0 relations (same as parent floor)"
+      },
+      {
+        "condition": "degenerate_type_coverage",
+        "rule": "fraction of typed roles (role_type != NONE) in query < 0.2 AND fraction of typed relations (relation_type != PLAIN) < 0.1"
+      },
+      {
+        "condition": "low_mapping_confidence",
+        "rule": "normalized mapping score < theta_w AND (role_coverage == 0 OR relation_coverage == 0), i.e., poor alignment even before threshold"
+      }
+    ],
+    "abstention_threshold_pre_registered": {
+      "min_typed_role_fraction": 0.2,
+      "min_typed_relation_fraction": 0.1,
+      "min_role_coverage_for_accept": 1,
+      "min_relation_coverage_for_accept": 0
+    },
+    "rationale": "Principled abstention when extraction is too sparse (few typed elements) or mapping is too weak (no significant overlap). This addresses the parent's NOT_USED deficit where CANNOT_CHECK rate was 0.0 despite poor performance."
+  },
+  "admission": {
+    "gate": "src/rakl/reduction_validation.py::admit_reducer",
+    "sample_sources": "the query texts of the first 8 groups in frozen split order (same as parent)",
+    "seed": 20260814,
+    "required_verdict": "ADMITTED at CertificateKind.EXTERNAL_LABEL"
+  },
+  "baseline_to_beat": {
+    "band_control_confirmatory_exact": 0.506,
+    "parent_arn_confirmatory_exact": 0.489,
+    "target": "exceed band_control 0.506 confirmatory exact accuracy"
+  },
+  "revival_strategy": {
+    "primary_levers": [
+      "typed extraction adds semantic signal (subject/object/oblique, relation types)",
+      "partial-credit mapping rewards type matches instead of raw coverage",
+      "principled abstention avoids forced decisions on uncertain mappings"
+    ],
+    "hypothesis": "Typed extraction + type-preserving mapping + abstention will capture more analogical structure than raw lexical co-occurrence, leading to higher confirmatory accuracy."
+  },
+  "evaluation": {
+    "same_evaluator_as_parent": true,
+    "runner": "scripts/paper2_external_corpus_confirmatory.py (modified for v2 reducer)",
+    "scoring": "same Brier scoring, same bootstrap CI, same G1/G2/G3 gates as parent protocol",
+    "artifact_path": "research/paper2_external_corpus_v1/results_v2_reducer/RESULT.json"
+  },
+  "terminals": [
+    "POSITIVE_SCOPED__EXTERNAL_LABEL (beats band_control)",
+    "NEGATIVE__CAPABILITY_ABSENT (fails to beat band_control)",
+    "INDETERMINATE__CI_STRADDLES_MDE"
+  ],
+  "nonclaims": [
+    "universal cross-domain transfer law",
+    "frontier LLM structural extraction",
+    "independent review (same-context analysis over third-party labels)",
+    "scientific authority"
+  ]
+}

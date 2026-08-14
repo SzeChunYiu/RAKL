@@ -1,0 +1,118 @@
+{
+  "schema_version": "paper2-b3-known-answer-receipt-v1",
+  "date": "2026-08-15",
+  "mde": 0.05,
+  "n_pairs": 1542,
+  "shuffle_seed": 20260815,
+  "grants_scientific_authority": false,
+  "claim": "B3 as registered measures differential abstention, not label leakage; the repaired probe b3_prime removes the abstention term without losing a planted leak.",
+  "no_leak_arm": [
+    {
+      "abstention_rate": 0.0,
+      "predicted_confound": 0.0,
+      "B3_original_advantage": -0.008716,
+      "B3_original_fires": false,
+      "B3_prime_advantage": -0.008716,
+      "B3_prime_fires": false,
+      "n_scored": 1542
+    },
+    {
+      "abstention_rate": 0.1,
+      "predicted_confound": 0.02304,
+      "B3_original_advantage": 0.007421,
+      "B3_original_fires": false,
+      "B3_prime_advantage": -0.013179,
+      "B3_prime_fires": false,
+      "n_scored": 1384
+    },
+    {
+      "abstention_rate": 0.2,
+      "predicted_confound": 0.04608,
+      "B3_original_advantage": 0.029348,
+      "B3_original_fires": false,
+      "B3_prime_advantage": -0.007019,
+      "B3_prime_fires": false,
+      "n_scored": 1231
+    },
+    {
+      "abstention_rate": 0.4,
+      "predicted_confound": 0.09216,
+      "B3_original_advantage": 0.072479,
+      "B3_original_fires": true,
+      "B3_prime_advantage": -0.009505,
+      "B3_prime_fires": false,
+      "n_scored": 909
+    },
+    {
+      "abstention_rate": 0.6,
+      "predicted_confound": 0.13824,
+      "B3_original_advantage": 0.121363,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.004714,
+      "B3_prime_fires": false,
+      "n_scored": 611
+    }
+  ],
+  "leak_arm": [
+    {
+      "leak_probability": 0.0,
+      "B3_original_advantage": -0.034241,
+      "B3_original_fires": false,
+      "B3_prime_advantage": -0.034241,
+      "B3_prime_fires": false,
+      "n_scored": 1542
+    },
+    {
+      "leak_probability": 0.3,
+      "B3_original_advantage": 0.117665,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.117665,
+      "B3_prime_fires": true,
+      "n_scored": 1542
+    },
+    {
+      "leak_probability": 0.6,
+      "B3_original_advantage": 0.265837,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.265837,
+      "B3_prime_fires": true,
+      "n_scored": 1542
+    },
+    {
+      "leak_probability": 1.0,
+      "B3_original_advantage": 0.458833,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.458833,
+      "B3_prime_fires": true,
+      "n_scored": 1542
+    }
+  ],
+  "leak_masked_by_abstention": [
+    {
+      "leak_probability": 0.6,
+      "abstention_rate": 0.4,
+      "B3_original_advantage": 0.241656,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.255859,
+      "B3_prime_fires": true,
+      "n_scored": 908
+    },
+    {
+      "leak_probability": 0.3,
+      "abstention_rate": 0.6,
+      "B3_original_advantage": 0.174854,
+      "B3_original_fires": true,
+      "B3_prime_advantage": 0.113035,
+      "B3_prime_fires": true,
+      "n_scored": 603
+    }
+  ],
+  "executed_lineage_closure": {
+    "instrument": "ARN v4 relational-correspondence (results_v4_reducer)",
+    "measured_cannot_check_rate_on_confirm": 0.5629,
+    "identity_prediction": 0.129692,
+    "recorded_B3_advantage": 0.1346739299610895,
+    "single_shuffle_noise_sd_estimate": 0.012,
+    "reading": "v4's BATTERY_FAILED terminal is accounted for by differential abstention alone; it is not evidence of label leakage."
+  }
+}

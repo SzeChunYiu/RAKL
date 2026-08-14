@@ -1,0 +1,107 @@
+{
+  "schema_version": "paper2-external-corpus-protocol-v3-reducer",
+  "freeze_date": "2026-08-14",
+  "purpose": "Pre-register the ARN v3 instance-paired reducer successor BEFORE touching any confirmatory data. All parameters and thresholds are frozen. Hard falsifier ordering: B3 (shuffled gold) runs FIRST.",
+  "parent_protocol": "research/paper2_external_corpus_v1/PROTOCOL.json",
+  "parent_v2_protocol": "research/paper2_external_corpus_v1/PROTOCOL_V2_REDUCER.json",
+  "parent_v2_result": "research/paper2_external_corpus_v1/results_v2_reducer/RESULT.json",
+  "parent_v2_verdict": "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+  "parent_v2_attribution": {
+    "stage": "mapping",
+    "deficit": "scoring used label-INDEPENDENT type marginals, surviving gold shuffling",
+    "artifact": "B3_shuffled_gold advantage 0.121 [0.091, 0.150] when it should be ~0",
+    "leverage": "make scoring instance-paired: every score term must consume the joint (source-instance, target-instance) assignment, not marginals from one narrative alone"
+  },
+  "successor_description": "ARN v3 reducer with instance-paired mapping. NO language model, NO network, deterministic rules only. Scoring rewards specific query-instance to candidate-instance correspondences; no component computable from one side alone.",
+  "module": "src/rakl/narrative_reducer_v3.py",
+  "callable": "reduce_narrative_v3",
+  "author": "RAKL programme (same-context; LLM-assisted)",
+  "external_label_author": "Sourati, Ilievski, Sommerauer, Jiang (ARN, TACL 2024)",
+  "deterministic": true,
+  "extraction": {
+    "inherit_from": "PROTOCOL_V2_REDUCER.json",
+    "description": "Reuse v2 extraction verbatim: typed roles, typed relations, negation scope. All v2 extraction parameters preserved.",
+    "max_roles": 12,
+    "co_occurrence_window": 4,
+    "negation_markers": ["no", "not", "never", "cannot", "cannot", "neither", "nothing", "none", "without", "fails", "lacks", "nowhere", "nor", "hardly", "scarcely", "barely", "differs"]
+  },
+  "mapping": {
+    "method": "instance_paired_correspondence",
+    "description": "Scoring is strictly instance-paired: every score term consumes a specific (query-instance, candidate-instance) pair. No marginal components computable from one narrative alone. Shuffling gold labels breaks pairings and collapses advantage BY CONSTRUCTION.",
+    "correspondence_function": {
+      "role_correspondence": "c_role(q_r, c_r) = 1 if q_r.token == c_r.token, 0.4 if q_r.token != c_r.token AND q_r.role_type == c_r.role_type != NONE, 0 otherwise",
+      "relation_correspondence": "c_rel(q_rel, c_rel) = 1 if q_rel.source.token == c_rel.source.token AND q_rel.target.token == c_rel.target.token, 0.5 if tokens differ AND role_types match pairwise AND relation_types match, 0 otherwise"
+    },
+    "scoring_formula": {
+      "roles": "role_score = (sum over max(1 matched candidate per query role)) of c_role(q_r, matched_c_r) / |query_roles|",
+      "relations": "relation_score = (sum over max(1 matched candidate per query relation)) of c_rel(q_rel, matched_c_rel) / |query_relations|",
+      "combined": "score = 0.5 * role_score + 0.5 * relation_score"
+    },
+    "matching_rule": {
+      "description": "Each query instance matches at most one candidate instance (asymmetric, query-centric). Greedy assignment by correspondence strength: for each query role/relation, select the highest-correspondence candidate not already matched, break ties by position.",
+      "formal": "matching: query_instances -> candidate_instances, injective, maximizing sum of correspondence values"
+    },
+    "theta_w_fit": "DEV grid 0.05..0.95 step 0.05, maximize decidable exact accuracy (same as parent)",
+    "acceptance_rule": "ACCEPT iff score >= theta_w, else REJECT",
+    "instance_paired_verification": {
+      "test": "For any score component s, there is no way to compute s from query alone or candidate alone. Every term depends on a specific pairing (q_i, c_j).",
+      "shuffling_property": "Shuffling candidate labels (permuting candidate roles/relations) changes the matching and thus the score. Advantage on shuffled-gold must be ~0 by construction."
+    }
+  },
+  "abstention": {
+    "CANNOT_CHECK_conditions": [
+      {
+        "condition": "insufficient_extraction_evidence",
+        "rule": "query has < 2 roles OR 0 relations OR candidate has < 2 roles OR 0 relations"
+      },
+      {
+        "condition": "degenerate_type_coverage",
+        "rule": "fraction of typed roles (role_type != NONE) in query < 0.2 AND fraction of typed relations (relation_type != PLAIN) in query < 0.1"
+      },
+      {
+        "condition": "zero_correspondence",
+        "rule": "role_score == 0 AND relation_score == 0 (no instances matched)"
+      }
+    ],
+    "rationale": "Same abstention thresholds as v2, but with zero-correspondence check added for instance-paired mapping."
+  },
+  "admission": {
+    "gate": "src/rakl/reduction_validation.py::admit_reducer",
+    "sample_sources": "the query texts of the first 8 groups in frozen split order (same as parent)",
+    "seed": 20260814,
+    "required_verdict": "ADMITTED at CertificateKind.EXTERNAL_LABEL"
+  },
+  "baseline_to_beat": {
+    "band_control_confirmatory_exact": 0.506,
+    "parent_v2_confirmatory_exact": 0.489,
+    "parent_v2_B3_shuffled_gold_advantage": 0.121,
+    "target": "beat band_control 0.506 confirmatory exact accuracy, AND B3_shuffled_gold advantage CI must contain 0"
+  },
+  "revival_strategy": {
+    "primary_lever": "instance-paired mapping scoring",
+    "hypothesis": "Instance-paired correspondence scoring (specific query-instance to candidate-instance matching) will not survive label shuffling, making B3_shuffled_gold advantage ~0 by construction. This repairs the v2 deficit where type marginals survived shuffling."
+  },
+  "hard_falsifier_ordering": {
+    "description": "B3 (shuffled-gold negative control) runs FIRST. If B3 fails again (advantage CI does not contain 0), STOP at NEGATIVE__BATTERY_FAILED with measured artifact. Never run confirmatory gates with a failed battery.",
+    "ordering": ["B3_shuffled_gold", "B2_text_destruction", "B1_gold_arm_distinctness", "B4_trivial_arm_floor", "B5_paired_variance"],
+    "stop_condition": "If B3_shuffled_gold g1_fails_as_required == false, TERMINAL at NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE"
+  },
+  "evaluation": {
+    "same_evaluator_as_parent": true,
+    "runner": "scripts/paper2_external_corpus_confirmatory_v3.py",
+    "scoring": "same Brier scoring, same bootstrap CI (10,000 resamples, seed 20260814), same G1/G2/G3 gates as parent protocol",
+    "artifact_path": "research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json"
+  },
+  "terminals": [
+    "POSITIVE_SCOPED__EXTERNAL_LABEL (beats band_control 0.506 AND B3 passes)",
+    "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE (B3 fails; stop here, no confirmatory)",
+    "NEGATIVE__CAPABILITY_ABSENT (B3 passes but fails to beat band_control)",
+    "INDETERMINATE__CI_STRADDLES_MDE (confirmatory CI straddles MDE 0.05)"
+  ],
+  "nonclaims": [
+    "universal cross-domain transfer law",
+    "frontier LLM structural extraction",
+    "independent review (same-context analysis over third-party labels)",
+    "scientific authority"
+  ]
+}
