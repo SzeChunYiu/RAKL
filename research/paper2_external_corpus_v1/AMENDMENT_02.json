@@ -1,0 +1,51 @@
+{
+  "schema_version": "paper2-external-corpus-amendment-v2",
+  "date": "2026-08-15",
+  "amends": "research/paper2_external_corpus_v1/PROTOCOL_V5_REDUCER.json",
+  "frozen_protocol_commit": "a5fc1709acd44702f036b6ea8ca24d88ce166f64",
+  "stage_reached_before_amendment": "ADMISSION",
+  "confirmatory_outcomes_accessed_before_amendment": false,
+  "dev_outcomes_accessed_before_amendment": false,
+  "why_this_is_pre_outcome": "The frozen runner terminated at ADMISSION_REJECTED. Admission precedes DEV threshold fitting and precedes every CONFIRM read in the registered chronology, so no arm score, gate value or terminal was observed before this amendment. The first execution's rejection receipt is preserved verbatim in results_v5_admission_rejected/.",
+
+  "changes": [
+    {
+      "id": "A02.1",
+      "kind": "defect_repair",
+      "what": "reduce_narrative_v5 constructed Atom, Obstruction and ReducedStructure with keyword names that do not exist on those dataclasses.",
+      "detected_by": "the admission gate, which fail-closed with CANNOT_CHECK rather than admitting: \"reducer raised on source 0: TypeError(Atom.__init__() got an unexpected keyword argument 'identifier')\".",
+      "fix": "use the declared signatures Atom(atom_id=...), Obstruction(obstruction_id=..., cover=..., detail=...), ReducedStructure(structure=..., roles=..., relations=..., provenance=...).",
+      "affects_measurement": false
+    },
+    {
+      "id": "A02.2",
+      "kind": "extraction_repair",
+      "what": "The obstruction coordinate was derived only from spaCy's `neg` dependency arc, and surfaced NO obstruction on the frozen parity calibration source.",
+      "detected_by": "the admission gate's obstruction-harvest check. On that source the negations are a determiner (\"no assignment satisfies all three\") and a contrast verb (\"x differs from z\"); neither carries a `neg` arc. The gate is correct to reject: an obstruction-blind reducer produces spaces that are unsound to navigate.",
+      "fix": "derive obstructions from the union of the `neg` arc and the negation/contrast marker lexicon ALREADY FROZEN in this lineage (narrative_reducer_v2.NEGATION_MARKERS, used unchanged by v1 through v4), covering the role lemmas of the marked sentence.",
+      "why_not_a_new_invention": "The marker lexicon is the parent chain's own obstruction rule, imported unchanged. The v5 extraction is therefore continuous with v1-v4 on the obstruction coordinate and differs from them only where the protocol says it differs: predicate-argument structure and embedding correspondence.",
+      "affects_measurement": true,
+      "direction_of_effect": "Adds obstruction content to the reducer's output. It does not enter any arm's score: no registered correspondence function reads obstructions. Its only role is admissibility.",
+      "no_threshold_touched": true
+    },
+    {
+      "id": "A02.3",
+      "kind": "constraint_conformance",
+      "what": "An obstruction's cover must be a subset of the structure's declared atoms (enforced by SupportStructure.__post_init__).",
+      "fix": "intersect the obstructed lemmas with the role set before constructing the Obstruction.",
+      "affects_measurement": false
+    }
+  ],
+
+  "unchanged": [
+    "every registered arm and its correspondence function",
+    "every threshold grid and the DEV fitting rule",
+    "G1, G2, G3 and their values",
+    "B1, B2, B3, B3_prime, B4, B5 and the hard falsifier ordering",
+    "the terminal set and the terminal rules",
+    "the split, the seeds and the strongest-control rule",
+    "the pre-registered expectation of NEGATIVE__CAPABILITY_ABSENT with MULTI_FAMILY scope"
+  ],
+
+  "integrity": "No threshold was relaxed, no gate weakened and no terminal added. All three changes are repairs to the reducer's conformance with the admission gate and with the structure dataclasses; the gate rejected the first surface and the amendment is what the gate demanded, not a route around it."
+}

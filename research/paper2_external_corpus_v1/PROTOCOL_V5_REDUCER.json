@@ -1,0 +1,130 @@
+{
+  "schema_version": "paper2-external-corpus-protocol-v5-multifamily",
+  "freeze_date": "2026-08-15",
+  "confirmatory_outcomes_accessed": false,
+  "grants_scientific_authority": false,
+  "purpose": "Test whether Paper II's named successor to the deterministic reducer -- 'a capable learned extractor' -- discharges the external-label residual. Rather than one more successor in the v1..v4 line, this epoch reads a PRE-REGISTERED SET of correspondence families in a single CONFIRM execution, so that the residual is either discharged or bounded across the family class instead of being re-attributed to the next reducer.",
+
+  "parent_chain": {
+    "v1": {"protocol": "PROTOCOL.json", "result": "results/RESULT.json", "terminal": "NEGATIVE__CAPABILITY_ABSENT"},
+    "v2": {"protocol": "PROTOCOL_V2_REDUCER.json", "terminal": "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE", "note": "label-independent type marginals survived gold shuffling"},
+    "v3": {"protocol": "PROTOCOL_V3_REDUCER.json", "result": "results_v3_reducer/RESULT.json", "terminal": "NEGATIVE__CAPABILITY_ABSENT", "note": "instance-paired mapping; B3 passed at 0.004395"},
+    "v4": {"protocol": "PROTOCOL_V4_REDUCER.json", "result": "results_v4_reducer/RESULT.json", "terminal": "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE", "note": "battery failure now attributed to differential abstention (r=0.5629), see research/paper2_battery_repair_v1/"}
+  },
+
+  "one_stage_attribution_of_the_parent": {
+    "stage": "extraction",
+    "deficit": "Every correspondence functional executed so far is monotone in similarity between the query and the candidate. ARN constructs its distractors to be surface-similar to the query while the far analogy shares only abstract structure, so a similarity-monotone functional is driven the wrong way exactly where analogical transfer is hardest.",
+    "dev_evidence": "research/paper2_capability_frontier_v5/DEV_PROBE_FINDINGS.md -- DEV AUC 0.4725 (whole-narrative encoder), 0.4551 (vocabulary-masked), 0.4733 (predicate-argument), with the far-analogy slice at 0.400 against 0.516 near; v3's typed structural score anti-correlated with gold at 0.0849 vs 0.0992.",
+    "lever": "Replace the reducer's extraction with learned components -- a dependency parser for predicate-argument structure and a sentence encoder for vocabulary-independent correspondence -- which is exactly the successor Paper II names. Read the whole family in one epoch so a negative bounds the class, not just one instance."
+  },
+
+  "arms": {
+    "note": "All arms are pairwise and absolute, exactly as the parent registered them. No arm sees the sibling candidate of its query, and no arm sees the gold field. A rule that scores the two siblings jointly and accepts the higher would import the constraint 'exactly one of these two is ACCEPT', which is the gold field marginalized over the pair; it is excluded for that reason and its exclusion is deliberate.",
+    "witness_structural_v5": {
+      "family": "predicate-argument, instance-paired",
+      "extraction": "spaCy en_core_web_sm 3.8.0 dependency parse; for each VERB token, the triple (nsubj|nsubjpass lemma, verb lemma, dobj|obj|attr|dative lemma) with a negation flag from a `neg` child; first 12 triples in document order",
+      "correspondence": "c(q_i, c_j) = cosine(encode('subj verb obj')_q_i, encode(...)_c_j), halved when the negation flags disagree; greedy injective query-centric matching by correspondence strength, ties broken by position",
+      "score": "sum of matched correspondences / |query triples|",
+      "instance_paired": "every score term consumes a specific (query-instance, candidate-instance) pair; no component is computable from one narrative alone"
+    },
+    "witness_masked_v5": {
+      "family": "vocabulary-masked abstraction",
+      "extraction": "every content token replaced by its coarse class and syntactic role (PERSON/PLACE/THING-<dep> for nouns, [NOT-]ACT for verbs, ATTR for adjectives); the surface vocabulary the distractors share is destroyed by construction",
+      "correspondence": "cosine of the sentence-encoder embeddings of the two masked strings",
+      "purpose": "directly tests the hypothesis that surface vocabulary is what defeats the structural arms"
+    },
+    "control_semantic": {
+      "family": "sentence-encoder cosine over the raw narratives",
+      "role": "STRONGEST CALIBRATED SEMANTIC CONTROL. Paper II's stopping rule names it: the programme narrows if the structural score adds no transfer information beyond the strongest calibrated semantic control. It is registered as a control, never as a witness."
+    },
+    "control_lexical": "Jaccard over stopword-filtered content tokens; theta_l fit on DEV over the parent grid 0.02..0.98 step 0.02; never abstains",
+    "control_band": "ACCEPT iff the pair's band metadata is 'near' (dataset-author annotation as predictor)",
+    "trivial": ["always_accept", "always_reject", "always_cannot_check"],
+    "strongest_control_rule": "the non-witness arm with maximum DEV decidable exact accuracy; selected on DEV, frozen, then used as the paired comparator on CONFIRM"
+  },
+
+  "dev_only_diagnostics_excluded_from_the_terminal": [
+    "S1 frozen-anchor trajectory profile cosine (DEV AUC 0.4633)",
+    "S3 trajectory minus surface (DEV AUC 0.5045)",
+    "S6 outcome-arc polarity delta match (DEV AUC 0.4537)"
+  ],
+  "why_excluded": "Six functionals were measured on DEV. Freezing all six as CONFIRM arms would invite the objection that the space was searched and the best cell reported. The three registered here are the ones with a stated role -- the instance-paired successor of the v1..v4 line, the direct test of the surface hypothesis, and the semantic control Paper II's stopping rule names. The other three remain DEV diagnostics and enter no terminal.",
+
+  "threshold_fitting": {
+    "rule": "UNCHANGED from the parent: each arm's theta fit on DEV over its frozen grid, maximizing decidable exact accuracy, ascending first-max tie-break. Frozen before CONFIRM scoring.",
+    "why_unchanged": "A DEV sweep of the v3 instrument showed the fitted theta lands on the all-reject corner (accept rate exactly 0.000) and that NO theta on the frozen grid attains G2 on DEV. An operating-point-constrained selection rule was considered and REJECTED for this epoch: it cannot repair a score whose DEV discrimination is below chance, and changing the rule would break comparability with the v1 and v3 terminals. The degeneracy is reported as a measured diagnostic, not routed around."
+  },
+
+  "battery": {
+    "ordering": ["B3_prime_shuffled_gold", "B3_shuffled_gold_original", "B2_text_destruction", "B1_gold_arm_distinctness", "B4_trivial_arm_floor", "B5_paired_variance"],
+    "B3_prime_shuffled_gold": {
+      "governing": true,
+      "implementation": "src/rakl/battery_probes.py::b3_prime",
+      "rule": "shuffle gold over CONFIRM (seed 20260815) and recompute the paired statistic over pairs where BOTH arms are decisive; it must FAIL (advantage < MDE). If it passes -> BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE.",
+      "justification": "The original B3 statistic has expectation 0.2304*(r_witness - r_control) under a balance-preserving shuffle and therefore measures differential abstention, not label leakage. Derivation and two-sided known-answer validation: research/paper2_battery_repair_v1/. B3_prime removes the abstention term identically while retaining a planted leak."
+    },
+    "B3_shuffled_gold_original": {
+      "governing": false,
+      "rule": "reported alongside B3_prime, together with the measured abstention rates and the predicted confound term 0.2304*(r_w - r_c), so the two probes can be compared on this epoch's data. It does not decide the terminal."
+    },
+    "B2_text_destruction": "character-scramble both texts of every CONFIRM pair (seed 20260814): each witness arm's (decision, structure-signature) must change on >= 50% of pairs and scrambled exact accuracy must be <= the upper edge of the shuffled-gold null band",
+    "B1_gold_arm_distinctness": "runtime assertion that arm callables never receive the gold field",
+    "B4_trivial_arm_floor": "no trivial arm may attain the G2 joint property",
+    "B5_paired_variance": "per-pair Brier loss variance > 0 in both compared arms",
+    "probe_H_matched_pair": "N/A: no self-authored renderer; all surfaces are third-party"
+  },
+
+  "gates": {
+    "G1_advantage": "UNCHANGED: primary statistic >= MDE 0.05 with bootstrap CI (10,000 resamples, seed 20260814, pair unit) excluding zero",
+    "G2_joint_property": "UNCHANGED: witness valid_accept >= 0.60 AND invalid_false_accept <= 0.20 on CONFIRM, reported as a pair with the per-quadrant breakdown",
+    "G3_abstention_accounting": "UNCHANGED: CANNOT_CHECK rate reported; > 0.50 gives NEGATIVE__CAPABILITY_ABSENT with reason ABSTENTION_DOMINANT",
+    "no_gate_is_relaxed": "G1, G2 and G3 are byte-identical in force to the parent protocol. This epoch changes which arms are read and which negative control governs; it changes no threshold."
+  },
+
+  "reported_diagnostic": {
+    "AUC": "threshold-free discrimination of each arm's underlying score between gold-ACCEPT and gold-REJECT, reported on CONFIRM overall and split by the corpus's own analogy_level axis. Reported because a gate outcome conflates discrimination with operating point, and the honest statement of a capability gap is the threshold-free one. AUC enters no terminal."
+  },
+
+  "contamination_declaration": {
+    "corpus_public_since": "2023-10",
+    "trained_components": ["spaCy en_core_web_sm 3.8.0", "sentence-transformers/all-MiniLM-L6-v2"],
+    "statement": "Both components carry pretrained weights whose training corpora are not auditable here, so ARN or its ePiC proverb source may be present in them. The reducer author had no access to ARN labels when specifying the arms, and the arms contain no ARN-specific vocabulary. The declaration applies SYMMETRICALLY to the witness arms and to control_semantic, which uses the same encoder; any contamination advantage is therefore shared by the control the witnesses must beat.",
+    "residual_risk": "A contaminated encoder would inflate all encoder-based arms together. It cannot manufacture a witness-over-control advantage, which is the registered statistic."
+  },
+
+  "terminals": [
+    "CANNOT_CHECK__ACQUISITION",
+    "CANNOT_CHECK__SCHEMA_MISMATCH",
+    "ADMISSION_REJECTED",
+    "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "POSITIVE_SCOPED__EXTERNAL_LABEL",
+    "NEGATIVE__CAPABILITY_ABSENT",
+    "INDETERMINATE__CI_STRADDLES_MDE"
+  ],
+  "terminal_rules": {
+    "POSITIVE_SCOPED__EXTERNAL_LABEL": "admission ADMITTED, battery pass under B3_prime, G1 pass, G2 pass, G3 <= 0.50, for at least one registered witness arm against the strongest control",
+    "NEGATIVE__CAPABILITY_ABSENT": "admission ADMITTED, battery pass, and for EVERY registered witness arm: G1 CI upper bound < MDE, or G2 fail, or G3 > 0.50. Scope recorded as MULTI_FAMILY when it holds across both witness families.",
+    "no_post_result_rescue": "thresholds, arms, gates and terminals may not be modified after outcome access; a successor epoch is a new versioned object",
+    "one_shot": "CONFIRM is read ONCE. No arm may be added, refit or re-read after outcome access."
+  },
+
+  "pre_registered_expectation": {
+    "statement": "On the DEV evidence the expected terminal is NEGATIVE__CAPABILITY_ABSENT with MULTI_FAMILY scope. It is recorded here, before outcome access, so that the expected result cannot later be presented as a discovery and so that a POSITIVE, if it occurs, is the surprising one.",
+    "what_a_negative_would_establish": "that the residual is not discharged by replacing the deterministic reducer with a learned extractor of this class -- strengthening the parent negative and discharging the objection that only a weak reducer was tried",
+    "what_a_negative_would_NOT_establish": "that no reducer can recover the contract's coordinates from natural artifacts; that frontier-scale extraction fails; or anything about the contract's soundness, which is not what this epoch measures"
+  },
+
+  "forbidden": {
+    "per_slice_sign_flip": "Accepting the LESS similar candidate on the far-analogy slice would exceed chance on this corpus. It exploits the corpus construction rather than measuring analogical structure and is forbidden as outcome tuning. Recorded so that its absence is deliberate and auditable.",
+    "rescoring": "No frozen artifact of v1..v4 is rescored. This is a new versioned epoch."
+  },
+
+  "execution": {
+    "runner": "scripts/paper2_external_corpus_confirmatory_v5.py",
+    "artifact_path": "research/paper2_external_corpus_v1/results_v5_multifamily/RESULT.json",
+    "deterministic_given_weights": true,
+    "network_at_run_time": false,
+    "nonclaims": ["universal cross-domain transfer law", "frontier LLM structural extraction", "independent review (same-context analysis over third-party labels)", "scientific authority"]
+  }
+}

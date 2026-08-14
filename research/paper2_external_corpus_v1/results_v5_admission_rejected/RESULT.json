@@ -1,0 +1,37 @@
+{
+  "schema_version": "paper2-external-corpus-result-v5-multifamily",
+  "protocol": "research/paper2_external_corpus_v1/PROTOCOL_V5_REDUCER.json",
+  "grants_scientific_authority": false,
+  "spacy_model": "en_core_web_sm",
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "acquisition": {
+    "file": "arn.csv",
+    "sha256": "a866fe5341ce4a29f00f24987a12278303b2b8ad788352f549b0fe051ad4a7a8",
+    "bytes": 1256913,
+    "n_rows": 1095
+  },
+  "mapping": {
+    "mode": "M3",
+    "query": "query_narrative",
+    "first": "first_choice",
+    "second": "second_choice",
+    "answer": "correct_answer",
+    "analogy_band": "analogy_level",
+    "distractor_band": "distractor_similarity",
+    "group": "proverb"
+  },
+  "pairs": {
+    "total": 2190,
+    "dev": 648,
+    "confirm": 1542,
+    "skipped_rows": 0
+  },
+  "admission": {
+    "verdict": "REJECTED",
+    "admitted_kind": null,
+    "reasons": [
+      "CANNOT_CHECK: reducer raised on source 0: TypeError(\"Atom.__init__() got an unexpected keyword argument 'identifier'\")"
+    ]
+  },
+  "terminal": "ADMISSION_REJECTED"
+}

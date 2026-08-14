@@ -1,0 +1,199 @@
+{
+  "schema_version": "paper2-external-corpus-result-v5-multifamily",
+  "protocol": "research/paper2_external_corpus_v1/PROTOCOL_V5_REDUCER.json",
+  "grants_scientific_authority": false,
+  "spacy_model": "en_core_web_sm",
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "acquisition": {
+    "file": "arn.csv",
+    "sha256": "a866fe5341ce4a29f00f24987a12278303b2b8ad788352f549b0fe051ad4a7a8",
+    "bytes": 1256913,
+    "n_rows": 1095
+  },
+  "mapping": {
+    "mode": "M3",
+    "query": "query_narrative",
+    "first": "first_choice",
+    "second": "second_choice",
+    "answer": "correct_answer",
+    "analogy_band": "analogy_level",
+    "distractor_band": "distractor_similarity",
+    "group": "proverb"
+  },
+  "pairs": {
+    "total": 2190,
+    "dev": 648,
+    "confirm": 1542,
+    "skipped_rows": 0
+  },
+  "admission": {
+    "verdict": "ADMITTED",
+    "admitted_kind": "EXTERNAL_LABEL",
+    "reasons": []
+  },
+  "dev_fit": {
+    "theta_structural": 0.56,
+    "theta_masked": 0.72,
+    "theta_semantic": 0.48,
+    "theta_lexical": 0.08,
+    "control_dev_exact": {
+      "control_semantic": 0.5570987654320988,
+      "control_lexical": 0.5015432098765432,
+      "control_band": 0.5462962962962963,
+      "always_accept": 0.5,
+      "always_reject": 0.5,
+      "always_cannot_check": 0.0
+    },
+    "strongest_control": "control_semantic",
+    "dev_auc": {
+      "witness_structural_v5": 0.47334628867550677,
+      "witness_masked_v5": 0.4550563938424021,
+      "control_semantic": 0.47245084590763603
+    }
+  },
+  "battery": {
+    "B1_gold_arm_distinctness": "pass (arms receive texts/band only by signature)",
+    "B3_prime_shuffled_gold": {
+      "witness_structural_v5": {
+        "advantage": -0.0049805447470817055,
+        "n_scored": 1542,
+        "fires": false,
+        "abstention_witness": 0.0,
+        "abstention_control": 0.0,
+        "predicted_confound_term": 0.0,
+        "g1_fails_as_required": true
+      },
+      "witness_masked_v5": {
+        "advantage": -0.0056031128404669395,
+        "n_scored": 1542,
+        "fires": false,
+        "abstention_witness": 0.0,
+        "abstention_control": 0.0,
+        "predicted_confound_term": 0.0,
+        "g1_fails_as_required": true
+      }
+    },
+    "B3_shuffled_gold_original": {
+      "witness_structural_v5": {
+        "advantage": -0.0049805447470817055,
+        "fires": false,
+        "governing": false
+      },
+      "witness_masked_v5": {
+        "advantage": -0.0056031128404669395,
+        "fires": false,
+        "governing": false
+      }
+    },
+    "B2_text_destruction": {
+      "witness_structural_v5": {
+        "decision_changed_fraction": 0.004539559014267186,
+        "scrambled_exact": 0.5,
+        "scrambled_auc": 0.5231250872668608
+      },
+      "witness_masked_v5": {
+        "decision_changed_fraction": 0.009727626459143969,
+        "scrambled_exact": 0.5006485084306096,
+        "scrambled_auc": 0.49815204536699187
+      }
+    },
+    "B4_trivial_floor": {
+      "always_accept": {
+        "valid_accept": 1.0,
+        "invalid_false_accept": 1.0,
+        "attains_G2": false
+      },
+      "always_reject": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      },
+      "always_cannot_check": {
+        "valid_accept": 0.0,
+        "invalid_false_accept": 0.0,
+        "attains_G2": false
+      }
+    },
+    "B4_pass": true,
+    "B5_paired_variance": {
+      "witness_structural_v5": 0.23039031022422743,
+      "witness_masked_v5": 0.23039379854350553,
+      "control_semantic": 0.22946939393480595
+    },
+    "probe_H_matched_pair": "N/A: no self-authored renderer; third-party surfaces"
+  },
+  "gates": {
+    "witness_structural_v5": {
+      "G1_advantage": {
+        "advantage": 0.027392996108949352,
+        "ci": [
+          0.004357976653696527,
+          0.050428015564202344
+        ],
+        "mde": 0.05,
+        "pass": false
+      },
+      "G2_joint": {
+        "valid_accept": 0.0012970168612191958,
+        "invalid_false_accept": 0.007782101167315175,
+        "pass": false
+      },
+      "G3_abstention": {
+        "cannot_check_rate": 0.0,
+        "dominant": false
+      }
+    },
+    "witness_masked_v5": {
+      "G1_advantage": {
+        "advantage": 0.03299610894941629,
+        "ci": [
+          -0.008715953307393054,
+          0.07533073929961087
+        ],
+        "mde": 0.05,
+        "pass": false
+      },
+      "G2_joint": {
+        "valid_accept": 0.9948119325551232,
+        "invalid_false_accept": 0.9896238651102465,
+        "pass": false
+      },
+      "G3_abstention": {
+        "cannot_check_rate": 0.0,
+        "dominant": false
+      }
+    }
+  },
+  "diagnostic_auc": {
+    "note": "threshold-free; enters no terminal",
+    "overall": {
+      "witness_structural_v5": 0.42951276913940994,
+      "witness_masked_v5": 0.4634118440686292,
+      "control_semantic": 0.4102795735825759
+    },
+    "analogy_level_near": {
+      "n": 760,
+      "witness_structural_v5": 0.4468628808864266,
+      "witness_masked_v5": 0.5034002770083102,
+      "control_semantic": 0.4411634349030471
+    },
+    "analogy_level_far": {
+      "n": 782,
+      "witness_structural_v5": 0.41461659722267646,
+      "witness_masked_v5": 0.42514766386928393,
+      "control_semantic": 0.38040698320916266
+    }
+  },
+  "arm_confirm_exact": {
+    "witness_structural_v5": 0.496757457846952,
+    "witness_masked_v5": 0.5025940337224384,
+    "control_semantic": 0.4682230869001297,
+    "control_lexical": 0.47470817120622566,
+    "control_band": 0.506485084306096,
+    "always_accept": 0.5,
+    "always_reject": 0.5,
+    "always_cannot_check": 0.0
+  },
+  "terminal": "NEGATIVE__CAPABILITY_ABSENT",
+  "terminal_scope": "MULTI_FAMILY"
+}
