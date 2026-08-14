@@ -158,4 +158,8 @@ def validate_packet_set(packet_set: MechanicResearchPacketSet) -> Tuple[str, ...
     coverage = packet_set.coverage_report()
     if not coverage.complete:
         reasons.extend(coverage.reasons)
-    return tuple(reasons)
+    # Coverage deliberately reuses the same per-packet validator, so one defect
+    # can otherwise appear twice (once directly and once through coverage). A
+    # failure reason is an identity-bearing diagnostic, not a count; keep first
+    # occurrence order and de-duplicate exact repeats.
+    return tuple(dict.fromkeys(reasons))
