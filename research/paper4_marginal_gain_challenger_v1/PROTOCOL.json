@@ -63,11 +63,15 @@
     "rule": "the comparison is executed only if the admissibility gate under research/paper4_instrument_admissibility_v1/KAPPA_FREEZE_V1.json (kappa=1.2) returns ADMISSIBLE for this instrument on the primary F-D contrast (constructive lower bound >= 0.06) BEFORE any arm outcome is accessed",
     "secondary_gate_licensing_rule": "declared before the ceiling numbers were computed: the F-C material-margin threshold is 0.02 only if the constructive ceiling over the expected C_SCALAR_LOSS_AWARE rollout is >= kappa*0.02 = 0.024; otherwise the F-C gate is registered sign-only (threshold 0.0 with bootstrap CI excluding zero) and the material-margin question is recorded as unresolvable by this instrument",
     "ceiling_receipt": "INSTRUMENT_V2_CEILING.json",
-    "design_log": "INSTRUMENT_DESIGN_LOG.jsonl"
+    "design_log": "INSTRUMENT_DESIGN_LOG.jsonl",
+    "binding_record": [
+      "2026-08-14: ceiling executed on the first configuration; verdict ADMISSIBLE (constructive +0.0800 >= 0.06, upper bound +0.0974, kappa-range up to 1.60). No design iteration was needed; the design log has exactly one entry.",
+      "2026-08-14: secondary-gate rule fired — constructive ceiling over the expected C_SCALAR_LOSS_AWARE rollout is +0.0046 mean (per-world 0.0036..0.0060), below kappa*0.02=0.024. Per the pre-declared rule the F-C gate is bound SIGN-ONLY (threshold 0.0 with bootstrap CI excluding zero); the 0.02 material-margin question is recorded as UNRESOLVABLE by this instrument. The scalar deficit-chasing parent C is near-ceiling in state-divergent worlds, so only the D-contrast is materially resolvable here. Bound before any arm outcome was accessed."
+    ]
   },
   "hard_gate": {
     "F_minus_D_balanced_mean_min": 0.05,
-    "F_minus_C_balanced_mean_min": 0.02,
+    "F_minus_C_balanced_mean_min": 0.0,
     "F_minus_strongest_parent_min": 0.0,
     "F_safety_harm_vs_D_min": -0.01,
     "all_worlds_F_minus_D_positive": true,
