@@ -61,7 +61,7 @@ class TransferArbitration:
 
     @property
     def orion_residual_eligible(self) -> bool:
-        """True only when the registered formal parent is explicitly out of scope."""
+        """True only after an evidence-bound formal OUT_OF_SCOPE result."""
         return self.authority_source == "ORION_OUTSIDE_FORMAL_PARENT_SCOPE"
 
 
@@ -79,12 +79,12 @@ def arbitrate_transfer(
 ) -> TransferArbitration:
     """Arbitrate a formal-parent result against an ORION transfer verdict.
 
-    Decisive formal results dominate inside the exact bound subject.  A formal
-    ``CANNOT_CHECK`` remains an abstention.  ORION is consulted only when the
-    formal parent explicitly says the object is outside its registered scope.
+    Decisive formal results dominate inside the exact bound subject. A formal
+    ``CANNOT_CHECK`` remains an abstention. ORION is consulted only when the
+    formal parent supplies an evidence-bound ``OUT_OF_SCOPE`` result.
 
     This is intentionally asymmetric: disagreement is diagnostic evidence, not
-    a voting scheme.  A weaker or broader heuristic may not overturn a complete
+    a voting scheme. A weaker or broader heuristic may not overturn a complete
     formal parent on the parent's own object class.
     """
 
@@ -100,16 +100,18 @@ def arbitrate_transfer(
     elif _is_sha256(expected_subject_sha256) and parent.subject_sha256 != expected_subject_sha256:
         reasons.append("formal_parent_subject_mismatch")
 
-    decisive = parent.disposition in {
+    requires_derivation = parent.disposition in {
         FormalParentDisposition.LICENSED,
         FormalParentDisposition.REJECTED,
-    }
-    if decisive and not _is_sha256(parent.derivation_sha256):
-        reasons.append("formal_parent_decisive_result_missing_derivation_digest")
-    if parent.disposition in {
-        FormalParentDisposition.CANNOT_CHECK,
         FormalParentDisposition.OUT_OF_SCOPE,
-    } and parent.derivation_sha256 is not None and not _is_sha256(parent.derivation_sha256):
+    }
+    if requires_derivation and not _is_sha256(parent.derivation_sha256):
+        reasons.append("formal_parent_result_missing_derivation_digest")
+    if (
+        parent.disposition is FormalParentDisposition.CANNOT_CHECK
+        and parent.derivation_sha256 is not None
+        and not _is_sha256(parent.derivation_sha256)
+    ):
         reasons.append("formal_parent_derivation_digest_invalid")
 
     if reasons:
@@ -159,5 +161,5 @@ def arbitrate_transfer(
         authority_source="ORION_OUTSIDE_FORMAL_PARENT_SCOPE",
         parent_disposition=parent.disposition,
         orion_verdict=orion_verdict,
-        reasons=("formal_parent_explicitly_out_of_scope",),
+        reasons=("formal_parent_evidence_bound_out_of_scope",),
     )
