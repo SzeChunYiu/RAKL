@@ -63,7 +63,7 @@ The challenger introduces:
 
 ## 5. Development tests
 
-The local executable development suite contains nine adversarial workflow-control tests:
+The local executable development suite contains eleven adversarial workflow-control tests:
 
 1. no search rounds -> continue search;
 2. any retained semantic novelty -> cannot claim saturation;
@@ -73,9 +73,11 @@ The local executable development suite contains nine adversarial workflow-contro
 6. freshness event reopens incrementally without deleting prior history;
 7. semantic-yield metrics distinguish retained novelty from raw inventory;
 8. categorized novelty must be bound to retained semantic identity;
-9. "relevant source" must be among processed source identities.
+9. "relevant source" must be among processed source identities;
+10. a historical residual that merely triggered a past reading round does not keep the fiber reopened after the active residual is resolved;
+11. the same semantic identity cannot be counted as newly retained in multiple rounds.
 
-Development result: **9/9 pass** in the standalone compatibility harness.
+Development result: **11/11 pass** in the standalone compatibility harness.
 
 This is evidence that the workflow-control contract is executable. It is not evidence of superior scientific problem-solving outcomes.
 
