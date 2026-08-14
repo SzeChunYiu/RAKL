@@ -1,0 +1,27 @@
+{
+  "schema_version": "rakl-p3-stale-memory-mode-probe-diagnosis-v1",
+  "date": "2026-08-14",
+  "subject": "PROBE_RECEIPT.json (v1 probe run, terminal JUDGE_UNRELIABLE_CANNOT_CHECK)",
+  "preserved_verbatim": "the v1 probe receipt and rows are committed unchanged; this diagnosis narrows nothing in them",
+
+  "observed": {
+    "admissibility_gate": "PASS — SKYLINE dim1 1.0 vs FLOOR dim1 0.0 (separation 1.0 >= 0.30; SKYLINE >= 0.60)",
+    "judge_known_answer_agreement": 0.6875,
+    "judge_gate": "FAIL (< 0.90) => frozen terminal JUDGE_UNRELIABLE_CANNOT_CHECK; confirmatory subset not read"
+  },
+
+  "single_stage_attribution": {
+    "stage": "planted-control construction, not the judge",
+    "evidence": "The same judge scored 16/16 NATURAL responses correctly on dim1 in the same run: all 8 SKYLINE dim1 answers CORRECT and all 8 FLOOR dim1 answers INCORRECT — perfect separation of genuinely-informed from genuinely-uninformed natural answers. The 0.6875 agreement comes only from the synthetic control texts, which pasted raw first-person M_new/M_old observations as if they were answers to the dim1 question ('Consistent with the update: I just finished updating my address...'), a form the judge reasonably declines to score as a correct direct answer.",
+    "competing_diagnosis_rejected": "judge-model incapacity — rejected because natural-response scoring was 16/16 in the identical run under the identical prompt"
+  },
+
+  "registered_revival_attempt": {
+    "count": "1 of 1 (global-recovery doctrine)",
+    "change": "ONLY the planted-control answer texts are re-phrased as natural answers (pro: a sentence asserting the updated state as an answer; anti: a natural assertion that the outdated state still holds). Same judge model, same judge prompt, same 0.90 threshold, same probe subset, same skyline/floor arms, same admissibility gate. Per-control verdicts are persisted this time (CONTROLS.jsonl).",
+    "why_this_is_not_post_result_rescue": "The confirmatory subset was never read; the probe exists precisely to qualify the instrument before confirmatory spend, and the frozen honesty clause forbids changes after FIRST CONFIRMATORY outcome access, which has not occurred. The judge-agreement threshold itself is unchanged.",
+    "failure_branch": "if the re-phrased controls still fail the 0.90 gate, the lane terminates at JUDGE_UNRELIABLE_CANNOT_CHECK with no further revival; the confirmatory subset stays unspent"
+  },
+
+  "grants_scientific_authority": false
+}
