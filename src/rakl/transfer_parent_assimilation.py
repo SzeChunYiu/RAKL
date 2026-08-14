@@ -1,13 +1,13 @@
 """Fail-closed strongest-formal-parent arbitration for Paper II.
 
-This module does *not* implement causal transportability.  It encodes the
+This module does *not* implement causal transportability. It encodes the
 claim/routing boundary discovered by the Paper-II nearest-work audit: when a
 registered formal parent already decides a transfer problem inside its own
 scope, ORION may not override or rename that result as an ORION contribution.
 
 The intended first parent is the Bareinboim/Pearl sID transportability family.
 A future adapter can bind an actual formal-parent implementation to this
-interface.  Until then, this module is a conformance/novelty boundary only.
+interface. Until then, this module is a conformance/novelty boundary only.
 """
 
 from __future__ import annotations
@@ -51,8 +51,8 @@ class FormalParentResult:
 class TransferArbitration:
     verdict: TransferVerdict
     authority_source: str
-    parent_disposition: FormalParentDisposition
-    orion_verdict: TransferVerdict
+    parent_disposition: FormalParentDisposition | object
+    orion_verdict: TransferVerdict | object
     reasons: Tuple[str, ...] = ()
 
     @property
@@ -83,12 +83,16 @@ def arbitrate_transfer(
     ``CANNOT_CHECK`` remains an abstention. ORION is consulted only when the
     formal parent supplies an evidence-bound ``OUT_OF_SCOPE`` result.
 
-    This is intentionally asymmetric: disagreement is diagnostic evidence, not
-    a voting scheme. A weaker or broader heuristic may not overturn a complete
-    formal parent on the parent's own object class.
+    Runtime annotations are not trusted as validators: a string that merely
+    *looks* like an enum value is invalid and fails closed rather than falling
+    through to the delegation branch.
     """
 
     reasons: list[str] = []
+    if not isinstance(parent.disposition, FormalParentDisposition):
+        reasons.append("formal_parent_disposition_type_invalid")
+    if not isinstance(orion_verdict, TransferVerdict):
+        reasons.append("orion_verdict_type_invalid")
     if parent.method_id != expected_parent_id:
         reasons.append("formal_parent_method_id_mismatch")
     if parent.method_version != expected_parent_version:
@@ -100,7 +104,7 @@ def arbitrate_transfer(
     elif _is_sha256(expected_subject_sha256) and parent.subject_sha256 != expected_subject_sha256:
         reasons.append("formal_parent_subject_mismatch")
 
-    requires_derivation = parent.disposition in {
+    requires_derivation = isinstance(parent.disposition, FormalParentDisposition) and parent.disposition in {
         FormalParentDisposition.LICENSED,
         FormalParentDisposition.REJECTED,
         FormalParentDisposition.OUT_OF_SCOPE,
