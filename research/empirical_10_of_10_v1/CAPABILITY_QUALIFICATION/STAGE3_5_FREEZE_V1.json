@@ -1,0 +1,70 @@
+{
+  "schema_version": "rakl-capability-qualification-stage3-5-freeze-v1",
+  "date": "2026-08-14",
+  "owner_issue": 447,
+  "base_main_sha": "60654878bf69ade0e585a6cf087094a917ba50a9",
+  "predecessor": "STAGED_INTERFACE_DEVELOPMENT_PROMISING",
+  "model_candidates": [
+    {
+      "order": 1,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "access": "LUNARC staged exact revision / offline local weights",
+      "precision": "frozen runtime default for qualification packet",
+      "selection_reason": "smallest exactly staged open-weight candidate compatible with the repaired Stage-2 interface",
+      "authorization_eligible": true
+    }
+  ],
+  "interface": {
+    "system_prompt": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/SYSTEM_PROMPT.txt",
+    "runner_instruction": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/RUNNER_INSTRUCTION_BLOCK.txt",
+    "evidence_role_semantics": "LICENSES_VERDICT",
+    "repair_passes": 0
+  },
+  "fresh_panel": {
+    "seed": 202608140901,
+    "families": [
+      "STRAIGHT_SUPPORT",
+      "STRAIGHT_REFUTATION",
+      "SUPPORT_WITH_IRRELEVANT_DISTRACTORS",
+      "REFUTATION_WITH_IRRELEVANT_DISTRACTORS",
+      "CONTEXT_QOI_NEAR_MISS",
+      "SCOPE_RESTRICTION",
+      "CONFLICTING_EVIDENCE",
+      "MISSING_DECISIVE_EVIDENCE_CANNOT_CHECK",
+      "SAME_ROOT_PSEUDO_CORROBORATION",
+      "INDEPENDENT_CORROBORATION",
+      "CORRECT_VERDICT_WRONG_EVIDENCE_ID_TRAP"
+    ],
+    "cases_per_family": 12,
+    "n_total": 132,
+    "opaque_ids": true,
+    "diagnostic_overlap_forbidden": true,
+    "stage2_development_overlap_forbidden": true,
+    "answer_leak_sweep_required": true
+  },
+  "vector_gate": {
+    "parse_validity_min": 0.98,
+    "exact_joint_verdict_and_binding_min": 0.85,
+    "support_id_recall_min": 0.90,
+    "reject_id_recall_min": 0.90,
+    "context_qoi_error_max": 0.05,
+    "cannot_check_recall_min": 0.90,
+    "cannot_check_precision_min": 0.90,
+    "shortcut_audit_clean": true,
+    "family_min_exact": 0.75
+  },
+  "uncertainty": {
+    "report_wilson_95_intervals": true,
+    "no_optional_stopping": true,
+    "all_132_cases_required_unless_transport_failure": true
+  },
+  "decision": {
+    "pass": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
+    "fail": "DIAGNOSTIC_OVERFIT_OR_INSUFFICIENT_CAPABILITY",
+    "resource": "CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE",
+    "degenerate": "QUALIFICATION_BENCHMARK_DEGENERATE"
+  },
+  "downstream_on_pass": "freeze a separate power-sized Paper-III experience causal packet; qualification itself is not evidence that ORION helps",
+  "grants_scientific_authority": false
+}
