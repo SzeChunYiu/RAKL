@@ -5,7 +5,9 @@ applicability contract as a specification, the typed-refusal absorption of the
 causal-transportability parent (measured), and the instrument-falsifiability
 battery with its three preserved negative case studies. No transfer/generality
 claim is made; the external-label natural-domain coordinate (n≈48) is stated as
-open. Evidence pointers: `research/paper2_six_family_audit_v1/`,
+open, with its blocker measured by the executed ARN third-party-label epoch
+(`research/paper2_external_corpus_v1/`, terminal NEGATIVE__CAPABILITY_ABSENT,
+battery passing). Evidence pointers: `research/paper2_six_family_audit_v1/`,
 `research/paper2_causal_transport_absorption_v1/`,
 `research/paper2_nearest_work_2026/`, `research/paper2_prose_transfer_v1/`,
 `research/paper2_controlled_witness_extraction_v1/`.
