@@ -101,6 +101,22 @@ def choose_active_training_policy(
     )
 
 
+def _phase2_cost_allows_active_default(final_receipt: Mapping[str, object] | None) -> bool:
+    """Recompute the frozen <=2x E/D GPU-cost condition from admitted resources."""
+
+    if not isinstance(final_receipt, Mapping):
+        return False
+    try:
+        arms = final_receipt["arms"]
+        e_gpu = float(arms["E_ADAPTIVE_RAKL_STRUCTURAL"]["resources"]["gpu_seconds"])
+        d_gpu = float(arms["D_STATIC_RAKL_STRUCTURAL"]["resources"]["gpu_seconds"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    if d_gpu <= 0 or e_gpu < 0:
+        return False
+    return e_gpu / d_gpu <= 2.0
+
+
 def choose_active_training_policy_from_phase2_bundle(
     *,
     final_receipt: Mapping[str, object] | None = None,
@@ -129,10 +145,19 @@ def choose_active_training_policy_from_phase2_bundle(
                 *admission.reasons,
             ),
         )
+    if not _phase2_cost_allows_active_default(final_receipt):
+        return TrainingPolicyDecision(
+            TrainingPolicyMode.STATIC_STRUCTURAL,
+            (
+                "phase2_recomputed_cost_terminal_high_cost_static_parent_retained",
+                "positive_efficacy_cannot_override_frozen_cost_boundary",
+            ),
+        )
     return TrainingPolicyDecision(
         TrainingPolicyMode.ADAPTIVE_STRUCTURAL,
         (
             "canonical_phase2_bundle_admitted",
+            "phase2_cost_terminal_independently_recomputed",
             *admission.reasons,
         ),
         admission.receipt_id,
