@@ -29,25 +29,23 @@ jobs:
         run: >-
           pytest -q
           tests/test_phase2_adaptive_receipt_admission.py
+          tests/test_phase2_adaptive_receipt_cost_boundary.py
           tests/test_training_policy_authority.py
           tests/test_training_scheduler.py
           tests/test_phase2_adaptive_protocol.py
-      - name: Verify frozen parent/evaluator and preserved negative identities
+      - name: Verify frozen evaluator and preserved negative identities
         run: |
           python - <<'PY'
           import hashlib
           from pathlib import Path
 
           expected_git_blobs = {
-              'src/rakl/training_policy_authority.py': None,
               'research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json': 'fc5d2363de1a6f1303ca9a80795fc291fe57a5a6',
               'research/paper4_phase2_v1/PROTOCOL_V3.json': '0ca5aa15dc078ec92e82ab4aff94e5ffcf16b0af',
               'research/paper4_phase2_v1/INFERENCE_PLAN.json': '2d31897ea6441d280519276e0f1fb3323bf03f99',
               'experiments/training_ladder/phase2_adaptive_v1.py': '5ade3b9fea3fc029870782d1157a867bc4feb700',
           }
           for name, expected in expected_git_blobs.items():
-              if expected is None:
-                  continue
               data = Path(name).read_bytes()
               observed = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
               assert observed == expected, (name, observed, expected)
