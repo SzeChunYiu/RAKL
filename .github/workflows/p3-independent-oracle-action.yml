@@ -1,0 +1,61 @@
+name: p3-independent-oracle-action
+
+on:
+  push:
+    branches:
+      - automation/p3-independent-oracle-action-gate-v1-20260814
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  independent-oracle-action:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Bind exact subject
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Preserve narrowed historical evidence
+        run: |
+          git diff --exit-code 8fa768f62444cca5fec99cf0673dc16d57b55722 -- \
+            research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json \
+            research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json \
+            experiments/orion_closure/run_p3_structured_experience_action.py
+      - name: Execute frozen fresh independent-oracle gate
+        run: |
+          rm -rf /tmp/p3-independent-oracle
+          python experiments/paper3/run_independent_oracle_action_v1.py \
+            --protocol research/paper3_independent_oracle_action_v1/PROTOCOL.json \
+            --outdir /tmp/p3-independent-oracle
+      - name: Enforce claim boundary and falsifiability
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('/tmp/p3-independent-oracle/FINAL_RECEIPT.json').read_text())
+          assert p['all_gates_pass'] is True
+          assert p['terminal'] == 'PROMOTE_CONDITIONALLY_STRUCTURED_EXPERIENCE_ACTION_CONFORMANCE_INDEPENDENT_ORACLE_V1'
+          assert p['independence_audit']['passes'] is True
+          assert p['grants_scientific_authority'] is False
+          assert p['grants_model_level_efficacy'] is False
+          assert set(p['gold_outcome_counts']) == {'APPLY_SUCCESSOR','APPLY_VERIFIED_LESSON','CANNOT_CHECK','FALLBACK_SEARCH'}
+          assert all(p['metric_gate_falsifiability_witnesses'].values())
+          assert all(row['changed_metrics'] for row in p['registered_mutants'].values())
+          assert p['composite_simple_parent_information_ceiling'] <= 0.80
+          print('P3 independent-oracle gate: PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p3-independent-oracle-action-v1
+          path: /tmp/p3-independent-oracle/
+          if-no-files-found: error
