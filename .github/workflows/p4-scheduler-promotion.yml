@@ -14,7 +14,7 @@ permissions:
 jobs:
   scheduler-gate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -25,12 +25,30 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
-      - name: Run allocator and projection hard gates
+      - name: Run allocator, projection, and Phase-2 instrument hard gates
         run: >-
           pytest -q
           tests/test_training_scheduler.py
           tests/test_training_projection.py
           tests/test_training_projection_guards.py
           tests/test_v3_and_training_commitment.py
-      - name: Verify Phase-2 freeze and Phase-1 authorization
-        run: python -c "import json,pathlib; p=json.loads(pathlib.Path('research/paper4_phase2_v1/PROTOCOL.json').read_text()); assert p['authorizing_phase1']['terminal']=='MECHANISM_SIGNAL_PRESENT'; assert p['primary_estimand'].startswith('E_ADAPTIVE_RAKL_STRUCTURAL minus D_STATIC_RAKL_STRUCTURAL'); assert p['decision_tree']['RESOURCE_BLOCKED']; print('P4 allocator boundary: PASS')"
+          tests/test_phase2_adaptive_protocol.py
+      - name: Verify outcome-authorizing V3 freeze
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('research/paper4_phase2_v1/PROTOCOL_V3.json').read_text())
+          assert p['outcomes_accessed_before_v3_freeze'] is False
+          assert p['authorizing_phase1']['terminal'] == 'MECHANISM_SIGNAL_PRESENT'
+          assert p['training']['model_revision'] == 'a09a35458c702b33eeacc393d103063234e8bc28'
+          assert p['primary_estimand'].startswith('E-D')
+          assert p['decision_tree']['RESOURCE_BLOCKED']
+          print('P4 allocator boundary: PASS')
+          PY
+      - name: Dry-run frozen Phase-2 data and leakage manifest
+        run: |
+          rm -rf /tmp/p4-phase2-dry
+          python experiments/training_ladder/phase2_adaptive_v1.py --outdir /tmp/p4-phase2-dry --dry-run
+          test -s /tmp/p4-phase2-dry/DATA_MANIFEST.json
+          test ! -e /tmp/p4-phase2-dry/FINAL_RECEIPT.json
