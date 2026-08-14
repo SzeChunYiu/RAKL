@@ -13,9 +13,11 @@ on every artifact. The parent negative and every existing freeze are byte-unchan
 | `ATTRIBUTION_DIAGNOSTIC_PROTOCOL.json` | Frozen before outcome access, with 4 numbered predictions and their falsifiers |
 | `ATTRIBUTION_RECEIPT.json` | Executed result, terminals read from data |
 | `ATTRIBUTION_WORLD_RESULTS.jsonl` | 2,304 per-world/rep/arm records incl. realized budget counts |
-| `PACKET_oracle_ceiling_calibration_gate_v1.json` | Proposal-only revival packet (schema `mechanic-research-packet-v1`, sealed `b8b3cc95…`) |
+| `CEILING_BOUNDS.json` | Three-tier bound on what *any* equal-budget policy can achieve here |
+| `PACKET_oracle_ceiling_calibration_gate_v1.json` | Proposal-only revival packet (schema `mechanic-research-packet-v1`) |
 
-Runner: `../../experiments/orion_closure/run_p4_allocator_attribution.py`. It **imports**
+Runners: `../../experiments/orion_closure/run_p4_allocator_attribution.py` and
+`../../experiments/orion_closure/run_p4_instrument_ceiling_bounds.py`. The first **imports**
 `world_rates` / `apply_batch` / `mean_ci` / `select_batch` unchanged from the frozen parent runner,
 so no world dynamics were modified and arms D/E consume the identical RNG streams.
 
@@ -103,15 +105,34 @@ non-repetition slot from `target_ranked` — one coordinate — and `_target_coo
 selects `argmin` mastery **level**. Both v1 defects are present in the promoted mechanic, so the
 diagnosis applies to it and not only to the simulator.
 
-## The decisive finding
+## The decisive finding — and a correction to it
 
-An omniscient equal-budget allocator — full access to the true generative rates and harm terms —
-beats the static parent by **+0.00148** against a frozen promotion gate of **0.05**, and does so
-while *harming* safety (`hard_safety_min −D = −0.00966`, against a frozen ceiling of −0.01).
+**Self-correction, made before merge.** My first pass read the greedy oracle's `+0.00148` as *the*
+ceiling and reported it as "34× below the gate". That inference was **invalid**: a greedy oracle is
+a *policy*, so its score is only a **lower** bound on what the instrument can produce. Concluding
+"no policy can pass" from a policy score is a category error. `CEILING_BOUNDS.json` replaces it with
+three tiers, and the conclusion is now carried by a genuine **upper** bound:
 
-So **no allocation policy whatsoever can pass this instrument's own hard gate.** The bootstrap CIs
-are ≈0.0016 wide — by conventional power analysis amply powered — which is precisely why the defect
-was invisible. Three structural causes, all verifiable in `run_p4_adaptive_development_stress.py`:
+| tier | bound on mean advantage over static | vs. frozen 0.05 gate |
+|---|---|---|
+| 1 — greedy oracle *policy* (lower bound) | +0.00148 | 33.8× below |
+| 2 — best constructive allocation found (lower bound, local search) | **+0.00446** | 11.2× below |
+| 3 — **rigorous upper bound** (harm-free relaxation, exact water-filling) | **+0.02457** | **2.03× below** |
+
+Tier 3 is rigorous: every harm term in `apply_batch` is non-negative and subtracted, and the gain
+step `m → m(1−r)+r` is monotone increasing in `m`, so pointwise dominance is preserved and the
+harm-free trajectory upper-bounds every with-harm trajectory. Maximizing it over integer count
+vectors is a concave separable allocation, exact by greedy water-filling.
+
+So the honest statement is: **no equal-budget allocation policy, however optimal, can reach this
+instrument's own registered 0.05 gate — with a factor-2 margin, not a factor-34 one.** The
+qualitative conclusion survives on a stronger footing; the headline magnitude was wrong and is
+retracted. The greedy oracle also *harms* safety (`hard_safety_min −D = −0.00966` against a frozen
+ceiling of −0.01).
+
+Bootstrap CIs on the primary contrast are ≈0.0016 wide — by conventional power analysis amply
+powered — which is precisely why the defect was invisible. Three structural causes, all verifiable
+in `run_p4_adaptive_development_stress.py`:
 
 - `initial_mastery` is one protocol-level vector; `world_rates()` varies **rates only**; `irng`
   noise is ±0.01. Round-0 learner state is therefore effectively **world-independent**, so learner
@@ -131,6 +152,32 @@ there was to retract the instrument and rebuild it.
 The conservative operational consequence of the parent negative is unaffected: STATIC_STRUCTURAL
 correctly remains the active default, now for a stronger reason — the evidence that would be needed
 to displace it has never been obtainable from this instrument.
+
+## Reconciliation with the parallel P4 lane on main
+
+While this diagnostic was running, main advanced from `60654878` to `321f3f72`, adding
+`../paper4_parent_assimilation_v1/PROTOCOL.json` — a parallel lane off the *same* base sha that
+took the policy-tuning route this diagnostic says is unavailable. Its recorded lineage:
+
+| candidate | −static | −strongest scalar parent | terminal |
+|---|---|---|---|
+| `ADAPTIVE_V2_DIVERSIFIED_DEFICIT_WITH_HARD_RESERVES` | +0.004958 | −0.002002 | `DEVELOPMENT_SUCCESSOR_REQUIRED` |
+| `ADAPTIVE_V3_SPARSE_RESERVE` | −0.00133 | −0.00829 | `DEVELOPMENT_ONLY_REJECTED` |
+
+Its RSHEA decision is `STOP_SIMULATOR_POLICY_TUNING_AND_ASSIMILATE_STRONGEST_PARENT`.
+
+**The two lanes agree, and quantitatively.** Adaptive-v2's `+0.004958` sits essentially *at* the
+tier-2 constructive ceiling computed here (mean `+0.00446`, best world `+0.00529`). That lane had
+already found a near-optimal allocation for this instrument class and still missed its material-effect
+gate — which is exactly what tier 3 says must happen. This diagnostic supplies the **mechanism** that
+the `STOP_SIMULATOR_POLICY_TUNING` decision reached empirically: further policy tuning is not merely
+unproductive, it is **bounded above** by roughly 0.025 against a 0.05 gate.
+
+Honest caveats. The v2/v3 numbers come from an instrument that includes at least one world
+(`NEAR_UNIFORM_HIGH_MASTERY_CONTROL`) **not** among the frozen six, and only that lane's
+`PROTOCOL.json` is on main — no runner or receipt. So the numeric alignment is **cross-instrument
+and approximate**, and their exact instrument is **`CANNOT_CHECK`** from repository bytes. The
+agreement is corroborative, not a verified identity.
 
 ## Revival proposal (proposal-only)
 
@@ -178,8 +225,9 @@ Strongest currently-defensible Paper IV claim, and it is negative/structural:
 > model×family cells (7B, `state_reachability`), at the top of the ladder, with
 > `scientific_claim_status: NO_EMPIRICAL_RESULT`. The vector allocator that signal motivates loses
 > to a static equal-coverage parent under equal budget, attributable to guard-rail budget capture
-> plus within-round concentration. And the model-free instrument used to test it has an omniscient
-> ceiling 34× below its own promotion gate, so it cannot adjudicate the estimand at all.
+> plus within-round concentration. And the model-free instrument used to test it is provably unable
+> to adjudicate the estimand: a rigorous upper bound on *any* equal-budget policy's advantage over
+> the static parent is ≈0.025, below the instrument's own registered 0.05 gate.
 
 No Structural Learning Mechanics law is established. The defensible objects are the fail-closed
 allocator mechanic (engineering scope only), the preserved negatives, and the instrument-admissibility
