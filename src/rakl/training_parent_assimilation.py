@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from hashlib import sha256
-from math import isfinite
 from typing import Sequence, Tuple
 
 from .training_projection import (
@@ -21,17 +20,19 @@ class ParentAssimilationVerdict(str, Enum):
 
 
 @dataclass(frozen=True)
-class ParentLearnerValueBundle:
-    """Frozen strongest-parent candidate values, higher = preferred.
+class ParentSelectionBundle:
+    """Exact frozen strongest-parent proposal order.
 
-    The bundle is a proposal-side routing artifact only.  It carries no
-    scientific authority and cannot activate a training policy.
+    The Phase-2 strongest model-aware parent owns its NLL scoring, exposure
+    tie-breaking and frozen queue order.  This bundle transports that exact
+    proposed candidate order without asking RAKL to reconstruct or rescore it.
+    It is proposal-side only and carries no authority.
     """
 
     provider_id: str
     provider_revision: str
     model_checkpoint_hash: str
-    candidate_scores: Tuple[Tuple[str, float], ...]
+    candidate_order: Tuple[str, ...]
     frozen_before_outcome_access: bool | None
     bundle_hash: str
 
@@ -66,63 +67,59 @@ class ParentAssimilationDecision:
         return False
 
 
-def _canonical_score_rows(rows: Sequence[Tuple[str, float]]) -> Tuple[Tuple[str, float], ...]:
-    out: list[tuple[str, float]] = []
-    for candidate_id, score in rows:
-        if not candidate_id.strip():
-            raise ValueError("parent score candidate identity cannot be blank")
-        if not isfinite(float(score)):
-            raise ValueError("parent learner-value score must be finite")
-        out.append((candidate_id, float(score)))
-    return tuple(sorted(out, key=lambda row: (row[0], row[1])))
+def _canonical_candidate_order(candidate_order: Sequence[str]) -> Tuple[str, ...]:
+    rows = tuple(str(candidate_id) for candidate_id in candidate_order)
+    if not rows:
+        raise ValueError("parent selection bundle requires at least one candidate")
+    if any(not candidate_id.strip() for candidate_id in rows):
+        raise ValueError("parent selection candidate identity cannot be blank")
+    return rows
 
 
 def _bundle_hash(
     provider_id: str,
     provider_revision: str,
     model_checkpoint_hash: str,
-    candidate_scores: Sequence[Tuple[str, float]],
+    candidate_order: Sequence[str],
     frozen_before_outcome_access: bool | None,
 ) -> str:
     payload = repr(
         (
-            "RAKL_P4_PARENT_LEARNER_VALUE_BUNDLE_V1",
+            "RAKL_P4_PARENT_SELECTION_BUNDLE_V1",
             provider_id,
             provider_revision,
             model_checkpoint_hash,
-            _canonical_score_rows(candidate_scores),
+            _canonical_candidate_order(candidate_order),
             frozen_before_outcome_access,
         )
     ).encode("utf-8")
     return sha256(payload).hexdigest()
 
 
-def build_parent_learner_value_bundle(
+def build_parent_selection_bundle(
     *,
     provider_id: str,
     provider_revision: str,
     model_checkpoint_hash: str,
-    candidate_scores: Sequence[Tuple[str, float]],
+    candidate_order: Sequence[str],
     frozen_before_outcome_access: bool | None,
-) -> ParentLearnerValueBundle:
+) -> ParentSelectionBundle:
     if not provider_id.strip() or not provider_revision.strip():
-        raise ValueError("parent score provider identity and revision are required")
+        raise ValueError("parent selection provider identity and revision are required")
     if not model_checkpoint_hash.strip():
-        raise ValueError("parent score bundle requires model checkpoint identity")
-    rows = _canonical_score_rows(candidate_scores)
-    if not rows:
-        raise ValueError("parent score bundle requires at least one candidate score")
-    return ParentLearnerValueBundle(
+        raise ValueError("parent selection bundle requires model checkpoint identity")
+    order = _canonical_candidate_order(candidate_order)
+    return ParentSelectionBundle(
         provider_id=provider_id,
         provider_revision=provider_revision,
         model_checkpoint_hash=model_checkpoint_hash,
-        candidate_scores=rows,
+        candidate_order=order,
         frozen_before_outcome_access=frozen_before_outcome_access,
         bundle_hash=_bundle_hash(
             provider_id,
             provider_revision,
             model_checkpoint_hash,
-            rows,
+            order,
             frozen_before_outcome_access,
         ),
     )
@@ -143,18 +140,18 @@ def _safe_candidate(
 
 def select_with_parent_assimilation(
     snapshot: TrainingProjectionSnapshot,
-    parent_values: ParentLearnerValueBundle,
+    parent_selection: ParentSelectionBundle,
     *,
     batch_size: int,
     max_forgetting_risk: float = 0.10,
     max_negative_transfer_risk: float = 0.10,
 ) -> ParentAssimilationDecision:
-    """Faithfully wrap a strongest-parent ranking with ORION hard gates.
+    """Stable-filter a strongest-parent proposal through ORION hard gates.
 
-    This function deliberately does not invent a new utility score.  If all
-    candidates are admissible, selection is exactly the parent ordering.  RAKL
-    may only veto candidates through pre-existing fail-closed projection,
-    leakage, forgetting-risk and negative-transfer-risk constraints.
+    No new learner-value heuristic is defined here.  For an all-safe candidate
+    set, the returned order is exactly the parent's supplied order.  When an
+    existing noncompensatory structural gate vetoes a candidate, the relative
+    order of every surviving parent candidate is preserved.
     """
 
     if batch_size <= 0:
@@ -171,7 +168,7 @@ def select_with_parent_assimilation(
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.INVALID,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
             assessment.reasons,
@@ -180,122 +177,121 @@ def select_with_parent_assimilation(
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
             assessment.reasons,
         )
 
     expected_bundle_hash = _bundle_hash(
-        parent_values.provider_id,
-        parent_values.provider_revision,
-        parent_values.model_checkpoint_hash,
-        parent_values.candidate_scores,
-        parent_values.frozen_before_outcome_access,
+        parent_selection.provider_id,
+        parent_selection.provider_revision,
+        parent_selection.model_checkpoint_hash,
+        parent_selection.candidate_order,
+        parent_selection.frozen_before_outcome_access,
     )
-    if parent_values.bundle_hash != expected_bundle_hash:
+    if parent_selection.bundle_hash != expected_bundle_hash:
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.INVALID,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            ("parent_value_bundle_content_hash_mismatch",),
+            ("parent_selection_bundle_content_hash_mismatch",),
         )
-    if parent_values.frozen_before_outcome_access is None:
+    if parent_selection.frozen_before_outcome_access is None:
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            ("parent_value_freeze_chronology_unknown",),
+            ("parent_selection_freeze_chronology_unknown",),
         )
-    if parent_values.frozen_before_outcome_access is False:
+    if parent_selection.frozen_before_outcome_access is False:
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.INVALID,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            ("parent_values_defined_after_outcome_access",),
+            ("parent_selection_defined_after_outcome_access",),
         )
-    if parent_values.model_checkpoint_hash != snapshot.model_checkpoint_hash:
+    if parent_selection.model_checkpoint_hash != snapshot.model_checkpoint_hash:
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            ("parent_value_checkpoint_mismatch",),
+            ("parent_selection_checkpoint_mismatch",),
         )
 
-    score_ids = tuple(candidate_id for candidate_id, _ in parent_values.candidate_scores)
-    if len(score_ids) != len(set(score_ids)):
+    order = parent_selection.candidate_order
+    if len(order) != len(set(order)):
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            ("parent_value_duplicate_candidate_identity",),
+            ("parent_selection_duplicate_candidate_identity",),
         )
-    candidate_ids = {candidate.candidate_id for candidate in snapshot.candidates}
-    score_id_set = set(score_ids)
-    if score_id_set != candidate_ids:
-        missing = tuple(sorted(candidate_ids - score_id_set))
-        extra = tuple(sorted(score_id_set - candidate_ids))
+
+    candidate_by_id = {candidate.candidate_id: candidate for candidate in snapshot.candidates}
+    candidate_ids = set(candidate_by_id)
+    order_ids = set(order)
+    if order_ids != candidate_ids:
+        missing = tuple(sorted(candidate_ids - order_ids))
+        extra = tuple(sorted(order_ids - candidate_ids))
         reasons = tuple(
-            [*(f"parent_value_missing_candidate:{item}" for item in missing),
-             *(f"parent_value_unknown_candidate:{item}" for item in extra)]
+            [
+                *(f"parent_selection_missing_candidate:{item}" for item in missing),
+                *(f"parent_selection_unknown_candidate:{item}" for item in extra),
+            ]
         )
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
             (),
-            reasons or ("parent_value_candidate_coverage_mismatch",),
+            reasons or ("parent_selection_candidate_coverage_mismatch",),
         )
 
-    scores = dict(parent_values.candidate_scores)
-    safe: list[TrainingAllocationCandidate] = []
-    rejected: list[TrainingAllocationCandidate] = []
-    for candidate in snapshot.candidates:
+    selected: list[str] = []
+    rejected: list[str] = []
+    for candidate_id in order:
+        candidate = candidate_by_id[candidate_id]
         if _safe_candidate(
             candidate,
             max_forgetting_risk=max_forgetting_risk,
             max_negative_transfer_risk=max_negative_transfer_risk,
         ):
-            safe.append(candidate)
+            if len(selected) < batch_size:
+                selected.append(candidate_id)
         else:
-            rejected.append(candidate)
+            rejected.append(candidate_id)
 
-    if len(safe) < batch_size:
+    safe_count = len(snapshot.candidates) - len(rejected)
+    if safe_count < batch_size:
         return ParentAssimilationDecision(
             ParentAssimilationVerdict.CANNOT_CHECK,
             snapshot.snapshot_hash,
-            parent_values.bundle_hash,
+            parent_selection.bundle_hash,
             (),
-            tuple(sorted(item.candidate_id for item in rejected)),
+            tuple(rejected),
             ("insufficient_candidates_after_noncompensatory_structural_veto",),
         )
 
-    ranked = tuple(
-        sorted(
-            safe,
-            key=lambda item: (-scores[item.candidate_id], item.candidate_id),
-        )
-    )
-    selected = ranked[:batch_size]
     return ParentAssimilationDecision(
         ParentAssimilationVerdict.SELECT_PROPOSAL,
         snapshot.snapshot_hash,
-        parent_values.bundle_hash,
-        tuple(item.candidate_id for item in selected),
-        tuple(sorted(item.candidate_id for item in rejected)),
+        parent_selection.bundle_hash,
+        tuple(selected),
+        tuple(rejected),
         (
-            "strongest_parent_order_preserved_within_structurally_admissible_set",
+            "strongest_parent_relative_order_preserved_exactly",
             "forgetting_and_negative_transfer_are_noncompensatory_vetoes",
             "proposal_only_no_training_or_scientific_authority",
         ),
