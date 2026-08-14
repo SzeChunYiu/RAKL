@@ -10,14 +10,38 @@ The ORION governed-acceptance layer: a candidate may be promoted only when every
 is `PASS` with evidence bound to the exact candidate, and an unresolved gate blocks promotion.
 The question is not "do the gates fire" but **what fail-closed acceptance costs and what it buys**.
 
-## Read the claim-class split first
+## Read the claim-class split first — and the correction to it
+
+`CLASSIFICATION_CORRECTION_V1.json` **retracts this packet's original headline.** The split below is
+the corrected one; `PREREGISTRATION_V1.json` is left byte-identical with its wrong split intact,
+because the record of the misclassification is the point.
 
 | Class | Coordinates | Why |
 |---|---|---|
-| `CONFORMANCE` — **not evidence** | arm A false-promotion rate; receipt completeness; A-vs-C | Determined by the gate definitions. A catching defects drawn from RAKL's own invariant list is a wiring check. It may not carry a headline. |
-| `MEASURED` — the actual result | fail-closed tax; throughput; cost; **A-vs-D**; **D-vs-B at matched throughput** | Nothing in the gate definitions fixes these. |
+| `CONFORMANCE` — **not evidence** | arm A false-promotion; receipt completeness; A-vs-C; **A-vs-D**; **D-vs-B at matched throughput** | All determined by construction. |
+| `MEASURED` / `DERIVED` | fail-closed tax; the availability requirement; governance cost | Composes ORION's rule with a non-authored external input. |
 
-`A_ORION_GOVERNED` false-promotion is `0.000` everywhere. That number is **conformance, not a finding.**
+`A_ORION_GOVERNED` false-promotion is `0.000` everywhere — conformance, not a finding.
+
+**What was retracted.** The original Finding 1 claimed *"executing the gate contract cuts false
+promotion 3.31× at matched throughput."* It does not measure a mechanism. Arm D reads the identical
+observations in which the defect is planted as an explicit `FAIL`, so it admits an unsound candidate
+exactly when the defect gate's evidence is unavailable; arm B reads a scalar independent of
+soundness, so it admits at the base rate. Both are closed-form:
+
+| `n_repro` | D observed | D predicted `0.5 × unavailability` | B observed | B predicted `0.5 × acceptance` |
+|---|---|---|---|---|
+| 0 | 0.089 | 0.085 | 0.294 | 0.293 |
+| 6 | 0.202 | 0.198 | 0.363 | 0.357 |
+| 12 | 0.321 | 0.310 | 0.397 | 0.405 |
+
+Predicted to within sampling noise across the whole sweep by expressions containing **no mechanism
+term**. This is the same tautology already quarantined for arm A, one step removed: arm D reads the
+same gate definitions, so its contrast inherits the same status.
+
+Retracting it also removes the only claim that rested on arm B — the post-result repaired control —
+so every surviving claim rests on arm A and the external anchor alone. **The packet's chronology
+position is stronger after the correction than before it.**
 
 ## What was actually measured
 
@@ -38,20 +62,24 @@ gates are reproducibility-class) is swept 0..12 and the whole curve is reported.
 Arm B is calibrated on a disjoint split so its acceptance rate matches arm D's
 (0.5870 vs 0.5875 at `n_repro=0`), so these false-promotion rates are compared at equal throughput.
 
-**Three findings, in order of strength:**
+**The two surviving findings** (the retracted third is documented above):
 
-1. **Executing the gate contract cuts false promotion 3.31× at matched throughput** (0.089 vs 0.294,
-   `n_repro=0`), *even when the gates fail open on unresolved evidence*. The benefit decays to 1.24×
-   at `n_repro=12` as evidence availability falls.
-2. **The fail-closed rule drives false promotion to zero at a throughput tax of 0.897 → 1.000.**
+1. **The fail-closed rule drives false promotion to zero at a throughput tax of 0.897 → 1.000.**
    Under the anchored rates, ORION's governed acceptance promotes almost nothing: true-promotion
    peaks at 0.051 and is 0.000 for `n_repro ≥ 7`. This is not a flattering number and is not
    presented as one.
-3. **The binding parameter is evidence availability, not gate design.** With 12 gates, per-gate
+2. **The binding parameter is evidence availability, not gate design.** With 12 gates, per-gate
    availability `p` must reach **0.9816** for a 20% tax and **0.9913** for a 10% tax. The anchored
    code-class rate of 0.83 gives a tax of 0.893; the repro-class rate of 0.38 gives 0.99999.
 
-Finding 3 is the load-bearing one for the external-baseline programme: it converts
+**Epistemic character — stated precisely.** These are a **derived operating-regime constraint**, not
+an empirical estimate. `tax = 1 − Π pᵢ` is analytic; the simulation instantiates and confirms it.
+It is not circular because it composes ORION's actual fail-closed rule with an **external,
+non-authored** input — the verification-gap survey rates — and because the contract composition was
+swept rather than fixed at a favourable point. What *is* authored is the gate count (12) and the
+two-class structure, so the requirement scales with contract size and is not a universal constant.
+
+Finding 2 is the load-bearing one for the external-baseline programme: it converts
 `MEC-CONTROLLED_RETRIEVAL_ENVIRONMENT` from a methodological preference into a **quantified
 precondition**. A controlled-evidence environment is not a nicety for fair comparison; without one,
 fail-closed governance has no operable regime at all.
@@ -59,15 +87,18 @@ fail-closed governance has no operable regime at all.
 Governance cost: 12 gate evaluations and ~6.0 µs per decision (arm A) versus 5 scalar evaluations
 and ~0.3 µs (arm B) — roughly 20× wall time, which is negligible against any real evidence-acquisition cost.
 
-## Falsifiers — all five survive
+## Falsifiers — all five survive, but three are reclassified
 
 | | Registered condition | Observed | Verdict |
 |---|---|---|---|
-| F1 | fail-closed tax ≈ 0 ⇒ claim vacuous | 0.897–1.000 | survives |
-| F2 | A and D identical false promotion ⇒ fail-closed buys nothing | 0.000 vs 0.089–0.321 | survives |
-| F3 | B not worse than A on integrity | 0.294 vs 0.000 | survives |
-| F4 | A's cost not above B's | ~20× wall time | survives |
-| F5 | D not below B at matched throughput | 0.089 vs 0.294 | survives |
+| F1 | fail-closed tax ≈ 0 ⇒ claim vacuous | 0.897–1.000 | survives — **evidence** |
+| F2 | A and D identical false promotion | 0.000 vs 0.089–0.321 | survives — **conformance**, so its survival is not evidence |
+| F3 | B not worse than A on integrity | 0.294 vs 0.000 | survives — **conformance** |
+| F4 | A's cost not above B's | ~20× wall time | survives — **evidence** |
+| F5 | D not below B at matched throughput | 0.089 vs 0.294 | survives — **conformance** |
+
+Surviving a falsifier whose contrast is determined by construction is not support. Only F1 and F4
+carry weight.
 
 ## Negative history retained
 
@@ -117,7 +148,8 @@ Deterministic and seeded (seeds 11–15, 400 episodes per cell, 400 disjoint cal
 
 | Path | What |
 |---|---|
-| `PREREGISTRATION_V1.json` | v1 freeze, committed before any result existed |
+| `PREREGISTRATION_V1.json` | v1 freeze, committed before any result existed; **its claim-class split is wrong and is deliberately left intact** |
+| `CLASSIFICATION_CORRECTION_V1.json` | **retracts the original headline**; reclassifies A-vs-D and D-vs-B as conformance |
 | `PREREGISTRATION_V1_1.json` | successor freeze; arm-B repair only, with chronology disclosure |
 | `RESULTS_V1.json` | retained v1 run with the defective control arm |
 | `RESULTS_V1_1.json` | primary result + leakage-inflated sensitivity variant |

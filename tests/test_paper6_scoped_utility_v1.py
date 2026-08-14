@@ -130,7 +130,53 @@ def test_registry_anchor_is_recorded_not_imported() -> None:
     assert "2608.05179" in anchor["source"]
     # no packet file may import the registry loader, which main lacks
     for path in PACKET.glob("*.json"):
+        if path.name.startswith("._"):
+            continue  # macOS AppleDouble sidecar, never part of the packet
         assert "external_agent_registry" not in path.read_text()
+
+
+CORRECTION = PACKET / "CLASSIFICATION_CORRECTION_V1.json"
+
+
+def test_correction_exists_and_does_not_edit_the_frozen_prereg() -> None:
+    doc = _load(CORRECTION)
+    assert doc["frozen_prereg_edited"] is False
+    assert doc["direction"] == "SELF_PENALIZING"
+    # the frozen prereg must still carry its ORIGINAL (wrong) split
+    original = set(_load(V1)["claim_class_split"]["MEASURED_evidence"])
+    assert any("arm_A_vs_arm_D" in item for item in original), (
+        "the frozen prereg must retain its wrong split; the record of the error is the point"
+    )
+
+
+def test_retracted_contrasts_are_predicted_by_closed_form() -> None:
+    """The retraction must stay true against the live results, not just be asserted."""
+    for cell in _load(R1_1)["primary_neutral_scalar_model"]:
+        n = cell["n_repro"]
+        arms = cell["arms"]
+        mean_unavail = ((12 - n) * (1 - 0.83) + n * (1 - 0.38)) / 12
+        d_obs = arms["D_FAIL_OPEN"]["false_promotion_rate"]
+        assert abs(d_obs - 0.5 * mean_unavail) < 0.03, (
+            f"n_repro={n}: arm D no longer matches its closed form; revisit the retraction"
+        )
+        b = arms["B_GREEDY_HELDOUT_SCALAR_MATCHED"]
+        acc_b = b["false_promotion_rate"] + b["true_promotion_rate"]
+        assert abs(b["false_promotion_rate"] - 0.5 * acc_b) < 0.03
+
+
+def test_surviving_claims_do_not_rest_on_the_repaired_control_arm() -> None:
+    survives = _load(CORRECTION)["what_survives"]
+    assert "arm A" in survives["rests_on"]
+    assert "arm B" in survives["does_not_rest_on"]
+    assert "arm D" in survives["does_not_rest_on"]
+    assert survives["epistemic_character"].startswith("DERIVED_OPERATING_REGIME_CONSTRAINT")
+
+
+def test_readme_does_not_still_lead_with_the_retracted_finding() -> None:
+    readme = (PACKET / "README.md").read_text()
+    idx = readme.find("3.31")
+    assert idx != -1, "the retracted number should still appear, inside the retraction"
+    assert "What was retracted" in readme[:idx], "3.31x must only appear after the retraction notice"
 
 
 def test_forbidden_claims_are_registered() -> None:
