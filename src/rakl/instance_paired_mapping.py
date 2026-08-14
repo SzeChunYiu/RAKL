@@ -175,8 +175,8 @@ def check_abstention_conditions(query: TypedReducedStructure,
     if len(candidate_roles) < 2 or len(candidate_relations) == 0:
         return "insufficient_extraction_evidence_candidate"
 
-    # Degenerate type coverage
-    typed_q_roles = sum(1 for r in query_roles if r.role_type != RoleType.NONE)
+    # Degenerate type coverage (iterate over dict values)
+    typed_q_roles = sum(1 for r in query_roles.values() if r.role_type != RoleType.NONE)
     typed_q_rels = sum(1 for r in query_relations if r.relation_type != RelationType.PLAIN)
     if (typed_q_roles / len(query_roles) < 0.2 and
         typed_q_rels / len(query_relations) < 0.1):
