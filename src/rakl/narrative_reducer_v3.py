@@ -21,8 +21,7 @@ from .narrative_reducer_v2 import (
     NEGATION_MARKERS, PREPOSITIONS,
     RoleType, RelationType, EntityType,
     TypedRole, TypedRelation, TypedReducedStructure,
-    _detect_role_type, _detect_entity_type, _detect_relation_type,
-    _is_negated, _token_is_content, VERB_LIKE,
+    content_tokens, VERB_LIKE,
 )
 from .support_solver import Atom, Obstruction, SupportEdge, SupportStructure
 from .structure_space import ReducedStructure
