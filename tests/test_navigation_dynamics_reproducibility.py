@@ -13,7 +13,6 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -21,29 +20,41 @@ import pytest
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 EXP_SCRIPT = REPO / "research" / "unified_problem_solving_v1" / "navigation_dynamics_experiment.py"
+ARTIFACT_PATH = REPO / "research" / "unified_problem_solving_v1" / "results" / "navigation_dynamics.json"
+
+
+@pytest.fixture(autouse=True)
+def restore_committed_artifact():
+    """Restore the committed artifact after each test that overwrites it."""
+    # Read original content before test
+    original_content = ARTIFACT_PATH.read_bytes()
+    yield
+    # Restore after test
+    ARTIFACT_PATH.write_bytes(original_content)
 
 
 def _run_experiment(seed: int, graphs_per_cell: int) -> bytes:
-    """Run the experiment script once and return the output JSON bytes."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        out_path = Path(tmpdir) / "output.json"
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(EXP_SCRIPT),
-                "--seed", str(seed),
-                "--graphs-per-cell", str(graphs_per_cell),
-            ],
-            capture_output=True,
-            text=True,
-            cwd=str(REPO),
-        )
-        if result.returncode != 0:
-            pytest.fail(f"Experiment script failed: {result.stderr}")
+    """Run the experiment script once and return the output JSON bytes.
 
-        # Read the generated output
-        generated = REPO / "research" / "unified_problem_solving_v1" / "results" / "navigation_dynamics.json"
-        return generated.read_bytes()
+    WARNING: This overwrites the committed artifact. The restore_committed_artifact
+    fixture will restore it after the test completes.
+    """
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(EXP_SCRIPT),
+            "--seed", str(seed),
+            "--graphs-per-cell", str(graphs_per_cell),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(REPO),
+    )
+    if result.returncode != 0:
+        pytest.fail(f"Experiment script failed: {result.stderr}")
+
+    # Read the generated output
+    return ARTIFACT_PATH.read_bytes()
 
 
 def test_experiment_determinism_small():
@@ -103,9 +114,8 @@ def test_committed_artifact_semantically_correct():
     output = _run_experiment(seed, graphs_per_cell)
     data = json.loads(output)
 
-    # Read committed artifact
-    committed_path = REPO / "research" / "unified_problem_solving_v1" / "results" / "navigation_dynamics.json"
-    committed_data = json.loads(committed_path.read_bytes())
+    # Read committed artifact (restored by fixture)
+    committed_data = json.loads(ARTIFACT_PATH.read_bytes())
 
     # Core data should be identical
     assert data["schema_version"] == committed_data["schema_version"]
