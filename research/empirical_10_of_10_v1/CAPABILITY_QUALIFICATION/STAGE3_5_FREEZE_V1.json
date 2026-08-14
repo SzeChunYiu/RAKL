@@ -10,7 +10,8 @@
       "model_id": "Qwen/Qwen2.5-7B-Instruct",
       "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
       "access": "LUNARC staged exact revision / offline local weights",
-      "precision": "frozen runtime default for qualification packet",
+      "precision": "bfloat16",
+      "device": "cuda",
       "selection_reason": "smallest exactly staged open-weight candidate compatible with the repaired Stage-2 interface",
       "authorization_eligible": true
     }
@@ -19,10 +20,17 @@
     "system_prompt": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/SYSTEM_PROMPT.txt",
     "runner_instruction": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/protocol_stage2/RUNNER_INSTRUCTION_BLOCK.txt",
     "evidence_role_semantics": "LICENSES_VERDICT",
-    "repair_passes": 0
+    "repair_passes": 0,
+    "chat_template": "model_native_if_available_else_system_plus_user_plaintext",
+    "decoding": "greedy",
+    "temperature": 0.0,
+    "max_new_tokens": 256,
+    "batch_size": 1
   },
   "fresh_panel": {
     "seed": 202608140901,
+    "generator": "experiments/paper3/build_capability_stage4_panel_v1.py",
+    "manifest": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/FRESH_TASK_MANIFEST_V1.json",
     "families": [
       "STRAIGHT_SUPPORT",
       "STRAIGHT_REFUTATION",
@@ -58,6 +66,12 @@
     "report_wilson_95_intervals": true,
     "no_optional_stopping": true,
     "all_132_cases_required_unless_transport_failure": true
+  },
+  "resource_ceiling": {
+    "gpu_class": "single A100",
+    "wall_time_hours": 2,
+    "model_substitution_allowed": false,
+    "network_model_download_on_compute_node": false
   },
   "decision": {
     "pass": "CAPABLE_MODEL_AUTHORIZE_RECEIPT_V3",
