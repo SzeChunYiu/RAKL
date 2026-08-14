@@ -1,0 +1,34 @@
+{
+  "schema_version": "rshea-promotion-enforcement-freeze-v1",
+  "change_class": "CLASS_B_WORKFLOW_METHOD",
+  "parent_main_sha": "e5b1e3fb2c231381ca6eacf7122710a0d5e7f282",
+  "packet_contract_sha": "875168cc450a9f10a40be1e899c368f85c4be388",
+  "packet_universe_sha": "e5b1e3fb2c231381ca6eacf7122710a0d5e7f282",
+  "affected_contract": "scripts/promotion_gate.py",
+  "hypothesis": "Every post-contract promotion candidate can be required to bind a valid frozen mechanic research packet without changing any historical candidate verdict or weakening existing applicability, telemetry, evidence, or authority gates.",
+  "primary_meta_qois": [
+    "zero positive/conditional future verdicts survive with missing or invalid packet",
+    "all historical candidate verdicts remain unchanged",
+    "new-candidate registration without a packet fails CI/preflight",
+    "valid packet does not create promotion by itself",
+    "scientific authority remains false"
+  ],
+  "negative_controls": [
+    "synthetic positive candidate without research_packet_variant_id",
+    "synthetic positive candidate pointing to unknown packet id",
+    "renamed historical candidate must not inherit grandfathering",
+    "valid packet plus positive evidence preserves ordinary verdict",
+    "legacy path-equivalence conditional verdict remains conditional"
+  ],
+  "protected_evaluators_unchanged": [
+    "net metric / CI logic",
+    "regime crossover applicability builder",
+    "claim-class telemetry gate",
+    "historical evidence artifacts",
+    "scientific-authority boundary"
+  ],
+  "legacy_cutoff_rule": "Only the exact candidate ids already present at parent_main_sha may be LEGACY_PRE_PACKET. Any successor or revalidation uses a new id and requires a packet.",
+  "rollback": "Close/revert the challenger; historical PROMOTION_GATE artifacts and evidence remain unchanged.",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false
+}
