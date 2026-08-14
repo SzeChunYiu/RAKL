@@ -38,7 +38,13 @@ class ChokepointReport:
 DEFAULT_ALLOWLIST: Mapping[str, frozenset[str]] = {
     "AuthorityProposal_constructor": frozenset({"src/rakl/agent_authority_gateway.py"}),
     "promote_scientific_authority_call": frozenset({"src/rakl/agent_authority_gateway.py"}),
-    "raw_agent_authority_parser_call": frozenset({"src/rakl/driver_learning.py"}),
+    # Two canonical uses exist and have different roles: the gateway's protected
+    # raw-submit sibling parses before forwarding to the protected authority
+    # boundary, while driver_learning is the only production model/driver ingress.
+    # Any third production parser caller remains a choke-point violation.
+    "raw_agent_authority_parser_call": frozenset(
+        {"src/rakl/agent_authority_gateway.py", "src/rakl/driver_learning.py"}
+    ),
     "AuthorityLedger_commit_verified_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
     "AuthorityLedger_revoke_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
     "AuthorityLedger_supersede_call": frozenset({"src/rakl/v3_scientific_authority.py"}),
@@ -98,9 +104,9 @@ def audit_source_tree(
 
     The audit is deliberately syntax-based and fail-closed: an unparsable source
     file is a finding. Tests/fixtures are outside the production root and do not
-    weaken the allowlist.  The raw-agent parser is also single-caller constrained
-    so future production code cannot silently create a second model-output
-    authority ingestion path with different framing semantics.
+    weaken the allowlist.  Raw-agent parsing is constrained to the canonical
+    gateway itself plus the one registered production model/driver ingress, so a
+    second model-output parser path with different framing semantics fails closed.
     """
 
     root = Path(repository_root)
