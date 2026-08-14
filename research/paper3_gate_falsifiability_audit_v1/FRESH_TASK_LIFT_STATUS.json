@@ -1,0 +1,72 @@
+{
+  "schema_version": "rakl-paper3-fresh-task-lift-status-v1",
+  "date": "2026-08-14",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "claim_under_examination": "ORION turns raw research trajectories into verified reusable methods that causally improve fresh research performance across cycles.",
+  "status": "BLOCKED_ON_CAPABILITY_QUALIFICATION",
+  "authority": "STATUS_ESTABLISHMENT_ONLY",
+
+  "why_this_is_not_a_null_result": "A null requires an executed comparison. Nothing was executed here, so nothing may be filed as a null. The lift is blocked upstream, and reporting a blocked lane as a null would be a fabricated negative — as damaging to the record as a fabricated positive.",
+
+  "four_arm_causal_attribution": {
+    "executed": false,
+    "recorded_terminal": "CAPABILITY_LIMITED_CAUSAL_CANNOT_IDENTIFY",
+    "source": "research/paper3_publication_closeout_v1/FINAL_RECEIPT.json :: causal_model_efficacy",
+    "preserved_precursor": "NEGATIVE_NO_TRANSFER_SUCCESS_LIFT_UNDER_0_5B",
+    "recorded_constraint": "'No post-outcome model shopping is authorized.'",
+    "interpretation_verbatim_from_receipt": "The model-dependent four-arm treatment effect is not identified at the registered operating point. This does not negate or establish the structured routing mechanics."
+  },
+
+  "gating_dependency": {
+    "gate": "issue #447 Stage 4 — fresh held-out capability qualification panel",
+    "freeze": "research/empirical_10_of_10_v1/CAPABILITY_QUALIFICATION/STAGE3_5_FREEZE_V1.json",
+    "freeze_status": "FROZEN — model candidate, revision, interface, decoding, panel and vector gate are all bound",
+    "frozen_subject": "Qwen/Qwen2.5-7B-Instruct revision a09a35458c702b33eeacc393d103063234e8bc28, bfloat16, cuda, greedy decoding, 256 max new tokens, LUNARC staged offline weights",
+    "panel": "132 cases across 11 families, generator experiments/paper3/build_capability_stage4_panel_v1.py, panel_sha256-bound",
+    "executed": false,
+    "evidence_of_non_execution": "no Stage-4 / Stage-5 result receipt exists anywhere under research/; the only model output artifact in the qualification packet is DIAGNOSTIC_RESULTS/qwen2.5-7b-instruct.jsonl, which is Stage-1 development material and is excluded from the fresh panel by the freeze"
+  },
+
+  "why_not_executed_in_this_fiber": {
+    "resource": "This lane's compute is restricted to laptop billy, which carries an NVIDIA RTX A3000 Laptop GPU and 22 GB of available system RAM. A 7B model in bfloat16 does not fit that GPU, and the weights are staged on LUNARC, not locally.",
+    "protocol": "More decisive than the resource limit: the freeze binds device=cuda, precision=bfloat16, a specific transformers version and an exact staged weight path, and registers version_mismatch_terminal = CAPABLE_MODEL_NOT_FEASIBLE_UNDER_RESOURCE_ENVELOPE. Executing the frozen panel under a different runtime would not be the frozen protocol; it would be a silent substitution, which the freeze forbids.",
+    "conclusion": "Stage 4 must run on the staged LUNARC A100 subject exactly as frozen. It is BLOCKED here, not failed, and not runnable-but-skipped."
+  },
+
+  "instrument_certified_before_budget": {
+    "audit": "research/paper3_gate_falsifiability_audit_v1/STAGE4_GATE_FALSIFIABILITY_AUDIT.json",
+    "verdict": "FALSIFIABLE",
+    "controls": "an oracle responder that echoes gold passes (so the gate is not mis-specified), and the shipped shortcut audit is clean — all four constant responders (ALWAYS_SUPPORT / ALWAYS_REFUTE / ALWAYS_CANNOT_CHECK / ALWAYS_CONTEXT_MISALIGNED) fail the vector gate",
+    "sensitivity": "6 of 7 probes moved the verdict — shuffling verdicts, shuffling selected or rejected evidence IDs, swapping the partition, shuffling task IDs, and making 10% of responses unparseable all flip it to FAIL",
+    "the_one_insensitive_probe": "corrupting a single verdict does not flip the gate. At n=132 against a 0.85 exact-joint floor that is correct calibration, not deadness, and it is reported rather than hidden.",
+    "significance": "Unlike the experience-to-action gate, the Stage-4 gate scores model output against panel gold produced by a separate generator, and it can fail. The instrument standing in front of the next confirmatory budget is sound. What is missing is execution, not a working gate."
+  },
+
+  "revival_attempt_before_filing": {
+    "required_by": "the operator's diagnose-revive-before-discard rule — a failure is a lead, not a dead end",
+    "attribution_to_one_stage": "MODEL_AND_INTERFACE_QUALIFICATION. Not the benchmark (frozen and audited FALSIFIABLE), not the routing mechanics (independently validated), not the analysis.",
+    "levers_considered": [
+      {
+        "lever": "run the frozen panel on smaller local weights",
+        "verdict": "REJECTED — silent model substitution against a freeze that names the exact revision; this is the failure mode the freeze exists to prevent"
+      },
+      {
+        "lever": "run on a hosted API model",
+        "verdict": "REJECTED — the frozen candidate set contains exactly one entry and the freeze forbids adding candidates because an earlier one is unavailable"
+      },
+      {
+        "lever": "relax the vector gate so the existing 7B evidence clears it",
+        "verdict": "REJECTED — post-outcome threshold rescue; forbidden by no_post_result_threshold_rescue and by the repository rule against modifying promotion criteria to make a candidate pass"
+      },
+      {
+        "lever": "evaluate the typed state on an externally constructed benchmark that needs no LUNARC qualification",
+        "verdict": "VIABLE — the strongest available revival path. STALE (arXiv:2605.06527) supplies 400 expert-validated staleness-conflict scenarios with a published 55.2% best-model ceiling, targeting exactly the version_current / not_refuted coordinates of RAKL's typed state. This would give Paper III an external, non-self-generated evaluation surface while Stage 4 remains blocked, and it does not require the frozen 7B subject.",
+        "status": "PROPOSED_NOT_EXECUTED — requires its own freeze before outcome access, and the operator's budget decision"
+      }
+    ]
+  },
+
+  "honest_terminal": "The Paper III fresh-task lift is BLOCKED on Stage-4 capability qualification, which is frozen, instrument-audited FALSIFIABLE, and unexecuted for want of the staged LUNARC A100 subject. This is CANNOT_CHECK, not a negative. The frozen four-arm protocol was not rewritten, no threshold was relaxed, and no model was substituted.",
+
+  "grants_scientific_authority": false
+}
