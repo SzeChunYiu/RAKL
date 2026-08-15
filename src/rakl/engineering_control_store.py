@@ -8,7 +8,7 @@ consistent engineering state.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from enum import Enum
 import json
@@ -79,7 +79,7 @@ class SqliteControlProjectionStore:
         return db
 
     def _init_schema(self) -> None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             db.executescript(
                 """
                 PRAGMA journal_mode=WAL;
@@ -169,7 +169,7 @@ class SqliteControlProjectionStore:
         *,
         kind: ControlArtifactKind | None = None,
     ) -> Tuple[ControlArtifactProjection, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             if kind is None:
                 rows = db.execute(
                     """SELECT payload_json FROM control_projection

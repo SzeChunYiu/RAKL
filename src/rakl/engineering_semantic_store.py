@@ -16,7 +16,7 @@ version content hash.  Historical semantic state remains append-only and queryab
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -251,7 +251,7 @@ class SqliteSemanticStateStore:
         return db
 
     def _init_schema(self) -> None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             db.executescript(
                 """
                 PRAGMA journal_mode=WAL;
@@ -367,7 +367,7 @@ class SqliteSemanticStateStore:
         return fiber
 
     def get_fiber(self, fiber_id: str) -> SemanticFiber | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT fiber_id,parent_fiber_id,created_from_sequence FROM semantic_fibers WHERE fiber_id=?",
                 (fiber_id,),
@@ -377,7 +377,7 @@ class SqliteSemanticStateStore:
         return SemanticFiber(row["fiber_id"], row["parent_fiber_id"], int(row["created_from_sequence"]))
 
     def fibers_at(self, sequence: int) -> Tuple[SemanticFiber, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT fiber_id,parent_fiber_id,created_from_sequence FROM semantic_fibers
                    WHERE created_from_sequence <= ? ORDER BY fiber_id""",
@@ -396,7 +396,7 @@ class SqliteSemanticStateStore:
         ).fetchone()
 
     def latest_atom_version(self, atom_id: str) -> SemanticAtomVersion | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = self._latest_atom_row(db, atom_id)
         return None if row is None else self._atom_from_dict(json.loads(row["payload_json"]))
 
@@ -448,7 +448,7 @@ class SqliteSemanticStateStore:
         return version
 
     def latest_witness_version(self, witness_id: str) -> RelationWitnessVersion | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT payload_json FROM semantic_witness_versions WHERE witness_id=?
                    ORDER BY valid_from_sequence DESC LIMIT 1""",
@@ -516,7 +516,7 @@ class SqliteSemanticStateStore:
         return version
 
     def atom_versions_at(self, sequence: int) -> Tuple[SemanticAtomVersion, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT v.payload_json FROM semantic_atom_versions v
                    JOIN (
@@ -529,7 +529,7 @@ class SqliteSemanticStateStore:
         return tuple(self._atom_from_dict(json.loads(row["payload_json"])) for row in rows)
 
     def witness_versions_at(self, sequence: int) -> Tuple[RelationWitnessVersion, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT v.payload_json FROM semantic_witness_versions v
                    JOIN (
@@ -615,7 +615,7 @@ class SqliteSemanticStateStore:
         return self._revision_for(batch.sequence, fibers.values(), atoms.values(), witnesses.values())
 
     def preview_batch_revision(self, batch: SemanticMutationBatch) -> str:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._preview_batch_revision_db(db, batch)
 
     def _commit_batch_db(
@@ -688,7 +688,7 @@ class SqliteSemanticStateStore:
         """
         if not batch_id or not batch_id.strip():
             raise ValueError("batch_id is required")
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT committed_snapshot_id,semantic_revision FROM semantic_batch_commits WHERE batch_id=?",
                 (batch_id,),

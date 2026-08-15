@@ -229,7 +229,7 @@ class SqliteAtlasPlaneStore:
 
     @staticmethod
     def _dump(value: Mapping[str, object]) -> str:
-        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
     def commit_batch(
         self,

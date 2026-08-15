@@ -176,7 +176,7 @@ class SqliteWorkerWorkflowEngine:
 
     @staticmethod
     def _dump(value: Mapping[str, object]) -> str:
-        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
     def _append_event(self, db: sqlite3.Connection, workflow_id: str, kind: str, payload: Mapping[str, object]) -> str:
         row = db.execute(

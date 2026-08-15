@@ -170,9 +170,36 @@ class BudgetVerdict(str, Enum):
     DEGRADED = "DEGRADED"
 
 
+class AdmissionSlot(str, Enum):
+    NONE = "NONE"          # refused; nothing to release
+    INFLIGHT = "INFLIGHT"
+    QUEUED = "QUEUED"
+
+
+@dataclass(frozen=True)
+class Admission:
+    """What admit() hands back: the verdict, the slot taken, and an id.
+
+    release() takes this back and frees whichever slot the admission CURRENTLY
+    occupies -- which may differ from `slot` if a queued caller was promoted
+    into a freed inflight slot in the meantime. The budget tracks that by id;
+    the token's `slot` field records only where it started.
+    """
+
+    verdict: BudgetVerdict
+    slot: AdmissionSlot
+    admission_id: int = 0
+
+
 @dataclass
 class ResourceBudget:
-    """Admission control. Refusal happens BEFORE any mutation, so exhaustion never half-writes."""
+    """Admission control. Refusal happens BEFORE any mutation, so exhaustion never half-writes.
+
+    Live admissions are tracked by id so release() frees the slot a caller
+    actually holds. The two prior versions of release() both guessed -- one
+    freed a queued slot for an inflight holder, one freed a queued slot for a
+    caller that had since been promoted -- and both ratcheted inflight upward.
+    """
 
     max_inflight: int
     max_queue: int
@@ -181,25 +208,68 @@ class ResourceBudget:
     queued: int = 0
     refused: int = 0
     degraded: int = 0
+    _next_id: int = 0
+    _inflight_ids: set = field(default_factory=set)
+    _queued_ids: list = field(default_factory=list)  # FIFO promotion
 
-    def admit(self) -> BudgetVerdict:
+    def admit(self) -> Admission:
+        self._next_id += 1
+        aid = self._next_id
         if self.inflight >= self.max_inflight:
             if self.queued >= self.max_queue:
                 self.refused += 1
-                return BudgetVerdict.REFUSED_OVER_BUDGET
+                return Admission(BudgetVerdict.REFUSED_OVER_BUDGET, AdmissionSlot.NONE, aid)
             self.queued += 1
-            return BudgetVerdict.DEGRADED  # queued, not running: backpressure
+            self._queued_ids.append(aid)
+            return Admission(BudgetVerdict.DEGRADED, AdmissionSlot.QUEUED, aid)  # backpressure
         self.inflight += 1
+        self._inflight_ids.add(aid)
         if self.inflight >= self.degrade_at_inflight:
             self.degraded += 1
-            return BudgetVerdict.DEGRADED
-        return BudgetVerdict.ADMITTED
+            return Admission(BudgetVerdict.DEGRADED, AdmissionSlot.INFLIGHT, aid)
+        return Admission(BudgetVerdict.ADMITTED, AdmissionSlot.INFLIGHT, aid)
 
-    def release(self) -> None:
-        if self.queued > 0:
+    def current_slot(self, admission: Admission) -> AdmissionSlot:
+        """Where this admission is NOW: inflight, still queued, or released/refused."""
+
+        if admission.admission_id in self._inflight_ids:
+            return AdmissionSlot.INFLIGHT
+        if admission.admission_id in self._queued_ids:
+            return AdmissionSlot.QUEUED
+        return AdmissionSlot.NONE
+
+    def release(self, admission: Admission | None = None) -> None:
+        """Free the slot the admission currently holds; promote the oldest queued caller.
+
+        Releasing a refused or already-released token is a no-op. Untokened
+        release frees one inflight slot for callers written before tokens
+        existed; there is no correct reason for new code to use it.
+        """
+
+        if admission is None:
+            if self.inflight > 0:
+                self.inflight -= 1
+                if self._inflight_ids:
+                    self._inflight_ids.pop()
+            self._promote()
+            return
+        slot = self.current_slot(admission)
+        if slot is AdmissionSlot.NONE:
+            return
+        if slot is AdmissionSlot.QUEUED:
+            self._queued_ids.remove(admission.admission_id)
             self.queued -= 1
-        elif self.inflight > 0:
-            self.inflight -= 1
+            return
+        self._inflight_ids.discard(admission.admission_id)
+        self.inflight -= 1
+        self._promote()
+
+    def _promote(self) -> None:
+        if self._queued_ids and self.inflight < self.max_inflight:
+            aid = self._queued_ids.pop(0)
+            self.queued -= 1
+            self._inflight_ids.add(aid)
+            self.inflight += 1
 
 
 @dataclass(frozen=True)
@@ -281,6 +351,15 @@ class ProbeStatus(str, Enum):
     CANNOT_CHECK = "CANNOT_CHECK"
 
 
+# Severity is explicit, not enum declaration order. See OperatorDoctor.overall.
+PROBE_SEVERITY: dict[ProbeStatus, int] = {
+    ProbeStatus.OK: 0,
+    ProbeStatus.DEGRADED: 1,
+    ProbeStatus.CANNOT_CHECK: 2,
+    ProbeStatus.FAIL: 3,
+}
+
+
 @dataclass(frozen=True)
 class ProbeResult:
     subsystem: str
@@ -305,16 +384,32 @@ class OperatorDoctor:
         return tuple(out)
 
     @staticmethod
+    def overall(results: Sequence[ProbeResult]) -> ProbeStatus:
+        """The single canonical health rollup.
+
+        Explicit total order, worst wins: OK < DEGRADED < CANNOT_CHECK < FAIL.
+        CANNOT_CHECK outranks DEGRADED because an unavailable subsystem is worse
+        than a degraded one you can see; FAIL outranks CANNOT_CHECK because a
+        confirmed failure is never softened by an unrelated probe being
+        unavailable. A doctor that ran no probes checked nothing, and nothing
+        checked is CANNOT_CHECK, never OK.
+        """
+
+        if not results:
+            return ProbeStatus.CANNOT_CHECK
+        return max((r.status for r in results), key=PROBE_SEVERITY.__getitem__)
+
+    @staticmethod
     def render(results: Sequence[ProbeResult]) -> str:
-        worst = max((r.status for r in results), key=list(ProbeStatus).index, default=ProbeStatus.OK)
-        lines = [f"ORION DOCTOR  overall={worst.value}"]
+        worst = OperatorDoctor.overall(results)
+        lines = [f"ORION DOCTOR  overall={worst.value}  probes={len(results)}"]
         for r in results:
             lines.append(f"  {r.status.value:<12} {r.subsystem:<22} {r.detail}")
         return "\n".join(lines)
 
 
 __all__ = [
-    "BackupManifest", "BudgetVerdict", "BuildProvenance", "ObservatoryView", "OperatorDoctor",
+    "Admission", "AdmissionSlot", "BackupManifest", "BudgetVerdict", "BuildProvenance", "ObservatoryView", "OperatorDoctor", "PROBE_SEVERITY",
     "ProbeResult", "ProbeStatus", "ProvenanceVerdict", "ResourceBudget", "RestoreVerdict",
     "SloEnvelope", "measure_slo", "project_observatory", "take_backup", "verify_restore",
 ]

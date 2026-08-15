@@ -76,13 +76,38 @@ def test_tampered_manifest_is_refused() -> None:
 
 def test_budget_refuses_typed_before_state_changes() -> None:
     b = ResourceBudget(max_inflight=2, max_queue=1, degrade_at_inflight=2)
-    assert b.admit() is BudgetVerdict.ADMITTED
-    assert b.admit() is BudgetVerdict.DEGRADED     # hit degrade threshold
-    assert b.admit() is BudgetVerdict.DEGRADED     # queued (backpressure)
-    assert b.admit() is BudgetVerdict.REFUSED_OVER_BUDGET
+    a1 = b.admit(); assert a1.verdict is BudgetVerdict.ADMITTED
+    a2 = b.admit(); assert a2.verdict is BudgetVerdict.DEGRADED     # hit degrade threshold
+    a3 = b.admit(); assert a3.verdict is BudgetVerdict.DEGRADED     # queued (backpressure)
+    a4 = b.admit(); assert a4.verdict is BudgetVerdict.REFUSED_OVER_BUDGET
     assert b.refused == 1
-    b.release(); b.release(); b.release()
-    assert b.admit() in (BudgetVerdict.ADMITTED, BudgetVerdict.DEGRADED)
+    b.release(a1); b.release(a2); b.release(a3)
+    assert b.admit().verdict in (BudgetVerdict.ADMITTED, BudgetVerdict.DEGRADED)
+
+
+def test_budget_release_frees_exactly_the_slot_taken_and_never_ratchets() -> None:
+    """Regression: an ADMITTED holder's release used to consume a QUEUED slot.
+
+    4 admits + 1 queued, then an inflight holder releases: inflight must drop
+    (and the queued caller is promoted into the freed slot), not stay pinned at
+    the ceiling. Then cycle admit/release many times: inflight must return to
+    zero, proving nothing ratchets.
+    """
+
+    b = ResourceBudget(max_inflight=4, max_queue=4, degrade_at_inflight=99)
+    held = [b.admit() for _ in range(4)]
+    queued = b.admit()
+    assert (b.inflight, b.queued) == (4, 1)
+    b.release(held[0])                     # one inflight frees; queued promotes
+    assert (b.inflight, b.queued) == (4, 0)
+    for a in held[1:]:
+        b.release(a)
+    b.release(queued)                      # the promoted caller finishes
+    assert (b.inflight, b.queued) == (0, 0)
+    for _ in range(6):                     # nothing ratchets across cycles
+        a = b.admit(); assert a.verdict is BudgetVerdict.ADMITTED
+        b.release(a)
+    assert (b.inflight, b.queued) == (0, 0)
 
 
 def test_slo_envelope_measures_and_judges() -> None:

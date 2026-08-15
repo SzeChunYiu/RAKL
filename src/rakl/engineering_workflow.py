@@ -8,7 +8,7 @@ which it was planned.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from enum import Enum
 import json
@@ -139,7 +139,7 @@ class SqliteReferenceWorkflowEngine:
         return db
 
     def _init_schema(self) -> None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             db.executescript(
                 """
                 PRAGMA journal_mode=WAL;
@@ -352,7 +352,7 @@ class SqliteReferenceWorkflowEngine:
         )
 
     def activity(self, workflow_id: str, activity_id: str) -> ActivityRecord:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT * FROM workflow_activities WHERE workflow_id=? AND activity_id=?",
                 (workflow_id, activity_id),
@@ -565,7 +565,7 @@ class SqliteReferenceWorkflowEngine:
             return self.workflow(workflow_id, _db=db)
 
     def events(self, workflow_id: str) -> Tuple[WorkflowEvent, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 "SELECT * FROM workflow_events WHERE workflow_id=? ORDER BY sequence",
                 (workflow_id,),

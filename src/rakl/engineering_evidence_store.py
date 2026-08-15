@@ -7,7 +7,7 @@ not part of the record content hash, avoiding snapshot/content identity cycles.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 import json
 from pathlib import Path
@@ -127,7 +127,7 @@ class SqliteEvidenceMetadataStore:
         return db
 
     def _init_schema(self) -> None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             db.executescript(
                 """
                 PRAGMA journal_mode=WAL;
@@ -198,7 +198,7 @@ class SqliteEvidenceMetadataStore:
         return tuple(self._from_dict(json.loads(row["payload_json"])) for row in rows)
 
     def records_at(self, project_id: str, sequence: int) -> Tuple[EvidenceRecord, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._records_at_db(db, project_id, sequence)
 
     @staticmethod
@@ -236,7 +236,7 @@ class SqliteEvidenceMetadataStore:
         return self._revision_for(batch.project_id, existing.values())
 
     def preview_batch_revision(self, batch: EvidenceMutationBatch) -> str:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._preview_batch_revision_db(db, batch)
 
     def _commit_batch_db(
@@ -307,7 +307,7 @@ class SqliteEvidenceMetadataStore:
         return EvidenceBatchCommit(batch.batch_id, committed_snapshot_id, actual)
 
     def batch_commit(self, batch_id: str) -> EvidenceBatchCommit | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT committed_snapshot_id,evidence_revision
                    FROM engineering_evidence_batch_commits WHERE batch_id=?""",

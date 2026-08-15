@@ -8,7 +8,7 @@ scientific or promotion authority.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 import json
 from pathlib import Path
 import sqlite3
@@ -113,7 +113,7 @@ class SqliteEngineeringStateStore:
         return connection
 
     def _initialize_schema(self) -> None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             db.executescript(
                 """
                 PRAGMA journal_mode=WAL;
@@ -218,7 +218,7 @@ class SqliteEngineeringStateStore:
         return snapshot
 
     def head(self, project_id: str) -> ProjectSnapshot:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT s.payload_json FROM project_heads h
                    JOIN snapshots s ON s.snapshot_id=h.snapshot_id
@@ -230,7 +230,7 @@ class SqliteEngineeringStateStore:
         return ProjectSnapshot.from_dict(json.loads(row["payload_json"]))
 
     def get_snapshot(self, snapshot_id: str) -> ProjectSnapshot:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT payload_json FROM snapshots WHERE snapshot_id=?", (snapshot_id,)
             ).fetchone()
@@ -294,7 +294,7 @@ class SqliteEngineeringStateStore:
         target_id: str,
         fiber_id: str,
     ) -> EpistemicStatus | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT payload_json FROM epistemic_statuses
                    WHERE project_snapshot_id=? AND target_id=? AND fiber_id=?
@@ -304,7 +304,7 @@ class SqliteEngineeringStateStore:
         return None if row is None else EpistemicStatus.from_dict(json.loads(row["payload_json"]))
 
     def transition_receipt(self, project_id: str, idempotency_key: str) -> StateTransitionReceipt | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT payload_json FROM transitions WHERE project_id=? AND idempotency_key=?",
                 (project_id, idempotency_key),
