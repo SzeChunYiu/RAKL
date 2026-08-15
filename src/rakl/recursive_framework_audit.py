@@ -19,6 +19,7 @@ Known-world conformance is not utility evidence.
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
 
@@ -158,13 +159,41 @@ class DecompositionCandidate:
 
 @dataclass(frozen=True)
 class InterfaceContract:
-    """Parent-child interface: exchanged obligations and erasure map."""
+    """Parent-child interface: exchanged obligations, erasure map and transport license.
+
+    The handoff packet requires an interface to bind ten things, not three:
+    the discharged parent obligation, inherited inputs, returned outputs,
+    assumptions, scope/context, units/representation, the authority that may
+    and may not transport across the boundary, uncertainty composition and
+    failure/``CANNOT_CHECK`` semantics.  The additional bindings default to
+    empty so existing contracts stay constructible, but ``complete`` is false
+    until all of them are supplied, and authority transport is **fail closed**:
+    anything not explicitly licensed is unlicensed.
+    """
 
     parent_fiber_id: str
     child_fiber_id: str
     child_obligations: tuple[str, ...] = ()
     parent_consumables: tuple[str, ...] = ()
     erasure_map: tuple[tuple[str, str], ...] = ()
+    parent_obligation_discharged: str = ""
+    inherited_inputs: tuple[str, ...] = ()
+    returned_outputs: tuple[str, ...] = ()
+    assumptions: tuple[str, ...] = ()
+    scope: str = ""
+    units: str = ""
+    authority_transportable: tuple[str, ...] = ()
+    authority_forbidden: tuple[str, ...] = ()
+    uncertainty_composition: str = ""
+    failure_semantics: str = ""
+
+    def __post_init__(self) -> None:
+        contradictory = set(self.authority_transportable) & set(self.authority_forbidden)
+        if contradictory:
+            raise ValueError(
+                "authority cannot be both transportable and forbidden across one "
+                f"interface: {sorted(contradictory)}"
+            )
 
     @property
     def grants_scientific_authority(self) -> bool:
@@ -173,6 +202,42 @@ class InterfaceContract:
     @property
     def grants_method_promotion_authority(self) -> bool:
         return False
+
+    @property
+    def complete(self) -> bool:
+        """True only when every binding the packet requires is present."""
+
+        return all(
+            (
+                self.child_obligations,
+                self.parent_obligation_discharged,
+                self.inherited_inputs,
+                self.returned_outputs,
+                self.assumptions,
+                self.scope,
+                self.units,
+                self.authority_transportable or self.authority_forbidden,
+                self.uncertainty_composition,
+                self.failure_semantics,
+            )
+        )
+
+    def licenses(self, authority_kind: str) -> bool:
+        """Fail closed: only explicitly transportable authority is licensed."""
+
+        return (
+            authority_kind in self.authority_transportable
+            and authority_kind not in self.authority_forbidden
+        )
+
+    def unlicensed_transports(self, claimed: "Iterable[str]") -> tuple[str, ...]:
+        """Claimed transports this interface does not license.
+
+        A child cannot silently update its parent: every claim outside the
+        licensed set is returned here rather than quietly allowed through.
+        """
+
+        return tuple(kind for kind in dict.fromkeys(claimed) if not self.licenses(kind))
 
 
 @dataclass(frozen=True)
@@ -623,25 +688,233 @@ def request_self_rakl_escalation(
     )
 
 
+# ---------------------------------------------------------------------------
+# Provisional atomicity — admissibility conditions (packet section 06)
+# ---------------------------------------------------------------------------
+
+
+class AtomicitySplitCondition(str, Enum):
+    """The five conditions a registered split family must clear.
+
+    A fiber is provisionally atomic at a registered target, evaluator, split
+    family and cutoff only if every one of these holds over that split family.
+    """
+
+    NO_MATERIALLY_DIFFERENT_TARGET_PREDICTIONS = "NO_MATERIALLY_DIFFERENT_TARGET_PREDICTIONS"
+    NO_DIFFERENT_AUTHORITY_PREREQUISITES = "NO_DIFFERENT_AUTHORITY_PREREQUISITES"
+    NO_DIFFERENT_OPTIMAL_DECISION_ACTION = "NO_DIFFERENT_OPTIMAL_DECISION_ACTION"
+    NO_CHILD_FALSIFIER_EXPOSING_MIXED_REGIME = "NO_CHILD_FALSIFIER_EXPOSING_MIXED_REGIME"
+    NO_OMITTED_STRUCTURE_FROM_INTERFACE_BURDEN = "NO_OMITTED_STRUCTURE_FROM_INTERFACE_BURDEN"
+
+
+def issue_atomicity_receipt(
+    *,
+    target_id: str,
+    split_family: str,
+    evaluator_epoch: str,
+    evidence_cutoff: str,
+    satisfied_conditions: Iterable[AtomicitySplitCondition],
+    decision_consumer: str = "",
+) -> AtomicityReceipt:
+    """Issue a provisional atomicity receipt only when all five conditions hold.
+
+    ``AtomicityReceipt`` itself stays constructible as a plain record; this is
+    the checked constructor.  Missing conditions fail closed rather than
+    downgrading to a weaker terminal — an unchecked split family is not
+    evidence of atomicity, it is an unrun check.
+    """
+
+    satisfied = set(satisfied_conditions)
+    missing = tuple(c.value for c in AtomicitySplitCondition if c not in satisfied)
+    if missing:
+        raise ValueError(f"atomicity conditions not established over the split family: {list(missing)}")
+    return AtomicityReceipt(
+        target_id=target_id,
+        split_family=split_family,
+        evaluator_epoch=evaluator_epoch,
+        evidence_cutoff=evidence_cutoff,
+        decision_consumer=decision_consumer,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Stopping law — mandatory triggers, value of audit, bounded node closure
+# (packet section 08)
+# ---------------------------------------------------------------------------
+
+
+class AuditTrigger(str, Enum):
+    """Conditions under which an audit is mandatory, not optional."""
+
+    EVALUATOR_INVALID = "EVALUATOR_INVALID"
+    AUTHORITY_LEAK_RISK = "AUTHORITY_LEAK_RISK"
+    UNRESOLVED_CONTRADICTION = "UNRESOLVED_CONTRADICTION"
+    TARGET_UNREACHABLE = "TARGET_UNREACHABLE"
+    REPEATED_UNCLASSIFIED_RESIDUAL = "REPEATED_UNCLASSIFIED_RESIDUAL"
+    DISTINCT_LOCAL_REPAIRS_FAIL = "DISTINCT_LOCAL_REPAIRS_FAIL"
+    INTERFACE_GLUE_FAILURE = "INTERFACE_GLUE_FAILURE"
+    MEASUREMENT_MODEL_FAILURE = "MEASUREMENT_MODEL_FAILURE"
+    HIGH_STAKES_DOMAIN_TRANSFER = "HIGH_STAKES_DOMAIN_TRANSFER"
+    CHALLENGER_CHANGES_THE_DECISION = "CHALLENGER_CHANGES_THE_DECISION"
+
+
+def mandatory_audit_triggered(triggers: Iterable[AuditTrigger]) -> bool:
+    """Any registered trigger makes the audit mandatory regardless of its value."""
+
+    return bool(tuple(triggers))
+
+
+@dataclass(frozen=True)
+class OptionalAuditCandidate:
+    """One optional audit action, with the inputs the stopping law admits."""
+
+    action: AuditAction
+    registered_priority: int
+    cost: int
+    separates_decision: bool = False
+    expected_utility_gain: int | None = None
+
+    def __post_init__(self) -> None:
+        if self.cost < 0:
+            raise ValueError("audit cost cannot be negative")
+        if self.registered_priority < 0:
+            raise ValueError("registered priority cannot be negative")
+
+
+def select_optional_audit(
+    candidates: Iterable[OptionalAuditCandidate],
+    *,
+    calibrated: bool = False,
+) -> OptionalAuditCandidate | None:
+    """Choose the next optional audit, or ``None`` to stop.
+
+    With calibrated probabilities the packet's value-of-audit rule applies:
+    ``VOA(a) = E[U* after a] - U* now - Cost(a)``, and only a strictly positive
+    VOA justifies opening the node.  Without them the fallback is
+    ``hard trigger -> worst-case decision separation -> registered priority ->
+    cost``; candidates that cannot separate the decision are not opened.
+
+    Priors are never invented: asking for the calibrated rule without supplying
+    every expected-utility gain raises instead of substituting a default.
+    """
+
+    pool = tuple(candidates)
+    if not pool:
+        return None
+    if calibrated:
+        missing = tuple(c.action.value for c in pool if c.expected_utility_gain is None)
+        if missing:
+            raise ValueError(
+                "calibrated value-of-audit requires an expected utility gain for every "
+                f"candidate; missing: {list(missing)}"
+            )
+        scored = [(c.expected_utility_gain - c.cost, c) for c in pool]
+        best_value, best = max(scored, key=lambda pair: (pair[0], -pair[1].registered_priority))
+        return best if best_value > 0 else None
+    separating = [c for c in pool if c.separates_decision]
+    if not separating:
+        return None
+    return min(separating, key=lambda c: (c.registered_priority, c.cost))
+
+
+class NodeClosureTerminal(str, Enum):
+    """Terminals of the bounded node-closure assessment."""
+
+    NODE_CLOSED_AT_REGISTERED_CUTOFF = "NODE_CLOSED_AT_REGISTERED_CUTOFF"
+    NODE_OPEN = "NODE_OPEN"
+    CANNOT_CHECK_RESOURCE_BOUND = "CANNOT_CHECK_RESOURCE_BOUND"
+
+
+@dataclass(frozen=True)
+class NodeClosureAssessment:
+    """Result of the eight-condition bounded closure check.  Carries no authority."""
+
+    terminal: NodeClosureTerminal
+    unmet_conditions: tuple[str, ...] = ()
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+    @property
+    def grants_method_promotion_authority(self) -> bool:
+        return False
+
+    @property
+    def closed(self) -> bool:
+        return self.terminal is NodeClosureTerminal.NODE_CLOSED_AT_REGISTERED_CUTOFF
+
+
+def assess_bounded_node_closure(
+    *,
+    question_decision_sufficient: bool,
+    framework_not_dominated: bool,
+    decomposition_checks_pass: bool,
+    interfaces_complete: bool,
+    measurement_and_evaluator_valid: bool,
+    target_solved_or_blocker_typed: bool,
+    no_decision_relevant_residual: bool,
+    no_material_optional_audit_value: bool,
+    resource_bound: bool = False,
+) -> NodeClosureAssessment:
+    """Assess ``NODE_CLOSED_AT_REGISTERED_CUTOFF`` against all eight conditions.
+
+    Closure is decision- and cutoff-relative, never global completeness.  A
+    resource cap arriving while any condition is still unmet is
+    ``CANNOT_CHECK_RESOURCE_BOUND`` — a resource block is not a solver failure
+    and not a scientific terminal, so it is never rounded down to ``NODE_OPEN``
+    or up to closure.
+    """
+
+    conditions = (
+        ("question_decision_sufficient", question_decision_sufficient),
+        ("framework_not_dominated", framework_not_dominated),
+        ("decomposition_checks_pass", decomposition_checks_pass),
+        ("interfaces_complete", interfaces_complete),
+        ("measurement_and_evaluator_valid", measurement_and_evaluator_valid),
+        ("target_solved_or_blocker_typed", target_solved_or_blocker_typed),
+        ("no_decision_relevant_residual", no_decision_relevant_residual),
+        ("no_material_optional_audit_value", no_material_optional_audit_value),
+    )
+    unmet = tuple(name for name, met in conditions if not met)
+    if unmet:
+        terminal = (
+            NodeClosureTerminal.CANNOT_CHECK_RESOURCE_BOUND
+            if resource_bound
+            else NodeClosureTerminal.NODE_OPEN
+        )
+        return NodeClosureAssessment(terminal, unmet)
+    return NodeClosureAssessment(NodeClosureTerminal.NODE_CLOSED_AT_REGISTERED_CUTOFF)
+
+
 __all__ = [
     "AncestorChallenge",
+    "AtomicityReceipt",
+    "AtomicitySplitCondition",
     "AuditAction",
     "AuditCoordinate",
     "AuditNode",
     "AuditResidual",
-    "AtomicityReceipt",
+    "AuditTrigger",
     "DecompositionCandidate",
     "DiscriminatorReceipt",
     "FrameworkCandidate",
     "InterfaceContract",
+    "NodeClosureAssessment",
+    "NodeClosureTerminal",
+    "OptionalAuditCandidate",
     "ProblemStatement",
     "QuestionFormulationCandidate",
     "RecursiveAuditDecision",
     "RecursiveAuditProjection",
     "SelfRaklEscalationRequest",
+    "assess_bounded_node_closure",
     "audit_after_material_residual",
     "audit_before_commit",
     "decide",
+    "issue_atomicity_receipt",
+    "mandatory_audit_triggered",
     "metacognitive_gap_candidates",
     "request_self_rakl_escalation",
+    "select_optional_audit",
 ]
