@@ -1,0 +1,46 @@
+{
+  "schema_version": "self-rakl-meta-evolution-v4-frozen-benchmark-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "PROPOSAL_ONLY",
+  "question": "Can recursive credit/escalation identity remain invariant to every human-readable domain, problem-family and mechanic-class rename by requiring content-manifest digests rather than opaque IDs?",
+  "cases": [
+    {
+      "id": "V4-DOMAIN-RENAME",
+      "world": "same domain manifest bytes, different display/domain labels",
+      "expected": "SAME_CONTEXT_DIGEST"
+    },
+    {
+      "id": "V4-PROBLEM-FAMILY-RENAME",
+      "world": "same problem-family manifest bytes, different family labels",
+      "expected": "SAME_CONTEXT_DIGEST"
+    },
+    {
+      "id": "V4-DOMAIN-CONTENT-CHANGE",
+      "world": "domain manifest digest changes while display name stays fixed",
+      "expected": "DIFFERENT_CONTEXT_DIGEST"
+    },
+    {
+      "id": "V4-MECHANIC-CLASS-RENAME",
+      "world": "same mutation contract/preconditions/effects/falsifiers, different mechanic-class display labels",
+      "expected": "SAME_MUTATION_FAMILY_DIGEST"
+    },
+    {
+      "id": "V4-OPERATOR-CONTRACT-CHANGE",
+      "world": "operator contract digest changes while label and observable field names remain fixed",
+      "expected": "DIFFERENT_MUTATION_FAMILY_DIGEST"
+    },
+    {
+      "id": "V4-NON-DIGEST-IDENTITY",
+      "world": "caller supplies a human label instead of a content digest for a required manifest",
+      "expected": "REJECT_INVALID_CONTENT_IDENTITY"
+    }
+  ],
+  "invariants": [
+    "human-readable names are metadata and never enter evidence identity digests",
+    "domain and problem-family identity are SHA-256 content-manifest digests",
+    "mutation-family identity includes a SHA-256 operator-contract digest plus normalized precondition/effect/falsifier content digests",
+    "renaming cannot create fresh evidence or distinct failure diversity",
+    "content change under a stable label changes identity",
+    "v4 remains research-only and grants no authority"
+  ]
+}
