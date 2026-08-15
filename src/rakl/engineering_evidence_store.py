@@ -14,6 +14,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterable, Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -112,24 +113,8 @@ class EvidenceBatchCommit:
     evidence_revision: str
 
 
-class SqliteEvidenceMetadataStore:
-    """Append-only logical evidence metadata with preview/commit semantics."""
 
-    def __init__(self, path: str | Path) -> None:
-        self.path = str(path)
-        self._init_schema()
-
-    def _connect(self) -> sqlite3.Connection:
-        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA foreign_keys=ON")
-        db.execute("PRAGMA busy_timeout=10000")
-        return db
-
-    def _init_schema(self) -> None:
-        with closing(self._connect()) as db:
-            db.executescript(
-                """
+_SCHEMA_SQL = """
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS engineering_evidence_records(
                     evidence_id TEXT PRIMARY KEY,
@@ -152,6 +137,27 @@ class SqliteEvidenceMetadataStore:
                     batch_json TEXT NOT NULL
                 );
                 """
+
+class SqliteEvidenceMetadataStore:
+    """Append-only logical evidence metadata with preview/commit semantics."""
+
+    def __init__(self, path: str | Path) -> None:
+        self.path = str(path)
+        self._init_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA foreign_keys=ON")
+        db.execute("PRAGMA busy_timeout=10000")
+        return db
+
+    def _init_schema(self) -> None:
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_evidence_store', schema_version='orion-engineering-evidence-store-v1',
+                tables=('engineering_evidence_records', 'engineering_evidence_batch_commits'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager

@@ -14,6 +14,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator, Mapping, Protocol, runtime_checkable
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import (
     EpistemicStatus,
     ProjectSnapshot,
@@ -110,38 +111,8 @@ class ProjectNotInitialized(EngineeringStoreError):
     pass
 
 
-class SqliteEngineeringStateStore:
-    """Reference transactional store with snapshot CAS and idempotent transitions.
 
-    Properties intentionally tested here:
-
-    * one authoritative project head;
-    * immutable content-identified snapshots/statuses/receipts;
-    * idempotency-key replay returns the exact prior receipt;
-    * reuse of an idempotency key with a different request is rejected;
-    * a transition based on a stale snapshot returns RETRY_REQUIRED rather than
-      silently applying last-writer-wins;
-    * committed transitions atomically install the next snapshot and receipt;
-    * a transition's ``action_payload_hash`` must equal
-      ``metadata_transition_payload_hash(after_snapshot)`` — the base store is
-      not a bypass around the atomic coordinator's payload binding.
-    """
-
-    def __init__(self, path: str | Path) -> None:
-        self.path = str(path)
-        self._initialize_schema()
-
-    def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA foreign_keys=ON")
-        connection.execute("PRAGMA busy_timeout=10000")
-        return connection
-
-    def _initialize_schema(self) -> None:
-        with closing(self._connect()) as db:
-            db.executescript(
-                """
+_SCHEMA_SQL = """
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS snapshots (
                     snapshot_id TEXT PRIMARY KEY,
@@ -191,6 +162,41 @@ class SqliteEngineeringStateStore:
                     payload_json TEXT NOT NULL
                 );
                 """
+
+class SqliteEngineeringStateStore:
+    """Reference transactional store with snapshot CAS and idempotent transitions.
+
+    Properties intentionally tested here:
+
+    * one authoritative project head;
+    * immutable content-identified snapshots/statuses/receipts;
+    * idempotency-key replay returns the exact prior receipt;
+    * reuse of an idempotency key with a different request is rejected;
+    * a transition based on a stale snapshot returns RETRY_REQUIRED rather than
+      silently applying last-writer-wins;
+    * committed transitions atomically install the next snapshot and receipt;
+    * a transition's ``action_payload_hash`` must equal
+      ``metadata_transition_payload_hash(after_snapshot)`` — the base store is
+      not a bypass around the atomic coordinator's payload binding.
+    """
+
+    def __init__(self, path: str | Path) -> None:
+        self.path = str(path)
+        self._initialize_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        connection = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA foreign_keys=ON")
+        connection.execute("PRAGMA busy_timeout=10000")
+        return connection
+
+    def _initialize_schema(self) -> None:
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_state_store', schema_version='orion-engineering-state-store-v2',
+                tables=('snapshots', 'project_heads', 'epistemic_statuses', 'transitions', 'superseded_transitions'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager

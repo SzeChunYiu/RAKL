@@ -38,6 +38,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, Mapping, Sequence
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -179,6 +180,39 @@ def atlas_revision_for(sequence: int, batch: AtlasPlaneBatch) -> str:
 ATLAS_GENESIS_REVISION: str = canonical_sha256({"sequence": 0, "plane": None})
 
 
+
+_SCHEMA_SQL = """
+                CREATE TABLE IF NOT EXISTS atlas_plane_commits (
+                    batch_id TEXT PRIMARY KEY,
+                    sequence INTEGER NOT NULL,
+                    committed_snapshot_id TEXT NOT NULL,
+                    atlas_revision TEXT NOT NULL,
+                    chart_count INTEGER NOT NULL,
+                    transition_count INTEGER NOT NULL,
+                    obstruction_count INTEGER NOT NULL,
+                    payload_json TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS atlas_charts (
+                    chart_id TEXT PRIMARY KEY,
+                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
+                    layer TEXT NOT NULL,
+                    payload_json TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS atlas_transitions (
+                    transition_id TEXT PRIMARY KEY,
+                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
+                    source_chart_id TEXT NOT NULL REFERENCES atlas_charts(chart_id),
+                    target_chart_id TEXT NOT NULL REFERENCES atlas_charts(chart_id),
+                    payload_json TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS atlas_obstructions (
+                    obstruction_id TEXT PRIMARY KEY,
+                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
+                    transition_id TEXT NOT NULL REFERENCES atlas_transitions(transition_id),
+                    payload_json TEXT NOT NULL
+                );
+                """
+
 class SqliteAtlasPlaneStore:
     """Reference store persisting the atlas plane as one transactional unit."""
 
@@ -212,39 +246,13 @@ class SqliteAtlasPlaneStore:
     def _init_schema(self) -> None:
         db = self._connect()
         try:
-            db.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS atlas_plane_commits (
-                    batch_id TEXT PRIMARY KEY,
-                    sequence INTEGER NOT NULL,
-                    committed_snapshot_id TEXT NOT NULL,
-                    atlas_revision TEXT NOT NULL,
-                    chart_count INTEGER NOT NULL,
-                    transition_count INTEGER NOT NULL,
-                    obstruction_count INTEGER NOT NULL,
-                    payload_json TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS atlas_charts (
-                    chart_id TEXT PRIMARY KEY,
-                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
-                    layer TEXT NOT NULL,
-                    payload_json TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS atlas_transitions (
-                    transition_id TEXT PRIMARY KEY,
-                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
-                    source_chart_id TEXT NOT NULL REFERENCES atlas_charts(chart_id),
-                    target_chart_id TEXT NOT NULL REFERENCES atlas_charts(chart_id),
-                    payload_json TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS atlas_obstructions (
-                    obstruction_id TEXT PRIMARY KEY,
-                    batch_id TEXT NOT NULL REFERENCES atlas_plane_commits(batch_id),
-                    transition_id TEXT NOT NULL REFERENCES atlas_transitions(transition_id),
-                    payload_json TEXT NOT NULL
-                );
-                """
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component="engineering_atlas_store", schema_version="orion-engineering-atlas-store-v2",
+                tables=("atlas_plane_commits", "atlas_charts", "atlas_transitions", "atlas_obstructions"),
+                create_script=_SCHEMA_SQL,
             )
+            # a typed, backfilling column migration -- explicit, not a silent CREATE-over-populated
             self._migrate_sequence_column(db)
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS atlas_plane_commits_sequence "

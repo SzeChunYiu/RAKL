@@ -724,29 +724,55 @@ def h13() -> Outcome:
 
 
 def h14() -> Outcome:
+    from rakl.engineering_index import IndexIntegrityError, IndexVerdict
     with tempfile.TemporaryDirectory() as td:
         store = _semantic_with_atom(td)
         idx = RebuildableSemanticIndex()
         real = idx.rebuild(store, sequence=1)
-        # corrupt the derived projection: an atom that does not exist canonically, under the REAL index_id
         fake = IndexedAtom("atom:ghost", "ver:ghost", "fiber:a", "MECHANISM_NODE", "alpha ghost")
-        corrupted = SemanticIndexSnapshot(real.semantic_revision, real.indexed_atoms + (fake,), real.index_id)
-        idx._snapshot = corrupted
-        served = idx.exact_filter(fiber_ids=("fiber:a",))
-        lex = idx.lexical("ghost")
-        canonical_has_ghost = store.latest_atom_version("atom:ghost") is not None
-        # Is there ANY referential/self-verification path?
-        verifier = getattr(idx, "verify", None) or getattr(corrupted, "verify", None)
-        served_ghost = any(a.atom_id == "atom:ghost" for a in served) or any(a.atom_id == "atom:ghost" for a in lex)
-        if served_ghost and not canonical_has_ghost and verifier is None:
-            return broke(
-                "corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the "
-                "canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no "
-                "__post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and "
-                "RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK.",
-                code_path="rakl.engineering_index.SemanticIndexSnapshot (no id verification); "
-                          "rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)")
-        return held("corrupted index was blocked")
+        # attack 1: forge a snapshot carrying a ghost under the REAL index_id
+        try:
+            SemanticIndexSnapshot(real.semantic_revision, real.indexed_atoms + (fake,), real.index_id)
+            return broke("a snapshot with a fabricated atom was accepted under the real index_id",
+                         code_path="rakl.engineering_index.SemanticIndexSnapshot.__post_init__")
+        except ValueError:
+            pass
+        # attack 2: a self-consistent ghost snapshot (its own honest id) swapped in behind the verifier
+        ghost_snap = SemanticIndexSnapshot(real.semantic_revision, real.indexed_atoms + (fake,))
+        idx._snapshot = ghost_snap
+        try:
+            served = idx.exact_filter(fiber_ids=("fiber:a",))
+            return broke(f"swapped-in ghost projection served {[a.atom_id for a in served]} without verification",
+                         code_path="rakl.engineering_index.RebuildableSemanticIndex._served")
+        except IndexIntegrityError:
+            pass
+        v = idx.verify(store)
+        if v.verdict is not IndexVerdict.GHOST_ATOMS or v.ghost_atom_ids != ("atom:ghost",):
+            return broke(f"verify() did not name the ghost: {v}", code_path="RebuildableSemanticIndex.verify")
+        for call in (lambda: idx.exact_filter(fiber_ids=("fiber:a",)), lambda: idx.lexical("ghost")):
+            try:
+                call()
+                return broke("ghost projection served after a failed verify()", code_path="RebuildableSemanticIndex._served")
+            except IndexIntegrityError:
+                pass
+        # attack 3: mutate atoms behind a verified id (frozen dataclass -> object.__setattr__)
+        idx.rebuild(store, sequence=1)
+        object.__setattr__(idx._snapshot, "indexed_atoms", idx._snapshot.indexed_atoms + (fake,))
+        try:
+            idx.lexical("ghost")
+            return broke("atoms mutated behind a verified index_id were served", code_path="RebuildableSemanticIndex._served")
+        except IndexIntegrityError:
+            pass
+        # no-alarm: rebuild serves; verify() on the rebuilt index is VERIFIED
+        again = idx.rebuild(store, sequence=1)
+        ok = idx.verify(store)
+        if not ok.ok or [a.atom_id for a in idx.exact_filter(fiber_ids=("fiber:a",))] != ["atom:a"]:
+            return broke(f"honest index refused after rebuild: {ok}", code_path="RebuildableSemanticIndex")
+        return held("forged id refused at construction; swapped-in ghost snapshot refused (unverified); verify() names "
+                    "atom:ghost -> GHOST_ATOMS and exact_filter/lexical raise IndexIntegrityError; mutated-behind-id "
+                    "caught; rebuilt index VERIFIED and served",
+                    cross_ref="first execution BROKE here; fixed in engineering_index.py (SemanticIndexSnapshot.__post_init__, "
+                              "RebuildableSemanticIndex.verify/_served)")
 
 
 # =============================================================================
@@ -1009,26 +1035,45 @@ def h21() -> Outcome:
         with sqlite3.connect(path) as db:
             row["schema_version"] = "orion-engineering-state-v2"
             db.execute("UPDATE snapshots SET payload_json=? WHERE snapshot_id=?", (json.dumps(row), s1.snapshot_id))
-        # variant B: half-applied migration -- a ledger table is missing
-        with sqlite3.connect(path) as db:
-            db.execute("DROP TABLE transitions")
-        reopened = SqliteEngineeringStateStore(path)      # opens; _initialize_schema runs CREATE TABLE IF NOT EXISTS
-        head = reopened.head("p")
-        receipt = reopened.transition_receipt("p", "k")
-        with sqlite3.connect(path) as db:
-            has_tr = db.execute("SELECT 1 FROM sqlite_master WHERE name='transitions'").fetchone() is not None
-            uv = db.execute("PRAGMA user_version").fetchone()[0]
         if var_a.startswith("BROKE"):
             return broke(var_a, code_path="rakl.engineering_state.ProjectSnapshot.from_dict")
-        if head == s1 and receipt is None and has_tr:
-            return broke(
-                f"{var_a}; BUT after a half-applied migration (transitions table dropped) the store reopens without "
-                f"error, silently recreates an EMPTY transitions table, serves head seq {head.sequence} and returns "
-                f"None for the receipt that produced it. No schema version is recorded (PRAGMA user_version={uv}); "
-                f"no migration guard exists.",
-                code_path="rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema "
-                          "(CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)")
-        return held(f"{var_a}; dropped-table variant blocked")
+        # variant B: half-applied migration -- a ledger table is missing
+        from rakl.engineering_schema_guard import SchemaIntegrityError
+        with sqlite3.connect(path) as db:
+            db.execute("DROP TABLE transitions")
+        try:
+            reopened = SqliteEngineeringStateStore(path)
+            head = reopened.head("p")
+            return broke(f"{var_a}; BUT after a half-applied migration (transitions dropped) the store reopened and served "
+                         f"head seq {head.sequence}", code_path="rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema")
+        except SchemaIntegrityError as exc:
+            if "transitions" not in exc.missing_tables:
+                return broke(f"typed error did not name the missing table: {exc}", code_path="engineering_schema_guard")
+        with sqlite3.connect(path) as db:
+            recreated = db.execute("SELECT 1 FROM sqlite_master WHERE name='transitions'").fetchone() is not None
+        if recreated:
+            return broke("the guard raised but the table was recreated anyway", code_path="engineering_schema_guard")
+        # variant C: the same guard on the stores that share the idiom
+        from rakl.engineering_semantic_store import SqliteSemanticStateStore as _Sem
+        from rakl.engineering_workflow import SqliteReferenceWorkflowEngine as _Wf
+        for cls, table in ((_Sem, "semantic_atom_versions"), (_Wf, "workflow_events")):
+            p2 = Path(td) / f"{table}.db"
+            cls(p2)
+            with sqlite3.connect(p2) as db:
+                db.execute(f"DROP TABLE {table}")
+            try:
+                cls(p2)
+                return broke(f"{cls.__name__} reopened over a dropped {table}", code_path=f"{cls.__module__}._init_schema")
+            except SchemaIntegrityError:
+                pass
+        # no-alarm: a fresh db and a normal reopen both work
+        fresh = Path(td) / "fresh.db"
+        SqliteEngineeringStateStore(fresh).initialize_project(plain_initial())
+        if SqliteEngineeringStateStore(fresh).head("p") != s0:
+            return broke("normal reopen failed", code_path="engineering_schema_guard")
+        return held(f"{var_a}; dropped `transitions` -> SchemaIntegrityError naming it, table NOT recreated, head not served; "
+                    f"same for semantic + workflow stores; fresh open and normal reopen fine",
+                    cross_ref="first execution BROKE here; fixed via engineering_schema_guard in six stores")
 
 
 def h22() -> Outcome:
@@ -1325,6 +1370,17 @@ def h30() -> Outcome:
             proj2.ingest_bytes(record_id=f"m{i}", payload=(f"must {i} " * 200).encode(), token_cost=400,
                                fiber_ids=("f",), coverage_atoms=(f"a{i}",), mandatory=True)
         rep2 = proj2.compile_task_packet(operation="SOLVE", question="q", budget_tokens=5, target_fibers=("f",))
+        if rep.verdict is not TaskPacketVerdict.READY:
+            if "context_over_budget" not in tuple(rep.issues):
+                return broke(f"not READY but the reason does not name the budget: {rep.issues}",
+                             code_path="rakl.context_compiler.compile_epistemic_context")
+            # no-alarm: records that fit are READY; nothing-relevant stays READY-empty (not over budget)
+            proj3 = RAKLProject.create(Path(td) / "proj3", project_id="p3")
+            for i in range(3):
+                proj3.ingest_bytes(record_id=f"ok{i}", payload=b"small", token_cost=10, fiber_ids=("f",), coverage_atoms=(f"a{i}",))
+            fit = proj3.compile_task_packet(operation="SOLVE", question="q", budget_tokens=100, target_fibers=("f",))
+            if fit.verdict is not TaskPacketVerdict.READY or len(fit.compile_report.selected_record_ids) != 3:
+                return broke(f"records that fit were not READY: {fit.verdict} {fit.issues}", code_path="context_compiler")
         if rep.verdict is TaskPacketVerdict.READY:
             return broke(
                 f"30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with "
@@ -1337,7 +1393,9 @@ def h30() -> Outcome:
                 code_path="rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory "
                           "records dropped to fit budget without a verdict downgrade or a reason)")
     return held(f"context overflow -> BLOCK_NEW_WORK; index lag -> COMPACT (history preserved); missing obs -> CANNOT_CHECK; "
-                f"5-token compile -> {rep.verdict.value}")
+                f"30 records / 5-token budget -> {rep.verdict.value} {tuple(rep.issues)}; mandatory -> {rep2.verdict.value}; "
+                f"records that fit -> READY",
+                cross_ref="first execution BROKE here; fixed in context_compiler.compile_epistemic_context (context_over_budget)")
 
 
 # =============================================================================

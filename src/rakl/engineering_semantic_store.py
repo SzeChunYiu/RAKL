@@ -23,6 +23,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterable, Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -194,6 +195,58 @@ class SemanticBatchCommit:
     semantic_revision: str
 
 
+
+_SCHEMA_SQL = """
+                PRAGMA journal_mode=WAL;
+                CREATE TABLE IF NOT EXISTS semantic_fibers(
+                    fiber_id TEXT PRIMARY KEY,
+                    parent_fiber_id TEXT,
+                    created_from_snapshot_id TEXT NOT NULL,
+                    created_from_sequence INTEGER NOT NULL CHECK(created_from_sequence >= 0),
+                    FOREIGN KEY(parent_fiber_id) REFERENCES semantic_fibers(fiber_id)
+                );
+                CREATE TABLE IF NOT EXISTS semantic_atoms(
+                    atom_id TEXT PRIMARY KEY,
+                    fiber_id TEXT NOT NULL REFERENCES semantic_fibers(fiber_id),
+                    kind TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS semantic_atom_versions(
+                    version_id TEXT PRIMARY KEY,
+                    atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
+                    valid_from_snapshot_id TEXT NOT NULL,
+                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
+                    supersedes_version_id TEXT REFERENCES semantic_atom_versions(version_id),
+                    payload_json TEXT NOT NULL,
+                    UNIQUE(atom_id, valid_from_sequence)
+                );
+                CREATE INDEX IF NOT EXISTS semantic_atom_versions_lookup
+                    ON semantic_atom_versions(atom_id, valid_from_sequence DESC);
+                CREATE TABLE IF NOT EXISTS semantic_witnesses(
+                    witness_id TEXT PRIMARY KEY,
+                    left_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
+                    right_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id)
+                );
+                CREATE TABLE IF NOT EXISTS semantic_witness_versions(
+                    version_id TEXT PRIMARY KEY,
+                    witness_id TEXT NOT NULL REFERENCES semantic_witnesses(witness_id),
+                    valid_from_snapshot_id TEXT NOT NULL,
+                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
+                    supersedes_version_id TEXT REFERENCES semantic_witness_versions(version_id),
+                    payload_json TEXT NOT NULL,
+                    UNIQUE(witness_id, valid_from_sequence)
+                );
+                CREATE INDEX IF NOT EXISTS semantic_witness_versions_lookup
+                    ON semantic_witness_versions(witness_id, valid_from_sequence DESC);
+                CREATE TABLE IF NOT EXISTS semantic_batch_commits(
+                    batch_id TEXT PRIMARY KEY,
+                    sequence INTEGER NOT NULL,
+                    committed_snapshot_id TEXT NOT NULL,
+                    semantic_revision TEXT NOT NULL,
+                    batch_json TEXT NOT NULL,
+                    UNIQUE(sequence)
+                );
+                """
+
 class SqliteSemanticStateStore:
     """Reference append-only semantic store with preview/commit semantics."""
 
@@ -252,57 +305,10 @@ class SqliteSemanticStateStore:
 
     def _init_schema(self) -> None:
         with closing(self._connect()) as db:
-            db.executescript(
-                """
-                PRAGMA journal_mode=WAL;
-                CREATE TABLE IF NOT EXISTS semantic_fibers(
-                    fiber_id TEXT PRIMARY KEY,
-                    parent_fiber_id TEXT,
-                    created_from_snapshot_id TEXT NOT NULL,
-                    created_from_sequence INTEGER NOT NULL CHECK(created_from_sequence >= 0),
-                    FOREIGN KEY(parent_fiber_id) REFERENCES semantic_fibers(fiber_id)
-                );
-                CREATE TABLE IF NOT EXISTS semantic_atoms(
-                    atom_id TEXT PRIMARY KEY,
-                    fiber_id TEXT NOT NULL REFERENCES semantic_fibers(fiber_id),
-                    kind TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS semantic_atom_versions(
-                    version_id TEXT PRIMARY KEY,
-                    atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
-                    valid_from_snapshot_id TEXT NOT NULL,
-                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
-                    supersedes_version_id TEXT REFERENCES semantic_atom_versions(version_id),
-                    payload_json TEXT NOT NULL,
-                    UNIQUE(atom_id, valid_from_sequence)
-                );
-                CREATE INDEX IF NOT EXISTS semantic_atom_versions_lookup
-                    ON semantic_atom_versions(atom_id, valid_from_sequence DESC);
-                CREATE TABLE IF NOT EXISTS semantic_witnesses(
-                    witness_id TEXT PRIMARY KEY,
-                    left_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
-                    right_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id)
-                );
-                CREATE TABLE IF NOT EXISTS semantic_witness_versions(
-                    version_id TEXT PRIMARY KEY,
-                    witness_id TEXT NOT NULL REFERENCES semantic_witnesses(witness_id),
-                    valid_from_snapshot_id TEXT NOT NULL,
-                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
-                    supersedes_version_id TEXT REFERENCES semantic_witness_versions(version_id),
-                    payload_json TEXT NOT NULL,
-                    UNIQUE(witness_id, valid_from_sequence)
-                );
-                CREATE INDEX IF NOT EXISTS semantic_witness_versions_lookup
-                    ON semantic_witness_versions(witness_id, valid_from_sequence DESC);
-                CREATE TABLE IF NOT EXISTS semantic_batch_commits(
-                    batch_id TEXT PRIMARY KEY,
-                    sequence INTEGER NOT NULL,
-                    committed_snapshot_id TEXT NOT NULL,
-                    semantic_revision TEXT NOT NULL,
-                    batch_json TEXT NOT NULL,
-                    UNIQUE(sequence)
-                );
-                """
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_semantic_store', schema_version='orion-engineering-semantic-store-v1',
+                tables=('semantic_fibers', 'semantic_atoms', 'semantic_atom_versions', 'semantic_witnesses', 'semantic_witness_versions', 'semantic_batch_commits'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager

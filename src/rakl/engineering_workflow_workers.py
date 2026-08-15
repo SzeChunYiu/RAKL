@@ -33,12 +33,13 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Iterator, Mapping
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_workflow import (
     ActivitySpec,
@@ -46,6 +47,41 @@ from .engineering_workflow import (
     WorkflowIntegrityError,
 )
 
+
+_SCHEMA_SQL = """
+                CREATE TABLE IF NOT EXISTS worker_activities (
+                    workflow_id TEXT NOT NULL,
+                    activity_id TEXT NOT NULL,
+                    spec_json TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    attempt_count INTEGER NOT NULL DEFAULT 0,
+                    effect_started INTEGER NOT NULL DEFAULT 0,
+                    result_digest TEXT,
+                    idempotency_key TEXT NOT NULL,
+                    PRIMARY KEY (workflow_id, activity_id)
+                );
+                CREATE UNIQUE INDEX IF NOT EXISTS ux_worker_activity_idem
+                    ON worker_activities (workflow_id, idempotency_key);
+                CREATE TABLE IF NOT EXISTS leases (
+                    workflow_id TEXT NOT NULL,
+                    activity_id TEXT NOT NULL,
+                    worker_id TEXT NOT NULL,
+                    lease_token TEXT NOT NULL,
+                    acquired_at INTEGER NOT NULL,
+                    heartbeat_at INTEGER NOT NULL,
+                    ttl INTEGER NOT NULL,
+                    PRIMARY KEY (workflow_id, activity_id)
+                );
+                CREATE TABLE IF NOT EXISTS worker_events (
+                    workflow_id TEXT NOT NULL,
+                    sequence INTEGER NOT NULL,
+                    kind TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    previous_event_hash TEXT NOT NULL,
+                    event_hash TEXT NOT NULL,
+                    PRIMARY KEY (workflow_id, sequence)
+                );
+"""
 
 class LeaseState(str, Enum):
     FREE = "FREE"
@@ -132,47 +168,13 @@ class SqliteWorkerWorkflowEngine:
             db.close()
 
     def _init_schema(self) -> None:
-        db = self._connect()
-        try:
-            db.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS worker_activities (
-                    workflow_id TEXT NOT NULL,
-                    activity_id TEXT NOT NULL,
-                    spec_json TEXT NOT NULL,
-                    status TEXT NOT NULL,
-                    attempt_count INTEGER NOT NULL DEFAULT 0,
-                    effect_started INTEGER NOT NULL DEFAULT 0,
-                    result_digest TEXT,
-                    idempotency_key TEXT NOT NULL,
-                    PRIMARY KEY (workflow_id, activity_id)
-                );
-                CREATE UNIQUE INDEX IF NOT EXISTS ux_worker_activity_idem
-                    ON worker_activities (workflow_id, idempotency_key);
-                CREATE TABLE IF NOT EXISTS leases (
-                    workflow_id TEXT NOT NULL,
-                    activity_id TEXT NOT NULL,
-                    worker_id TEXT NOT NULL,
-                    lease_token TEXT NOT NULL,
-                    acquired_at INTEGER NOT NULL,
-                    heartbeat_at INTEGER NOT NULL,
-                    ttl INTEGER NOT NULL,
-                    PRIMARY KEY (workflow_id, activity_id)
-                );
-                CREATE TABLE IF NOT EXISTS worker_events (
-                    workflow_id TEXT NOT NULL,
-                    sequence INTEGER NOT NULL,
-                    kind TEXT NOT NULL,
-                    payload_json TEXT NOT NULL,
-                    previous_event_hash TEXT NOT NULL,
-                    event_hash TEXT NOT NULL,
-                    PRIMARY KEY (workflow_id, sequence)
-                );
-                """
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired
+            # (see engineering_schema_guard). The create script runs only when fresh.
+            guard_and_initialize_schema(
+                db, component="engineering_worker_engine", schema_version="orion-engineering-workers-v1",
+                tables=("worker_activities", "leases", "worker_events"), create_script=_SCHEMA_SQL,
             )
-            db.commit()
-        finally:
-            db.close()
 
     @staticmethod
     def _dump(value: Mapping[str, object]) -> str:

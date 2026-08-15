@@ -1,8 +1,8 @@
 {
   "counts": {
-    "BROKE": 4,
+    "BROKE": 0,
     "CANNOT_CHECK": 0,
-    "HELD": 26
+    "HELD": 30
   },
   "cross_reference_policy": "Rows previously touched by the A01..A12 campaign (run_hostile_assurance_v3.py) are RE-EXECUTED here against the row's own mechanism; where the A-case is cited it is as context, never as the evidence for this row.",
   "grants_scientific_authority": false,
@@ -32,7 +32,7 @@
     ]
   },
   "held_scope": {
-    "FULL": 23,
+    "FULL": 27,
     "LOCAL_REFERENCE_ONLY": 3
   },
   "matrix": "HOSTILE_TEST_MATRIX.md",
@@ -138,12 +138,12 @@
       "verdict": "HELD"
     },
     {
-      "code_path": "rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
-      "detail": "corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK.",
+      "cross_ref": "first execution BROKE here; fixed in engineering_index.py (SemanticIndexSnapshot.__post_init__, RebuildableSemanticIndex.verify/_served)",
+      "detail": "forged id refused at construction; swapped-in ghost snapshot refused (unverified); verify() names atom:ghost -> GHOST_ATOMS and exact_filter/lexical raise IndexIntegrityError; mutated-behind-id caught; rebuilt index VERIFIED and served",
       "name": "corrupt derived index to return nonexistent atom",
       "row": "H14",
       "scope": "FULL",
-      "verdict": "BROKE"
+      "verdict": "HELD"
     },
     {
       "cross_ref": "A06 only tested lease expiry; this executes the effect-then-crash window the row names",
@@ -193,12 +193,12 @@
       "verdict": "HELD"
     },
     {
-      "code_path": "rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
-      "detail": "future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists.",
+      "cross_ref": "first execution BROKE here; fixed via engineering_schema_guard in six stores",
+      "detail": "future-schema payload refused; dropped `transitions` -> SchemaIntegrityError naming it, table NOT recreated, head not served; same for semantic + workflow stores; fresh open and normal reopen fine",
       "name": "partial schema migration",
       "row": "H21",
       "scope": "FULL",
-      "verdict": "BROKE"
+      "verdict": "HELD"
     },
     {
       "detail": "canonical dumps MATCH after rollback (digest bc16a038999c..); MISMATCH cannot be receipted; receipt import-receipt:9c1c27f39db99..",
@@ -247,15 +247,14 @@
       "verdict": "HELD"
     },
     {
-      "code_path": "rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
-      "detail": "read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt.",
+      "detail": "read ok 200; write ok 200 status=COMMITTED; transition semantics unchanged with exporter down",
       "name": "audit/log exporter unavailable",
       "row": "H28",
       "scope": "FULL",
-      "verdict": "BROKE"
+      "verdict": "HELD"
     },
     {
-      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms",
+      "detail": "12 contending writers all committed (head seq 12); 11 RETRY_REQUIRED receipts preserved; max retries/writer=1; p95 time-to-commit 344.4 ms",
       "name": "high transaction contention",
       "not_exercised": "a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
       "row": "H29",
@@ -263,12 +262,12 @@
       "verdict": "HELD"
     },
     {
-      "code_path": "rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
-      "detail": "30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing.",
+      "cross_ref": "first execution BROKE here; fixed in context_compiler.compile_epistemic_context (context_over_budget)",
+      "detail": "context overflow -> BLOCK_NEW_WORK; index lag -> COMPACT (history preserved); missing obs -> CANNOT_CHECK; 30 records / 5-token budget -> CANNOT_COMPILE ('context_over_budget',); mandatory -> CANNOT_COMPILE; records that fit -> READY",
       "name": "huge knowledge lattice + context request",
       "row": "H30",
       "scope": "FULL",
-      "verdict": "BROKE"
+      "verdict": "HELD"
     }
   ],
   "rows_executed": 30,
