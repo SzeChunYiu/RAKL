@@ -19,8 +19,8 @@ Known-world conformance is not utility evidence.
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Iterable
-from dataclasses import dataclass
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass, replace
 from enum import Enum
 
 from .metacognition import MetacognitiveAuditVerdict, formulation_gap_candidate
@@ -301,6 +301,13 @@ class AncestorChallenge:
     failed_local_repair_families: tuple[str, ...] = ()
     dependent_descendant_ids: tuple[str, ...] = ()
     supersession_registered: bool = False
+    child_fiber_id: str = ""
+    residual_id: str = ""
+    local_causes_tested: tuple[AuditCoordinate, ...] = ()
+    fresh_evidence_epochs: tuple[str, ...] = ()
+    parent_coordinate_implicated: AuditCoordinate | None = None
+    local_vs_parent_discriminator_id: str = ""
+    cost: int = 0
 
     def __post_init__(self) -> None:
         if len(set(self.failed_local_repair_families)) != len(self.failed_local_repair_families):
@@ -324,16 +331,49 @@ class AncestorChallenge:
     def admissible_for_ascent(self) -> bool:
         return self.supersession_registered is False and self.distinct_local_repair_families_failed >= 2
 
-    def with_supersession(self) -> "AncestorChallenge":
-        """Register supersession: descendant closure certificates go stale."""
+    @property
+    def packet_complete(self) -> bool:
+        """True when the challenge carries every field the packet requires.
 
-        return AncestorChallenge(
-            ancestor_fiber_id=self.ancestor_fiber_id,
-            challenge_evidence_digest=self.challenge_evidence_digest,
-            failed_local_repair_families=self.failed_local_repair_families,
-            dependent_descendant_ids=self.dependent_descendant_ids,
-            supersession_registered=True,
+        Child identity, residual identity, local causes tested, distinct failed
+        repair families, fresh evidence epochs, the implicated parent
+        coordinate, the local-vs-parent discriminator and cost.  Repeated raw
+        failures are not a packet.
+        """
+
+        return all(
+            (
+                self.child_fiber_id,
+                self.residual_id,
+                self.local_causes_tested,
+                self.failed_local_repair_families,
+                self.fresh_evidence_epochs,
+                self.parent_coordinate_implicated is not None,
+                self.local_vs_parent_discriminator_id,
+                self.cost >= 0,
+            )
         )
+
+    @property
+    def escalation_admissible(self) -> bool:
+        """Ascent needs a complete packet *and* a parent-discriminating witness.
+
+        Stricter than ``admissible_for_ascent``, which encodes only the frozen
+        two-failed-families rule the decision chain reads.  Distinct failed
+        local repairs establish that the local level is not responsible; only
+        the discriminator separates parent from child.
+        """
+
+        return self.admissible_for_ascent and self.packet_complete
+
+    def with_supersession(self) -> "AncestorChallenge":
+        """Register supersession: descendant closure certificates go stale.
+
+        Every field is carried forward; supersession never drops the packet
+        that justified it, and never deletes descendants or their evidence.
+        """
+
+        return replace(self, supersession_registered=True)
 
     def descendant_closure_stale(self, descendant_fiber_id: str) -> bool:
         if not self.supersession_registered:
@@ -887,7 +927,129 @@ def assess_bounded_node_closure(
     return NodeClosureAssessment(NodeClosureTerminal.NODE_CLOSED_AT_REGISTERED_CUTOFF)
 
 
+# ---------------------------------------------------------------------------
+# Question and framework audit gates (packet section 05)
+# ---------------------------------------------------------------------------
+
+
+class QuestionAdequacyCoordinate(str, Enum):
+    """Coordinates of question adequacy.  There is deliberately no scalar score."""
+
+    DECISION_RELEVANCE = "DECISION_RELEVANCE"
+    SCOPE_CLARITY = "SCOPE_CLARITY"
+    ALTERNATIVE_DISTINGUISHABILITY = "ALTERNATIVE_DISTINGUISHABILITY"
+    FALSIFIABILITY_OR_BOUNDABILITY = "FALSIFIABILITY_OR_BOUNDABILITY"
+    MEASUREMENT_AVAILABILITY = "MEASUREMENT_AVAILABILITY"
+    IDENTIFIABILITY = "IDENTIFIABILITY"
+    PARENT_FORMULATION_COVERAGE = "PARENT_FORMULATION_COVERAGE"
+    NONDEGENERACY = "NONDEGENERACY"
+    RESOURCE_FEASIBILITY = "RESOURCE_FEASIBILITY"
+
+
+class FrameworkAdequacyCoordinate(str, Enum):
+    """Coordinates of framework adequacy *for a target*, never global rightness."""
+
+    TARGET_EXPRESSIBILITY = "TARGET_EXPRESSIBILITY"
+    ALTERNATIVE_EXPRESSIBILITY = "ALTERNATIVE_EXPRESSIBILITY"
+    DISCRIMINATING_PREDICTIONS = "DISCRIMINATING_PREDICTIONS"
+    INTERFACE_VALIDITY = "INTERFACE_VALIDITY"
+    MEASUREMENT_GROUNDING = "MEASUREMENT_GROUNDING"
+    UNCERTAINTY_SEMANTICS = "UNCERTAINTY_SEMANTICS"
+    DECISION_SUFFICIENCY = "DECISION_SUFFICIENCY"
+    RESIDUAL_LOCALIZABILITY = "RESIDUAL_LOCALIZABILITY"
+    FRESH_TRANSFER = "FRESH_TRANSFER"
+    COMPLEXITY_COST = "COMPLEXITY_COST"
+
+
+class FrameworkParentFamily(str, Enum):
+    """The parent families a framework portfolio must register before selection."""
+
+    DIRECT_MINIMAL_REPRESENTATION = "DIRECT_MINIMAL_REPRESENTATION"
+    CANONICAL_DOMAIN_FRAMEWORK = "CANONICAL_DOMAIN_FRAMEWORK"
+    STRONGEST_RETRIEVED_ALTERNATIVE = "STRONGEST_RETRIEVED_ALTERNATIVE"
+    CURRENT_RAKL_COMPILED_FRAMEWORK = "CURRENT_RAKL_COMPILED_FRAMEWORK"
+    SYNTHESIZED_CHALLENGER = "SYNTHESIZED_CHALLENGER"
+
+
+_MINIMUM_FRAMEWORK_PARENTS: tuple[FrameworkParentFamily, ...] = (
+    FrameworkParentFamily.DIRECT_MINIMAL_REPRESENTATION,
+    FrameworkParentFamily.CANONICAL_DOMAIN_FRAMEWORK,
+    FrameworkParentFamily.STRONGEST_RETRIEVED_ALTERNATIVE,
+    FrameworkParentFamily.CURRENT_RAKL_COMPILED_FRAMEWORK,
+)
+
+
+def missing_framework_parents(
+    registered: Iterable[FrameworkParentFamily],
+) -> tuple[FrameworkParentFamily, ...]:
+    """Minimum parent families not yet registered in the portfolio.
+
+    ``SYNTHESIZED_CHALLENGER`` is not required: a synthesized framework is
+    admissible only if the registered parents leave a residual, so its absence
+    is not a gap.
+    """
+
+    present = set(registered)
+    return tuple(parent for parent in _MINIMUM_FRAMEWORK_PARENTS if parent not in present)
+
+
+@dataclass(frozen=True)
+class AdequacyAssessment:
+    """Noncompensatory adequacy verdict over a coordinate vector.
+
+    Deliberately carries no scalar: a strong coordinate never compensates for a
+    hard failure, and an unrated coordinate is an unrun check rather than a
+    pass.  The assessment is proposal-side and grants nothing.
+    """
+
+    hard_failures: tuple[str, ...] = ()
+    unrated: tuple[str, ...] = ()
+
+    @property
+    def grants_scientific_authority(self) -> bool:
+        return False
+
+    @property
+    def grants_method_promotion_authority(self) -> bool:
+        return False
+
+    @property
+    def adequate(self) -> bool:
+        return not self.hard_failures and not self.unrated
+
+    @property
+    def blocking_reason(self) -> str:
+        if self.hard_failures:
+            return f"noncompensatory failure: {list(self.hard_failures)}"
+        if self.unrated:
+            return f"unrated coordinates (unrun check, not a pass): {list(self.unrated)}"
+        return ""
+
+
+def _assess(coordinates: type[Enum], ratings: "Mapping[Enum, bool]") -> AdequacyAssessment:
+    hard_failures = tuple(c.value for c in coordinates if ratings.get(c) is False)
+    unrated = tuple(c.value for c in coordinates if c not in ratings)
+    return AdequacyAssessment(hard_failures=hard_failures, unrated=unrated)
+
+
+def assess_question_adequacy(
+    ratings: "Mapping[QuestionAdequacyCoordinate, bool]",
+) -> AdequacyAssessment:
+    """Assess a question candidate over the nine adequacy coordinates."""
+
+    return _assess(QuestionAdequacyCoordinate, ratings)
+
+
+def assess_framework_adequacy(
+    ratings: "Mapping[FrameworkAdequacyCoordinate, bool]",
+) -> AdequacyAssessment:
+    """Assess a framework candidate, for a target, over the ten coordinates."""
+
+    return _assess(FrameworkAdequacyCoordinate, ratings)
+
+
 __all__ = [
+    "AdequacyAssessment",
     "AncestorChallenge",
     "AtomicityReceipt",
     "AtomicitySplitCondition",
@@ -898,23 +1060,29 @@ __all__ = [
     "AuditTrigger",
     "DecompositionCandidate",
     "DiscriminatorReceipt",
+    "FrameworkAdequacyCoordinate",
     "FrameworkCandidate",
+    "FrameworkParentFamily",
     "InterfaceContract",
     "NodeClosureAssessment",
     "NodeClosureTerminal",
     "OptionalAuditCandidate",
     "ProblemStatement",
+    "QuestionAdequacyCoordinate",
     "QuestionFormulationCandidate",
     "RecursiveAuditDecision",
     "RecursiveAuditProjection",
     "SelfRaklEscalationRequest",
     "assess_bounded_node_closure",
+    "assess_framework_adequacy",
+    "assess_question_adequacy",
     "audit_after_material_residual",
     "audit_before_commit",
     "decide",
     "issue_atomicity_receipt",
     "mandatory_audit_triggered",
     "metacognitive_gap_candidates",
+    "missing_framework_parents",
     "request_self_rakl_escalation",
     "select_optional_audit",
 ]
