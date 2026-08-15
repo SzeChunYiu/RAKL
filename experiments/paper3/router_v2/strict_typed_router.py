@@ -50,6 +50,14 @@ REGISTERED_MUTATIONS = (
 AUDIT_MUTANTS = (
     "AUDIT_DOWNGRADE_VIABLE_ROUTES",  # fail-closed direction: viable route -> CANNOT_CHECK
     "AUDIT_SWAP_SEARCH_FOR_JUMP",  # wrong concrete route, never touches CANNOT_CHECK cases
+    # Emits the right route with an empty negative trace while still *enforcing*
+    # retention. Added after the first execution, because the registered
+    # DROP_NEGATIVE_HISTORY mutation turned out to move three conditions at once
+    # (it drops enforcement as well as output) and so could not show whether the
+    # "+ negative trace" half of route_plus_negative_trace_exact is load-bearing
+    # at all. It cannot affect any measured value: audit mutants never enter the
+    # baseline, the parent arms or the registered gate.
+    "AUDIT_TRACE_ONLY_DROP",
 )
 
 ALL_MUTANTS = REGISTERED_MUTATIONS + AUDIT_MUTANTS
@@ -144,7 +152,7 @@ def strict_route(
             return CANNOT_CHECK, ()
         route = "LIFT"
 
-    if m == "DROP_NEGATIVE_HISTORY":
+    if m in ("DROP_NEGATIVE_HISTORY", "AUDIT_TRACE_ONLY_DROP"):
         return route, ()
     if m == "AUDIT_SWAP_SEARCH_FOR_JUMP" and route == "SEARCH":
         return "JUMP", tuple(trace)
