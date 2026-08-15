@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/epistemic_status.schema.json",
+  "title": "ORION EpistemicStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_snapshot_id",
+    "target_id",
+    "fiber_id",
+    "axis_statuses",
+    "required_routes",
+    "covered_routes",
+    "missing_routes",
+    "active_residual_ids",
+    "freshness_stale",
+    "required_authority",
+    "available_support_paths",
+    "blocking_cut_ids",
+    "hard_gate_ids",
+    "next_action",
+    "reasons",
+    "metric_receipt_ids",
+    "basis_fingerprints",
+    "status_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "orion-engineering-state-v2"
+    },
+    "project_snapshot_id": {
+      "type": "string",
+      "pattern": "^snapshot:[0-9a-f]{64}$"
+    },
+    "target_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fiber_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "axis_statuses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "axis",
+          "bounded_flat",
+          "recent_retained_novelty",
+          "independent_flat_routes",
+          "reopen_residual_ids"
+        ],
+        "properties": {
+          "axis": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bounded_flat": {
+            "type": "boolean"
+          },
+          "recent_retained_novelty": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "independent_flat_routes": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "reopen_residual_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "required_routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "covered_routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "missing_routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "active_residual_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "freshness_stale": {
+      "type": "boolean"
+    },
+    "required_authority": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "available_support_paths": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "blocking_cut_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "hard_gate_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "next_action": {
+      "enum": [
+        "CONTINUE_SEARCH",
+        "PROCEED_OBJECT_WORK",
+        "TARGETED_REFRESH_REQUIRED",
+        "FRESHNESS_REFRESH_REQUIRED",
+        "COMPILE_SOLVER_VIEW",
+        "VERIFY_SOLUTION",
+        "RUN_DISCRIMINATOR",
+        "REPAIR_EPISTEMIC_CUT",
+        "CANNOT_CHECK"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metric_receipt_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "basis_fingerprints": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "status_id": {
+      "type": "string",
+      "pattern": "^epistemic-status:[0-9a-f]{64}$"
+    }
+  }
+}

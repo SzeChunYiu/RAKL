@@ -259,9 +259,14 @@ def _production_claiming_symbols() -> list[tuple[str, str]]:
     """Symbols whose docstring *declares* they are a production path.
 
     Deliberately narrow: only a docstring whose first line begins with
-    "Production" counts. Matching any mention of the word instead would fire on
-    six further symbols that merely discuss production in passing - a checker
-    that cries wolf on its first real run gets switched off.
+    "Production" as a standalone word counts. Matching any mention of the word
+    instead would fire on six further symbols that merely discuss production in
+    passing - a checker that cries wolf on its first real run gets switched off.
+
+    The trailing guard excludes hyphenated compounds. ``BlobStore`` in the
+    engineering reference layer opens with "Production-neutral exact-byte storage
+    contract", which declares the opposite of a production path; a plain
+    ``\\b`` matched it at the hyphen.
     """
     import ast
     import re
@@ -275,7 +280,7 @@ def _production_claiming_symbols() -> list[tuple[str, str]]:
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 doc = (ast.get_docstring(node) or "").strip()
-                if re.match(r"^Production\b", doc):
+                if re.match(r"^Production(?![-\w])", doc):
                     found.append((path.name, node.name))
     return found
 
