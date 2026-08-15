@@ -1,0 +1,49 @@
+{
+  "schema_version": "rakl-arn-v4r-role-boost-repair-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "grants_scientific_authority": false,
+  "grants_method_promotion_authority": false,
+  "target_negative": {
+    "slug": "p2-arn-v4-battery-failed",
+    "class": "REVIVABLE_LOCAL",
+    "terminal": "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+    "frontier_lever": "restore v3's instance-paired property (remove/instance-pair role_boost)",
+    "recorded_cause": "the role_boost component (exact token matches) introduced marginal statistics that survive label shuffling",
+    "observed_leak": {"probe": "B3_shuffled_gold", "advantage": 0.1346739299610895, "ci": [0.10537587548638133, 0.16336186770428018]}
+  },
+  "support_declaration": {
+    "why": "Three instruments this session failed by freezing a predicate before characterising the population's support. This declares support first.",
+    "population": "research/paper2_external_corpus_v1/data/arn.csv, 1095 rows, 2190 pairs, CONFIRM split as defined by the parent protocol",
+    "predicate_in_domain": "yes — B3 shuffled-gold is already implemented in the v4 runner and produced the leak being repaired, so the population demonstrably supports the measurement",
+    "known_conditioning_variable": "distractor_similarity (high/low). research/arn_local_vs_parent_discriminator_v1 measured a 0.217 accuracy spread across these bands for lexical features, so surface-overlap effects are known to be band-dependent and MUST be reported per band, not only pooled",
+    "reachable_ceiling": "not bounded a priori. If the relational channel alone carries no signal, G1 fails and the epoch closes NEGATIVE__CAPABILITY_ABSENT — an admissible outcome for a repaired instrument, not a defect of the repair",
+    "cost": "deterministic, single-threaded, local; no hosted model, no A100, no new annotation"
+  },
+  "exact_change": {
+    "scope": "ONE term in src/rakl/relational_correspondence.py",
+    "before": "score = 0.8 * triple_score + 0.2 * role_boost",
+    "after": "score = (1 - w) * triple_score + w * role_boost, with w = RAKL_ARN_ROLE_BOOST_WEIGHT, default 0.2",
+    "repair_setting": "RAKL_ARN_ROLE_BOOST_WEIGHT=0.0, leaving score = triple_score",
+    "why_a_weight_and_not_a_deletion": "the default preserves v4 byte-for-byte, so the repaired and original arms differ in exactly one declared parameter and the v4 terminal remains reproducible",
+    "not_changed": "the runner, the reducer, the abstention conditions, the thresholds, the split, the battery, the gates, the bootstrap seed"
+  },
+  "frozen_decision_rule": {
+    "R1_leak_must_die": "B3 shuffled-gold advantage CI must include zero. If it still excludes zero, the repair failed and the terminal stays BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE.",
+    "R2_text_reading_must_survive": "B2 text-destruction must still pass; a repair that also destroys the instrument's ability to read text is not a repair.",
+    "R3_then_and_only_then_report_G1": "the confirmatory advantage on unshuffled gold is read ONLY if R1 and R2 both hold. Reporting a G1 advantage from an instrument that still leaks is the defect being repaired.",
+    "R4_per_band": "G1 and B3 are reported per distractor_similarity band as well as pooled, because the conditioning variable is known to matter.",
+    "terminals": {
+      "REPAIRED_AND_PROBATIVE": "R1 and R2 hold and G1 clears its registered MDE with CI excluding zero",
+      "REPAIRED_BUT_CAPABILITY_ABSENT": "R1 and R2 hold and G1 does not clear the MDE — the instrument is now honest and the relational channel carries no sufficient signal",
+      "REPAIR_FAILED__LEAK_PERSISTS": "R1 fails",
+      "REPAIR_DESTROYED_THE_INSTRUMENT": "R2 fails"
+    }
+  },
+  "falsifier": "REPAIRED_BUT_CAPABILITY_ABSENT is the outcome that refutes the hope motivating this repair: it would mean the v4 advantage was the leak and nothing else. That is the expected direction of failure and it will be reported as the result, not as a reason to try another weight.",
+  "non_claims": [
+    "No weight other than 0.0 will be tried. Sweeping the weight after seeing outcomes is threshold rescue.",
+    "This does not retract the v4 terminal, which stands under its own protocol.",
+    "A repaired instrument is not a positive result about analogical transfer; it is an instrument that no longer reads its own marginals.",
+    "Grants no scientific or method-promotion authority."
+  ]
+}
