@@ -9,6 +9,8 @@ This fixes the v3 deficit where flat typed-role/relation features were insuffici
 
 from __future__ import annotations
 
+import os
+
 from dataclasses import dataclass
 from typing import Callable
 
@@ -64,6 +66,21 @@ def greedy_match_triples(query_triples: list, candidate_triples: list,
     return matches
 
 
+DEFAULT_ROLE_BOOST_WEIGHT = 0.2
+
+
+def _role_boost_weight() -> float:
+    """Weight on the lexical role-overlap term, default reproducing v4."""
+
+    raw = os.environ.get("RAKL_ARN_ROLE_BOOST_WEIGHT")
+    if raw is None:
+        return DEFAULT_ROLE_BOOST_WEIGHT
+    weight = float(raw)
+    if not 0.0 <= weight <= 1.0:
+        raise ValueError(f"role-boost weight must lie in [0, 1]; got {weight}")
+    return weight
+
+
 def compute_relational_correspondence_score(query: TypedReducedStructure,
                                             candidate: TypedReducedStructure) -> tuple[float, float, float]:
     """Compute relational-correspondence score using relation-triple alignment.
@@ -93,8 +110,18 @@ def compute_relational_correspondence_score(query: TypedReducedStructure,
     exact_token_matches = len(query_role_tokens & candidate_role_tokens)
     role_boost = exact_token_matches / len(query_role_tokens) if query_role_tokens else 0.0
 
-    # Combined score: 0.8 * triple_score + 0.2 * role_boost
-    score = 0.8 * triple_score + 0.2 * role_boost
+    # Combined score: (1 - w) * triple_score + w * role_boost.
+    #
+    # role_boost is exact role-token overlap — a marginal that depends on the two
+    # texts alone and not on which candidate is the analogue. The v4 battery
+    # closed BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE because that marginal
+    # survived gold shuffling (B3 advantage 0.1347, CI [0.105, 0.163]).
+    #
+    # The weight is configurable so the leaking arm stays exactly reproducible:
+    # the default reproduces v4 byte-for-byte, and RAKL_ARN_ROLE_BOOST_WEIGHT=0.0
+    # is the registered repair, leaving the purely relational channel.
+    w = _role_boost_weight()
+    score = (1.0 - w) * triple_score + w * role_boost
 
     return score, triple_score, role_boost
 

@@ -1,0 +1,62 @@
+{
+  "b2_text_destruction_repair": {
+    "changed_fraction": 1.0,
+    "null_upper_975": 0.22957198443579765,
+    "pass": true,
+    "scrambled_exact": 0.008430609597924773
+  },
+  "b3_shuffled_gold": {
+    "baseline_w_0_2": {
+      "advantage": 0.1346739299610895,
+      "ci": [
+        0.10537587548638133,
+        0.16336186770428018
+      ]
+    },
+    "committed_v4": {
+      "advantage": 0.1346739299610895,
+      "ci": [
+        0.10537587548638133,
+        0.16336186770428018
+      ]
+    },
+    "delta_from_removing_role_boost": 0.000623,
+    "repair_w_0_0": {
+      "advantage": 0.13405136186770428,
+      "ci": [
+        0.10490272373540849,
+        0.16270194552529177
+      ]
+    }
+  },
+  "baseline_reproduces_committed_v4": true,
+  "finding": {
+    "consequence_for_the_frontier": "research/negative_frontier_v1 record p2-arn-v4-battery-failed carries a core_lever that predates that finding. It is stale: the negative is not revivable by removing role_boost, and the successor route is the repaired probe restricted to items on which both compared arms are decisive.",
+    "headline": "the frontier's recorded lever for this negative is refuted by execution",
+    "recorded_cause": "the role_boost component (exact token matches) introduced marginal statistics that survive label shuffling",
+    "recorded_lever": "restore v3's instance-paired property (remove/instance-pair role_boost)",
+    "what_execution_shows": "Removing the role_boost term entirely moves the shuffled-gold advantage by 0.000623. The leak is not in role_boost, so restoring the instance-paired property cannot repair this battery.",
+    "where_the_leak_actually_is": "Already established on main and independently confirmed here: Paper II's 'Case 4: the shuffle null measured abstention, not binding' (#709, #712). Where the decision space includes abstention and the statistic is a proper score, the shuffle probe measures differential abstention rather than binding, so it cannot be passed by any instrument that abstains more than its control \u2014 whatever its scoring terms."
+  },
+  "grants_method_promotion_authority": false,
+  "grants_scientific_authority": false,
+  "non_claims": [
+    "No weight other than 0.0 will be tried. Sweeping the weight after seeing outcomes is threshold rescue.",
+    "This does not retract the v4 terminal, which stands under its own protocol.",
+    "A repaired instrument is not a positive result about analogical transfer; it is an instrument that no longer reads its own marginals.",
+    "Grants no scientific or method-promotion authority."
+  ],
+  "protocol": "research/arn_v4r_role_boost_repair_v1/PROTOCOL.json",
+  "protocol_status_at_execution": "FROZEN_BEFORE_EXECUTION",
+  "rule_R1_leak_must_die": {
+    "held": false,
+    "why": "the repaired CI still excludes zero"
+  },
+  "rule_R2_text_reading_must_survive": {
+    "held": true
+  },
+  "rule_R3_g1_not_read": "R1 failed, so the confirmatory advantage is deliberately not reported: reading a G1 advantage from an instrument that still leaks is the defect under repair",
+  "schema_version": "rakl-arn-v4r-role-boost-repair-result-v1",
+  "successor_epoch_required": "Running the repaired B3 (jointly-decisive restriction) on this arm is a different experiment and needs its own freeze. Continuing into it under this protocol would be the post-hoc amendment the invariants forbid.",
+  "terminal": "REPAIR_FAILED__LEAK_PERSISTS"
+}
