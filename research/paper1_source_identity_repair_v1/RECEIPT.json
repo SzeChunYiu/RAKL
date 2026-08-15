@@ -1,0 +1,232 @@
+{
+  "schema_version": "paper1-source-identity-repair-v1",
+  "run_date": "2026-08-15T03:32:05.643523+00:00",
+  "protocol_path": "research/paper1_source_identity_repair_v1/PROTOCOL_V2.json",
+  "parent_negative": "research/negative_frontier_v1/NEG-p1-source-monitoring-repetition-attack.md",
+  "one_stage_attribution": "extraction",
+  "lever_applied": "source-identity / lineage resolution (scheme-aware canonicalization)",
+  "threshold_changed": false,
+  "formula_changed": false,
+  "denominator_changed": false,
+  "gate_slot": {
+    "formula": "repetition_ratio = 1.0 - (distinct_count / total_submissions)",
+    "formula_source": "byte-identical to parent PROTOCOL.json / run_source_monitoring_repetition_attack_v1.py",
+    "total_submissions": 10,
+    "threshold_repetition_ratio_min": 0.5,
+    "threshold_source": "parent PROTOCOL.json hard_gate.repetition_ratio_min (unchanged)",
+    "distinct_count_slot": "distinct_canonical",
+    "slot_justification": "distinct_canonical is the same slot the v1 normalizer filled; swapping the normalizer under a fixed slot keeps the comparison apples-to-apples. distinct_roots is reported as a secondary diagnostic only and MUST NOT feed the gate."
+  },
+  "parent_receipt_reproduced_in_process": true,
+  "terminal_selector_falsification_check": {
+    "date": "2026-08-15",
+    "why": "a terminal selector that has only ever taken its pass branch is unvalidated; each failure branch was forced once with a throwaway mutation and then reverted",
+    "branches_observed": [
+      {
+        "terminal": "NORMALIZATION_UNSAFE_OVER_MERGES",
+        "mutation": "v2_distinct replaced by len({s.strip().lower() for s in identifiers}) so opaque ids over-merge"
+      },
+      {
+        "terminal": "ATTACK_STILL_SUCCEEDS",
+        "mutation": "v2 attack gate fed a hardcoded distinct_count of 9"
+      },
+      {
+        "terminal": "CANNOT_CHECK_PARENT_NOT_REPRODUCED",
+        "mutation": "baseline replace('?v=') changed to replace('?v=1') so the v1 arm no longer yields 8"
+      }
+    ],
+    "mutations_committed": false
+  },
+  "controls": {
+    "C1_no_false_merge_benign": {
+      "expected_distinct": 8,
+      "v2_distinct": 8,
+      "v1_distinct": 8,
+      "v2_false_merges": 0,
+      "v1_false_merges": 0,
+      "passed": true
+    },
+    "C2_near_miss_pairs_stay_separate": {
+      "pairs": [
+        {
+          "pair": "adjacent_doi",
+          "left": "doi:10.1038/s41586-019-1234-5",
+          "right": "doi:10.1038/s41586-019-1234-6",
+          "v1_distinct": 2,
+          "v2_distinct": 2,
+          "v1_over_merged": false,
+          "v2_over_merged": false
+        },
+        {
+          "pair": "same_author_arxiv_pair",
+          "left": "arXiv:2401.00111",
+          "right": "arXiv:2401.00112",
+          "v1_distinct": 2,
+          "v2_distinct": 2,
+          "v1_over_merged": false,
+          "v2_over_merged": false
+        },
+        {
+          "pair": "identity_bearing_url_query",
+          "left": "https://example.org/paper?id=1",
+          "right": "https://example.org/paper?id=2",
+          "v1_distinct": 2,
+          "v2_distinct": 2,
+          "v1_over_merged": false,
+          "v2_over_merged": false
+        },
+        {
+          "pair": "doi_supplement_suffix",
+          "left": "doi:10.1038/s41586-019-1234-5",
+          "right": "doi:10.1038/s41586-019-1234-5.suppl",
+          "v1_distinct": 2,
+          "v2_distinct": 2,
+          "v1_over_merged": false,
+          "v2_over_merged": false
+        },
+        {
+          "pair": "v1_baseline_collision_pair",
+          "left": "doi:10.1000/x?v=1",
+          "right": "doi:10.1000/x1",
+          "v1_distinct": 1,
+          "v2_distinct": 2,
+          "v1_over_merged": true,
+          "v2_over_merged": false
+        },
+        {
+          "pair": "case_varied_opaque_path",
+          "left": "https://records.example.org/Archive/Case-Alpha",
+          "right": "https://records.example.org/archive/case-alpha",
+          "v1_distinct": 1,
+          "v2_distinct": 2,
+          "v1_over_merged": true,
+          "v2_over_merged": false
+        }
+      ],
+      "v2_over_merge_count": 0,
+      "passed": true
+    },
+    "C3_arxiv_versions_distinct_but_share_root": {
+      "identifiers": [
+        "arXiv:2401.00111v1",
+        "arXiv:2401.00111v2"
+      ],
+      "distinct_canonical": 2,
+      "distinct_roots": 1,
+      "syntactic_edges": [
+        [
+          "arxiv:2401.00111v1",
+          "arxiv:2401.00111",
+          "VERSION_OF"
+        ],
+        [
+          "arxiv:2401.00111v2",
+          "arxiv:2401.00111",
+          "VERSION_OF"
+        ]
+      ],
+      "passed": true
+    },
+    "C4_baseline_over_merge_exists": {
+      "baseline_over_merged_pairs": [
+        "v1_baseline_collision_pair",
+        "case_varied_opaque_path"
+      ],
+      "passed": true,
+      "note": "the v1 normalizer both under-merges (the attack) and over-merges; a control that no arm can fail proves nothing"
+    },
+    "C5_equivalent_surface_forms_collapse": {
+      "identifiers": [
+        "doi:10.1038/s41586-019-1234-5",
+        "DOI: 10.1038/s41586-019-1234-5",
+        "10.1038/S41586-019-1234-5",
+        "https://doi.org/10.1038/s41586-019-1234-5",
+        "http://dx.doi.org/10.1038/s41586-019-1234-5#results",
+        "doi:10.1038/s41586-019-1234-5?v=7",
+        "  doi:10.1038/s41586-019-1234-5.  "
+      ],
+      "v1_distinct": 6,
+      "v2_distinct": 1,
+      "passed": true
+    },
+    "all_passed": true,
+    "control_ids": [
+      "C1_no_false_merge_benign",
+      "C2_near_miss_pairs_stay_separate",
+      "C3_arxiv_versions_distinct_but_share_root",
+      "C4_baseline_over_merge_exists",
+      "C5_equivalent_surface_forms_collapse"
+    ]
+  },
+  "attack": {
+    "corpus": [
+      "doi:10.1038/s41586-019-1234-5",
+      "doi:10.1038/s41586-019-1234-5?v=1",
+      "doi:10.1038/s41586-019-1234-5?v=2",
+      "arXiv:1234.5678v1",
+      "doi:10.1038/s41586-019-1234-5",
+      "doi:10.1038/s41586-019-1234-5?v=3",
+      "DOI: 10.1038/s41586-019-1234-5",
+      "doi:10.1038/s41586-019-1234-5?v=4",
+      "doi:10.1038/s41586-019-1234-5?v=5",
+      "arXiv:1234.5678v1"
+    ],
+    "v1_baseline": {
+      "distinct_count": 8,
+      "total_submissions": 10,
+      "attack_detected": true,
+      "repetition_ratio": 0.19999999999999996,
+      "hard_gate_pass": false
+    },
+    "v2_repair": {
+      "distinct_count": 2,
+      "total_submissions": 10,
+      "attack_detected": true,
+      "repetition_ratio": 0.8,
+      "hard_gate_pass": true
+    },
+    "v2_repair_diagnostics": {
+      "distinct_canonical": [
+        "arxiv:1234.5678v1",
+        "doi:10.1038/s41586-019-1234-5"
+      ],
+      "distinct_roots_no_declared_record": [
+        "arxiv:1234.5678",
+        "doi:10.1038/s41586-019-1234-5"
+      ],
+      "syntactic_edges": [
+        [
+          "arxiv:1234.5678v1",
+          "arxiv:1234.5678",
+          "VERSION_OF"
+        ]
+      ],
+      "declared_edges": []
+    },
+    "v2_with_declared_cross_venue_record": {
+      "note": "DIAGNOSTIC ONLY - does not feed the gate. Cross-venue sameness is not derivable from the identifier strings.",
+      "distinct_canonical": 2,
+      "distinct_roots": 1,
+      "declared_edges": [
+        [
+          "arxiv:1234.5678",
+          "doi:10.1038/s41586-019-1234-5",
+          "VERSION_OF"
+        ]
+      ],
+      "repetition_ratio_on_roots": 0.9
+    }
+  },
+  "code_change": [
+    "src/rakl/source_identity.py (new)",
+    "src/rakl/identity.py (EvidenceIdentityLedger.ancestry_roots)",
+    "src/rakl/__init__.py (exports)"
+  ],
+  "tests": [
+    "tests/test_source_identity.py"
+  ],
+  "residual": "Cross-venue identity (DOI <-> arXiv preprint) is NOT derivable from identifier strings and is not attempted syntactically. In this attack corpus the two arXiv submissions are byte-identical, so the gate flips on surface-form canonicalization alone; a repetition attack that used two DIFFERENT surface forms of the SAME cross-venue work would still need a declared mapping record.",
+  "terminal": "ATTACK_DETECTED_CONTROLS_PASSING",
+  "grants_scientific_authority": false,
+  "promotion_verdict": "KEEP_PROPOSAL_ONLY_PENDING_GOVERNANCE"
+}
