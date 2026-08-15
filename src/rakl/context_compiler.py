@@ -122,6 +122,10 @@ def compile_epistemic_context(
     4. Redundant items with zero new coverage are not filler-selected.
     5. Target-fiber filtering is applied before optional selection.
     6. Compact/lossy views remain rehydratable pointers, not replacement evidence.
+    7. If relevant, coverage-bearing context exists and the budget admits NONE of
+       it, the result is ``CANNOT_COMPILE`` / ``context_over_budget`` -- never an
+       empty working set reported as compiled (HOSTILE_TEST_MATRIX H30). An
+       empty result is COMPILED only when there was nothing relevant to select.
 
     This is support infrastructure only. The function does not retrieve raw payloads,
     summarize evidence, change memory, or mint authority.
@@ -197,6 +201,17 @@ def compile_epistemic_context(
     if missing_required:
         verdict = ContextCompileVerdict.CANNOT_COMPILE
         reasons = ("required_coverage_not_materialized",)
+    elif not selected:
+        # H30: zero context because the budget excluded everything that carried value
+        # is a capacity refusal, not a compiled packet. Distinguish it from "nothing
+        # relevant existed" (which stays COMPILED with an empty, honest working set).
+        excluded_by_budget = [
+            item for item in candidates
+            if _marginal_value(item, covered, weights) > 0 and used + item.token_cost > request.budget_tokens
+        ]
+        if excluded_by_budget:
+            verdict = ContextCompileVerdict.CANNOT_COMPILE
+            reasons = ("context_over_budget",)
 
     return ContextCompileReport(
         verdict=verdict,

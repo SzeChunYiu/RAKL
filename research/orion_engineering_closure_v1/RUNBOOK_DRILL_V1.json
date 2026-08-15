@@ -1,0 +1,446 @@
+{
+  "drill_version": "orion-runbook-drill-v1",
+  "runbook": "docs/OPERATIONS_RUNBOOK.md",
+  "date": "2026-08-15",
+  "repo_commit": "68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68",
+  "python": "/home/billy/rakl-verify/.venv/bin/python",
+  "workdir": "/tmp/orion-runbook-drill-sdxgmiux",
+  "outcome_vocabulary": [
+    "EXECUTED",
+    "EXECUTED_WITH_DEVIATION",
+    "NOT_EXECUTABLE_LOCALLY"
+  ],
+  "rollup_rule": "a procedure's outcome is its weakest step: NOT_EXECUTABLE_LOCALLY < EXECUTED_WITH_DEVIATION < EXECUTED. A procedure with an executed half and an infrastructure-bound half is reported NOT_EXECUTABLE_LOCALLY with the executed steps listed, never rolled up as executed.",
+  "grants_scientific_authority": false,
+  "procedures": [
+    {
+      "procedure_id": "P01",
+      "name": "deploy",
+      "steps": [
+        {
+          "step_id": "P01.1",
+          "command": "\"$ORION_PY\" -m rakl profiles",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"profiles\": [ { \"input_budget_tokens\": 24576, \"min_context_tokens\": 32768, \"profile_id\": \"agentic-32k\", \"requires_instruction_following\": true, \"requires_native_tool_calls\": true, \"requires_parseable_json\": true, \"reserved_output_tokens\": 6144, \"reserved_protocol_tokens\": 2048 }, { \"input_budget_tokens\": 6144, \"min_context_tokens\": 8192, \"profile_id\": \"ordinary-8k\", \"requires_instruction_following\": true, \"requires_native_tool_calls\": false, \"requires_parseable_json\": true, \"reserved_output_tokens\": 1536, \"reserved_protocol_tokens\": 512 }, { \"input_budget_tokens\": 24576, \"min_context_tokens\": 32768, \"profile_id\": \"standard-32k\", \"requires_instruction_following\": true, \"requires_native_tool_calls\": false, \"requires_parseable_json\": true, \"reserved_output_tokens\": 6144, \"reserved_protocol_tokens\": 2048 } ] }",
+          "note": "runtime import + profile table"
+        },
+        {
+          "step_id": "P01.2",
+          "command": "\"$ORION_PY\" -m rakl release-manifest /tmp/orion-runbook-drill-sdxgmiux/release --source-revision 68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68 --artifact RELEASE_TARBALL:orion.tar --output /tmp/orion-runbook-drill-sdxgmiux/release-manifest.json",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"artifact_count\": 1, \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"manifest_sha256\": \"da0cea1dffd39ddf1a66cdc1675a6c11b88bb143f508ec9e321aa1b78e66f8fe\", \"output\": \"/tmp/orion-runbook-drill-sdxgmiux/release-manifest.json\" }",
+          "note": ""
+        },
+        {
+          "step_id": "P01.3",
+          "command": "\"$ORION_PY\" -m rakl verify-release /tmp/orion-runbook-drill-sdxgmiux/release /tmp/orion-runbook-drill-sdxgmiux/release-manifest.json",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"issues\": [], \"manifest_sha256\": \"da0cea1dffd39ddf1a66cdc1675a6c11b88bb143f508ec9e321aa1b78e66f8fe\", \"verdict\": \"VERIFIED\", \"verified_artifact_count\": 1 }",
+          "note": ""
+        },
+        {
+          "step_id": "P01.4",
+          "command": "cp -r /tmp/orion-runbook-drill-sdxgmiux/release /tmp/orion-runbook-drill-sdxgmiux/release-tampered && printf tamper >> /tmp/orion-runbook-drill-sdxgmiux/release-tampered/orion.tar && \"$ORION_PY\" -m rakl verify-release /tmp/orion-runbook-drill-sdxgmiux/release-tampered /tmp/orion-runbook-drill-sdxgmiux/release-manifest.json",
+          "expected_exit": [
+            8
+          ],
+          "actual_exit": 8,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"issues\": [ \"artifact_digest_mismatch:RELEASE_TARBALL:orion.tar\" ], \"manifest_sha256\": \"da0cea1dffd39ddf1a66cdc1675a6c11b88bb143f508ec9e321aa1b78e66f8fe\", \"verdict\": \"FAILED\", \"verified_artifact_count\": 0 }",
+          "note": "an artifact that moved after the manifest was cut must fail verification"
+        },
+        {
+          "step_id": "P01.5",
+          "command": "<deploy the verified artifact to the target environment>",
+          "expected_exit": [],
+          "actual_exit": null,
+          "outcome": "NOT_EXECUTABLE_LOCALLY",
+          "output_excerpt": "",
+          "note": "needs provisioned infrastructure: a PostgreSQL, an OTLP collector, an identity provider and a secret manager (CLOSURE_ASSESSMENT_V3 residuals for E6/E12/E13/E15)"
+        }
+      ],
+      "not_executable_reason": "the deploy step itself needs provisioned infrastructure; its preflight is executed above",
+      "outcome": "NOT_EXECUTABLE_LOCALLY"
+    },
+    {
+      "procedure_id": "P02",
+      "name": "initialize",
+      "steps": [
+        {
+          "step_id": "P02.1",
+          "command": "\"$ORION_PY\" -m rakl init /tmp/orion-runbook-drill-sdxgmiux/project --project-id orion-drill --profile ordinary-8k",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"healthy\": true, \"issues\": [], \"payload_count\": 0, \"project_id\": \"orion-drill\", \"protocol_version\": \"rakl-project-v1\", \"record_count\": 0, \"reference_profile\": \"ordinary-8k\" }",
+          "note": ""
+        },
+        {
+          "step_id": "P02.2",
+          "command": "\"$ORION_PY\" -m rakl init /tmp/orion-runbook-drill-sdxgmiux/project --project-id orion-drill --profile ordinary-8k",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"healthy\": true, \"issues\": [], \"payload_count\": 0, \"project_id\": \"orion-drill\", \"protocol_version\": \"rakl-project-v1\", \"record_count\": 0, \"reference_profile\": \"ordinary-8k\" }",
+          "note": "re-running init on an existing project must be idempotent"
+        },
+        {
+          "step_id": "P02.3",
+          "command": "\"$ORION_PY\" -m rakl init /tmp/orion-runbook-drill-sdxgmiux/project --project-id other-id --profile ordinary-8k",
+          "expected_exit": [
+            2
+          ],
+          "actual_exit": 2,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"error\": \"ProjectRuntimeError\", \"message\": \"existing project manifest is incompatible; refusing to rewrite\" }",
+          "note": "a different project_id must be refused, not silently rewritten"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P03",
+      "name": "ingest",
+      "steps": [
+        {
+          "step_id": "P03.1",
+          "command": "\"$ORION_PY\" -m rakl ingest /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/evidence.md --record-id evidence:drill:1 --tokens 120 --kind SOURCE_PROJECTION --coverage drill_evidence --fiber E20 --mandatory",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"coverage_atoms\": [ \"drill_evidence\" ], \"fiber_ids\": [ \"E20\" ], \"kind\": \"SOURCE_PROJECTION\", \"mandatory\": true, \"payload_sha256\": \"fd4a1a8aee778d48d813199ca06bea1c709db8a1c97bcdc3359356d5bb4a8ba4\", \"record_id\": \"evidence:drill:1\", \"semantic_tags\": [], \"token_cost\": 120 }",
+          "note": ""
+        },
+        {
+          "step_id": "P03.2",
+          "command": "\"$ORION_PY\" -m rakl ingest /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/evidence.md --record-id evidence:drill:1 --tokens 120 --kind SOURCE_PROJECTION --coverage drill_evidence --fiber E20 --mandatory",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"coverage_atoms\": [ \"drill_evidence\" ], \"fiber_ids\": [ \"E20\" ], \"kind\": \"SOURCE_PROJECTION\", \"mandatory\": true, \"payload_sha256\": \"fd4a1a8aee778d48d813199ca06bea1c709db8a1c97bcdc3359356d5bb4a8ba4\", \"record_id\": \"evidence:drill:1\", \"semantic_tags\": [], \"token_cost\": 120 }",
+          "note": "same bytes under the same record id: idempotent"
+        },
+        {
+          "step_id": "P03.3",
+          "command": "\"$ORION_PY\" -m rakl ingest /tmp/orion-runbook-drill-sdxgmiux/project /home/billy/rakl-pub46/README.md --record-id evidence:drill:1 --tokens 120",
+          "expected_exit": [
+            2
+          ],
+          "actual_exit": 2,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"error\": \"ProjectRuntimeError\", \"message\": \"record_id is immutable and already refers to different content/metadata\" }",
+          "note": "rebinding a record id to different content must be refused"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P04",
+      "name": "research",
+      "steps": [
+        {
+          "step_id": "P04.1",
+          "command": "\"$ORION_PY\" -m rakl packet /tmp/orion-runbook-drill-sdxgmiux/project --operation SATURATION_SCAN --question \"what evidence covers the drill?\" --require drill_evidence --output /tmp/orion-runbook-drill-sdxgmiux/packet.json",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"compile_report\": { \"budget_tokens\": 6144, \"covered_atoms\": [ \"drill_evidence\" ], \"missing_required_atoms\": [], \"omitted_record_ids\": [], \"reasons\": [], \"rehydration_record_ids\": [], \"selected_record_ids\": [ \"evidence:drill:1\" ], \"used_tokens\": 120, \"verdict\": \"COMPILED\" }, \"issues\": [], \"output\": \"/tmp/orion-runbook-drill-sdxgmiux/packet.json\", \"packet\": { \"authority_boundary\": { \"llm_output_authority\": \"PROPOSAL_ONLY\", \"may_mint_mechanistic_or_decision_authority\": false, \"may_promote_canonical_knowledge\": false }, \"context_budget_tokens\": 6144, \"epistemic_rules\": [ \"projection/context before competition\", \"representation is not mechanism\", \"LLM output is proposal-only\", \"negative evidence remains addressable\", \"missing evidence must be reported rather than guessed\" ], \"operation\": \"SATURATION_SCAN\", \"packet_version\": \"rakl-task-packet-v1\", \"project_id\": \"orion-drill\", \"question\": \"wh \u2026",
+          "note": ""
+        },
+        {
+          "step_id": "P04.2",
+          "command": "\"$ORION_PY\" -m rakl packet /tmp/orion-runbook-drill-sdxgmiux/project --operation SATURATION_SCAN --question \"unsatisfiable\" --require atom_that_does_not_exist",
+          "expected_exit": [
+            5
+          ],
+          "actual_exit": 5,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"compile_report\": { \"budget_tokens\": 6144, \"covered_atoms\": [ \"drill_evidence\" ], \"missing_required_atoms\": [ \"atom_that_does_not_exist\" ], \"omitted_record_ids\": [], \"reasons\": [ \"required_coverage_not_materialized\" ], \"rehydration_record_ids\": [], \"selected_record_ids\": [ \"evidence:drill:1\" ], \"used_tokens\": 120, \"verdict\": \"CANNOT_COMPILE\" }, \"issues\": [ \"required_coverage_not_materialized\" ], \"packet\": null, \"verdict\": \"CANNOT_COMPILE\" }",
+          "note": "a packet that cannot cover a required atom is CANNOT_COMPILE, not a partial packet"
+        },
+        {
+          "step_id": "P04.3",
+          "command": "\"$ORION_PY\" -m rakl run /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/packet.json --runner-id drill-runner --model-id local-echo --model-version 0 --exec /bin/bash --arg /tmp/orion-runbook-drill-sdxgmiux/echo_adapter.sh --output /tmp/orion-runbook-drill-sdxgmiux/run-output.json",
+          "expected_exit": [
+            0,
+            6
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"invocation_id\": \"30f70d7d9169d596271c6b64a501254bf7b9f16cb0996f78dff0d7c270d60a48\", \"output\": \"/tmp/orion-runbook-drill-sdxgmiux/run-output.json\", \"reason\": null, \"receipt\": { \"attempt\": 1, \"completed_at_utc\": \"2026-08-15T18:42:11.410004Z\", \"duration_ms\": 1, \"event_chain_head_sha256\": \"08584bc826507e4f5959ee5bef88c4ba3bb217a1311a5bcf339d0f4ff528ba3a\", \"execution_nonce\": \"default\", \"exit_code\": 0, \"generation_config\": {}, \"generation_config_authority\": \"DELIVERED_TO_RUNNER_PROTOCOL\", \"invocation_id\": \"30f70d7d9169d596271c6b64a501254bf7b9f16cb0996f78dff0d7c270d60a48\", \"may_promote_canonical_knowledge\": false, \"output_authority\": \"PROPOSAL_ONLY\", \"packet_sha256\": \"4dd1c49830bc5e8535e10915aacb3661cc6d038f37078c979e2d3d6e9396258b\", \"protocol_valid\": true, \"runner\": { \"allowed_env_names\": [], \"argv\": [ \"/bin/bash\", \"/tmp/orion-runbook-drill-sdxgmiux/echo_adapter.sh\" ], \"argv_sha256\": \"30fe5 \u2026",
+          "note": "governed local adapter; a provider-backed runner is deployment"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P05",
+      "name": "inspect status",
+      "steps": [
+        {
+          "step_id": "P05.1",
+          "command": "\"$ORION_PY\" -m rakl status /tmp/orion-runbook-drill-sdxgmiux/project",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"healthy\": true, \"issues\": [], \"payload_count\": 11, \"project_id\": \"orion-drill\", \"protocol_version\": \"rakl-project-v1\", \"record_count\": 1, \"reference_profile\": \"ordinary-8k\" }",
+          "note": ""
+        },
+        {
+          "step_id": "P05.2",
+          "command": "\"$ORION_PY\" -m rakl doctor /tmp/orion-runbook-drill-sdxgmiux/project",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"healthy\": true, \"issues\": [], \"payload_count\": 11, \"project_id\": \"orion-drill\", \"record_count\": 1, \"reference_profile\": \"ordinary-8k\" }",
+          "note": ""
+        },
+        {
+          "step_id": "P05.3",
+          "command": "\"$ORION_PY\" -m rakl doctor /tmp/orion-runbook-drill-sdxgmiux",
+          "expected_exit": [
+            2
+          ],
+          "actual_exit": 2,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"error\": \"ProjectRuntimeError\", \"message\": \"not a RAKL project: /tmp/orion-runbook-drill-sdxgmiux\" }",
+          "note": "a non-project directory is an error, not healthy"
+        },
+        {
+          "step_id": "P05.4",
+          "command": "cp -r /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/project-corrupt && D=$(\"$ORION_PY\" -c 'import json,glob;print(json.load(open(glob.glob(\"/tmp/orion-runbook-drill-sdxgmiux/project-corrupt/.rakl/records/*.json\")[0]))[\"payload_sha256\"])') && printf tamper >> /tmp/orion-runbook-drill-sdxgmiux/project-corrupt/.rakl/store/sha256/${D:0:2}/$D && \"$ORION_PY\" -m rakl doctor /tmp/orion-runbook-drill-sdxgmiux/project-corrupt",
+          "expected_exit": [
+            4
+          ],
+          "actual_exit": 4,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"healthy\": false, \"issues\": [ \"payload_integrity_failure:evidence:drill:1:fd4a1a8aee778d48d813199ca06bea1c709db8a1c97bcdc3359356d5bb4a8ba4\" ], \"payload_count\": 11, \"project_id\": \"orion-drill\", \"record_count\": 1, \"reference_profile\": \"ordinary-8k\" }",
+          "note": "a tampered canonical payload must exit 4 with payload_integrity_failure"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P06",
+      "name": "recover an ambiguous activity",
+      "steps": [
+        {
+          "step_id": "P06.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/workflow.sqlite3 <<'PY'\nimport sys\nfrom pathlib import Path\nfrom rakl.engineering_workflow import ActivitySpec\nfrom rakl.engineering_workflow_workers import SqliteWorkerWorkflowEngine, ClaimVerdict\n\ndb = Path(sys.argv[1])\nengine = SqliteWorkerWorkflowEngine(db)\nspec = ActivitySpec(activity_id=\"act:publish\", invocation_id=\"inv:1\", input_digest=\"d\"*64,\n                    retry_safe=True, external_effect=True, max_attempts=3)\nengine.schedule(\"wf:release\", spec, idempotency_key=\"idem:publish:1\")\nlease = engine.claim(\"wf:release\", \"act:publish\", worker_id=\"worker-a\", now=1000, ttl=30).lease\nengine.mark_effect_started(lease)                      # worker-a now dies mid-effect\nverdict = engine.claim(\"wf:release\", \"act:publish\", worker_id=\"worker-b\", now=9999, ttl=30)\nprint(\"claim verdict:\", verdict.verdict.value)\nprint(\"reason:\", verdict.reason)\nrecord = engine.activity(\"wf:release\", \"act:publish\")\nprint(\"activity status:\", record.status.value, \"attempts:\", record.attempt_count,\n      \"effect_started:\", record.effect_started, \"receipt:\", record.result_digest)\nprint(\"history intact:\", engine.verify_history(\"wf:release\"))\nfor event in engine.events(\"wf:release\"):\n    print(\" \", event[\"sequence\"], event[\"kind\"], event[\"payload\"])\nassert verdict.verdict is ClaimVerdict.RECOVERY_REQUIRED\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "claim verdict: RECOVERY_REQUIRED reason: dead worker had started an external effect; ambiguity is not retried activity status: RECOVERY_REQUIRED attempts: 1 effect_started: True receipt: None history intact: True 0 ACTIVITY_SCHEDULED {'activity_id': 'act:publish', 'idempotency_key': 'idem:publish:1'} 1 LEASE_ACQUIRED {'activity_id': 'act:publish', 'reclaimed': False, 'token': 'a7728e6c7d52119b0bd7190111589b9ab6361aea4103398fc0708df18d68d5b9', 'worker': 'worker-a'} 2 EFFECT_STARTED {'activity_id': 'act:publish', 'worker': 'worker-a'} 3 RECOVERY_REQUIRED {'activity_id': 'act:publish', 'dead_worker': 'worker-a', 'reason': 'worker died after starting an external effect and before writing a receipt'}",
+          "note": "drives the after-effect/before-receipt crash window and reads the typed terminal"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P07",
+      "name": "backup",
+      "steps": [
+        {
+          "step_id": "P07.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json bk-1 2026-08-15T00:00:00+00:00 <<'PY'\nimport json, sys\nfrom pathlib import Path\nfrom rakl.engineering_ops import take_backup\nsource, out = Path(sys.argv[1]), Path(sys.argv[2])\nmanifest = take_backup(source, backup_id=sys.argv[3], created_at=sys.argv[4])\nout.parent.mkdir(parents=True, exist_ok=True)\nout.write_text(json.dumps({\"backup_id\": manifest.backup_id, \"created_at\": manifest.created_at,\n                           \"entries\": dict(manifest.entries),\n                           \"manifest_digest\": manifest.manifest_digest}, indent=2, sort_keys=True))\nprint(\"entries:\", len(manifest.entries), \"manifest_digest:\", manifest.manifest_digest)\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "entries: 18 manifest_digest: e2948a06802001eb400cd069b2cdf7e2653a8c5b3247a431420beabc2222a5a8",
+          "note": ""
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P08",
+      "name": "restore",
+      "steps": [
+        {
+          "step_id": "P08.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/restore /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json <<'PY'\nimport json, shutil, sys\nfrom pathlib import Path\nfrom rakl.engineering_ops import BackupManifest, RestoreVerdict, verify_restore\nsource, target, manifest_path = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])\nraw = json.loads(manifest_path.read_text())\nmanifest = BackupManifest(raw[\"backup_id\"], raw[\"created_at\"], raw[\"entries\"], raw[\"manifest_digest\"])\nif target.exists():\n    shutil.rmtree(target)\ntarget.mkdir(parents=True)\nfor rel in manifest.entries:                            # restore into an EMPTY environment\n    (target / rel).parent.mkdir(parents=True, exist_ok=True)\n    (target / rel).write_bytes((source / rel).read_bytes())\nverdict, offenders = verify_restore(target, manifest)\nprint(\"restore verdict:\", verdict.value, \"offenders:\", list(offenders))\nraise SystemExit(0 if verdict is RestoreVerdict.EXACT else 1)\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "restore verdict: EXACT offenders: []",
+          "note": ""
+        },
+        {
+          "step_id": "P08.2",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/restore /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json <<'PY'\nimport json, sys\nfrom pathlib import Path\nfrom rakl.engineering_ops import BackupManifest, RestoreVerdict, verify_restore\ntarget, manifest_path = Path(sys.argv[1]), Path(sys.argv[2])\nraw = json.loads(manifest_path.read_text())\nmanifest = BackupManifest(raw[\"backup_id\"], raw[\"created_at\"], raw[\"entries\"], raw[\"manifest_digest\"])\nvictim = target / sorted(manifest.entries)[0]\nvictim.write_bytes(victim.read_bytes() + b\"tamper\")\nverdict, offenders = verify_restore(target, manifest)\nprint(\"tampered restore verdict:\", verdict.value, \"offenders:\", list(offenders))\nraise SystemExit(0 if verdict is RestoreVerdict.CORRUPTED_BLOB else 1)\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "tampered restore verdict: CORRUPTED_BLOB offenders: ['.rakl/project.json']",
+          "note": "the verifier must catch a byte-level tamper, else the drill proves nothing"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    },
+    {
+      "procedure_id": "P09",
+      "name": "upgrade",
+      "steps": [
+        {
+          "step_id": "P09.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/source_state.json /tmp/orion-runbook-drill-sdxgmiux/target_state.json <<'PY'\nimport json, sys\nfrom pathlib import Path\nfrom rakl.engineering_migration import build_import_receipt, compare_migration_parity\nsource = json.loads(Path(sys.argv[1]).read_text())\ntarget = json.loads(Path(sys.argv[2]).read_text())\nreport = compare_migration_parity(source, target)\nprint(\"parity:\", report.verdict.value, report.source_digest[:16], report.target_digest[:16])\nif not report.passed:\n    raise SystemExit(1)\nreceipt = build_import_receipt(\n    import_id=\"upgrade:v1\", project_id=\"orion-drill\", source_store_kind=\"sqlite-reference\",\n    source_store_identity=sys.argv[1], source_head_hash=report.source_digest,\n    target_backend_identity=\"sqlite-reference-next\", imported_object_ids=tuple(source),\n    parity_report=report, created_at_utc=\"2026-08-15T00:00:00+00:00\")\nprint(\"import receipt:\", receipt.receipt_id)\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "parity: MATCH 4058cca15b82abf7 4058cca15b82abf7 import receipt: import-receipt:c009b0d13b28b4c138539dd34cb95ee7bd4d18da8b8978b80656dbbb8b62bbf3",
+          "note": ""
+        },
+        {
+          "step_id": "P09.2",
+          "command": "<run the schema migration against the target backend>",
+          "expected_exit": [],
+          "actual_exit": null,
+          "outcome": "NOT_EXECUTABLE_LOCALLY",
+          "output_excerpt": "",
+          "note": "needs a provisioned target backend (PostgreSQL); the parity check and the import receipt that gate it are executed above"
+        }
+      ],
+      "not_executable_reason": "the migration execution needs a provisioned target backend",
+      "outcome": "NOT_EXECUTABLE_LOCALLY"
+    },
+    {
+      "procedure_id": "P10",
+      "name": "rollback",
+      "steps": [
+        {
+          "step_id": "P10.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/rollback /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json <<'PY'\nimport json, shutil, sys\nfrom pathlib import Path\nfrom rakl.engineering_ops import BackupManifest, RestoreVerdict, verify_restore\nsource, target, manifest_path = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])\nraw = json.loads(manifest_path.read_text())\nmanifest = BackupManifest(raw[\"backup_id\"], raw[\"created_at\"], raw[\"entries\"], raw[\"manifest_digest\"])\nif target.exists():\n    shutil.rmtree(target)\ntarget.mkdir(parents=True)\nfor rel in manifest.entries:                            # restore into an EMPTY environment\n    (target / rel).parent.mkdir(parents=True, exist_ok=True)\n    (target / rel).write_bytes((source / rel).read_bytes())\nverdict, offenders = verify_restore(target, manifest)\nprint(\"restore verdict:\", verdict.value, \"offenders:\", list(offenders))\nraise SystemExit(0 if verdict is RestoreVerdict.EXACT else 1)\nPY",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "restore verdict: EXACT offenders: []",
+          "note": "data-plane rollback: restore the last verified backup into an empty root"
+        },
+        {
+          "step_id": "P10.2",
+          "command": "<redeploy the previous digest-pinned image>",
+          "expected_exit": [],
+          "actual_exit": null,
+          "outcome": "NOT_EXECUTABLE_LOCALLY",
+          "output_excerpt": "",
+          "note": "needs a container registry and the deployed environment; the digest that pins it is verified by scripts/verify_release_provenance.py above"
+        }
+      ],
+      "not_executable_reason": "image rollback needs a registry and a deployed environment; the data-plane half is executed above",
+      "outcome": "NOT_EXECUTABLE_LOCALLY"
+    },
+    {
+      "procedure_id": "P11",
+      "name": "diagnose",
+      "steps": [
+        {
+          "step_id": "P11.1",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json 1786752060 /tmp/orion-runbook-drill-sdxgmiux/workflow.sqlite3 <<'PY'\nimport json, sys\nfrom pathlib import Path\nfrom rakl.engineering_doctor_probes import ProbeContext, build_doctor, render_report, worst_status\nfrom rakl.engineering_ops import BackupManifest, ProbeStatus\n\nproject, manifest_path, now, workflow_db = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3]), Path(sys.argv[4])\nmanifest_raw = json.loads(manifest_path.read_text())\nrecords = sorted((project / \".rakl\" / \"records\").glob(\"*.json\"))\ndigests = tuple(json.loads(p.read_text())[\"payload_sha256\"] for p in records)\nctx = ProbeContext(\n    now=now,\n    object_store_root=project / \".rakl\" / \"store\" / \"sha256\",\n    expected_object_digests=digests,\n    workflow_db_path=workflow_db,\n    backup_manifest=BackupManifest(manifest_raw[\"backup_id\"], manifest_raw[\"created_at\"],\n                                   manifest_raw[\"entries\"], manifest_raw[\"manifest_digest\"]),\n    backup_restore_root=project,\n    backup_max_age_seconds=86400,\n    stored_status={\"project_id\": \"orion-drill\", \"freshness\": \"FRESH\",\n                   \"hard_gates\": {\"payload_integrity\": \"PASS\"}},\n)\nresults = build_doctor(ctx).run()\nprint(render_report(results))\noverall = worst_status(results)\n# CANNOT_CHECK gets its own code: \"could not check\" must never exit 0 alongside \"checked and fine\"\nraise SystemExit({ProbeStatus.FAIL: 1, ProbeStatus.CANNOT_CHECK: 3}.get(overall, 0))\nPY",
+          "expected_exit": [
+            1
+          ],
+          "actual_exit": 1,
+          "outcome": "EXECUTED",
+          "output_excerpt": "ORION DOCTOR overall=FAIL probes=9 FAIL workflow_workers 1 activities in RECOVERY_REQUIRED: wf:release/act:publish CANNOT_CHECK database no database path supplied CANNOT_CHECK index no semantic store supplied CANNOT_CHECK migration migration source and/or target projection not supplied CANNOT_CHECK provenance no build provenance record supplied CANNOT_CHECK secrets no secret store supplied OK backup backup bk-1 is 60s old, restore verified EXACT over 18 entries OK object_store 1 declared objects verified, 11 stored OK status_freshness stored freshness=FRESH, gates={'payload_integrity': 'PASS'}, axes={}",
+          "note": "exit 1 is correct here: P06 deliberately left an unrecovered activity, and the doctor must surface it as FAIL rather than an unexplained error"
+        },
+        {
+          "step_id": "P11.2",
+          "command": "\"$ORION_PY\" - /tmp/orion-runbook-drill-sdxgmiux/project /tmp/orion-runbook-drill-sdxgmiux/backups/bk-1.json 1786752060 /tmp/orion-runbook-drill-sdxgmiux/clean-workflow.sqlite3 <<'PY'\nimport json, sys\nfrom pathlib import Path\nfrom rakl.engineering_doctor_probes import ProbeContext, build_doctor, render_report, worst_status\nfrom rakl.engineering_ops import BackupManifest, ProbeStatus\n\nproject, manifest_path, now, workflow_db = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3]), Path(sys.argv[4])\nmanifest_raw = json.loads(manifest_path.read_text())\nrecords = sorted((project / \".rakl\" / \"records\").glob(\"*.json\"))\ndigests = tuple(json.loads(p.read_text())[\"payload_sha256\"] for p in records)\nctx = ProbeContext(\n    now=now,\n    object_store_root=project / \".rakl\" / \"store\" / \"sha256\",\n    expected_object_digests=digests,\n    workflow_db_path=workflow_db,\n    backup_manifest=BackupManifest(manifest_raw[\"backup_id\"], manifest_raw[\"created_at\"],\n                                   manifest_raw[\"entries\"], manifest_raw[\"manifest_digest\"]),\n    backup_restore_root=project,\n    backup_max_age_seconds=86400,\n    stored_status={\"project_id\": \"orion-drill\", \"freshness\": \"FRESH\",\n                   \"hard_gates\": {\"payload_integrity\": \"PASS\"}},\n)\nresults = build_doctor(ctx).run()\nprint(render_report(results))\noverall = worst_status(results)\n# CANNOT_CHECK gets its own code: \"could not check\" must never exit 0 alongside \"checked and fine\"\nraise SystemExit({ProbeStatus.FAIL: 1, ProbeStatus.CANNOT_CHECK: 3}.get(overall, 0))\nPY",
+          "expected_exit": [
+            3
+          ],
+          "actual_exit": 3,
+          "outcome": "EXECUTED",
+          "output_excerpt": "ORION DOCTOR overall=CANNOT_CHECK probes=9 CANNOT_CHECK database no database path supplied CANNOT_CHECK index no semantic store supplied CANNOT_CHECK migration migration source and/or target projection not supplied CANNOT_CHECK provenance no build provenance record supplied CANNOT_CHECK secrets no secret store supplied OK backup backup bk-1 is 60s old, restore verified EXACT over 18 entries OK object_store 1 declared objects verified, 11 stored OK status_freshness stored freshness=FRESH, gates={'payload_integrity': 'PASS'}, axes={} OK workflow_workers no RECOVERY_REQUIRED activities, 0 live leases",
+          "note": "no FAIL on a workflow database with nothing in RECOVERY_REQUIRED; exit 3 because five subsystems of a file-based project are genuinely not wired, and CANNOT_CHECK gets its own code rather than exiting 0"
+        },
+        {
+          "step_id": "P11.3",
+          "command": "\"$ORION_PY\" /home/billy/rakl-pub46/scripts/verify_release_provenance.py",
+          "expected_exit": [
+            3
+          ],
+          "actual_exit": 3,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"checked\": [], \"exit_code\": 3, \"failures\": [], \"grants_scientific_authority\": false, \"uncheckable\": [ \"PROVENANCE_RECORD_NOT_SUPPLIED\", \"ARTIFACT_NOT_SUPPLIED\" ], \"verdict\": \"CANNOT_CHECK\" }",
+          "note": "no inputs: the gate must say CANNOT_CHECK, never VERIFIED"
+        },
+        {
+          "step_id": "P11.4",
+          "command": "\"$ORION_PY\" /home/billy/rakl-pub46/scripts/verify_release_provenance.py --provenance /tmp/orion-runbook-drill-sdxgmiux/provenance.json --artifact /tmp/orion-runbook-drill-sdxgmiux/release/orion.tar --identities /tmp/orion-runbook-drill-sdxgmiux/identities.json --root /tmp/orion-runbook-drill-sdxgmiux/release --expect-commit 68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68",
+          "expected_exit": [
+            0
+          ],
+          "actual_exit": 0,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"checked\": [ \"build_provenance:registry.internal/orion@sha256:dc9fb920d40c9843d35c5628a3dd2e5681ec1cbaa847711c3896796dc841d427\", \"source_commit:68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68\", \"benchmark_identity:engineering_ops_falsifier_suite\", \"evaluator_identity:doctor_probe_matrix\", \"deployment_artifact:RELEASE_TARBALL:orion.tar\" ], \"exit_code\": 0, \"failures\": [], \"grants_scientific_authority\": false, \"uncheckable\": [], \"verdict\": \"VERIFIED\" }",
+          "note": "well-formed record over real bytes"
+        },
+        {
+          "step_id": "P11.5",
+          "command": "\"$ORION_PY\" /home/billy/rakl-pub46/scripts/verify_release_provenance.py --provenance /tmp/orion-runbook-drill-sdxgmiux/provenance-mutable-tag.json --artifact /tmp/orion-runbook-drill-sdxgmiux/release/orion.tar --identities /tmp/orion-runbook-drill-sdxgmiux/identities.json --root /tmp/orion-runbook-drill-sdxgmiux/release --expect-commit 68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68",
+          "expected_exit": [
+            2
+          ],
+          "actual_exit": 2,
+          "outcome": "EXECUTED",
+          "output_excerpt": "{ \"authority_scope\": \"ENGINEERING_ARTIFACT_IDENTITY_ONLY\", \"checked\": [ \"source_commit:68f44f17c5be9e5a45bfe7e447e8d8c0b23b4f68\", \"benchmark_identity:engineering_ops_falsifier_suite\", \"evaluator_identity:doctor_probe_matrix\", \"deployment_artifact:RELEASE_TARBALL:orion.tar\" ], \"exit_code\": 2, \"failures\": [ \"MUTABLE_TAG_WITHOUT_DIGEST\" ], \"grants_scientific_authority\": false, \"uncheckable\": [], \"verdict\": \"REJECTED\" }",
+          "note": "mutable tag without a digest is rejected"
+        }
+      ],
+      "not_executable_reason": "",
+      "outcome": "EXECUTED"
+    }
+  ],
+  "summary": {
+    "NOT_EXECUTABLE_LOCALLY": 3,
+    "EXECUTED_WITH_DEVIATION": 0,
+    "EXECUTED": 8
+  }
+}

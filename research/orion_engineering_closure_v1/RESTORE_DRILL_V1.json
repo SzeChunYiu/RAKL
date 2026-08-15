@@ -1,0 +1,220 @@
+{
+  "broke": 0,
+  "cases": [
+    {
+      "byte_offenders": [],
+      "byte_verdict": "EXACT",
+      "case": "D01",
+      "detail": "byte=EXACT archive=VALID planes_equal=9/9",
+      "name": "clean full restore into empty env",
+      "outcome": "HELD",
+      "plane_verdicts": {
+        "atlas": "EQUAL",
+        "blobs": "EQUAL",
+        "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+        "epistemic_status": "EQUAL",
+        "evidence": "EQUAL",
+        "project_snapshots": "EQUAL",
+        "semantic": "EQUAL",
+        "transition_decisions": "EQUAL",
+        "workflow_history": "EQUAL"
+      }
+    },
+    {
+      "byte_verdict": "CORRUPTED_BLOB",
+      "case": "D02",
+      "dangling_evidence_payloads": [
+        "ev-0->3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679"
+      ],
+      "detail": "byte=CORRUPTED_BLOB offenders=['blobs/39/3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679'] dangling=['ev-0->3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679']",
+      "name": "corrupted blob in restored tree",
+      "outcome": "HELD"
+    },
+    {
+      "byte_verdict": "MISSING_BLOB",
+      "case": "D03",
+      "dangling_evidence_payloads": [
+        "ev-0->3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679"
+      ],
+      "detail": "byte=MISSING_BLOB offenders=['blobs/39/3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679'] dangling=['ev-0->3985eb1dbdcde1f76bf20befe1cd341232bdb00c737158613520203bbdced679']",
+      "name": "missing object-store payload",
+      "outcome": "HELD"
+    },
+    {
+      "byte_verdict": "MISSING_BLOB",
+      "case": "D04",
+      "detail": "byte=MISSING_BLOB atlas=CANNOT_CHECK atlas_db_recreated_by_probe=False planes={'project_snapshots': 'EQUAL', 'transition_decisions': 'EQUAL', 'evidence': 'EQUAL', 'semantic': 'EQUAL', 'atlas': 'CANNOT_CHECK', 'control_metrics_saturation_gates_decisions_residuals': 'EQUAL', 'epistemic_status': 'EQUAL', 'workflow_history': 'EQUAL', 'blobs': 'EQUAL'}",
+      "name": "partial restore, atlas plane absent",
+      "outcome": "HELD",
+      "plane_verdicts": {
+        "atlas": "CANNOT_CHECK",
+        "blobs": "EQUAL",
+        "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+        "epistemic_status": "EQUAL",
+        "evidence": "EQUAL",
+        "project_snapshots": "EQUAL",
+        "semantic": "EQUAL",
+        "transition_decisions": "EQUAL",
+        "workflow_history": "EQUAL"
+      }
+    },
+    {
+      "byte_verdict": "MANIFEST_TAMPERED",
+      "case": "D05",
+      "detail": "byte=MANIFEST_TAMPERED",
+      "name": "manifest tampered after signing",
+      "outcome": "HELD"
+    },
+    {
+      "case": "D06",
+      "detail": "head_is_frozen=True later_snapshot_present=False later_atlas_present=False later_control_records=0 wf2_present=False chain_vs_frozen_sealed_head=True chain_vs_later_sealed_head=False planes={'project_snapshots': 'EQUAL', 'transition_decisions': 'EQUAL', 'evidence': 'EQUAL', 'semantic': 'EQUAL', 'atlas': 'EQUAL', 'control_metrics_saturation_gates_decisions_residuals': 'EQUAL', 'epistemic_status': 'EQUAL', 'workflow_history': 'EQUAL', 'blobs': 'EQUAL'}",
+      "name": "restore to frozen snapshot",
+      "outcome": "HELD",
+      "plane_verdicts": {
+        "atlas": "EQUAL",
+        "blobs": "EQUAL",
+        "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+        "epistemic_status": "EQUAL",
+        "evidence": "EQUAL",
+        "project_snapshots": "EQUAL",
+        "semantic": "EQUAL",
+        "transition_decisions": "EQUAL",
+        "workflow_history": "EQUAL"
+      }
+    },
+    {
+      "case": "D07",
+      "detail": "no -wal/-shm sidecar existed at copy time, so this copy could not have lost committed pages and the case proves nothing either way. The reason is a property of these stores, not an omission: every store closes its connection at the end of each transaction, so SQLite checkpoints the WAL back into the main database and removes the sidecars. A backend that holds connections open would leave a live WAL and this case would then bite",
+      "name": "main-file-only copy ignoring WAL sidecars",
+      "outcome": "NOT_EXERCISED",
+      "wal_sidecars": []
+    },
+    {
+      "byte_verdict": "EXACT",
+      "case": "D08",
+      "detail": "byte=EXACT (self-derived manifest) planes={'project_snapshots': 'EQUAL', 'transition_decisions': 'EQUAL', 'evidence': 'EQUAL', 'semantic': 'EQUAL', 'atlas': 'EQUAL', 'control_metrics_saturation_gates_decisions_residuals': 'EQUAL', 'epistemic_status': 'EQUAL', 'workflow_history': 'DIVERGED', 'blobs': 'EQUAL'} chain_valid=False",
+      "name": "byte-clean tree, workflow tail truncated",
+      "outcome": "HELD",
+      "plane_verdicts": {
+        "atlas": "EQUAL",
+        "blobs": "EQUAL",
+        "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+        "epistemic_status": "EQUAL",
+        "evidence": "EQUAL",
+        "project_snapshots": "EQUAL",
+        "semantic": "EQUAL",
+        "transition_decisions": "EQUAL",
+        "workflow_history": "DIVERGED"
+      }
+    },
+    {
+      "byte_verdict": "EXACT",
+      "case": "D09",
+      "detail": "byte=EXACT (self-derived manifest) planes={'project_snapshots': 'EQUAL', 'transition_decisions': 'EQUAL', 'evidence': 'EQUAL', 'semantic': 'EQUAL', 'atlas': 'DIVERGED', 'control_metrics_saturation_gates_decisions_residuals': 'EQUAL', 'epistemic_status': 'EQUAL', 'workflow_history': 'EQUAL', 'blobs': 'EQUAL'} plane_counts={'atlas_plane_commits': 2, 'atlas_charts': 3, 'atlas_transitions': 2, 'atlas_obstructions': 2}",
+      "name": "byte-clean tree, atlas chart row removed",
+      "outcome": "HELD",
+      "plane_verdicts": {
+        "atlas": "DIVERGED",
+        "blobs": "EQUAL",
+        "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+        "epistemic_status": "EQUAL",
+        "evidence": "EQUAL",
+        "project_snapshots": "EQUAL",
+        "semantic": "EQUAL",
+        "transition_decisions": "EQUAL",
+        "workflow_history": "EQUAL"
+      }
+    }
+  ],
+  "cases_frozen_before_execution": true,
+  "clean_restore_plane_verdicts": {
+    "atlas": "EQUAL",
+    "blobs": "EQUAL",
+    "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+    "epistemic_status": "EQUAL",
+    "evidence": "EQUAL",
+    "project_snapshots": "EQUAL",
+    "semantic": "EQUAL",
+    "transition_decisions": "EQUAL",
+    "workflow_history": "EQUAL"
+  },
+  "fiber_id": "E15",
+  "frozen_restore_plane_verdicts": {
+    "atlas": "EQUAL",
+    "blobs": "EQUAL",
+    "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+    "epistemic_status": "EQUAL",
+    "evidence": "EQUAL",
+    "project_snapshots": "EQUAL",
+    "semantic": "EQUAL",
+    "transition_decisions": "EQUAL",
+    "workflow_history": "EQUAL"
+  },
+  "grants_scientific_authority": false,
+  "held": 8,
+  "live_identities": {
+    "atlas_batch_ids": [
+      "atlas-batch-1",
+      "atlas-batch-2"
+    ],
+    "evidence_batch_ids": [
+      "evidence-batch:977c5075028fcf386576f5622097a6c0aae890ee12ca07039d902323108a9794"
+    ],
+    "frozen_snapshot_id": "snapshot:0d17cf78d90392a851067bab24302cc692018ca7ca3bd7226f06d1098f087c0a",
+    "project_id": "orion-restore-drill",
+    "sealed_workflow_heads": {
+      "wf-1@current": "af98feb0ffcb7a3c7146dc735f65ea10e0a87191eedf72b13a3b19ba1606a82a",
+      "wf-1@frozen": "9ee464e1e49c3fa202bd1b9c24063021fbe1a988726dd26908b795729cecddd0",
+      "wf-2@current": "f672adbb05a80bfe90a9dce31ed409c39f8f263f1b15f1e727994f9a422053b4"
+    },
+    "semantic_batch_ids": [
+      "semantic-batch:22a97661ad31944bc7e63993e855d2a9f413e98bfc484da608f6014d3074b336",
+      "semantic-batch:8003d5803109babea0b851a4a6f535e3f1e18aa02f1c37626991649289149bed"
+    ],
+    "snapshot_ids": [
+      "snapshot:0b1ef6462d323616eb19f7e72fa74721cebfe529ab5c2232ec67d286f0d4ac51",
+      "snapshot:286d2585104d152ebe4e3ee10d49d8d4d833fb8e4bd6d8394be27415d3857f03",
+      "snapshot:0d17cf78d90392a851067bab24302cc692018ca7ca3bd7226f06d1098f087c0a",
+      "snapshot:2d56a410b75d0a11d7da855d9ce66687c2d979c93ca56c11d7aa90ad7069b433"
+    ]
+  },
+  "non_terminal": 1,
+  "not_claimed": [
+    "PostgreSQL WAL or point-in-time recovery of any kind",
+    "database failover, replica promotion or HA behaviour",
+    "a restore rehearsal on production infrastructure or a real object store",
+    "reconstruction of the incumbent RAKL MetricLedger or EpisodeStore, which are separate stores not present in this store directory",
+    "that byte equality alone establishes logical reconstruction, or the converse"
+  ],
+  "obligation": "restore into a completely empty environment and prove exact reconstruction of project snapshots, Atlas, evidence, metrics, saturation, episodes, decisions and workflow history",
+  "partial_restore_plane_verdicts": {
+    "atlas": "CANNOT_CHECK",
+    "blobs": "EQUAL",
+    "control_metrics_saturation_gates_decisions_residuals": "EQUAL",
+    "epistemic_status": "EQUAL",
+    "evidence": "EQUAL",
+    "project_snapshots": "EQUAL",
+    "semantic": "EQUAL",
+    "transition_decisions": "EQUAL",
+    "workflow_history": "EQUAL"
+  },
+  "plane_coverage": {
+    "atlas": "EXERCISED_reconstructed_and_compared",
+    "blobs": "EXERCISED_content_addressed_bytes_and_dangling_pointer_check",
+    "control_metrics_saturation_gates_decisions_residuals": "EXERCISED_as_snapshot_bound_ControlArtifactProjection_records_only",
+    "database_failover_ha": "NOT_EXERCISED_no_replicated_database_present",
+    "epistemic_status": "EXERCISED_reconstructed_and_compared",
+    "evidence": "EXERCISED_reconstructed_and_compared",
+    "incumbent_EpisodeStore_store": "NOT_EXERCISED_not_present_in_this_store_directory",
+    "incumbent_MetricLedger_store": "NOT_EXERCISED_not_present_in_this_store_directory",
+    "postgresql_wal_pitr": "NOT_EXERCISED_no_postgresql_present",
+    "project_snapshots": "EXERCISED_reconstructed_and_compared",
+    "semantic": "EXERCISED_reconstructed_and_compared",
+    "transition_decisions": "EXERCISED_reconstructed_and_compared",
+    "workflow_history": "EXERCISED_hash_chain_and_sealed_head_verified"
+  },
+  "proof_mode": "byte_manifest_AND_independent_semantic_reopen",
+  "schema_version": "orion-restore-drill-v1",
+  "status": "FROZEN_CASES_EXECUTED__ALL_OUTCOMES_PRESERVED",
+  "total": 9
+}

@@ -12,6 +12,7 @@ from rakl.engineering_state import (
     StateTransitionRequest, TransitionStatus,
 )
 from rakl.engineering_store import SqliteEngineeringStateStore
+from rakl.engineering_store import metadata_transition_payload_hash
 
 T0="2026-08-15T17:00:00+00:00"; T1="2026-08-15T17:01:00+00:00"
 
@@ -53,7 +54,7 @@ def test_service_mutation_preserves_snapshot_cas_and_idempotency(tmp_path):
     s1=snap(1,s0.snapshot_id)
     req=StateTransitionRequest(
         project_id="p", before_snapshot_id=s0.snapshot_id, action="ADVANCE",
-        action_payload_hash="c"*64, idempotency_key="k", process_identity="w",
+        action_payload_hash=metadata_transition_payload_hash(s1), idempotency_key="k", process_identity="w",
         read_set=("head",), write_set=("head",), created_at_utc=T1,
     )
     api=EngineeringServiceFacade(store)

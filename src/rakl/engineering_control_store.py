@@ -8,7 +8,7 @@ consistent engineering state.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from enum import Enum
 import json
@@ -16,6 +16,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -67,21 +68,8 @@ class ControlArtifactProjection:
         return False
 
 
-class SqliteControlProjectionStore:
-    def __init__(self, path: str | Path) -> None:
-        self.path = str(path)
-        self._init_schema()
 
-    def _connect(self) -> sqlite3.Connection:
-        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA busy_timeout=10000")
-        return db
-
-    def _init_schema(self) -> None:
-        with self._connect() as db:
-            db.executescript(
-                """
+_SCHEMA_SQL = """
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS control_projection(
                     record_id TEXT PRIMARY KEY,
@@ -94,6 +82,24 @@ class SqliteControlProjectionStore:
                 CREATE INDEX IF NOT EXISTS control_projection_snapshot_kind
                     ON control_projection(project_snapshot_id,kind,source_object_id);
                 """
+
+class SqliteControlProjectionStore:
+    def __init__(self, path: str | Path) -> None:
+        self.path = str(path)
+        self._init_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA busy_timeout=10000")
+        return db
+
+    def _init_schema(self) -> None:
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_control_store', schema_version='orion-engineering-control-store-v1',
+                tables=('control_projection',), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager
@@ -169,7 +175,7 @@ class SqliteControlProjectionStore:
         *,
         kind: ControlArtifactKind | None = None,
     ) -> Tuple[ControlArtifactProjection, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             if kind is None:
                 rows = db.execute(
                     """SELECT payload_json FROM control_projection

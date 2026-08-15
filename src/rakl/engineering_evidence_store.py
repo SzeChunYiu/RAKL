@@ -7,13 +7,14 @@ not part of the record content hash, avoiding snapshot/content identity cycles.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 import json
 from pathlib import Path
 import sqlite3
 from typing import Iterable, Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -112,24 +113,8 @@ class EvidenceBatchCommit:
     evidence_revision: str
 
 
-class SqliteEvidenceMetadataStore:
-    """Append-only logical evidence metadata with preview/commit semantics."""
 
-    def __init__(self, path: str | Path) -> None:
-        self.path = str(path)
-        self._init_schema()
-
-    def _connect(self) -> sqlite3.Connection:
-        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA foreign_keys=ON")
-        db.execute("PRAGMA busy_timeout=10000")
-        return db
-
-    def _init_schema(self) -> None:
-        with self._connect() as db:
-            db.executescript(
-                """
+_SCHEMA_SQL = """
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS engineering_evidence_records(
                     evidence_id TEXT PRIMARY KEY,
@@ -152,6 +137,27 @@ class SqliteEvidenceMetadataStore:
                     batch_json TEXT NOT NULL
                 );
                 """
+
+class SqliteEvidenceMetadataStore:
+    """Append-only logical evidence metadata with preview/commit semantics."""
+
+    def __init__(self, path: str | Path) -> None:
+        self.path = str(path)
+        self._init_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA foreign_keys=ON")
+        db.execute("PRAGMA busy_timeout=10000")
+        return db
+
+    def _init_schema(self) -> None:
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_evidence_store', schema_version='orion-engineering-evidence-store-v1',
+                tables=('engineering_evidence_records', 'engineering_evidence_batch_commits'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager
@@ -198,7 +204,7 @@ class SqliteEvidenceMetadataStore:
         return tuple(self._from_dict(json.loads(row["payload_json"])) for row in rows)
 
     def records_at(self, project_id: str, sequence: int) -> Tuple[EvidenceRecord, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._records_at_db(db, project_id, sequence)
 
     @staticmethod
@@ -236,7 +242,7 @@ class SqliteEvidenceMetadataStore:
         return self._revision_for(batch.project_id, existing.values())
 
     def preview_batch_revision(self, batch: EvidenceMutationBatch) -> str:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._preview_batch_revision_db(db, batch)
 
     def _commit_batch_db(
@@ -307,7 +313,7 @@ class SqliteEvidenceMetadataStore:
         return EvidenceBatchCommit(batch.batch_id, committed_snapshot_id, actual)
 
     def batch_commit(self, batch_id: str) -> EvidenceBatchCommit | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT committed_snapshot_id,evidence_revision
                    FROM engineering_evidence_batch_commits WHERE batch_id=?""",

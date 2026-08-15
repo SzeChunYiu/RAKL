@@ -8,7 +8,7 @@ which it was planned.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from enum import Enum
 import json
@@ -16,6 +16,7 @@ from pathlib import Path
 import sqlite3
 from typing import Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 
 
@@ -124,24 +125,8 @@ class WorkflowEvent:
         }
 
 
-class SqliteReferenceWorkflowEngine:
-    """Deterministic local durable-history implementation for tests and development."""
 
-    def __init__(self, path: str | Path) -> None:
-        self.path = str(path)
-        self._init_schema()
-
-    def _connect(self) -> sqlite3.Connection:
-        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA foreign_keys=ON")
-        db.execute("PRAGMA busy_timeout=10000")
-        return db
-
-    def _init_schema(self) -> None:
-        with self._connect() as db:
-            db.executescript(
-                """
+_SCHEMA_SQL = """
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS workflows(
                     workflow_id TEXT PRIMARY KEY,
@@ -174,6 +159,27 @@ class SqliteReferenceWorkflowEngine:
                     FOREIGN KEY(workflow_id) REFERENCES workflows(workflow_id)
                 );
                 """
+
+class SqliteReferenceWorkflowEngine:
+    """Deterministic local durable-history implementation for tests and development."""
+
+    def __init__(self, path: str | Path) -> None:
+        self.path = str(path)
+        self._init_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        db = sqlite3.connect(self.path, timeout=10.0, isolation_level=None)
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA foreign_keys=ON")
+        db.execute("PRAGMA busy_timeout=10000")
+        return db
+
+    def _init_schema(self) -> None:
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_workflow_engine', schema_version='orion-engineering-workflow-v1',
+                tables=('workflows', 'workflow_events', 'workflow_activities'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager
@@ -352,7 +358,7 @@ class SqliteReferenceWorkflowEngine:
         )
 
     def activity(self, workflow_id: str, activity_id: str) -> ActivityRecord:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT * FROM workflow_activities WHERE workflow_id=? AND activity_id=?",
                 (workflow_id, activity_id),
@@ -565,7 +571,7 @@ class SqliteReferenceWorkflowEngine:
             return self.workflow(workflow_id, _db=db)
 
     def events(self, workflow_id: str) -> Tuple[WorkflowEvent, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 "SELECT * FROM workflow_events WHERE workflow_id=? ORDER BY sequence",
                 (workflow_id,),

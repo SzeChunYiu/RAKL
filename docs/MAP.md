@@ -135,6 +135,7 @@ held the framework's generative half, including the navigation loop and the meas
 - [`RAKL_V3_IMPLEMENTATION_MANIFEST.md`](RAKL_V3_IMPLEMENTATION_MANIFEST.md) — RAKL v3 Implementation Manifest
 - [`REFERENCE_RUNTIME.md`](REFERENCE_RUNTIME.md) — RAKL Reference Runtime
 - [`EXECUTION_RUNTIME.md`](EXECUTION_RUNTIME.md) — Governed Execution Runtime
+- [`OPERATIONS_RUNBOOK.md`](OPERATIONS_RUNBOOK.md) — Orion Operations Runbook (deploy, ingest, research, recover, backup, restore, upgrade, rollback, diagnose; executed, see RUNBOOK_DRILL_V1)
 - [`CODING_AGENT_INTEGRATION.md`](CODING_AGENT_INTEGRATION.md) — Coding-Agent Integration
 - [`RESEARCH_MACHINE_WORKFLOW_V2.md`](RESEARCH_MACHINE_WORKFLOW_V2.md) — RAKL Research Machine Workflow v2
 - [`ARTIFACT_EVALUATION.md`](ARTIFACT_EVALUATION.md) — RAKL Artifact Evaluation — Reference Runtime v1

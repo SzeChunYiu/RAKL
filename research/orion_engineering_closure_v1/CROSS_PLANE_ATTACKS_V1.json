@@ -1,0 +1,141 @@
+{
+  "breaks": [],
+  "broke": 0,
+  "cannot_check": 0,
+  "cases_frozen_before_execution": true,
+  "claim_under_attack": "evidence / semantic / Atlas / control heads cannot be changed by an action whose payload hash does not bind those effects",
+  "confirms_known_open": 1,
+  "fiber_id": "E18",
+  "grants_scientific_authority": false,
+  "held": 18,
+  "no_alarm_controls": [
+    "X01",
+    "X02",
+    "X03",
+    "X08c"
+  ],
+  "not_claimed": [
+    "an independently executed pass on an exact production release",
+    "distributed exactly-once across external effects",
+    "any result on a PostgreSQL or otherwise serializable production backend"
+  ],
+  "results": [
+    {
+      "case": "X01",
+      "detail": "legitimate evidence transition COMMITTED",
+      "name": "legitimate evidence transition (no-alarm control)",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X02",
+      "detail": "legitimate semantic transition COMMITTED",
+      "name": "legitimate semantic transition (no-alarm control)",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X03",
+      "detail": "legitimate atlas chain (2 batches) committed, counts={'atlas_plane_commits': 2, 'atlas_charts': 3, 'atlas_transitions': 1, 'atlas_obstructions': 1}",
+      "name": "legitimate atlas plane batch (no-alarm control)",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X04",
+      "detail": "EngineeringIntegrityError: pure semantic update unexpectedly changes evidence_cutoff",
+      "name": "semantic payload, effect on the evidence plane",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X05",
+      "detail": "EngineeringIntegrityError: pure evidence ingest unexpectedly changes semantic_state_revision",
+      "name": "evidence payload, effect on the semantic plane",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X06",
+      "detail": "EngineeringIntegrityError: transition action payload hash does not bind the semantic mutation batch",
+      "name": "payload binds a different semantic batch",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X07",
+      "detail": "domain-separated hashes ({atlas_batch_id} vs {evidence_batch_id}); EngineeringIntegrityError",
+      "name": "atlas payload hash offered to the evidence path",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X08",
+      "detail": "refused: EngineeringIntegrityError: transition action payload hash does not bind the after snapshot; head unchanged=True, no receipt minted=True",
+      "name": "control-head advance with no payload binding",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X08b",
+      "detail": "EngineeringIntegrityError: pure semantic update unexpectedly changes authority_projection_revision",
+      "name": "same attack through the atomic coordinator",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X08c",
+      "detail": "bound metadata transition COMMITTED, replay identical=True",
+      "name": "honestly bound metadata transition (no-alarm control)",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X09",
+      "detail": "fault_raised=True both_planes_rolled_back=True replay_after_fault_removed=COMMITTED",
+      "name": "injected fault mid-transaction, two planes",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X10",
+      "detail": "IntegrityError; charts/transitions rolled back with the obstruction, counts={'atlas_plane_commits': 1, 'atlas_charts': 2, 'atlas_transitions': 1, 'atlas_obstructions': 1}",
+      "name": "atlas batch half-write (id collision)",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X11",
+      "detail": "stale base revision rejected: EngineeringIntegrityError: atlas batch base revision is stale",
+      "name": "atlas advanced under a stale base revision",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X12",
+      "detail": "sequence rewind rejected: EngineeringIntegrityError: atlas batch sequence must advance the plane exactly once (stored position 2, batch declares 1)",
+      "name": "atlas sequence rewind",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X13",
+      "detail": "EngineeringIntegrityError: batch id already bound to a different atlas plane payload",
+      "name": "replayed atlas batch id, different content",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X14",
+      "detail": "semantic batch ids are content-derived; forging one raises ValueError: semantic batch id does not match content",
+      "name": "replayed semantic batch id, different content",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X15",
+      "detail": "IdempotencyConflict: idempotency key already bound to a different transition request",
+      "name": "replayed idempotency key, different request",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X16",
+      "detail": "atlas batch committed against snapshot id 'snapshot:this-snapshot-does-not-exist' which is absent from the snapshots table in the SAME database; the store has no snapshot-binding check (documented open item, V2_IMPLEMENTATION_STATUS.md: Atlas persistence in the atomic metadata transaction)",
+      "name": "atlas batch naming an unknown snapshot",
+      "outcome": "CONFIRMS_KNOWN_OPEN"
+    },
+    {
+      "case": "X17",
+      "detail": "EngineeringIntegrityError: control projection references unknown project snapshot",
+      "name": "control projection naming an unknown snapshot",
+      "outcome": "HELD"
+    }
+  ],
+  "schema_version": "orion-cross-plane-attacks-v1",
+  "status": "FROZEN_CASES_EXECUTED__ALL_OUTCOMES_PRESERVED",
+  "total": 19
+}

@@ -16,13 +16,14 @@ version content hash.  Historical semantic state remains append-only and queryab
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 import json
 from pathlib import Path
 import sqlite3
 from typing import Iterable, Iterator, Mapping, Tuple
 
+from .engineering_schema_guard import guard_and_initialize_schema
 from .engineering_state import canonical_sha256
 from .engineering_store import EngineeringIntegrityError
 
@@ -194,6 +195,58 @@ class SemanticBatchCommit:
     semantic_revision: str
 
 
+
+_SCHEMA_SQL = """
+                PRAGMA journal_mode=WAL;
+                CREATE TABLE IF NOT EXISTS semantic_fibers(
+                    fiber_id TEXT PRIMARY KEY,
+                    parent_fiber_id TEXT,
+                    created_from_snapshot_id TEXT NOT NULL,
+                    created_from_sequence INTEGER NOT NULL CHECK(created_from_sequence >= 0),
+                    FOREIGN KEY(parent_fiber_id) REFERENCES semantic_fibers(fiber_id)
+                );
+                CREATE TABLE IF NOT EXISTS semantic_atoms(
+                    atom_id TEXT PRIMARY KEY,
+                    fiber_id TEXT NOT NULL REFERENCES semantic_fibers(fiber_id),
+                    kind TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS semantic_atom_versions(
+                    version_id TEXT PRIMARY KEY,
+                    atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
+                    valid_from_snapshot_id TEXT NOT NULL,
+                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
+                    supersedes_version_id TEXT REFERENCES semantic_atom_versions(version_id),
+                    payload_json TEXT NOT NULL,
+                    UNIQUE(atom_id, valid_from_sequence)
+                );
+                CREATE INDEX IF NOT EXISTS semantic_atom_versions_lookup
+                    ON semantic_atom_versions(atom_id, valid_from_sequence DESC);
+                CREATE TABLE IF NOT EXISTS semantic_witnesses(
+                    witness_id TEXT PRIMARY KEY,
+                    left_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
+                    right_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id)
+                );
+                CREATE TABLE IF NOT EXISTS semantic_witness_versions(
+                    version_id TEXT PRIMARY KEY,
+                    witness_id TEXT NOT NULL REFERENCES semantic_witnesses(witness_id),
+                    valid_from_snapshot_id TEXT NOT NULL,
+                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
+                    supersedes_version_id TEXT REFERENCES semantic_witness_versions(version_id),
+                    payload_json TEXT NOT NULL,
+                    UNIQUE(witness_id, valid_from_sequence)
+                );
+                CREATE INDEX IF NOT EXISTS semantic_witness_versions_lookup
+                    ON semantic_witness_versions(witness_id, valid_from_sequence DESC);
+                CREATE TABLE IF NOT EXISTS semantic_batch_commits(
+                    batch_id TEXT PRIMARY KEY,
+                    sequence INTEGER NOT NULL,
+                    committed_snapshot_id TEXT NOT NULL,
+                    semantic_revision TEXT NOT NULL,
+                    batch_json TEXT NOT NULL,
+                    UNIQUE(sequence)
+                );
+                """
+
 class SqliteSemanticStateStore:
     """Reference append-only semantic store with preview/commit semantics."""
 
@@ -251,58 +304,11 @@ class SqliteSemanticStateStore:
         return db
 
     def _init_schema(self) -> None:
-        with self._connect() as db:
-            db.executescript(
-                """
-                PRAGMA journal_mode=WAL;
-                CREATE TABLE IF NOT EXISTS semantic_fibers(
-                    fiber_id TEXT PRIMARY KEY,
-                    parent_fiber_id TEXT,
-                    created_from_snapshot_id TEXT NOT NULL,
-                    created_from_sequence INTEGER NOT NULL CHECK(created_from_sequence >= 0),
-                    FOREIGN KEY(parent_fiber_id) REFERENCES semantic_fibers(fiber_id)
-                );
-                CREATE TABLE IF NOT EXISTS semantic_atoms(
-                    atom_id TEXT PRIMARY KEY,
-                    fiber_id TEXT NOT NULL REFERENCES semantic_fibers(fiber_id),
-                    kind TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS semantic_atom_versions(
-                    version_id TEXT PRIMARY KEY,
-                    atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
-                    valid_from_snapshot_id TEXT NOT NULL,
-                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
-                    supersedes_version_id TEXT REFERENCES semantic_atom_versions(version_id),
-                    payload_json TEXT NOT NULL,
-                    UNIQUE(atom_id, valid_from_sequence)
-                );
-                CREATE INDEX IF NOT EXISTS semantic_atom_versions_lookup
-                    ON semantic_atom_versions(atom_id, valid_from_sequence DESC);
-                CREATE TABLE IF NOT EXISTS semantic_witnesses(
-                    witness_id TEXT PRIMARY KEY,
-                    left_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id),
-                    right_atom_id TEXT NOT NULL REFERENCES semantic_atoms(atom_id)
-                );
-                CREATE TABLE IF NOT EXISTS semantic_witness_versions(
-                    version_id TEXT PRIMARY KEY,
-                    witness_id TEXT NOT NULL REFERENCES semantic_witnesses(witness_id),
-                    valid_from_snapshot_id TEXT NOT NULL,
-                    valid_from_sequence INTEGER NOT NULL CHECK(valid_from_sequence >= 0),
-                    supersedes_version_id TEXT REFERENCES semantic_witness_versions(version_id),
-                    payload_json TEXT NOT NULL,
-                    UNIQUE(witness_id, valid_from_sequence)
-                );
-                CREATE INDEX IF NOT EXISTS semantic_witness_versions_lookup
-                    ON semantic_witness_versions(witness_id, valid_from_sequence DESC);
-                CREATE TABLE IF NOT EXISTS semantic_batch_commits(
-                    batch_id TEXT PRIMARY KEY,
-                    sequence INTEGER NOT NULL,
-                    committed_snapshot_id TEXT NOT NULL,
-                    semantic_revision TEXT NOT NULL,
-                    batch_json TEXT NOT NULL,
-                    UNIQUE(sequence)
-                );
-                """
+        with closing(self._connect()) as db:
+            # H21: verify-or-create. A populated database is checked, never repaired (see engineering_schema_guard).
+            guard_and_initialize_schema(
+                db, component='engineering_semantic_store', schema_version='orion-engineering-semantic-store-v1',
+                tables=('semantic_fibers', 'semantic_atoms', 'semantic_atom_versions', 'semantic_witnesses', 'semantic_witness_versions', 'semantic_batch_commits'), create_script=_SCHEMA_SQL,
             )
 
     @contextmanager
@@ -367,7 +373,7 @@ class SqliteSemanticStateStore:
         return fiber
 
     def get_fiber(self, fiber_id: str) -> SemanticFiber | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT fiber_id,parent_fiber_id,created_from_sequence FROM semantic_fibers WHERE fiber_id=?",
                 (fiber_id,),
@@ -377,7 +383,7 @@ class SqliteSemanticStateStore:
         return SemanticFiber(row["fiber_id"], row["parent_fiber_id"], int(row["created_from_sequence"]))
 
     def fibers_at(self, sequence: int) -> Tuple[SemanticFiber, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT fiber_id,parent_fiber_id,created_from_sequence FROM semantic_fibers
                    WHERE created_from_sequence <= ? ORDER BY fiber_id""",
@@ -396,7 +402,7 @@ class SqliteSemanticStateStore:
         ).fetchone()
 
     def latest_atom_version(self, atom_id: str) -> SemanticAtomVersion | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = self._latest_atom_row(db, atom_id)
         return None if row is None else self._atom_from_dict(json.loads(row["payload_json"]))
 
@@ -448,7 +454,7 @@ class SqliteSemanticStateStore:
         return version
 
     def latest_witness_version(self, witness_id: str) -> RelationWitnessVersion | None:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT payload_json FROM semantic_witness_versions WHERE witness_id=?
                    ORDER BY valid_from_sequence DESC LIMIT 1""",
@@ -516,7 +522,7 @@ class SqliteSemanticStateStore:
         return version
 
     def atom_versions_at(self, sequence: int) -> Tuple[SemanticAtomVersion, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT v.payload_json FROM semantic_atom_versions v
                    JOIN (
@@ -529,7 +535,7 @@ class SqliteSemanticStateStore:
         return tuple(self._atom_from_dict(json.loads(row["payload_json"])) for row in rows)
 
     def witness_versions_at(self, sequence: int) -> Tuple[RelationWitnessVersion, ...]:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT v.payload_json FROM semantic_witness_versions v
                    JOIN (
@@ -615,7 +621,7 @@ class SqliteSemanticStateStore:
         return self._revision_for(batch.sequence, fibers.values(), atoms.values(), witnesses.values())
 
     def preview_batch_revision(self, batch: SemanticMutationBatch) -> str:
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             return self._preview_batch_revision_db(db, batch)
 
     def _commit_batch_db(
@@ -688,7 +694,7 @@ class SqliteSemanticStateStore:
         """
         if not batch_id or not batch_id.strip():
             raise ValueError("batch_id is required")
-        with self._connect() as db:
+        with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT committed_snapshot_id,semantic_revision FROM semantic_batch_commits WHERE batch_id=?",
                 (batch_id,),

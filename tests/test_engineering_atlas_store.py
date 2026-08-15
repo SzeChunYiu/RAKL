@@ -12,6 +12,7 @@ import sqlite3
 import pytest
 
 from rakl.engineering_atlas_store import (
+    ATLAS_GENESIS_REVISION,
     AtlasChartRecord,
     AtlasObstructionRecord,
     AtlasPlaneBatch,
@@ -23,10 +24,12 @@ from rakl.engineering_atlas_store import (
 from rakl.engineering_store import EngineeringIntegrityError
 
 
-def plane(batch_id: str = "b1", *, sequence: int = 1) -> AtlasPlaneBatch:
+def plane(
+    batch_id: str = "b1", *, sequence: int = 1, base: str = ATLAS_GENESIS_REVISION
+) -> AtlasPlaneBatch:
     return AtlasPlaneBatch(
         sequence=sequence,
-        base_atlas_revision="rev-0",
+        base_atlas_revision=base,
         batch_id=batch_id,
         charts=(
             AtlasChartRecord("c1", "structural", ("x", "y")),
@@ -63,12 +66,12 @@ def test_a_failure_partway_leaves_nothing_behind(store) -> None:
     inside the same transaction. If those survive, the plane is not atomic.
     """
 
-    store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    first = store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
     before = store.plane_counts()
 
     colliding = AtlasPlaneBatch(
         sequence=2,
-        base_atlas_revision="rev-1",
+        base_atlas_revision=first.atlas_revision,  # honest base: only the collision can fail it
         batch_id="b2",
         charts=(AtlasChartRecord("c9", "structural"), AtlasChartRecord("c8", "structural")),
         transitions=(AtlasTransitionRecord("t9", "c9", "c8"),),
@@ -141,7 +144,7 @@ def test_a_different_payload_under_the_same_batch_id_is_a_conflict(store) -> Non
     store.commit_batch(plane(), committed_snapshot_id="snap-1", expected_atlas_revision="")
     other = AtlasPlaneBatch(
         sequence=1,
-        base_atlas_revision="rev-0",
+        base_atlas_revision=ATLAS_GENESIS_REVISION,
         batch_id="b1",
         charts=(AtlasChartRecord("cX", "structural"),),
     )
@@ -165,6 +168,7 @@ def test_revision_is_deterministic_and_content_sensitive() -> None:
     assert a == atlas_revision_for(1, plane())
     assert a != atlas_revision_for(2, plane(sequence=2))
     assert a != atlas_revision_for(1, plane("b2"))
+    assert a != ATLAS_GENESIS_REVISION
 
 
 def test_action_payload_hash_binds_the_batch() -> None:
@@ -177,3 +181,138 @@ def test_batch_commit_lookup_round_trips(store) -> None:
     found = store.batch_commit("b1")
     assert found is not None
     assert found.chart_count == 2
+
+
+# --- compare-and-swap on the base revision (CROSS_PLANE_ATTACKS_V1 X11) ------
+
+
+def test_a_stale_base_revision_is_refused_and_writes_nothing(store) -> None:
+    """Before the fix a batch declaring the pre-b1 base committed after b1."""
+
+    store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    before = store.plane_counts()
+    stale = AtlasPlaneBatch(
+        sequence=2,
+        base_atlas_revision=ATLAS_GENESIS_REVISION,  # planned against a plane that no longer exists
+        batch_id="b2",
+        charts=(AtlasChartRecord("c3", "structural"),),
+    )
+    with pytest.raises(EngineeringIntegrityError, match="atlas batch base revision is stale"):
+        store.commit_batch(stale, committed_snapshot_id="snap-2", expected_atlas_revision="")
+    assert store.plane_counts() == before
+    assert store.batch_commit("b2") is None
+
+
+def test_first_batch_must_declare_the_genesis_revision(store) -> None:
+    with pytest.raises(EngineeringIntegrityError, match="atlas batch base revision is stale"):
+        store.commit_batch(plane(base="rev-0"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    assert store.plane_counts()["atlas_plane_commits"] == 0
+    assert store.current_atlas_revision() == ATLAS_GENESIS_REVISION
+    assert store.current_sequence() == 0
+
+
+def test_expected_atlas_revision_alone_cannot_stand_in_for_the_base_cas(store) -> None:
+    """expected_atlas_revision is recomputed from the batch, so it agrees with any base."""
+
+    store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    stale = AtlasPlaneBatch(
+        sequence=2, base_atlas_revision=ATLAS_GENESIS_REVISION, batch_id="b2",
+        charts=(AtlasChartRecord("c3", "structural"),),
+    )
+    self_consistent = atlas_revision_for(2, stale)
+    with pytest.raises(EngineeringIntegrityError, match="base revision is stale"):
+        store.commit_batch(stale, committed_snapshot_id="snap-2", expected_atlas_revision=self_consistent)
+
+
+def test_two_writers_planning_against_the_same_base_cannot_both_commit(store) -> None:
+    first = store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    writer_a = AtlasPlaneBatch(2, first.atlas_revision, "b-a", charts=(AtlasChartRecord("ca", "s"),))
+    writer_b = AtlasPlaneBatch(2, first.atlas_revision, "b-b", charts=(AtlasChartRecord("cb", "s"),))
+    store.commit_batch(writer_a, committed_snapshot_id="snap-2", expected_atlas_revision="")
+    with pytest.raises(EngineeringIntegrityError):
+        store.commit_batch(writer_b, committed_snapshot_id="snap-2", expected_atlas_revision="")
+    assert store.batch_commit("b-b") is None
+    assert store.current_sequence() == 2
+
+
+# --- monotonic sequence (CROSS_PLANE_ATTACKS_V1 X12) ---------------------------
+
+
+def test_sequence_rewind_from_an_established_position_is_refused(store) -> None:
+    """Before the fix a batch at sequence 1 committed after sequences 1 and 2."""
+
+    c1 = store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    c2 = store.commit_batch(
+        AtlasPlaneBatch(2, c1.atlas_revision, "b2", charts=(AtlasChartRecord("c3", "s"),)),
+        committed_snapshot_id="snap-2", expected_atlas_revision="",
+    )
+    before = store.plane_counts()
+    rewind = AtlasPlaneBatch(1, c2.atlas_revision, "b3", charts=(AtlasChartRecord("c4", "s"),))
+    with pytest.raises(EngineeringIntegrityError, match="advance the plane exactly once"):
+        store.commit_batch(rewind, committed_snapshot_id="snap-3", expected_atlas_revision="")
+    assert store.plane_counts() == before
+    assert store.current_sequence() == 2
+
+
+def test_sequence_skip_is_refused(store) -> None:
+    c1 = store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    skip = AtlasPlaneBatch(3, c1.atlas_revision, "b3", charts=(AtlasChartRecord("c4", "s"),))
+    with pytest.raises(EngineeringIntegrityError, match="advance the plane exactly once"):
+        store.commit_batch(skip, committed_snapshot_id="snap-3", expected_atlas_revision="")
+    assert store.current_sequence() == 1
+
+
+def test_batch_sequence_zero_is_not_a_mutation() -> None:
+    with pytest.raises(ValueError, match=">= 1"):
+        AtlasPlaneBatch(0, ATLAS_GENESIS_REVISION, "b0", charts=(AtlasChartRecord("c", "s"),))
+
+
+# --- no-alarm: the honest chain still commits and replays ---------------------
+
+
+def test_an_honest_chain_of_batches_commits_and_replays_idempotently(store) -> None:
+    c1 = store.commit_batch(plane("b1"), committed_snapshot_id="snap-1", expected_atlas_revision="")
+    assert store.current_atlas_revision() == c1.atlas_revision
+    b2 = AtlasPlaneBatch(2, store.current_atlas_revision(), "b2", charts=(AtlasChartRecord("c3", "s"),))
+    c2 = store.commit_batch(b2, committed_snapshot_id="snap-2", expected_atlas_revision=atlas_revision_for(2, b2))
+    assert store.current_sequence() == 2 and store.current_atlas_revision() == c2.atlas_revision
+    # replaying an already-committed batch (now behind the head) is idempotent, not stale
+    assert store.commit_batch(plane("b1"), committed_snapshot_id="ignored", expected_atlas_revision="") == c1
+    assert store.plane_counts()["atlas_plane_commits"] == 2
+
+
+def test_pre_cas_database_is_migrated_and_position_recovered(tmp_path) -> None:
+    """A database created by the previous schema (no sequence column) must open and CAS."""
+
+    path = tmp_path / "old-atlas.db"
+    db = sqlite3.connect(path)
+    db.executescript(
+        """
+        CREATE TABLE atlas_plane_commits (
+            batch_id TEXT PRIMARY KEY, committed_snapshot_id TEXT NOT NULL,
+            atlas_revision TEXT NOT NULL, chart_count INTEGER NOT NULL,
+            transition_count INTEGER NOT NULL, obstruction_count INTEGER NOT NULL,
+            payload_json TEXT NOT NULL);
+        CREATE TABLE atlas_charts (chart_id TEXT PRIMARY KEY, batch_id TEXT NOT NULL,
+            layer TEXT NOT NULL, payload_json TEXT NOT NULL);
+        CREATE TABLE atlas_transitions (transition_id TEXT PRIMARY KEY, batch_id TEXT NOT NULL,
+            source_chart_id TEXT NOT NULL, target_chart_id TEXT NOT NULL, payload_json TEXT NOT NULL);
+        CREATE TABLE atlas_obstructions (obstruction_id TEXT PRIMARY KEY, batch_id TEXT NOT NULL,
+            transition_id TEXT NOT NULL, payload_json TEXT NOT NULL);
+        """
+    )
+    old = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "legacy", charts=(AtlasChartRecord("c1", "s"),))
+    import json as _json
+    db.execute(
+        "INSERT INTO atlas_plane_commits VALUES (?,?,?,?,?,?,?)",
+        ("legacy", "snap-legacy", atlas_revision_for(1, old), 1, 0, 0,
+         _json.dumps(old.payload(), sort_keys=True, separators=(",", ":"))),
+    )
+    db.commit(); db.close()
+
+    store = SqliteAtlasPlaneStore(path)
+    assert store.current_sequence() == 1
+    assert store.current_atlas_revision() == atlas_revision_for(1, old)
+    nxt = AtlasPlaneBatch(2, store.current_atlas_revision(), "b2", charts=(AtlasChartRecord("c2", "s"),))
+    store.commit_batch(nxt, committed_snapshot_id="snap-2", expected_atlas_revision="")
+    assert store.current_sequence() == 2
