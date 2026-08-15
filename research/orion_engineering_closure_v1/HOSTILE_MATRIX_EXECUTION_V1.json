@@ -1,0 +1,278 @@
+{
+  "counts": {
+    "BROKE": 4,
+    "CANNOT_CHECK": 0,
+    "HELD": 26
+  },
+  "cross_reference_policy": "Rows previously touched by the A01..A12 campaign (run_hostile_assurance_v3.py) are RE-EXECUTED here against the row's own mechanism; where the A-case is cited it is as context, never as the evidence for this row.",
+  "grants_scientific_authority": false,
+  "harness_self_validation": {
+    "all_broke_as_required": true,
+    "controls": [
+      {
+        "code_path": "weakened get_verified (control)",
+        "detail": "mutated blob served as verified",
+        "expected": "BROKE",
+        "name": "unverified blob store must BROKE",
+        "ok": true,
+        "row": "WEAKENED_H04",
+        "scope": "FULL",
+        "verdict": "BROKE"
+      },
+      {
+        "code_path": "weakened verifier (control)",
+        "detail": "weakened verifier says VALID; real verifier TAMPERED@1",
+        "expected": "BROKE",
+        "name": "link-blind chain verifier must BROKE",
+        "ok": true,
+        "row": "WEAKENED_H06",
+        "scope": "FULL",
+        "verdict": "BROKE"
+      }
+    ]
+  },
+  "held_scope": {
+    "FULL": 23,
+    "LOCAL_REFERENCE_ONLY": 3
+  },
+  "matrix": "HOSTILE_TEST_MATRIX.md",
+  "not_claimed": [
+    "an independently executed pass on an exact production release",
+    "distributed exactly-once across external effects",
+    "any production latency/resource envelope (H29 numbers are local SQLite)",
+    "a real PostgreSQL failover (H17), object-store network outage (H18) -- local stand-ins only"
+  ],
+  "results": [
+    {
+      "detail": "killed write leaves no temp, no target, digest absent; retry installs; torn target -> integrity error on read and on re-put",
+      "name": "kill during canonical blob write",
+      "row": "H01",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "head unchanged, 0 transitions/evidence rows/batch commits after kill; orphan blob intact; retry commits",
+      "name": "blob committed, metadata transition killed before commit",
+      "row": "H02",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "ingest refused (evidence payload unavailable or corrupt:9d11f9a71c...); head unchanged; stat() raises KeyError",
+      "name": "metadata references unavailable blob",
+      "row": "H03",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "digest mismatch on read; exists_verified False; re-put refuses rather than overwrite",
+      "name": "mutate stored blob bytes",
+      "row": "H04",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "TRUNCATED at index 3, 3-record prefix and head preserved; store refuses to open",
+      "name": "torn episode JSONL tail",
+      "row": "H05",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "TAMPERED with first_bad_index=1; tail-rewrite vs expected head -> TRUNCATED",
+      "name": "delete interior episode record",
+      "row": "H06",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A03 covers the HTTP layer serially; this re-executes concurrently at the store",
+      "detail": "8 concurrent identical requests -> 1 transition_id, all COMMITTED replays, head seq 1",
+      "name": "concurrent identical idempotency key, identical request",
+      "row": "H07",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A04 covers the HTTP layer; re-executed at the store",
+      "detail": "IdempotencyConflict on both commit and non-committed paths",
+      "name": "same idempotency key, different request",
+      "row": "H08",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A01 covers the HTTP layer serially; re-executed concurrently at the store",
+      "detail": "6 writers on one snapshot -> 1 COMMITTED, 5 RETRY_REQUIRED receipts, head seq 1",
+      "name": "two writers plan on same project snapshot",
+      "row": "H09",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "stale decision -> RETRY_REQUIRED, head still s1; solver view STALE; workflow CANNOT_CHECK",
+      "name": "stale controller decision replayed after semantic mutation",
+      "row": "H10",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "INVALID_BASIS on fingerprint change; status plane refuses a second fingerprint at same coordinates",
+      "name": "saturation certificate basis fingerprint changes",
+      "row": "H11",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "PROCEED -> TARGETED_REFRESH_REQUIRED on new residual; only the implicated axis is non-flat",
+      "name": "new native residual after bounded saturation",
+      "row": "H12",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "cleared index returns () (degraded); canonical atom intact; rebuild reproduces identical index_id",
+      "name": "delete full-text/vector/graph index",
+      "row": "H13",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "code_path": "rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
+      "detail": "corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK.",
+      "name": "corrupt derived index to return nonexistent atom",
+      "row": "H14",
+      "scope": "FULL",
+      "verdict": "BROKE"
+    },
+    {
+      "cross_ref": "A06 only tested lease expiry; this executes the effect-then-crash window the row names",
+      "detail": "worker engine: RECOVERY_REQUIRED on reclaim after effect_started; stale lease cannot complete; reference engine: RECOVERY_REQUIRED and re-begin refused",
+      "name": "worker finishes external effect, crashes before completion record",
+      "row": "H15",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A02 covered only the live-holder half",
+      "detail": "live duplicate HELD_BY_LIVE_WORKER; post-completion duplicate ALREADY_COMPLETED; attempts=1; reference engine refuses to rebind a completed result",
+      "name": "duplicate activity delivery",
+      "row": "H16",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "mid-transaction connection loss -> full rollback (head, atoms, commits, receipts all unchanged); retry commits",
+      "name": "DB failover mid-transition",
+      "not_exercised": "a real primary failover (connection drop + promoted replica) needs a PostgreSQL cluster; the invariant is shown under an in-process SQLite transaction abort only",
+      "row": "H17",
+      "scope": "LOCAL_REFERENCE_ONLY",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "unreachable store -> OSError propagates, no integrity verdict fabricated, head unchanged; unreadable shard -> PermissionError propagates (no false 'missing')",
+      "name": "object store temporary outage",
+      "not_exercised": "a network object-store endpoint outage/timeout; the terminal is an unhandled OSError, not a typed CANNOT_CHECK receipt -- that shaping is a production-adapter obligation",
+      "row": "H18",
+      "scope": "LOCAL_REFERENCE_ONLY",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A05 executed only the CORRUPTED_BLOB branch of a different (engineering_ops) verifier",
+      "detail": "restore into empty dir reproduces head snapshot:1a3ef9334573a0b.. and blob bytes; non-empty destination refused",
+      "name": "restore backup into empty environment",
+      "row": "H19",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "snapshot s0, its EpistemicStatus (same status_id), HARD_GATE projection and semantic state at seq 0 all reconstruct while head is s1",
+      "name": "point-in-time replay to older snapshot",
+      "row": "H20",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "code_path": "rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
+      "detail": "future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists.",
+      "name": "partial schema migration",
+      "row": "H21",
+      "scope": "FULL",
+      "verdict": "BROKE"
+    },
+    {
+      "detail": "canonical dumps MATCH after rollback (digest bc16a038999c..); MISMATCH cannot be receipted; receipt import-receipt:9c1c27f39db99..",
+      "name": "rollback after failed migration",
+      "row": "H22",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A12 covered value-not-in-provenance; rotation added here",
+      "detail": "only secret://api_key@v1 and secret://api_key@v2 appear in receipts; resolve() follows rotation; no value leaked",
+      "name": "secret rotation during worker lifetime",
+      "row": "H23",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A09 covered authority_projection_revision; scientific_authority key + hard-gate path added",
+      "detail": "ADMIN authorized for the infra op but grants no scientific authority; unverified promotion -> hard gates CANNOT_CHECK; API refuses scientific_authority write with 403",
+      "name": "infrastructure admin submits unverified scientific promotion",
+      "row": "H24",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "detail": "fabricated gate id has no HARD_GATE projection (lookup empty); fabricated PASS observation leaves the contract's real gate unresolved -> CANNOT_CHECK; status grants no authority. CAVEAT preserved: EngineeringReadService.shared_status served the status without cross-checking hard_gate_ids against the control store -- the fail-closed depends on the consumer performing the lookup; no service does it for them.",
+      "name": "malicious fabricated hard-gate ID in status",
+      "row": "H25",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A07 clock skew: heartbeat in the past -> lease not extended",
+      "detail": "skewed-earlier writer commits at seq 1 (order by sequence, not clock); sequence jump refused; workflow events sequence+hash chained; heartbeat-in-the-past covered by A07",
+      "name": "clock skew on worker",
+      "row": "H26",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "cross_ref": "A11 covered the mutable-tag refusal only",
+      "detail": "same label, different source -> ARTIFACT_MISMATCH; RuntimeArtifactIdentity ids differ",
+      "name": "execution artifact rebuilt from different source but same label",
+      "row": "H27",
+      "scope": "FULL",
+      "verdict": "HELD"
+    },
+    {
+      "code_path": "rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
+      "detail": "read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt.",
+      "name": "audit/log exporter unavailable",
+      "row": "H28",
+      "scope": "FULL",
+      "verdict": "BROKE"
+    },
+    {
+      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms",
+      "name": "high transaction contention",
+      "not_exercised": "a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
+      "row": "H29",
+      "scope": "LOCAL_REFERENCE_ONLY",
+      "verdict": "HELD"
+    },
+    {
+      "code_path": "rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
+      "detail": "30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing.",
+      "name": "huge knowledge lattice + context request",
+      "row": "H30",
+      "scope": "FULL",
+      "verdict": "BROKE"
+    }
+  ],
+  "rows_executed": 30,
+  "rows_specified": 30,
+  "schema_version": "orion-hostile-matrix-execution-v1",
+  "status": "FROZEN_ROWS_EXECUTED__ALL_OUTCOMES_PRESERVED"
+}

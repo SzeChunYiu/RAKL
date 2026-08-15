@@ -284,11 +284,19 @@ add(find_symbol("LADDER-E4-bounded_saturation_artifacts", LADDER, "bounded_satur
 
 
 def _service():
+    """The service over real stores (ephemeral tempdir). Creates project p1 at genesis and returns its snapshot id.
+
+    First-audit note: the original service kept in-memory 'snap-N' state and no genesis step; that
+    version 404'd 10/12 routes. The probes below run against whatever the tree has now.
+    """
     from rakl.engineering_http import Actor, Capability, EngineeringHttpService, IdentityProvider, SecretStore
     idp, sec = IdentityProvider(), SecretStore()
     svc = EngineeringHttpService(idp=idp, secrets=sec)
     token = idp.issue(Actor("auditor", frozenset({"p1"}), frozenset(Capability)))
-    return svc, {"Authorization": f"Bearer {token}"}
+    hdr = {"Authorization": f"Bearer {token}"}
+    st, body, _h = svc.handle("POST", "/v1/projects", hdr, json.dumps({"project_id": "p1"}).encode())
+    genesis = body["snapshot"]["snapshot_id"] if int(st) in (200, 201) and "snapshot" in body else "snap-0"
+    return svc, hdr, genesis
 
 
 def _mutation_body(payload: dict, *, key: str, expected: str) -> bytes:
@@ -298,9 +306,9 @@ def _mutation_body(payload: dict, *, key: str, expected: str) -> bytes:
 
 
 ROUTES = [
-    ("POST", "/v1/projects", True),
+    ("POST", "/v1/projects", "genesis"),
     ("GET", "/v1/projects/p1/head", False),
-    ("GET", "/v1/projects/p1/snapshots/snap-0", False),
+    ("GET", "/v1/projects/p1/snapshots/{genesis}", False),
     ("POST", "/v1/projects/p1/evidence", True),
     ("POST", "/v1/projects/p1/research-rounds", True),
     ("GET", "/v1/projects/p1/epistemic-status", False),
@@ -314,13 +322,23 @@ ROUTES = [
 
 for _i, (method, path, mutating) in enumerate(ROUTES):
     def _probe(method=method, path=path, mutating=mutating, i=_i):
-        svc, hdr = _service()
-        body = _mutation_body({"a": i}, key=f"k{i}", expected="snap-0") if mutating else b""
-        status, resp, _h = svc.handle(method, path, hdr, body)
+        svc, hdr, genesis = _service()
+        p = path.format(genesis=genesis)
+        if mutating == "genesis":
+            body = json.dumps({"project_id": "p1"}).encode()     # a second genesis call: served (200/201/409), not 404
+        elif mutating:
+            body = _mutation_body({"content_utf8": f"x{i}"}, key=f"k{i}", expected=genesis)
+        else:
+            body = b""
+        status, resp, _h = svc.handle(method, p, hdr, body)
         code = resp.get("error") if isinstance(resp, dict) else None
-        if int(status) == 404 and code == "NOT_FOUND":
+        detail = resp.get("detail") if isinstance(resp, dict) else None
+        # only the ROUTE being unknown is absence; a served route reporting "no transition 't1'" is a served route
+        unknown_route = int(status) == 404 and code == "NOT_FOUND" and (
+            detail == "unknown route" or str(detail).startswith(f"no {method} for"))
+        if unknown_route:
             return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", \
-                f"{method} {path} -> 404 NOT_FOUND"
+                f"{method} {path} -> 404 NOT_FOUND ({detail})"
         return PRESENT, "rakl.engineering_http.EngineeringHttpService.handle", \
             f"{method} {path} -> {int(status)} {code or 'ok'}"
     add(check_behavioural(f"API-route-{method}-{path}", API, f"{method} {path}", _probe))
@@ -328,13 +346,14 @@ for _i, (method, path, mutating) in enumerate(ROUTES):
 
 def _probe_query_params():
     """The spec'd epistemic-status route carries ?snapshot=&target=&fiber=."""
-    svc, hdr = _service()
-    status, resp, _h = svc.handle("GET", "/v1/projects/p1/status?snapshot=snap-0&target=t&fiber=f", hdr, b"")
+    svc, hdr, genesis = _service()
+    status, resp, _h = svc.handle("GET", f"/v1/projects/p1/epistemic-status?snapshot={genesis}&target=t&fiber=f", hdr, b"")
     code = resp.get("error") if isinstance(resp, dict) else None
-    if int(status) == 404:
+    detail = resp.get("detail") if isinstance(resp, dict) else None
+    if int(status) == 404 and (detail == "unknown route" or str(detail).startswith("no GET")):
         return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", \
             f"query string is not stripped from the path segment -> {int(status)} {code}"
-    return PRESENT, "rakl.engineering_http.EngineeringHttpService.handle", f"{int(status)} {code or 'ok'}"
+    return PRESENT, "rakl.engineering_http.EngineeringHttpService.handle", f"{int(status)} {code or 'ok'} ({str(detail)[:60]})"
 
 
 add(check_behavioural("API-query-params", API, "GET .../epistemic-status?snapshot=&target=&fiber=",
@@ -344,22 +363,20 @@ add(check_behavioural("API-query-params", API, "GET .../epistemic-status?snapsho
 def _probe_receipt_on_mutation():
     """'Every mutation returns a StateTransitionReceipt, even on RETRY_REQUIRED,
     RECOVERY_REQUIRED or CANNOT_CHECK.'"""
-    import dataclasses as _dc
-    from rakl.engineering_state import StateTransitionReceipt
-    svc, hdr = _service()
+    from rakl.engineering_state import StateTransitionReceipt, TransitionStatus
+    svc, hdr, genesis = _service()
     status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr,
-                                  _mutation_body({"a": 1}, key="kr", expected="snap-0"))
+                                  _mutation_body({"content_utf8": "one"}, key="kr", expected=genesis))
     if int(status) != 200:
         return CANNOT_CHECK, "rakl.engineering_http", f"mutation did not succeed: {status} {resp}"
-    required = {f.name for f in _dc.fields(StateTransitionReceipt)
-                if f.default is _dc.MISSING and f.default_factory is _dc.MISSING}  # type: ignore[misc]
-    have = set(resp) if isinstance(resp, dict) else set()
-    missing = sorted(required - have)
-    if not missing:
-        return PRESENT, "rakl.engineering_http", "mutation response carries receipt fields"
-    return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", (
-        f"committed mutation returned keys {sorted(have)}; a StateTransitionReceipt "
-        f"requires {sorted(required)} -- missing {missing}")
+    try:
+        receipt = StateTransitionReceipt.from_dict(resp)
+    except Exception as exc:  # noqa: BLE001
+        return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", (
+            f"committed mutation returned keys {sorted(resp)}; not a StateTransitionReceipt ({type(exc).__name__}: {exc})")
+    if receipt.status is not TransitionStatus.COMMITTED:
+        return ABSENT, "rakl.engineering_http", f"receipt status {receipt.status.value} on a 200"
+    return PRESENT, "rakl.engineering_http", f"round-trips StateTransitionReceipt.from_dict; status={receipt.status.value}"
 
 
 add(check_behavioural("API-mutation-returns-receipt", API,
@@ -368,21 +385,21 @@ add(check_behavioural("API-mutation-returns-receipt", API,
 
 def _probe_error_returns_receipt():
     """The same rule on the non-committed terminals."""
-    import dataclasses as _dc
-    from rakl.engineering_state import StateTransitionReceipt
-    svc, hdr = _service()
-    svc.handle("POST", "/v1/projects/p1/evidence", hdr, _mutation_body({"a": 1}, key="k1", expected="snap-0"))
+    from rakl.engineering_state import StateTransitionReceipt, TransitionStatus
+    svc, hdr, genesis = _service()
+    svc.handle("POST", "/v1/projects/p1/evidence", hdr, _mutation_body({"content_utf8": "one"}, key="k1", expected=genesis))
     status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr,
-                                  _mutation_body({"a": 2}, key="k2", expected="snap-0"))
+                                  _mutation_body({"content_utf8": "two"}, key="k2", expected=genesis))
     if int(status) == 200:
         return CANNOT_CHECK, "rakl.engineering_http", "expected a stale-snapshot refusal, got 200"
-    required = {f.name for f in _dc.fields(StateTransitionReceipt)
-                if f.default is _dc.MISSING and f.default_factory is _dc.MISSING}  # type: ignore[misc]
-    have = set(resp) if isinstance(resp, dict) else set()
-    if required <= have:
-        return PRESENT, "rakl.engineering_http", "refusal carries receipt fields"
-    return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", (
-        f"refusal ({resp.get('error')}) returned keys {sorted(have)}, not a StateTransitionReceipt")
+    try:
+        receipt = StateTransitionReceipt.from_dict(resp)
+    except Exception as exc:  # noqa: BLE001
+        return ABSENT, "rakl.engineering_http.EngineeringHttpService.handle", (
+            f"refusal ({resp.get('error')}) returned keys {sorted(resp)}, not a StateTransitionReceipt ({type(exc).__name__})")
+    if receipt.status is not TransitionStatus.RETRY_REQUIRED:
+        return PARTIAL, "rakl.engineering_http", f"refusal is a receipt but status={receipt.status.value}"
+    return PRESENT, "rakl.engineering_http", f"stale refusal is a RETRY_REQUIRED receipt (HTTP {int(status)})"
 
 
 add(check_behavioural("API-refusal-returns-receipt", API,
@@ -454,36 +471,36 @@ MATRIX_ROWS = {
 #
 # value = (matrix_row, PRESENT|PARTIAL, why)
 CAMPAIGN_TO_MATRIX: dict[str, tuple[str, str, str] | None] = {
-    "H01 stale snapshot mutation": (
+    "A01 stale snapshot mutation": (
         "H09", PRESENT,
         "second writer on the same expected snapshot is refused SNAPSHOT_STALE and the head does "
         "not move; the row's allowed result names RETRY_REQUIRED, the refusal is the same terminal class"),
-    "H02 duplicate worker delivery": (
+    "A02 duplicate worker delivery": (
         "H16", PRESENT, "two claims on one activity: one ACQUIRED, one HELD_BY_LIVE_WORKER, attempt_count==1"),
-    "H03 replayed decision, same key": ("H07", PRESENT, "identical key + identical request replays, head unmoved"),
-    "H04 replayed decision, tampered payload": ("H08", PRESENT, "same key, different payload -> IDEMPOTENCY_CONFLICT"),
-    "H05 corrupted backup blob": (
+    "A03 replayed decision, same key": ("H07", PRESENT, "identical key + identical request replays, head unmoved"),
+    "A04 replayed decision, tampered payload": ("H08", PRESENT, "same key, different payload -> IDEMPOTENCY_CONFLICT"),
+    "A05 corrupted backup blob": (
         "H19", PARTIAL,
         "exercises only the FAILURE branch (restore into a corrupted tree -> CORRUPTED_BLOB). "
         "'frozen snapshot identities reproduce' after a restore into an EMPTY environment is not "
         "asserted by this case"),
-    "H06 delayed worker past lease": (
+    "A06 delayed worker past lease": (
         "H15", PARTIAL,
         "a lease expiry/reclaim with a stale completion token refused. The row's actual attack -- "
         "external effect COMPLETED, then crash before the completion record, expecting "
         "RECOVERY_REQUIRED -- is not run; mark_effect_started/recover_ambiguous_activity are never "
         "invoked in the campaign"),
-    "H07 clock skew: heartbeat in the past": (
+    "A07 clock skew: heartbeat in the past": (
         "H26", PRESENT, "a backwards heartbeat does not extend the lease; reclaim still occurs"),
-    "H08 payload hash not binding effect": None,  # no corresponding matrix row
-    "H09 authority projection via API": (
+    "A08 payload hash not binding effect": None,  # no corresponding matrix row
+    "A09 authority projection via API": (
         "H24", PRESENT, "fully-capable actor cannot write the authority projection -> 403"),
-    "H10 atlas plane half-write": (
+    "A10 atlas plane half-write": (
         "H17", PARTIAL,
         "shows no partial commit survives an aborted multi-record batch, which is the row's "
         "INVARIANT; the row's mechanism (DB failover mid-transition) is not simulated"),
-    "H11 mutable image tag": ("H27", PRESENT, "an artifact ref without a digest is refused"),
-    "H12 secret value in provenance": (
+    "A11 mutable image tag": ("H27", PRESENT, "an artifact ref without a digest is refused"),
+    "A12 secret value in provenance": (
         "H23", PARTIAL,
         "covers 'no secret in receipt/log' (reference only). Secret ROTATION during a worker "
         "lifetime, and the declared-revision change, are not exercised"),
@@ -491,13 +508,13 @@ CAMPAIGN_TO_MATRIX: dict[str, tuple[str, str, str] | None] = {
 COVERED = {v[0]: v for v in CAMPAIGN_TO_MATRIX.values() if v}
 
 assurance_path = Path("research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json")
+execution_path = Path("research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json")
 try:
     assurance = json.loads(assurance_path.read_text())
-    executed_ids = {r["case"] for r in assurance["results"]}
     executed_named = {f"{r['case']} {r['name']}" for r in assurance["results"]}
     assurance_readable = True
 except Exception as exc:  # noqa: BLE001
-    assurance, executed_ids, executed_named, assurance_readable = None, set(), set(), False
+    assurance, executed_named, assurance_readable = None, set(), False
     add(Finding("MATRIX-assurance-readable", MATRIX, "artifact", str(assurance_path), CANNOT_CHECK,
                 "-", f"{type(exc).__name__}: {exc}"))
 
@@ -507,18 +524,42 @@ if assurance_readable:
         add(Finding("MATRIX-campaign-drift", MATRIX, "artifact", "campaign case list", CANNOT_CHECK,
                     str(assurance_path),
                     f"executed cases not in the hand-read mapping: {unknown}; rerun the mapping"))
-    for row, desc in MATRIX_ROWS.items():
+
+# The matrix is now EXECUTED row by row (run_hostile_matrix.py). MATRIX-* findings are read from that
+# receipt: HELD(FULL) -> PRESENT, HELD(LOCAL_REFERENCE_ONLY) -> PARTIAL, BROKE -> ABSENT (the invariant
+# the row specifies is not held by the code; the code path is the evidence), CANNOT_CHECK -> CANNOT_CHECK.
+# The A-campaign mapping above is retained as history of what the FIRST campaign covered.
+try:
+    execution = json.loads(execution_path.read_text())
+    by_row = {r["row"]: r for r in execution["results"]}
+    execution_readable = True
+except Exception as exc:  # noqa: BLE001
+    execution, by_row, execution_readable = None, {}, False
+    add(Finding("MATRIX-execution-readable", MATRIX, "artifact", str(execution_path), CANNOT_CHECK,
+                "-", f"{type(exc).__name__}: {exc}; falling back to the A-campaign mapping only"))
+
+for row, desc in MATRIX_ROWS.items():
+    r = by_row.get(row)
+    if r is None:
         if row in COVERED:
             _r, _verdict, _why = COVERED[row]
             src = [k for k, v in CAMPAIGN_TO_MATRIX.items() if v and v[0] == row][0]
             add(Finding(f"MATRIX-{row}", MATRIX, "hostile_case", f"{row} {desc}", _verdict,
                         f"{assurance_path} :: campaign case {src!r}", _why))
         else:
-            collides = row in executed_ids
             add(Finding(f"MATRIX-{row}", MATRIX, "hostile_case", f"{row} {desc}", ABSENT,
-                        str(assurance_path),
-                        ("NOT executed by the frozen campaign; the campaign REUSES this id for a "
-                         "different attack" if collides else "NOT executed by the frozen campaign")))
+                        str(assurance_path), "NOT executed by any campaign"))
+        continue
+    v = r["verdict"]
+    if v == "HELD":
+        verdict = PRESENT if r.get("scope") == "FULL" else PARTIAL
+        detail = r["detail"] + (f" | NOT EXERCISED: {r['not_exercised']}" if r.get("not_exercised") else "")
+    elif v == "BROKE":
+        verdict, detail = ABSENT, f"BROKE against real code -- {r['detail']} | code path: {r.get('code_path', '?')}"
+    else:
+        verdict, detail = CANNOT_CHECK, r["detail"]
+    add(Finding(f"MATRIX-{row}", MATRIX, "hostile_case", f"{row} {desc}", verdict,
+                f"{execution_path} :: {row}", detail))
 
 # ---------------------------------------------------------------------------
 # GAP_LEDGER fibres -- the modules CLOSURE_ASSESSMENT_V3 cites as evidence
@@ -668,9 +709,18 @@ report = {
     "summary": dict(by_verdict),
     "hostile_matrix_coverage": {
         "rows_specified": len(MATRIX_ROWS),
-        "rows_fully_attacked": sorted(r for r, (_, v, _w) in COVERED.items() if v == PRESENT),
-        "rows_partially_attacked": sorted(r for r, (_, v, _w) in COVERED.items() if v == PARTIAL),
-        "rows_not_attacked": sorted(set(MATRIX_ROWS) - set(COVERED)),
+        "execution_receipt": str(execution_path) if execution_readable else None,
+        "executed": {
+            "held_full": sorted(r for r, x in by_row.items() if x["verdict"] == "HELD" and x.get("scope") == "FULL"),
+            "held_local_reference_only": sorted(r for r, x in by_row.items() if x["verdict"] == "HELD" and x.get("scope") != "FULL"),
+            "broke": {r: x.get("code_path") for r, x in sorted(by_row.items()) if x["verdict"] == "BROKE"},
+            "cannot_check": sorted(r for r, x in by_row.items() if x["verdict"] == "CANNOT_CHECK"),
+        },
+        "first_campaign_history_A01_A12": {
+            "rows_fully_attacked": sorted(r for r, (_, v, _w) in COVERED.items() if v == PRESENT),
+            "rows_partially_attacked": sorted(r for r, (_, v, _w) in COVERED.items() if v == PARTIAL),
+            "rows_not_attacked": sorted(set(MATRIX_ROWS) - set(COVERED)),
+        },
         "mapping_is_an_analyst_judgement": (
             "campaign_case_to_matrix_row below is a hand mapping by CONTENT, produced by reading "
             "run_hostile_assurance_v3.py case by case. It is not a mechanical result. The per-row "
@@ -682,24 +732,26 @@ report = {
             k.split()[0] for k, v in CAMPAIGN_TO_MATRIX.items()
             if k.split()[0] in MATRIX_ROWS and (v is None or v[0] != k.split()[0])),
         "note": (
-            "CLOSURE_ASSESSMENT_V3 reports hostile_assurance held=12 total=12. That is true of the "
-            "campaign's OWN 12 cases. The campaign numbers them H01..H12, colliding with the "
-            "HOSTILE_TEST_MATRIX namespace while attacking different things: campaign H01 is "
-            "'stale snapshot mutation', matrix H01 is 'kill during canonical blob write'."),
+            "CLOSURE_ASSESSMENT_V3 reported hostile_assurance held=12 total=12. That was true of the "
+            "campaign's OWN 12 cases, which were numbered H01..H12 -- colliding with the "
+            "HOSTILE_TEST_MATRIX namespace while attacking different things (campaign 'H01 stale snapshot "
+            "mutation' vs matrix 'H01 kill during canonical blob write'). Since then: the campaign ids are "
+            "A01..A12, and the matrix itself is executed row by row in run_hostile_matrix.py."),
     },
     "findings": [f.to_dict() for f in findings],
     "negatives_preserved": negatives,
     "closure_assessment_v3_review": {
         "claim_reviewed": "all 20 fibres REFERENCE_IMPLEMENTED, terminal "
                           "ALL_FIBRES_REFERENCE_IMPLEMENTED__PRODUCTION_RESIDUALS_TYPED",
-        "verdict": "OVERCLAIMS ON TWO FIBRES (E10, E18); one citation defect (E4); "
-                   "the remaining seventeen hold on the falsifier axis",
+        "verdict": "AT V3: OVERCLAIMED ON TWO FIBRES (E10, E18); one citation defect (E4); the remaining seventeen "
+                   "held on the falsifier axis. Both overclaims have since been addressed in the working tree "
+                   "(see per_fibre); this record of the V3 claim is not rewritten.",
         "axis_note": (
             "'REFERENCE_IMPLEMENTED' in V3 asserts falsifier closure. A fibre can close its "
             "GAP_LEDGER falsifier while the surface the packet's own ladder/API named is absent. "
             "Only E10 and E18 are overclaims; the rest are gaps, citation defects, or nothing."),
         "per_fibre": [
-            {"fiber": "E18", "verdict": "OVERCLAIM", "axis": "falsifier + spec obligation",
+            {"fiber": "E18", "verdict": "OVERCLAIM_AT_V3__SINCE_ADDRESSED", "axis": "falsifier + spec obligation",
              "evidence": (
                  "V3 marks E18 REFERENCE_IMPLEMENTED citing a 12-case campaign. Those 12 cases "
                  "attack 7 of the 30 HOSTILE_TEST_MATRIX rows fully and 4 partially; 19 rows are "
@@ -709,8 +761,11 @@ report = {
                  "cross-referencing 'H01 held' concludes 'kill during canonical blob write' held. "
                  "It did not. run_hostile_assurance_v3.py itself is honest: its docstring freezes "
                  "its own list and never claims to be the matrix. The defect is in the assessment "
-                 "that cites it as E18 closure, and in the colliding ID namespace.")},
-            {"fiber": "E10", "verdict": "OVERCLAIM", "axis": "the packet's own API contract",
+                 "that cites it as E18 closure, and in the colliding ID namespace. SINCE ADDRESSED: "
+                 "run_hostile_matrix.py executes all 30 rows (HOSTILE_MATRIX_EXECUTION_V1.json: 26 HELD of which 3 "
+                 "local-reference-only, 4 BROKE, 0 CANNOT_CHECK) and the campaign ids are A01..A12. The 4 BROKEs "
+                 "(H14, H21, H28, H30) are open defects, not closure.")},
+            {"fiber": "E10", "verdict": "OVERCLAIM_AT_V3__SINCE_ADDRESSED", "axis": "the packet's own API contract",
              "evidence": (
                  "The GAP_LEDGER falsifier ('a mutating request has no idempotency/snapshot "
                  "contract') IS defeated. But API_AND_OBSERVATORY.md is also spec: 10 of its 12 "
@@ -721,7 +776,8 @@ report = {
                  "after_snapshot_id, payload_hash, api_version} and a refusal returns "
                  "{error, detail, api_version}. engineering_http.py never imports engineering_state "
                  "and keeps its own in-memory 'snap-N' state. V3's only named E10 residual is "
-                 "'TLS, rate limits is deployment', which names none of this.")},
+                 "'TLS, rate limits is deployment', which names none of this. SINCE ADDRESSED by the operate lane: "
+                 "the API-route-* / API-query-params / API-*-returns-receipt findings in this run show the current state.")},
             {"fiber": "E11", "verdict": "PARTIAL_NOT_OVERCLAIM", "axis": "named surface",
              "evidence": (
                  "The falsifier is defeated: ObservatoryView has no method that computes a score "
@@ -779,5 +835,11 @@ for c in controls:
     if not c["ok"]:
         print(f"    CONTROL FAILED {c['control']}: expected {c['expected']}, got {c['got']}")
 print(f"  {dict(by_verdict)}")
-print(f"  hostile matrix: {sum(1 for _r,(_x,_v,_w) in COVERED.items() if _v==PRESENT)} fully + {sum(1 for _r,(_x,_v,_w) in COVERED.items() if _v==PARTIAL)} partial of {len(MATRIX_ROWS)} specified rows attacked by the frozen campaign")
+if execution_readable:
+    _h = sum(1 for x in by_row.values() if x["verdict"] == "HELD")
+    _b = sum(1 for x in by_row.values() if x["verdict"] == "BROKE")
+    _c = sum(1 for x in by_row.values() if x["verdict"] == "CANNOT_CHECK")
+    print(f"  hostile matrix (executed): {len(by_row)}/{len(MATRIX_ROWS)} rows -> HELD={_h} BROKE={_b} CANNOT_CHECK={_c}")
+print(f"  first campaign (A01..A12) history: {sum(1 for _r,(_x,_v,_w) in COVERED.items() if _v==PRESENT)} fully + "
+      f"{sum(1 for _r,(_x,_v,_w) in COVERED.items() if _v==PARTIAL)} partial of {len(MATRIX_ROWS)} rows")
 print(f"wrote {OUT}")

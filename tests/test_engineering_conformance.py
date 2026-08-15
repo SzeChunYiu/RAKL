@@ -205,73 +205,119 @@ def test_behavioural_probe_passthrough() -> None:
 
 
 # --- the specific behavioural facts the audit reports ----------------------
+#
+# HISTORY, kept on purpose. The first run of this audit found, against the
+# original engineering_http.py: 10 of the 12 API_AND_OBSERVATORY routes 404'd,
+# query strings were not parsed out of the path segment, and a committed
+# mutation returned {committed, before_snapshot_id, after_snapshot_id,
+# payload_hash, api_version} -- not a StateTransitionReceipt. The tests below
+# originally PINNED those defects (asserting the 404s, asserting the missing
+# receipt). The operate lane then rewired the service over the real stores and
+# every one of those assertions inverted. The docstrings say what used to be
+# wrong; the assertions say what is true now. A flipped test that reads as if it
+# always passed loses the history, so the history is here.
 
 
 def _service():
+    """The rewritten service: real stores in an ephemeral tempdir; project 'p1' created at genesis."""
+    import json
+
     from rakl.engineering_http import (
         Actor, Capability, EngineeringHttpService, IdentityProvider, SecretStore,
     )
     idp, sec = IdentityProvider(), SecretStore()
     svc = EngineeringHttpService(idp=idp, secrets=sec)
     token = idp.issue(Actor("t", frozenset({"p1"}), frozenset(Capability)))
-    return svc, {"Authorization": f"Bearer {token}"}
+    hdr = {"Authorization": f"Bearer {token}"}
+    status, body, _h = svc.handle("POST", "/v1/projects", hdr, json.dumps({"project_id": "p1"}).encode())
+    assert int(status) in (200, 201), body
+    return svc, hdr, body["snapshot"]["snapshot_id"]
 
 
-@pytest.mark.parametrize("method,path", [
-    ("POST", "/v1/projects"),
-    ("GET", "/v1/projects/p1/head"),
-    ("GET", "/v1/projects/p1/snapshots/snap-0"),
-    ("POST", "/v1/projects/p1/research-rounds"),
-    ("GET", "/v1/projects/p1/epistemic-status"),
-    ("POST", "/v1/projects/p1/actions:plan"),
-    ("POST", "/v1/projects/p1/actions:execute"),
-    ("GET", "/v1/projects/p1/transitions/t1"),
-    ("GET", "/v1/projects/p1/decisions/d1"),
-    ("GET", "/v1/projects/p1/runs/r1"),
+def _mutation(payload: dict, *, key: str, expected: str) -> bytes:
+    import json
+
+    from rakl.engineering_http import content_hash
+    return json.dumps({"idempotency_key": key, "expected_snapshot_id": expected,
+                       "payload": payload, "payload_hash": content_hash(payload)}).encode()
+
+
+@pytest.mark.parametrize("method,path,mutating", [
+    ("GET", "/v1/projects/p1/head", False),
+    ("GET", "/v1/projects/p1/snapshots/{genesis}", False),
+    ("POST", "/v1/projects/p1/research-rounds", True),
+    ("GET", "/v1/projects/p1/epistemic-status", False),
+    ("POST", "/v1/projects/p1/actions:plan", True),
+    ("POST", "/v1/projects/p1/actions:execute", True),
+    ("GET", "/v1/projects/p1/transitions/t1", False),
+    ("GET", "/v1/projects/p1/decisions/d1", False),
+    ("GET", "/v1/projects/p1/runs/r1", False),
+    ("GET", "/v1/projects/p1/provenance/e1", False),
 ])
-def test_specified_api_routes_are_not_served(method: str, path: str) -> None:
-    """API_AND_OBSERVATORY.md names these. The service 404s them. Recorded, not fixed."""
-    svc, hdr = _service()
-    status, body, _h = svc.handle(method, path, hdr, b"{}")
-    assert int(status) == 404 and body["error"] == "NOT_FOUND", (method, path, status, body)
+def test_specified_api_routes_are_served(method: str, path: str, mutating: bool) -> None:
+    """FLIPPED. These routes returned 404 NOT_FOUND ('unknown route') at first audit.
+
+    'Served' here means the route is recognised: the response is anything but the
+    unknown-route 404. A typed 4xx from the route's own validation (a missing
+    transition id, an unauthenticated caller) is a served route.
+    """
+    svc, hdr, genesis = _service()
+    path = path.format(genesis=genesis)
+    body = _mutation({"content_utf8": "x"}, key="k", expected=genesis) if mutating else b""
+    status, resp, _h = svc.handle(method, path, hdr, body)
+    assert not (int(status) == 404 and resp.get("error") == "NOT_FOUND" and resp.get("detail") == "unknown route"), \
+        (method, path, status, resp)
+    # and unauthenticated is still gated, not open
+    status2, resp2, _h2 = svc.handle(method, path, {}, body)
+    assert int(status2) == 401 and resp2.get("error") == "UNAUTHENTICATED", (method, path, status2, resp2)
 
 
-def test_evidence_route_is_served_so_the_404s_above_are_not_a_blanket_failure() -> None:
-    from rakl.engineering_http import content_hash
-    svc, hdr = _service()
-    payload = {"a": 1}
-    body = __import__("json").dumps({
-        "idempotency_key": "k", "expected_snapshot_id": "snap-0",
-        "payload": payload, "payload_hash": content_hash(payload)}).encode()
-    status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr, body)
-    assert int(status) == 200 and resp["committed"] is True
+def test_project_genesis_route_is_served() -> None:
+    """FLIPPED. POST /v1/projects was 404 at first audit; it is genesis now (201, a ProjectSnapshot, no receipt)."""
+    _svc, _hdr, genesis = _service()
+    assert genesis.startswith("snapshot:")
 
 
-def test_query_string_breaks_route_resolution() -> None:
-    """The spec'd status route carries ?snapshot=&target=&fiber=; the path is not parsed."""
-    svc, hdr = _service()
-    status, body, _h = svc.handle("GET", "/v1/projects/p1/status?snapshot=s&target=t&fiber=f", hdr, b"")
-    assert int(status) == 404, (status, body)
-    plain, _b, _h2 = svc.handle("GET", "/v1/projects/p1/status", hdr, b"")
-    assert int(plain) == 200
+def test_evidence_route_is_served_no_alarm_control() -> None:
+    """The one route that was ALWAYS served -- kept so the block above is not a blanket assertion."""
+    svc, hdr, genesis = _service()
+    status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr,
+                                  _mutation({"content_utf8": "x"}, key="k", expected=genesis))
+    assert int(status) == 200 and resp["status"] == "COMMITTED", (status, resp)
 
 
-def test_mutation_response_is_not_a_state_transition_receipt() -> None:
-    """API_AND_OBSERVATORY.md: 'Every mutation returns a StateTransitionReceipt.'"""
-    from rakl.engineering_http import content_hash
-    from rakl.engineering_state import StateTransitionReceipt
+def test_query_string_resolves_on_the_status_route() -> None:
+    """FLIPPED. The spec'd ?snapshot=&target=&fiber= form 404'd at first audit because the
+    query string was left inside the last path segment. It parses now."""
+    svc, hdr, genesis = _service()
+    status, body, _h = svc.handle(
+        "GET", f"/v1/projects/p1/epistemic-status?snapshot={genesis}&target=t&fiber=f", hdr, b"")
+    assert not (int(status) == 404 and body.get("detail") == "unknown route"), (status, body)
+    assert body.get("error") != "NOT_FOUND" or "no GET" not in str(body.get("detail")), (status, body)
 
-    svc, hdr = _service()
-    payload = {"a": 1}
-    body = __import__("json").dumps({
-        "idempotency_key": "k", "expected_snapshot_id": "snap-0",
-        "payload": payload, "payload_hash": content_hash(payload)}).encode()
-    status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr, body)
+
+def test_mutation_response_is_a_state_transition_receipt() -> None:
+    """FLIPPED. API_AND_OBSERVATORY.md: 'Every mutation returns a StateTransitionReceipt.'
+
+    At first audit a commit returned {committed, before_snapshot_id, after_snapshot_id,
+    payload_hash, api_version} and a refusal returned {error, detail, api_version}. Now
+    the body round-trips through StateTransitionReceipt.from_dict on COMMITTED and on
+    the RETRY_REQUIRED refusal alike, and `status` is in the TransitionStatus vocabulary.
+    """
+    from rakl.engineering_state import StateTransitionReceipt, TransitionStatus
+
+    svc, hdr, genesis = _service()
+    status, resp, _h = svc.handle("POST", "/v1/projects/p1/evidence", hdr,
+                                  _mutation({"content_utf8": "one"}, key="k1", expected=genesis))
     assert int(status) == 200
-    required = {f.name for f in dataclasses.fields(StateTransitionReceipt)
-                if f.default is dataclasses.MISSING and f.default_factory is dataclasses.MISSING}
-    assert not required <= set(resp), "the mutation response now carries receipt fields; update the audit"
-    assert "transition_id" not in resp
+    receipt = StateTransitionReceipt.from_dict(resp)
+    assert receipt.status is TransitionStatus.COMMITTED and receipt.transition_id == resp["transition_id"]
+    # a stale-snapshot refusal is ALSO a receipt
+    status2, resp2, _h2 = svc.handle("POST", "/v1/projects/p1/evidence", hdr,
+                                     _mutation({"content_utf8": "two"}, key="k2", expected=genesis))
+    receipt2 = StateTransitionReceipt.from_dict(resp2)
+    assert int(status2) == 409 and receipt2.status is TransitionStatus.RETRY_REQUIRED
+    assert receipt2.after_snapshot_id is None
 
 
 def test_the_two_workflow_engines_share_no_common_scheduling_surface() -> None:
@@ -286,20 +332,39 @@ def test_the_two_workflow_engines_share_no_common_scheduling_surface() -> None:
     assert "claim" in b and "claim" not in a
 
 
-def test_hostile_campaign_ids_do_not_mean_the_matrix_ids() -> None:
-    """HOSTILE_ASSURANCE_V3 reuses H01..H12 for different attacks than the matrix."""
+def test_hostile_campaign_ids_no_longer_collide_with_the_matrix_namespace() -> None:
+    r"""FLIPPED. HOSTILE_ASSURANCE_V3 originally numbered its 12 cases H01..H12 -- the
+    HOSTILE_TEST_MATRIX namespace -- while attacking different things (campaign 'H01
+    stale snapshot mutation' vs matrix 'H01 kill during canonical blob write'). The
+    ids are A01..A12 now; no campaign case may match ^H\d\d$."""
     import json
+    import re
     from pathlib import Path
 
     p = Path("research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json")
     if not p.exists():
         pytest.skip("assurance receipt not present in this checkout")
-    names = {r["case"]: r["name"] for r in json.loads(p.read_text())["results"]}
-    # matrix H01 is "kill during canonical blob write"; the campaign's H01 is not that
-    assert names["H01"] == "stale snapshot mutation"
-    # matrix H12 is "new native residual after bounded saturation"
-    assert names["H12"] == "secret value in provenance"
-    assert len(names) == 12
+    data = json.loads(p.read_text())
+    ids = [r["case"] for r in data["results"]]
+    assert len(ids) == 12
+    assert not any(re.fullmatch(r"H\d\d", i) for i in ids), ids
+    assert all(re.fullmatch(r"A\d\d", i) for i in ids), ids
+    assert "A01..A12" in data.get("case_id_namespace", "")
+
+
+def test_matrix_execution_receipt_covers_all_thirty_rows() -> None:
+    """The matrix itself is executed row-by-row in run_hostile_matrix.py; every row has an outcome."""
+    import json
+    from pathlib import Path
+
+    p = Path("research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json")
+    if not p.exists():
+        pytest.skip("matrix execution receipt not present in this checkout")
+    data = json.loads(p.read_text())
+    rows = {r["row"] for r in data["results"]}
+    assert rows == {f"H{i:02d}" for i in range(1, 31)}
+    assert all(r["verdict"] in ("HELD", "BROKE", "CANNOT_CHECK") for r in data["results"])
+    assert data["harness_self_validation"]["all_broke_as_required"] is True
 
 
 # --- Finding hygiene -------------------------------------------------------

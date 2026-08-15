@@ -4,18 +4,26 @@ Cases are FROZEN in this file before execution — the list below is the
 registration. Each attacks a specific invariant across the layers landed this
 session, and every outcome, negative or positive, is preserved in the receipt.
 
-    H01 stale snapshot mutation             -> SNAPSHOT_STALE, no state change
-    H02 duplicate worker delivery           -> second claim HELD/RECLAIMED, one execution
-    H03 replayed decision (same key)        -> same response, head unmoved
-    H04 replayed decision (tampered payload)-> IDEMPOTENCY_CONFLICT
-    H05 corrupted backup blob               -> CORRUPTED_BLOB, not EXACT
-    H06 delayed worker past lease           -> stale token refused, cannot complete
-    H07 clock skew (heartbeat in the past)  -> lease treated as expired, reclaimable
-    H08 payload not binding effect          -> PAYLOAD_HASH_MISMATCH, no state change
-    H09 authority projection via API        -> AUTHORITY_PROJECTION_IMMUTABLE
-    H10 atlas plane half-write              -> rolled back, counts unchanged
-    H11 mutable image tag                   -> MUTABLE_TAG_WITHOUT_DIGEST
-    H12 secret value in provenance          -> never appears; reference only
+Case ids are A01..A12. They were H01..H12 in the first execution, which
+collided with the HOSTILE_TEST_MATRIX.md namespace while attacking DIFFERENT
+things (campaign "H01 stale snapshot mutation" vs matrix "H01 kill during
+canonical blob write"). CONFORMANCE_AUDIT_V1.json recorded that collision; the
+ids were renamed so a reader cross-referencing "A01 held" cannot conclude that
+matrix row H01 held. This campaign is NOT the matrix. The matrix is executed,
+row by row, in run_hostile_matrix.py -> HOSTILE_MATRIX_EXECUTION_V1.json.
+
+    A01 stale snapshot mutation             -> SNAPSHOT_STALE, no state change
+    A02 duplicate worker delivery           -> second claim HELD/RECLAIMED, one execution
+    A03 replayed decision (same key)        -> same response, head unmoved
+    A04 replayed decision (tampered payload)-> IDEMPOTENCY_CONFLICT
+    A05 corrupted backup blob               -> CORRUPTED_BLOB, not EXACT
+    A06 delayed worker past lease           -> stale token refused, cannot complete
+    A07 clock skew (heartbeat in the past)  -> lease treated as expired, reclaimable
+    A08 payload not binding effect          -> PAYLOAD_HASH_MISMATCH, no state change
+    A09 authority projection via API        -> AUTHORITY_PROJECTION_IMMUTABLE
+    A10 atlas plane half-write              -> rolled back, counts unchanged
+    A11 mutable image tag                   -> MUTABLE_TAG_WITHOUT_DIGEST
+    A12 secret value in provenance          -> never appears; reference only
 
 What this campaign is NOT: an independently executed pass on an exact
 production release. That is a separate obligation and it is recorded as open.
@@ -33,7 +41,7 @@ sys.path.insert(0, "src")
 
 from rakl.engineering_atlas_store import (  # noqa: E402
     ATLAS_GENESIS_REVISION, AtlasChartRecord, AtlasObstructionRecord, AtlasPlaneBatch, AtlasTransitionRecord,
-    SqliteAtlasPlaneStore,
+    SqliteAtlasPlaneStore, atlas_revision_for,
 )
 from rakl.engineering_http import (  # noqa: E402
     Actor, Capability, EngineeringHttpService, IdentityProvider, SecretStore, content_hash,
@@ -56,15 +64,33 @@ def case(cid: str, name: str, fn):
         print(f"  BROKE {cid} {name:<42} EXCEPTION {exc}")
 
 
+# The service was rewritten (operate lane) to run over the REAL stores: `POST /v1/projects` is
+# genesis, `expected_snapshot_id` must name a real snapshot, and a stale expected snapshot is a
+# RETRY_REQUIRED *receipt* (HTTP 409), not a SNAPSHOT_STALE error. The attacks below are the same
+# attacks as the first execution; only the helpers speak the new contract.
+
+
 def api():
     idp, sec = IdentityProvider(), SecretStore()
     svc = EngineeringHttpService(idp=idp, secrets=sec)
     tok = idp.issue(Actor("w", frozenset({"p"}), frozenset(Capability)))
     hdr = {"Authorization": f"Bearer {tok}"}
+    st, body, _ = svc.handle("POST", "/v1/projects", hdr, json.dumps({"project_id": "p"}).encode())
+    assert int(st) in (200, 201), body
     return svc, hdr, sec
 
 
-def post(svc, hdr, payload, key="k", expected="snap-0", phash=None):
+def head_id(svc, hdr):
+    return svc.handle("GET", "/v1/projects/p/head", hdr, b"")[1]["snapshot_id"]
+
+
+def head_seq(svc, hdr):
+    return svc.handle("GET", "/v1/projects/p/head", hdr, b"")[1]["sequence"]
+
+
+def post(svc, hdr, payload, key="k", expected=None, phash=None):
+    if expected is None:
+        expected = head_id(svc, hdr)
     body = json.dumps({"idempotency_key": key, "expected_snapshot_id": expected, "payload": payload,
                        "payload_hash": phash or content_hash(payload)}).encode()
     return svc.handle("POST", "/v1/projects/p/evidence", hdr, body)
@@ -72,9 +98,11 @@ def post(svc, hdr, payload, key="k", expected="snap-0", phash=None):
 
 def h01():
     svc, hdr, _ = api()
-    post(svc, hdr, {"a": 1}, key="k1")
-    st, body, _ = post(svc, hdr, {"b": 2}, key="k2", expected="snap-0")
-    return st == 409 and body["error"] == "SNAPSHOT_STALE" and svc.projects["p"].sequence == 1, body["error"]
+    genesis = head_id(svc, hdr)
+    post(svc, hdr, {"content_utf8": "a"}, key="k1", expected=genesis)
+    st, body, _ = post(svc, hdr, {"content_utf8": "b"}, key="k2", expected=genesis)   # stale: head moved
+    return (int(st) == 409 and body.get("status") == "RETRY_REQUIRED" and body.get("after_snapshot_id") is None
+            and head_seq(svc, hdr) == 1), f"{body.get('status')} (receipt), head seq {head_seq(svc, hdr)}"
 
 
 def h02():
@@ -89,16 +117,19 @@ def h02():
 
 def h03():
     svc, hdr, _ = api()
-    s1, r1, _ = post(svc, hdr, {"a": 1})
-    s2, r2, _ = post(svc, hdr, {"a": 1})
-    return s1 == s2 == 200 and r2.get("replayed") and svc.projects["p"].sequence == 1, "replayed, seq=1"
+    genesis = head_id(svc, hdr)
+    s1, r1, _ = post(svc, hdr, {"content_utf8": "a"}, expected=genesis)
+    s2, r2, _ = post(svc, hdr, {"content_utf8": "a"}, expected=genesis)   # exact replay, same key+payload
+    return (int(s1) == int(s2) == 200 and r2.get("replayed") is True and r2.get("transition_id") == r1.get("transition_id")
+            and head_seq(svc, hdr) == 1), f"replayed, same transition_id, seq={head_seq(svc, hdr)}"
 
 
 def h04():
     svc, hdr, _ = api()
-    post(svc, hdr, {"a": 1})
-    st, body, _ = post(svc, hdr, {"a": 2})
-    return st == 409 and body["error"] == "IDEMPOTENCY_CONFLICT", body["error"]
+    genesis = head_id(svc, hdr)
+    post(svc, hdr, {"content_utf8": "a"}, expected=genesis)
+    st, body, _ = post(svc, hdr, {"content_utf8": "b"}, expected=genesis)   # same key, tampered payload
+    return int(st) == 409 and body.get("error") == "IDEMPOTENCY_CONFLICT", body.get("error")
 
 
 def h05():
@@ -133,30 +164,34 @@ def h07():
 
 def h08():
     svc, hdr, _ = api()
-    st, body, _ = post(svc, hdr, {"a": 1}, phash="0" * 64)
-    return st == 400 and body["error"] == "PAYLOAD_HASH_MISMATCH" and svc.projects["p"].sequence == 0, body["error"]
+    st, body, _ = post(svc, hdr, {"content_utf8": "a"}, phash="0" * 64)
+    return int(st) == 400 and body.get("error") == "PAYLOAD_HASH_MISMATCH" and head_seq(svc, hdr) == 0, body.get("error")
 
 
 def h09():
     svc, hdr, _ = api()
+    before = svc.handle("GET", "/v1/projects/p/head", hdr, b"")[1]["authority_projection_revision"]
     st, body, _ = post(svc, hdr, {"authority_projection_revision": "auth-99"})
-    return (st == 403 and body["error"] == "AUTHORITY_PROJECTION_IMMUTABLE"
-            and svc.projects["p"].authority_projection_revision == "auth-0"), body["error"]
+    after = svc.handle("GET", "/v1/projects/p/head", hdr, b"")[1]["authority_projection_revision"]
+    return (int(st) == 403 and body.get("error") == "AUTHORITY_PROJECTION_IMMUTABLE" and before == after), body.get("error")
 
 
 def h10():
     with tempfile.TemporaryDirectory() as td:
         st = SqliteAtlasPlaneStore(Path(td) / "a.db")
-        b1 = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "b1", charts=(AtlasChartRecord("c1", "s"), AtlasChartRecord("c2", "s")),
+        # the store now enforces sequence + base-revision CAS (X11/X12); a batch must name the plane's real position
+        b1 = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "b1",
+                             charts=(AtlasChartRecord("c1", "s"), AtlasChartRecord("c2", "s")),
                              transitions=(AtlasTransitionRecord("t1", "c1", "c2"),),
                              obstructions=(AtlasObstructionRecord("o1", "t1"),))
-        c1 = st.commit_batch(b1, committed_snapshot_id="s1", expected_atlas_revision="")
+        r1 = st.commit_batch(b1, committed_snapshot_id="s1", expected_atlas_revision=atlas_revision_for(1, b1))
         before = st.plane_counts()
-        b2 = AtlasPlaneBatch(2, c1.atlas_revision, "b2", charts=(AtlasChartRecord("c9", "s"), AtlasChartRecord("c8", "s")),
+        b2 = AtlasPlaneBatch(2, r1.atlas_revision, "b2",
+                             charts=(AtlasChartRecord("c9", "s"), AtlasChartRecord("c8", "s")),
                              transitions=(AtlasTransitionRecord("t9", "c9", "c8"),),
-                             obstructions=(AtlasObstructionRecord("o1", "t9"),))  # collides
+                             obstructions=(AtlasObstructionRecord("o1", "t9"),))  # o1 collides with the committed plane
         try:
-            st.commit_batch(b2, committed_snapshot_id="s2", expected_atlas_revision="")
+            st.commit_batch(b2, committed_snapshot_id="s2", expected_atlas_revision=atlas_revision_for(2, b2))
             return False, "collision was accepted"
         except Exception:
             return st.plane_counts() == before, "rolled back, counts unchanged"
@@ -171,7 +206,7 @@ def h11():
 def h12():
     svc, hdr, sec = api()
     sec.put("api_key", "s3cr3t-value")
-    post(svc, hdr, {"secret_names": ["api_key"]})
+    post(svc, hdr, {"content_utf8": "x", "secret_names": ["api_key"]})
     st, prov, _ = svc.handle("GET", "/v1/projects/p/provenance", hdr, b"")
     text = json.dumps(prov)
     return "s3cr3t-value" not in text and "secret://api_key@v1" in text, "reference only"
@@ -180,18 +215,18 @@ def h12():
 print("=" * 78)
 print("HOSTILE ASSURANCE V3 — integrated engineering layer")
 print("=" * 78)
-case("H01", "stale snapshot mutation", h01)
-case("H02", "duplicate worker delivery", h02)
-case("H03", "replayed decision, same key", h03)
-case("H04", "replayed decision, tampered payload", h04)
-case("H05", "corrupted backup blob", h05)
-case("H06", "delayed worker past lease", h06)
-case("H07", "clock skew: heartbeat in the past", h07)
-case("H08", "payload hash not binding effect", h08)
-case("H09", "authority projection via API", h09)
-case("H10", "atlas plane half-write", h10)
-case("H11", "mutable image tag", h11)
-case("H12", "secret value in provenance", h12)
+case("A01", "stale snapshot mutation", h01)
+case("A02", "duplicate worker delivery", h02)
+case("A03", "replayed decision, same key", h03)
+case("A04", "replayed decision, tampered payload", h04)
+case("A05", "corrupted backup blob", h05)
+case("A06", "delayed worker past lease", h06)
+case("A07", "clock skew: heartbeat in the past", h07)
+case("A08", "payload hash not binding effect", h08)
+case("A09", "authority projection via API", h09)
+case("A10", "atlas plane half-write", h10)
+case("A11", "mutable image tag", h11)
+case("A12", "secret value in provenance", h12)
 
 held = sum(1 for r in RESULTS if r["held"])
 print("=" * 78)
@@ -200,6 +235,7 @@ print(f"held {held}/{len(RESULTS)}")
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps({
     "schema_version": "orion-hostile-assurance-v3",
+    "case_id_namespace": "A01..A12 (renamed from H01..H12; NOT HOSTILE_TEST_MATRIX rows -- see run_hostile_matrix.py)",
     "status": "FROZEN_CASES_EXECUTED__ALL_OUTCOMES_PRESERVED",
     "grants_scientific_authority": False,
     "cases_frozen_before_execution": True,

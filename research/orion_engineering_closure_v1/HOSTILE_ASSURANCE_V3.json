@@ -1,4 +1,5 @@
 {
+  "case_id_namespace": "A01..A12 (renamed from H01..H12; NOT HOSTILE_TEST_MATRIX rows -- see run_hostile_matrix.py)",
   "cases_frozen_before_execution": true,
   "grants_scientific_authority": false,
   "held": 12,
@@ -8,73 +9,73 @@
   ],
   "results": [
     {
-      "case": "H01",
-      "detail": "SNAPSHOT_STALE",
+      "case": "A01",
+      "detail": "RETRY_REQUIRED (receipt), head seq 1",
       "held": true,
       "name": "stale snapshot mutation"
     },
     {
-      "case": "H02",
+      "case": "A02",
       "detail": "ACQUIRED/HELD_BY_LIVE_WORKER",
       "held": true,
       "name": "duplicate worker delivery"
     },
     {
-      "case": "H03",
-      "detail": "replayed, seq=1",
+      "case": "A03",
+      "detail": "replayed, same transition_id, seq=1",
       "held": true,
       "name": "replayed decision, same key"
     },
     {
-      "case": "H04",
+      "case": "A04",
       "detail": "IDEMPOTENCY_CONFLICT",
       "held": true,
       "name": "replayed decision, tampered payload"
     },
     {
-      "case": "H05",
+      "case": "A05",
       "detail": "CORRUPTED_BLOB",
       "held": true,
       "name": "corrupted backup blob"
     },
     {
-      "case": "H06",
+      "case": "A06",
       "detail": "stale token refused",
       "held": true,
       "name": "delayed worker past lease"
     },
     {
-      "case": "H07",
+      "case": "A07",
       "detail": "skewed heartbeat did not extend the lease",
       "held": true,
       "name": "clock skew: heartbeat in the past"
     },
     {
-      "case": "H08",
+      "case": "A08",
       "detail": "PAYLOAD_HASH_MISMATCH",
       "held": true,
       "name": "payload hash not binding effect"
     },
     {
-      "case": "H09",
+      "case": "A09",
       "detail": "AUTHORITY_PROJECTION_IMMUTABLE",
       "held": true,
       "name": "authority projection via API"
     },
     {
-      "case": "H10",
+      "case": "A10",
       "detail": "rolled back, counts unchanged",
       "held": true,
       "name": "atlas plane half-write"
     },
     {
-      "case": "H11",
+      "case": "A11",
       "detail": "MUTABLE_TAG_WITHOUT_DIGEST",
       "held": true,
       "name": "mutable image tag"
     },
     {
-      "case": "H12",
+      "case": "A12",
       "detail": "reference only",
       "held": true,
       "name": "secret value in provenance"

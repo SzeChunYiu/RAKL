@@ -43,15 +43,15 @@
     "per_fibre": [
       {
         "axis": "falsifier + spec obligation",
-        "evidence": "V3 marks E18 REFERENCE_IMPLEMENTED citing a 12-case campaign. Those 12 cases attack 7 of the 30 HOSTILE_TEST_MATRIX rows fully and 4 partially; 19 rows are never executed. E18's own ledger 'next' is 'execute HOSTILE_TEST_MATRIX on release candidate'. Compounding it, the campaign numbers its cases H01..H12, colliding with the matrix namespace while attacking different things -- a reader cross-referencing 'H01 held' concludes 'kill during canonical blob write' held. It did not. run_hostile_assurance_v3.py itself is honest: its docstring freezes its own list and never claims to be the matrix. The defect is in the assessment that cites it as E18 closure, and in the colliding ID namespace.",
+        "evidence": "V3 marks E18 REFERENCE_IMPLEMENTED citing a 12-case campaign. Those 12 cases attack 7 of the 30 HOSTILE_TEST_MATRIX rows fully and 4 partially; 19 rows are never executed. E18's own ledger 'next' is 'execute HOSTILE_TEST_MATRIX on release candidate'. Compounding it, the campaign numbers its cases H01..H12, colliding with the matrix namespace while attacking different things -- a reader cross-referencing 'H01 held' concludes 'kill during canonical blob write' held. It did not. run_hostile_assurance_v3.py itself is honest: its docstring freezes its own list and never claims to be the matrix. The defect is in the assessment that cites it as E18 closure, and in the colliding ID namespace. SINCE ADDRESSED: run_hostile_matrix.py executes all 30 rows (HOSTILE_MATRIX_EXECUTION_V1.json: 26 HELD of which 3 local-reference-only, 4 BROKE, 0 CANNOT_CHECK) and the campaign ids are A01..A12. The 4 BROKEs (H14, H21, H28, H30) are open defects, not closure.",
         "fiber": "E18",
-        "verdict": "OVERCLAIM"
+        "verdict": "OVERCLAIM_AT_V3__SINCE_ADDRESSED"
       },
       {
         "axis": "the packet's own API contract",
-        "evidence": "The GAP_LEDGER falsifier ('a mutating request has no idempotency/snapshot contract') IS defeated. But API_AND_OBSERVATORY.md is also spec: 10 of its 12 named routes return 404 NOT_FOUND; query strings are not parsed out of the path segment so the spec'd ?snapshot=&target=&fiber= form 404s; and 'Every mutation returns a StateTransitionReceipt, even on RETRY_REQUIRED, RECOVERY_REQUIRED or CANNOT_CHECK' does not hold -- a commit returns {committed, before_snapshot_id, after_snapshot_id, payload_hash, api_version} and a refusal returns {error, detail, api_version}. engineering_http.py never imports engineering_state and keeps its own in-memory 'snap-N' state. V3's only named E10 residual is 'TLS, rate limits is deployment', which names none of this.",
+        "evidence": "The GAP_LEDGER falsifier ('a mutating request has no idempotency/snapshot contract') IS defeated. But API_AND_OBSERVATORY.md is also spec: 10 of its 12 named routes return 404 NOT_FOUND; query strings are not parsed out of the path segment so the spec'd ?snapshot=&target=&fiber= form 404s; and 'Every mutation returns a StateTransitionReceipt, even on RETRY_REQUIRED, RECOVERY_REQUIRED or CANNOT_CHECK' does not hold -- a commit returns {committed, before_snapshot_id, after_snapshot_id, payload_hash, api_version} and a refusal returns {error, detail, api_version}. engineering_http.py never imports engineering_state and keeps its own in-memory 'snap-N' state. V3's only named E10 residual is 'TLS, rate limits is deployment', which names none of this. SINCE ADDRESSED by the operate lane: the API-route-* / API-query-params / API-*-returns-receipt findings in this run show the current state.",
         "fiber": "E10",
-        "verdict": "OVERCLAIM"
+        "verdict": "OVERCLAIM_AT_V3__SINCE_ADDRESSED"
       },
       {
         "axis": "named surface",
@@ -84,7 +84,7 @@
         "verdict": "CLAIM_HOLDS"
       }
     ],
-    "verdict": "OVERCLAIMS ON TWO FIBRES (E10, E18); one citation defect (E4); the remaining seventeen hold on the falsifier axis"
+    "verdict": "AT V3: OVERCLAIMED ON TWO FIBRES (E10, E18); one citation defect (E4); the remaining seventeen held on the falsifier axis. Both overclaims have since been addressed in the working tree (see per_fibre); this record of the V3 claim is not rewritten."
   },
   "concurrent_work_qualifications": {
     "note": "Other sessions landed files into this working tree while the audit ran. Each was checked against every ABSENT verdict below; none defines any symbol this audit reports as absent. Two qualifications are recorded so the negatives are not read more harshly than the evidence supports.",
@@ -455,31 +455,31 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "POST /v1/projects -> 404 NOT_FOUND",
+      "detail": "POST /v1/projects -> 200 ok",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-POST-/v1/projects",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "POST /v1/projects",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "GET /v1/projects/p1/head -> 404 NOT_FOUND",
+      "detail": "GET /v1/projects/p1/head -> 200 ok",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-GET-/v1/projects/p1/head",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET /v1/projects/p1/head",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "GET /v1/projects/p1/snapshots/snap-0 -> 404 NOT_FOUND",
+      "detail": "GET /v1/projects/p1/snapshots/{genesis} -> 200 ok",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/snapshots/snap-0",
+      "item_id": "API-route-GET-/v1/projects/p1/snapshots/{genesis}",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/snapshots/snap-0",
-      "verdict": "ABSENT"
+      "specified": "GET /v1/projects/p1/snapshots/{genesis}",
+      "verdict": "PRESENT"
     },
     {
       "detail": "POST /v1/projects/p1/evidence -> 200 ok",
@@ -491,40 +491,40 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "POST /v1/projects/p1/research-rounds -> 404 NOT_FOUND",
+      "detail": "POST /v1/projects/p1/research-rounds -> 400 INVALID_REQUEST",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-POST-/v1/projects/p1/research-rounds",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "POST /v1/projects/p1/research-rounds",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "GET /v1/projects/p1/epistemic-status -> 404 NOT_FOUND",
+      "detail": "GET /v1/projects/p1/epistemic-status -> 400 INVALID_REQUEST",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-GET-/v1/projects/p1/epistemic-status",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET /v1/projects/p1/epistemic-status",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "POST /v1/projects/p1/actions:plan -> 404 NOT_FOUND",
+      "detail": "POST /v1/projects/p1/actions:plan -> 400 INVALID_REQUEST",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-POST-/v1/projects/p1/actions:plan",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "POST /v1/projects/p1/actions:plan",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "POST /v1/projects/p1/actions:execute -> 404 NOT_FOUND",
+      "detail": "POST /v1/projects/p1/actions:execute -> 400 INVALID_REQUEST",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-POST-/v1/projects/p1/actions:execute",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "POST /v1/projects/p1/actions:execute",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "GET /v1/projects/p1/transitions/t1 -> 404 NOT_FOUND",
@@ -533,7 +533,7 @@
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET /v1/projects/p1/transitions/t1",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "GET /v1/projects/p1/decisions/d1 -> 404 NOT_FOUND",
@@ -542,7 +542,7 @@
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET /v1/projects/p1/decisions/d1",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "GET /v1/projects/p1/runs/r1 -> 404 NOT_FOUND",
@@ -551,10 +551,10 @@
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET /v1/projects/p1/runs/r1",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "GET /v1/projects/p1/provenance/e1 -> 200 ok",
+      "detail": "GET /v1/projects/p1/provenance/e1 -> 404 NOT_FOUND",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-route-GET-/v1/projects/p1/provenance/e1",
       "kind": "behaviour",
@@ -563,31 +563,31 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "query string is not stripped from the path segment -> 404 NOT_FOUND",
+      "detail": "404 NOT_FOUND (no EpistemicStatus at snapshot snapshot:8728bdf42fef78d6cb1d)",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-query-params",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "GET .../epistemic-status?snapshot=&target=&fiber=",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "committed mutation returned keys ['after_snapshot_id', 'api_version', 'before_snapshot_id', 'committed', 'payload_hash']; a StateTransitionReceipt requires ['action', 'action_payload_hash', 'after_snapshot_id', 'before_snapshot_id', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set'] -- missing ['action', 'action_payload_hash', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set']",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "detail": "round-trips StateTransitionReceipt.from_dict; status=COMMITTED",
+      "evidence": "rakl.engineering_http",
       "item_id": "API-mutation-returns-receipt",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "every mutation returns a StateTransitionReceipt",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "refusal (SNAPSHOT_STALE) returned keys ['api_version', 'detail', 'error'], not a StateTransitionReceipt",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "detail": "stale refusal is a RETRY_REQUIRED receipt (HTTP 409)",
+      "evidence": "rakl.engineering_http",
       "item_id": "API-refusal-returns-receipt",
       "kind": "behaviour",
       "spec_source": "API_AND_OBSERVATORY.md",
       "specified": "RETRY_REQUIRED/RECOVERY_REQUIRED/CANNOT_CHECK also return a receipt",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "all 4 members present",
@@ -671,62 +671,62 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "killed write leaves no temp, no target, digest absent; retry installs; torn target -> integrity error on read and on re-put",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H01",
       "item_id": "MATRIX-H01",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H01 kill during canonical blob write",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "head unchanged, 0 transitions/evidence rows/batch commits after kill; orphan blob intact; retry commits",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H02",
       "item_id": "MATRIX-H02",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H02 blob committed, metadata transition killed before commit",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "ingest refused (evidence payload unavailable or corrupt:9d11f9a71c...); head unchanged; stat() raises KeyError",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H03",
       "item_id": "MATRIX-H03",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H03 metadata references unavailable blob",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "digest mismatch on read; exists_verified False; re-put refuses rather than overwrite",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H04",
       "item_id": "MATRIX-H04",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H04 mutate stored blob bytes",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "TRUNCATED at index 3, 3-record prefix and head preserved; store refuses to open",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H05",
       "item_id": "MATRIX-H05",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H05 torn episode JSONL tail",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "TAMPERED with first_bad_index=1; tail-rewrite vs expected head -> TRUNCATED",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H06",
       "item_id": "MATRIX-H06",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H06 delete interior episode record",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "identical key + identical request replays, head unmoved",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H03 replayed decision, same key'",
+      "detail": "8 concurrent identical requests -> 1 transition_id, all COMMITTED replays, head seq 1",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H07",
       "item_id": "MATRIX-H07",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -734,8 +734,8 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "same key, different payload -> IDEMPOTENCY_CONFLICT",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H04 replayed decision, tampered payload'",
+      "detail": "IdempotencyConflict on both commit and non-committed paths",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H08",
       "item_id": "MATRIX-H08",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -743,8 +743,8 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "second writer on the same expected snapshot is refused SNAPSHOT_STALE and the head does not move; the row's allowed result names RETRY_REQUIRED, the refusal is the same terminal class",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H01 stale snapshot mutation'",
+      "detail": "6 writers on one snapshot -> 1 COMMITTED, 5 RETRY_REQUIRED receipts, head seq 1",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H09",
       "item_id": "MATRIX-H09",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -752,44 +752,44 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "stale decision -> RETRY_REQUIRED, head still s1; solver view STALE; workflow CANNOT_CHECK",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H10",
       "item_id": "MATRIX-H10",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H10 stale controller decision replayed after semantic mutation",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "INVALID_BASIS on fingerprint change; status plane refuses a second fingerprint at same coordinates",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H11",
       "item_id": "MATRIX-H11",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H11 saturation certificate basis fingerprint changes",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "PROCEED -> TARGETED_REFRESH_REQUIRED on new residual; only the implicated axis is non-flat",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H12",
       "item_id": "MATRIX-H12",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H12 new native residual after bounded saturation",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "cleared index returns () (degraded); canonical atom intact; rebuild reproduces identical index_id",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H13",
       "item_id": "MATRIX-H13",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H13 delete full-text/vector/graph index",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK. | code path: rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H14",
       "item_id": "MATRIX-H14",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -797,17 +797,17 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "a lease expiry/reclaim with a stale completion token refused. The row's actual attack -- external effect COMPLETED, then crash before the completion record, expecting RECOVERY_REQUIRED -- is not run; mark_effect_started/recover_ambiguous_activity are never invoked in the campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H06 delayed worker past lease'",
+      "detail": "worker engine: RECOVERY_REQUIRED on reclaim after effect_started; stale lease cannot complete; reference engine: RECOVERY_REQUIRED and re-begin refused",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H15",
       "item_id": "MATRIX-H15",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H15 worker finishes external effect, crashes before completion record",
-      "verdict": "PARTIAL"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "two claims on one activity: one ACQUIRED, one HELD_BY_LIVE_WORKER, attempt_count==1",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H02 duplicate worker delivery'",
+      "detail": "live duplicate HELD_BY_LIVE_WORKER; post-completion duplicate ALREADY_COMPLETED; attempts=1; reference engine refuses to rebind a completed result",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H16",
       "item_id": "MATRIX-H16",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -815,8 +815,8 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "shows no partial commit survives an aborted multi-record batch, which is the row's INVARIANT; the row's mechanism (DB failover mid-transition) is not simulated",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H10 atlas plane half-write'",
+      "detail": "mid-transaction connection loss -> full rollback (head, atoms, commits, receipts all unchanged); retry commits | NOT EXERCISED: a real primary failover (connection drop + promoted replica) needs a PostgreSQL cluster; the invariant is shown under an in-process SQLite transaction abort only",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H17",
       "item_id": "MATRIX-H17",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -824,35 +824,35 @@
       "verdict": "PARTIAL"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "unreachable store -> OSError propagates, no integrity verdict fabricated, head unchanged; unreadable shard -> PermissionError propagates (no false 'missing') | NOT EXERCISED: a network object-store endpoint outage/timeout; the terminal is an unhandled OSError, not a typed CANNOT_CHECK receipt -- that shaping is a production-adapter obligation",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H18",
       "item_id": "MATRIX-H18",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H18 object store temporary outage",
-      "verdict": "ABSENT"
+      "verdict": "PARTIAL"
     },
     {
-      "detail": "exercises only the FAILURE branch (restore into a corrupted tree -> CORRUPTED_BLOB). 'frozen snapshot identities reproduce' after a restore into an EMPTY environment is not asserted by this case",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H05 corrupted backup blob'",
+      "detail": "restore into empty dir reproduces head snapshot:1a3ef9334573a0b.. and blob bytes; non-empty destination refused",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H19",
       "item_id": "MATRIX-H19",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H19 restore backup into empty environment",
-      "verdict": "PARTIAL"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "snapshot s0, its EpistemicStatus (same status_id), HARD_GATE projection and semantic state at seq 0 all reconstruct while head is s1",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H20",
       "item_id": "MATRIX-H20",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H20 point-in-time replay to older snapshot",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists. | code path: rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H21",
       "item_id": "MATRIX-H21",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -860,26 +860,26 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "canonical dumps MATCH after rollback (digest bc16a038999c..); MISMATCH cannot be receipted; receipt import-receipt:9c1c27f39db99..",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H22",
       "item_id": "MATRIX-H22",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H22 rollback after failed migration",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "covers 'no secret in receipt/log' (reference only). Secret ROTATION during a worker lifetime, and the declared-revision change, are not exercised",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H12 secret value in provenance'",
+      "detail": "only secret://api_key@v1 and secret://api_key@v2 appear in receipts; resolve() follows rotation; no value leaked",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H23",
       "item_id": "MATRIX-H23",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H23 secret rotation during worker lifetime",
-      "verdict": "PARTIAL"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "fully-capable actor cannot write the authority projection -> 403",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H09 authority projection via API'",
+      "detail": "ADMIN authorized for the infra op but grants no scientific authority; unverified promotion -> hard gates CANNOT_CHECK; API refuses scientific_authority write with 403",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H24",
       "item_id": "MATRIX-H24",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -887,17 +887,17 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "fabricated gate id has no HARD_GATE projection (lookup empty); fabricated PASS observation leaves the contract's real gate unresolved -> CANNOT_CHECK; status grants no authority. CAVEAT preserved: EngineeringReadService.shared_status served the status without cross-checking hard_gate_ids against the control store -- the fail-closed depends on the consumer performing the lookup; no service does it for them.",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H25",
       "item_id": "MATRIX-H25",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H25 malicious fabricated hard-gate ID in status",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "a backwards heartbeat does not extend the lease; reclaim still occurs",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H07 clock skew: heartbeat in the past'",
+      "detail": "skewed-earlier writer commits at seq 1 (order by sequence, not clock); sequence jump refused; workflow events sequence+hash chained; heartbeat-in-the-past covered by A07",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H26",
       "item_id": "MATRIX-H26",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -905,8 +905,8 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "an artifact ref without a digest is refused",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H11 mutable image tag'",
+      "detail": "same label, different source -> ARTIFACT_MISMATCH; RuntimeArtifactIdentity ids differ",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H27",
       "item_id": "MATRIX-H27",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -914,8 +914,8 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt. | code path: rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H28",
       "item_id": "MATRIX-H28",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -923,17 +923,17 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H29",
       "item_id": "MATRIX-H29",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H29 high transaction contention",
-      "verdict": "ABSENT"
+      "verdict": "PARTIAL"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- 30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing. | code path: rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H30",
       "item_id": "MATRIX-H30",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1124,71 +1124,100 @@
   "grants_scientific_authority": false,
   "hostile_matrix_coverage": {
     "campaign_case_to_matrix_row": {
-      "H01 stale snapshot mutation": "H09",
-      "H02 duplicate worker delivery": "H16",
-      "H03 replayed decision, same key": "H07",
-      "H04 replayed decision, tampered payload": "H08",
-      "H05 corrupted backup blob": "H19",
-      "H06 delayed worker past lease": "H15",
-      "H07 clock skew: heartbeat in the past": "H26",
-      "H08 payload hash not binding effect": null,
-      "H09 authority projection via API": "H24",
-      "H10 atlas plane half-write": "H17",
-      "H11 mutable image tag": "H27",
-      "H12 secret value in provenance": "H23"
+      "A01 stale snapshot mutation": "H09",
+      "A02 duplicate worker delivery": "H16",
+      "A03 replayed decision, same key": "H07",
+      "A04 replayed decision, tampered payload": "H08",
+      "A05 corrupted backup blob": "H19",
+      "A06 delayed worker past lease": "H15",
+      "A07 clock skew: heartbeat in the past": "H26",
+      "A08 payload hash not binding effect": null,
+      "A09 authority projection via API": "H24",
+      "A10 atlas plane half-write": "H17",
+      "A11 mutable image tag": "H27",
+      "A12 secret value in provenance": "H23"
     },
-    "campaign_reuses_matrix_ids_for_different_attacks": [
-      "H01",
-      "H02",
-      "H03",
-      "H04",
-      "H05",
-      "H06",
-      "H07",
-      "H08",
-      "H09",
-      "H10",
-      "H11",
-      "H12"
-    ],
+    "campaign_reuses_matrix_ids_for_different_attacks": [],
+    "executed": {
+      "broke": {
+        "H14": "rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
+        "H21": "rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
+        "H28": "rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
+        "H30": "rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)"
+      },
+      "cannot_check": [],
+      "held_full": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H07",
+        "H08",
+        "H09",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H15",
+        "H16",
+        "H19",
+        "H20",
+        "H22",
+        "H23",
+        "H24",
+        "H25",
+        "H26",
+        "H27"
+      ],
+      "held_local_reference_only": [
+        "H17",
+        "H18",
+        "H29"
+      ]
+    },
+    "execution_receipt": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json",
+    "first_campaign_history_A01_A12": {
+      "rows_fully_attacked": [
+        "H07",
+        "H08",
+        "H09",
+        "H16",
+        "H24",
+        "H26",
+        "H27"
+      ],
+      "rows_not_attacked": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H14",
+        "H18",
+        "H20",
+        "H21",
+        "H22",
+        "H25",
+        "H28",
+        "H29",
+        "H30"
+      ],
+      "rows_partially_attacked": [
+        "H15",
+        "H17",
+        "H19",
+        "H23"
+      ]
+    },
     "mapping_is_an_analyst_judgement": "campaign_case_to_matrix_row below is a hand mapping by CONTENT, produced by reading run_hostile_assurance_v3.py case by case. It is not a mechanical result. The per-row 'why' text in each MATRIX-* finding is what makes it reviewable; disagree with a row by disputing its reason, not the count.",
-    "note": "CLOSURE_ASSESSMENT_V3 reports hostile_assurance held=12 total=12. That is true of the campaign's OWN 12 cases. The campaign numbers them H01..H12, colliding with the HOSTILE_TEST_MATRIX namespace while attacking different things: campaign H01 is 'stale snapshot mutation', matrix H01 is 'kill during canonical blob write'.",
-    "rows_fully_attacked": [
-      "H07",
-      "H08",
-      "H09",
-      "H16",
-      "H24",
-      "H26",
-      "H27"
-    ],
-    "rows_not_attacked": [
-      "H01",
-      "H02",
-      "H03",
-      "H04",
-      "H05",
-      "H06",
-      "H10",
-      "H11",
-      "H12",
-      "H13",
-      "H14",
-      "H18",
-      "H20",
-      "H21",
-      "H22",
-      "H25",
-      "H28",
-      "H29",
-      "H30"
-    ],
-    "rows_partially_attacked": [
-      "H15",
-      "H17",
-      "H19",
-      "H23"
-    ],
+    "note": "CLOSURE_ASSESSMENT_V3 reported hostile_assurance held=12 total=12. That was true of the campaign's OWN 12 cases, which were numbered H01..H12 -- colliding with the HOSTILE_TEST_MATRIX namespace while attacking different things (campaign 'H01 stale snapshot mutation' vs matrix 'H01 kill during canonical blob write'). Since then: the campaign ids are A01..A12, and the matrix itself is executed row by row in run_hostile_matrix.py.",
     "rows_specified": 30
   },
   "negative_history_preserved": {
@@ -1301,123 +1330,6 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "POST /v1/projects -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-POST-/v1/projects",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "POST /v1/projects",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/head -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/head",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/head",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/snapshots/snap-0 -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/snapshots/snap-0",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/snapshots/snap-0",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "POST /v1/projects/p1/research-rounds -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-POST-/v1/projects/p1/research-rounds",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "POST /v1/projects/p1/research-rounds",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/epistemic-status -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/epistemic-status",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/epistemic-status",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "POST /v1/projects/p1/actions:plan -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-POST-/v1/projects/p1/actions:plan",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "POST /v1/projects/p1/actions:plan",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "POST /v1/projects/p1/actions:execute -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-POST-/v1/projects/p1/actions:execute",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "POST /v1/projects/p1/actions:execute",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/transitions/t1 -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/transitions/t1",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/transitions/t1",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/decisions/d1 -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/decisions/d1",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/decisions/d1",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "GET /v1/projects/p1/runs/r1 -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-route-GET-/v1/projects/p1/runs/r1",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET /v1/projects/p1/runs/r1",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "query string is not stripped from the path segment -> 404 NOT_FOUND",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-query-params",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "GET .../epistemic-status?snapshot=&target=&fiber=",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "committed mutation returned keys ['after_snapshot_id', 'api_version', 'before_snapshot_id', 'committed', 'payload_hash']; a StateTransitionReceipt requires ['action', 'action_payload_hash', 'after_snapshot_id', 'before_snapshot_id', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set'] -- missing ['action', 'action_payload_hash', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set']",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-mutation-returns-receipt",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "every mutation returns a StateTransitionReceipt",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "refusal (SNAPSHOT_STALE) returned keys ['api_version', 'detail', 'error'], not a StateTransitionReceipt",
-      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
-      "item_id": "API-refusal-returns-receipt",
-      "kind": "behaviour",
-      "spec_source": "API_AND_OBSERVATORY.md",
-      "specified": "RETRY_REQUIRED/RECOVERY_REQUIRED/CANNOT_CHECK also return a receipt",
-      "verdict": "ABSENT"
-    },
-    {
       "detail": "missing: compiled_view_identity,support_paths,cuts",
       "evidence": "rakl.engineering_ops.ObservatoryView",
       "item_id": "API-view-4-solver-state",
@@ -1445,98 +1357,8 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H01",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H01 kill during canonical blob write",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H02",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H02 blob committed, metadata transition killed before commit",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H03",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H03 metadata references unavailable blob",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H04",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H04 mutate stored blob bytes",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H05",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H05 torn episode JSONL tail",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H06",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H06 delete interior episode record",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H10",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H10 stale controller decision replayed after semantic mutation",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H11",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H11 saturation certificate basis fingerprint changes",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H12",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H12 new native residual after bounded saturation",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H13",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H13 delete full-text/vector/graph index",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK. | code path: rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H14",
       "item_id": "MATRIX-H14",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1544,17 +1366,8 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "a lease expiry/reclaim with a stale completion token refused. The row's actual attack -- external effect COMPLETED, then crash before the completion record, expecting RECOVERY_REQUIRED -- is not run; mark_effect_started/recover_ambiguous_activity are never invoked in the campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H06 delayed worker past lease'",
-      "item_id": "MATRIX-H15",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H15 worker finishes external effect, crashes before completion record",
-      "verdict": "PARTIAL"
-    },
-    {
-      "detail": "shows no partial commit survives an aborted multi-record batch, which is the row's INVARIANT; the row's mechanism (DB failover mid-transition) is not simulated",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H10 atlas plane half-write'",
+      "detail": "mid-transaction connection loss -> full rollback (head, atoms, commits, receipts all unchanged); retry commits | NOT EXERCISED: a real primary failover (connection drop + promoted replica) needs a PostgreSQL cluster; the invariant is shown under an in-process SQLite transaction abort only",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H17",
       "item_id": "MATRIX-H17",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1562,35 +1375,17 @@
       "verdict": "PARTIAL"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "unreachable store -> OSError propagates, no integrity verdict fabricated, head unchanged; unreadable shard -> PermissionError propagates (no false 'missing') | NOT EXERCISED: a network object-store endpoint outage/timeout; the terminal is an unhandled OSError, not a typed CANNOT_CHECK receipt -- that shaping is a production-adapter obligation",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H18",
       "item_id": "MATRIX-H18",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H18 object store temporary outage",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "exercises only the FAILURE branch (restore into a corrupted tree -> CORRUPTED_BLOB). 'frozen snapshot identities reproduce' after a restore into an EMPTY environment is not asserted by this case",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H05 corrupted backup blob'",
-      "item_id": "MATRIX-H19",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H19 restore backup into empty environment",
       "verdict": "PARTIAL"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H20",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H20 point-in-time replay to older snapshot",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists. | code path: rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H21",
       "item_id": "MATRIX-H21",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1598,35 +1393,8 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H22",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H22 rollback after failed migration",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "covers 'no secret in receipt/log' (reference only). Secret ROTATION during a worker lifetime, and the declared-revision change, are not exercised",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H12 secret value in provenance'",
-      "item_id": "MATRIX-H23",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H23 secret rotation during worker lifetime",
-      "verdict": "PARTIAL"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
-      "item_id": "MATRIX-H25",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H25 malicious fabricated hard-gate ID in status",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt. | code path: rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H28",
       "item_id": "MATRIX-H28",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1634,17 +1402,17 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H29",
       "item_id": "MATRIX-H29",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H29 high transaction contention",
-      "verdict": "ABSENT"
+      "verdict": "PARTIAL"
     },
     {
-      "detail": "NOT executed by the frozen campaign",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "detail": "BROKE against real code -- 30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing. | code path: rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H30",
       "item_id": "MATRIX-H30",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
@@ -1653,10 +1421,10 @@
     }
   ],
   "summary": {
-    "ABSENT": 44,
+    "ABSENT": 16,
     "CANNOT_CHECK": 0,
-    "PARTIAL": 4,
-    "PRESENT": 64
+    "PARTIAL": 3,
+    "PRESENT": 93
   },
   "what_this_does_not_decide": "whether each GAP_LEDGER falsifier is defeated. A fibre can defeat its falsifier with a differently-named abstraction, and can carry every named symbol while its falsifier stands. Only the named-surface question is answered mechanically here."
 }
