@@ -1,0 +1,19 @@
+name: local-export-benefit-historical
+on:
+  push:
+    branches:
+      - tooling/export-benefit-9052b523
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Archive exact parent commit
+        run: git archive --format=zip --output=RAKL-benefit-9052b523.zip HEAD^
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-benefit-9052b523
+          path: RAKL-benefit-9052b523.zip
+          if-no-files-found: error
