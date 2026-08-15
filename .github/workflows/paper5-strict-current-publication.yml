@@ -42,9 +42,19 @@ jobs:
           latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main_strict_20260815.tex | tee strict.stdout.log
           test -s main_strict_20260815.pdf
           pdftotext main_strict_20260815.pdf main_strict_20260815.txt
-          grep -F 'Current strict promotion path and remaining external trust roots' main_strict_20260815.txt
-          grep -F 'candidate eligibility only' main_strict_20260815.txt
-          grep -F 'Sze Chun Yiu' main_strict_20260815.txt
+          python3 - <<'PY'
+          import re, sys
+          flat = re.sub(r"\s+", " ", open("main_strict_20260815.txt", encoding="utf-8").read())
+          required = [
+              "Current strict promotion path and remaining external trust roots",
+              "candidate eligibility only",
+              "Sze Chun Yiu",
+          ]
+          missing = [s for s in required if s not in flat]
+          if missing:
+              print("missing required strict Paper-V text:", missing, file=sys.stderr)
+              sys.exit(1)
+          PY
           if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main_strict_20260815.log; then
             echo 'blocking strict Paper-V LaTeX/PDF warning' >&2
             exit 1
