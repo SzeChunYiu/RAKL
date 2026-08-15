@@ -1,0 +1,227 @@
+{
+  "criteria": {
+    "C": "has a caller outside tests and its own scripts",
+    "F": "carries a registered falsifier",
+    "R": "tested against real recorded data, not fixtures",
+    "T": "has tests",
+    "X": "that falsifier has been executed"
+  },
+  "grades": {
+    "EXERCISED_BUT_UNFALSIFIABLE_AS_BUILT": 2,
+    "FALSIFIER_REGISTERED_UNRUN": 2,
+    "INTERNALLY_CONSISTENT_ONLY": 5,
+    "UNIMPLEMENTED": 1
+  },
+  "grants_scientific_authority": false,
+  "headline": "Of the mechanics added, the majority are INTERNALLY_CONSISTENT_ONLY: their tests show the code does what its docstring says, which is not evidence that they measure anything. Exactly one carries a registered falsifier and it has not been run.",
+  "mechanics": 10,
+  "per_mechanic": [
+    {
+      "added": "prior session (#722); extended here",
+      "callers_outside_tests": false,
+      "criteria_met": 3,
+      "falsifier": true,
+      "falsifier_executed": false,
+      "falsifier_note": "RFC-v1 utility benchmark, arms A-G over F0-F10",
+      "grade": "FALSIFIER_REGISTERED_UNRUN",
+      "id": "recursive_framework_audit.decide",
+      "real_data": true,
+      "real_data_note": "run over 38 recorded frontier terminals in the question audit",
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": true,
+        "R_tested_on_real_data": true,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 1,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none registered; the bindings are asserted as required, never tested against an interface that failed for want of one",
+      "grade": "INTERNALLY_CONSISTENT_ONLY",
+      "id": "recursive_framework_audit: interface ten bindings",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 1,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none; no recorded atomicity claim was re-checked against them",
+      "grade": "INTERNALLY_CONSISTENT_ONLY",
+      "id": "recursive_framework_audit: atomicity five conditions",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 1,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none; no node has ever been assessed with it",
+      "grade": "INTERNALLY_CONSISTENT_ONLY",
+      "id": "recursive_framework_audit: bounded node closure (8 conditions)",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 1,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none; no audit has been selected by it",
+      "grade": "INTERNALLY_CONSISTENT_ONLY",
+      "id": "recursive_framework_audit: value-of-audit selection",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 1,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none. The 9 and 10 coordinates were transcribed from the packet; nothing tests that they are the right coordinates, or that scoring a question on them predicts anything",
+      "grade": "INTERNALLY_CONSISTENT_ONLY",
+      "id": "recursive_framework_audit: question/framework adequacy vectors",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#723",
+      "callers_outside_tests": false,
+      "criteria_met": 2,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "grade": "EXERCISED_BUT_UNFALSIFIABLE_AS_BUILT",
+      "id": "recursive_framework_audit: ancestor challenge packet",
+      "real_data": true,
+      "real_data_note": "applied to the ARN lineage; returned escalation_admissible=False, which held up",
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": true,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#726",
+      "callers_note": "research/arn_local_vs_parent_discriminator_v1/run_discriminator.py",
+      "callers_outside_tests": true,
+      "criteria_met": 3,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "none registered. No evidence that declaring a regime changes any outcome; the question-level probe found zero designs declare one",
+      "grade": "EXERCISED_BUT_UNFALSIFIABLE_AS_BUILT",
+      "id": "observation_contract",
+      "real_data": true,
+      "real_data_note": "the ARN discriminator ran under a source-grounded contract",
+      "score": {
+        "C_caller_outside_tests": true,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": true,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "#731",
+      "callers_outside_tests": false,
+      "criteria_met": 3,
+      "falsifier": true,
+      "falsifier_executed": false,
+      "falsifier_note": "frozen: over the next 12 instrument closures, defect rate must be lower among designs declaring all four obligations",
+      "grade": "FALSIFIER_REGISTERED_UNRUN",
+      "id": "construct_independence gate",
+      "real_data": true,
+      "real_data_note": "validated against 3 recorded instruments: 2 agree with the record, 1 clean miss",
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": true,
+        "R_tested_on_real_data": true,
+        "T_has_tests": true,
+        "X_falsifier_executed": false
+      },
+      "tests": true
+    },
+    {
+      "added": "named in #734, not implemented",
+      "callers_outside_tests": false,
+      "criteria_met": 0,
+      "falsifier": false,
+      "falsifier_executed": false,
+      "falsifier_note": "named after three failures it would have caught; no code, no test, no falsifier",
+      "grade": "UNIMPLEMENTED",
+      "id": "SUPPORT_DECLARED precondition",
+      "real_data": false,
+      "score": {
+        "C_caller_outside_tests": false,
+        "F_has_registered_falsifier": false,
+        "R_tested_on_real_data": false,
+        "T_has_tests": false,
+        "X_falsifier_executed": false
+      },
+      "tests": false
+    }
+  ],
+  "question": "Which mechanics added this session are verifiable, and against what?",
+  "schema_version": "rakl-self-verifiability-audit-v1",
+  "status": "SELF_AUDIT__PROPOSAL_ONLY",
+  "the_honest_reading": "The programme's own rule is that conformance is instrument evidence and never utility evidence. That rule was applied to the RFA controller and not to the mechanics built on top of it. Applied here, most of this session's formalism is a hypothesis written in type declarations: it constrains what can be expressed, and nothing yet shows that constraining it improves any research outcome.",
+  "what_would_change_each_grade": {
+    "EXERCISED_BUT_UNFALSIFIABLE_AS_BUILT": "register a falsifier before the next use, stating what result would retire the mechanic",
+    "FALSIFIER_REGISTERED_UNRUN": "execute it; for the construct gate that means 12 instrument closures",
+    "INTERNALLY_CONSISTENT_ONLY": "run it against recorded instruments whose outcomes are known, as the construct gate was",
+    "UNIMPLEMENTED": "implement, or delete the name so it stops looking like a mechanic"
+  },
+  "with_a_production_caller": 1,
+  "with_a_registered_falsifier": 2,
+  "with_an_executed_falsifier": 0
+}
