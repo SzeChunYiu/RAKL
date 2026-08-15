@@ -248,6 +248,56 @@ def next_step(
     )
 
 
+def render_step(step: SessionStep, *, width: int = 78) -> str:
+    """Render one step as text an operator reads and can argue with.
+
+    Shows the proposal, what was licensed, and — when those differ — exactly
+    what refused it. A downgrade with no visible reason is indistinguishable
+    from a bug.
+    """
+
+    bar = "-" * width
+    verdict = (
+        f"{step.proposed_action.value}"
+        if not step.blocked
+        else f"{step.proposed_action.value}  ->  {step.licensed_action.value}"
+    )
+    lines = [
+        bar,
+        f"target    {step.target_id}",
+        f"decision  {verdict}",
+    ]
+    if step.coordinates:
+        lines.append(f"coords    {', '.join(c.value for c in step.coordinates)}")
+    lines.append(f"support   {step.support.value}")
+    if step.support_gaps:
+        lines.append(f"  missing {', '.join(step.support_gaps)}")
+    if step.instrument_verdict is not None:
+        lines.append(f"instrument {step.instrument_verdict.value}")
+    if step.blocked:
+        lines.append("BLOCKED because:")
+        for reason in step.reasons:
+            lines.append(f"  - {reason}")
+    else:
+        for reason in step.reasons:
+            lines.append(f"  . {reason}")
+    lines.append(f"digest    {step.digest()[:16]}")
+    lines.append(bar)
+    return "\n".join(lines)
+
+
+def render_ledger(ledger: "SessionLedger", *, width: int = 78) -> str:
+    """Render a whole ledger, newest last, with a one-line summary."""
+
+    blocked = len(ledger.blocked_steps)
+    body = "\n".join(render_step(s, width=width) for s in ledger.steps)
+    summary = (
+        f"{ledger.target_id}: {len(ledger.steps)} step(s), "
+        f"{blocked} blocked, {len(ledger.steps) - blocked} licensed"
+    )
+    return f"{body}\n{summary}" if body else summary
+
+
 @dataclass(frozen=True)
 class SessionLedger:
     """Append-only record of the steps taken against one target."""
@@ -297,4 +347,6 @@ __all__ = [
     "SupportDeclaration",
     "SupportVerdict",
     "next_step",
+    "render_ledger",
+    "render_step",
 ]

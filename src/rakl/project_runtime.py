@@ -403,9 +403,95 @@ class RAKLProject:
             issues=tuple(sorted(issues)),
         )
 
-    def status(self) -> dict[str, object]:
-        report = self.doctor()
+    def epistemic_gate(
+        self,
+        service: object,
+        *,
+        target_id: str,
+        fiber_id: str,
+    ) -> dict[str, object]:
+        """Consult the EpistemicStatus gate for this project's current head.
+
+        Closes engineering fiber E9. The gate is passed in rather than imported:
+        the runtime must be able to call it without depending on the engineering
+        layer, and a caller without a service keeps the previous behaviour.
+
+        The gate is allowed to refuse. An unavailable or stale status is reported
+        as ``consulted`` with a reason, never silently omitted — a gate whose
+        refusal disappears from the output is not a gate.
+        """
+
+        try:
+            status = service.current_status(  # type: ignore[attr-defined]
+                project_id=self.manifest.project_id,
+                target_id=target_id,
+                fiber_id=fiber_id,
+            )
+        except Exception as exc:  # the gate's own refusal types live one layer up
+            return {
+                "consulted": True,
+                "available": False,
+                "reason": f"{type(exc).__name__}: {exc}",
+                "target_id": target_id,
+                "fiber_id": fiber_id,
+            }
         return {
+            "consulted": True,
+            "available": True,
+            "target_id": target_id,
+            "fiber_id": fiber_id,
+            "project_snapshot_id": getattr(status, "project_snapshot_id", None),
+            "status_id": getattr(status, "status_id", None),
+        }
+
+    def next_action(self, source: object) -> dict[str, object]:
+        """Project an incumbent decision head into a next action.
+
+        Closes engineering fiber E4. ``source`` may be a callable returning the
+        action — which is how the engineering layer supplies it, as a closure
+        over ``next_action_from_incumbent`` — or an object exposing
+        ``next_action``. It is passed in rather than imported so the runtime
+        gains no dependency on the engineering layer.
+
+        The runtime reports what the head says. It does not decide, it grants
+        nothing, and a source that yields no action is reported as carrying
+        none rather than as ``wired`` with an empty value: the first version of
+        this method duck-typed ``.next_action`` off the shipped
+        ``IncumbentStateHeads``, which has no such attribute, and silently
+        reported success while carrying nothing.
+        """
+
+        action = None
+        resolved_by = "none"
+        if callable(source):
+            action = source()
+            resolved_by = "callable"
+        else:
+            attr = getattr(source, "next_action", None)
+            if callable(attr):
+                action = attr()
+                resolved_by = "next_action_method"
+            elif attr is not None:
+                action = attr
+                resolved_by = "next_action_attribute"
+
+        return {
+            "wired": action is not None,
+            "resolved_by": resolved_by,
+            "next_action": None if action is None else str(action),
+            "grants_scientific_authority": False,
+        }
+
+    def status(
+        self,
+        *,
+        epistemic_service: object | None = None,
+        target_id: str = "",
+        fiber_id: str = "",
+        heads: object | None = None,
+    ) -> dict[str, object]:
+        report = self.doctor()
+        out: dict[str, object] = {
             "protocol_version": self.manifest.protocol_version,
             "project_id": self.manifest.project_id,
             "reference_profile": self.manifest.reference_profile,
@@ -414,6 +500,13 @@ class RAKLProject:
             "healthy": report.healthy,
             "issues": list(report.issues),
         }
+        if epistemic_service is not None:
+            out["epistemic_gate"] = self.epistemic_gate(
+                epistemic_service, target_id=target_id, fiber_id=fiber_id
+            )
+        if heads is not None:
+            out["decision_heads"] = self.next_action(heads)
+        return out
 
     def compile_task_packet(
         self,

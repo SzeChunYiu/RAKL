@@ -197,6 +197,69 @@ def test_a_ceiling_without_a_gate_cannot_block() -> None:
     assert step.licensed_action is AuditAction.SPLIT
 
 
+def test_out_of_domain_blocks_every_action_not_only_revisions() -> None:
+    """Replay: p1-l4-tight-resource-floor.
+
+    The tight stratum's budget was declared outside PROMOTE scope, so both arms
+    score 0.0 by construction. On first real use the loop licensed SOLVE_CURRENT
+    there, because only revisions were gated. Solving at the current
+    representation on a population that cannot express the predicate produces no
+    evidence either.
+    """
+
+    step = next_step(
+        target_id="p1-l4-tight-resource-floor",
+        node=OPEN,
+        residual=AuditResidual(),  # -> SOLVE_CURRENT, not a revision
+        support=full_support(predicate_in_domain=False),
+    )
+    assert step.proposed_action is AuditAction.SOLVE_CURRENT
+    assert step.licensed_action is AuditAction.CANNOT_CHECK
+    assert "no action on this population produces evidence" in " ".join(step.reasons)
+
+
+def test_a_ceiling_below_the_registered_gate_blocks_every_action() -> None:
+    """Replay: p4-adaptive-lost-to-static.
+
+    Its tier-3 rigorous harm-free ceiling is 0.0246 against a frozen 0.05 hard
+    gate. No repair to the allocation policy changes a ceiling, so no action on
+    that instrument can clear it. On first real use the loop licensed SPLIT,
+    because the recorded ceiling was compared to nothing.
+    """
+
+    step = next_step(
+        target_id="p4-adaptive-lost-to-static",
+        node=OPEN,
+        residual=AuditResidual(split_required=True),
+        support=full_support(reachable_ceiling=0.0246, registered_gate=0.05),
+    )
+    assert step.proposed_action is AuditAction.SPLIT
+    assert step.licensed_action is AuditAction.CANNOT_CHECK
+    assert "below the registered gate" in " ".join(step.reasons)
+
+
+def test_a_ceiling_above_the_gate_does_not_block() -> None:
+    step = next_step(
+        target_id="headroom",
+        node=OPEN,
+        residual=AuditResidual(split_required=True),
+        support=full_support(reachable_ceiling=0.30, registered_gate=0.05),
+    )
+    assert step.licensed_action is AuditAction.SPLIT
+
+
+def test_a_ceiling_without_a_gate_cannot_block() -> None:
+    """A recorded ceiling with nothing to clear is not evidence of anything."""
+
+    step = next_step(
+        target_id="no-gate",
+        node=OPEN,
+        residual=AuditResidual(split_required=True),
+        support=full_support(reachable_ceiling=0.001, registered_gate=None),
+    )
+    assert step.licensed_action is AuditAction.SPLIT
+
+
 # --- instrument gating ------------------------------------------------------
 
 
