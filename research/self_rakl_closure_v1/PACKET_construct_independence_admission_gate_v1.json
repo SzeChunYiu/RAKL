@@ -1,0 +1,133 @@
+{
+  "schema_version": "mechanic-research-packet-v1",
+  "packet_id": "MRP-CLOSURE-CONSTRUCT-INDEPENDENCE-V1",
+  "mechanic_id": "instrument_construct_independence",
+  "variant_id": "construct_independence_admission_gate_v1",
+  "parent_method_sha": "83f63c93f338fad50a02281b9d99dfb529d920fb",
+  "object_description": "A frozen pre-execution instrument design whose target signal, candidate, generator/renderer, gold construction, and evaluator channels may or may not be construct-independent.",
+  "qoi": "Whether the design is admissible to spend an outcome-bearing epoch without reading the target through a shared author/channel or a statistic that survives a registered null permutation.",
+  "scope": [
+    "outcome-bearing RAKL instrument designs",
+    "pre-execution admission only",
+    "proposal-side measurement governance; no scientific authority"
+  ],
+  "assumptions": [
+    "an undeclared independence obligation is an unrun check, not a pass",
+    "author identity and channel identity are explicit design inputs",
+    "gold construction must be candidate-independent at the registered evaluator epoch",
+    "permutation/shuffle controls are run on development or known-answer fixtures before confirmatory outcome access"
+  ],
+  "strongest_parents": [
+    {
+      "parent_id": "oracle_ceiling_admissibility_gate",
+      "implementation_refs": ["src/rakl/instrument_admissibility.py"],
+      "cost_model_id": "pre-execution-admission-v1",
+      "cost_equation": "declaration_audit + oracle_or_fixture_checks",
+      "justification": "Existing fail-closed pre-execution admissibility gate; this variant adds an orthogonal construct-independence coordinate rather than changing its ceiling semantics.",
+      "evidence_pointers": ["research/self_rakl_recursive_question_audit_v1/NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md"]
+    },
+    {
+      "parent_id": "gate_falsifiability_audit",
+      "implementation_refs": ["src/rakl/gate_falsifiability.py"],
+      "cost_model_id": "pre-execution-admission-v1",
+      "cost_equation": "fixture_generation + mutation_or_null_checks",
+      "justification": "Existing gate-level falsifiability practice is the strongest internal parent for proving a control can fail rather than merely being declared.",
+      "evidence_pointers": ["research/self_rakl_recursive_question_audit_v1/NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md"]
+    },
+    {
+      "parent_id": "nonindependent_selective_analysis_double_dipping",
+      "implementation_refs": ["primary:doi:10.1038/nn.2303", "primary:doi:10.1126/science.aaa9375"],
+      "cost_model_id": "conceptual-parent-no-runtime",
+      "cost_equation": "N/A: prior-art obligation only",
+      "justification": "Established parent principle: evaluation/selection reuse can invalidate inference unless the evaluated signal is independent of the selection/adaptation channel.",
+      "evidence_pointers": ["doi:10.1038/nn.2303", "doi:10.1126/science.aaa9375"]
+    }
+  ],
+  "prior_art_equivalence_map": [
+    "double-dipping / nonindependent selective analysis",
+    "adaptive holdout reuse and evaluation overfitting",
+    "blind/held-out evaluation",
+    "label-permutation and sham/null controls",
+    "RAKL gate-falsifiability and oracle-ceiling admissibility"
+  ],
+  "oracle_or_lower_bound": "Known-answer fixture instruments provide an exact oracle for whether candidate/gold/channel dependencies were planted. A gate must reject planted shared-channel, same-author, candidate-derived-gold, and permutation-surviving fixtures while admitting clean fixtures; this is a conformance oracle only, not evidence that real instruments are scientifically valid.",
+  "minimal_counterexamples": [
+    "gold label is computed from the candidate prediction",
+    "renderer writes an answer-bearing field that the extractor reads",
+    "generator and grader are the same unseparated author/process",
+    "reported advantage survives label permutation",
+    "one obligation is omitted and would otherwise be silently counted as a pass",
+    "all four obligations are declared but a planted leak is still admitted"
+  ],
+  "development_benchmark_id": "CONSTRUCT-INDEPENDENCE-KNOWN-WORLD-V1",
+  "development_case_ids": [
+    "ci-dev-clean-independent",
+    "ci-dev-shared-channel",
+    "ci-dev-same-author",
+    "ci-dev-candidate-derived-gold",
+    "ci-dev-permutation-survives",
+    "ci-dev-missing-obligation"
+  ],
+  "fresh_assurance_benchmark_id": "CONSTRUCT-INDEPENDENCE-NEXT-12-CLOSURES-V1",
+  "fresh_assurance_case_ids": [
+    "ci-fresh-closure-01",
+    "ci-fresh-closure-02",
+    "ci-fresh-closure-03",
+    "ci-fresh-closure-04",
+    "ci-fresh-closure-05",
+    "ci-fresh-closure-06",
+    "ci-fresh-closure-07",
+    "ci-fresh-closure-08",
+    "ci-fresh-closure-09",
+    "ci-fresh-closure-10",
+    "ci-fresh-closure-11",
+    "ci-fresh-closure-12"
+  ],
+  "selection_case_ids": [
+    "ci-dev-clean-independent",
+    "ci-dev-shared-channel",
+    "ci-dev-same-author",
+    "ci-dev-candidate-derived-gold",
+    "ci-dev-permutation-survives",
+    "ci-dev-missing-obligation"
+  ],
+  "falsifier": "On the next 12 instrument closures, designs declaring and satisfying all four obligations do not have a lower construct-defect rate than designs that do not; or a planted construct-dependent known-world fixture is admitted.",
+  "same_system_ablation": "Same frozen instrument design with exactly one independence obligation removed or violated at a time; evaluator and primary statistic unchanged.",
+  "hard_gate_obligations": [
+    "CHANNEL_SEPARATION",
+    "AUTHOR_SEPARATION",
+    "GOLD_INDEPENDENCE",
+    "PERMUTATION_NULL",
+    "missing obligation fails closed to CANNOT_CHECK",
+    "no verdict grants scientific or method-promotion authority"
+  ],
+  "required_telemetry_fields": [
+    "instrument_id",
+    "declaration_sha256",
+    "evaluator_epoch",
+    "subject_sha",
+    "channel_separation_status",
+    "author_separation_status",
+    "gold_independence_status",
+    "permutation_null_status",
+    "evidence_ids",
+    "verdict",
+    "reasons"
+  ],
+  "total_cost_equation": "admission_cost = declaration_review + fixture/null-control execution + identity/provenance verification; confirmatory_epoch_cost is excluded because the gate runs before it is spent",
+  "novelty_residual": "RAKL-specific composition of four pre-execution construct-independence obligations into a fail-closed admission object beside, not inside, the existing ceiling and falsifiability gates.",
+  "permitted_publication_claim": "At most: the pre-execution admission gate rejects registered construct-dependent fixtures and records undeclared obligations as CANNOT_CHECK. No claim that it improves scientific outcomes until the frozen forward falsifier is executed.",
+  "evidence_pointers": [
+    "issue:#730",
+    "research/self_rakl_recursive_question_audit_v1/NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md",
+    "research/self_rakl_recursive_question_audit_v1/OPEN_ITEMS_DECISIONS.json"
+  ],
+  "mechanism_gate_state": "UNASSESSED",
+  "applicability_gate_state": "UNASSESSED",
+  "frozen_before_implementation": true,
+  "frozen_before_outcome_access": true,
+  "packet_content_sha256": "7c8c9643d1ae6e6957b2cfbf48679f1b97d42a2ae90bb6054243033c9deb9877",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "replaces_promotion_gate": false
+}
