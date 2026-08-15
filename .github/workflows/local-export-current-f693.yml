@@ -1,0 +1,19 @@
+name: local-export-current-f693
+on:
+  push:
+    branches:
+      - tooling/export-current-f6931b35
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Archive exact parent commit
+        run: git archive --format=zip --output=RAKL-main-f6931b35.zip HEAD^
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-main-f6931b35
+          path: RAKL-main-f6931b35.zip
+          if-no-files-found: error
