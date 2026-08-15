@@ -1,0 +1,46 @@
+{
+  "schema_version": "paper5-transitive-receipt-binding-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "HOSTILE_CONFORMANCE_ONLY",
+  "question": "Are independent-review and verifier-trust receipts transitively bound to the exact current proposer, intended informal/formal pair, novelty dossier result, and verifier attestor?",
+  "cases": [
+    {
+      "id": "P5-TR-01-PROPOSER-RECEIPT-REUSE",
+      "world": "a valid independent review receipt records proposer A, but proposer B reuses it without changing the reviewed artifact",
+      "expected": "REJECT_REVIEW_PROPOSER_MISMATCH"
+    },
+    {
+      "id": "P5-TR-02-INFORMAL-CLAIM-SWAP",
+      "world": "formal statement is identical but the intended informal claim hash changes after formalization review",
+      "expected": "REJECT_FORMALIZATION_PAIR_MISMATCH"
+    },
+    {
+      "id": "P5-TR-03-NOVELTY-RESULT-FLIP",
+      "world": "novelty review was performed on a dossier with no equivalent found, then equivalent_found/candidate_matches are changed without a new review",
+      "expected": "REJECT_NOVELTY_DOSSIER_MISMATCH"
+    },
+    {
+      "id": "P5-TR-04-VERIFIER-SELF-ATTESTATION",
+      "world": "verifier-trust receipt is authored by the current proposer and labelled trusted",
+      "expected": "REJECT_VERIFIER_ATTESTOR_NOT_INDEPENDENT"
+    },
+    {
+      "id": "P5-TR-05-VERIFIER-PROPOSER-REUSE",
+      "world": "verifier-trust receipt records proposer A but is reused by proposer B",
+      "expected": "REJECT_VERIFIER_PROPOSER_MISMATCH"
+    },
+    {
+      "id": "P5-TR-06-EXACT-CHAIN",
+      "world": "review receipts bind the exact current proposer and exact informal/formal pair; novelty review binds the complete dossier result/world; verifier attestation is independently authored for the exact proposer/proof/checker manifest",
+      "expected": "MAY_ENTER_EXISTING_GATE"
+    }
+  ],
+  "invariants": [
+    "formalization review subject is a digest of both informal and formal statement identities",
+    "every independent review receipt binds the current proposer identity as well as the reviewer identity",
+    "novelty review binds the complete novelty dossier result, not only the search world",
+    "verifier-trust attestation binds current proposer and an attestor distinct from that proposer",
+    "receipt reuse across proposer identity fails closed",
+    "the successor may only narrow incumbent authority"
+  ]
+}
