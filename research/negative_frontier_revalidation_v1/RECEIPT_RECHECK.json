@@ -1,0 +1,138 @@
+{
+  "cause": "the check compared Path(receipt_path).exists() against references that carry a branch qualifier such as 'publication-overlay-papers-123:research/...'. A branch-qualified reference is not a filesystem path, so the check was asking the wrong question of at least some of them.",
+  "corrects": "#739, which reported four records citing receipts absent from main",
+  "grants_scientific_authority": false,
+  "per_record": [
+    {
+      "genuinely_absent": 0,
+      "recovered_by_stripping_the_qualifier": 4,
+      "refs": [
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/RESULTS.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "experiments/paper1/source_monitoring_repetition_attack_v1/RESULTS.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/PROMOTION_GATE_CANDIDATE.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "experiments/paper1/source_monitoring_repetition_attack_v1/PROMOTION_GATE_CANDIDATE.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/PROTOCOL.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "experiments/paper1/source_monitoring_repetition_attack_v1/PROTOCOL.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:experiments/paper1/run_source_monitoring_repetition_attack_v1.py",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "experiments/paper1/run_source_monitoring_repetition_attack_v1.py",
+          "path_exists_on_main": true
+        }
+      ],
+      "slug": "p1-source-monitoring-repetition-attack",
+      "verdict": "EVIDENCE_PRESENT__EARLIER_FINDING_WAS_A_PATH_ERROR"
+    },
+    {
+      "genuinely_absent": 0,
+      "recovered_by_stripping_the_qualifier": 2,
+      "refs": [
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/V2_PARENT_BOUNDARY_ADDENDUM.md",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper1_adversarial_epistemic_benchmark_v1/V2_PARENT_BOUNDARY_ADDENDUM.md",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "publication-overlay-papers-123",
+          "cited": "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/PROJECTION_SUFFICIENCY_RESULT_V2.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper1_adversarial_epistemic_benchmark_v1/PROJECTION_SUFFICIENCY_RESULT_V2.json",
+          "path_exists_on_main": true
+        }
+      ],
+      "slug": "p1-atms-parent-boundary",
+      "verdict": "EVIDENCE_PRESENT__EARLIER_FINDING_WAS_A_PATH_ERROR"
+    },
+    {
+      "genuinely_absent": 0,
+      "recovered_by_stripping_the_qualifier": 2,
+      "refs": [
+        {
+          "branch_qualifier": null,
+          "cited": "research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json @ PR #703 head ef42786e8bb2e3fc658ce483b0d281d048ffad7e",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "arn/v3-instance-paired-reducer",
+          "cited": "arn/v3-instance-paired-reducer:research/paper2_external_corpus_v1/PROTOCOL_V3_REDUCER.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper2_external_corpus_v1/PROTOCOL_V3_REDUCER.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": null,
+          "cited": "PR #703 body (gh pr view 703)",
+          "kind": "NOT_A_PATH",
+          "naive_exists": false,
+          "path": null,
+          "path_exists_on_main": null
+        }
+      ],
+      "slug": "p2-arn-v3-capability-absent",
+      "verdict": "EVIDENCE_PRESENT__EARLIER_FINDING_WAS_A_PATH_ERROR"
+    },
+    {
+      "genuinely_absent": 0,
+      "recovered_by_stripping_the_qualifier": 2,
+      "refs": [
+        {
+          "branch_qualifier": null,
+          "cited": "research/paper2_external_corpus_v1/results_v4_reducer/RESULT.json @ PR #707 head 5d2d332b2ed6b4a0a59ca7e53b2e87221be582c9",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper2_external_corpus_v1/results_v4_reducer/RESULT.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": "arn/v4-relational-reducer",
+          "cited": "arn/v4-relational-reducer:research/paper2_external_corpus_v1/PROTOCOL_V4_REDUCER.json",
+          "kind": "PATH",
+          "naive_exists": false,
+          "path": "research/paper2_external_corpus_v1/PROTOCOL_V4_REDUCER.json",
+          "path_exists_on_main": true
+        },
+        {
+          "branch_qualifier": null,
+          "cited": "PR #707 body (gh pr view 707)",
+          "kind": "NOT_A_PATH",
+          "naive_exists": false,
+          "path": null,
+          "path_exists_on_main": null
+        }
+      ],
+      "slug": "p2-arn-v4-battery-failed",
+      "verdict": "EVIDENCE_PRESENT__EARLIER_FINDING_WAS_A_PATH_ERROR"
+    }
+  ],
+  "records_rechecked": 4,
+  "schema_version": "rakl-receipt-recheck-v1",
+  "status": "CORRECTION_TO_A_PUBLISHED_FINDING"
+}
