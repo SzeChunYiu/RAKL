@@ -23,6 +23,19 @@ PHASE2_ADAPTIVE_SCHEDULER=NOT_OPEN
 
 The residual hypothesis is unresolved.
 
+## Second independent defect (added 2026-08-15)
+
+Root-cause analysis later found a second, independent defect in the same v1 run: byte-pair
+encoding merged the answer-token space, so the gold token was masked out and no gradient ever
+reached the VALID/INVALID decision. Either defect alone voids the run. The manuscript status box
+and abstract already state the two-defect retraction; this note previously described only the
+generator defect and understated the retraction. The corrected v2 instrument fixes both
+(token-id concatenation so the answer is trained; varied, length-matched generator with disjoint
+train/probe instances and a learnability positive-control gate).
+
+Nothing in this update changes the terminal reading: the v1 packet identifies neither a residual
+nor a capability floor, and the residual hypothesis remains unresolved.
+
 ## Required repair before a valid Phase-1 conclusion
 
 The next generator must provide:
