@@ -1,0 +1,43 @@
+name: export-greedy-assembly-receipt
+on:
+  push:
+    branches: [tooling/formal-greedy-assembly-20260815]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install exact Lean and recheck candidate
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan.sh
+          sh /tmp/elan.sh -y --default-toolchain "$(cat formal/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Build receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd formal
+          ! grep -nE '\bsorry\b|\badmit\b' GreedyAssembly.lean
+          lean --root=. -o RaklFormal.olean RaklFormal.lean
+          LEAN_PATH=. lean --root=. -o GreedyAssembly.olean GreedyAssembly.lean
+          cat > /tmp/ga_ax.lean <<'EOF'
+          import GreedyAssembly
+          #print axioms RaklFormal.normalize_reservations
+          #print axioms RaklFormal.reservation_first_greedy_optimal
+          EOF
+          LEAN_PATH=. lean /tmp/ga_ax.lean | tee axiom_report.txt
+          test "$(grep -c 'does not depend on any axioms' axiom_report.txt)" = 2
+          sha256sum GreedyAssembly.lean RaklFormal.lean > SHA256SUMS.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('GreedyAssembly.lean')
+          out={'schema_version':'paper1-greedy-assembly-formal-receipt-v1','lean_toolchain':pathlib.Path('lean-toolchain').read_text().strip(),'assembly_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'theorems':['RaklFormal.normalize_reservations','RaklFormal.reservation_first_greedy_optimal'],'axiom_free':True,'contains_sorry_or_admit':False,'scope':'Nat utilities with explicit ReservationExchange operational hypothesis','science_subject':'41bdbfcadfd974e26e66b3111552c7a00c4eeab6','grants_scientific_authority':False}
+          pathlib.Path('FORMAL_RECEIPT.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          PY
+          mkdir -p export
+          cp GreedyAssembly.lean axiom_report.txt SHA256SUMS.txt FORMAL_RECEIPT.json export/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paper1-greedy-assembly-axiom-free
+          path: formal/export/
+          if-no-files-found: error
