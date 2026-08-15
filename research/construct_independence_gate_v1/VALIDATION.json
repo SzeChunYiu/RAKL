@@ -1,0 +1,44 @@
+{
+  "cases": 3,
+  "grants_scientific_authority": false,
+  "known_incompleteness": {
+    "candidate_fifth_obligation": "STRATUM_HOMOGENEITY \u2014 registered blocking factors must be declared before execution, and the statistic reported per stratum as well as in aggregate",
+    "description": "Opposite-signed strata averaging to a null are invisible to all four obligations. Every one can be satisfied while the aggregate statistic is a cancellation artifact, as this session's own ARN discriminator was.",
+    "missed_defect": "STRATUM_CANCELLATION",
+    "not_implemented_here": "The forward falsifier frozen for this gate covers the four obligations as registered. Adding a fifth after seeing the miss, without re-freezing, would be the post-hoc amendment the programme's own invariants forbid."
+  },
+  "no_alarm_case_holds": true,
+  "per_case": [
+    {
+      "gate_agrees_with_record": true,
+      "gate_reasons": [
+        "statistic 'band-similarity-mapping-score' survives label shuffling (shuffled 0.68 vs chance 0.5); it is reading something other than the labels"
+      ],
+      "gate_verdict": "INADMISSIBLE",
+      "instrument": "arn-v2-deterministic-reducer",
+      "recorded_terminal": "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE"
+    },
+    {
+      "gate_agrees_with_record": false,
+      "gate_reasons": [
+        "every construct-independence obligation is declared and witnessed"
+      ],
+      "gate_verdict": "ADMISSIBLE",
+      "instrument": "arn-local-vs-parent-discriminator-v1",
+      "note": "A clean miss. The gate admits this instrument: its best statistic sits far enough from chance to clear the separation check and dies under shuffling as required, so all four obligations pass. It is nonetheless not probative, because the aggregate is opposite-signed strata cancelling (high-similarity band 0.3955, low-similarity band 0.612). No obligation in the registered set can see that, so the gate is incomplete in a way this session's own instrument demonstrates.",
+      "recorded_terminal": "DISCRIMINATOR_NOT_PROBATIVE__DISTRACTOR_DESIGN_ARTIFACT"
+    },
+    {
+      "gate_agrees_with_record": true,
+      "gate_reasons": [
+        "every construct-independence obligation is declared and witnessed"
+      ],
+      "gate_verdict": "ADMISSIBLE",
+      "instrument": "p2-prose-transfer-confirmatory-v1",
+      "recorded_terminal": "passed six of seven registered gates; demonstrably reads its text"
+    }
+  ],
+  "schema_version": "rakl-construct-independence-gate-validation-v1",
+  "status": "GATE_VALIDATED_AGAINST_RECORDED_INSTRUMENTS__ONE_KNOWN_MISS",
+  "verdict_matches_record": "2/3"
+}
