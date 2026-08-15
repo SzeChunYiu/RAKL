@@ -1,0 +1,906 @@
+{
+  "schema_version": "rakl-negative-frontier-inventory-v1",
+  "date": "2026-08-15",
+  "scope": "Every NEGATIVE / NULL / REFUTED / BLOCKED / NOT-PROBATIVE terminal that the current manuscripts of Papers I, II and III report or depend on, traced to its receipt.",
+  "manuscript_sources": [
+    "publication/papers/paper-01-epistemic-mechanics/main.tex (main) + overlay branch publication-overlay-papers-123",
+    "publication/papers/paper-02-structural-mechanics/main.tex (main) + overlay",
+    "publication/papers/paper-03-method-evolution-mechanics/main.tex (main) + overlay"
+  ],
+  "enumeration_method": "Exhaustive extraction of every \\path{}, \\texttt{} and \\textsc{} argument from every section reachable via the resolved \\input list of each main.tex, on main and on publication-overlay-papers-123; then a prose pass for negatives carrying no machine string. Overlay input lists were diffed against main to confirm the authoritative section set (overlay is additive for Papers II/III; for Paper I it adds 01a, 06c and REPLACES 02d_projection_sufficiency with 02d_projection_sufficiency_v2). PROSE PASS (run over the full input set, not a sample): a case-insensitive grep for null|negativ|refut|not probative|unreproducib|inconclusiv|underpower|could not|did not (pass|clear|beat)|preserved as was executed over every included section of all three papers on both branches; the sections not read in full during the machine-string pass (P3 03/10/11/12, P2 03/04, P1 02d/06_appendices) were covered by that grep and its load-bearing hits are inventoried below (p2-faithful-import-refuted, p2-cannot-construct-unreachable-arm, p1-one-claim-not-machine-checked).",
+  "inclusion_rule": "A record is created when the manuscript reports a terminal outcome that closed a registered attempt (negative, null, refuted, not-probative, cannot-check, blocked) or a preserved defect of the programme's own instrument. Excluded: bare vocabulary tokens of the verdict type system (CANNOT_CHECK, REFUTED, BLOCKED as label definitions), qualifications that did not close an attempt (e.g. the four-family sign test p=0.125, Paper II sec.6:10), and the three withdrawn Paper II hypotheses (sec.8:28), which the manuscript states are 'not established, not refuted' and therefore have no terminal.",
+  "legacy_naming_note": "Repository directories predate the current manuscript numbering. Manuscript Paper II (structural mechanics) is 'PAPER3'/'paper3_*' in many receipt paths; manuscript Paper III (method-evolution mechanics) is 'Paper 5'/'paper5_*'/'paper2_experience_*' in others. Paths below are exactly as they exist on disk.",
+  "class_definitions": {
+    "REVIVABLE_LOCAL": "attackable with deterministic or locally-runnable learned components; no hosted model, no A100, no new human annotation",
+    "REVIVABLE_EXTERNAL": "needs an A100 / hosted LLM / human annotation / a corpus not yet acquired",
+    "STRUCTURALLY_BLOCKED": "blocked by an operator budget or protocol decision, not by code",
+    "IMMUTABLE_HISTORY": "preserved negative history the repo forbids reviving or relabelling; the successor, where one exists, is a separate epoch named in `lever`"
+  },
+  "records": [
+    {
+      "slug": "p2-template-inversion",
+      "terminal": "INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/05_instrument_falsifiability.tex:55",
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:20"
+      ],
+      "receipt_path": "research/paper2_prose_transfer_v1/results/CONFIRMATORY_RESULT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_prose_transfer_v1/PROTOCOL.json",
+        "research/paper2_prose_transfer_v1/README.md",
+        "experiments/paper2/run_prose_transfer_confirmatory_v1.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Heldout confirmatory n=576. The instrument passed six of seven registered gates (G1 advantage 0.4722, McNemar p=1.8e-80; G2 ceiling; G4 joint property; G5 paired variance; G6 twelve-seed spread; G7 all three negative controls failed as required) and demonstrably reads its text (scrambling collapses 0.9722 to 0.2500). G3, the error-diversity gate, failed: all 55 coordinate errors fall in exactly one of seven registered ambiguity classes -- the held-out qualitative-degree lexicon -- with zero errors in the other six classes across 3,077 realizations. Probe H matched pairs: 1.0000 on the development surface vs 0.9792 on the heldout surface with identical latent draw and gold.",
+      "one_stage_attribution": "instrument-construct. Manuscript: 'what the instrument currently measures is how much of the surface its author templated' (05:55). Single-author coupling between renderer and extractor produced the zero-error classes (05:57).",
+      "lever": "Registered revival specification, 05:57: (a) the successor's renderer must not be authored by whoever writes the extractor; (b) every ambiguity class needs a held-out realization, not just one; (c) the ceiling must not be raised -- a successor reporting a LOWER exact score with errors spread across classes is strictly better evidence. Explicitly rejected as a repair: widening the extractor's cue lists.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Fully deterministic renderer/extractor code. The author-separation requirement is a separate authoring process, not a second human annotator; no hosted model or accelerator is named anywhere in the revival spec.",
+      "core_lever": "successor prose instrument: renderer author != extractor author; held-out realization per ambiguity class; ceiling must not rise"
+    },
+    {
+      "slug": "p2-six-family-nonfalsifiable",
+      "terminal": "SCOPED (six-family gate passed and was shown non-falsifiable; probes A, B, F, G failed)",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/05_instrument_falsifiability.tex:24-39",
+        "publication/papers/paper-02-structural-mechanics/sections/06_known_world.tex:14"
+      ],
+      "receipt_path": "research/paper2_six_family_audit_v1/results/SIX_FAMILY_AUDIT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_six_family_audit_v1/results/PROBE_G_TEXT_INERTNESS.json",
+        "research/paper2_six_family_audit_v1/README.md",
+        "research/paper2_six_family_audit_v1/run_audit.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Seed 2026081212, n=810, every registered gate passed with empty gate reasons. The audit then showed the pass carries no generalization content. Probe A: the full arm IS the gold function, per-item Brier loss constant 0.0004, measured variance 1.24e-37. Probe B: 12/12 arbitrary non-registered seeds reproduce 6/6 positive families and p=0.03125 -- no seed can fail the gate. Probe F: two strata invisible to the control by design score exactly 0.000 and supply 66.7% of the headline advantage. Probe G: replacing every source and target text with noise leaves gold and all six coordinates unchanged on 810/810 cases.",
+      "one_stage_attribution": "instrument-construct. Manuscript: 'the answer travelled alongside the text in a pre-parsed sibling field, so no arm ever read the text' (05:51); 'a gate no seed can fail is not a test' (05:33).",
+      "lever": "The named successor already exists and was executed: the prose-transfer instrument of Case 3, built to the repaired specification (probe-G repair: destroying the text must destroy performance; probe-F repair: sampled rather than assigned discriminating coordinate). That successor terminated at INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION -- see NEG-p2-template-inversion.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "sec.8:18: 'a benchmark that fails the battery is repaired in a new versioned epoch, never rescored.' The audit artifact and the registered outcome are preserved verbatim; the live frontier is the Case 3 successor.",
+      "core_lever": "superseded by the Case-3 prose-transfer epoch; never rescored"
+    },
+    {
+      "slug": "p2-serialization-fidelity",
+      "terminal": "AUXILIARY_DIAGNOSTIC_ONLY__NOT_PART_OF_FROZEN_REGISTRATION (probe-G refutation of the PROMOTE_CONDITIONALLY controlled-witness extraction terminal)",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/05_instrument_falsifiability.tex:41-46"
+      ],
+      "receipt_path": "research/paper2_controlled_witness_extraction_audit_v1/results/PROBE_G_CONTROLLED_TEXT_INERTNESS.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_controlled_witness_extraction_v1/FINAL_RECEIPT.json",
+        "research/paper2_controlled_witness_extraction_v1/PROTOCOL.json",
+        "research/paper2_controlled_witness_extraction_audit_v1/README.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "n=1296 base tasks, 2592 text surfaces. The full controlled extractor scored exact decision 1.0, invalid false-accept 0.0, abstention recall 1.0; strongest non-extraction parent 0.889; a ten-mutation panel was caught in full. Probe G then showed the renderer emits 'Label :: serialized-value' lines carrying the structural records verbatim and the extractor parses them back: the render/extract composition is the IDENTITY on the structural record, recovered byte-identically on 2592/2592 surfaces. Scrambling the prose changes every rendered surface (1296/1296) and changes nothing else. The original FINAL_RECEIPT.json still carries terminal PROMOTE_CONDITIONALLY_...; the refutation lives in the separate audit directory, and the original is preserved unedited.",
+      "one_stage_attribution": "instrument-construct. Exact decision 1.0 was 'entailed by parse success' (05:46) -- the instrument measured serialization fidelity, not witness extraction from prose.",
+      "lever": "Narrowed survivor is retained explicitly: the mutation panel remains a valid test of fail-closed parser behaviour under field omission and tampering, 'an honest terminal of serialization-interface fail-closure'. The extraction question moved to the Case 3 prose-transfer successor.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "The manuscript preserves the refuted conditional-promotion terminal verbatim and states what survives is 'deliberately narrower'. The successor epoch is Case 3.",
+      "core_lever": "superseded by the Case-3 prose-transfer epoch; parser fail-closure survives as the narrow terminal",
+      "receipt_branch_note": "The refutation and the refuted terminal live in two different artifacts, by design. `research/paper2_controlled_witness_extraction_audit_v1/results/PROBE_G_CONTROLLED_TEXT_INERTNESS.json` carries `status: AUXILIARY_DIAGNOSTIC_ONLY__NOT_PART_OF_FROZEN_REGISTRATION` and the interpretation verbatim: \"exact_decision=1.0 is entailed by parse success and is a measure of serialization fidelity, not of structural witness extraction from prose\". The original `research/paper2_controlled_witness_extraction_v1/FINAL_RECEIPT.json` still carries `terminal: PROMOTE_CONDITIONALLY_CONTROLLED_TEXT_STRUCTURAL_WITNESS_EXTRACTION`, unedited -- that string is deliberately NOT present in the audit directory."
+    },
+    {
+      "slug": "p2-arn-capability-absent",
+      "terminal": "NEGATIVE__CAPABILITY_ABSENT",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:34",
+        "publication/papers/paper-02-structural-mechanics/sections/01_introduction.tex:13"
+      ],
+      "receipt_path": "research/paper2_external_corpus_v1/results/RESULT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_external_corpus_v1/PROTOCOL.json",
+        "research/paper2_external_corpus_v1/AMENDMENT_01.json",
+        "research/paper2_external_corpus_v1/SEARCH_LEDGER.md",
+        "research/paper2_external_corpus_v1/results/ACQUISITION_RECEIPT.json",
+        "research/paper2_scientific_analogy_external_v1/predecessors/ARN_NEGATIVE_RESULT.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "ARN corpus (Sourati et al. 2024), 1,095 query-choice-choice triples; 1,542 held-out confirmatory pairs split by proverb. The falsifiability battery PASSED in full (text destruction changed the witness arm's output on 1542/1542 pairs and collapsed accuracy to the shuffled-gold null; shuffled-gold control failed the advantage gate as required; no trivial arm attained the joint property; both arms carried per-item loss variance). Because the battery passed, the outcome is a measurement: paired-Brier advantage -0.016, item-bootstrap 95% CI [-0.0498, +0.0162], upper bound below the registered 0.05 MDE; joint property failed with valid-transfer retention 0.023 at invalid false-accept 0.044. On the Q2-analogue quadrant (far analogies) the gate retained 1.3% (n=386).",
+      "one_stage_attribution": "capability (extraction). Manuscript verbatim: 'The residual is a measured extraction-capability gap: no admissible reducer in this programme recovers system-level structure from natural narratives' (07:36). Explicitly NOT power ('n=1,542 >> 48; CI half-width +/-0.033 ... leaves no power excuse') and explicitly NOT label availability.",
+      "lever": "'the named successor is a capable learned extractor, which owes the same admission gate plus a contamination declaration (ARN has been public since 2023)' (07:36). Admission gate is implemented at src/rakl/reduction_validation.py.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "The admission gate requires external labels authored outside the programme -- ARN satisfies this mechanically -- and nowhere requires a hosted model or accelerator. A locally-runnable learned extractor is admissible. Risk flag: if the required capability is only reachable with a hosted frontier model, the record reclassifies to REVIVABLE_EXTERNAL, and the contamination declaration becomes load-bearing. **Gate read (src/rakl/reduction_validation.py):** the implemented admission gate applies exactly three checks -- scramble-invariance (one scramble-invariant source is disqualifying), obstruction-surfacing on a fixed calibration source, and author independence of the validation labels (`external_label_author` must differ from `author`, else admission is capped at `ADMITTED_AT_FLOOR` / `CertificateKind.ASSERTED`). There is NO contamination check in code and NO model-class restriction: the gate does not distinguish a deterministic reducer from a learned one, nor a from-scratch extractor from a pretrained encoder. The contamination declaration is a manuscript-level obligation (sec.7:36, sec.8:22), not a code gate. A locally-runnable learned extractor therefore passes the same three checks a hosted one would, which is what keeps this REVIVABLE_LOCAL.",
+      "successor_lineage": [
+        "p2-arn-v2-battery-failed",
+        "p2-arn-v3-capability-absent",
+        "p2-arn-v4-battery-failed"
+      ],
+      "core_lever": "a capable learned extractor through the admission gate + contamination declaration"
+    },
+    {
+      "slug": "p2-44pair-nonconfirmatory",
+      "terminal": "FAIL_CLOSED_MISSING_INDEPENDENT_ANNOTATION",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:12"
+      ],
+      "receipt_path": "research/receipts/PAPER3_CHEAP_GATE_RESULT_20260810.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/receipts/PAPER3_V2_GATE_PREPARATION_20260810.json",
+        "research/PAPER3_CHEAP_GATE_SATURATION_20260810.md",
+        "src/rakl/paper3_cheap_gate.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "44 constructed proposal pairs across 11 mechanism families, frozen at Git subject f2701f732f83. The deterministic pilot crossed its frozen incremental-signal thresholds (LOFO ROC-AUC 0.914 -> 1.000; AP 0.903 -> 1.000 over the strongest frozen lexical/tag control), but the independent-annotation gate has authority over the signal gate: zero of 44 items confirmatory-eligible, no training or inference run launched. A subsequent chronology audit found labels were visible during construction, so the v1 set is PERMANENTLY an internal constructed diagnostic.",
+      "one_stage_attribution": "licence/abstention. The independent-annotation gate outranks the signal gate, and the chronology audit imposed the stricter cut.",
+      "lever": "None for this artifact -- 'later annotations cannot retroactively convert it, and the receipt is retained unchanged as negative history' (07:12). The live successor is the v2.1 label-blind lane and open issue #359.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "The manuscript states the artifact is permanently non-confirmatory and can never be reclassified. The research question continues live elsewhere (see NEG-p2-power-limited-packet and NEG-p2-independent-humans-absent).",
+      "core_lever": "none for the artifact; live successor is the v2.1 lane / issue #359"
+    },
+    {
+      "slug": "p2-power-limited-packet",
+      "terminal": "CONFIRMATORY_PACKET_POWER_LIMITED",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:25"
+      ],
+      "receipt_path": "research/paper3_successor_validation_v1/DECISION_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper3_successor_validation_v1/PACKET_FREEZE_RECEIPT.json",
+        "research/paper3_successor_validation_v1/ISSUE_326_TERMINAL_RECEIPT.json",
+        "research/ISSUE_258_TERMINAL_RECEIPT.json",
+        "research/paper3/annotation/README_V2_1.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "A label-blind power study registered a primary paired Brier-reduction MDE of 0.05 and simulated paired bootstrap/sign-flip resolution under plausible item-level noise. The frozen 16-item v2.1 packet is underpowered for that MDE: adequate resolution requires roughly n~48 items across the registered noise envelope. Consequences carried in the manuscript: indistinguishable outcomes are inconclusive rather than negative evidence; confirmatory refutation claims are blocked when intervals include zero; the power limitation is not repaired by the demoted AI-operator path; the item set cannot be enlarged post-label and represented as the same confirmatory epoch.",
+      "one_stage_attribution": "power. The packet size is below the registered MDE resolution requirement.",
+      "lever": "'an externally labelled natural-domain packet at n~48 whose label authors are independent of the instrument's author' (07:27). Two admissible routes under the same admission gate: solicited independent annotation under #359, or a published third-party-labelled corpus. The second route was executed once (ARN) and returned NEGATIVE__CAPABILITY_ABSENT.",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Both admissible routes require an external resource -- solicited human annotators or a not-yet-acquired third-party corpus fitting the transfer-instrument shape.",
+      "core_lever": "externally labelled n~48 packet (issue #359) or a third-party corpus"
+    },
+    {
+      "slug": "p2-independent-humans-absent",
+      "terminal": "CANNOT_OBTAIN_INDEPENDENT_EXTERNAL_HUMANS / DEMOTED_AI_OPERATOR_PATH_COMPLETE__INDEPENDENT_REVIEW_ABSENT / INDEPENDENT_CONFIRMATION_ABSENT",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:18"
+      ],
+      "receipt_path": "research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/PAPERS_II_III_V_CLAIM_TO_EVIDENCE_MATRIX_20260812.json",
+        "research/FIVE_PAPER_SEMANTIC_SHORTCUT_DATA_AUDIT_20260812.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Issue #217 was closed through an explicitly demoted AI_OPERATOR / NON_INDEPENDENT annotation path. Demoted jobs 3476753 (training) and 3476754 (inference) passed under DEMOTED_AI_OPERATOR authority. They establish the demoted execution path can run; they attest no independent external annotators, no independent adjudicator and no independent provenance auditor, and grant no confirmatory authority. The independent-human coordinate was frozen in issue #332; the residual continues under open successor #359.",
+      "one_stage_attribution": "licence/abstention (independence). The manuscript's own summary: 'The correct scientific status is INDEPENDENT_CONFIRMATION_ABSENT.'",
+      "lever": "Open successor issue #359: two genuinely external annotators, a distinct adjudicator, a distinct provenance auditor. Alternative route: a published third-party-labelled corpus (author-independence holds mechanically).",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Requires human annotation by people outside the programme; no code change can produce it.",
+      "core_lever": "issue #359: two external annotators, distinct adjudicator, distinct provenance auditor"
+    },
+    {
+      "slug": "p2-demoted-torch-env-failure",
+      "terminal": "preserved negative history -- first demoted train/inference pair failed on a missing torch environment",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:18"
+      ],
+      "receipt_path": "research/paper3_independent_human_residual_v1/ISSUE_332_TERMINAL_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Jobs 3476750 (training) and 3476751 (inference) failed on a missing torch environment and remain negative history. After hardening, jobs 3476753/3476754 passed under DEMOTED_AI_OPERATOR authority.",
+      "one_stage_attribution": "hardware/environment. Missing torch runtime on the execution host.",
+      "lever": "Already discharged -- the hardened rerun succeeded. Retained only as preserved history.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Superseded by a successful hardened rerun; retained as preserved negative history and not to be relabelled.",
+      "core_lever": "already discharged by the hardened rerun"
+    },
+    {
+      "slug": "p2-model-asset-missing",
+      "terminal": "CANNOT_CHECK_MODEL_ASSET_MISSING",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:16"
+      ],
+      "receipt_path": "research/receipts/PAPER3_STRONG_CONTROL_DESCRIPTOR_ATTEMPT_20260811.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "src/rakl/paper3_strong_control.py",
+        "experiments/paper3/build_semantic_descriptor.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "An earlier clean-environment attempt to build the label-blind strong semantic control on the pinned revision 953dc6f6f85a1b2d of BAAI/bge-reranker-v2-m3 returned CANNOT_CHECK_MODEL_ASSET_MISSING and is preserved. Label-blind descriptor jobs 3476527-3476529 subsequently reached HARVEST_DESCRIPTOR_READY under the preserved pre-annotation chronology, with training unauthorized throughout.",
+      "one_stage_attribution": "hardware/environment. The pinned model asset was absent from the clean environment; nothing about the instrument or the science failed.",
+      "lever": "Already discharged by the successful descriptor jobs. Retained as preserved history.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Superseded and preserved; the manuscript reports it only to keep the attempt chronology honest.",
+      "core_lever": "already discharged by descriptor jobs 3476527-3476529"
+    },
+    {
+      "slug": "p2-ablated-twin-circularity",
+      "terminal": "development instrument REJECTED -- failed the preregistered coordinate-ablated-twin circularity attack",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/06_known_world.tex:8"
+      ],
+      "receipt_path": "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/DEVELOPMENT_NEGATIVE_HISTORY.md",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/empirical_10_of_10_v1/PAPER3/OBJECTIVE/GENERATOR_MANIFEST.json",
+        "research/paper3/PAPER3_TRACK_A_REGISTRATION_V1.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "The first known-world generator produced invalid items by directly perturbing one named structural coordinate while the structural extractor exposed essentially the same coordinate. On the ordinary development set the full structural rule appeared excellent; the preregistered coordinate-ablated twin removed the directly perturbed coordinate from the extractor and the apparent advantage collapsed toward chance with a very high invalid false-accept rate. The design was rejected as a confirmatory instrument rather than repaired after confirmatory outcome access.",
+      "one_stage_attribution": "instrument-construct. Receipt verbatim: 'the original design largely measured the generator's own construction rather than a residual transfer-validity signal.'",
+      "lever": "A redesigned development instrument was built before confirmatory freeze and passed the registered checks (paired variance gave a required decidable sample of 431 for the 0.05 MDE). That redesign became the four-family confirmatory packet.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Preserved as development negative history; explicitly rejected rather than repaired, with a separate successor epoch already executed.",
+      "core_lever": "redesigned development instrument, already frozen and executed"
+    },
+    {
+      "slug": "p2-v2-packet-preannotation-defects",
+      "terminal": "two preserved pre-annotation defects: near_miss identifier leakage; forced cannot_assess=false schema",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/07_natural_domain.tex:14"
+      ],
+      "receipt_path": "research/receipts/PAPER3_V2_SOURCE_ID_REPAIR_20260810.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/receipts/PAPER3_V2_1_ANNOTATION_PACKET_INTERNAL_REVIEW_20260810.json",
+        "research/paper3/annotation/README_V2_1.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "A pre-annotation identifier-leakage audit found four curator-only source identifiers containing the phrase near_miss; that source set was preserved as negative history and replaced by an otherwise byte-equivalent v2.1 set with neutral identifiers. Separately, a hostile usability check found the response schemas forced cannot_assess=false against the frozen rubric; the repaired schemas permit abstention only as a fully null judgement, with the compiler preserving such submissions while failing confirmatory import.",
+      "one_stage_attribution": "instrument-construct (both). Leakage of an answer-correlated token into curator-visible identifiers; and a response schema that made the registered abstention option unreachable.",
+      "lever": "Both already repaired into the v2.1 packet, which is the frozen 16-item set now carrying CONFIRMATORY_PACKET_POWER_LIMITED.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Preserved defect history of a superseded packet version; the repair is already shipped.",
+      "core_lever": "already repaired into the v2.1 packet"
+    },
+    {
+      "slug": "p2-llm-comparator-near-miss-weakness",
+      "terminal": "demoted external-model comparator -- on the hardest semantic near-miss decoys the gate does not beat Direct",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/06_known_world.tex:26",
+        "publication/papers/paper-02-structural-mechanics/sections/06_known_world.tex:30"
+      ],
+      "receipt_path": "research/llm_comparator_confirmatory_v1/summary.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/llm_comparator_confirmatory_v1/raw_results.jsonl",
+        "research/llm_comparator_confirmatory_v1/run.py",
+        "research/llm_comparator_confirmatory_v1/README.md",
+        "research/llm_comparator_dev_v1/ (development lane, preserved separately)"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Model glm-5.2, seed 20260812, n=504 (gold ACCEPT 224 / REJECT 224 / CANNOT_CHECK 56), zero parse failures in any arm. False-accept on invalid: DIRECT 0.5268, FREE_COT 0.5357, RAKL_GATE 0.3393 -- the gate roughly halves the odds while the compute-matched control moves nothing. Three-way accuracy 0.6369 / 0.5774 / 0.7083. **The reported negative, confirmed in the receipt:** false_accept_on_hostile_decoys is DIRECT 0.2679, FREE_COT 0.3571, RAKL_GATE 0.3571 -- on the hardest semantic near-miss decoys the gate is not merely no better than Direct, it is measurably WORSE (0.3571 vs 0.2679) and exactly ties the Free-CoT control. Three demotions bound the whole result: one model / one seed / one family-set; a structured-inference scaffold rather than a smarter model; and, after probe G, a benchmark whose coordinates travel in pre-parsed form.",
+      "one_stage_attribution": "instrument-construct + capability. The benchmark carries no extraction requirement (probe G), so the comparator measures obligation application over structured facts, not prose reading. The hostile-decoy regression is a capability gap of the gate's own decoy discrimination, not a scaffolding failure -- the scaffold works everywhere else.",
+      "lever": "'A cross-model, cross-seed replication on a battery-compliant benchmark is the named next coordinate before any external-model claim' (06:30).",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Cross-model, cross-seed replication requires hosted frontier models. Note the hostile-decoy sub-result is a sharper negative than the manuscript's wording ('does not beat Direct') conveys: the receipt shows it loses.",
+      "core_lever": "cross-model, cross-seed replication on a battery-compliant benchmark (receipt shows the gate LOSES on hostile decoys, 0.357 vs 0.268)",
+      "receipt_branch_note": "Located via `git log --all -- publication/papers/paper-02-structural-mechanics/figures/llm_comparator.*` (commit 53d32148 'Paper II: wire real external-model applicability-gate comparator') and `find ... -iname '*comparator*'`. An earlier pass recorded this as NOT_FOUND; that was a miss, corrected here."
+    },
+    {
+      "slug": "p3-no-transfer-lift-0-5b",
+      "terminal": "NEGATIVE_NO_TRANSFER_SUCCESS_LIFT_UNDER_0_5B",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:6",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/02a_terminology_and_measurement_scope.tex:39",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:27"
+      ],
+      "receipt_path": "research/paper2_experience_benchmark_v1_2/native_job_3476548/VALIDATION_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_experience_benchmark_v1_2/native_job_3476548/README.md",
+        "research/orion_p1_p4_closure_v2/P3_EXPERIENCE_PROTOCOL_FREEZE.json",
+        "research/orion_p1_p4_closure_v2/P3_STRUCTURED_EXPERIENCE_ACTION_RECEIPT.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Frozen v1.2 RESET-versus-LEARNING packet, native job 3476548: twelve of twelve schema-valid records with the intended chronology. On the staged Qwen2.5-0.5B-Instruct model both arms achieved zero registered successes on both development and fresh-transfer tasks. Development score delta zero; the small partial-score difference on fresh transfer does not satisfy the registered success criterion. The earlier v1 and v1.1 executions remain in the lineage as prompt-interface failures rather than being pooled with the interpretable v1.2 result.",
+      "one_stage_attribution": "capability. At 0.5B the base model cannot clear the task threshold, so learning effects are unidentifiable there (the MODEL_CAPABILITY_FLOOR semantics of 02a:37).",
+      "lever": "The manuscript does not revive this record. It changes the dependency graph instead: the required ORION experience-to-action transition is now the typed structured-state mechanic held to a repaired, demonstrably falsifiable gate. 'Nothing in the later RSHEA loop relabels these records as positive' (07a:7).",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Explicitly immutable in the manuscript. The v1/v1.1 prompt-interface failures are likewise preserved and must not be pooled.",
+      "core_lever": "not revived; dependency replaced by the structured-state mechanic"
+    },
+    {
+      "slug": "p3-oracle-ladder-capability-floor",
+      "terminal": "MODEL_CAPABILITY_FLOOR_7B_V2_EXEC / CAPABLE_MODEL_AVAILABLE=NO_REFUTED",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:9",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:11",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:27",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:31 (Figure capability_ladder)"
+      ],
+      "receipt_path": "research/paper2_wave1_alr_execution_terminal_v1/CAPABILITY_BIND_V2_EXEC.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/capability_gated_closeout_20260812/ISSUE_398_TERMINAL_RECEIPT.json",
+        "research/paper2_continual_learning_causal_ladder_v1/ISSUE_399_TERMINAL_RECEIPT.json",
+        "research/CAPABILITY_GATED_CLOSEOUT_350_352_398_399_367.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Preregistered ORACLE ladder: 0.5B (jobs 3476730/3476731), 1.5B (3476756; instrument defect 3476742 preserved) and 3B (3476778) produced 0/3 registered successes; 7B (3476788) produced 1/3 with 3/3 parse-valid; the sealed V2_0_EXEC revisit (3476813) produced 2/5 with 5/5 parse-valid. Under the then-active packet none cleared the 2/3 operating-point rule.",
+      "one_stage_attribution": "capability at the time of execution -- but the manuscript later attributes part of it to instrument-construct: a Stage-0/1 audit found the prompt/evaluator contract had not defined the semantic roles of the selected- and rejected-evidence-ID fields, and two apparent model failures were exact inversions of those undefined roles (07a:11).",
+      "lever": "A hosted GLM-5.2 probe on the repaired conceptual surface reached 30/30 exact conceptual passes in both arms, clearing the conceptual 2/3 capability floor, while showing the old single-task panel had become a ceiling that could not discriminate RAKL from control. The named residual is 'fresh evidence relevance/binding under a discriminating panel' -- a new panel, not a bigger model.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "'These points remain immutable negative/capability-floor history' (figure caption, 07a:31). The diagnosis invalidates using the packet as permanent authority; it does not invalidate the recorded failure.",
+      "core_lever": "discriminating panel for fresh evidence relevance/binding, not a bigger model"
+    },
+    {
+      "slug": "p3-gate-falsifiability-construct-defect",
+      "terminal": "NON-FALSIFIABLE -- four of six registered gate conditions satisfied by identity",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:16"
+      ],
+      "receipt_path": "research/paper3_gate_falsifiability_audit_v1/GATE_FALSIFIABILITY_AUDIT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper3_gate_falsifiability_audit_v1/REPAIRED_GATE_FALSIFIABILITY_AUDIT.json",
+        "research/paper3_gate_falsifiability_audit_v1/INTERPRETATION_NARROWING.json",
+        "experiments/paper3/independent_action_oracle_v1.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "A frozen 1,792-case / 14-family minimal-twin benchmark compared typed selective experience against RESET, failure-memory-only, scalar-confidence, provenance-only, untyped whole-state and their strongest composite projection. The governance audit found the harness assigned the gold action and the candidate prediction from the same pure function on the same argument, so exact action accuracy, unsafe-apply rate, CANNOT_CHECK recall and legitimate-apply recall were satisfied BY IDENTITY and could not fail under any perturbation (a black-box probe battery left all four unmoved in 32/32 trials per probe while the two live conditions moved under identical probes). Those four numbers are not reported as candidate measurements.",
+      "one_stage_attribution": "instrument-construct. Self-grading gold assignment: gold and candidate share one pure function.",
+      "lever": "Already executed. The successor severs gold from candidate via an independently implemented declarative oracle (experiments/paper3/independent_action_oracle_v1.py, statically audited to neither import nor reference the candidate) assigning gold after case freeze on a fresh 2,400-case stratified panel. REPAIRED_GATE_FALSIFIABILITY_AUDIT.json returns FALSIFIABLE on all eight evidence-dependent conditions, with a re-planted self-grading variant reproducing the historical NON-FALSIFIABLE signature and a doctored oracle failing the independence audit.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "'The original receipt is preserved verbatim as negative instrument history.' The repair is a separate epoch and is already shipped. What the old benchmark VALIDLY measured (the information-sufficiency / projection-lossiness separation) is retained.",
+      "core_lever": "already repaired: independent declarative oracle, 2400-case panel, FALSIFIABLE on 8/8"
+    },
+    {
+      "slug": "p3-blocked-on-capability-qualification",
+      "terminal": "BLOCKED_ON_CAPABILITY_QUALIFICATION",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:24"
+      ],
+      "receipt_path": "research/paper3_gate_falsifiability_audit_v1/FRESH_TASK_LIFT_STATUS.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/l6_capability_qualification_v1/PROTOCOL.json",
+        "research/l6_capability_qualification_v1/QUALIFICATION_CRITERIA.md",
+        "research/framework_ladder/ladder.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "not_a_negative": true,
+      "what_happened": "The registered four-arm fresh-task benefit obligation is blocked: the frozen Stage-4 protocol requires an A100-class subject executing the exact pinned unquantized 7B loading semantics, and whether to stage that subject is an operator budget decision.",
+      "one_stage_attribution": "hardware, gated by operator budget. Manuscript verbatim: 'This is a prospective, unexecuted measurement---explicitly not a null and not a negative---and no threshold of the frozen protocol has been relaxed to route around it.'",
+      "lever": "Stage an A100-class subject under the frozen Stage-4 protocol. Prerequisite flagged by the programme itself (07b:13): the 0.05 gate 'has no recorded ceiling qualification, and executing it without one risks buying an underpowered terminal with scarce accelerator hours' -- so the ceiling-admissibility mechanic (NEG-p3-instrument-inadmissible-ceiling) should be applied to this protocol BEFORE the accelerator spend.",
+      "class": "STRUCTURALLY_BLOCKED",
+      "class_justification": "Blocked by an operator budget decision, not by code. Must not be counted among the negatives: the manuscript explicitly denies it that status.",
+      "core_lever": "stage an A100-class subject -- but qualify the 0.05 gate's ceiling first"
+    },
+    {
+      "slug": "p3-stale-infeasible",
+      "terminal": "published full-context STALE protocol INFEASIBLE under the sanctioned local envelope",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07a_current_precursor_result.tex:24"
+      ],
+      "receipt_path": "research/paper3_stale_feasibility_v1/FEASIBILITY_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "An externally constructed staleness benchmark (STALE, arXiv:2605.06527) was identified as the strongest lever for an external non-self-generated evaluation surface. A feasibility verification found its published full-context protocol infeasible under the currently sanctioned local envelope: every scenario requires a ~167-200K-token context and hosted LLM judging.",
+      "one_stage_attribution": "hardware. Context length and hosted-judge requirement exceed the sanctioned local envelope; the instrument and the science are untouched.",
+      "lever": "'its incremental memory-system mode remains a viable, separately frozen prospective lane' (07a:24).",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "The full-context route needs a hosted LLM judge and 167-200K-token contexts. The incremental memory-system mode is the named cheaper successor and may be locally attackable; that variant should be re-scoped when it is frozen.",
+      "core_lever": "STALE incremental memory-system mode as a separately frozen lane"
+    },
+    {
+      "slug": "p3-instrument-inadmissible-ceiling",
+      "terminal": "INSTRUMENT_INADMISSIBLE_CEILING_BELOW_GATE",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07b_structural_learning_cautionary.tex:13",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07b_structural_learning_cautionary.tex:10"
+      ],
+      "receipt_path": "research/paper4_allocator_attribution_v1/README.md",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper4_conceptual_absorption_v1/ABSORPTION_RECEIPT.json",
+        "research/paper3_stale_feasibility_v1/FEASIBILITY_RECEIPT.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "A three-tier ceiling analysis showed that NO equal-budget allocation policy, however optimal, could have reached the instrument's own registered material-effect gate of 0.05: a greedy-oracle policy achieved +0.0015 (lower bound), local search found +0.0045 (lower bound), and a harm-free-relaxation upper bound caps every policy at ~0.0246 -- a factor of two below the gate. Stated with its tightness caveat, because an earlier stronger version of this bound was itself found invalid and corrected before use. Conventional power analysis was silent throughout: bootstrap intervals were ~0.0016 wide, amply 'powered' for an effect the instrument could not generate. An independent lane that tuned allocation policies on the same instrument class plateaued at the same constructive ceiling and stopped.",
+      "one_stage_attribution": "instrument-construct (admissibility, distinct from falsifiability). The instrument cannot EXPRESS the effect it is gating. Manuscript: 'Falsifiability audit asks whether a gate CAN FAIL; admissibility analysis asks whether the instrument CAN EXPRESS the effect it is gating.'",
+      "lever": "The mechanic itself is the deliverable and is specified in executable form: compute the instrument's oracle ceiling before an allocation comparison and require it to clear a pre-frozen multiple of the minimum detectable effect, emitting INSTRUMENT_INADMISSIBLE_CEILING_BELOW_GATE -- and spending nothing -- otherwise, failing closed to CANNOT_CHECK when the oracle is not computable. The named open application: Paper III's own fresh-task lift protocol, whose 0.05 gate has no recorded ceiling qualification.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Ceiling computation is deterministic simulation over frozen worlds. Nothing hosted or accelerated is required, and the highest-value application (qualifying the Stage-4 0.05 gate) is pure local computation that gates an expensive external spend.",
+      "core_lever": "compute the oracle ceiling before spending a confirmatory epoch; apply it to P3's own 0.05 fresh-task gate"
+    },
+    {
+      "slug": "p4-adaptive-lost-to-static",
+      "terminal": "DEVELOPMENT_NEGATIVE_ADAPTIVE_OVERCONCENTRATES__STATIC_PARENT_RETAINS_DEFAULT",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/07b_structural_learning_cautionary.tex:7"
+      ],
+      "receipt_path": "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_DEVELOPMENT_NEGATIVE.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_PROTOCOL_FREEZE.json",
+        "research/orion_p1_p4_closure_v2/P4_ADAPTIVE_FREEZE_MANIFEST.json",
+        "research/paper4_allocator_attribution_v1/README.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "A learner-state-conditioned adaptive training allocator was compared against a static structural parent at strictly equal example budget across six frozen simulation worlds, 384 replicates, 48 examples per arm. E_VECTOR_ADAPTIVE_V1 lost on balanced mastery by -0.0166 (bootstrap 95% CI [-0.0174, -0.0158]) against D_STATIC_STRUCTURAL and degraded the hard-safety floor by -0.0503 [-0.0578, -0.0431]. One diagnostic arm was found confounded and is recorded as uninformative rather than used as evidence. The originally recorded root-cause narrative was refuted by the realized budget counts and is superseded AS AN INTERPRETATION ONLY; the receipt itself is immutable. Both identified defects were verified present in the promoted production allocator.",
+      "one_stage_attribution": "mapping / allocation-policy stage. Manuscript: 'Failure attribution then localized the loss to the allocation-policy stage via two designed lever arms: guard-rail budget capture (a coverage floor implemented as a budget-consuming target rather than a constraint absorbed 13 of 48 examples into the highest-mastery coordinate in every world; capping it recovered about a third of the gap) and within-round concentration (near-uniform budget still lost -0.0108).'",
+      "lever": "Two named repairs from the attribution: (1) implement the coverage floor as a CONSTRAINT rather than a budget-consuming target; (2) fix within-round concentration. Revival is explicitly permitted by the receipt: 'STATIC_STRUCTURAL remains the active training policy unless a fresh frozen receipt explicitly emits ADAPTIVE_RESIDUAL_SUPPORTED and independently satisfies strongest-parent residual, hard-harm and full-overhead gates.' BLOCKER: the instrument this was run on is the one whose ceiling (~0.0246) sits below its own 0.05 gate -- see NEG-p3-instrument-inadmissible-ceiling. A re-run on the same instrument cannot pass regardless of the policy.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Model-free deterministic simulation, 384 replicates, no accelerator. But the revival is gated on first building an admissible instrument; re-running the allocator on the existing one is provably futile.",
+      "core_lever": "coverage floor as constraint not budget target; fix within-round concentration -- but only on an admissible instrument"
+    },
+    {
+      "slug": "p3-cannot-freeze-confirmatory-packet",
+      "terminal": "CANNOT_FREEZE_CONFIRMATORY_PACKET",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:29"
+      ],
+      "receipt_path": "research/paper5_confirmatory_packet_v1/ISSUE_251_TERMINAL_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper5_confirmatory_packet_v1/PACKET_FREEZE_STUB.json",
+        "research/paper5_confirmatory_packet_v1/README.md",
+        "research/capability_gated_closeout_20260812/ISSUE_367_TERMINAL_RECEIPT.json",
+        "research/sweeper_closeout_20260812/TERMINAL_RECEIPTS.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Issue #250 terminated at CANNOT_FREEZE_CONFIRMATORY_PACKET after the shared #247 capability floor. The four-arm causal-attribution objects and scripts are integrated and preregistered, but the executor and harness are instrument-only and no four-arm causal performance result is reported.",
+      "one_stage_attribution": "capability. The shared #247 model-capability floor makes the four-arm contrast unidentifiable, so the packet cannot legitimately be frozen.",
+      "lever": "Same as the fresh-task lift: capability qualification of a subject model. Downstream of BLOCKED_ON_CAPABILITY_QUALIFICATION.",
+      "class": "STRUCTURALLY_BLOCKED",
+      "class_justification": "Blocked by the same capability-qualification/operator-budget decision, not by code.",
+      "core_lever": "capability qualification of a subject model"
+    },
+    {
+      "slug": "p3-cannot-execute-frozen-packet",
+      "terminal": "CANNOT_EXECUTE_FROZEN_PACKET",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:29"
+      ],
+      "receipt_path": "research/paper5_confirmatory_packet_v1/ISSUE_251_TERMINAL_RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/ISSUE_258_TERMINAL_RECEIPT.json",
+        "research/ISSUE_TERMINAL_FLOOR_20260811.md",
+        "research/STRONGEST_VERSION_CAMPAIGN_SCOREBOARD_20260811.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Issue #251 terminated at CANNOT_EXECUTE_FROZEN_PACKET. Together with #250 this is the manuscript's 'confirmatory freeze/execution terminal refusal' row: the four-arm causal study is neither frozen nor executed and no four-arm causal performance result is reported.",
+      "one_stage_attribution": "capability, inherited from the same #247 floor.",
+      "lever": "Capability qualification of a subject model; then freeze, then execute, in that order.",
+      "class": "STRUCTURALLY_BLOCKED",
+      "class_justification": "Blocked by the capability-qualification/operator-budget decision, not by code.",
+      "core_lever": "capability qualification of a subject model"
+    },
+    {
+      "slug": "p3-no-integration-surface",
+      "terminal": "NO_INTEGRATION_SURFACE",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:24"
+      ],
+      "receipt_path": "docs/EPISTEMIC_NONINTERFERENCE.md",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "src/rakl/epistemic_noninterference.py",
+        "research/PAPERS_II_III_V_CLAIM_TO_EVIDENCE_MATRIX_20260812.json",
+        "docs/PAPER5_IMPLEMENTATION_STATUS.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Before issue #242 the epistemic-noninterference specification had no integration surface at all. That state is preserved as superseded negative/incomplete history. Current RAKLV3State carries an immutable ScientificAuthorityProjection, and experience/retrieval/routing/workspace/self-evolution operations are tested for noninterference. The manuscript states this is not a model-level low-leakage or superiority result.",
+      "one_stage_attribution": "extraction/integration. The specification existed but had no executable binding point.",
+      "lever": "Already discharged by #242. The residual open coordinate is independent external assurance, tracked separately.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Explicitly 'preserved as superseded negative/incomplete history' in the manuscript.",
+      "core_lever": "already discharged by issue #242"
+    },
+    {
+      "slug": "p3-cannot-execute-matched-eval",
+      "terminal": "CANNOT_EXECUTE_MATCHED_EVAL",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04b_obstruction_transformation_memory.tex:75"
+      ],
+      "receipt_path": "research/sweeper_closeout_20260812/TERMINAL_RECEIPTS.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper3_route_resolver_v1/PROTOCOL.json",
+        "research/paper3_glue_rejection_production_v1/PROTOCOL.json",
+        "research/paper3_typed_rejection_production_v1/PROTOCOL.json",
+        "research/paper3_publication_closeout_v2/CANDIDATE_RECEIPT.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "The earlier model-dependent matched evaluation of the obstruction-transformation memory remains preserved as CANNOT_EXECUTE_MATCHED_EVAL at the registered capability boundary. The manuscript is explicit that it is not reinterpreted as a routing win: 'whether model-mediated use of that memory improves fresh scientific research remains causally unidentified at the available operating point.'",
+      "one_stage_attribution": "capability, at the registered capability boundary.",
+      "lever": "Same capability-qualification lane as the fresh-task lift; nothing in the manuscript proposes a cheaper substitute for this specific evaluation.",
+      "class": "STRUCTURALLY_BLOCKED",
+      "class_justification": "Blocked at the registered capability boundary -- an operator-budget/protocol decision, not code. The record itself is preserved and must not be reinterpreted.",
+      "core_lever": "capability qualification; no cheaper substitute proposed"
+    },
+    {
+      "slug": "p3-router-v2-unreproducible",
+      "terminal": "CANNOT_CHECK (21-family / 2,688-case router validation is unreproducible; NOT a refutation)",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04b_obstruction_transformation_memory.tex:71"
+      ],
+      "receipt_path": "research/paper3_gate_falsifiability_audit_v1/UNREPRODUCIBLE_V2_RESULT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json",
+        "research/paper3_publication_closeout_v1/FINAL_RECEIPT.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "A 21-family, 2,688-case adversarial validation of the strict typed router was previously quoted for the routing plane. A repository audit found that although its protocol freeze survives, no harness, no case set and no result artifact for it exists anywhere in the repository or its history. The receipt records its own search-scope justification (git log --all -S over four v2-distinctive family tokens and the metric name; git show --stat of the single matching commit; enumeration of every file ever added under experiments/paper3/*; repo-wide grep for '2688'). Status CANNOT_CHECK, not refutation. The audit also records a structural prediction, made before any such harness exists, that the instrument shares the self-grading gold-assignment defect confirmed in the sibling harness -- its four registered thresholds sit exactly at the ceilings its metrics could not leave. The paper does not cite the numbers as evidence. Separately preserved: the FAILED FIRST validation instrument for this plane, rejected because two intended mutations were not load-bearing (receipt for that sub-item NOT located; see receipt_search_scope).",
+      "receipt_search_scope": "For the failed-first-instrument sub-item: `grep -rln 'load.bearing' research/ experiments/` (widened from research/paper3_*/ after review) returns 15 files, none of which records a routing-validation instrument rejected for non-load-bearing mutations; the nearest hits are unrelated (MECHANIC_PROMOTION_MATRIX.json, NEAREST_WORK_AUDIT.json, STAGE4_GATE_FALSIFIABILITY_AUDIT.json). Recorded as 'could not locate', not 'absent'.",
+      "one_stage_attribution": "extraction/provenance. The quoted numbers exist as written text and never as a generated artifact.",
+      "lever": "Build the harness and case set under the frozen protocol, with gold assignment severed from the candidate (the repaired-oracle pattern of experiments/paper3/independent_action_oracle_v1.py), and re-execute. The audit's structural prediction that the old instrument was self-grading is itself a falsifiable claim the rebuild would test.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Deterministic typed-router validation; the protocol freeze already exists and only a harness plus case generator are missing. No model, no accelerator, no annotation.",
+      "core_lever": "build the missing harness + case set with gold severed from the candidate, then re-execute"
+    },
+    {
+      "slug": "p3-novelty-audit-human-blocked",
+      "terminal": "independent retained-novelty audit -- protocol frozen, evidence pending, human-blocked on #255",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:31",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:37"
+      ],
+      "receipt_path": "research/paper5_independent_novelty_human_residual_v1/BLOCKED_HUMAN_PACKET_FREEZE.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper5_independent_novelty_human_residual_v1/ISSUE_353_TERMINAL_RECEIPT.json",
+        "research/paper5_independent_novelty_human_residual_v1/README.md",
+        "research/paper5_novelty_audit_v1/README.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Internal seven-axis novelty accounting is measurable but is not represented as externally validated semantic novelty. The audit protocol is frozen; the evidence is pending and blocked on a human packet (#255).",
+      "one_stage_attribution": "licence/abstention (independence). Requires external human judgement that the programme cannot self-supply.",
+      "lever": "Execute the frozen human packet with judges outside the programme.",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Needs human annotation; no code path can discharge it.",
+      "core_lever": "execute the frozen human packet with external judges"
+    },
+    {
+      "slug": "p3-external-assurance-pending",
+      "terminal": "independent external assurance of v3 hardening -- pending / not claimed",
+      "paper": "III",
+      "manuscript_locations": [
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:32",
+        "publication/papers/paper-03-method-evolution-mechanics/sections/04a_implementation_status.tex:33"
+      ],
+      "receipt_path": "docs/PAPER5_IMPLEMENTATION_STATUS.md",
+      "receipt_verified": true,
+      "supporting_receipts": [],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "The current implementation closes known declaration-bound authority paths under internal tests; independent, process-lineage-separated assurance remains a stronger unperformed claim. Relatedly, 'Orion 3.1 superiority or incumbent status' is recorded as not established: a future Class-B challenger must earn that label through matched development, fresh protected assurance and governance.",
+      "one_stage_attribution": "licence/abstention (independence). Same-process assurance is not independent review.",
+      "lever": "A process-lineage-separated assurance pass, i.e. reviewers or a harness outside this repository's authoring process.",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Independence is definitionally unattainable from inside the programme.",
+      "core_lever": "process-lineage-separated assurance outside this repository"
+    },
+    {
+      "slug": "p1-bounded-saturation-null",
+      "terminal": "NULL (MECH-BOUNDED-SATURATION solve-enablement ablation)",
+      "paper": "I (overlay branch publication-overlay-papers-123, PR #704)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/06c_current_evidence_update.tex:7"
+      ],
+      "receipt_path": "research/orion_saturation_solve_enablement_v1/receipts/results_v1.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/orion_saturation_solve_enablement_v1/RESULT_V1.md",
+        "research/orion_saturation_solve_enablement_v1/PROTOCOL.json",
+        "research/orion_saturation_solve_enablement_v1/receipts/gate_audit.json",
+        "research/mechanism_benefit_ledger/ledger.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Non-circular downstream benefit attempt on 112 held-out Mathlib theorem-proving tasks under Lean adjudication. Solve rate 0.357 (saturation arm A, 2256 rounds) vs 0.3125 (matched-budget uniform arm B, 2240 rounds); discordant 8 vs 3; exact McNemar two-sided p=0.2266. Verdict: NULL -- the benefit column does not gain an entry. Mean gold coverage was essentially equal (0.342 vs 0.349), so the arms were genuinely matched.",
+      "one_stage_attribution": "capability/benefit. The mechanic runs and the design check is clean (no censoring at schedule end, no degenerate single-valued rounds); the downstream solve-enablement effect is simply not resolvable at n=112.",
+      "lever": "'Its frozen revival remains a separate epoch; the original result is not reclassified' (06c:7). The receipt itself is honest that the substituted anchor is 'Mathlib-level lemma proving, not frontier mathematics' and that the operator's stated target is not met and not claimed.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Lean-adjudicated Mathlib tasks run locally and deterministically; a larger held-out set or a sharper retrieval-budget contrast is pure local compute. The original artifact is immutable; the revival is a new epoch.",
+      "core_lever": "frozen revival as a separate epoch; original not reclassified"
+    },
+    {
+      "slug": "p1-autoresearchbench-blocked",
+      "terminal": "BLOCKED (AutoResearchBench external anchor unexecutable)",
+      "paper": "I (overlay branch, via the same receipt as the bounded-saturation null)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/06c_current_evidence_update.tex:7 (implicit -- the manuscript reports only the substituted Mathlib anchor; the block is recorded in the receipt)"
+      ],
+      "receipt_path": "research/orion_saturation_solve_enablement_v1/RESULT_V1.md",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/orion_saturation_solve_enablement_v1/receipts/gate_audit.json"
+      ],
+      "in_manuscript": false,
+      "immutable_artifact": false,
+      "what_happened": "AutoResearchBench (arXiv:2604.25256) was verified to primary depth and upgraded from SEARCH_SNIPPET; title, authors, submission date and the 9.39%/9.31% ceiling were confirmed and the dataset was downloaded and characterised. Execution is nevertheless BLOCKED for two independent reasons: (1) the DeepXiv retrieval endpoint is unpublished (PAPER_SEARCH_API_URL empty in example.env, defaults to \"\"), so the paper's standard retrieval environment cannot be reproduced; (2) no LLM is available on the sanctioned compute host (no ollama, no vllm, no llama.cpp, 6 GiB GPU, no OpenAI-compatible endpoint). One discrepancy is preserved rather than smoothed: the released bundle contains 3695 wide-research gold papers against 3692 reported in the paper -- recorded FLAGGED.",
+      "one_stage_attribution": "hardware/environment. Two independent environment blockers; nothing about the mechanic was tested.",
+      "lever": "The substituted Lean/Mathlib anchor is the executed alternative. Reviving the original anchor needs a published retrieval endpoint and an LLM-capable host.",
+      "class": "REVIVABLE_EXTERNAL",
+      "class_justification": "Needs a hosted or locally served LLM and an external retrieval API that is not published.",
+      "core_lever": "needs a published retrieval endpoint and an LLM-capable host"
+    },
+    {
+      "slug": "p1-source-monitoring-repetition-attack",
+      "terminal": "NEGATIVE (source-monitoring repetition attack; KEEP_PROPOSAL_ONLY)",
+      "paper": "I (overlay branch publication-overlay-papers-123, PR #704)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/06c_current_evidence_update.tex:7",
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/01a_executor_independence.tex:23"
+      ],
+      "receipt_path": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/RESULTS.json",
+      "receipt_verified": true,
+      "receipt_branch_note": "This receipt does NOT exist on main. It was added by the overlay branch; verify with `git show publication-overlay-papers-123:<path>`.",
+      "supporting_receipts": [
+        "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/PROMOTION_GATE_CANDIDATE.json",
+        "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/PROTOCOL.json",
+        "publication-overlay-papers-123:experiments/paper1/run_source_monitoring_repetition_attack_v1.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "Under the frozen attack model, ten submitted identifiers for one claim collapsed to only eight normalized identities, giving a repetition ratio 0.2 against a registered 0.5 gate. The submissions were near-duplicates of one DOI (query-string variants ?v=1..?v=5, a case-varied 'DOI: ' prefix, an arXiv id). Typed outcome NEGATIVE; promotion verdict KEEP_PROPOSAL_ONLY; net_benign 0.0, net_adversarial 0.0.",
+      "one_stage_attribution": "extraction. The identity normalizer fails to collapse trivially equivalent identifiers, so the firewall never gets to demonstrate authority-inertness.",
+      "lever": "Manuscript: 'The next mechanism must therefore change source-identity and lineage resolution rather than the threshold' (06c:7). The receipt names four concrete next steps: proper DOI-to-arXiv mapping; case-insensitive matching; publisher-specific prefix handling; cross-venue citation detection.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Pure deterministic identifier-normalization work, fully specified by the receipt's own next_steps list. No model, no data acquisition.",
+      "core_lever": "change source-identity/lineage resolution (DOI<->arXiv map, case-insensitive, publisher prefixes), never the threshold"
+    },
+    {
+      "slug": "p1-l4-tight-resource-floor",
+      "terminal": "both arms fail on the deliberately tight resource floor (sr_a_tight = sr_b_tight = 0.0)",
+      "paper": "I (overlay branch publication-overlay-papers-123, PR #704)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/06c_current_evidence_update.tex:3"
+      ],
+      "receipt_path": "research/benefit_L4_navigation_v1/results_v1/evaluator_report.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/benefit_L4_navigation_v1/PROTOCOL.json",
+        "research/benefit_L4_navigation_v1/EVALUATOR.py",
+        "research/benefit_L4_navigation_v1/README.md"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "L4 distil-and-navigate: 400 worlds, 310 primary, seed 20260814. Arm B (distil-and-navigate) solves every registered medium/loose-budget primary world (sr_b = 1.0) against sr_a = 0.3226 for budgeted lexical raw reading, McNemar p=1.2e-63 with discordant 210/0, and both null models (random acquisition q95 0.297, index permutation q95 0.290) sit far below. The reported negative half: on the deliberately tight worlds BOTH arms score 0.0 (sr_a_tight = 0.0, sr_b_tight = 0.0). The manuscript describes this as a '60-world resource floor'; the receipt records the tight-stratum solve rates but not the stratum size in its summary block, so the count is quoted from the manuscript and not independently confirmed here.",
+      "one_stage_attribution": "power/resource-envelope, by construction. The tight stratum was deliberately built below the budget any arm needs; it is a designed floor, not an instrument defect.",
+      "lever": "No repair is proposed and none is implied -- the floor is intentional. It is inventoried because it bounds the L4 positive: the mechanism's advantage does not extend to the tight-budget regime, which is precisely the regime a global-recovery claim would need.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Extending the mechanism into the tight-budget regime is deterministic local work on the same frozen generator. Any such attempt is a new epoch and must not rescore results_v1.",
+      "core_lever": "intentional floor; extending the mechanism into the tight-budget regime is a new epoch"
+    },
+    {
+      "slug": "p1-minimal-twin-v1-retired",
+      "terminal": "first minimal-twin projection instrument RETIRED -- transition_type carried family_id; identical substantive states carried conflicting gold actions",
+      "paper": "I (overlay branch publication-overlay-papers-123, PR #704)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/02d_projection_sufficiency_v2.tex:14-16"
+      ],
+      "receipt_path": "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/V2_LIVE_REPAIR.md",
+      "receipt_verified": true,
+      "receipt_branch_note": "V2_LIVE_REPAIR.md and PROJECTION_SUFFICIENCY_RESULT_V2.json are added by the overlay branch and do NOT exist on main. The overlay REPLACES sections/02d_projection_sufficiency.tex with sections/02d_projection_sufficiency_v2.tex in Paper I's main.tex.",
+      "supporting_receipts": [
+        "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/PROJECTION_SUFFICIENCY_RESULT_V2.json",
+        "publication/papers/paper-01-epistemic-mechanics/sections/02d_projection_sufficiency.tex (the superseded v1 section, still on main)"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "The first development instrument used fifteen named failure families and exposed a field called transition_type to every comparator; the value of that field was the family identifier. A RAKL-on-RAKL audit removed the identifier and found that some otherwise identical substantive states carried different gold actions -- the common 'safe' state was interpreted as promotion in most families but as hold or scope restriction in others, and an otherwise identical superseded state was assigned different revocation/supersession actions in two families. The first panel therefore did not define one coherent function a* over the scientific state unless family identity was treated as answer-semantic input. Its numerical separation result is retained as development history and is NOT used as flagship evidence.",
+      "one_stage_attribution": "instrument-construct. An answer-bearing family label was visible to every comparator, and gold was not a function of substantive state alone.",
+      "lever": "Already executed: the V2 panel separates a non-answer-bearing transition request from the governance decision, hides family/case identifiers from candidate-visible projections, and adds an executable collision audit verifying no two cases with identical substantive state and request carry conflicting gold. 28 cases / 14 families, zero contradictory pairs, 10-coordinate basis sufficient and each coordinate individually necessary.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "The v1 numerical result is explicitly retained as development history and barred from flagship use; the successor epoch is already shipped in the overlay.",
+      "core_lever": "already repaired: V2 panel, request/decision split, executable collision audit"
+    },
+    {
+      "slug": "p1-atms-parent-boundary",
+      "terminal": "NOT A SUPERIORITY RESULT -- the ATMS_PROV_REVISION comparison must not claim typed RAKL authority is more expressive",
+      "paper": "I (overlay branch publication-overlay-papers-123, PR #704)",
+      "manuscript_locations": [
+        "publication-overlay-papers-123:publication/papers/paper-01-epistemic-mechanics/sections/06c_current_evidence_update.tex:5"
+      ],
+      "receipt_path": "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/V2_PARENT_BOUNDARY_ADDENDUM.md",
+      "receipt_verified": true,
+      "receipt_branch_note": "Added by the overlay branch; does not exist on main.",
+      "supporting_receipts": [
+        "publication-overlay-papers-123:research/paper1_adversarial_epistemic_benchmark_v1/PROJECTION_SUFFICIENCY_RESULT_V2.json"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "The ATMS_PROV_REVISION architecture in the v2 development benchmark is a diagnostic abstraction, not a strongest-fair-parent superiority result. General truth-maintenance, provenance, belief-revision and argumentation systems can represent application-specific propositions and rules, including scientific authority coordinates, if configured to do so. The 0.6786 ATMS+PROV+revision development bound is retained only as a diagnostic of what a richer parent abstraction already explains. The manuscript carries the narrowing verbatim: 'the result is not stated as a generic expressiveness theorem over all rule or logic systems' (06c:5).",
+      "one_stage_attribution": "instrument-construct (comparator admissibility). An equal-information generic rule engine is an expressiveness oracle, not a fair weaker parent.",
+      "lever": "Named successor, verbatim: 'Paper I's positive mechanism target is instead causal ablation of its scientific authority contract: full typed basis versus leave-one-coordinate-out, scalar authority, pairwise-only gluing, proposal/workspace/experience authority leakage, missing negative-history retention and missing CANNOT_CHECK.'",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "The named successor is a deterministic leave-one-coordinate-out ablation over an existing 28-case panel. No external resource of any kind.",
+      "core_lever": "causal leave-one-coordinate-out ablation of the authority contract"
+    },
+    {
+      "slug": "p2-arn-v2-battery-failed",
+      "terminal": "NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE",
+      "paper": "II (successor lineage; NOT in the current manuscript)",
+      "manuscript_locations": [],
+      "receipt_path": "NOT_FOUND",
+      "receipt_verified": false,
+      "receipt_branch_note": "**No committed result artifact exists.** The v2 terminal is asserted only in the body of PR #703. `gh pr view 703 --json files` lists twelve files and contains NO `results_v2_reducer/` directory; the same directory is absent from the PR #707 head tree (`gh api .../contents/research/paper2_external_corpus_v1?ref=5d2d332b`). Only `PROTOCOL_V2_REDUCER.json` and `scripts/paper2_external_corpus_confirmatory_v2.py` were committed. Local branch refs `arn/v2-*`/`arn/v3-*` are stale relative to the PR head SHAs (local ecce469e vs head ef42786e), so a local `git show` is not a valid check here.",
+      "supporting_receipts": [
+        "PR #703 body (gh pr view 703)"
+      ],
+      "in_manuscript": false,
+      "immutable_artifact": false,
+      "what_happened": "ARN v2 introduced typed extraction and type-preserving partial-credit mapping. Per the PR #703 body: B3_shuffled_gold advantage 0.121, CI [0.091, 0.150] when it should be ~0; the instrument is not probative and the confirmatory gates were not read. **Caveat recorded rather than smoothed:** these numbers have no committed result artifact -- the protocol and runner were committed but `results_v2_reducer/` was not. Treated as CANNOT_CHECK at the artifact level, exactly as Paper III treats the unreproducible 21-family router result.",
+      "one_stage_attribution": "instrument-construct. PR body: 'The mapping score used label-INDEPENDENT type marginals, so it survived gold shuffling -- a band-similarity proxy, not structural analogy.'",
+      "lever": "v3 instance-paired correspondence scoring, already executed and successful at making the instrument probative. Separately: commit the v2 result artifact, or record the v2 terminal as CANNOT_CHECK.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "Preserved as lineage history; v3 is the successor epoch. Classed IMMUTABLE_HISTORY as lineage, but note the artifact gap above -- an uncommitted result cannot be preserved history in the sense the programme's own discipline requires.",
+      "core_lever": "superseded by v3; **v2 result artifact is not committed** -- treat as CANNOT_CHECK",
+      "receipt_search_scope": "Enumerated the complete file list of both open PRs from the GitHub API, and listed the full `research/paper2_external_corpus_v1/` tree at the PR #707 head SHA. `results_v2_reducer/` appears in neither. This is 'checked and absent from the PR heads', not 'could not check'."
+    },
+    {
+      "slug": "p2-arn-v3-capability-absent",
+      "terminal": "NEGATIVE__CAPABILITY_ABSENT (probative instrument)",
+      "paper": "II (successor lineage; NOT in the current manuscript)",
+      "manuscript_locations": [],
+      "receipt_path": "research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json @ PR #703 head ef42786e8bb2e3fc658ce483b0d281d048ffad7e",
+      "receipt_verified": true,
+      "receipt_branch_note": "Branch-only, open PR #703. **Local ref `arn/v3-instance-paired-reducer` is stale** (ecce469e) and does not contain this file; fetch from the PR head instead: `gh api \"repos/{owner}/{repo}/contents/research/paper2_external_corpus_v1/results_v3_reducer/RESULT.json?ref=ef42786e\" -q .content | base64 -d`. Verified this way: line 154 carries `\"terminal\": \"NEGATIVE__CAPABILITY_ABSENT\"`, admission verdict ADMITTED / EXTERNAL_LABEL, pairs total 2190 (dev 648, confirm 1542), acquisition sha256 a866fe5341ce4a29f00f24987a12278303b2b8ad788352f549b0fe051ad4a7a8.",
+      "supporting_receipts": [
+        "arn/v3-instance-paired-reducer:research/paper2_external_corpus_v1/PROTOCOL_V3_REDUCER.json",
+        "PR #703 body (gh pr view 703)"
+      ],
+      "in_manuscript": false,
+      "immutable_artifact": false,
+      "what_happened": "Instance-paired correspondence scoring: every score term consumes a specific (query-instance, candidate-instance) pair, so no marginal component is computable from one narrative alone. B3_shuffled_gold PASSED -- advantage 0.0044, CI [-0.029, 0.038], g1_fails_as_required true. The instrument is now probative. Confirmatory nonetheless NEGATIVE__CAPABILITY_ABSENT: witness exact 0.495 vs band 0.506; G1 advantage -0.0018, CI [-0.036, 0.031]; G2 valid_accept 0.0, invalid_false_accept 0.0.",
+      "one_stage_attribution": "capability (feature adequacy). PR body: 'The instance-paired correspondence ... yields insufficient signal. The scoring is strict and principled, but the extracted features (typed roles, typed relations) may not capture the analogical structure that ARN requires.'",
+      "lever": "The v4 relation-triple attempt was the first response and regressed the battery. The manuscript's own named lever -- a capable learned extractor under the admission gate plus a contamination declaration -- remains untried.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Same reasoning as the manuscript-reported ARN negative: probative deterministic instrument in hand, external labels already acquired, admission gate does not require a hosted model. This is the cleanest live entry point to the ARN capability question. **Gate read (src/rakl/reduction_validation.py):** the implemented admission gate applies exactly three checks -- scramble-invariance (one scramble-invariant source is disqualifying), obstruction-surfacing on a fixed calibration source, and author independence of the validation labels (`external_label_author` must differ from `author`, else admission is capped at `ADMITTED_AT_FLOOR` / `CertificateKind.ASSERTED`). There is NO contamination check in code and NO model-class restriction: the gate does not distinguish a deterministic reducer from a learned one, nor a from-scratch extractor from a pretrained encoder. The contamination declaration is a manuscript-level obligation (sec.7:36, sec.8:22), not a code gate. A locally-runnable learned extractor therefore passes the same three checks a hosted one would, which is what keeps this REVIVABLE_LOCAL.",
+      "core_lever": "capable learned extractor under the admission gate (instrument already probative; terminal verified in the artifact)"
+    },
+    {
+      "slug": "p2-arn-v4-battery-failed",
+      "terminal": "BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE (PR text says NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE)",
+      "paper": "II (successor lineage; NOT in the current manuscript)",
+      "manuscript_locations": [],
+      "receipt_path": "research/paper2_external_corpus_v1/results_v4_reducer/RESULT.json @ PR #707 head 5d2d332b2ed6b4a0a59ca7e53b2e87221be582c9",
+      "receipt_verified": true,
+      "receipt_branch_note": "Branch-only, open PR #707. **Local ref `arn/v4-relational-reducer` is stale** (c38a9561); fetch from the PR head. Verified: the artifact's terminal string is `BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE` and the B3 advantage is 0.1346739299610895. **String mismatch preserved:** the PR title and body say `NEGATIVE__BATTERY_FAILED__INSTRUMENT_NOT_PROBATIVE`; the artifact omits the `NEGATIVE__` prefix. The artifact string is authoritative.",
+      "supporting_receipts": [
+        "arn/v4-relational-reducer:research/paper2_external_corpus_v1/PROTOCOL_V4_REDUCER.json",
+        "PR #707 body (gh pr view 707)"
+      ],
+      "in_manuscript": false,
+      "immutable_artifact": false,
+      "what_happened": "v4 aligned relation triples (source_role_type, relation_type, target_role_type) with scoring 0.8*triple_score + 0.2*role_boost. B3_shuffled_gold FAILED: advantage 0.135, CI [0.105, 0.163], g1_fails_as_required false. The run stopped at the battery; no confirmatory gates were read.",
+      "one_stage_attribution": "instrument-construct. PR body: 'The role_boost component (exact token matches) introduced marginal statistics that survive label shuffling'; triple extraction/scoring failed to maintain the v3 instance-paired property.",
+      "lever": "Restore the v3 instance-paired property -- remove or instance-pair the role_boost term -- before any second-order relational feature is scored. This is a code fix with an already-attributed cause, not a research target.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Deterministic scoring code with a one-line-scope attributed defect. Not a frontier: it is a regression of v3.",
+      "core_lever": "restore v3's instance-paired property (remove/instance-pair role_boost)"
+    },
+    {
+      "slug": "p2-faithful-import-refuted",
+      "terminal": "registered refutation of the faithful import -- false impossibility certificates on all four repairable/open-world/budget arms",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/04_typed_refusal.tex:41",
+        "publication/papers/paper-02-structural-mechanics/sections/04_typed_refusal.tex:45",
+        "publication/papers/paper-02-structural-mechanics/sections/04_typed_refusal.tex:49"
+      ],
+      "receipt_path": "research/paper2_causal_transport_absorption_v1/RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_causal_transport_absorption_v1/PROTOCOL.json",
+        "research/paper2_causal_transport_absorption_v1/AMENDMENT_01.json",
+        "research/paper2_causal_transport_absorption_v1/MECHANIC_CANDIDATE.json",
+        "research/paper2_causal_transport_absorption_v1/SOURCE_VERIFICATION.json",
+        "src/rakl/transfer_impossibility.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Eight frozen arms. Arm A, a FAITHFUL import of the completeness parent's refusal semantics, emitted a false impossibility certificate on every repairable, open-world and budget-limited arm -- all four. That is the registered refutation of the import, designed in advance as the falsifying test. Arm B, the ADAPTED gate that re-derives the strong verdict from the parent's actual preconditions, emitted no false certificate, fired the strong verdict on exactly the three witness-independent structural arms, and differed from the import on four arms; all three registered falsifiers failed to fire. Two sweeps under hard gates: a 600-case randomized proposition sweep with zero disagreements against an oracle criterion (288 with source relations, 18 discriminating via a non-canonical role mapping), and a planted known-answer sweep of 178 planted-pass / 178 planted-fail with zero failures (seed 20260814). All five hard gates passed. Verified in the receipt: ARM-1_REPAIRABLE_ROLE_MAP and ARM-3_REPAIRABLE_BOUNDARY both show challenger_A=CERTIFIABLY_IMPOSSIBLE against ground_truth=MERELY_UNLICENSED with A_correct=false and B_correct=true; ARM-4_STRUCTURAL_RELATION and its siblings show both challengers agreeing with a CERTIFIABLY_IMPOSSIBLE ground truth.",
+      "one_stage_attribution": "mapping. The import failed precisely where 'the refusal cause is witness-local' -- surface analogy carried the parent's verdict without its preconditions. Manuscript: 'refusal semantics cannot be imported from the completeness parent by surface analogy'.",
+      "lever": "Already executed and successful: the adapted typed refusal, which re-derives the strong verdict from the parent's actual preconditions, is exact on the registered design. This is the programme's clearest worked example of assimilation-by-adaptation rather than import. Open residuals the section names itself: same-context evaluation with no independent reproduction; the transfer is not peer-reviewed even though the source theorem is; and the exponential presentation-space cost means the bounded-exhaustion path must be MEASURED, not assumed, in any deployment claim.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "A deliberately constructed refutation that already produced its successor in the same epoch. It is negative history of the IMPORT, not a live open problem -- the live residual is the unmeasured bounded-exhaustion cost, which belongs to the adapted gate.",
+      "core_lever": "already answered by the adapted gate; live residual is the UNMEASURED exponential bounded-exhaustion cost",
+      "receipt_branch_note": "Located by grepping for the verdict vocabulary the section uses (`CERTIFIABLY_IMPOSSIBLE`, `MERELY_UNLICENSED`) across research/ experiments/ src/, after `find -iname '*refusal*'` returned nothing -- the lane is filed under its parent's name (causal transport absorption), not under 'typed refusal'. Verified: the receipt's `arms` array carries ARM-1..ARM-8 with per-arm `challenger_A` / `challenger_B` / `ground_truth`, and the planted sweep records planted_pass_cases 178 / planted_fail_cases 178."
+    },
+    {
+      "slug": "p2-cannot-construct-unreachable-arm",
+      "terminal": "CANNOT_CONSTRUCT",
+      "paper": "II",
+      "manuscript_locations": [
+        "publication/papers/paper-02-structural-mechanics/sections/04_typed_refusal.tex:32",
+        "publication/papers/paper-02-structural-mechanics/sections/04_typed_refusal.tex:41"
+      ],
+      "receipt_path": "research/paper2_causal_transport_absorption_v1/RECEIPT.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "research/paper2_causal_transport_absorption_v1/PROTOCOL.json",
+        "research/paper2_causal_transport_absorption_v1/AMENDMENT_01.json",
+        "research/paper2_causal_transport_absorption_v1/MECHANIC_CANDIDATE.json",
+        "research/paper2_causal_transport_absorption_v1/SOURCE_VERIFICATION.json",
+        "src/rakl/transfer_impossibility.py"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": true,
+      "what_happened": "Arm 2 of the eight-arm typed-refusal design (ARM-2_REPAIRABLE_EVIDENCE) is preserved as CANNOT_CONSTRUCT. `StructuralWitness.__post_init__` rejects empty evidence_ids, so an evidence-free witness is not an admissible presentation and the `missing_witness_evidence` branch of `assess_transfer` is unreachable through the public constructor (constructor error: 'structural witness requires nonblank evidence identities'). The manuscript reports the arm as unreachable rather than counting it as a pass.",
+      "one_stage_attribution": "instrument-construct. A registered arm turned out to be unconstructible under the shipped public API -- an honest coverage hole in the design, surfaced rather than silently scored.",
+      "lever": "None proposed. The correct handling is exactly what was done: report the arm as unreachable, never as a pass. Inventoried because it is a place where the eight-arm design covers seven arms, and any future claim of eight-arm coverage would be false.",
+      "class": "IMMUTABLE_HISTORY",
+      "class_justification": "A structural property of the public constructor, preserved as an explicit non-pass. Reviving it would mean weakening the constructor's evidence requirement, which is the opposite of the design intent.",
+      "core_lever": "none; the arm is unreachable by design and must never be counted as a pass",
+      "receipt_branch_note": "Same receipt as p2-faithful-import-refuted. Verified verbatim at `arms[1]`: `\"arm\": \"ARM-2_REPAIRABLE_EVIDENCE\", \"status\": \"CANNOT_CONSTRUCT\"` with detail 'StructuralWitness.__post_init__ rejects empty evidence_ids, so an evidence-free witness is not an admissible presentation and the missing_witness_evidence branch of assess_transfer is unreachable through the public constructor.'"
+    },
+    {
+      "slug": "p1-one-claim-not-machine-checked",
+      "terminal": "one of eighteen numbered formal claims is NOT machine-checked (Lean covers 17/18)",
+      "paper": "I",
+      "manuscript_locations": [
+        "publication/papers/paper-01-epistemic-mechanics/sections/03_workspace.tex:61",
+        "publication/papers/paper-01-epistemic-mechanics/sections/06_appendices.tex:173"
+      ],
+      "receipt_path": "research/paper1_formal_closure/theorem_inventory.json",
+      "receipt_verified": true,
+      "supporting_receipts": [
+        "RaklFormal.lean (Lean 4, toolchain 4.14.0, cited in 06_appendices.tex:173)"
+      ],
+      "in_manuscript": true,
+      "immutable_artifact": false,
+      "what_happened": "The artifact's Lean 4 development machine-checks seventeen of the paper's eighteen numbered formal claims in full. The exception is the workspace top-k optimality theorem. Its INGREDIENTS are machine-checked -- the exchange step (swapping a selected item for an unselected one of at least equal utility never decreases the objective), the availability of a swap partner derived from feasibility rather than asserted, and top-k optimality against a tie-safe predicate quantifying over ANY maximal r_p-subset, which repairs the tie-ambiguity in the phrase 'the top r_p candidates'. The ASSEMBLY of those ingredients into the stated theorem is not machine-checked; that theorem's status rests on the paper proof. The mechanized statements also encode utilities as naturals, so they cover a non-negative special case of the real-valued statement.",
+      "one_stage_attribution": "licence. The formal-verification licence stops one level below the stated claim: ingredients are discharged by the kernel, the composition is not.",
+      "lever": "Assemble the three checked ingredients into the stated optimality theorem in Lean, and generalize the utility encoding from naturals to reals (or state the theorem over naturals). Both are ordinary Lean work against an existing development; no new mathematics is implied by the manuscript.",
+      "class": "REVIVABLE_LOCAL",
+      "class_justification": "Lean 4 toolchain 4.14.0 runs locally and deterministically; the missing step is composition of already-checked lemmas plus a numeric-domain generalization.",
+      "core_lever": "assemble the three checked Lean ingredients into the stated theorem; generalize naturals to reals"
+    }
+  ]
+}
