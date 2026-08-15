@@ -5,10 +5,6 @@ namespace RaklFormal
 universe u
 variable {I : Type u}
 
-/-- A one-for-one reservation exchange is the operational content of the
-paper's disjoint-partition/lower-bound hypotheses after the top reserved sets
-have been fixed.  Every missing mandatory item can replace a currently selected
-non-mandatory item without leaving the feasible region. -/
 def ReservationExchange [DecidableEq I]
     (u : I → Nat) (mandatory : List I) (feasible : List I → Prop) : Prop :=
   ∀ sel : List I, Distinct sel → feasible sel →
@@ -16,21 +12,16 @@ def ReservationExchange [DecidableEq I]
       ∃ j : I, j ∈ sel ∧ ¬ j ∈ mandatory ∧ u j ≤ u i ∧
         feasible (i :: dropOne j sel)
 
-/-- If an item is not in a list then it is not introduced by dropping another
-item from that list. -/
 theorem not_mem_dropOne_of_not_mem [DecidableEq I] (a j : I) (l : List I)
     (ha : ¬ a ∈ l) : ¬ a ∈ dropOne j l := by
   intro h
   exact ha (mem_of_mem_dropOne j a l h)
 
-/-- One exchange preserves cardinality. -/
 theorem length_swapIn [DecidableEq I] (i j : I) (l : List I) (hj : j ∈ l) :
     (i :: dropOne j l).length = l.length := by
-  have h := length_dropOne j l hj
-  exact h.symm
+  show (dropOne j l).length + 1 = l.length
+  exact length_dropOne j l hj
 
-/-- A reservation exchange that removes an item outside `mandatory` preserves
-all mandatory members that were already present. -/
 theorem mandatory_mem_survives_swap [DecidableEq I]
     (mandatory sel : List I) (i j a : I)
     (haM : a ∈ mandatory) (haS : a ∈ sel) (hjM : ¬ j ∈ mandatory) :
@@ -40,11 +31,6 @@ theorem mandatory_mem_survives_swap [DecidableEq I]
     exact hjM (h ▸ haM)
   exact List.Mem.tail _ (mem_dropOne j a sel haS hne)
 
-/-- **Reservation normalization.** Repeated exchange can force every mandatory
-reserved-top item into a feasible selection, without decreasing additive
-utility or changing cardinality.  The proof also carries the invariant that no
-already-present mandatory item is ever lost; this is the bookkeeping step left
-unmechanized in Paper I. -/
 theorem normalize_reservations [DecidableEq I]
     (u : I → Nat) (allMandatory : List I) (feasible : List I → Prop)
     (hex : ReservationExchange u allMandatory feasible) :
@@ -101,19 +87,19 @@ theorem normalize_reservations [DecidableEq I]
             exact hpresSwap a haM (mandatory_mem_survives_swap allMandatory sel i j a haM haS hjM)
           · exact hlen2.trans hswapLen
 
-/-- Utility distributes over append. -/
 theorem sumU_append (u : I → Nat) :
     ∀ (a b : List I), sumU u (a ++ b) = sumU u a + sumU u b := by
   intro a
   induction a with
-  | nil => intro b; rfl
+  | nil =>
+      intro b
+      show sumU u b = 0 + sumU u b
+      exact (Nat.zero_add _).symm
   | cons x xs ih =>
       intro b
       show u x + sumU u (xs ++ b) = (u x + sumU u xs) + sumU u b
       rw [ih, Nat.add_assoc]
 
-/-- A normalized distinct selection contains exactly the mandatory items in its
-mandatory projection. -/
 theorem mandatory_projection_members [DecidableEq I]
     (mandatory norm : List I)
     (hcontains : ∀ a ∈ mandatory, a ∈ norm) :
@@ -126,14 +112,12 @@ theorem mandatory_projection_members [DecidableEq I]
   · intro h
     exact mem_keep _ norm a (hcontains a h) (memB_of_mem a mandatory h)
 
-/-- The residual projection of a pool-contained selection remains pool-contained. -/
 theorem residual_in_pool [DecidableEq I]
     (mandatory pool norm : List I) (hin : ∀ a ∈ norm, a ∈ pool) :
     ∀ a ∈ keep (fun x => !memB x mandatory) norm, a ∈ pool := by
   intro a ha
   exact hin a (mem_of_mem_keep _ norm a ha).1
 
-/-- The residual projection is, by construction, eligible for the global fill. -/
 theorem residual_eligible [DecidableEq I]
     (mandatory norm : List I) :
     ∀ a ∈ keep (fun x => !memB x mandatory) norm,
@@ -141,24 +125,16 @@ theorem residual_eligible [DecidableEq I]
   intro a ha
   exact (mem_of_mem_keep _ norm a ha).2
 
-/-- **Machine-checked assembly of reservation-first greedy optimality (Nat case).**
-
-The assumptions expose exactly the two mathematical stages in the paper:
-`ReservationExchange` is the first-stage consequence of disjoint partitions,
-lower-bound reservations and per-partition top sets; `IsTopSubset` is the
-second-stage global greedy fill over non-mandatory items.  Under unit costs and
-additive non-negative (`Nat`) utility, every feasible competitor within the same
-capacity has utility no larger than `mandatory ++ fill`.
-
-This closes the previously unmechanized assembly without strengthening the
-claim to real-valued utilities; the paper's real-valued version remains a
-straight algebraic generalization, not something this theorem silently claims. -/
+/-- Machine-checked assembly of reservation-first greedy optimality for the
+non-negative natural-valued case.  `ReservationExchange` is the explicit
+operational consequence of disjoint reserved partitions and lower-bound
+feasibility; `IsTopSubset` is the tie-safe global fill certificate. -/
 theorem reservation_first_greedy_optimal [DecidableEq I]
     (u : I → Nat) (pool mandatory fill cand : List I) (k : Nat)
     (feasible : List I → Prop)
     (hMandD : Distinct mandatory)
     (hFillTop : IsTopSubset u (fun x => !memB x mandatory) pool fill k)
-    (hCandD : Distinct cand) (hCandPool : ∀ a ∈ cand, a ∈ pool)
+    (hCandD : Distinct cand) (_hCandPool : ∀ a ∈ cand, a ∈ pool)
     (hCandFeasible : feasible cand)
     (hFeasiblePool : ∀ sel : List I, feasible sel → ∀ a ∈ sel, a ∈ pool)
     (hCapacity : cand.length ≤ mandatory.length + k)
@@ -179,10 +155,13 @@ theorem reservation_first_greedy_optimal [DecidableEq I]
       (distinct_keep _ norm hNormD) hMandD hMandMem
   have hResLen : resPart.length ≤ k := by
     have hsplit := length_keep_add_not (fun x => memB x mandatory) norm
-    have hcapNorm : norm.length ≤ mandatory.length + k := hNormLen.trans_le hCapacity
+    have hcapNorm : norm.length ≤ mandatory.length + k := by
+      rw [hNormLen]
+      exact hCapacity
     have hkey : mandPart.length + resPart.length ≤ mandatory.length + k := by
       exact hsplit.symm ▸ hcapNorm
     rw [hMandLen] at hkey
+    rw [Nat.add_comm mandatory.length resPart.length, Nat.add_comm mandatory.length k] at hkey
     exact le_of_add_le_add_right mandatory.length _ _ hkey
   have hResOpt : sumU u resPart ≤ sumU u fill :=
     top_subset_optimal u (fun x => !memB x mandatory) pool fill resPart k
