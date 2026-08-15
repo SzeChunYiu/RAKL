@@ -1,27 +1,21 @@
 {
-  "blocked": 5,
+  "blocked": 3,
   "grants_scientific_authority": false,
   "ledgers": [
     {
       "grants_scientific_authority": false,
       "steps": [
         {
-          "blocked": true,
-          "digest": "08ee7356defde85af7fe078752b6a65074918699e2bfafe6c4978408236df32e",
+          "blocked": false,
+          "digest": "7e8ba25d87c468925a59cb6c2e853f0013e0aaf5f76df56d385b870777066e88",
           "instrument": null,
-          "licensed": "CANNOT_CHECK",
+          "licensed": "REVISE_MEASUREMENT",
           "proposed": "REVISE_MEASUREMENT",
           "reasons": [
-            "single responsible coordinate: MEASUREMENT",
-            "support undeclared (population, predicate_in_domain, reachable_ceiling, ceiling_basis): a revision against an uncharacterised population is an unrun check, not a step"
+            "single responsible coordinate: MEASUREMENT"
           ],
-          "support": "UNDECLARED",
-          "support_gaps": [
-            "population",
-            "predicate_in_domain",
-            "reachable_ceiling",
-            "ceiling_basis"
-          ]
+          "support": "DECLARED",
+          "support_gaps": []
         }
       ],
       "target_id": "p2-template-inversion"
@@ -136,22 +130,16 @@
       "grants_scientific_authority": false,
       "steps": [
         {
-          "blocked": true,
-          "digest": "9d406ceda994e2db50563569dfce598c46fcb2070950756b71db8309f779b8df",
+          "blocked": false,
+          "digest": "265008b6be9b18064f2a23778e813f6b998f60b301959e65c6717e37c1d5c32f",
           "instrument": null,
-          "licensed": "CANNOT_CHECK",
+          "licensed": "REVISE_MEASUREMENT",
           "proposed": "REVISE_MEASUREMENT",
           "reasons": [
-            "single responsible coordinate: MEASUREMENT",
-            "support undeclared (population, predicate_in_domain, reachable_ceiling, ceiling_basis): a revision against an uncharacterised population is an unrun check, not a step"
+            "single responsible coordinate: MEASUREMENT"
           ],
-          "support": "UNDECLARED",
-          "support_gaps": [
-            "population",
-            "predicate_in_domain",
-            "reachable_ceiling",
-            "ceiling_basis"
-          ]
+          "support": "DECLARED",
+          "support_gaps": []
         }
       ],
       "target_id": "p1-source-monitoring-repetition-attack"
@@ -266,31 +254,25 @@
   ],
   "licensed_action_counts": {
     "AUDIT_EVALUATOR": 3,
-    "CANNOT_CHECK": 5,
-    "REVISE_MEASUREMENT": 1,
+    "CANNOT_CHECK": 3,
+    "REVISE_MEASUREMENT": 3,
     "SOLVE_CURRENT": 3
   },
-  "licensed_to_act": 7,
+  "licensed_to_act": 9,
   "note": "Support declarations are taken from evidence committed this session, never invented. Targets absent from that map are genuinely undeclared and come back CANNOT_CHECK, which is the loop working rather than a gap in the driver.",
   "per_target": [
     {
-      "blocked": true,
+      "blocked": false,
       "coordinate": "MEASUREMENT",
-      "digest": "08ee7356defde85af7fe078752b6a65074918699e2bfafe6c4978408236df32e",
-      "licensed": "CANNOT_CHECK",
+      "digest": "7e8ba25d87c468925a59cb6c2e853f0013e0aaf5f76df56d385b870777066e88",
+      "licensed": "REVISE_MEASUREMENT",
       "proposed": "REVISE_MEASUREMENT",
       "reasons": [
-        "single responsible coordinate: MEASUREMENT",
-        "support undeclared (population, predicate_in_domain, reachable_ceiling, ceiling_basis): a revision against an uncharacterised population is an unrun check, not a step"
+        "single responsible coordinate: MEASUREMENT"
       ],
       "slug": "p2-template-inversion",
-      "support": "UNDECLARED",
-      "support_gaps": [
-        "population",
-        "predicate_in_domain",
-        "reachable_ceiling",
-        "ceiling_basis"
-      ]
+      "support": "DECLARED",
+      "support_gaps": []
     },
     {
       "blocked": false,
@@ -374,23 +356,17 @@
       "support_gaps": []
     },
     {
-      "blocked": true,
+      "blocked": false,
       "coordinate": "MEASUREMENT",
-      "digest": "9d406ceda994e2db50563569dfce598c46fcb2070950756b71db8309f779b8df",
-      "licensed": "CANNOT_CHECK",
+      "digest": "265008b6be9b18064f2a23778e813f6b998f60b301959e65c6717e37c1d5c32f",
+      "licensed": "REVISE_MEASUREMENT",
       "proposed": "REVISE_MEASUREMENT",
       "reasons": [
-        "single responsible coordinate: MEASUREMENT",
-        "support undeclared (population, predicate_in_domain, reachable_ceiling, ceiling_basis): a revision against an uncharacterised population is an unrun check, not a step"
+        "single responsible coordinate: MEASUREMENT"
       ],
       "slug": "p1-source-monitoring-repetition-attack",
-      "support": "UNDECLARED",
-      "support_gaps": [
-        "population",
-        "predicate_in_domain",
-        "reachable_ceiling",
-        "ceiling_basis"
-      ]
+      "support": "DECLARED",
+      "support_gaps": []
     },
     {
       "blocked": true,
@@ -476,13 +452,26 @@
     }
   ],
   "question": "Which frontier targets does the governed loop license action on, and what is missing on the rest?",
+  "records_discharged_since_the_inventory": {
+    "p1-source-monitoring-repetition-attack": {
+      "frontier_defect": "the record cites research/p1_source_identity_repair_v1, a path that has never existed; the artifact is at research/paper1_source_identity_repair_v1",
+      "landed_by": "#728",
+      "receipt_on_main": "research/paper1_source_identity_repair_v1/RECEIPT.json",
+      "terminal": "ATTACK_DETECTED_CONTROLS_PASSING"
+    }
+  },
   "schema_version": "rakl-frontier-session-drive-v1",
   "status": "FIRST_REAL_USE_OF_THE_SESSION_LOOP",
   "support_declared_for": [
     "p1-bounded-saturation-null",
     "p1-l4-tight-resource-floor",
+    "p1-source-monitoring-repetition-attack",
     "p2-arn-v4-battery-failed",
+    "p2-template-inversion",
     "p4-adaptive-lost-to-static"
   ],
+  "support_undeclarable": {
+    "p1-atms-parent-boundary": "both cited receipts are absent from main, so no population, domain or ceiling can be read. The loop still licenses AUDIT_EVALUATOR, which is correct: auditing a comparator's admissibility asks whether the ruler is fair and needs no population. Any measurement against that comparator would block on the same missing support, and the provenance gap stands independently of this verdict."
+  },
   "targets": 12
 }

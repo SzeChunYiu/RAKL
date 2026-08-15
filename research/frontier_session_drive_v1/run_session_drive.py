@@ -60,6 +60,24 @@ SUPPORT = {
         "(research/p4_adaptive_lever_admissibility_v1)",
         registered_gate=0.05,
     ),
+    "p2-template-inversion": SupportDeclaration(
+        population="576 held-out confirmatory pairs, prose-transfer instrument",
+        predicate_in_domain=True,
+        # The failure concentrated in exactly one of seven registered ambiguity
+        # classes, so the class is the conditioning variable a successor must block on.
+        conditioning_variables=("ambiguity_class",),
+        reachable_ceiling=0.9722222222222222,
+        ceiling_basis="G2 full_exact on the executed confirmatory run; the lever requires the "
+        "successor's ceiling not to rise (research/paper2_prose_transfer_v1/results)",
+    ),
+    "p1-source-monitoring-repetition-attack": SupportDeclaration(
+        population="source-identity repair v1 case set",
+        predicate_in_domain=True,
+        conditioning_variables=("identifier_form",),
+        reachable_ceiling=1.0,
+        ceiling_basis="repair executed and landed via #728; RECEIPT.json terminal "
+        "ATTACK_DETECTED_CONTROLS_PASSING (research/paper1_source_identity_repair_v1)",
+    ),
     "p2-arn-v4-battery-failed": SupportDeclaration(
         population="ARN corpus, 2190 pairs, CONFIRM split",
         predicate_in_domain=True,
@@ -142,6 +160,26 @@ def main() -> int:
         "blocked": len(rows) - len(licensed),
         "licensed_action_counts": dict(counts.most_common()),
         "support_declared_for": sorted(SUPPORT),
+        "records_discharged_since_the_inventory": {
+            "p1-source-monitoring-repetition-attack": {
+                "receipt_on_main": "research/paper1_source_identity_repair_v1/RECEIPT.json",
+                "terminal": "ATTACK_DETECTED_CONTROLS_PASSING",
+                "landed_by": "#728",
+                "frontier_defect": (
+                    "the record cites research/p1_source_identity_repair_v1, a path that has "
+                    "never existed; the artifact is at research/paper1_source_identity_repair_v1"
+                ),
+            }
+        },
+        "support_undeclarable": {
+            "p1-atms-parent-boundary": (
+                "both cited receipts are absent from main, so no population, domain or ceiling "
+                "can be read. The loop still licenses AUDIT_EVALUATOR, which is correct: "
+                "auditing a comparator's admissibility asks whether the ruler is fair and needs "
+                "no population. Any measurement against that comparator would block on the same "
+                "missing support, and the provenance gap stands independently of this verdict."
+            )
+        },
         "note": (
             "Support declarations are taken from evidence committed this session, never "
             "invented. Targets absent from that map are genuinely undeclared and come back "
