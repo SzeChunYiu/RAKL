@@ -1,30 +1,30 @@
 {
   "assessment_version": "orion-engineering-closure-assessment-v4",
   "campaigns": {
-    "capacity_campaign": "measured on laptop hardware; 2 SLOs missed (api_availability 0.928 vs 0.99, index_lag p95 34 vs 25); budgets not moved",
+    "capacity_campaign": "rewired against the real store: race FIXED_VERIFIED (1/15 across 16 threads), same-key eventual success 0.317 exposed the dead-key defect (now fixed); api_availability MISSED 0.317, index_lag MISSED; budgets not moved",
     "conformance_audit": "112 items: 64 PRESENT 44 ABSENT 4 PARTIAL 0 CANNOT_CHECK; 48 negatives preserved",
     "cross_plane_attacks": "14 HELD / 3 BROKE / 1 CONFIRMS_KNOWN_OPEN; the 3 BROKE are X08 X11 X12 above",
     "hostile_assurance_a01_a12": "12/12 held; renamed from H01..H12 to stop colliding with the matrix namespace",
-    "hostile_matrix_30_rows": "IN_FLIGHT",
+    "hostile_matrix_30_rows": "30/30 executed: 26 HELD (23 full, 3 local-ref), 4 BROKE (H28 fixed; H21 H14 H30 in flight), 0 CANNOT_CHECK; harness validated both directions",
     "restore_drill": "8 HELD / 1 NOT_EXERCISED (WAL sidecar absent at copy time); 9/9 planes semantically EQUAL on clean restore",
     "runbook_drill": "11 procedures: 8 EXECUTED 3 NOT_EXECUTABLE_LOCALLY"
   },
   "corrections_to_v3": {
     "E10": {
       "found_by": "conformance lane, CONFORMANCE_AUDIT_V1, verified route by route",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 814ac7c: API holds no state, 12 routes served, receipts on every outcome, race closed",
       "v3_said": "REFERENCE_IMPLEMENTED; residual: fronting with a hardened production server",
       "what_was_wrong": "The GAP_LEDGER falsifier is defeated, but API_AND_OBSERVATORY.md is also part of the specification and 10 of its 12 named routes returned 404; query strings were not stripped from the path segment; every mutation is specified to return a StateTransitionReceipt on every outcome and the service returned ad-hoc dicts; and the service kept its own in-memory snapshot state, never touching the real store. V3's named residual (TLS, rate limits) named none of this."
     },
     "E18": {
       "found_by": "conformance lane, cross-referenced against HOSTILE_TEST_MATRIX.md row by row",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED d01bd14: 30/30 matrix rows executed, IDs renamed A01..A12; 4 BROKE found, 1 fixed 3 in flight",
       "v3_said": "hostile_assurance held 12/12; REFERENCE_IMPLEMENTED",
       "what_was_wrong": "The 12 executed cases attack 7 of the matrix's 30 rows fully and 4 partially; 19 rows were never executed. The campaign's own docstring is honest -- it freezes its own list and never claims to be the matrix -- but V3 cited it as E18 closure. Worse, the campaign numbered its cases H01..H12, colliding with the matrix namespace while attacking different things: campaign H01 is stale-snapshot mutation, matrix H01 is kill during canonical blob write. A reader cross-referencing would conclude the wrong thing."
     },
     "E3": {
       "found_by": "restore lane, CROSS_PLANE_ATTACKS_V1 X11 and X12, confirmed in source",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 31b4d6c",
       "v3_said": "REFERENCE_IMPLEMENTED, production_residuals: []",
       "what_was_wrong": "SqliteAtlasPlaneStore.commit_batch had no compare-and-swap against the stored revision (base_atlas_revision was stored and never compared; expected_atlas_revision was recomputed from the same batch, a self-consistency check not a CAS) and no monotonic sequence check. The semantic store, which the atlas docstring claims to mirror, does both. A stale-base batch and a sequence-rewind batch both committed."
     },
@@ -42,13 +42,13 @@
     }
   },
   "date": "2026-08-15",
-  "defects_fixed_count": 7,
+  "defects_fixed_count": 13,
   "defects_found_today": [
     {
       "confirmed": true,
       "found_by": "restore lane",
       "id": "X08",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 31b4d6c",
       "what": "action_payload_hash stored but never verified to bind any effect; all six heads advanced under a hash of nothing",
       "where": "engineering_store.SqliteEngineeringStateStore.commit_transition"
     },
@@ -56,7 +56,7 @@
       "confirmed": true,
       "found_by": "restore lane",
       "id": "X11",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 31b4d6c",
       "what": "no compare-and-swap against stored revision",
       "where": "engineering_atlas_store.SqliteAtlasPlaneStore.commit_batch"
     },
@@ -64,7 +64,7 @@
       "confirmed": true,
       "found_by": "restore lane",
       "id": "X12",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 31b4d6c",
       "what": "no monotonic sequence check; sequence rewind commits",
       "where": "engineering_atlas_store.SqliteAtlasPlaneStore.commit_batch"
     },
@@ -123,13 +123,61 @@
       "status": "FIXED #749",
       "what": "coverage predicate used where a route was needed; covered atom's researcher never called",
       "where": "recursive_solver.solve_recursive"
+    },
+    {
+      "confirmed": true,
+      "found_by": "capacity lane",
+      "id": "HTTP_RACE",
+      "status": "FIXED 814ac7c (API holds no state; store transaction is the critical section)",
+      "what": "idempotency + staleness guards check-then-act outside the lock; 16 threads one key -> 16 commits",
+      "where": "engineering_http.EngineeringHttpService (old in-memory state)"
+    },
+    {
+      "confirmed": true,
+      "found_by": "capacity lane (rewired campaign)",
+      "id": "DEAD_IDEMPOTENCY_KEY",
+      "status": "FIXED 8b0a87b",
+      "what": "RETRY_REQUIRED receipt occupied the (project,key) slot and bound the stale before snapshot; the retry it asked for was refused forever; same-key eventual success 0.317",
+      "where": "engineering_store.commit_transition replay lookup"
+    },
+    {
+      "confirmed": true,
+      "found_by": "conformance lane (30-row matrix)",
+      "id": "H28_EXPORTER_OUTAGE",
+      "status": "FIXED 8b0a87b",
+      "what": "a raising telemetry exporter took every request down; mutation applied, receipt lost",
+      "where": "engineering_http._SpanCtx.__exit__"
+    },
+    {
+      "confirmed": true,
+      "found_by": "conformance lane",
+      "id": "H21_SILENT_SCHEMA_REPAIR",
+      "status": "FIX_IN_FLIGHT",
+      "what": "dropped table on a populated DB is silently recreated empty; head served with no receipt",
+      "where": "every store _initialize_schema (CREATE TABLE IF NOT EXISTS on open)"
+    },
+    {
+      "confirmed": true,
+      "found_by": "conformance lane",
+      "id": "H14_GHOST_ATOM",
+      "status": "FIX_IN_FLIGHT",
+      "what": "no __post_init__ id check; index serves a nonexistent atom; nothing emits CANNOT_CHECK",
+      "where": "engineering_state.SemanticIndexSnapshot / engineering_index.RebuildableSemanticIndex"
+    },
+    {
+      "confirmed": true,
+      "found_by": "conformance lane",
+      "id": "H30_READY_WITH_NOTHING",
+      "status": "FIX_IN_FLIGHT",
+      "what": "30 non-mandatory records under a 5-token budget -> READY with 0 selected",
+      "where": "compile_task_packet / context compiler"
     }
   ],
-  "defects_found_today_count": 10,
+  "defects_found_today_count": 16,
   "grants_scientific_authority": false,
   "production_ready_scoped": false,
   "supersedes": "CLOSURE_ASSESSMENT_V3.json",
-  "terminal": "CORRECTED__FIXES_IN_FLIGHT__NOT_PRODUCTION_READY",
+  "terminal": "CORRECTED__12_OF_15_DEFECTS_FIXED__3_IN_FLIGHT__NOT_PRODUCTION_READY",
   "what_this_does_not_claim": [
     "that any fibre is closed while a fix for it is in flight",
     "that laptop capacity numbers are production capacity",
