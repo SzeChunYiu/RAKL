@@ -1,0 +1,81 @@
+name: paper5-formal-assurance
+
+on:
+  push:
+    paths:
+      - 'formal/PaperVAssurance.lean'
+      - 'formal/lean-toolchain'
+      - 'research/self_rakl_p4_p6_question_saturation_v3/PAPER_V_LEAN_ASSURANCE_FREEZE.json'
+      - '.github/workflows/paper5-formal-assurance.yml'
+  pull_request:
+    paths:
+      - 'formal/PaperVAssurance.lean'
+      - 'formal/lean-toolchain'
+      - 'research/self_rakl_p4_p6_question_saturation_v3/PAPER_V_LEAN_ASSURANCE_FREEZE.json'
+      - '.github/workflows/paper5-formal-assurance.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lean-assurance:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Install exact Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain "$(cat formal/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Reject unfinished proof placeholders
+        run: |
+          if grep -nE '(^|[^A-Za-z0-9_])(sorry|admit)([^A-Za-z0-9_]|$)' formal/PaperVAssurance.lean; then
+            echo "::error::unfinished proof placeholder in PaperVAssurance.lean"
+            exit 1
+          fi
+
+      - name: Typecheck Paper V assurance nucleus
+        run: |
+          cd formal
+          lean PaperVAssurance.lean
+
+      - name: Negative control - false proof must be rejected
+        run: |
+          cp formal/PaperVAssurance.lean /tmp/p5-negative.lean
+          cat >> /tmp/p5-negative.lean <<'EOF'
+          namespace PaperVAssurance
+          theorem deliberately_false : False := by
+            exact True.intro
+          end PaperVAssurance
+          EOF
+          if lean /tmp/p5-negative.lean; then
+            echo "::error::Lean accepted the deliberately false/type-invalid control"
+            exit 1
+          fi
+          echo "negative control correctly rejected"
+
+      - name: Axiom audit - all load-bearing Paper V theorems must be axiom-free
+        run: |
+          cd formal
+          lean --root=. -o /tmp/PaperVAssurance.olean PaperVAssurance.lean
+          cat > /tmp/p5-axioms.lean <<'EOF'
+          import PaperVAssurance
+          #print axioms PaperVAssurance.generator_error_containment
+          #print axioms PaperVAssurance.promotion_noncompensation
+          #print axioms PaperVAssurance.truth_stable_novelty_can_drop
+          #print axioms PaperVAssurance.dependency_closure_two_step
+          #print axioms PaperVAssurance.proposal_noninterference
+          EOF
+          LEAN_PATH=/tmp lean /tmp/p5-axioms.lean | tee /tmp/p5-axioms.out
+          expected=5
+          total=$(grep -c . /tmp/p5-axioms.out)
+          clean=$(grep -c 'does not depend on any axioms' /tmp/p5-axioms.out)
+          echo "reported=$total axiom-free=$clean expected=$expected"
+          if [ "$clean" -ne "$expected" ] || [ "$total" -ne "$expected" ]; then
+            echo "::error::expected $expected axiom-free Paper V theorems"
+            exit 1
+          fi
