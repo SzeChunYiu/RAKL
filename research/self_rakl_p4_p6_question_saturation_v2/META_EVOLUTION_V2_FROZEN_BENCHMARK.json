@@ -1,0 +1,154 @@
+{
+  "schema_version": "self-rakl-p4-p6-meta-evolution-v2-benchmark-v1",
+  "date": "2026-08-15",
+  "frozen_against_main": "e17eaa5498701ed25aa765f4952baaa46f177524",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "PROPOSAL_ONLY",
+  "question": "Can RAKL improve its own Papers IV-VI mechanics while refusing premature mutation under ambiguous diagnosis, refusing self-conditioned evaluator assurance, containing mutation credit to its evidence scope, escalating only after distinct failed evidence epochs, and excluding blocking-invalid challengers before Pareto selection?",
+  "atomic_gaps": [
+    {
+      "gap_id": "MEV2-G1-DIAGNOSIS_BEFORE_MUTATION",
+      "current_surface": "src/rakl/mechanic_diagnosis.py + src/rakl/meta_evolution.py",
+      "counterexample": "A diagnosis returns DISCRIMINATOR_REQUIRED with REPRESENTATION_GAP and METRIC_FALSEHOOD. The current EvolutionPortrait accepts only the naked causes and can propose both REPRESENTATION and EVALUATOR mutations instead of resolving the registered discriminator first.",
+      "desired_rule": "If a diagnosis is DISCRIMINATOR_REQUIRED, or is PARTIALLY_IDENTIFIED across more than one mutation layer, do not propose a mutation; return RUN_DISCRIMINATOR and preserve the candidate cause set."
+    },
+    {
+      "gap_id": "MEV2-G2-OUTER_ASSURANCE_IDENTITY",
+      "current_surface": "src/rakl/meta_evolution.py::assess_mutation_governance",
+      "counterexample": "outer_assurance_frozen=True cannot distinguish a genuinely external pre-outcome evaluator from the same evaluator after seeing candidate outcomes.",
+      "desired_rule": "Higher-order mutation requires a content-bound outer-assurance receipt frozen before candidate outcome access, with evaluator identity different from the target evaluator and no candidate-outcome use in evaluator construction."
+    },
+    {
+      "gap_id": "MEV2-G3-CONTEXTUAL_CREDIT",
+      "current_surface": "src/rakl/meta_evolution.py::MutationPolicy",
+      "counterexample": "An operator that succeeds on a Paper-IV representation-allocation residual receives a global weight increase and is thereby preferred on an unrelated Paper-V search residual despite no transfer evidence.",
+      "desired_rule": "Credit is indexed by at least operator + target layer + scope key; evidence in one scope cannot change another scope's weight without a registered transport/assimilation result."
+    },
+    {
+      "gap_id": "MEV2-G4-DISTINCT_FAILURE_ESCALATION",
+      "current_surface": "src/rakl/meta_evolution.py::EvolutionPortrait.same_layer_failed_generations",
+      "counterexample": "Three duplicate mutations in one family count as three failures and open a broader architecture layer even though no materially different hypothesis was tested.",
+      "desired_rule": "Escalation counts distinct failure-family/assurance-epoch identities, not raw attempts; duplicates do not broaden the mutation search space."
+    },
+    {
+      "gap_id": "MEV2-G5-VALIDITY_BEFORE_PARETO",
+      "current_surface": "src/rakl/meta_evolution.py::pareto_frontier",
+      "counterexample": "A challenger with a blocking validity failure can remain non-dominated on quality/cost/latency/robustness/complexity because CandidateDelta contains no validity coordinate.",
+      "desired_rule": "A validated frontier wrapper excludes blocking-invalid/CANNOT_CHECK candidates before non-dominated sorting; soft QoIs never rescue a hard failure."
+    }
+  ],
+  "cases": [
+    {
+      "id": "MEV2-C1-DISCRIMINATOR-FIRST",
+      "diagnosis_verdict": "DISCRIMINATOR_REQUIRED",
+      "causes": ["REPRESENTATION_GAP", "METRIC_FALSEHOOD"],
+      "discriminator_ids": ["rep_vs_metric_probe"],
+      "stagnant": true,
+      "expected_action": "RUN_DISCRIMINATOR",
+      "expected_target_layers": []
+    },
+    {
+      "id": "MEV2-C2-IDENTIFIED-MUTATES",
+      "diagnosis_verdict": "MECHANIC_GAP_IDENTIFIED",
+      "causes": ["REPRESENTATION_GAP"],
+      "discriminator_ids": [],
+      "stagnant": true,
+      "expected_action": "PROPOSE_MUTATION",
+      "expected_target_layers": ["REPRESENTATION"]
+    },
+    {
+      "id": "MEV2-C3-SAME-EVALUATOR-NOT-OUTER",
+      "target_layer": "EVALUATOR",
+      "target_evaluator_id": "eval-v2",
+      "outer_assurance": {
+        "assurance_id": "oa-same",
+        "subject_sha": "subject-a",
+        "evaluator_id": "eval-v2",
+        "benchmark_hash": "bench-a",
+        "frozen_before_candidate_outcome": true,
+        "candidate_outcomes_used_to_define_evaluator": false
+      },
+      "expected_auto_promotion_eligible": false
+    },
+    {
+      "id": "MEV2-C4-POSTOUTCOME-OUTER-REJECTED",
+      "target_layer": "META_POLICY",
+      "target_evaluator_id": "meta-eval-v2",
+      "outer_assurance": {
+        "assurance_id": "oa-post",
+        "subject_sha": "subject-a",
+        "evaluator_id": "outer-eval-v1",
+        "benchmark_hash": "bench-a",
+        "frozen_before_candidate_outcome": false,
+        "candidate_outcomes_used_to_define_evaluator": true
+      },
+      "expected_auto_promotion_eligible": false
+    },
+    {
+      "id": "MEV2-C5-FRESH-OUTER-ADMITTED",
+      "target_layer": "MUTATION_LANGUAGE",
+      "target_evaluator_id": "mutation-eval-v2",
+      "outer_assurance": {
+        "assurance_id": "oa-fresh",
+        "subject_sha": "subject-a",
+        "evaluator_id": "outer-eval-v1",
+        "benchmark_hash": "bench-a",
+        "frozen_before_candidate_outcome": true,
+        "candidate_outcomes_used_to_define_evaluator": false
+      },
+      "expected_auto_promotion_eligible": true
+    },
+    {
+      "id": "MEV2-C6-CREDIT-STAYS-IN-SCOPE",
+      "operator_id": "representation_reset",
+      "credited_scope": "paper4:REPRESENTATION:structural-learning",
+      "unrelated_scope": "paper5:SEARCH_OPERATOR:verified-math",
+      "outcome": "SCOPED_EVOLUTION_EVIDENCE",
+      "initial_weight": 1.0,
+      "expected_credited_weight_relation": "GT_INITIAL",
+      "expected_unrelated_weight_relation": "EQ_INITIAL"
+    },
+    {
+      "id": "MEV2-C7-DUPLICATE-FAILURES-DO-NOT-ESCALATE",
+      "diagnosis_verdict": "MECHANIC_GAP_IDENTIFIED",
+      "causes": ["REPRESENTATION_GAP"],
+      "failure_epochs": [
+        ["epoch-1", "same-family"],
+        ["epoch-2", "same-family"],
+        ["epoch-3", "same-family"]
+      ],
+      "expected_contains": ["REPRESENTATION"],
+      "expected_excludes": ["TOPOLOGY"]
+    },
+    {
+      "id": "MEV2-C8-DISTINCT-FAILURES-CAN-ESCALATE",
+      "diagnosis_verdict": "MECHANIC_GAP_IDENTIFIED",
+      "causes": ["REPRESENTATION_GAP"],
+      "failure_epochs": [
+        ["epoch-a", "mapping-family"],
+        ["epoch-b", "abstraction-family"],
+        ["epoch-c", "latent-chart-family"]
+      ],
+      "expected_contains": ["REPRESENTATION", "TOPOLOGY"]
+    },
+    {
+      "id": "MEV2-C9-HARD-INVALID-EXCLUDED",
+      "candidates": [
+        {"id": "invalid-fast", "quality": 10.0, "cost": 10.0, "latency": 10.0, "robustness": 10.0, "complexity": 10.0, "blocking_validity": "FAIL"},
+        {"id": "valid-balanced", "quality": 1.0, "cost": 1.0, "latency": 1.0, "robustness": 1.0, "complexity": 1.0, "blocking_validity": "PASS"},
+        {"id": "unknown", "quality": 20.0, "cost": 20.0, "latency": 20.0, "robustness": 20.0, "complexity": 20.0, "blocking_validity": "CANNOT_CHECK"}
+      ],
+      "expected_frontier": ["valid-balanced"],
+      "expected_excluded": ["invalid-fast", "unknown"]
+    }
+  ],
+  "nonclaims": [
+    "No self-evolution benefit claim from these known-world counterexamples.",
+    "No evaluator independence claim from a boolean flag alone.",
+    "No mutation operator transfers across papers/layers without evidence.",
+    "No broad architecture search merely because repeated attempts share a counter.",
+    "No Pareto membership for a challenger that fails a blocking validity gate."
+  ],
+  "grants_scientific_authority": false,
+  "grants_method_promotion_authority": false
+}
