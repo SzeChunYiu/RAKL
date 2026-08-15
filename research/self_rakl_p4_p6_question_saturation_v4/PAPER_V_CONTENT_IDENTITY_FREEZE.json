@@ -1,0 +1,21 @@
+{
+  "schema_version": "paper5-content-identity-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "HOSTILE_CONFORMANCE_ONLY",
+  "question": "Can fields merely named *_hash satisfy independent-review/provenance gates using human labels instead of content-addressed identities?",
+  "cases": [
+    {"id":"P5-CI-01-PROPOSER-LABEL","world":"current proposer identity is literal 'alice' rather than a SHA-256 identity manifest digest","expected":"REJECT_NON_CONTENT_IDENTITY"},
+    {"id":"P5-CI-02-REVIEWER-LABEL","world":"reviewer identity is literal 'reviewer-B'","expected":"REJECT_NON_CONTENT_IDENTITY"},
+    {"id":"P5-CI-03-PROCEDURE-LABEL","world":"review procedure is a human label rather than content digest","expected":"REJECT_NON_CONTENT_IDENTITY"},
+    {"id":"P5-CI-04-LITERATURE-MANIFEST-LABEL","world":"literature manifest is a name rather than content digest","expected":"REJECT_NON_CONTENT_IDENTITY"},
+    {"id":"P5-CI-05-VERIFIER-MANIFEST-LABEL","world":"verifier manifest/attestation procedure is a label rather than content digest","expected":"REJECT_NON_CONTENT_IDENTITY"},
+    {"id":"P5-CI-06-EXACT-CONTENT-ADDRESSED-CHAIN","world":"proposer/reviewer/attestor/procedures/literature/verifier manifests are lowercase SHA-256 digests and v3 transitive receipt gates pass","expected":"MAY_ENTER_EXISTING_GATE"}
+  ],
+  "invariants": [
+    "v4 may only narrow v3",
+    "all load-bearing actor/procedure/manifest identity strings are lowercase SHA-256 digests",
+    "human display names are never used as evidence identity",
+    "correctness of the mapping from external actor/artifact to its digest is an explicit provenance trust-root assumption, not self-certified by this wrapper",
+    "v4 grants no theorem, novelty, scientific or publication authority"
+  ]
+}
