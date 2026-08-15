@@ -526,9 +526,19 @@ def main() -> int:
         if key in measured
     }
 
+    disagreements = sorted(k for k, v in prose_vs_measured.items() if not v["agrees"])
+    terminal = "CORROBORATED" if not disagreements else "PARTIALLY_CORROBORATED"
+
     result = {
         "schema_version": "rakl-p3-router-v2-reconstruction-v1",
         "date": "2026-08-15",
+        "terminal": terminal,
+        "prose_quantities_not_corroborated": disagreements,
+        "manuscript_correction_required": True,
+        "manuscript_correction_target": (
+            "publication/papers/paper-03-method-evolution-mechanics/sections/"
+            "04b_obstruction_transformation_memory.tex"
+        ),
         "paper": "Paper III — Method-Evolution Mechanics",
         "negative_addressed": "research/negative_frontier_v1/NEG-p3-router-v2-unreproducible.md",
         "frozen_protocol": "research/paper3_publication_validation_v2/PROTOCOL_FREEZE.json",
