@@ -1,0 +1,19 @@
+name: local-export-pr728
+on:
+  push:
+    branches:
+      - tooling/export-pr728-local
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Archive exact parent commit
+        run: git archive --format=zip --output=RAKL-pr728-841410d.zip HEAD^
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-pr728-841410d
+          path: RAKL-pr728-841410d.zip
+          if-no-files-found: error
