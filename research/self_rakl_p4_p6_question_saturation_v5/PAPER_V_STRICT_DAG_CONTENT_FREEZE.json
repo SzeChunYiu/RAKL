@@ -1,0 +1,19 @@
+{
+  "schema_version": "paper5-strict-dag-content-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "HOSTILE_CONFORMANCE_ONLY",
+  "question": "Can the current strict Paper-V path accept human labels as load-bearing proof dependency identities merely because the DAG and dependency manifest repeat the same label?",
+  "cases": [
+    {"id":"P5-DAG-CI-01-LABEL-DEPENDENCY","world":"DAG dependency node and manifest both use literal 'lemma-A' instead of a SHA-256 statement identity","expected":"STRICT_PATH_REJECTS"},
+    {"id":"P5-DAG-CI-02-LABEL-EXTRACTOR","world":"dependency manifest extracted_by is a human tool label instead of a content-addressed extractor/procedure manifest","expected":"STRICT_PATH_REJECTS"},
+    {"id":"P5-DAG-CI-03-LABEL-MANIFEST-ID","world":"dependency manifest identity is a human label rather than a content digest","expected":"STRICT_PATH_REJECTS"},
+    {"id":"P5-DAG-CI-04-EXACT-CONTENT-DEPENDENCIES","world":"manifest id, proof source, theorem statement, every dependency statement, and extractor/procedure are SHA-256 content identities and the dependency set equals the DAG closure","expected":"MAY_ENTER_EXISTING_STRICT_GATE"}
+  ],
+  "invariants": [
+    "all dependency statement identities used by the closure-eligible strict path are lowercase SHA-256 digests",
+    "dependency manifest identity and extractor/procedure identity are content digests",
+    "historical proof_dag_v2 remains reproducible but strict current promotion validates a stronger receipt shape before using it",
+    "content-address validation does not self-certify that the external extractor faithfully parsed the proof source; that remains an explicit provenance trust root",
+    "strict success grants no theorem, novelty, scientific or publication authority"
+  ]
+}
