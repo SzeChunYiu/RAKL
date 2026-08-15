@@ -36,6 +36,8 @@ Proposal-only. Nothing here grants scientific authority.
 
 from __future__ import annotations
 
+from typing import Callable, Iterable
+
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
@@ -146,6 +148,45 @@ def _atom_is_supplied(space: StructureSpace, problem: ProblemStructure, atom: st
     return False
 
 
+@dataclass(frozen=True)
+class SolveEvent:
+    """One observable transition inside the search.
+
+    Emitted per fibre open, per research round, and at every state change. The
+    round-level `growth` is the load-bearing field: a fibre researching for
+    eight rounds with zero growth is saturating, while one still growing when it
+    hits the bound is bounded-open. Those are different findings and the trace
+    has to show which is happening while it happens, not only afterwards.
+    """
+
+    kind: str
+    fiber_id: str = ""
+    atom: str = ""
+    depth: int = 0
+    round_index: int = 0
+    growth: int = 0
+    state: str = ""
+    detail: str = ""
+
+    def render(self) -> str:
+        head = f"{self.kind:<18}"
+        loc = f"{self.fiber_id or '-':>4} {self.atom or '-':<22}"
+        body = ""
+        if self.kind == "RESEARCH_ROUND":
+            body = f"round {self.round_index} growth {self.growth:+d}"
+        elif self.state:
+            body = self.state
+        if self.detail:
+            body = f"{body}  {self.detail}" if body else self.detail
+        return f"  {head} d{self.depth} {loc} {body}".rstrip()
+
+
+def render_trace(events: "Iterable[SolveEvent]") -> str:
+    """Render a trace as an operator log, newest last."""
+
+    return "\n".join(e.render() for e in events)
+
+
 def solve_recursive(
     space: StructureSpace,
     problem: ProblemStructure,
@@ -157,6 +198,7 @@ def solve_recursive(
     inventor: InventionOperator | None = None,
     max_depth: int = 4,
     max_rounds_per_fiber: int = 8,
+    observer: "Callable[[SolveEvent], None] | None" = None,
 ) -> RecursiveSolveReport:
     """Run the loop to a terminal: solved, or a fiber tree naming exactly why not.
 
@@ -172,6 +214,10 @@ def solve_recursive(
     rounds_spent = 0
     counter = 0
 
+    def emit(kind: str, **kw: object) -> None:
+        if observer is not None:
+            observer(SolveEvent(kind=kind, **kw))  # type: ignore[arg-type]
+
     def close_atom(atom: str, prob: ProblemStructure, parent: str | None, depth: int) -> None:
         nonlocal rounds_spent, counter
         counter += 1
@@ -185,20 +231,32 @@ def solve_recursive(
             depth=depth,
         )
         fibers.append(fiber)
+        emit("FIBER_OPENED", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+             detail=f"parent={parent or 'root'}")
 
         # 1. Targeted research until matched or the fiber saturates.
         while len(fiber.growth_rounds) < max_rounds_per_fiber:
             if _atom_is_supplied(space, prob, atom):
                 fiber.state = FiberState.MATCHED
+                emit("FIBER_MATCHED", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                     state="MATCHED", detail="already supplied")
                 return
             if fiber.research_saturated:
+                emit("RESEARCH_FLAT", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                     round_index=len(fiber.growth_rounds),
+                     detail="no growth across the saturation window")
                 break
             batch = researcher(fiber)
             rounds_spent += 1
             growth = sum(space.accumulate(r) for r in batch)
             fiber.growth_rounds.append(growth)
+            emit("RESEARCH_ROUND", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                 round_index=len(fiber.growth_rounds), growth=growth,
+                 detail=f"{len(batch)} structure(s) returned")
         if _atom_is_supplied(space, prob, atom):
             fiber.state = FiberState.MATCHED
+            emit("FIBER_MATCHED", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                 state="MATCHED", detail=f"after {len(fiber.growth_rounds)} round(s)")
             return
         fiber.state = FiberState.RESEARCH_SATURATED
         # "Saturated" and "hit the round bound while still growing" are different
@@ -218,6 +276,9 @@ def solve_recursive(
             sub = decomposer(atom)
             if sub is not None:
                 fiber.state = FiberState.DECOMPOSED
+                emit("DECOMPOSED", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                     state="DECOMPOSED",
+                     detail=f"into {len(sub.required_roles)} sub-atom(s)")
                 for sub_atom in sorted(sub.required_roles):
                     if not _atom_is_supplied(space, sub, sub_atom):
                         close_atom(sub_atom, sub, fiber.fiber_id, depth + 1)
@@ -232,6 +293,8 @@ def solve_recursive(
 
         # 3. Invention — only now, and only with the LIFT precondition satisfied.
         if inventor is not None and len(fiber.failed_attempts) >= 2:
+            emit("INVENTION_ELIGIBLE", fiber_id=fiber.fiber_id, atom=atom, depth=depth,
+                 detail=f"{len(fiber.failed_attempts)} distinct failed attempts")
             candidate = inventor(fiber)
             if candidate is not None:
                 space.accumulate(candidate.structure)
