@@ -1,0 +1,20 @@
+name: local-export-git-history-1270
+on:
+  push:
+    branches: [tooling/local-export-1270bd55]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bundle repository history
+        run: |
+          git bundle create RAKL-full-history.bundle --all
+          git bundle verify RAKL-full-history.bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-full-history-1270bd55
+          path: RAKL-full-history.bundle
+          compression-level: 0
