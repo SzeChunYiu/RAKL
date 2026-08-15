@@ -1,0 +1,36 @@
+name: export-external-corpora-local
+on:
+  push:
+    branches: [tooling/export-external-corpora-20260815]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acquire SCAR at frozen commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q https://github.com/siyuyuan/scar.git scar
+          git -C scar checkout -q 3dfc897cf6cc685531edc80ab64f35660403fc6c
+          test "$(git -C scar hash-object release/system_analogy_en.json)" = "214464cc4274f1af5a0bc1008a194b133c214e15"
+      - name: Acquire ParallelPARC at frozen commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q https://github.com/orensul/ParallelPARC.git parallelparc
+          git -C parallelparc checkout -q 5b88971a6ce1ba120e8bc6f78f2b2c8d623dc622
+          test "$(git -C parallelparc hash-object datasets/gold_test_set/gold_set_analogies_w_challenging_distractors_w_randoms.csv)" = "e6aa2fa366c7da25b6b4f7fcb70b76e79487c7d9"
+      - name: Bind files and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p export
+          cp scar/release/system_analogy_en.json export/SCAR_system_analogy_en.json
+          cp parallelparc/datasets/gold_test_set/gold_set_analogies_w_challenging_distractors_w_randoms.csv export/PROPARA_gold.csv
+          sha256sum export/* | tee export/SHA256SUMS.txt
+          printf '%s\n' 'SCAR_commit=3dfc897cf6cc685531edc80ab64f35660403fc6c' 'SCAR_blob=214464cc4274f1af5a0bc1008a194b133c214e15' 'PROPARA_commit=5b88971a6ce1ba120e8bc6f78f2b2c8d623dc622' 'PROPARA_blob=e6aa2fa366c7da25b6b4f7fcb70b76e79487c7d9' > export/IDENTITY.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frozen-external-scientific-analogy-corpora
+          path: export/
+          if-no-files-found: error
