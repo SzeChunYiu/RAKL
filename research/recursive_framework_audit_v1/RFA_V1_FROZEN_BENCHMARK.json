@@ -1,0 +1,163 @@
+{
+  "schema_version": "rakl-rfa-v1-frozen-benchmark",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "authority": "KNOWN_WORLD_CONFORMANCE_ONLY",
+  "frozen_at": "2026-08-15",
+  "implementation_branch": "research/recursive-framework-audit-v1-20260815",
+  "question": "Does the recursive framework audit select the registered responsible-coordinate action on each known-world defect family, fail closed on authority/epoch/supersession invariants, and abstain (no reframe) on well-posed controls?",
+  "scope_note": "This is the known-world conformance freeze (roadmap Phase 4). The RFC-v1 utility benchmark (arms A-G, fresh tasks, method evolution) is a separate future freeze and MUST be re-frozen on the implementation subject before any utility execution; this file does not preregister it.",
+  "decision_semantics_reference": "reference/recursive_framework_audit_reference.py (vendored from handoff packet, audited repo head 4ef389360af3ea035817057da931267b7844e133)",
+  "known_world_families": [
+    {
+      "case_id": "F0_WELL_POSED",
+      "family": "F0_WELL_POSED",
+      "description": "no reframe required; closure coordinates pass, no material open residual",
+      "node": {"closure_coordinates_pass": true, "material_open_residual": false},
+      "residual": {"plausible_causes": [], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "STOP_BOUNDED",
+      "invariants": ["false_reframe_emitted == 0", "grants_scientific_authority is false", "grants_method_promotion_authority is false"]
+    },
+    {
+      "case_id": "F1_WRONG_QUESTION",
+      "family": "F1_WRONG_QUESTION",
+      "description": "decision/question mismatch localizes to the QUESTION coordinate",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": ["QUESTION"], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "REFRAME_QUESTION",
+      "invariants": ["grants_scientific_authority is false", "grants_method_promotion_authority is false"]
+    },
+    {
+      "case_id": "F2_WRONG_FRAMEWORK",
+      "family": "F2_WRONG_FRAMEWORK",
+      "description": "missing decision-relevant coordinate localizes to the FRAMEWORK coordinate",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": ["FRAMEWORK"], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "CHALLENGE_FRAMEWORK",
+      "invariants": []
+    },
+    {
+      "case_id": "F3_FALSE_MERGE",
+      "family": "F3_FALSE_MERGE",
+      "description": "one atom hides decision-distinct mechanisms/regimes; split required",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": [], "split_required": true, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "SPLIT",
+      "invariants": []
+    },
+    {
+      "case_id": "F4_FALSE_SPLIT",
+      "family": "F4_FALSE_SPLIT",
+      "description": "children are decision-equivalent; merge required",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": [], "split_required": false, "merge_required": true, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "MERGE",
+      "invariants": []
+    },
+    {
+      "case_id": "F5_INTERFACE_DEFECT",
+      "family": "F5_INTERFACE_DEFECT",
+      "description": "locally valid children cannot compose; interface contract at fault",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": ["INTERFACE"], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "REPAIR_INTERFACE",
+      "invariants": []
+    },
+    {
+      "case_id": "F6_MEASUREMENT_DEFECT",
+      "family": "F6_MEASUREMENT_DEFECT",
+      "description": "observation operator does not measure the target",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": ["MEASUREMENT"], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "REVISE_MEASUREMENT",
+      "invariants": []
+    },
+    {
+      "case_id": "F7_EVALUATOR_DEFECT",
+      "family": "F7_EVALUATOR_DEFECT",
+      "description": "benchmark/checker invalid or overly rigid",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": [], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": true, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "AUDIT_EVALUATOR",
+      "invariants": ["no evaluator self-rewrite after outcome"]
+    },
+    {
+      "case_id": "F8_ANCESTOR_ASCENT",
+      "family": "F8_ANCESTOR_ASCENT",
+      "description": "two distinct local repair families failed and evidence implicates the parent abstraction",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": ["ATOM"], "split_required": false, "merge_required": false, "parent_challenge_supported": true, "distinct_local_repair_families_failed": 2, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": false},
+      "expected_action": "ASCEND",
+      "invariants": ["ascent requires parent_challenge_supported AND distinct_local_repair_families_failed >= 2"]
+    },
+    {
+      "case_id": "F9_EXTERNAL_TRUST_ROOT",
+      "family": "F9_EXTERNAL_TRUST_ROOT",
+      "description": "digest relations valid but external identity ungrounded",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": [], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": true, "resource_bound": false},
+      "expected_action": "EXTERNAL_TRUST_ROOT",
+      "invariants": []
+    },
+    {
+      "case_id": "F10_RESOURCE_BOUND",
+      "family": "F10_RESOURCE_BOUND",
+      "description": "material audit remains open at resource cap",
+      "node": {"closure_coordinates_pass": false, "material_open_residual": true},
+      "residual": {"plausible_causes": [], "split_required": false, "merge_required": false, "parent_challenge_supported": false, "distinct_local_repair_families_failed": 0, "evaluator_invalid": false, "external_trust_root": false, "resource_bound": true},
+      "expected_action": "CANNOT_CHECK",
+      "invariants": ["resource_block is not solver failure and not a scientific terminal"]
+    }
+  ],
+  "reference_conformance_cases": [
+    {"case_id": "R01_wrong_question", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["QUESTION"], "expected_action": "REFRAME_QUESTION"},
+    {"case_id": "R02_wrong_framework", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["FRAMEWORK"], "expected_action": "CHALLENGE_FRAMEWORK"},
+    {"case_id": "R03_false_merge", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"split_required": true}, "expected_action": "SPLIT"},
+    {"case_id": "R04_false_split", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"merge_required": true}, "expected_action": "MERGE"},
+    {"case_id": "R05_interface", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["INTERFACE"], "expected_action": "REPAIR_INTERFACE"},
+    {"case_id": "R06_measurement", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["MEASUREMENT"], "expected_action": "REVISE_MEASUREMENT"},
+    {"case_id": "R07_evaluator", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"evaluator_invalid": true}, "expected_action": "AUDIT_EVALUATOR"},
+    {"case_id": "R08_ambiguous", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["FRAMEWORK", "MEASUREMENT"], "expected_action": "RUN_DISCRIMINATOR"},
+    {"case_id": "R09_ascend", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["ATOM"], "residual_flags": {"parent_challenge_supported": true, "distinct_local_repair_families_failed": 2}, "expected_action": "ASCEND"},
+    {"case_id": "R10_external", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"external_trust_root": true}, "expected_action": "EXTERNAL_TRUST_ROOT"},
+    {"case_id": "R11_resource", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"resource_bound": true}, "expected_action": "CANNOT_CHECK"},
+    {"case_id": "R12_stop", "node": {"closure_coordinates_pass": true, "material_open_residual": false}, "residual_causes": [], "expected_action": "STOP_BOUNDED"},
+    {"case_id": "R13_default", "node": {"closure_coordinates_pass": false, "material_open_residual": false}, "residual_causes": [], "expected_action": "SOLVE_CURRENT"},
+    {"case_id": "R14_nonsovereign", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["QUESTION"], "expected_action": "REFRAME_QUESTION", "check": "both authority flags false on every emitted decision"}
+  ],
+  "hostile_priority_cases": [
+    {"case_id": "H01_evaluator_over_external", "description": "evaluator_invalid outranks external_trust_root", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"evaluator_invalid": true, "external_trust_root": true}, "expected_action": "AUDIT_EVALUATOR"},
+    {"case_id": "H02_external_over_resource", "description": "external_trust_root outranks resource_bound", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_flags": {"external_trust_root": true, "resource_bound": true}, "expected_action": "EXTERNAL_TRUST_ROOT"},
+    {"case_id": "H03_ascend_over_discriminator", "description": "supported ancestor challenge outranks ambiguous causes", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["FRAMEWORK", "MEASUREMENT"], "residual_flags": {"parent_challenge_supported": true, "distinct_local_repair_families_failed": 2}, "expected_action": "ASCEND"},
+    {"case_id": "H04_discriminator_before_revision", "description": "multiple plausible levels require a discriminator before any revision", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["QUESTION", "FRAMEWORK"], "expected_action": "RUN_DISCRIMINATOR"},
+    {"case_id": "H05_ascend_needs_two_failed_families", "description": "parent challenge with only one failed local repair family does not ascend", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["ATOM"], "residual_flags": {"parent_challenge_supported": true, "distinct_local_repair_families_failed": 1}, "expected_action": "SPLIT"},
+    {"case_id": "H06_resource_with_closed_audit", "description": "resource_bound alone with closed audit does not block a bounded stop", "node": {"closure_coordinates_pass": true, "material_open_residual": false}, "residual_flags": {"resource_bound": true}, "expected_action": "STOP_BOUNDED"},
+    {"case_id": "H07_duplicate_causes_dedup", "description": "repeated identical cause is one responsibility level", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["QUESTION", "QUESTION"], "expected_action": "REFRAME_QUESTION"},
+    {"case_id": "H08_atom_single_cause", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["ATOM"], "expected_action": "SPLIT"},
+    {"case_id": "H09_decomposition_single_cause", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["DECOMPOSITION"], "expected_action": "SPLIT"},
+    {"case_id": "H10_evidence_single_cause", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["EVIDENCE"], "expected_action": "SOLVE_CURRENT"},
+    {"case_id": "H11_method_single_cause", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["METHOD"], "expected_action": "SOLVE_CURRENT"},
+    {"case_id": "H12_resource_over_discriminator_with_causes", "description": "resource_bound with open plausible causes abstains rather than guessing", "node": {"closure_coordinates_pass": false, "material_open_residual": true}, "residual_causes": ["QUESTION", "FRAMEWORK"], "residual_flags": {"resource_bound": true}, "expected_action": "CANNOT_CHECK"}
+  ],
+  "structural_invariant_checks": [
+    {"check_id": "S01_atomicity_receipt_terminal", "requirement": "AtomicityReceipt terminal is exactly PROVISIONALLY_ATOMIC_AT_REGISTERED_CUTOFF; ATOM_PROVEN_FOREVER is rejected as a terminal string"},
+    {"check_id": "S02_atomicity_indexed", "requirement": "two receipts differing only in target/split_family/evaluator/cutoff are distinct objects and neither subsumes the other"},
+    {"check_id": "S03_ancestor_supersession_stales_descendants", "requirement": "AncestorChallenge supersession marks every registered descendant closure certificate stale; prior evidence ids are preserved (no negative-history deletion)"},
+    {"check_id": "S04_evaluator_change_closes_epoch", "requirement": "changing the evaluator epoch identity in RecursiveAuditProjection yields a new epoch id; no cross-epoch comparison is offered"},
+    {"check_id": "S05_nonsovereignty", "requirement": "every decision and every typed receipt carries grants_scientific_authority=false and grants_method_promotion_authority=false"},
+    {"check_id": "S06_no_post_hoc_selection", "requirement": "decide() is a pure function of (node, residual); no outcome-dependent mutation or selection of the winning level"},
+    {"check_id": "S07_escalation_cannot_bypass_controller", "requirement": "request_self_rakl_escalation returns a request receipt referencing CURRENT_SELF_EVOLUTION_CONTROLLER and grants no authority; the controller remains the only method-evolution gate"},
+    {"check_id": "S08_audit_before_commit_clean_problem", "requirement": "a single well-posed question candidate with a valid evaluator and no resource bound commits to SOLVE_CURRENT; divergent question candidates without a discriminator yield RUN_DISCRIMINATOR; an invalid evaluator yields AUDIT_EVALUATOR even before commit"}
+  ],
+  "terminal_rule": {
+    "KNOWN_WORLD_CONFORMANCE_PASS": "Every known-world family, reference conformance case, hostile priority case, and structural invariant check passes through the production module, and the production decide() is action-identical to the vendored reference decide() on every case.",
+    "KNOWN_WORLD_CONFORMANCE_FAIL": "Any case or invariant fails; the failure is reported per case and is not relabeled.",
+    "instrument_note": "Conformance is instrument evidence that the control semantics are executable and fail closed. It is NOT utility evidence for the recursive formulation principle; utility requires the separately re-frozen RFC-v1 benchmark on fresh tasks."
+  },
+  "float_policy": "The committed result JSON contains no floating-point numbers (integers, booleans, strings only) so exact reproduction is independent of builtin sum() summation semantics across Python versions.",
+  "non_claims": [
+    "No utility or superiority claim over DIRECT_SOLVE, STATIC_CURRENT_RAKL, or any parent arm.",
+    "No claim that a globally correct formulation exists or is discovered.",
+    "No scientific authority, method-promotion authority, or publication authority.",
+    "Known-world conformance is not fresh-task evidence."
+  ]
+}

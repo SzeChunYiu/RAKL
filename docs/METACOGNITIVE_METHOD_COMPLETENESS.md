@@ -194,6 +194,25 @@ not `NEW_OPERATOR_PROVEN`.
 
 The candidate operator must then enter the normal Self-RAKL challenger protocol.
 
+### Formulation gap candidates (recursive framework audit)
+
+The recursive framework audit (`src/rakl/recursive_framework_audit.py`) projects each
+responsibility coordinate of an open formulation onto a proposal-side diagnostic
+(`FORMULATION_GAP_CANDIDATES` in `src/rakl/metacognition.py`):
+
+```text
+QUESTION_FORMULATION_GAP_CANDIDATE
+FRAMEWORK_GAP_CANDIDATE
+DECOMPOSITION_GAP_CANDIDATE
+INTERFACE_GAP_CANDIDATE
+MEASUREMENT_GAP_CANDIDATE
+EVALUATOR_GAP_CANDIDATE
+```
+
+These are still **proposal-side**: a diagnostic names where additional checking is
+warranted; it never repairs, promotes, or mints authority, and an unknown coordinate fails
+closed to `CANNOT_CHECK`.
+
 ## 10. Intellectual humility as a protocol, not a personality trait
 
 RAKL does not need to simulate a humble personality. It needs **revisability**.
@@ -232,6 +251,12 @@ CALIBRATION_WEAKNESS
 EXPLANATION_GAP
 ONTOLOGY_GAP_CANDIDATE
 METHOD_BASIS_GAP_CANDIDATE
+QUESTION_FORMULATION_GAP_CANDIDATE
+FRAMEWORK_GAP_CANDIDATE
+DECOMPOSITION_GAP_CANDIDATE
+INTERFACE_GAP_CANDIDATE
+MEASUREMENT_GAP_CANDIDATE
+EVALUATOR_GAP_CANDIDATE
 INDEPENDENT_REVIEW_REQUIRED
 CANNOT_CHECK
 ```

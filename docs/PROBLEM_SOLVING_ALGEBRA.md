@@ -20,7 +20,9 @@ where:
 - `sigma` is a structured problem signature;
 - `F` is the set of currently licensed or candidate facts used for planning;
 - `O` is the set of open verification/proof obligations;
-- `R` is the active representation set;
+- `R` is the active representation set — **explicitly provisional**: membership in `R` is a
+  pursuit-state commitment, not a scientific claim, and a material residual may reopen it
+  (recursive framework audit, `FORMAL_SYSTEM_SPECIFICATION.md` §8.1);
 - `B` is the explicit obstruction set;
 - `H` is the applied-operator history;
 - `tau` is the terminal status.
@@ -184,6 +186,12 @@ review research value
 ```
 
 This is a seed grammar. Self-RAKL may propose additional operators when repeated residuals show that the basis is insufficient. New operators require explicit contracts and frozen transfer tests before becoming canonical defaults.
+
+Reformulation is bidirectional: a supported reformulation may **reopen the parent** state —
+staling descendant closure certificates while keeping their evidence addressable — rather
+than merely terminating the current path and starting a sibling. Ascent requires a supported
+parent challenge plus at least two distinct failed local repair families
+(`src/rakl/recursive_framework_audit.py`).
 
 ## 10. Claim boundary
 

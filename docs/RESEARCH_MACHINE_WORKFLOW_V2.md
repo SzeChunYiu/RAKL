@@ -28,7 +28,9 @@ The LLM is a proposer/planner/extractor among these components. It is not the re
 
 ```text
 PROBLEM
-  -> freeze QoI / evidence boundary / observational epoch
+  -> freeze decision/audit/evidence boundary + observational epoch
+  -> candidate question audit (recursive framework audit, pre-commitment)
+  -> activate scoped question/QoI
   -> acquire + normalize knowledge
   -> establish bounded KNOWLEDGE saturation
   -> reconstruct Apple object portrait

@@ -32,6 +32,14 @@ the structure is *for*, and until 2026-08-14 it had no paper home: its specifica
 document marked non-activating, and its three appearances across the papers were all
 *constraining* — Paper I's is inside a noninterference section. See issue #627.
 
+## The ladder is a dependency order, not a one-way task pipeline
+
+During a research episode, evidence may reopen the active question, representation,
+decomposition or evaluator. **Recursive Framework Audit** (`src/rakl/recursive_framework_audit.py`,
+frozen benchmark `research/recursive_framework_audit_v1/`) is the cross-layer controller
+choosing whether to solve at the current representation, refine downward, or challenge an
+ancestor abstraction. It changes pursuit state only; authority updates remain governed by L3.
+
 ## Readiness — how a layer is closed out
 
 A layer is **READY** only when all of the following hold. They are **non-compensatory**: a
