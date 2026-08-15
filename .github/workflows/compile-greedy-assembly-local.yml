@@ -1,0 +1,36 @@
+name: compile-greedy-assembly-local
+on:
+  push:
+    branches: [tooling/formal-greedy-assembly-20260815]
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install exact Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan.sh
+          sh /tmp/elan.sh -y --default-toolchain "$(cat formal/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile base and candidate assembly
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd formal
+          ! grep -nE '\bsorry\b|\badmit\b' GreedyAssembly.lean
+          lean --root=. -o RaklFormal.olean RaklFormal.lean
+          LEAN_PATH=. lean GreedyAssembly.lean
+      - name: Axiom audit assembly theorem
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd formal
+          lean --root=. -o RaklFormal.olean RaklFormal.lean
+          LEAN_PATH=. lean --root=. -o GreedyAssembly.olean GreedyAssembly.lean
+          cat > /tmp/ga_ax.lean <<'EOF'
+          import GreedyAssembly
+          #print axioms RaklFormal.normalize_reservations
+          #print axioms RaklFormal.reservation_first_greedy_optimal
+          EOF
+          LEAN_PATH=. lean /tmp/ga_ax.lean | tee /tmp/ga_ax.out
+          test "$(grep -c 'does not depend on any axioms' /tmp/ga_ax.out)" = 2
