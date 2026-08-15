@@ -1,0 +1,917 @@
+{
+  "budget_source": "rakl.engineering_capacity.ENGINEERING_SLO_ENVELOPES (imported, not declared here)",
+  "budgets_frozen_before_execution": true,
+  "campaign_wall_seconds": 9.024997878819704,
+  "configuration": {
+    "activity_hold_s": 0.002,
+    "budget_degrade_at_inflight": 3,
+    "budget_max_inflight": 4,
+    "budget_max_queue": 4,
+    "context_items": 200,
+    "context_iterations": 60,
+    "http_max_retries": 12,
+    "http_writer_threads": 16,
+    "http_writes_per_thread": 40,
+    "index_rebuild_interval_s": 0.02,
+    "max_claim_retries": 12,
+    "probe_sqlite_busy_timeout_s": 0.02,
+    "race_probe_window_sleep_s": 0.005,
+    "same_key_race_threads": 16,
+    "shipped_sqlite_busy_timeout_s": 5.0,
+    "solver_chain_structures": 8,
+    "solver_iterations": 60,
+    "status_iterations": 60,
+    "storage_sample_interval_s": 0.02,
+    "thread_switch_interval_s": 0.0005,
+    "workflow_activities_per_project": 30,
+    "workflow_passes_per_worker": 2,
+    "workflow_projects": 4,
+    "workflow_repeats": 3,
+    "workflow_worker_threads": 12
+  },
+  "contention": {
+    "commits_by_phase": {
+      "api::evidence": 640.0,
+      "workflow::shipped-0": 2280.0,
+      "workflow::shipped-1": 2280.0,
+      "workflow::shipped-2": 2280.0
+    },
+    "commits_total": 7480.0,
+    "conflicts_by_class": {
+      "held_by_live_worker": 76.0,
+      "snapshot_stale": 62.0
+    },
+    "denominator_composition": "a committed transaction is any durable BEGIN IMMEDIATE that succeeded, which includes claims that committed a no-op because the activity was ALREADY_COMPLETED. Under this load most of the workflow denominator is such no-op claims, so these are retries per durable transaction, not retries per unit of work.",
+    "retries_by_class": {
+      "snapshot_stale": 62.0
+    },
+    "retries_by_phase": {
+      "api::evidence": 62.0
+    },
+    "retry_amplification_by_phase": {
+      "api::evidence": 0.096875,
+      "workflow::shipped-0": 0.0,
+      "workflow::shipped-1": 0.0,
+      "workflow::shipped-2": 0.0
+    },
+    "retry_amplification_definition": "retries issued / transactions that committed, each phase against its own commits",
+    "retry_amplification_pooled": 0.008288770053475936,
+    "workflow_claim_outcomes_behind_the_denominator": {
+      "acquired": 360,
+      "already_completed": 5324,
+      "held_by_live_worker": 76
+    }
+  },
+  "declared_slo_envelopes": {
+    "api_availability_ratio": {
+      "budget": 0.99,
+      "description": "first-attempt 2xx responses over all first attempts under concurrent load",
+      "direction": "AT_LEAST",
+      "min_samples": 50,
+      "slo_id": "api_availability_ratio",
+      "statistic": "mean",
+      "unit": "1"
+    },
+    "context_compilation_ms": {
+      "budget": 50.0,
+      "description": "bounded working-set compilation for one budgeted request",
+      "direction": "AT_MOST",
+      "min_samples": 30,
+      "slo_id": "context_compilation_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    },
+    "index_lag_events": {
+      "budget": 25.0,
+      "description": "canonical events committed since the rebuildable projection last rebuilt",
+      "direction": "AT_MOST",
+      "min_samples": 10,
+      "slo_id": "index_lag_events",
+      "statistic": "p95",
+      "unit": "{event}"
+    },
+    "solver_compilation_ms": {
+      "budget": 100.0,
+      "description": "structure-space match and composition for one problem",
+      "direction": "AT_MOST",
+      "min_samples": 30,
+      "slo_id": "solver_compilation_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    },
+    "solver_navigation_ms": {
+      "budget": 100.0,
+      "description": "support-structure navigation for one composed problem",
+      "direction": "AT_MOST",
+      "min_samples": 30,
+      "slo_id": "solver_navigation_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    },
+    "status_computation_ms": {
+      "budget": 50.0,
+      "description": "canonical EpistemicStatus read and projection for one snapshot",
+      "direction": "AT_MOST",
+      "min_samples": 30,
+      "slo_id": "status_computation_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    },
+    "storage_growth_bytes_per_record": {
+      "budget": 4096.0,
+      "description": "durable store bytes divided by canonical records held",
+      "direction": "AT_MOST",
+      "min_samples": 5,
+      "slo_id": "storage_growth_bytes_per_record",
+      "statistic": "mean",
+      "unit": "By"
+    },
+    "transaction_latency_ms": {
+      "budget": 250.0,
+      "description": "one durable workflow transaction, attempt to commit, under concurrency",
+      "direction": "AT_MOST",
+      "min_samples": 50,
+      "slo_id": "transaction_latency_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    },
+    "workflow_latency_ms": {
+      "budget": 2000.0,
+      "description": "activity scheduled until its terminal receipt is written",
+      "direction": "AT_MOST",
+      "min_samples": 50,
+      "slo_id": "workflow_latency_ms",
+      "statistic": "p95",
+      "unit": "ms"
+    }
+  },
+  "defect_probes": [
+    {
+      "distinct_after_snapshot_ids": [
+        "snap-1",
+        "snap-10",
+        "snap-11",
+        "snap-12",
+        "snap-13",
+        "snap-14",
+        "snap-15",
+        "snap-16",
+        "snap-2",
+        "snap-3",
+        "snap-4",
+        "snap-5",
+        "snap-6",
+        "snap-7",
+        "snap-8",
+        "snap-9"
+      ],
+      "duplicate_commits": 15,
+      "evidence_records": 16,
+      "expected_invariant": "one logical mutation advances the head exactly once",
+      "final_sequence": 16,
+      "fresh_commit_responses": 16,
+      "history": [
+        {
+          "attempt": 1,
+          "note": "one handle() call completed in tens of microseconds against a 0.5ms switch interval, so the window was never entered; that result carried no power",
+          "verdict": "NOT_OBSERVED_IN_THIS_RUN",
+          "window_widened": "none"
+        },
+        {
+          "attempt": 2,
+          "duplicate_commits": 0,
+          "note": "all 16 threads read prior=None in _validate_mutation, but the second read in _apply_idempotent, the apply() and the map write are microseconds apart with no GIL yield between them; the first thread to wake wrote the map entry before any other thread re-read it. The window that matters is read->apply->write, not the validate path",
+          "verdict": "NOT_OBSERVED_IN_THIS_RUN",
+          "window_widened": "content_hash sleeps 5ms (validate path only)"
+        }
+      ],
+      "mutation_lock_acquisitions": 32,
+      "power_note": "with the mutation held open for milliseconds, every thread reads project.idempotency before any thread has written it; a NOT_OBSERVED here would be a real absence, not a timing artefact",
+      "probe": "http_same_idempotency_key_race",
+      "threads": 16,
+      "verdict": "DEFECT_OBSERVED",
+      "window_widened_by": "module-level content_hash patched to sleep 0.005s (entered 32 times across 16 threads) AND service._lock wrapped so acquire sleeps 0.005s before taking the real lock (32 acquisitions)"
+    },
+    {
+      "admit_trace": [
+        "ADMITTED/INFLIGHT",
+        "ADMITTED/INFLIGHT",
+        "ADMITTED/INFLIGHT",
+        "DEGRADED/INFLIGHT",
+        "DEGRADED/QUEUED"
+      ],
+      "after_admitted_holder_released": {
+        "inflight": 4,
+        "queued": 0
+      },
+      "api": "tokened admit() -> Admission; release(admission)",
+      "detail": "every admission released and the budget returned to zero",
+      "drain_trace": [
+        {
+          "inflight": 3,
+          "queued": 0,
+          "released_slot": "INFLIGHT"
+        },
+        {
+          "inflight": 2,
+          "queued": 0,
+          "released_slot": "INFLIGHT"
+        },
+        {
+          "inflight": 1,
+          "queued": 0,
+          "released_slot": "INFLIGHT"
+        },
+        {
+          "inflight": 0,
+          "queued": 0,
+          "released_slot": "QUEUED"
+        }
+      ],
+      "expected_invariant": "releasing an admitted holder frees an inflight slot, and once every admission has been released inflight == queued == 0",
+      "history": [
+        {
+          "api": "untokened admit()/release()",
+          "attempt": 1,
+          "inflight_after_admitted_holder_released": 4,
+          "inflight_after_four_admits": 4,
+          "observation": "after 4 admits (inflight=4) and a 5th admit (queued=1), releasing an ADMITTED holder left inflight=4 and took queued to 0; six further admit/release cycles all left inflight=4, queued=0, refused=0",
+          "queued_after_fifth_admit": 1,
+          "ratchet_trace": [
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            },
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            },
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            },
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            },
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            },
+            {
+              "inflight": 4,
+              "queued": 0,
+              "refused": 0
+            }
+          ],
+          "verdict": "DEFECT_OBSERVED"
+        },
+        {
+          "api": "tokened, Admission(verdict, slot) with the slot frozen at admit time",
+          "attempt": 2,
+          "inflight_after_full_drain": 1,
+          "observation": "same trace: releasing the ADMITTED holder promoted the queued 5th caller (inflight 4->3->4, queued 1->0), but the promoted caller's token still said QUEUED, so its own release was a no-op. After every admission was released inflight was 1, not 0: one slot leaked per promotion for the life of the budget",
+          "verdict": "FIX_INCOMPLETE_LEAK_ON_FULL_DRAIN"
+        }
+      ],
+      "inflight_after_four_admits": 4,
+      "inflight_after_full_drain": 0,
+      "leaked_slots_after_full_drain": 0,
+      "probe": "resource_budget_release_accounting",
+      "queued_after_fifth_admit": 1,
+      "queued_after_full_drain": 0,
+      "ratchet_trace": [
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        },
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        },
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        },
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        },
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        },
+        {
+          "inflight": 4,
+          "queued": 0,
+          "refused": 0,
+          "slot": "QUEUED"
+        }
+      ],
+      "verdict": "FIXED_VERIFIED"
+    }
+  ],
+  "fibres": [
+    "E17 item 19 (declared SLO envelopes)",
+    "E17 item 20 (concurrency/load campaign)",
+    "E12 item 11 (named-operation instrumentation)"
+  ],
+  "findings": [
+    "under the shipped 5.0s sqlite busy timeout the workflow load produced 0 `database is locked` errors; lock contention was absorbed as latency (claim/complete p95 5.481 ms over 6840 attempts), not surfaced as a conflict",
+    "with the busy timeout cut to 0.02s the same load produced 225 lock conflicts and a retry amplification of 0.0987 retries per commit",
+    "the workflow-layer conflict that does fire under the shipped configuration is the lease: 76 HELD_BY_LIVE_WORKER verdicts across 360 acquisitions",
+    "the bounded budget (max_inflight=4, max_queue=4) refused 2880 admissions before any mutation; every scheduled activity still reached exactly one terminal receipt ({'COMPLETED': 360})",
+    "concurrent writers to one project head saw a first-attempt success ratio of 0.9359 (62 SNAPSHOT_STALE over 640 first attempts); after bounded retry the eventual success ratio was 1.0000 with 0 untyped failures",
+    "storage held 480 canonical records in 196608 bytes, 409.6 bytes per record",
+    "the index-lag envelope is missed at cold start, not in steady state: pooled p95 33.0 events against a first-rebuild-per-repeat set of [120, 120, 120] and a steady-state p95 of 25.0 events",
+    "the same workflow load repeated 3x produced per-repeat workflow-latency p95s of [1397.2, 1393.6, 1403.5] ms against a 2000.0 ms budget; the reported verdict is on the pooled 360-sample distribution"
+  ],
+  "grants_scientific_authority": false,
+  "hardware_context": {
+    "cpu_count": 16,
+    "load_average_1_5_15": [
+      1.77197265625,
+      1.6826171875,
+      1.61474609375
+    ],
+    "machine": "x86_64",
+    "measured_at_utc": "2026-08-15T18:50:51.863754+00:00",
+    "note": "LAPTOP HARDWARE. These are measurements of this machine under this load. They are not a production capacity statement, and a missed envelope here is a measurement to report, not a budget to move.",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "python": "3.11.14",
+    "shared_machine_caveat": "the load average above is the whole machine's, not this campaign's. This host runs other work, so wall-clock envelopes (workflow latency in particular) vary run to run; counted quantities (conflicts, refusals, retries, records) do not.",
+    "sqlite_library_version": "3.50.4"
+  },
+  "harness_settings": {
+    "python_thread_switch_interval_s_default": 0.005,
+    "python_thread_switch_interval_s_used": 0.0005,
+    "why": "CPython's default switch interval lets one thread run thousands of these operations before yielding, so nothing interleaves in-process. This changes the scheduler, not the code under test."
+  },
+  "instrumented_operations": {
+    "backup_freshness": [
+      "orion.backup.age"
+    ],
+    "context_compilation_time": [
+      "orion.context.compilation.duration"
+    ],
+    "queue_and_workflow_latency": [
+      "orion.workflow.schedule_to_claim",
+      "orion.workflow.claim_to_complete",
+      "orion.workflow.queue_depth",
+      "orion.workflow.queue_refusals"
+    ],
+    "recovery_required_runs": [
+      "orion.recovery_required.runs"
+    ],
+    "solver_cost": [
+      "orion.solver.compile.duration",
+      "orion.solver.navigate.duration",
+      "orion.solver.fibres_opened",
+      "orion.solver.research_rounds"
+    ],
+    "status_computation_time": [
+      "orion.status.computation.duration"
+    ],
+    "storage_and_index_health": [
+      "orion.storage.bytes",
+      "orion.storage.rows",
+      "orion.storage.growth_bytes_per_record",
+      "orion.index.lag_events"
+    ],
+    "transaction_conflicts_and_retries": [
+      "orion.txn.commits",
+      "orion.txn.conflicts",
+      "orion.txn.retries",
+      "orion.txn.latency"
+    ]
+  },
+  "measurements": {
+    "B1_R1_backup_and_recovery": {
+      "backup_age_seconds": 0.00020599365234375,
+      "backup_detail": [],
+      "backup_entries": 1,
+      "backup_is_exact": true,
+      "backup_verdict": "EXACT",
+      "driven_recovery_cases": [
+        {
+          "activity_id": "rec-act-0",
+          "external_effect": true,
+          "retry_safe": true,
+          "verdict": "RECOVERY_REQUIRED"
+        },
+        {
+          "activity_id": "rec-act-1",
+          "external_effect": false,
+          "retry_safe": false,
+          "verdict": "RECOVERY_REQUIRED"
+        }
+      ],
+      "recovery_required_runs_total": 2.0
+    },
+    "C1_context_compilation": {
+      "budget_tokens": 1500,
+      "items": 200,
+      "iterations": 60,
+      "used_tokens_mean": 195.0,
+      "verdicts": {
+        "COMPILED": 60
+      }
+    },
+    "H1_api_concurrency": {
+      "eventual_success": 640,
+      "eventual_success_ratio": 1.0,
+      "evidence_records": 640,
+      "final_sequence": 640,
+      "first_attempt_success_ratio": 0.9359375,
+      "requests_first_attempt": 640,
+      "responses_by_code": {
+        "200": 640,
+        "SNAPSHOT_STALE": 62
+      },
+      "retry_exhausted": 0,
+      "unhandled_exceptions": 0,
+      "wall_seconds": 0.06155524495989084
+    },
+    "I1_index_lag_cold_start_vs_steady_state": {
+      "cold_start_note": "the first rebuild of each repeat has an empty baseline, so it reports every event the schedule burst committed. The envelope verdict stands as measured; the steady-state figure below is reported alongside it, not in place of it.",
+      "envelope_reading_is_on_the_pooled_sample": true,
+      "first_rebuild_per_repeat_events": [
+        120,
+        120,
+        120
+      ],
+      "steady_state_max_events": 61,
+      "steady_state_p50_events": 4.0,
+      "steady_state_p95_events": 25.0,
+      "steady_state_samples": 118
+    },
+    "S1_solver_cost": {
+      "fibres_opened": 3.0,
+      "iterations": 60,
+      "navigate_outcomes": {
+        "REACHED": 60
+      },
+      "recursive_events": {
+        "FIBER_OPENED": 3,
+        "RESEARCH_FLAT": 3,
+        "RESEARCH_ROUND": 6
+      },
+      "recursive_outcome": "REACHED",
+      "research_rounds_counted": 6.0,
+      "research_rounds_reported_by_solver": 6,
+      "structures_in_space": 8
+    },
+    "T1_status_computation": {
+      "distinct_status_ids": 1,
+      "iterations": 60,
+      "samples": 60
+    },
+    "W1_workflow_concurrency_shipped_config": {
+      "acquisitions_total": 360,
+      "repeats": [
+        {
+          "activities_scheduled": 120,
+          "budget": {
+            "degraded": 503,
+            "inflight_at_end": 0,
+            "max_inflight": 4,
+            "max_queue": 4,
+            "queued_at_end": 0,
+            "refused": 960
+          },
+          "bytes_per_record_final": 401.06666666666666,
+          "claim_outcomes": {
+            "ACQUIRED": 120,
+            "ALREADY_COMPLETED": 1776,
+            "HELD_BY_LIVE_WORKER": 24,
+            "budget_refused": 960,
+            "completed": 120
+          },
+          "db_bytes_final": 192512,
+          "index_lag_max": 120,
+          "index_lag_samples": 46,
+          "label": "shipped-0",
+          "records_final": {
+            "leases": 0,
+            "total": 480,
+            "worker_activities": 120,
+            "worker_events": 360
+          },
+          "retry_exhausted": 0,
+          "storage_sample_first_last": [
+            {
+              "bytes_per_record": 409.6,
+              "db_bytes": 98304,
+              "records": 240
+            },
+            {
+              "bytes_per_record": 401.06666666666666,
+              "db_bytes": 192512,
+              "records": 480
+            }
+          ],
+          "storage_samples": 53,
+          "terminal_status_counts": {
+            "COMPLETED": 120
+          },
+          "wall_seconds": 1.7251528850756586,
+          "worker_threads": 12,
+          "workflow_latency_ms_samples": 120,
+          "workflow_latency_p95_ms": 1397.1862690523267
+        },
+        {
+          "activities_scheduled": 120,
+          "budget": {
+            "degraded": 427,
+            "inflight_at_end": 0,
+            "max_inflight": 4,
+            "max_queue": 4,
+            "queued_at_end": 0,
+            "refused": 960
+          },
+          "bytes_per_record_final": 409.6,
+          "claim_outcomes": {
+            "ACQUIRED": 120,
+            "ALREADY_COMPLETED": 1776,
+            "HELD_BY_LIVE_WORKER": 24,
+            "budget_refused": 960,
+            "completed": 120
+          },
+          "db_bytes_final": 196608,
+          "index_lag_max": 120,
+          "index_lag_samples": 35,
+          "label": "shipped-1",
+          "records_final": {
+            "leases": 0,
+            "total": 480,
+            "worker_activities": 120,
+            "worker_events": 360
+          },
+          "retry_exhausted": 0,
+          "storage_sample_first_last": [
+            {
+              "bytes_per_record": 409.6,
+              "db_bytes": 98304,
+              "records": 240
+            },
+            {
+              "bytes_per_record": 409.6,
+              "db_bytes": 196608,
+              "records": 480
+            }
+          ],
+          "storage_samples": 43,
+          "terminal_status_counts": {
+            "COMPLETED": 120
+          },
+          "wall_seconds": 1.6218775501474738,
+          "worker_threads": 12,
+          "workflow_latency_ms_samples": 120,
+          "workflow_latency_p95_ms": 1393.6370960436761
+        },
+        {
+          "activities_scheduled": 120,
+          "budget": {
+            "degraded": 533,
+            "inflight_at_end": 0,
+            "max_inflight": 4,
+            "max_queue": 4,
+            "queued_at_end": 0,
+            "refused": 960
+          },
+          "bytes_per_record_final": 409.6,
+          "claim_outcomes": {
+            "ACQUIRED": 120,
+            "ALREADY_COMPLETED": 1772,
+            "HELD_BY_LIVE_WORKER": 28,
+            "budget_refused": 960,
+            "completed": 120
+          },
+          "db_bytes_final": 196608,
+          "index_lag_max": 120,
+          "index_lag_samples": 40,
+          "label": "shipped-2",
+          "records_final": {
+            "leases": 0,
+            "total": 480,
+            "worker_activities": 120,
+            "worker_events": 360
+          },
+          "retry_exhausted": 0,
+          "storage_sample_first_last": [
+            {
+              "bytes_per_record": 409.6,
+              "db_bytes": 98304,
+              "records": 240
+            },
+            {
+              "bytes_per_record": 409.6,
+              "db_bytes": 196608,
+              "records": 480
+            }
+          ],
+          "storage_samples": 32,
+          "terminal_status_counts": {
+            "COMPLETED": 120
+          },
+          "wall_seconds": 1.703457866795361,
+          "worker_threads": 12,
+          "workflow_latency_ms_samples": 120,
+          "workflow_latency_p95_ms": 1403.4825381822884
+        }
+      ],
+      "terminal_status_counts_total": {
+        "COMPLETED": 360
+      },
+      "why_repeated": "a single run of this phase decided the workflow-latency verdict by what else this shared host was doing; the verdict below is on the pooled sample and the per-repeat spread is stated",
+      "workflow_latency_p95_ms_per_repeat": [
+        1397.1862690523267,
+        1393.6370960436761,
+        1403.4825381822884
+      ],
+      "workflow_latency_pooled_samples": 360
+    },
+    "W2_workflow_concurrency_low_busy_timeout_probe": {
+      "activities_scheduled": 120,
+      "budget": {
+        "degraded": 266,
+        "inflight_at_end": 0,
+        "max_inflight": 4,
+        "max_queue": 4,
+        "queued_at_end": 0,
+        "refused": 960
+      },
+      "bytes_per_record_final": 401.06666666666666,
+      "claim_outcomes": {
+        "ACQUIRED": 120,
+        "ALREADY_COMPLETED": 1629,
+        "HELD_BY_LIVE_WORKER": 171,
+        "budget_refused": 960,
+        "completed": 120
+      },
+      "conflicts_by_class": {
+        "held_by_live_worker": 171.0,
+        "sqlite_locked": 225.0
+      },
+      "db_bytes_final": 192512,
+      "index_lag_max": null,
+      "index_lag_samples": 0,
+      "label": "low-busy-timeout",
+      "probe_note": "sqlite busy timeout patched from 5.0s to 0.02s so lock contention surfaces as `database is locked` instead of being absorbed as latency. Latencies from this variant are NOT fed into the SLO evaluation.",
+      "records_final": {
+        "leases": 0,
+        "total": 480,
+        "worker_activities": 120,
+        "worker_events": 360
+      },
+      "retry_amplification": 0.09868421052631579,
+      "retry_exhausted": 0,
+      "sqlite_locked_conflicts": 225.0,
+      "storage_sample_first_last": [],
+      "storage_samples": 0,
+      "terminal_status_counts": {
+        "COMPLETED": 120
+      },
+      "wall_seconds": 1.5241488772444427,
+      "worker_threads": 12,
+      "workflow_latency_ms_samples": 120,
+      "workflow_latency_p95_ms": 1331.9923472590744
+    }
+  },
+  "not_claimed": [
+    "production capacity: every number here is laptop hardware under this load",
+    "a distributed multi-process campaign: workers are threads in one process",
+    "PostgreSQL serializable behaviour: the durable engine under test is SQLite",
+    "that a met envelope on this machine will be met on any other"
+  ],
+  "queue_saturation": {
+    "budget": {
+      "degraded": 533,
+      "inflight_at_end": 0,
+      "max_inflight": 4,
+      "max_queue": 4,
+      "queued_at_end": 0,
+      "refused": 960
+    },
+    "final_queue_depth_gauge": 0.0,
+    "refusals_counted": 2880.0
+  },
+  "receipt_separation_check": {
+    "held": true,
+    "otlp_payload_bytes": 10405,
+    "receipt_content_keys_found_in_export": [],
+    "rule": "an operational metric may reference a receipt id and carry no other receipt content"
+  },
+  "required_slo_ids": [
+    "transaction_latency_ms",
+    "workflow_latency_ms",
+    "status_computation_ms",
+    "solver_compilation_ms",
+    "solver_navigation_ms",
+    "storage_growth_bytes_per_record",
+    "index_lag_events",
+    "api_availability_ratio"
+  ],
+  "schema_version": "orion-capacity-campaign-v1",
+  "slo_readings": [
+    {
+      "budget": 0.99,
+      "detail": "mean=0.9359 1 vs budget AT_LEAST 0.99 1",
+      "direction": "AT_LEAST",
+      "max": 1.0,
+      "mean": 0.9359375,
+      "measured": 0.9359375,
+      "min": 0.0,
+      "p50": 1.0,
+      "p95": 1.0,
+      "samples": 640,
+      "slo_id": "api_availability_ratio",
+      "statistic": "mean",
+      "unit": "1",
+      "verdict": "MISSED"
+    },
+    {
+      "budget": 50.0,
+      "detail": "p95=0.5119 ms vs budget AT_MOST 50.0 ms",
+      "direction": "AT_MOST",
+      "max": 0.5757180042564869,
+      "mean": 0.4652335386102398,
+      "measured": 0.511879101395607,
+      "min": 0.44497568160295486,
+      "p50": 0.45769382268190384,
+      "p95": 0.511879101395607,
+      "samples": 60,
+      "slo_id": "context_compilation_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    },
+    {
+      "budget": 25.0,
+      "detail": "p95=33.0000 {event} vs budget AT_MOST 25.0 {event}",
+      "direction": "AT_MOST",
+      "max": 120.0,
+      "mean": 8.925619834710744,
+      "measured": 33.0,
+      "min": 0.0,
+      "p50": 4.0,
+      "p95": 33.0,
+      "samples": 121,
+      "slo_id": "index_lag_events",
+      "statistic": "p95",
+      "unit": "{event}",
+      "verdict": "MISSED"
+    },
+    {
+      "budget": 100.0,
+      "detail": "p95=0.0211 ms vs budget AT_MOST 100.0 ms",
+      "direction": "AT_MOST",
+      "max": 0.044465065002441406,
+      "mean": 0.020117172971367836,
+      "measured": 0.021093059331178665,
+      "min": 0.018928200006484985,
+      "p50": 0.01954333856701851,
+      "p95": 0.021093059331178665,
+      "samples": 60,
+      "slo_id": "solver_compilation_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    },
+    {
+      "budget": 100.0,
+      "detail": "p95=0.0279 ms vs budget AT_MOST 100.0 ms",
+      "direction": "AT_MOST",
+      "max": 0.04791282117366791,
+      "mean": 0.024940352886915207,
+      "measured": 0.02786470577120781,
+      "min": 0.0229543074965477,
+      "p50": 0.024260953068733215,
+      "p95": 0.02786470577120781,
+      "samples": 60,
+      "slo_id": "solver_navigation_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    },
+    {
+      "budget": 50.0,
+      "detail": "p95=0.4127 ms vs budget AT_MOST 50.0 ms",
+      "direction": "AT_MOST",
+      "max": 0.4497379995882511,
+      "mean": 0.363761264209946,
+      "measured": 0.4127020947635174,
+      "min": 0.3418000414967537,
+      "p50": 0.3551216796040535,
+      "p95": 0.4127020947635174,
+      "samples": 60,
+      "slo_id": "status_computation_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    },
+    {
+      "budget": 4096.0,
+      "detail": "mean=401.9676 By vs budget AT_MOST 4096.0 By",
+      "direction": "AT_MOST",
+      "max": 422.2680412371134,
+      "mean": 401.9676318048132,
+      "measured": 401.9676318048132,
+      "min": 344.9263157894737,
+      "p50": 403.83098591549293,
+      "p95": 415.536231884058,
+      "samples": 128,
+      "slo_id": "storage_growth_bytes_per_record",
+      "statistic": "mean",
+      "unit": "By",
+      "verdict": "MET"
+    },
+    {
+      "budget": 250.0,
+      "detail": "p95=5.4813 ms vs budget AT_MOST 250.0 ms",
+      "direction": "AT_MOST",
+      "max": 1530.7506676763296,
+      "mean": 5.542465386645357,
+      "measured": 5.481254775077105,
+      "min": 0.07335003465414047,
+      "p50": 0.07943622767925262,
+      "p95": 5.481254775077105,
+      "samples": 6840,
+      "slo_id": "transaction_latency_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    },
+    {
+      "budget": 2000.0,
+      "detail": "p95=1400.6668 ms vs budget AT_MOST 2000.0 ms",
+      "direction": "AT_MOST",
+      "max": 2015.092516783625,
+      "mean": 993.7624295500832,
+      "measured": 1400.6668110378087,
+      "min": 351.64345195516944,
+      "p50": 1038.8118079863489,
+      "p95": 1400.6668110378087,
+      "samples": 360,
+      "slo_id": "workflow_latency_ms",
+      "statistic": "p95",
+      "unit": "ms",
+      "verdict": "MET"
+    }
+  ],
+  "slo_summary": {
+    "cannot_check": [],
+    "met": [
+      "context_compilation_ms",
+      "solver_compilation_ms",
+      "solver_navigation_ms",
+      "status_computation_ms",
+      "storage_growth_bytes_per_record",
+      "transaction_latency_ms",
+      "workflow_latency_ms"
+    ],
+    "missed": [
+      "api_availability_ratio",
+      "index_lag_events"
+    ]
+  },
+  "storage_scaling": {
+    "bytes_per_record_final": 409.6,
+    "bytes_per_record_samples": 128,
+    "db_bytes_final": 196608,
+    "records_final": {
+      "leases": 0,
+      "total": 480,
+      "worker_activities": 120,
+      "worker_events": 360
+    },
+    "sample_first_last": [
+      {
+        "bytes_per_record": 409.6,
+        "db_bytes": 98304,
+        "records": 240
+      },
+      {
+        "bytes_per_record": 409.6,
+        "db_bytes": 196608,
+        "records": 480
+      }
+    ]
+  }
+}
