@@ -98,6 +98,14 @@ parent from child. The packet is missing exactly one field — a registered loca
 discriminator — and without it, ascending would be promoting repeated raw failure into a
 parent-level verdict.
 
+## 4b. Recursive step taken on the dominant cluster
+
+The construct-dependence cluster is researched as its own object in
+[NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md](NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md): the property defined,
+a non-circular census of how often the check is declared before execution (38 of 248 registered
+instrument designs; author separation 0), the candidate admission gate, an UNDERPOWERED verdict on
+the retrospective test, and a frozen forward falsifier.
+
 ## 5. What this licenses next
 
 Proposal-only; none of this is authorized by this audit.
