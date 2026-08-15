@@ -58,9 +58,9 @@ def identities(r: MathResearchRecord) -> AssuranceIdentityBundleV3:
     )
 
 
-def dag(include_dependency: bool = True) -> ProofDAG:
+def dag(include_dependency: bool = True, *, dependency_hash: str = DEPENDENCY) -> ProofDAG:
     nodes = (
-        ProofNode("A", ProofNodeKind.LEMMA, DEPENDENCY),
+        ProofNode("A", ProofNodeKind.LEMMA, dependency_hash),
         ProofNode("T", ProofNodeKind.THEOREM, FORMAL),
     )
     result = ProofDAG(nodes=nodes)
@@ -69,60 +69,73 @@ def dag(include_dependency: bool = True) -> ProofDAG:
     return result
 
 
-def manifest(*, dependencies=(DEPENDENCY,)) -> DependencyManifestReceipt:
+def manifest(
+    *,
+    dependencies=(DEPENDENCY,),
+    manifest_id: str | None = None,
+    extracted_by: str | None = None,
+) -> DependencyManifestReceipt:
     return DependencyManifestReceipt(
-        h("dependency-manifest"),
+        manifest_id or h("dependency-manifest"),
         PROOF_SOURCE,
         FORMAL,
         dependencies,
-        h("dependency-extractor"),
+        extracted_by or h("dependency-extractor"),
         True,
+    )
+
+
+def strict(r: MathResearchRecord, *, d: ProofDAG | None = None, m: DependencyManifestReceipt | None = None, proposer: str = PROP):
+    return strict_math_candidate(
+        r,
+        proposer_identity_hash=proposer,
+        identities=identities(r),
+        literature_manifest_hash=LITERATURE,
+        dag=d or dag(),
+        node_id="T",
+        dependency_manifest=m or manifest(),
     )
 
 
 def test_historical_classifier_positive_is_not_current_strict_eligibility_by_itself() -> None:
     r = record()
     assert classify_math_record(r).stage is MathClaimStage.NEW_MATHEMATICS_CANDIDATE
-    decision = strict_math_candidate(
-        r,
-        proposer_identity_hash="alice",
-        identities=identities(r),
-        literature_manifest_hash=LITERATURE,
-        dag=dag(),
-        node_id="T",
-        dependency_manifest=manifest(),
-    )
+    decision = strict(r, proposer="alice")
     assert decision.eligible_new_mathematics_candidate is False
     assert any("strict_content_identity_failed" in reason for reason in decision.reasons)
 
 
 def test_dependency_manifest_bypass_is_blocked_even_when_assurance_receipts_are_good() -> None:
-    r = record()
-    decision = strict_math_candidate(
-        r,
-        proposer_identity_hash=PROP,
-        identities=identities(r),
-        literature_manifest_hash=LITERATURE,
-        dag=dag(include_dependency=False),
-        node_id="T",
-        dependency_manifest=manifest(),
-    )
+    decision = strict(record(), d=dag(include_dependency=False))
     assert decision.stage is MathClaimStage.BLOCKED_PROOF_ASSURANCE
     assert decision.checkpoint_verified is False
     assert decision.eligible_new_mathematics_candidate is False
 
 
-def test_full_content_addressed_assurance_and_exact_dependency_path_is_candidate_eligible_only() -> None:
-    r = record()
-    decision = strict_math_candidate(
-        r,
-        proposer_identity_hash=PROP,
-        identities=identities(r),
-        literature_manifest_hash=LITERATURE,
-        dag=dag(),
-        node_id="T",
-        dependency_manifest=manifest(),
+def test_human_label_dependency_is_rejected_even_if_dag_and_manifest_repeat_it() -> None:
+    decision = strict(
+        record(),
+        d=dag(dependency_hash="lemma-A"),
+        m=manifest(dependencies=("lemma-A",)),
     )
+    assert decision.stage is MathClaimStage.BLOCKED_PROOF_ASSURANCE
+    assert any("dependency_statement_hashes[0]" in reason for reason in decision.reasons)
+
+
+def test_human_label_extractor_is_rejected() -> None:
+    decision = strict(record(), m=manifest(extracted_by="lean-dependency-extractor"))
+    assert decision.stage is MathClaimStage.BLOCKED_PROOF_ASSURANCE
+    assert any("extracted_by" in reason for reason in decision.reasons)
+
+
+def test_human_label_manifest_id_is_rejected() -> None:
+    decision = strict(record(), m=manifest(manifest_id="manifest-T"))
+    assert decision.stage is MathClaimStage.BLOCKED_PROOF_ASSURANCE
+    assert any("manifest_id" in reason for reason in decision.reasons)
+
+
+def test_full_content_addressed_assurance_and_exact_dependency_path_is_candidate_eligible_only() -> None:
+    decision = strict(record())
     assert decision.stage is MathClaimStage.NEW_MATHEMATICS_CANDIDATE
     assert decision.checkpoint_verified is True
     assert decision.eligible_new_mathematics_candidate is True
