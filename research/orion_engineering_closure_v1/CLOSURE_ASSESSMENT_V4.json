@@ -5,7 +5,7 @@
     "conformance_audit": "112 items: 64 PRESENT 44 ABSENT 4 PARTIAL 0 CANNOT_CHECK; 48 negatives preserved",
     "cross_plane_attacks": "14 HELD / 3 BROKE / 1 CONFIRMS_KNOWN_OPEN; the 3 BROKE are X08 X11 X12 above",
     "hostile_assurance_a01_a12": "12/12 held; renamed from H01..H12 to stop colliding with the matrix namespace",
-    "hostile_matrix_30_rows": "30/30 executed: 26 HELD (23 full, 3 local-ref), 4 BROKE (H28 fixed; H21 H14 H30 in flight), 0 CANNOT_CHECK; harness validated both directions",
+    "hostile_matrix_30_rows": "30/30 executed, 30 HELD (27 full, 3 local-ref), 0 BROKE, 0 CANNOT_CHECK; harness validated both directions; all four original BROKEs fixed",
     "restore_drill": "8 HELD / 1 NOT_EXERCISED (WAL sidecar absent at copy time); 9/9 planes semantically EQUAL on clean restore",
     "runbook_drill": "11 procedures: 8 EXECUTED 3 NOT_EXECUTABLE_LOCALLY"
   },
@@ -18,7 +18,7 @@
     },
     "E18": {
       "found_by": "conformance lane, cross-referenced against HOSTILE_TEST_MATRIX.md row by row",
-      "status": "FIXED d01bd14: 30/30 matrix rows executed, IDs renamed A01..A12; 4 BROKE found, 1 fixed 3 in flight",
+      "status": "FIXED d01bd14 + 2b14887: 30/30 rows executed and held",
       "v3_said": "hostile_assurance held 12/12; REFERENCE_IMPLEMENTED",
       "what_was_wrong": "The 12 executed cases attack 7 of the matrix's 30 rows fully and 4 partially; 19 rows were never executed. The campaign's own docstring is honest -- it freezes its own list and never claims to be the matrix -- but V3 cited it as E18 closure. Worse, the campaign numbered its cases H01..H12, colliding with the matrix namespace while attacking different things: campaign H01 is stale-snapshot mutation, matrix H01 is kill during canonical blob write. A reader cross-referencing would conclude the wrong thing."
     },
@@ -42,7 +42,7 @@
     }
   },
   "date": "2026-08-15",
-  "defects_fixed_count": 13,
+  "defects_fixed_count": 16,
   "defects_found_today": [
     {
       "confirmed": true,
@@ -152,7 +152,7 @@
       "confirmed": true,
       "found_by": "conformance lane",
       "id": "H21_SILENT_SCHEMA_REPAIR",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 2b14887",
       "what": "dropped table on a populated DB is silently recreated empty; head served with no receipt",
       "where": "every store _initialize_schema (CREATE TABLE IF NOT EXISTS on open)"
     },
@@ -160,7 +160,7 @@
       "confirmed": true,
       "found_by": "conformance lane",
       "id": "H14_GHOST_ATOM",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 2b14887",
       "what": "no __post_init__ id check; index serves a nonexistent atom; nothing emits CANNOT_CHECK",
       "where": "engineering_state.SemanticIndexSnapshot / engineering_index.RebuildableSemanticIndex"
     },
@@ -168,16 +168,50 @@
       "confirmed": true,
       "found_by": "conformance lane",
       "id": "H30_READY_WITH_NOTHING",
-      "status": "FIX_IN_FLIGHT",
+      "status": "FIXED 2b14887",
       "what": "30 non-mandatory records under a 5-token budget -> READY with 0 selected",
       "where": "compile_task_packet / context compiler"
     }
   ],
   "defects_found_today_count": 16,
+  "fibre_terminals_now": {
+    "production_residuals_that_need_provisioned_infrastructure": {
+      "E10": "TLS/rate limits on the front is deployment",
+      "E12": "wiring SpanExporter/MetricExporter to a live OTLP collector",
+      "E13": "binding IdentityProvider to real OIDC and SecretStore to a real secret manager",
+      "E15": "PostgreSQL WAL/PITR and failover; POSTGRES_SCHEMA_V1.sql never executed here",
+      "E17": "production capacity numbers; two SLOs MISSED on laptop hardware and budgets were not moved",
+      "E18": "an independently executed assurance pass on the exact production release; H17/H18/H29 held for the local stand-in only",
+      "E20": "the live operator drill on the exact release; 3 of 11 runbook procedures NOT_EXECUTABLE_LOCALLY",
+      "E6": "durable-history backend adapter (Temporal/Postgres) is deployment"
+    },
+    "reference_implemented_and_hostile_tested": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ]
+  },
   "grants_scientific_authority": false,
   "production_ready_scoped": false,
   "supersedes": "CLOSURE_ASSESSMENT_V3.json",
-  "terminal": "CORRECTED__12_OF_15_DEFECTS_FIXED__3_IN_FLIGHT__NOT_PRODUCTION_READY",
+  "terminal": "CORRECTED__ALL_16_DEFECTS_FOUND_TODAY_FIXED__NOT_PRODUCTION_READY",
   "what_this_does_not_claim": [
     "that any fibre is closed while a fix for it is in flight",
     "that laptop capacity numbers are production capacity",

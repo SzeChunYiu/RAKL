@@ -221,7 +221,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: epistemic_statuses,project_heads,snapshots,transitions",
+      "detail": "tables: engineering_schema_registry,epistemic_statuses,project_heads,snapshots,superseded_transitions,transitions",
       "evidence": "rakl.engineering_store.SqliteEngineeringStateStore",
       "item_id": "ARCH-5-projects/snapshots",
       "kind": "table",
@@ -230,7 +230,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: epistemic_statuses,project_heads,snapshots,transitions",
+      "detail": "tables: engineering_schema_registry,epistemic_statuses,project_heads,snapshots,superseded_transitions,transitions",
       "evidence": "rakl.engineering_store.SqliteEngineeringStateStore",
       "item_id": "ARCH-5-state_transition_receipts",
       "kind": "table",
@@ -239,7 +239,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: engineering_evidence_batch_commits,engineering_evidence_records",
+      "detail": "tables: engineering_evidence_batch_commits,engineering_evidence_records,engineering_schema_registry",
       "evidence": "rakl.engineering_evidence_store.SqliteEvidenceMetadataStore",
       "item_id": "ARCH-5-evidence_records",
       "kind": "table",
@@ -248,7 +248,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
+      "detail": "tables: engineering_schema_registry,semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
       "evidence": "rakl.engineering_semantic_store.SqliteSemanticStateStore",
       "item_id": "ARCH-5-fibres/atoms/atom_versions",
       "kind": "table",
@@ -257,7 +257,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
+      "detail": "tables: engineering_schema_registry,semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
       "evidence": "rakl.engineering_semantic_store.SqliteSemanticStateStore",
       "item_id": "ARCH-5-relations/relation_witnesses",
       "kind": "table",
@@ -266,7 +266,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: atlas_charts,atlas_obstructions,atlas_plane_commits,atlas_transitions",
+      "detail": "tables: atlas_charts,atlas_obstructions,atlas_plane_commits,atlas_transitions,engineering_schema_registry",
       "evidence": "rakl.engineering_atlas_store.SqliteAtlasPlaneStore",
       "item_id": "ARCH-5-atlas_charts/transitions/obstructions",
       "kind": "table",
@@ -275,7 +275,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "tables: workflow_activities,workflow_events,workflows",
+      "detail": "tables: engineering_schema_registry,workflow_activities,workflow_events,workflows",
       "evidence": "rakl.engineering_workflow.SqliteReferenceWorkflowEngine",
       "item_id": "ARCH-5-executions/execution_events",
       "kind": "table",
@@ -563,7 +563,7 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "404 NOT_FOUND (no EpistemicStatus at snapshot snapshot:8728bdf42fef78d6cb1d)",
+      "detail": "404 NOT_FOUND (no EpistemicStatus at snapshot snapshot:15c1586003631e53e0d8)",
       "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
       "item_id": "API-query-params",
       "kind": "behaviour",
@@ -788,13 +788,13 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "BROKE against real code -- corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK. | code path: rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
+      "detail": "forged id refused at construction; swapped-in ghost snapshot refused (unverified); verify() names atom:ghost -> GHOST_ATOMS and exact_filter/lexical raise IndexIntegrityError; mutated-behind-id caught; rebuilt index VERIFIED and served",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H14",
       "item_id": "MATRIX-H14",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H14 corrupt derived index to return nonexistent atom",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "worker engine: RECOVERY_REQUIRED on reclaim after effect_started; stale lease cannot complete; reference engine: RECOVERY_REQUIRED and re-begin refused",
@@ -851,13 +851,13 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "BROKE against real code -- future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists. | code path: rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
+      "detail": "future-schema payload refused; dropped `transitions` -> SchemaIntegrityError naming it, table NOT recreated, head not served; same for semantic + workflow stores; fresh open and normal reopen fine",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H21",
       "item_id": "MATRIX-H21",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H21 partial schema migration",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "canonical dumps MATCH after rollback (digest bc16a038999c..); MISMATCH cannot be receipted; receipt import-receipt:9c1c27f39db99..",
@@ -914,16 +914,16 @@
       "verdict": "PRESENT"
     },
     {
-      "detail": "BROKE against real code -- read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt. | code path: rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
+      "detail": "read ok 200; write ok 200 status=COMMITTED; transition semantics unchanged with exporter down",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H28",
       "item_id": "MATRIX-H28",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H28 audit/log exporter unavailable",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
-      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
+      "detail": "12 contending writers all committed (head seq 12); 11 RETRY_REQUIRED receipts preserved; max retries/writer=1; p95 time-to-commit 344.6 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H29",
       "item_id": "MATRIX-H29",
       "kind": "hostile_case",
@@ -932,13 +932,13 @@
       "verdict": "PARTIAL"
     },
     {
-      "detail": "BROKE against real code -- 30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing. | code path: rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
+      "detail": "context overflow -> BLOCK_NEW_WORK; index lag -> COMPACT (history preserved); missing obs -> CANNOT_CHECK; 30 records / 5-token budget -> CANNOT_COMPILE ('context_over_budget',); mandatory -> CANNOT_COMPILE; records that fit -> READY",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H30",
       "item_id": "MATRIX-H30",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H30 huge knowledge lattice + context request",
-      "verdict": "ABSENT"
+      "verdict": "PRESENT"
     },
     {
       "detail": "",
@@ -1139,12 +1139,7 @@
     },
     "campaign_reuses_matrix_ids_for_different_attacks": [],
     "executed": {
-      "broke": {
-        "H14": "rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
-        "H21": "rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
-        "H28": "rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
-        "H30": "rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)"
-      },
+      "broke": {},
       "cannot_check": [],
       "held_full": [
         "H01",
@@ -1160,16 +1155,20 @@
         "H11",
         "H12",
         "H13",
+        "H14",
         "H15",
         "H16",
         "H19",
         "H20",
+        "H21",
         "H22",
         "H23",
         "H24",
         "H25",
         "H26",
-        "H27"
+        "H27",
+        "H28",
+        "H30"
       ],
       "held_local_reference_only": [
         "H17",
@@ -1357,15 +1356,6 @@
       "verdict": "ABSENT"
     },
     {
-      "detail": "BROKE against real code -- corrupted index serves atom:ghost from exact_filter() and lexical(); the ghost is absent from the canonical store; SemanticIndexSnapshot accepted a fabricated atom under the real index_id (no __post_init__ recomputation, unlike every other identity-bearing dataclass in engineering_state) and RebuildableSemanticIndex has no verify()/referential check. Nothing emits CANNOT_CHECK. | code path: rakl.engineering_index.SemanticIndexSnapshot (no id verification); rakl.engineering_index.RebuildableSemanticIndex.exact_filter/lexical (no referential check)",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H14",
-      "item_id": "MATRIX-H14",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H14 corrupt derived index to return nonexistent atom",
-      "verdict": "ABSENT"
-    },
-    {
       "detail": "mid-transaction connection loss -> full rollback (head, atoms, commits, receipts all unchanged); retry commits | NOT EXERCISED: a real primary failover (connection drop + promoted replica) needs a PostgreSQL cluster; the invariant is shown under an in-process SQLite transaction abort only",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H17",
       "item_id": "MATRIX-H17",
@@ -1384,47 +1374,20 @@
       "verdict": "PARTIAL"
     },
     {
-      "detail": "BROKE against real code -- future-schema payload refused; BUT after a half-applied migration (transitions table dropped) the store reopens without error, silently recreates an EMPTY transitions table, serves head seq 1 and returns None for the receipt that produced it. No schema version is recorded (PRAGMA user_version=0); no migration guard exists. | code path: rakl.engineering_store.SqliteEngineeringStateStore._initialize_schema (CREATE TABLE IF NOT EXISTS on every open; no schema-version table/pragma; no completeness check)",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H21",
-      "item_id": "MATRIX-H21",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H21 partial schema migration",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "BROKE against real code -- read RAISED ConnectionError; write RAISED ConnectionError; project.sequence 0->1. With the exporter down, EVERY request raises out of handle(): reads are unavailable and the mutation's state change (0->1) was applied but no response/receipt reached the caller. That is not 'degraded observability + explicit health'; it is an outage of the scientific API caused by the telemetry sink, and a committed mutation with a lost receipt. | code path: rakl.engineering_http._SpanCtx.__exit__ (exporter.export raises through the context manager) -> EngineeringHttpService.handle (try/except ApiError sits INSIDE the span; the return value is discarded)",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H28",
-      "item_id": "MATRIX-H28",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H28 audit/log exporter unavailable",
-      "verdict": "ABSENT"
-    },
-    {
-      "detail": "12 contending writers all committed (head seq 12); 13 RETRY_REQUIRED receipts preserved; max retries/writer=2; p95 time-to-commit 243.7 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
+      "detail": "12 contending writers all committed (head seq 12); 11 RETRY_REQUIRED receipts preserved; max retries/writer=1; p95 time-to-commit 344.6 ms | NOT EXERCISED: a production latency/resource envelope; these are single-host SQLite numbers on the test machine, not a registered SLO. PERFORMANCE_ENVELOPE_EXCEEDED cannot be judged here.",
       "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H29",
       "item_id": "MATRIX-H29",
       "kind": "hostile_case",
       "spec_source": "HOSTILE_TEST_MATRIX.md",
       "specified": "H29 high transaction contention",
       "verdict": "PARTIAL"
-    },
-    {
-      "detail": "BROKE against real code -- 30 non-mandatory records under a 5-token budget -> TaskPacketVerdict.READY with 0/30 records selected, 30 omitted, compile reasons=(), issues=(): a SOLVE packet with zero context is handed out as READY and nothing in verdict/issues/reasons says why. The guard exists only for mandatory records (5 mandatory records -> CANNOT_COMPILE, ('mandatory_over_budget',)). Omissions are recorded in omitted_record_ids, so this is not invisible -- but it is not the fail-closed compact/demote/CANNOT_COMPILE the row requires; it is READY-with-nothing. | code path: rakl.project_runtime.RAKLProject.compile_task_packet -> context_compiler (non-mandatory records dropped to fit budget without a verdict downgrade or a reason)",
-      "evidence": "research/orion_engineering_closure_v1/HOSTILE_MATRIX_EXECUTION_V1.json :: H30",
-      "item_id": "MATRIX-H30",
-      "kind": "hostile_case",
-      "spec_source": "HOSTILE_TEST_MATRIX.md",
-      "specified": "H30 huge knowledge lattice + context request",
-      "verdict": "ABSENT"
     }
   ],
   "summary": {
-    "ABSENT": 16,
+    "ABSENT": 12,
     "CANNOT_CHECK": 0,
     "PARTIAL": 3,
-    "PRESENT": 93
+    "PRESENT": 97
   },
   "what_this_does_not_decide": "whether each GAP_LEDGER falsifier is defeated. A fibre can defeat its falsifier with a differently-named abstraction, and can carry every named symbol while its falsifier stands. Only the named-surface question is answered mechanically here."
 }
