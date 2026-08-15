@@ -7,7 +7,14 @@ from rakl.math_research_assurance_v3 import AssuranceIdentityBundleV3, NoveltyDo
 LIT="lit-manifest"; REVIEW="external-reviewer"; ATTEST="external-verifier-attestor"
 
 def _record(*, neighboring=False, rediscovery=False):
-    return MathResearchRecord("artifact",True,True,FormalizationWitness("informal","formal",True,True,True,1),ProofReceipt("T","neighbor" if neighboring else "formal","lean","4.32.1",True,(),"comparator","pinned",True,True,"proof-src"),NoveltyCertificate("2026-08-15",("registered",),("exact","structural"),"fp",rediscovery,("parent",) if rediscovery else (),1,"coverage"))
+    return MathResearchRecord(
+        claim_id="artifact",
+        interestingness_screened=True,
+        external_mathematical_review=True,
+        formalization=FormalizationWitness("informal","formal",True,True,True,1),
+        proof=ProofReceipt("T","neighbor" if neighboring else "formal","lean","4.32.1",True,(),"comparator","pinned",True,True,"proof-src"),
+        novelty=NoveltyCertificate("2026-08-15",("registered",),("exact","structural"),"fp",rediscovery,("parent",) if rediscovery else (),1,("coverage",)),
+    )
 
 def _ids(r, proposer):
     fd=formalization_pair_digest(r); nd=novelty_dossier_digest(r,literature_manifest_hash=LIT)
