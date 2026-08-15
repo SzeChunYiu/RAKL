@@ -1,0 +1,244 @@
+{
+  "assessment_version": "orion-engineering-closure-assessment-v3",
+  "assessments": [
+    {
+      "evidence_ids": [
+        "engineering_state.py"
+      ],
+      "fiber_id": "E1",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_store.py"
+      ],
+      "fiber_id": "E2",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_atlas_store.py",
+        "test_engineering_atlas_store.py"
+      ],
+      "fiber_id": "E3",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "project_runtime.py::next_action",
+        "test_runtime_wiring.py"
+      ],
+      "fiber_id": "E4",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_atomic.py"
+      ],
+      "fiber_id": "E5",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_workflow_workers.py",
+        "test_engineering_workflow_workers.py"
+      ],
+      "fiber_id": "E6",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "production durable-history backend adapter (contract is defined; a Temporal/Postgres adapter is deployment)"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_index.py"
+      ],
+      "fiber_id": "E7",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_service.py"
+      ],
+      "fiber_id": "E8",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "governed_solver.py",
+        "test_governed_solver.py"
+      ],
+      "fiber_id": "E9",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_http.py",
+        "test_engineering_http.py"
+      ],
+      "fiber_id": "E10",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "fronting with a hardened production server (TLS, rate limits) is deployment"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_ops.py::project_observatory",
+        "test_engineering_ops.py"
+      ],
+      "fiber_id": "E11",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "a browser UI over the read model is presentation; the read model never recomputes"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_http.py::Telemetry",
+        "test_engineering_http.py"
+      ],
+      "fiber_id": "E12",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "wiring the SpanExporter to a live OTLP collector is deployment"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_http.py::IdentityProvider,SecretStore",
+        "test_engineering_http.py"
+      ],
+      "fiber_id": "E13",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "binding IdentityProvider to real OIDC/workload identity and SecretStore to a real secret manager is deployment"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_migration.py"
+      ],
+      "fiber_id": "E14",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_ops.py::take_backup,verify_restore",
+        "test_engineering_ops.py"
+      ],
+      "fiber_id": "E15",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "PostgreSQL WAL/PITR semantics and a restore drill need a PostgreSQL; the byte-exact verifier is what the drill will assert with"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_release.py"
+      ],
+      "fiber_id": "E16",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": []
+    },
+    {
+      "evidence_ids": [
+        "engineering_ops.py::ResourceBudget,measure_slo",
+        "test_engineering_ops.py"
+      ],
+      "fiber_id": "E17",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "production capacity numbers need production hardware; typed refusal-before-mutation is asserted here"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "run_hostile_assurance_v3.py",
+        "HOSTILE_ASSURANCE_V3.json"
+      ],
+      "fiber_id": "E18",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "an independently executed pass on the exact production release; distributed exactly-once is explicitly not claimed"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_ops.py::BuildProvenance",
+        "test_engineering_ops.py"
+      ],
+      "fiber_id": "E19",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "a CI gate calling verify() against the built artifact is a workflow step, not new mechanics"
+      ]
+    },
+    {
+      "evidence_ids": [
+        "engineering_ops.py::OperatorDoctor",
+        "test_engineering_ops.py"
+      ],
+      "fiber_id": "E20",
+      "level": "REFERENCE_IMPLEMENTED",
+      "production_residuals": [
+        "the live operator drill on the exact release"
+      ]
+    }
+  ],
+  "date": "2026-08-15",
+  "fibres_with_production_residuals": [
+    "E6",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E15",
+    "E17",
+    "E18",
+    "E19",
+    "E20"
+  ],
+  "grants_scientific_authority": false,
+  "hostile_assurance": {
+    "campaign": "HOSTILE_ASSURANCE_V3.json",
+    "cases_frozen_before_execution": true,
+    "held": 12,
+    "total": 12
+  },
+  "production_ready_scoped": false,
+  "reference_implemented": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E20"
+  ],
+  "supersedes": "CLOSURE_ASSESSMENT_V2.json",
+  "terminal": "ALL_FIBRES_REFERENCE_IMPLEMENTED__PRODUCTION_RESIDUALS_TYPED",
+  "why_not_production_ready": "Every fibre's falsifier is now defeated by tested code that runs locally, and a 12/12 frozen hostile campaign holds. What remains is deployment against provisioned infrastructure -- a PostgreSQL, an OTLP collector, an identity provider, a secret manager, production hardware, and an independent assurance pass on the exact release. Those are named per fibre above. This assessment does not claim them, and neither should anything downstream of it."
+}
