@@ -1,0 +1,51 @@
+{
+  "schema_version": "self-rakl-claim-receipt-audit-v1",
+  "subject_main_sha": "d0e4ac3109d55ff10a0c32168f369bc57fbf39cd",
+  "programme_issue": "#730",
+  "selected_rfa_action": "AUDIT_EVALUATOR",
+  "question": "Can the current repository establish that every current manuscript claim resolves to a current evidence receipt?",
+  "terminal": "CANNOT_CHECK__ATOMIC_CLAIM_REGISTRY_STALE_AND_NOT_GLOBALLY_COMPLETE",
+  "findings": [
+    {
+      "artifact": "research/unified_problem_solving_v1/results/ATOMIC_CLAIM_REGISTRY.json",
+      "finding": "generated_at_cutoff is 9a9b1ced / 2026-08-13T16:48:58Z while the audited repository subject is d0e4ac3 on 2026-08-15"
+    },
+    {
+      "artifact": "research/unified_problem_solving_v1/results/ATOMIC_CLAIM_REGISTRY.json",
+      "finding": "global_completeness_claimed is explicitly false; the registry cannot serve as evidence that every manuscript claim is indexed"
+    },
+    {
+      "artifact": "tools/build_atomic_claim_registry.py",
+      "finding": "CUTOFF and CUTOFF_TIME are hard-coded to the August-13 subject, so rerunning the current builder cannot mint a current-subject registry without a versioned builder change"
+    },
+    {
+      "artifact": "tools/validate_atomic_claim_registry.py",
+      "finding": "the validator checks internal registry/proof/artifact invariants, but not completeness against every theorem-like or empirical sentence in the current manuscripts"
+    },
+    {
+      "artifact": "merged changes after the registry cutoff",
+      "finding": "the repository has since sharpened manuscript negatives (#711/#712), restored a negative's missing licensing chain (#715), executed and invalidated an ARN discriminator (#729), and added construct-independence v1 plus its miss (#731); these changes are outside the registry cutoff"
+    }
+  ],
+  "what_is_not_concluded": [
+    "the current manuscripts are inconsistent",
+    "the existing registry is internally invalid",
+    "any post-cutoff claim is unsupported",
+    "a stale registry may be silently treated as current by changing its cutoff field"
+  ],
+  "responsibility_coordinate": "EVALUATOR",
+  "successor": {
+    "id": "atomic-claim-registry-v2-current-subject",
+    "requirements": [
+      "version the builder rather than editing historical registry semantics after outcomes",
+      "derive or explicitly freeze the audited repository subject instead of retaining the August-13 hard-coded cutoff",
+      "inventory every current manuscript theorem-like and empirical claim, not only the existing unified-problem-solving claim set",
+      "bind each claim to exact artifact/receipt/proof status and allowed/forbidden wording",
+      "preserve negative and softened/strengthened wording history",
+      "run the existing internal-invariant validator plus a manuscript coverage check",
+      "fail closed when a current claim has no current receipt or proof status"
+    ]
+  },
+  "grants_scientific_authority": false,
+  "grants_method_promotion_authority": false
+}
