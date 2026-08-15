@@ -1,0 +1,83 @@
+{
+  "components": {
+    "contextual_credit_component": "SUPPORTED",
+    "diagnosis_component": "SIMPLER_PARENT_SUFFICIENT"
+  },
+  "contextual_credit": {
+    "arms": {
+      "CONTEXT_TRANSPORT_CREDIT": {
+        "correct_operator_rate": 1.0,
+        "harmful_repair_rate": 0.0,
+        "mean_effect": 0.2333333333333333,
+        "regret_vs_oracle": 0.0,
+        "selections": [
+          {"context": "A_fresh", "effect": 0.35, "operator": "local_patch", "regret": 0.0},
+          {"context": "B_fresh", "effect": 0.3, "operator": "representation_reset", "regret": 0.0},
+          {"context": "C_fresh", "effect": 0.05, "operator": "local_patch", "regret": 0.0}
+        ]
+      },
+      "GLOBAL_CREDIT": {
+        "correct_operator_rate": 0.6666666666666666,
+        "harmful_repair_rate": 0.3333333333333333,
+        "mean_effect": 0.04999999999999999,
+        "regret_vs_oracle": 0.18333333333333335,
+        "selections": [
+          {"context": "A_fresh", "effect": 0.35, "operator": "local_patch", "regret": 0.0},
+          {"context": "B_fresh", "effect": -0.25, "operator": "local_patch", "regret": 0.55},
+          {"context": "C_fresh", "effect": 0.05, "operator": "local_patch", "regret": 0.0}
+        ]
+      },
+      "ORACLE_FRESH": {
+        "correct_operator_rate": 1.0,
+        "harmful_repair_rate": 0.0,
+        "mean_effect": 0.2333333333333333,
+        "regret_vs_oracle": 0.0,
+        "selections": [
+          {"context": "A_fresh", "effect": 0.35, "operator": "local_patch", "regret": 0.0},
+          {"context": "B_fresh", "effect": 0.3, "operator": "representation_reset", "regret": 0.0},
+          {"context": "C_fresh", "effect": 0.05, "operator": "local_patch", "regret": 0.0}
+        ]
+      },
+      "UNINFORMED_FIXED_LOCAL": {
+        "correct_operator_rate": 0.6666666666666666,
+        "harmful_repair_rate": 0.3333333333333333,
+        "mean_effect": 0.04999999999999999,
+        "regret_vs_oracle": 0.18333333333333335,
+        "selections": [
+          {"context": "A_fresh", "effect": 0.35, "operator": "local_patch", "regret": 0.0},
+          {"context": "B_fresh", "effect": -0.25, "operator": "local_patch", "regret": 0.55},
+          {"context": "C_fresh", "effect": 0.05, "operator": "local_patch", "regret": 0.0}
+        ]
+      }
+    },
+    "global_selected_operator": "local_patch",
+    "global_train_mean": {"local_patch": 0.06666666666666668, "representation_reset": 0.016666666666666653},
+    "registered_same_family_transport": {"A": "local_patch", "B": "representation_reset", "C": "local_patch"}
+  },
+  "diagnosis": {
+    "arms": {
+      "DECISION_VOI": {"correct_repair_rate": 0.512451171875, "harmful_mutations_per_world": 0.487548828125, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.10000000000000601, "total_cost_per_world": 0.35000000000000603, "wrong_layer_mutation_rate": 0.487548828125},
+      "FIXED_SURFACE": {"correct_repair_rate": 0.512451171875, "harmful_mutations_per_world": 0.487548828125, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.10000000000000601, "total_cost_per_world": 0.35000000000000603, "wrong_layer_mutation_rate": 0.487548828125},
+      "INFO_GAIN_PER_COST": {"correct_repair_rate": 0.512451171875, "harmful_mutations_per_world": 0.487548828125, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.10000000000000601, "total_cost_per_world": 0.35000000000000603, "wrong_layer_mutation_rate": 0.487548828125},
+      "MUTATE_ALL_PLAUSIBLE": {"correct_repair_rate": 1.0, "harmful_mutations_per_world": 2.0, "mutation_cost_per_world": 0.75, "probe_cost_per_world": 0.0, "total_cost_per_world": 0.75, "wrong_layer_mutation_rate": 1.0},
+      "NO_PROBE_MAP": {"correct_repair_rate": 0.332275390625, "harmful_mutations_per_world": 0.667724609375, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.0, "total_cost_per_world": 0.25, "wrong_layer_mutation_rate": 0.667724609375},
+      "ORACLE_CAUSE": {"correct_repair_rate": 1.0, "harmful_mutations_per_world": 0.0, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.0, "total_cost_per_world": 0.25, "wrong_layer_mutation_rate": 0.0},
+      "RANDOM_PROBE": {"correct_repair_rate": 0.4970703125, "harmful_mutations_per_world": 0.5029296875, "mutation_cost_per_world": 0.25, "probe_cost_per_world": 0.1797338867187441, "total_cost_per_world": 0.42973388671874413, "wrong_layer_mutation_rate": 0.5029296875}
+    },
+    "selected_probes": {"DECISION_VOI": "surface", "INFO_GAIN_PER_COST": "surface"},
+    "selection_diagnostics": {
+      "decision_loss_plus_cost": {"NO_PROBE": 0.6599999999999999, "cheap_weak": 0.628, "deep": 0.7836, "surface": 0.5805},
+      "info_gain_per_cost": {"cheap_weak": 0.44962646925427546, "deep": 0.6939946286882633, "surface": 1.103359501992689}
+    }
+  },
+  "grants_method_promotion_authority": false,
+  "grants_scientific_authority": false,
+  "interpretation": {
+    "contextual_credit": "Same-family contextual transport avoided the harmful B_fresh global-credit choice and matched the fresh oracle in all registered contexts.",
+    "diagnosis": "Decision-VOI selected the same surface probe as fixed-surface and information-gain-per-cost; no distinct diagnosis-control value is established in this frozen world.",
+    "scope": "Known-world mechanic/control-value evidence only; not external-agent or scientific-performance authority."
+  },
+  "protocol_git_blob_sha": "2ffc092a00d30d9d233530616f059f98af877d70",
+  "schema_version": "paper6-recursive-control-value-result-v1",
+  "terminal": "SIMPLER_PARENT_SUFFICIENT"
+}
