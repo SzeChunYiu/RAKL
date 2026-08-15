@@ -1,0 +1,19 @@
+name: local-export-source-1270
+on:
+  push:
+    branches: [tooling/local-export-1270bd55]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Archive exact parent commit
+        run: |
+          git archive --format=zip --output=RAKL-main-1270bd55.zip HEAD^
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-main-1270bd55
+          path: RAKL-main-1270bd55.zip
+          compression-level: 0
