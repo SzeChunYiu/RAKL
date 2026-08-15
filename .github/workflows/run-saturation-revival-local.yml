@@ -1,0 +1,108 @@
+name: run-saturation-revival-local
+on:
+  push:
+    branches: [tooling/run-saturation-revival-20260815]
+jobs:
+  revival:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 41bdbfcadfd974e26e66b3111552c7a00c4eeab6
+      - name: Install elan / Lean 4.14 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan.sh
+          sh /tmp/elan.sh -y --default-toolchain leanprover/lean4:v4.14.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Acquire exact mathlib v4.14.0 and cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q --depth 1 --branch v4.14.0 https://github.com/leanprover-community/mathlib4.git /tmp/mathlib4
+          cd /tmp/mathlib4
+          lake exe cache get
+      - name: Extract frozen widened theorem corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/revival/work"
+          cp scripts/orion_saturation/Dump2.lean /tmp/mathlib4/LocalDump2.lean
+          sed -i "s#/home/billy/orion-lean/corpus2.jsonl#$GITHUB_WORKSPACE/revival/corpus2.jsonl#; s#/home/billy/orion-lean/population_raw2.jsonl#$GITHUB_WORKSPACE/revival/population_raw2.jsonl#" /tmp/mathlib4/LocalDump2.lean
+          cd /tmp/mathlib4
+          lake env lean LocalDump2.lean
+          wc -l "$GITHUB_WORKSPACE/revival/corpus2.jsonl" "$GITHUB_WORKSPACE/revival/population_raw2.jsonl"
+      - name: Build repaired two-sided population
+        shell: bash
+        env:
+          ORION_LEAN_HEADER: mathlib
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$GITHUB_WORKSPACE/src" python scripts/orion_saturation/build_population_v2.py \
+            --raw revival/population_raw2.jsonl \
+            --corpus revival/corpus2.jsonl \
+            --mathlib /tmp/mathlib4 \
+            --work revival/work \
+            --out revival/population_v4_all.jsonl \
+            --workers 2 --stride 1
+      - name: Enforce fresh-task exclusion from v1
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          old={r['name'] for r in json.load(open('research/orion_saturation_solve_enablement_v1/receipts/results_v1.json'))['rows']}
+          rows=[json.loads(x) for x in Path('revival/population_v4_all.jsonl').read_text().splitlines() if x]
+          fresh=[r for r in rows if r['name'] not in old]
+          with open('revival/population_v4_fresh.jsonl','w') as f:
+            for r in fresh:f.write(json.dumps(r,sort_keys=True)+'\n')
+          json.dump({'all':len(rows),'excluded_v1':len(rows)-len(fresh),'fresh':len(fresh)},open('revival/FRESHNESS.json','w'),indent=2,sort_keys=True)
+          print(json.load(open('revival/FRESHNESS.json')))
+          PY
+      - name: Execute frozen matched-budget revival
+        shell: bash
+        env:
+          ORION_LEAN_HEADER: mathlib
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          set -euo pipefail
+          python scripts/orion_saturation/study.py \
+            --population revival/population_v4_fresh.jsonl \
+            --corpus revival/corpus2.jsonl \
+            --mathlib /tmp/mathlib4 \
+            --work revival/work \
+            --out revival/results_revival.json \
+            --workers 2
+      - name: Score frozen revival decision rule
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          r=json.load(open('revival/results_revival.json'))
+          rows=r.get('rows',[])
+          a=sum(bool(x['solved_A']) for x in rows); b=sum(bool(x['solved_B']) for x in rows)
+          ao=sum(bool(x['solved_A']) and not bool(x['solved_B']) for x in rows)
+          bo=sum(bool(x['solved_B']) and not bool(x['solved_A']) for x in rows)
+          n=ao+bo
+          # Exact two-sided McNemar/binomial p under p=.5
+          if n==0:p=1.0
+          else:
+            lo=min(ao,bo)
+            tail=sum(math.comb(n,k) for k in range(0,lo+1))/(2**n)
+            p=min(1.0,2*tail)
+          alpha=.025
+          terminal='MECHANISM_SUPPORTED_FRESH_POWERED' if a>b and p<=alpha else ('NEGATIVE_DIRECTION_REVERSED' if b>a else 'NOT_DETECTED_AT_FRESH_N')
+          out={'schema_version':'orion-saturation-powered-revival-local-v1','n':len(rows),'solved_A':a,'solved_B':b,'solve_rate_A':a/len(rows) if rows else None,'solve_rate_B':b/len(rows) if rows else None,'A_only':ao,'B_only':bo,'discordant':n,'exact_mcnemar_p':p,'alpha':alpha,'terminal':terminal,'frozen_protocol':'research/orion_saturation_solve_enablement_v1/PROTOCOL.json','subject_sha':'41bdbfcadfd974e26e66b3111552c7a00c4eeab6','grants_scientific_authority':False}
+          Path('revival/REVIVAL_DECISION.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(out,indent=2,sort_keys=True))
+          PY
+          sha256sum revival/*.json revival/*.jsonl > revival/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saturation-powered-revival-41bdbfc
+          path: revival/
+          if-no-files-found: error
+          compression-level: 1
