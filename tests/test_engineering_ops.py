@@ -110,6 +110,45 @@ def test_budget_release_frees_exactly_the_slot_taken_and_never_ratchets() -> Non
     assert (b.inflight, b.queued) == (0, 0)
 
 
+def test_budget_full_drain_reaches_zero_after_promotions() -> None:
+    """The invariant that distinguishes the correct fix from the interim one.
+
+    The interim fix (frozen Admission.slot, no live lookup) produced IDENTICAL
+    numbers to the correct fix on the ratchet trace above -- it only leaked one
+    inflight slot per PROMOTION, and only a full drain reveals that. So: fill,
+    over-subscribe so several callers queue, release everything in an order
+    that forces promotions, and assert the budget drains to exactly zero.
+    """
+
+    b = ResourceBudget(max_inflight=3, max_queue=5, degrade_at_inflight=99)
+    tokens = [b.admit() for _ in range(8)]      # 3 inflight, 5 queued
+    assert (b.inflight, b.queued) == (3, 5)
+    assert b.refused == 0
+    # release the inflight ones first: each release promotes a queued caller
+    for tok in tokens[:3]:
+        b.release(tok)
+    assert (b.inflight, b.queued) == (3, 2)     # 3 promoted, 2 still queued
+    # now release everything that remains, in admission order
+    for tok in tokens[3:]:
+        b.release(tok)
+    assert (b.inflight, b.queued) == (0, 0), "a promoted caller's release did not free its slot"
+    # and double release is a no-op, never negative
+    for tok in tokens:
+        b.release(tok)
+    assert (b.inflight, b.queued) == (0, 0)
+
+
+def test_budget_refused_token_release_is_a_noop() -> None:
+    b = ResourceBudget(max_inflight=1, max_queue=0, degrade_at_inflight=99)
+    held = b.admit()
+    refused = b.admit()
+    assert refused.verdict is BudgetVerdict.REFUSED_OVER_BUDGET
+    b.release(refused)                          # must not free anything
+    assert b.inflight == 1
+    b.release(held)
+    assert b.inflight == 0
+
+
 def test_slo_envelope_measures_and_judges() -> None:
     env = measure_slo("noop", lambda: None, samples=50, budget_p95_ms=50.0)
     assert env.samples == 50 and env.p50_ms <= env.p95_ms
