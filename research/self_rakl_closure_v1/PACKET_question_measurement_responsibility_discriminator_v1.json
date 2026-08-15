@@ -1,0 +1,118 @@
+{
+  "schema_version": "mechanic-research-packet-v1",
+  "packet_id": "MRP-CLOSURE-QUESTION-MEASUREMENT-DISCRIMINATOR-V1",
+  "mechanic_id": "recursive_formulation_responsibility_discriminator",
+  "variant_id": "question_measurement_responsibility_discriminator_v1",
+  "parent_method_sha": "83f63c93f338fad50a02281b9d99dfb529d920fb",
+  "object_description": "A frozen intervention table over an unresolved residual with QUESTION and MEASUREMENT both plausible, changing one coordinate at a time while holding evaluator, evidence cutoff, framework, decomposition, and resources fixed.",
+  "qoi": "Correct responsibility localization and false-reframe harm relative to revising the question or measurement without a discriminator.",
+  "scope": [
+    "RFA residuals where QUESTION and MEASUREMENT are both plausible",
+    "known-world conformance first",
+    "pursuit-state selection only"
+  ],
+  "assumptions": [
+    "question-only and measurement-only interventions are predeclared before their outcomes",
+    "the evaluator epoch is fixed across interventions",
+    "outcome resolution is judged by a criterion independent of the intervention author",
+    "if both or neither intervention resolves the residual, the gate does not invent a unique responsible coordinate"
+  ],
+  "strongest_parents": [
+    {
+      "parent_id": "recursive_framework_audit_run_discriminator",
+      "implementation_refs": ["src/rakl/recursive_framework_audit.py"],
+      "cost_model_id": "responsibility-discrimination-v1",
+      "cost_equation": "probe_design + intervention_execution + evaluation",
+      "justification": "Existing frozen controller already requires a discriminator when multiple coordinates are plausible; this packet supplies the missing evidence object without changing `decide()`.",
+      "evidence_pointers": ["research/recursive_framework_audit_v1/RFA_V1_FROZEN_BENCHMARK.json"]
+    },
+    {
+      "parent_id": "diagnosis_discriminating_intervention_v2",
+      "implementation_refs": ["research/mechanic_research_packets_v1/PAPER5_PAPER6_SUCCESSORS.json"],
+      "cost_model_id": "responsibility-discrimination-v1",
+      "cost_equation": "probe_cost + intervention_cost + expected_wrong_revision_harm",
+      "justification": "Existing Self-RAKL packet is the strongest parent for selecting interventions that separate competing responsibility hypotheses.",
+      "evidence_pointers": ["issue:#721"]
+    }
+  ],
+  "prior_art_equivalence_map": [
+    "one-factor-at-a-time causal intervention",
+    "active diagnosis / value-of-information discriminator",
+    "ablation with frozen evaluator",
+    "RAKL RFA RUN_DISCRIMINATOR semantics"
+  ],
+  "oracle_or_lower_bound": "Known-world worlds with injected QUESTION_ONLY, MEASUREMENT_ONLY, BOTH, and NEITHER causes provide exact responsibility labels and a lower-bound control on false-reframe harm. Real residuals without such labels may only use the instrument to narrow an identified set, never to assert a unique cause by default.",
+  "minimal_counterexamples": [
+    "question reframe and measurement repair both resolve the residual",
+    "neither local intervention changes the residual",
+    "evaluator changes between intervention arms",
+    "question reframe secretly changes available evidence",
+    "measurement repair changes the target question",
+    "missing intervention outcome is treated as no effect"
+  ],
+  "development_benchmark_id": "QUESTION-MEASUREMENT-RESPONSIBILITY-KNOWN-WORLD-V1",
+  "development_case_ids": [
+    "qm-dev-question-only",
+    "qm-dev-measurement-only",
+    "qm-dev-both",
+    "qm-dev-neither",
+    "qm-dev-missing-arm",
+    "qm-dev-evaluator-drift"
+  ],
+  "fresh_assurance_benchmark_id": "QUESTION-MEASUREMENT-RESPONSIBILITY-FRESH-V1",
+  "fresh_assurance_case_ids": [
+    "qm-fresh-question-only",
+    "qm-fresh-measurement-only",
+    "qm-fresh-both",
+    "qm-fresh-neither"
+  ],
+  "selection_case_ids": [
+    "qm-dev-question-only",
+    "qm-dev-measurement-only",
+    "qm-dev-both",
+    "qm-dev-neither",
+    "qm-dev-missing-arm",
+    "qm-dev-evaluator-drift"
+  ],
+  "falsifier": "The discriminator does not reduce wrong-layer revision/false-reframe harm versus the no-discriminator parent on fresh known-world cases, or it emits a unique coordinate when both/neither interventions are decisive.",
+  "same_system_ablation": "Same residual and evaluator with the discriminator removed: immediately revise QUESTION, immediately revise MEASUREMENT, or choose one by a fixed rule.",
+  "hard_gate_obligations": [
+    "one-coordinate-at-a-time interventions",
+    "fixed evaluator epoch",
+    "fixed evidence cutoff and resource contract",
+    "missing intervention result is CANNOT_CHECK",
+    "both-resolve and neither-resolve do not collapse to a unique cause",
+    "no authority grant"
+  ],
+  "required_telemetry_fields": [
+    "residual_id",
+    "question_intervention_id",
+    "measurement_intervention_id",
+    "evaluator_epoch",
+    "baseline_outcome",
+    "question_only_outcome",
+    "measurement_only_outcome",
+    "joint_outcome",
+    "identified_coordinates",
+    "verdict",
+    "false_reframe_harm",
+    "total_cost"
+  ],
+  "total_cost_equation": "discriminator_total = probe_design + question_intervention + measurement_intervention + optional_joint_control + evaluation + verification",
+  "novelty_residual": "An explicit evidence object that lets the existing RFA distinguish QUESTION from MEASUREMENT responsibility without adding a new decision chain or treating `QUESTION:0` in execution-stage logs as a clean bill.",
+  "permitted_publication_claim": "At most: the discriminator localizes responsibility on registered known-world cases and fails closed on nonidentified cases. It does not establish that a real research question is correct.",
+  "evidence_pointers": [
+    "issue:#730",
+    "research/self_rakl_recursive_question_audit_v1/CORE.md",
+    "research/self_rakl_recursive_question_audit_v1/OPEN_ITEMS_DECISIONS.json",
+    "issue:#721"
+  ],
+  "mechanism_gate_state": "UNASSESSED",
+  "applicability_gate_state": "UNASSESSED",
+  "frozen_before_implementation": true,
+  "frozen_before_outcome_access": true,
+  "packet_content_sha256": "f2d41defb9685d77586acbe09470e0a379491aca455065a463517981d7ed7547",
+  "grants_scientific_authority": false,
+  "grants_promotion_authority": false,
+  "replaces_promotion_gate": false
+}
