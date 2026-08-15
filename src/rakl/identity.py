@@ -165,6 +165,35 @@ class EvidenceIdentityLedger:
         for node in sorted(graph):
             visit(node)
 
+    def ancestry_roots(self, entity_ids: Iterable[str]) -> frozenset[str]:
+        """Resolve entities to their maximal ancestors under version/derivation.
+
+        A canonical entity with no outgoing version/derivation edge is its own
+        root. Counting roots rather than canonical entities is what makes
+        apparent independent support insensitive to citing several versions of
+        one work; the ledger still keeps the versions as distinct entities.
+        """
+
+        resolution = self.normalize_lineage(entity_ids)
+        canonical = self._canonical_map(resolution.raw_entities)
+        graph = self._ancestry_graph(canonical)
+
+        roots: set[str] = set()
+        for entity in sorted(resolution.canonical_entities):
+            seen: set[str] = set()
+            stack = [entity]
+            while stack:
+                node = stack.pop()
+                if node in seen:
+                    continue
+                seen.add(node)
+                ancestors = graph.get(node)
+                if not ancestors:
+                    roots.add(node)
+                else:
+                    stack.extend(sorted(ancestors))
+        return frozenset(roots)
+
     def normalize_lineage(self, entity_ids: Iterable[str]) -> LineageResolution:
         raw = frozenset(item.strip() for item in entity_ids if item.strip())
         if not raw:
