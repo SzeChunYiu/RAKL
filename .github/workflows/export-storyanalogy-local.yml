@@ -1,0 +1,31 @@
+name: export-storyanalogy-local
+on:
+  push:
+    branches: [tooling/export-storyanalogy-20260815]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acquire exact StoryAnalogy data
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 -o StoryAnalogy.csv https://huggingface.co/datasets/JoeyCheng/story_analogy/resolve/main/StoryAnalogy.csv
+          test "$(sha256sum StoryAnalogy.csv | awk '{print $1}')" = "a74f1799ec6eec32a1d82aea5e036ac70c39feb298554c05da8382bf1d80319c"
+      - name: Acquire exact predecessor science files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone -q https://github.com/SzeChunYiu/RAKL.git prior
+          git -C prior checkout -q b9486371d96cf631091f382ce24e736439293b58
+          mkdir -p export
+          cp StoryAnalogy.csv export/
+          cp prior/experiments/paper2/run_storyanalogy_factorized_v1.py export/
+          cp prior/experiments/paper2/run_storyanalogy_ordinal_v2.py export/
+          cp prior/research/paper2_storyanalogy_ordinal_v2/PROTOCOL.json export/PREDECESSOR_PROTOCOL.json
+          sha256sum export/* | tee export/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storyanalogy-frozen-source-and-predecessor
+          path: export/
+          if-no-files-found: error
