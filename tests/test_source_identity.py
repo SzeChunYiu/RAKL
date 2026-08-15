@@ -184,18 +184,34 @@ def test_cross_venue_collapse_requires_a_declared_record() -> None:
     assert with_record.declared_edges != ()
 
 
-def test_declared_mapping_scope_version_binds_only_that_version() -> None:
+def test_declared_mapping_scope_work_collapses_every_version() -> None:
     resolution = resolve_source_identities(
         ("arXiv:1234.5678v1", "arXiv:1234.5678v2", BASE_DOI),
-        (
-            SourceIdentityMapping(
-                left="arXiv:1234.5678v2", right=BASE_DOI, scope="version"
-            ),
-        ),
+        (SourceIdentityMapping(left="arXiv:1234.5678v1", right=BASE_DOI),),
     )
-    # v1 still resolves to the bare arXiv root; only v2 was bound to the DOI
-    assert "arxiv:1234.5678" in resolution.distinct_roots
-    assert BASE_DOI in resolution.distinct_roots
+    # work scope binds the arXiv root itself, so both versions reach the DOI
+    assert resolution.distinct_roots == frozenset({BASE_DOI})
+    assert resolution.declared_edges[0].left == "arxiv:1234.5678"
+
+
+def test_declared_mapping_scope_version_is_multi_root_and_does_not_bind_siblings() -> None:
+    """``scope="version"`` binds one version only, leaving it with two ancestors.
+
+    The bound version reaches both its syntactic arXiv root and the declared DOI,
+    so the resolution is deliberately multi-root: a version-scoped record is not
+    evidence that the *work* is the same, and the unbound sibling version must
+    keep resolving to the bare arXiv root.
+    """
+
+    resolution = resolve_source_identities(
+        ("arXiv:1234.5678v1", "arXiv:1234.5678v2", BASE_DOI),
+        (SourceIdentityMapping(left="arXiv:1234.5678v2", right=BASE_DOI, scope="version"),),
+    )
+    assert resolution.distinct_roots == frozenset({"arxiv:1234.5678", BASE_DOI})
+    assert resolution.declared_edges[0].left == "arxiv:1234.5678v2"
+    # the sibling version is untouched by the record
+    sibling = resolve_source_identities(("arXiv:1234.5678v1",))
+    assert sibling.distinct_roots == frozenset({"arxiv:1234.5678"})
 
 
 def test_invalid_mapping_scope_is_rejected() -> None:

@@ -43,12 +43,44 @@
       "id": "C4_baseline_over_merge_exists",
       "corpus": "near_miss_pairs",
       "expectation": "the v1 baseline over-merges at least one near-miss pair, proving the control can fail and is not a no-op"
+    },
+    {
+      "id": "C5_equivalent_surface_forms_collapse",
+      "corpus": "equivalent_surface_forms",
+      "expectation": "7 trivially-equivalent surface forms of one DOI collapse to exactly 1 canonical identity (positive-collapse control; the counterpart to C1's no-false-merge assertion)"
     }
+  ],
+  "terminal_selector_inputs": [
+    "C1_no_false_merge_benign",
+    "C2_near_miss_pairs_stay_separate",
+    "C3_arxiv_versions_distinct_but_share_root",
+    "C4_baseline_over_merge_exists",
+    "C5_equivalent_surface_forms_collapse"
   ],
 
   "attack_corpus_source": "verbatim submission_details[].evidence_id from the frozen parent RESULTS.json (10 entries, order preserved)",
 
   "cross_venue_boundary": "arXiv:1234.5678v1 is asserted by a harness comment to be the same work as doi:10.1038/s41586-019-1234-5. Nothing in either identifier supports that. The v2 arm therefore reports the attack result WITHOUT any declared DOI<->arXiv record as the primary result, and reports the with-record variant separately as a diagnostic.",
+
+  "terminal_selector_falsification_check": {
+    "date": "2026-08-15",
+    "why": "a terminal selector that has only ever taken its pass branch is unvalidated; each failure branch was forced once with a throwaway mutation and then reverted",
+    "branches_observed": [
+      {
+        "terminal": "NORMALIZATION_UNSAFE_OVER_MERGES",
+        "mutation": "v2_distinct replaced by len({s.strip().lower() for s in identifiers}) so opaque ids over-merge"
+      },
+      {
+        "terminal": "ATTACK_STILL_SUCCEEDS",
+        "mutation": "v2 attack gate fed a hardcoded distinct_count of 9"
+      },
+      {
+        "terminal": "CANNOT_CHECK_PARENT_NOT_REPRODUCED",
+        "mutation": "baseline replace('?v=') changed to replace('?v=1') so the v1 arm no longer yields 8"
+      }
+    ],
+    "mutations_committed": false
+  },
 
   "decision_terminals": {
     "pass": "ATTACK_DETECTED_CONTROLS_PASSING",

@@ -167,6 +167,15 @@ def gate(distinct: int, total: int, threshold: float) -> dict[str, Any]:
 # --------------------------------------------------------------------------
 
 
+CONTROL_IDS: tuple[str, ...] = (
+    "C1_no_false_merge_benign",
+    "C2_near_miss_pairs_stay_separate",
+    "C3_arxiv_versions_distinct_but_share_root",
+    "C4_baseline_over_merge_exists",
+    "C5_equivalent_surface_forms_collapse",
+)
+
+
 def run_controls() -> dict[str, Any]:
     controls: dict[str, Any] = {}
 
@@ -232,9 +241,11 @@ def run_controls() -> dict[str, Any]:
         "passed": equiv.distinct_canonical_count == 1,
     }
 
-    controls["all_passed"] = all(
-        controls[key]["passed"] for key in controls if isinstance(controls[key], dict)
-    )
+    # Explicit id list, not a scan over whatever happens to be in the dict: the
+    # terminal selector depends on this single value, so its inputs must be
+    # auditable and must fail loudly (KeyError) if a control goes missing.
+    controls["all_passed"] = all(controls[cid]["passed"] for cid in CONTROL_IDS)
+    controls["control_ids"] = list(CONTROL_IDS)
     return controls
 
 
@@ -307,6 +318,7 @@ def main() -> int:
         "denominator_changed": False,
         "gate_slot": slot,
         "parent_receipt_reproduced_in_process": parent_reproduced,
+        "terminal_selector_falsification_check": protocol["terminal_selector_falsification_check"],
         "controls": controls,
         "attack": attack,
         "code_change": [

@@ -96,7 +96,10 @@ class SourceIdentityMapping:
     published DOI<->arXiv records are actually expressed) resolves both endpoints
     to their lineage roots, so the statement covers every version of the work.
     ``"version"`` binds the exact submitted versions only, for records that
-    genuinely single out one version.
+    genuinely single out one version; the bound version then has two ancestors
+    (its syntactic arXiv root and the declared counterpart), so the resolution is
+    deliberately multi-root — a version-scoped record is not evidence that the
+    *work* is the same. The repetition-attack repair uses ``"work"`` only.
     """
 
     left: str

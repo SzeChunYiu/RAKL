@@ -1,6 +1,6 @@
 {
   "schema_version": "paper1-source-identity-repair-v1",
-  "run_date": "2026-08-15T03:26:27.852971+00:00",
+  "run_date": "2026-08-15T03:32:05.643523+00:00",
   "protocol_path": "research/paper1_source_identity_repair_v1/PROTOCOL_V2.json",
   "parent_negative": "research/negative_frontier_v1/NEG-p1-source-monitoring-repetition-attack.md",
   "one_stage_attribution": "extraction",
@@ -18,6 +18,25 @@
     "slot_justification": "distinct_canonical is the same slot the v1 normalizer filled; swapping the normalizer under a fixed slot keeps the comparison apples-to-apples. distinct_roots is reported as a secondary diagnostic only and MUST NOT feed the gate."
   },
   "parent_receipt_reproduced_in_process": true,
+  "terminal_selector_falsification_check": {
+    "date": "2026-08-15",
+    "why": "a terminal selector that has only ever taken its pass branch is unvalidated; each failure branch was forced once with a throwaway mutation and then reverted",
+    "branches_observed": [
+      {
+        "terminal": "NORMALIZATION_UNSAFE_OVER_MERGES",
+        "mutation": "v2_distinct replaced by len({s.strip().lower() for s in identifiers}) so opaque ids over-merge"
+      },
+      {
+        "terminal": "ATTACK_STILL_SUCCEEDS",
+        "mutation": "v2 attack gate fed a hardcoded distinct_count of 9"
+      },
+      {
+        "terminal": "CANNOT_CHECK_PARENT_NOT_REPRODUCED",
+        "mutation": "baseline replace('?v=') changed to replace('?v=1') so the v1 arm no longer yields 8"
+      }
+    ],
+    "mutations_committed": false
+  },
   "controls": {
     "C1_no_false_merge_benign": {
       "expected_distinct": 8,
@@ -130,7 +149,14 @@
       "v2_distinct": 1,
       "passed": true
     },
-    "all_passed": true
+    "all_passed": true,
+    "control_ids": [
+      "C1_no_false_merge_benign",
+      "C2_near_miss_pairs_stay_separate",
+      "C3_arxiv_versions_distinct_but_share_root",
+      "C4_baseline_over_merge_exists",
+      "C5_equivalent_surface_forms_collapse"
+    ]
   },
   "attack": {
     "corpus": [

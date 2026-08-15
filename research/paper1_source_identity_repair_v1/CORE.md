@@ -22,7 +22,7 @@ Gate formula, threshold (0.5) and denominator (10) are byte-identical to the par
 | C4 control can fail | same 6 pairs | over-merges `10.1000/x?v=1`≡`10.1000/x1`, and a case-varied URL path | — | PASS |
 | C5 equivalent forms collapse | 7 surface forms of 1 DOI | 6 distinct | **1 distinct** | PASS |
 
-C2 pairs: adjacent DOI · same-author consecutive arXiv ids · identity-bearing URL query · DOI supplement suffix · the v1 collision pair · case-varied opaque URL path. C4 matters: v1 was **simultaneously under-merging (the attack) and over-merging (2 pairs)** — the control discriminates, it is not a no-op.
+C2 pairs: adjacent DOI · same-author consecutive arXiv ids · identity-bearing URL query · DOI supplement suffix · the v1 collision pair · case-varied opaque URL path. C4 matters: v1 was **simultaneously under-merging (the attack) and over-merging (2 pairs)** — the control discriminates, it is not a no-op. The terminal selector itself was falsified: each of the three failure terminals was forced once by a throwaway mutation and reverted (`terminal_selector_falsification_check` in the protocol/receipt).
 
 ## Attack: before → after
 
