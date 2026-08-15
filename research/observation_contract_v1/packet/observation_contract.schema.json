@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rakl.observation_contract.v1",
+  "title": "RAKL Observation Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "version",
+    "regime",
+    "input_sources",
+    "allowed_normalizers",
+    "external_knowledge_policy",
+    "provenance_required",
+    "abstention_allowed",
+    "evaluator_policy",
+    "evaluator_epoch"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "regime": {
+      "enum": [
+        "SOURCE_GROUNDED",
+        "SEMANTIC_NORMALIZED",
+        "EXTERNAL_COMPLETION"
+      ]
+    },
+    "input_sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "allowed_normalizers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "external_knowledge_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance_required": {
+      "type": "boolean"
+    },
+    "abstention_allowed": {
+      "type": "boolean"
+    },
+    "evaluator_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluator_epoch": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

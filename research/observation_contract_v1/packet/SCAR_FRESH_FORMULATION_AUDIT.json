@@ -1,0 +1,69 @@
+{
+  "receipt_type": "SCAR_FRESH_FORMULATION_AUDIT_V1",
+  "date": "2026-08-15",
+  "dataset": {
+    "repository": "siyuyuan/scar",
+    "path": "release/system_analogy_en.json",
+    "blob_sha": "214464cc4274f1af5a0bc1008a194b133c214e15",
+    "fresh_block_ids": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ]
+  },
+  "registered_question": "Under a strict source-grounded evidence license, are both annotated mapping endpoints licensed by the supplied system backgrounds?",
+  "audit_kind": "exploratory_manual_question_contract_diagnostic",
+  "counts": {
+    "records": 12,
+    "gold_mappings": 42,
+    "both_endpoints_strictly_source_licensed": 37,
+    "requires_normalization_external_or_evaluator_review": 5,
+    "strict_contract_recall_ceiling": 0.8809523809523809
+  },
+  "diagnostics": [
+    {
+      "record_id": 14,
+      "mapping": [
+        "sequence",
+        "parts"
+      ],
+      "classification": "REQUIRES_NORMALIZATION",
+      "note": "Supplied B background uses 'pieces' rather than annotated label 'parts'; semantic normalization may license the pair."
+    },
+    {
+      "record_id": 15,
+      "mapping": [
+        "Chlorophyll",
+        "dynamo"
+      ],
+      "classification": "REQUIRES_NORMALIZATION_OR_EXTERNAL_KNOWLEDGE",
+      "note": "Annotated B label is not supplied as the strict visible target label in the inspected background; semantic/world knowledge may bridge it."
+    },
+    {
+      "record_id": 24,
+      "mapping_b_labels": [
+        "source",
+        "transmission line",
+        "receiver"
+      ],
+      "classification": "EVALUATOR_CONTRACT_TENSION",
+      "note": "The supplied Information Flow background explicitly disclaims these keywords for the item, so strict source-grounded all-gold emission is not the same task as benchmark reproduction."
+    }
+  ],
+  "claim_boundary": [
+    "Not a corpus-wide SCAR prevalence estimate.",
+    "Not evidence that SCAR is globally invalid.",
+    "Not evidence that semantic or external-knowledge systems cannot recover the five mappings.",
+    "Does justify freezing the information regime before future Paper-II acquisition scoring."
+  ],
+  "authority": "NONE_PURSUIT_ONLY"
+}

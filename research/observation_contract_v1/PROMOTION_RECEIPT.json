@@ -1,0 +1,59 @@
+{
+  "authority": {
+    "authority_projection_unchanged": true,
+    "core_reopen": "NO",
+    "evaluator_policy_path": "unchanged; the plugin records the epoch and refuses cross-epoch comparison",
+    "new_authority_dimension": false,
+    "new_privileged_effect": false,
+    "new_recursion_layer": false
+  },
+  "base_commit": "d38e05b200fe6863a0c9f6f757eecc97462ab998",
+  "base_commit_subject": "publication + RFA v1: restore lost Paper VI sections, refresh stale PDFs, implement the unimplemented packet pieces (#723)",
+  "final_commit": "assigned at squash-merge; see the PR that carries this receipt",
+  "grants_method_promotion_authority": false,
+  "grants_scientific_authority": false,
+  "implementation": {
+    "defect_found_by_production_test": "the first verdict mapping let a resource bound outrank an evaluator/source contradiction; EVALUATOR_CONTRACT_TENSION now sets evaluator_invalid so it inherits the frozen chain's top priority",
+    "integration": "verdicts project into the existing AuditResidual and run through the frozen decide() chain; no second decision chain is introduced",
+    "module": "src/rakl/observation_contract.py",
+    "tests": "tests/test_observation_contract.py"
+  },
+  "open_gates": [
+    "RFA_FRESH_UTILITY_ASSURANCE = OPEN_EMPIRICAL",
+    "SEMANTIC_PARENT_EXECUTION = CANNOT_CHECK_RESOURCE_BOUND",
+    "SCAR_FRESH_FORMULATION_DIAGNOSTIC = PASS_EXPLORATORY (37/42 is contract-relative to one 12-record block, not a corpus rate)"
+  ],
+  "papers_changed": [
+    "publication/papers/paper-02-structural-mechanics/sections/01a_acquisition_executor_boundary.tex",
+    "publication/papers/paper-01-epistemic-mechanics/sections/03b_solver_noninterference.tex",
+    "publication/papers/paper-03-method-evolution-mechanics/sections/04d_recursive_formulation.tex"
+  ],
+  "papers_deliberately_unchanged": {
+    "paper-06": "the packet conditions its empirical extension on the RFC-v1 benchmark being refrozen on the implementation subject, which has not happened"
+  },
+  "prior_negatives_preserved": {
+    "arn_acquisition_negative": "unchanged under its original contract; a semantic or external successor is a different frozen acquisition regime and neither erases nor retroactively confirms it",
+    "history_semantics": "contract change stales dependent results under the predecessor digest; nothing deleted"
+  },
+  "schema_version": "rakl-observation-contract-promotion-receipt-v1",
+  "source_packet": {
+    "artifact": "RAKL_RECURSIVE_QUESTION_CLOSURE_2026-08-15",
+    "bound_repo_snapshot": "cf5085650e17469f72a2c27bfc060d415cbeca6b",
+    "file_count": 24,
+    "manifest_verified": "all 24 files byte-identical to MANIFEST.json before porting",
+    "vendored_packet_digest": "d6749b592268606bc479e50af88bb39f7cb02f2e8aae0cd52492badeea38256e"
+  },
+  "status": "PLUGIN_LANDED_SPEC_CLOSED_EMPIRICAL_ASSURANCE_OPEN",
+  "verification": {
+    "ci_note": "CI success is read from the exact-head check runs, never inferred from a committed JSON",
+    "full_suite": "see the PR's pytest check on the exact head",
+    "packet_reference_tests": "14 passed (run before porting)",
+    "paper_builds": {
+      "paper-01": "latexmk rc=0, CI gate clean, 62 pages",
+      "paper-02": "latexmk rc=0, CI gate clean, 28 pages",
+      "paper-03": "latexmk rc=0, CI gate clean, 59 pages"
+    },
+    "production_tests": "tests/test_observation_contract.py rc=0",
+    "rfa_v1_conformance": "37/37, committed RFA_V1_CONFORMANCE_RESULT.json unchanged"
+  }
+}

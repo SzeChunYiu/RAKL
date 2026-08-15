@@ -29,3 +29,65 @@ This gives Paper~II an explicit LLM-free baseline programme. If source and targe
 \subsection{Selection processes and absent evidence}
 
 Finally, acquisition is affected by how examples enter the corpus. Pedagogical-learning models show that the same examples can support different inferences when they were deliberately selected by a knowledgeable teacher rather than sampled independently \cite{shafto2014pedagogy}. Scientific corpora are also selected through publication, retrieval, citation and curation processes. Paper~II therefore treats future evidence selection as part of provenance. Absence of a counterexample or missing relation is informative only to the extent that the registered acquisition/selection process made it observable. Unknown selection remains a reason for \texttt{CANNOT\_CHECK}, not a free licence.
+
+\subsection{Registered acquisition regimes and the observation contract}
+\label{sec:registered-acquisition-regimes}
+
+The factorization
+\[
+X_s,X_t \xrightarrow{A} R_s,R_t \xrightarrow{M} W \xrightarrow{L}
+\{\texttt{LICENSED},\texttt{REJECTED},\texttt{CANNOT\_CHECK}\}
+\]
+is incomplete unless the information available to $A$ is itself registered.  We
+therefore distinguish three acquisition questions rather than treating them as
+interchangeable implementations of one extractor.  For supplied backgrounds
+$B=(B_s,B_t)$,
+\begin{align*}
+A_{\mathrm{vis}} &: B \longrightarrow R_{\mathrm{licensed}},\\
+A_{\mathrm{sem}} &: (B,\mathcal N) \longrightarrow R_{\mathrm{semantic}},\\
+A_{\mathrm{ext}} &: (B,\mathcal W) \longrightarrow R_{\mathrm{completed}},
+\end{align*}
+where $\mathcal N$ is a preregistered semantic normalizer and $\mathcal W$ denotes
+explicitly permitted external or world knowledge.  The first route is
+source-grounded and may abstain when the supplied evidence does not license a target;
+the second may bridge registered paraphrase or semantic-role equivalences; the third
+must preserve provenance that distinguishes external completion from source support.
+
+Before scoring, an observation contract $\Omega$ freezes the acquisition regime,
+input sources, allowed normalizers, external-knowledge policy, provenance and
+abstention rules, and the evaluator/gold epoch.  Changing any of these fields after
+observing an outcome defines a successor experiment rather than a repair of the
+predecessor.
+
+\paragraph{A contract-relative observability bound.}
+Let $G$ be the evaluator's gold mapping set and let
+$\operatorname{Lic}_{\Omega}(g)$ state that mapping $g$ is licensed under the
+registered observation contract.  Any extractor constrained to emit only licensed
+mappings satisfies
+\[
+E_{\Omega}(B)\subseteq\{g:\operatorname{Lic}_{\Omega}(g)=1\},
+\]
+and therefore
+\[
+\operatorname{Recall}_{G}(E_{\Omega})
+\leq
+\frac{|\{g\in G:\operatorname{Lic}_{\Omega}(g)=1\}|}{|G|}.
+\]
+This is an input--evaluator contract obstruction, not a claim that a semantic model
+or declared external knowledge cannot recover the remaining labels.
+
+\paragraph{Exploratory SCAR diagnostic.}
+A fresh hand audit of an untouched 12-record block (42 annotated mappings) found 37
+mappings for which both annotated endpoints were licensed by a deliberately strict
+source-grounded reading, while five required at least semantic normalization,
+external/benchmark knowledge, or evaluator review.  The resulting $37/42$ value is
+reported only as a contract-relative diagnostic for that block; it is neither a
+corpus-wide estimate nor evidence that SCAR is invalid.  The practical implication is
+narrower: future reducer experiments must declare whether they test source-grounded
+acquisition, semantic normalization, external completion, or benchmark reproduction
+before the evaluator is consulted.
+
+This refinement leaves the ARN result unchanged.  The registered deterministic
+acquisition route remains negative under its original contract.  A later semantic or
+external successor, if positive, would be a different frozen acquisition regime and
+would not erase or retroactively confirm that predecessor.
