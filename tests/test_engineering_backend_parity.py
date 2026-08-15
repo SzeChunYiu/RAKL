@@ -46,6 +46,7 @@ from rakl.engineering_state import (
 from rakl.engineering_store import (
     IdempotencyConflict,
     SqliteEngineeringStateStore,
+    metadata_transition_payload_hash,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -870,18 +871,18 @@ def test_shipped_sqlite_store_matches_the_asserted_semantics(tmp_path: Path) -> 
     initial = _snapshot(0, None, "revision-0")
     store.initialize_project(initial)
 
+    after = _snapshot(1, initial.snapshot_id, "revision-1")
     request = StateTransitionRequest(
         project_id="parity-project",
         before_snapshot_id=initial.snapshot_id,
         action="ADVANCE",
-        action_payload_hash="0" * 64,
+        action_payload_hash=metadata_transition_payload_hash(after),
         idempotency_key="idem-1",
         process_identity="parity-test",
         read_set=("r",),
         write_set=("w",),
         created_at_utc="2026-08-15T00:00:00+00:00",
     )
-    after = _snapshot(1, initial.snapshot_id, "revision-1")
     committed = store.commit_transition(
         request, after, created_at_utc="2026-08-15T00:00:01+00:00"
     )
@@ -898,7 +899,7 @@ def test_shipped_sqlite_store_matches_the_asserted_semantics(tmp_path: Path) -> 
         project_id="parity-project",
         before_snapshot_id=initial.snapshot_id,
         action="DIFFERENT",
-        action_payload_hash="1" * 64,
+        action_payload_hash=metadata_transition_payload_hash(after),
         idempotency_key="idem-1",
         process_identity="parity-test",
         read_set=("r",),
@@ -911,18 +912,18 @@ def test_shipped_sqlite_store_matches_the_asserted_semantics(tmp_path: Path) -> 
         )
 
     # Stale before-snapshot: RETRY_REQUIRED, and the head is untouched.
+    stale_after = _snapshot(1, initial.snapshot_id, "revision-1-alt")
     stale = StateTransitionRequest(
         project_id="parity-project",
         before_snapshot_id=initial.snapshot_id,
         action="ADVANCE",
-        action_payload_hash="2" * 64,
+        action_payload_hash=metadata_transition_payload_hash(stale_after),
         idempotency_key="idem-2",
         process_identity="parity-test",
         read_set=("r",),
         write_set=("w",),
         created_at_utc="2026-08-15T00:00:00+00:00",
     )
-    stale_after = _snapshot(1, initial.snapshot_id, "revision-1-alt")
     stale_receipt = store.commit_transition(
         stale, stale_after, created_at_utc="2026-08-15T00:00:04+00:00"
     )

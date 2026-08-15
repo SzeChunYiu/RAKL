@@ -74,6 +74,7 @@ from typing import Any
 sys.path.insert(0, "src")
 
 from rakl.engineering_atlas_store import (  # noqa: E402
+    ATLAS_GENESIS_REVISION,
     AtlasChartRecord,
     AtlasObstructionRecord,
     AtlasPlaneBatch,
@@ -312,7 +313,7 @@ def populate_phase_one(root: Path) -> LiveState:
 
     atlas_b1 = AtlasPlaneBatch(
         sequence=1,
-        base_atlas_revision="atlas-base-empty",
+        base_atlas_revision=ATLAS_GENESIS_REVISION,
         batch_id="atlas-batch-1",
         charts=(
             AtlasChartRecord("chart-a", "layer-0", ("x", "y")),
@@ -449,7 +450,7 @@ def populate_phase_two(root: Path, live: LiveState) -> LiveState:
 
     atlas_b2 = AtlasPlaneBatch(
         sequence=2,
-        base_atlas_revision="atlas-base-after-1",
+        base_atlas_revision=atlas.current_atlas_revision(),
         batch_id="atlas-batch-2",
         charts=(
             AtlasChartRecord("chart-c", "layer-1", ("z", "w")),
@@ -734,6 +735,8 @@ def logical_fingerprint(root: Path, live: LiveState) -> dict[str, Any]:
         fingerprint["atlas"] = {
             "status": RECONSTRUCTED,
             "plane_counts": atlas.plane_counts(),
+            "current_sequence": atlas.current_sequence(),
+            "current_atlas_revision": atlas.current_atlas_revision(),
             "batch_commits": commits,
         }
 

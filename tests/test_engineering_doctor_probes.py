@@ -38,6 +38,7 @@ from rakl.engineering_doctor_probes import (
 from rakl.engineering_http import SecretStore
 from rakl.engineering_index import RebuildableSemanticIndex
 from rakl.engineering_atlas_store import (
+    ATLAS_GENESIS_REVISION,
     AtlasChartRecord,
     AtlasPlaneBatch,
     SqliteAtlasPlaneStore,
@@ -237,13 +238,13 @@ def test_corrupted_database_pages_are_fail(tmp_path) -> None:
 
     store = SqliteAtlasPlaneStore(tmp_path / "atlas.sqlite3")
     batch = AtlasPlaneBatch(
-        sequence=0,
-        base_atlas_revision="base",
+        sequence=1,
+        base_atlas_revision=ATLAS_GENESIS_REVISION,
         batch_id="batch:1",
         charts=tuple(AtlasChartRecord(f"chart:{i}", "layer", ("x", "y")) for i in range(20)),
     )
     store.commit_batch(
-        batch, committed_snapshot_id="snapshot:0", expected_atlas_revision=atlas_revision_for(0, batch)
+        batch, committed_snapshot_id="snapshot:0", expected_atlas_revision=atlas_revision_for(1, batch)
     )
     db_path = Path(store.path)
     assert probe_database(ProbeContext(database_path=db_path)).status is ProbeStatus.OK

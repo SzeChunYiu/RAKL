@@ -32,7 +32,8 @@ from pathlib import Path
 sys.path.insert(0, "src")
 
 from rakl.engineering_atlas_store import (  # noqa: E402
-    AtlasChartRecord, AtlasObstructionRecord, AtlasPlaneBatch, AtlasTransitionRecord, SqliteAtlasPlaneStore,
+    ATLAS_GENESIS_REVISION, AtlasChartRecord, AtlasObstructionRecord, AtlasPlaneBatch, AtlasTransitionRecord,
+    SqliteAtlasPlaneStore,
 )
 from rakl.engineering_http import (  # noqa: E402
     Actor, Capability, EngineeringHttpService, IdentityProvider, SecretStore, content_hash,
@@ -146,12 +147,12 @@ def h09():
 def h10():
     with tempfile.TemporaryDirectory() as td:
         st = SqliteAtlasPlaneStore(Path(td) / "a.db")
-        b1 = AtlasPlaneBatch(1, "r0", "b1", charts=(AtlasChartRecord("c1", "s"), AtlasChartRecord("c2", "s")),
+        b1 = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "b1", charts=(AtlasChartRecord("c1", "s"), AtlasChartRecord("c2", "s")),
                              transitions=(AtlasTransitionRecord("t1", "c1", "c2"),),
                              obstructions=(AtlasObstructionRecord("o1", "t1"),))
-        st.commit_batch(b1, committed_snapshot_id="s1", expected_atlas_revision="")
+        c1 = st.commit_batch(b1, committed_snapshot_id="s1", expected_atlas_revision="")
         before = st.plane_counts()
-        b2 = AtlasPlaneBatch(2, "r1", "b2", charts=(AtlasChartRecord("c9", "s"), AtlasChartRecord("c8", "s")),
+        b2 = AtlasPlaneBatch(2, c1.atlas_revision, "b2", charts=(AtlasChartRecord("c9", "s"), AtlasChartRecord("c8", "s")),
                              transitions=(AtlasTransitionRecord("t9", "c9", "c8"),),
                              obstructions=(AtlasObstructionRecord("o1", "t9"),))  # collides
         try:

@@ -22,6 +22,8 @@ especially — the ones that BROKE.
         service facade — the headline case
     X08b the same attack through the atomic coordinator (the contrast that makes
         X08 a defect rather than a layering choice)
+    X08c NO-ALARM CONTROL for the X08 guard: an honestly bound metadata
+        transition must still COMMIT and replay identically
     X09 injected fault mid-transaction: evidence rows written, snapshot write
         fails -> BOTH planes must roll back
     X10 atlas batch half-write (obstruction id collision) -> whole plane rolls back
@@ -54,6 +56,7 @@ sys.path.insert(0, "src")
 
 from rakl.engineering_api import EngineeringServiceFacade  # noqa: E402
 from rakl.engineering_atlas_store import (  # noqa: E402
+    ATLAS_GENESIS_REVISION,
     AtlasChartRecord,
     AtlasObstructionRecord,
     AtlasPlaneBatch,
@@ -307,21 +310,27 @@ def x03() -> tuple[str, str]:
     atlas = SqliteAtlasPlaneStore(f.root / "atlas.db")
     batch = AtlasPlaneBatch(
         1,
-        "atlas-base-empty",
+        ATLAS_GENESIS_REVISION,
         "atlas-batch-1",
         charts=(AtlasChartRecord("chart-a", "L"), AtlasChartRecord("chart-b", "L")),
         transitions=(AtlasTransitionRecord("t-ab", "chart-a", "chart-b", "GLUED"),),
         obstructions=(AtlasObstructionRecord("o-ab", "t-ab", "COCYCLE"),),
     )
     commit = atlas.commit_batch(batch, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
+    # and a second honest batch on top, so the no-alarm control covers a chain, not just genesis
+    second = AtlasPlaneBatch(
+        2, atlas.current_atlas_revision(), "atlas-batch-2",
+        charts=(AtlasChartRecord("chart-c", "L"),),
+    )
+    commit2 = atlas.commit_batch(second, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
     counts = atlas.plane_counts()
-    ok = commit.atlas_revision == atlas_revision_for(1, batch) and counts == {
-        "atlas_plane_commits": 1,
-        "atlas_charts": 2,
+    ok = commit.atlas_revision == atlas_revision_for(1, batch) and commit2.atlas_revision == atlas_revision_for(2, second) and atlas.current_sequence() == 2 and counts == {
+        "atlas_plane_commits": 2,
+        "atlas_charts": 3,
         "atlas_transitions": 1,
         "atlas_obstructions": 1,
     }
-    return (HELD if ok else BROKE), f"legitimate atlas batch committed, counts={counts}"
+    return (HELD if ok else BROKE), f"legitimate atlas chain (2 batches) committed, counts={counts}"
 
 
 # ---------------------------------------------------------------------------
@@ -447,16 +456,21 @@ def x08() -> tuple[str, str]:
         authority_projection_revision="authority-projection-ATTACKER",
         controller_epoch_id="controller-epoch-ATTACKER",
     )
-    receipt = facade.commit_metadata_transition(
-        request=_request(
-            f.s0.snapshot_id,
-            "unrelated_noop",
-            canonical_sha256({"binds": "nothing at all"}),
-            "k1",
-        ),
-        after_snapshot=after,
-        created_at_utc=NOW,
-    )
+    receipt = None
+    refusal = ""
+    try:
+        receipt = facade.commit_metadata_transition(
+            request=_request(
+                f.s0.snapshot_id,
+                "unrelated_noop",
+                canonical_sha256({"binds": "nothing at all"}),
+                "k1",
+            ),
+            after_snapshot=after,
+            created_at_utc=NOW,
+        )
+    except Exception as exc:  # noqa: BLE001
+        refusal = f"{type(exc).__name__}: {exc}"
     head = facade.state.head(PROJECT)
     moved = [
         name
@@ -470,6 +484,17 @@ def x08() -> tuple[str, str]:
         )
         if getattr(head, name) != getattr(f.s0, name)
     ]
+    if receipt is None:
+        untouched = (
+            facade.state.head(PROJECT) == f.s0
+            and facade.state.transition_receipt(PROJECT, "k1") is None
+            and f.counts()["snapshots"] == 1
+        )
+        return (
+            (HELD if untouched else BROKE),
+            f"refused: {refusal}; head unchanged={facade.state.head(PROJECT) == f.s0}, "
+            f"no receipt minted={facade.state.transition_receipt(PROJECT, 'k1') is None}",
+        )
     if receipt.status is TransitionStatus.COMMITTED and moved:
         return (
             BROKE,
@@ -478,6 +503,33 @@ def x08() -> tuple[str, str]:
             f"action_payload_hash binds nothing and moved {len(moved)} heads: {moved}",
         )
     return HELD, f"status={receipt.status.value} moved={moved}"
+
+
+def x08c() -> tuple[str, str]:
+    """No-alarm for the X08 guard: an honestly bound metadata transition still commits."""
+
+    from rakl.engineering_store import metadata_transition_payload_hash
+
+    f = fixture(STACK, "x08c")
+    facade = EngineeringServiceFacade(SqliteEngineeringStateStore(f.db))
+    after = _snapshot(
+        1,
+        f.s0.snapshot_id,
+        evidence_cutoff=f.s0.evidence_cutoff,
+        semantic_state_revision=f.s0.semantic_state_revision,
+        metric_ledger_head="metric-ledger-head-1",
+        controller_epoch_id="controller-epoch-1",
+    )
+    request = _request(f.s0.snapshot_id, "advance_metric_ledger", metadata_transition_payload_hash(after), "k1")
+    receipt = facade.commit_metadata_transition(request=request, after_snapshot=after, created_at_utc=NOW)
+    replay = facade.commit_metadata_transition(request=request, after_snapshot=after, created_at_utc=NOW)
+    ok = (
+        receipt.status is TransitionStatus.COMMITTED
+        and replay == receipt
+        and facade.state.head(PROJECT).snapshot_id == after.snapshot_id
+        and receipt.action_payload_hash == metadata_transition_payload_hash(after)
+    )
+    return (HELD if ok else BROKE), f"bound metadata transition {receipt.status.value}, replay identical={replay == receipt}"
 
 
 def x08b() -> tuple[str, str]:
@@ -575,17 +627,17 @@ def x10() -> tuple[str, str]:
     atlas = SqliteAtlasPlaneStore(f.root / "atlas.db")
     good = AtlasPlaneBatch(
         1,
-        "atlas-base-empty",
+        ATLAS_GENESIS_REVISION,
         "atlas-batch-1",
         charts=(AtlasChartRecord("chart-a", "L"), AtlasChartRecord("chart-b", "L")),
         transitions=(AtlasTransitionRecord("t-ab", "chart-a", "chart-b"),),
         obstructions=(AtlasObstructionRecord("o-1", "t-ab"),),
     )
-    atlas.commit_batch(good, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
+    c_good = atlas.commit_batch(good, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
     before = atlas.plane_counts()
     colliding = AtlasPlaneBatch(
         2,
-        "atlas-base-after-1",
+        c_good.atlas_revision,  # honest base and sequence: ONLY the collision can fail it
         "atlas-batch-2",
         charts=(AtlasChartRecord("chart-c", "L"), AtlasChartRecord("chart-d", "L")),
         transitions=(AtlasTransitionRecord("t-cd", "chart-c", "chart-d"),),
@@ -612,7 +664,7 @@ def x11() -> tuple[str, str]:
     atlas = SqliteAtlasPlaneStore(f.root / "atlas.db")
     b1 = AtlasPlaneBatch(
         1,
-        "atlas-base-empty",
+        ATLAS_GENESIS_REVISION,
         "atlas-batch-1",
         charts=(AtlasChartRecord("chart-a", "L"), AtlasChartRecord("chart-b", "L")),
         transitions=(AtlasTransitionRecord("t-ab", "chart-a", "chart-b"),),
@@ -623,22 +675,23 @@ def x11() -> tuple[str, str]:
     # no longer exists. The semantic store raises "base revision is stale" here.
     b2 = AtlasPlaneBatch(
         2,
-        "atlas-base-empty",
+        ATLAS_GENESIS_REVISION,
         "atlas-batch-2",
         charts=(AtlasChartRecord("chart-c", "L"),),
     )
     try:
         c2 = atlas.commit_batch(b2, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
     except Exception as exc:  # noqa: BLE001
-        return HELD, f"stale base revision rejected: {type(exc).__name__}: {exc}"
+        untouched = atlas.plane_counts()["atlas_plane_commits"] == 1 and atlas.batch_commit("atlas-batch-2") is None
+        return (HELD if untouched else BROKE), f"stale base revision rejected: {type(exc).__name__}: {exc}"
     # Also show that expected_atlas_revision cannot detect this: it is recomputed
     # from the same batch, so it agrees with any base the batch cares to declare.
     self_consistent = c2.atlas_revision == atlas_revision_for(2, b2)
     return (
         BROKE,
         "SqliteAtlasPlaneStore.commit_batch never compares base_atlas_revision against the "
-        f"stored revision (current was {c1.atlas_revision[:16]}..., batch declared "
-        "'atlas-base-empty') and expected_atlas_revision is recomputed from the same batch "
+        f"stored revision (current was {c1.atlas_revision[:16]}..., batch declared the "
+        "genesis revision) and expected_atlas_revision is recomputed from the same batch "
         f"(self_consistent={self_consistent}), so no compare-and-swap against stored plane "
         "state exists; the batch committed",
     )
@@ -656,7 +709,7 @@ def x12() -> tuple[str, str]:
     atlas = SqliteAtlasPlaneStore(f.root / "atlas.db")
     b1 = AtlasPlaneBatch(
         1,
-        "atlas-base-empty",
+        ATLAS_GENESIS_REVISION,
         "atlas-batch-1",
         charts=(AtlasChartRecord("chart-a", "L"), AtlasChartRecord("chart-b", "L")),
         transitions=(AtlasTransitionRecord("t-ab", "chart-a", "chart-b"),),
@@ -682,7 +735,8 @@ def x12() -> tuple[str, str]:
     try:
         atlas.commit_batch(rewind, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
     except Exception as exc:  # noqa: BLE001
-        return HELD, f"sequence rewind rejected: {type(exc).__name__}: {exc}"
+        untouched = atlas.plane_counts() == before and atlas.current_sequence() == 2
+        return (HELD if untouched else BROKE), f"sequence rewind rejected: {type(exc).__name__}: {exc}"
     return (
         BROKE,
         "after sequences 1 and 2 committed in order, a batch declaring sequence 1 with an "
@@ -699,10 +753,10 @@ def x12() -> tuple[str, str]:
 def x13() -> tuple[str, str]:
     f = fixture(STACK, "x13")
     atlas = SqliteAtlasPlaneStore(f.root / "atlas.db")
-    b1 = AtlasPlaneBatch(1, "base", "shared-batch-id", charts=(AtlasChartRecord("chart-a", "L"),))
+    b1 = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "shared-batch-id", charts=(AtlasChartRecord("chart-a", "L"),))
     atlas.commit_batch(b1, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
     before = atlas.plane_counts()
-    b2 = AtlasPlaneBatch(1, "base", "shared-batch-id", charts=(AtlasChartRecord("chart-z", "L"),))
+    b2 = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "shared-batch-id", charts=(AtlasChartRecord("chart-z", "L"),))
     try:
         atlas.commit_batch(b2, committed_snapshot_id=f.s0.snapshot_id, expected_atlas_revision="")
         return BROKE, f"same batch id rebound to different content; counts={atlas.plane_counts()}"
@@ -779,7 +833,7 @@ def x16() -> tuple[str, str]:
 
     f = fixture(STACK, "x16")
     atlas = SqliteAtlasPlaneStore(f.db)  # same database file as the snapshots table
-    batch = AtlasPlaneBatch(1, "base", "atlas-batch-1", charts=(AtlasChartRecord("chart-a", "L"),))
+    batch = AtlasPlaneBatch(1, ATLAS_GENESIS_REVISION, "atlas-batch-1", charts=(AtlasChartRecord("chart-a", "L"),))
     try:
         commit = atlas.commit_batch(
             batch, committed_snapshot_id="snapshot:this-snapshot-does-not-exist", expected_atlas_revision=""
@@ -825,6 +879,7 @@ case("X06", "payload binds a different semantic batch", x06)
 case("X07", "atlas payload hash offered to the evidence path", x07)
 case("X08", "control-head advance with no payload binding", x08)
 case("X08b", "same attack through the atomic coordinator", x08b)
+case("X08c", "honestly bound metadata transition (no-alarm control)", x08c)
 case("X09", "injected fault mid-transaction, two planes", x09)
 case("X10", "atlas batch half-write (id collision)", x10)
 case("X11", "atlas advanced under a stale base revision", x11)
@@ -863,7 +918,7 @@ OUT.write_text(
             "confirms_known_open": known_open,
             "cannot_check": cannot,
             "total": len(RESULTS),
-            "no_alarm_controls": ["X01", "X02", "X03"],
+            "no_alarm_controls": ["X01", "X02", "X03", "X08c"],
             "breaks": [r for r in RESULTS if r["outcome"] == BROKE],
             "results": RESULTS,
             "not_claimed": [

@@ -14,6 +14,7 @@ from rakl.engineering_store import (
     EngineeringIntegrityError,
     IdempotencyConflict,
     SqliteEngineeringStateStore,
+    metadata_transition_payload_hash,
 )
 
 
@@ -38,12 +39,12 @@ def make_snapshot(sequence, previous, semantic):
     )
 
 
-def make_request(before, key, *, action="UPDATE_ATLAS"):
+def make_request(before, key, *, after, action="UPDATE_ATLAS"):
     return StateTransitionRequest(
         project_id="project:demo",
         before_snapshot_id=before.snapshot_id,
         action=action,
-        action_payload_hash="b" * 64,
+        action_payload_hash=metadata_transition_payload_hash(after),
         idempotency_key=key,
         process_identity="worker:test",
         read_set=("semantic_state", "saturation"),
@@ -57,7 +58,7 @@ def test_reference_store_commits_snapshot_and_reopens(tmp_path):
     store = SqliteEngineeringStateStore(path)
     s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
     s1 = make_snapshot(1, s0.snapshot_id, "semantic:1")
-    receipt = store.commit_transition(make_request(s0, "idem:1"), s1, created_at_utc=T1)
+    receipt = store.commit_transition(make_request(s0, "idem:1", after=s1), s1, created_at_utc=T1)
     assert receipt.status is TransitionStatus.COMMITTED
     assert store.head("project:demo") == s1
 
@@ -69,8 +70,8 @@ def test_reference_store_commits_snapshot_and_reopens(tmp_path):
 def test_idempotent_replay_does_not_create_second_snapshot(tmp_path):
     store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
     s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
-    request = make_request(s0, "idem:same")
     s1 = make_snapshot(1, s0.snapshot_id, "semantic:1")
+    request = make_request(s0, "idem:same", after=s1)
     first = store.commit_transition(request, s1, created_at_utc=T1)
     second = store.commit_transition(request, s1, created_at_utc=T1)
     assert first == second
@@ -83,8 +84,8 @@ def test_idempotency_key_reuse_for_different_request_fails_closed(tmp_path):
     store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
     s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
     s1 = make_snapshot(1, s0.snapshot_id, "semantic:1")
-    store.commit_transition(make_request(s0, "idem:1"), s1, created_at_utc=T1)
-    different = make_request(s0, "idem:1", action="DIFFERENT_ACTION")
+    store.commit_transition(make_request(s0, "idem:1", after=s1), s1, created_at_utc=T1)
+    different = make_request(s0, "idem:1", after=s1, action="DIFFERENT_ACTION")
     with pytest.raises(IdempotencyConflict):
         store.commit_transition(different, s1, created_at_utc=T1)
 
@@ -93,12 +94,12 @@ def test_stale_competing_update_is_retry_required_not_last_writer_wins(tmp_path)
     store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
     s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
     s1 = make_snapshot(1, s0.snapshot_id, "semantic:winner")
-    assert store.commit_transition(make_request(s0, "winner"), s1, created_at_utc=T1).status is TransitionStatus.COMMITTED
+    assert store.commit_transition(make_request(s0, "winner", after=s1), s1, created_at_utc=T1).status is TransitionStatus.COMMITTED
 
     # This worker planned against the now-stale s0.  Its proposed after snapshot
     # is never installed; the store records a typed retry requirement.
     stale_after = make_snapshot(1, s0.snapshot_id, "semantic:loser")
-    stale = store.commit_transition(make_request(s0, "loser"), stale_after, created_at_utc=T2)
+    stale = store.commit_transition(make_request(s0, "loser", after=stale_after), stale_after, created_at_utc=T2)
     assert stale.status is TransitionStatus.RETRY_REQUIRED
     assert stale.after_snapshot_id is None
     assert store.head("project:demo") == s1
@@ -158,8 +159,8 @@ def test_actual_concurrent_writers_produce_one_commit_and_one_retry(tmp_path):
 
     def run(key, semantic):
         local_store = SqliteEngineeringStateStore(store.path)
-        request = make_request(s0, key)
         proposed = make_snapshot(1, s0.snapshot_id, semantic)
+        request = make_request(s0, key, after=proposed)
         barrier.wait()
         return local_store.commit_transition(request, proposed, created_at_utc=T1)
 
@@ -175,7 +176,7 @@ def test_actual_concurrent_writers_produce_one_commit_and_one_retry(tmp_path):
 def test_recovery_required_outcome_is_idempotently_persisted(tmp_path):
     store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
     s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
-    request = make_request(s0, "external:ambiguous", action="RUN_NON_IDEMPOTENT_ACTIVITY")
+    request = make_request(s0, "external:ambiguous", after=s0, action="RUN_NON_IDEMPOTENT_ACTIVITY")
     first = store.record_noncommitted_transition(
         request,
         status=TransitionStatus.RECOVERY_REQUIRED,
@@ -234,12 +235,6 @@ def test_transition_rejects_snapshot_from_different_project(tmp_path):
     p1, p2 = initial("p1"), initial("p2")
     store.initialize_project(p1)
     store.initialize_project(p2)
-    request = StateTransitionRequest(
-        project_id="p1", before_snapshot_id=p2.snapshot_id, action="UPDATE_ATLAS",
-        action_payload_hash="b" * 64,
-        idempotency_key="cross-project", process_identity="worker:test",
-        read_set=("semantic_state",), write_set=("semantic_state",), created_at_utc=T1,
-    )
     after = ProjectSnapshot(
         project_id="p1", sequence=1, previous_snapshot_id=p1.snapshot_id,
         evidence_cutoff="evidence:1", semantic_state_revision="semantic:1",
@@ -247,6 +242,93 @@ def test_transition_rejects_snapshot_from_different_project(tmp_path):
         saturation_basis_ids=("basis:v1",), authority_projection_revision="authority:1",
         controller_epoch_id="epoch:1", created_at_utc=T1,
     )
+    request = StateTransitionRequest(
+        project_id="p1", before_snapshot_id=p2.snapshot_id, action="UPDATE_ATLAS",
+        action_payload_hash=metadata_transition_payload_hash(after),
+        idempotency_key="cross-project", process_identity="worker:test",
+        read_set=("semantic_state",), write_set=("semantic_state",), created_at_utc=T1,
+    )
     with pytest.raises(EngineeringIntegrityError, match="different project"):
         store.commit_transition(request, after, created_at_utc=T1)
     assert store.transition_receipt("p1", "cross-project") is None
+
+
+# --- X08 regression: the base store is not a bypass around payload binding ---
+
+
+def test_transition_whose_payload_hash_binds_nothing_is_refused_and_moves_no_head(tmp_path):
+    """CROSS_PLANE_ATTACKS_V1 X08: before the fix this COMMITTED and moved six heads."""
+
+    store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
+    s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
+    attacker_after = ProjectSnapshot(
+        project_id="project:demo", sequence=1, previous_snapshot_id=s0.snapshot_id,
+        evidence_cutoff="evidence:ATTACKER", semantic_state_revision="semantic:ATTACKER",
+        metric_ledger_head="metric:ATTACKER", episode_store_head="episode:ATTACKER",
+        saturation_basis_ids=("basis:ATTACKER",), authority_projection_revision="authority:ATTACKER",
+        controller_epoch_id="epoch:ATTACKER", created_at_utc=T1,
+    )
+    unbound = StateTransitionRequest(
+        project_id="project:demo", before_snapshot_id=s0.snapshot_id, action="unrelated_noop",
+        action_payload_hash="b" * 64, idempotency_key="k-unbound", process_identity="attacker",
+        read_set=(), write_set=(), created_at_utc=T1,
+    )
+    with pytest.raises(EngineeringIntegrityError, match="does not bind the after snapshot"):
+        store.commit_transition(unbound, attacker_after, created_at_utc=T1)
+    assert store.head("project:demo") == s0
+    # refused outright: no receipt of any status is minted for it
+    assert store.transition_receipt("project:demo", "k-unbound") is None
+    with sqlite3.connect(store.path) as db:
+        assert db.execute("SELECT COUNT(*) FROM snapshots").fetchone()[0] == 1
+        assert db.execute("SELECT COUNT(*) FROM transitions").fetchone()[0] == 0
+
+
+def test_payload_hash_bound_to_a_different_after_snapshot_is_refused(tmp_path):
+    """Binding some other snapshot is not binding this one."""
+
+    store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
+    s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
+    intended = make_snapshot(1, s0.snapshot_id, "semantic:intended")
+    smuggled = make_snapshot(1, s0.snapshot_id, "semantic:smuggled")
+    request = make_request(s0, "k", after=intended)
+    with pytest.raises(EngineeringIntegrityError, match="does not bind the after snapshot"):
+        store.commit_transition(request, smuggled, created_at_utc=T1)
+    assert store.head("project:demo") == s0
+
+
+def test_coordinator_style_payload_hash_cannot_be_replayed_through_the_base_store(tmp_path):
+    """Domain separation: a hash minted for the semantic/evidence path is refused here."""
+
+    from rakl.engineering_state import canonical_sha256
+
+    store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
+    s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
+    s1 = make_snapshot(1, s0.snapshot_id, "semantic:1")
+    for foreign in (
+        canonical_sha256({"semantic_batch_id": "semantic-batch:x"}),
+        canonical_sha256({"evidence_batch_id": "evidence-batch:x"}),
+        canonical_sha256({"atlas_batch_id": "atlas-batch-x"}),
+    ):
+        request = StateTransitionRequest(
+            project_id="project:demo", before_snapshot_id=s0.snapshot_id, action="ADVANCE",
+            action_payload_hash=foreign, idempotency_key=f"k-{foreign[:8]}",
+            process_identity="worker:test", read_set=(), write_set=(), created_at_utc=T1,
+        )
+        with pytest.raises(EngineeringIntegrityError, match="does not bind the after snapshot"):
+            store.commit_transition(request, s1, created_at_utc=T1)
+    assert store.head("project:demo") == s0
+
+
+def test_legitimately_bound_transition_still_commits_and_replays(tmp_path):
+    """NO-ALARM: the guard must not flag the honest path."""
+
+    store = SqliteEngineeringStateStore(tmp_path / "engineering.sqlite3")
+    s0 = store.initialize_project(make_snapshot(0, None, "semantic:0"))
+    s1 = make_snapshot(1, s0.snapshot_id, "semantic:1")
+    request = make_request(s0, "k", after=s1)
+    assert request.action_payload_hash == metadata_transition_payload_hash(s1)
+    first = store.commit_transition(request, s1, created_at_utc=T1)
+    assert first.status is TransitionStatus.COMMITTED
+    assert first.action_payload_hash == metadata_transition_payload_hash(s1)
+    assert store.commit_transition(request, s1, created_at_utc=T1) == first
+    assert store.head("project:demo") == s1

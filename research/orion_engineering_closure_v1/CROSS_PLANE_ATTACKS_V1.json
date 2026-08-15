@@ -1,36 +1,18 @@
 {
-  "breaks": [
-    {
-      "case": "X08",
-      "detail": "SqliteEngineeringStateStore.commit_transition, reachable via EngineeringServiceFacade.commit_metadata_transition, COMMITTED a transition whose action_payload_hash binds nothing and moved 6 heads: ['evidence_cutoff', 'semantic_state_revision', 'metric_ledger_head', 'episode_store_head', 'authority_projection_revision', 'controller_epoch_id']",
-      "name": "control-head advance with no payload binding",
-      "outcome": "BROKE"
-    },
-    {
-      "case": "X11",
-      "detail": "SqliteAtlasPlaneStore.commit_batch never compares base_atlas_revision against the stored revision (current was efb1b3b6f2564420..., batch declared 'atlas-base-empty') and expected_atlas_revision is recomputed from the same batch (self_consistent=True), so no compare-and-swap against stored plane state exists; the batch committed",
-      "name": "atlas advanced under a stale base revision",
-      "outcome": "BROKE"
-    },
-    {
-      "case": "X12",
-      "detail": "after sequences 1 and 2 committed in order, a batch declaring sequence 1 with an otherwise honest base revision committed as well; the atlas plane has no monotonic sequence check against stored plane position (counts {'atlas_plane_commits': 2, 'atlas_charts': 4, 'atlas_transitions': 2, 'atlas_obstructions': 1} -> {'atlas_plane_commits': 3, 'atlas_charts': 5, 'atlas_transitions': 2, 'atlas_obstructions': 1})",
-      "name": "atlas sequence rewind",
-      "outcome": "BROKE"
-    }
-  ],
-  "broke": 3,
+  "breaks": [],
+  "broke": 0,
   "cannot_check": 0,
   "cases_frozen_before_execution": true,
   "claim_under_attack": "evidence / semantic / Atlas / control heads cannot be changed by an action whose payload hash does not bind those effects",
   "confirms_known_open": 1,
   "fiber_id": "E18",
   "grants_scientific_authority": false,
-  "held": 14,
+  "held": 18,
   "no_alarm_controls": [
     "X01",
     "X02",
-    "X03"
+    "X03",
+    "X08c"
   ],
   "not_claimed": [
     "an independently executed pass on an exact production release",
@@ -52,7 +34,7 @@
     },
     {
       "case": "X03",
-      "detail": "legitimate atlas batch committed, counts={'atlas_plane_commits': 1, 'atlas_charts': 2, 'atlas_transitions': 1, 'atlas_obstructions': 1}",
+      "detail": "legitimate atlas chain (2 batches) committed, counts={'atlas_plane_commits': 2, 'atlas_charts': 3, 'atlas_transitions': 1, 'atlas_obstructions': 1}",
       "name": "legitimate atlas plane batch (no-alarm control)",
       "outcome": "HELD"
     },
@@ -82,14 +64,20 @@
     },
     {
       "case": "X08",
-      "detail": "SqliteEngineeringStateStore.commit_transition, reachable via EngineeringServiceFacade.commit_metadata_transition, COMMITTED a transition whose action_payload_hash binds nothing and moved 6 heads: ['evidence_cutoff', 'semantic_state_revision', 'metric_ledger_head', 'episode_store_head', 'authority_projection_revision', 'controller_epoch_id']",
+      "detail": "refused: EngineeringIntegrityError: transition action payload hash does not bind the after snapshot; head unchanged=True, no receipt minted=True",
       "name": "control-head advance with no payload binding",
-      "outcome": "BROKE"
+      "outcome": "HELD"
     },
     {
       "case": "X08b",
       "detail": "EngineeringIntegrityError: pure semantic update unexpectedly changes authority_projection_revision",
       "name": "same attack through the atomic coordinator",
+      "outcome": "HELD"
+    },
+    {
+      "case": "X08c",
+      "detail": "bound metadata transition COMMITTED, replay identical=True",
+      "name": "honestly bound metadata transition (no-alarm control)",
       "outcome": "HELD"
     },
     {
@@ -106,15 +94,15 @@
     },
     {
       "case": "X11",
-      "detail": "SqliteAtlasPlaneStore.commit_batch never compares base_atlas_revision against the stored revision (current was efb1b3b6f2564420..., batch declared 'atlas-base-empty') and expected_atlas_revision is recomputed from the same batch (self_consistent=True), so no compare-and-swap against stored plane state exists; the batch committed",
+      "detail": "stale base revision rejected: EngineeringIntegrityError: atlas batch base revision is stale",
       "name": "atlas advanced under a stale base revision",
-      "outcome": "BROKE"
+      "outcome": "HELD"
     },
     {
       "case": "X12",
-      "detail": "after sequences 1 and 2 committed in order, a batch declaring sequence 1 with an otherwise honest base revision committed as well; the atlas plane has no monotonic sequence check against stored plane position (counts {'atlas_plane_commits': 2, 'atlas_charts': 4, 'atlas_transitions': 2, 'atlas_obstructions': 1} -> {'atlas_plane_commits': 3, 'atlas_charts': 5, 'atlas_transitions': 2, 'atlas_obstructions': 1})",
+      "detail": "sequence rewind rejected: EngineeringIntegrityError: atlas batch sequence must advance the plane exactly once (stored position 2, batch declares 1)",
       "name": "atlas sequence rewind",
-      "outcome": "BROKE"
+      "outcome": "HELD"
     },
     {
       "case": "X13",
@@ -149,5 +137,5 @@
   ],
   "schema_version": "orion-cross-plane-attacks-v1",
   "status": "FROZEN_CASES_EXECUTED__ALL_OUTCOMES_PRESERVED",
-  "total": 18
+  "total": 19
 }

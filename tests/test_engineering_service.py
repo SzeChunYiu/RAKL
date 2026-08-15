@@ -8,7 +8,7 @@ from rakl.engineering_state import (
     ProjectSnapshot,
     StateTransitionRequest,
 )
-from rakl.engineering_store import SqliteEngineeringStateStore
+from rakl.engineering_store import SqliteEngineeringStateStore, metadata_transition_payload_hash
 
 T0 = "2026-08-15T16:30:00+00:00"
 T1 = "2026-08-15T16:31:00+00:00"
@@ -56,7 +56,7 @@ def test_service_never_reuses_status_from_stale_snapshot(tmp_path):
     s1 = snapshot(1, s0.snapshot_id, semantic="semantic:1")
     req = StateTransitionRequest(
         project_id="p", before_snapshot_id=s0.snapshot_id, action="ADVANCE",
-        action_payload_hash="a" * 64, idempotency_key="advance", process_identity="worker",
+        action_payload_hash=metadata_transition_payload_hash(s1), idempotency_key="advance", process_identity="worker",
         read_set=("head",), write_set=("head",), created_at_utc=T1,
     )
     store.commit_transition(req, s1, created_at_utc=T1)

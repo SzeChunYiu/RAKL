@@ -20,7 +20,30 @@ from .engineering_state import (
     StateTransitionReceipt,
     StateTransitionRequest,
     TransitionStatus,
+    canonical_sha256,
 )
+
+
+def metadata_transition_payload_hash(after_snapshot: ProjectSnapshot) -> str:
+    """The ``action_payload_hash`` a bare metadata transition must carry.
+
+    A metadata transition's whole effect IS the after snapshot: the heads it
+    installs are exactly the heads that snapshot names, and ``snapshot_id`` is
+    content-derived over all of them. Binding the payload hash to the after
+    snapshot id therefore binds every head the transition changes, the same way
+    the atomic coordinator binds ``{"semantic_batch_id": ...}`` /
+    ``{"evidence_batch_id": ...}`` to a content-derived batch id.
+
+    The key is domain-separated from the coordinator's hashes so a request
+    minted for one path cannot be replayed through another.
+
+    Why this exists: ``StateTransitionRequest`` has no typed way to declare its
+    effects — ``action`` and ``write_set`` are free-form strings — so before this
+    guard the base store stored the hash unverified and any after snapshot could
+    be installed under a hash binding nothing (CROSS_PLANE_ATTACKS_V1 X08).
+    """
+
+    return canonical_sha256({"metadata_after_snapshot_id": after_snapshot.snapshot_id})
 
 
 
@@ -98,7 +121,10 @@ class SqliteEngineeringStateStore:
     * reuse of an idempotency key with a different request is rejected;
     * a transition based on a stale snapshot returns RETRY_REQUIRED rather than
       silently applying last-writer-wins;
-    * committed transitions atomically install the next snapshot and receipt.
+    * committed transitions atomically install the next snapshot and receipt;
+    * a transition's ``action_payload_hash`` must equal
+      ``metadata_transition_payload_hash(after_snapshot)`` — the base store is
+      not a bypass around the atomic coordinator's payload binding.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -323,6 +349,14 @@ class SqliteEngineeringStateStore:
     ) -> StateTransitionReceipt:
         if request.project_id != after_snapshot.project_id:
             raise ValueError("transition request and after snapshot project differ")
+        # The payload hash must bind the effect before anything is read or written,
+        # exactly where the atomic coordinator performs the same check. A request
+        # whose hash does not name this after snapshot is refused outright: it is
+        # never recorded as RETRY_REQUIRED and never replayed.
+        if request.action_payload_hash != metadata_transition_payload_hash(after_snapshot):
+            raise EngineeringIntegrityError(
+                "transition action payload hash does not bind the after snapshot"
+            )
         self._require_project_snapshot(request.project_id, request.before_snapshot_id)
 
         with self._transaction() as db:
