@@ -1,0 +1,78 @@
+{
+  "schema_version": "programme-question-audit-v2",
+  "paper": "Paper IV - Structural Learning Mechanics",
+  "audit_date": "2026-08-15",
+  "base_commit": "e17eaa5498701ed25aa765f4952baaa46f177524",
+  "authority": "Same-context analysis. No scientific or promotion authority.",
+  "object": "The scientific decomposition and headline question of Paper IV.",
+  "current_question": "Does learner-conditioned vector structural allocation over the same directional/QoI/boundary structural substrate used at inference improve training efficiency and fresh transfer beyond Static Structural and strongest adaptive parents?",
+  "problem_with_current_question": [
+    "It conflates whether the structural state contains incremental predictive information with whether one allocator uses that information well.",
+    "It bundles a third claim - exact train-to-inference structural identity reuse - whose truth is not implied by an allocation win.",
+    "A negative Adaptive-vs-Static policy result can occur even when the state representation is useful; the known-world structure-identity collapse counterexample on PR #708 is a concrete witness.",
+    "The corrected Phase-1 v2 evidence is heterogeneous: one 7B family has MECHANISM_SIGNAL_PRESENT while other family/model cells are repetition-valued, null-residual or model-floor terminals."
+  ],
+  "candidate_questions": [
+    {
+      "id": "P4V2-Q1-INFORMATION",
+      "question": "Does the checkpoint-bound typed structural learner state contain incremental predictive information about the vector of future transfer gain/harm from a candidate exposure beyond loss, gradient/influence and strongest skill-state parents?",
+      "role": "FOUNDATIONAL_MEASUREMENT",
+      "sign_robust": true,
+      "why": "Separates representation/information sufficiency from control-policy quality. A null directly narrows the RAKL residual without blaming the allocator.",
+      "required_parents": ["STAT-style missing-skill state", "MATES/LESS-style influence", "loss/perplexity", "gradient/probe alignment", "static structural identity"],
+      "primary_outcome": "fresh/cross-fitted prediction of next-exposure gain/harm vector with calibration/proper scoring and total probe cost",
+      "hard_gates": ["structure/candidate identity exact", "no confirmatory target leakage", "gold outcomes from frozen verifier/probes", "negative-transfer/retention harm remains separate"]
+    },
+    {
+      "id": "P4V2-Q2-DECISION",
+      "question": "Conditional on any incremental structural information, can a registered allocation policy turn it into better fresh transfer per total cost than Static Structural and the strongest adaptive parent without crossing composition, boundary, retention or negative-transfer harm gates?",
+      "role": "POLICY_VALUE",
+      "sign_robust": true,
+      "why": "A policy can fail even when Q1 is positive; this localizes a negative to the decision rule instead of the representation.",
+      "primary_outcome": "paired fresh decision utility/cost vector under matched compute",
+      "existing_evidence_lane": "Frozen five-arm 7B Phase-2 Adaptive-v1 experiment addresses one policy instance and must remain unchanged."
+    },
+    {
+      "id": "P4V2-Q3-IDENTITY",
+      "question": "Does the exact structural identity that is predictive/useful for training allocation also reduce inference-time transfer or re-derivation cost on fresh structure-known/domain-new tasks?",
+      "role": "SHARED_SUBSTRATE",
+      "sign_robust": true,
+      "why": "Tests the claimed unification directly rather than inferring it from training performance.",
+      "primary_outcome": "fresh exact-identity reuse advantage with stale-reuse error hard-gated at zero"
+    },
+    {
+      "id": "P4V2-Q4-CAUSAL-COORDINATES",
+      "question": "Which structural coordinates are causally necessary for the information/decision residual, and where are simpler skill/influence representations sufficient?",
+      "role": "MECHANISM_ABLATION",
+      "sign_robust": true,
+      "why": "Prevents the six-coordinate representation from becoming architecture accumulation; removes coordinates that add no fresh residual."
+    }
+  ],
+  "recommended_headline_question": {
+    "id": "P4V2-Q1+Q2",
+    "statement": "When is a checkpoint-bound typed structural state a decision-useful representation of what a learner should see next? First test whether it predicts future transfer gain/harm beyond strong learner-state/influence parents; only then test whether a policy can convert that information into a noncompensatory fresh-transfer/cost benefit.",
+    "paper_title_direction": "Structural Learning Mechanics: When Typed Structural State Is Predictive and Actionable for Training",
+    "why_better": "It survives both policy-positive and policy-negative outcomes, makes the strongest-parent residual explicit, and prevents a bad allocator from falsifying a useful representation or a good allocator from laundering a non-novel state representation."
+  },
+  "identity_question_position": "Q3 is a co-primary unification claim only after Q1 or Q2 earns a positive residual; otherwise it remains a separate architectural reuse question.",
+  "publication_branching": {
+    "Q1_negative": "Learner-conditioned structural state has no incremental information residual at tested scope; do not sell adaptive structural mechanics as distinct. Preserve static/inference structural mechanics separately.",
+    "Q1_positive_Q2_negative": "Publishable information result may remain, but allocator mechanism is unsupported; build successors only from frozen diagnosis, not by tuning same outcomes.",
+    "Q1_positive_Q2_positive_Q3_negative": "Structural state is predictive/actionable but train/inference unification is false; report two representations/mechanisms.",
+    "Q1_Q2_Q3_positive": "Strong standalone Structural Learning Mechanics result; proceed to cross-family/model applicability law."
+  },
+  "must_not_claim": [
+    "Generic learner-conditioned curriculum novelty.",
+    "Generic missing-skill targeting novelty.",
+    "A broad structural-learning law from the single 7B state_reachability signal.",
+    "That Adaptive-v1 is evidence about every possible structural allocator.",
+    "That a training win establishes exact inference identity reuse."
+  ],
+  "closest_parent_identifiers": [
+    "STAT OpenReview m3jG3GaNIj / ICLR 2026",
+    "MATES arXiv:2406.06046",
+    "Group-MATES arXiv:2502.14709",
+    "MASS ICML 2025 PMLR 267",
+    "SkillDAG arXiv:2606.03056"
+  ]
+}

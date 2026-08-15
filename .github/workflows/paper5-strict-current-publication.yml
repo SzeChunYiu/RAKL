@@ -1,0 +1,72 @@
+name: paper5-strict-current-publication
+
+on:
+  pull_request:
+    paths:
+      - 'publication/papers/paper-05-verified-discovery-in-mathematics/**'
+      - 'src/rakl/math_research_assurance*.py'
+      - 'src/rakl/math_research_promotion_strict.py'
+      - 'src/rakl/proof_dag*.py'
+      - 'formal/PaperVAssurance.lean'
+      - '.github/workflows/paper5-strict-current-publication.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  strict-paper5-pdf:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install manuscript build tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            latexmk texlive-latex-extra texlive-fonts-recommended texlive-science \
+            lmodern poppler-utils
+
+      - name: Compile strict current Paper V companion
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd publication/papers/paper-05-verified-discovery-in-mathematics
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main_strict_20260815.tex | tee strict.stdout.log
+          test -s main_strict_20260815.pdf
+          pdftotext main_strict_20260815.pdf main_strict_20260815.txt
+          python3 - <<'PY'
+          import re, sys
+          flat = re.sub(r"\s+", " ", open("main_strict_20260815.txt", encoding="utf-8").read())
+          required = [
+              "Current strict promotion path and remaining external trust roots",
+              "candidate eligibility only",
+              "Sze Chun Yiu",
+          ]
+          missing = [s for s in required if s not in flat]
+          if missing:
+              print("missing required strict Paper-V text:", missing, file=sys.stderr)
+              sys.exit(1)
+          PY
+          if grep -E 'Overfull \\[hv]box|Float too large|Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined' main_strict_20260815.log; then
+            echo 'blocking strict Paper-V LaTeX/PDF warning' >&2
+            exit 1
+          fi
+
+      - name: Upload strict current Paper V companion
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper5-strict-current-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          retention-days: 1
+          path: |
+            publication/papers/paper-05-verified-discovery-in-mathematics/main_strict_20260815.tex
+            publication/papers/paper-05-verified-discovery-in-mathematics/main_strict_20260815.pdf
+            publication/papers/paper-05-verified-discovery-in-mathematics/main_strict_20260815.log
+            publication/papers/paper-05-verified-discovery-in-mathematics/main_strict_20260815.txt

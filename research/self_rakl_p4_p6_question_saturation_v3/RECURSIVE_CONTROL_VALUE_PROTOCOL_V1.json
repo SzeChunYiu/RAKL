@@ -1,0 +1,77 @@
+{
+  "schema_version": "paper6-recursive-control-value-protocol-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "authority": "KNOWN_WORLD_MECHANIC_EVIDENCE_ONLY",
+  "question": "Do diagnosis-before-mutation and context-bound mutation credit reduce wrong-layer or harmful self-repairs at matched known-world scope, before any external-agent claim?",
+  "seed": 20260815,
+  "n_diagnosis_worlds": 4096,
+  "diagnosis": {
+    "causes": ["REPRESENTATION", "EVALUATOR", "WORKFLOW"],
+    "prior": [0.34, 0.33, 0.33],
+    "mutation_cost": 0.25,
+    "wrong_layer_harm": 1.0,
+    "probes": {
+      "cheap_weak": {"cost": 0.03, "p_signal_1": [0.60, 0.40, 0.50]},
+      "surface": {"cost": 0.10, "p_signal_1": [0.80, 0.25, 0.45]},
+      "deep": {"cost": 0.40, "p_signal_1": [0.92, 0.08, 0.50]}
+    },
+    "arms": [
+      "MUTATE_ALL_PLAUSIBLE",
+      "NO_PROBE_MAP",
+      "RANDOM_PROBE",
+      "FIXED_SURFACE",
+      "INFO_GAIN_PER_COST",
+      "DECISION_VOI",
+      "ORACLE_CAUSE"
+    ],
+    "decision_voi_internal_loss": "wrong-layer indicator + probe cost; used only to choose a probe, never as the reported scientific scalar",
+    "reported_vector": [
+      "correct_repair_rate",
+      "wrong_layer_mutation_rate",
+      "harmful_mutations_per_world",
+      "probe_cost_per_world",
+      "mutation_cost_per_world",
+      "total_cost_per_world"
+    ],
+    "hard_rule": "No cost or correct-repair gain compensates a higher registered harmful-mutation rate when comparing RAKL control admission."
+  },
+  "contextual_credit": {
+    "train_contexts": {
+      "A_train": {"family": "A", "effects": {"local_patch": 0.40, "representation_reset": 0.10}},
+      "B_train": {"family": "B", "effects": {"local_patch": -0.30, "representation_reset": 0.35}},
+      "C_train": {"family": "C", "effects": {"local_patch": 0.10, "representation_reset": -0.40}}
+    },
+    "fresh_contexts": {
+      "A_fresh": {"family": "A", "effects": {"local_patch": 0.35, "representation_reset": 0.05}},
+      "B_fresh": {"family": "B", "effects": {"local_patch": -0.25, "representation_reset": 0.30}},
+      "C_fresh": {"family": "C", "effects": {"local_patch": 0.05, "representation_reset": -0.35}}
+    },
+    "arms": ["GLOBAL_CREDIT", "CONTEXT_TRANSPORT_CREDIT", "UNINFORMED_FIXED_LOCAL", "ORACLE_FRESH"],
+    "transport_rule": "Only same-family train->fresh transport is registered; no cross-family transfer.",
+    "reported_vector": ["correct_operator_rate", "harmful_repair_rate", "mean_effect", "regret_vs_oracle"]
+  },
+  "endpoint_classification": {
+    "MEASURED": [
+      "arm differences in diagnosis outcome/cost vector over seeded worlds",
+      "arm differences in fresh-context operator choice/effect/regret"
+    ],
+    "CONFORMANCE": [
+      "renamed context has identical canonical digest",
+      "renamed mutation family counts once",
+      "renamed evaluator cannot certify itself",
+      "invalid candidate is removed before Pareto"
+    ]
+  },
+  "terminal_rule": {
+    "CONTROL_VALUE_SUPPORTED": "DECISION_VOI has no greater harmful-mutation rate than every non-oracle diagnosis parent, lower wrong-layer rate than INFO_GAIN_PER_COST and FIXED_SURFACE, and total cost below MUTATE_ALL_PLAUSIBLE; CONTEXT_TRANSPORT_CREDIT has lower harmful-repair rate and lower regret than GLOBAL_CREDIT on fresh contexts.",
+    "SIMPLER_PARENT_SUFFICIENT": "A simpler diagnosis parent matches or dominates DECISION_VOI on the registered vector, or global credit matches contextual transport on fresh contexts.",
+    "CONTROL_TRADEOFF_UNRESOLVED": "No registered arm dominates under the hard-harm rule and vector comparison.",
+    "INVALID_INSTRUMENT": "Known-world generator/probability/posterior/oracle controls fail."
+  },
+  "non_claims": [
+    "No LLM training efficacy claim.",
+    "No external scientific-agent superiority claim.",
+    "No global self-improvement optimality claim.",
+    "No scientific or publication authority."
+  ]
+}

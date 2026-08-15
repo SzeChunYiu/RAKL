@@ -1,0 +1,35 @@
+{
+  "schema_version": "paper5-dag-dependency-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "HOSTILE_CONFORMANCE_ONLY",
+  "question": "Can a verified proof checkpoint enter the persistent ProofDAG while silently omitting a real proof dependency?",
+  "cases": [
+    {
+      "id": "P5-DAG-01-OMITTED",
+      "world": "proof dependency manifest contains lemma A and lemma B, but the DAG closure for theorem T contains only A",
+      "expected": "REJECT_DEPENDENCY_MANIFEST_MISMATCH"
+    },
+    {
+      "id": "P5-DAG-02-EXTRA",
+      "world": "DAG closure contains an undeclared extra dependency not present in the proof-source dependency manifest",
+      "expected": "REJECT_DEPENDENCY_MANIFEST_MISMATCH"
+    },
+    {
+      "id": "P5-DAG-03-SOURCE-SWAP",
+      "world": "dependency manifest is bound to a proof-source hash different from the ProofReceipt source",
+      "expected": "REJECT_PROOF_SOURCE_MISMATCH"
+    },
+    {
+      "id": "P5-DAG-04-EXACT",
+      "world": "proof receipt, theorem statement and exact transitive dependency statement-hash set match the DAG",
+      "expected": "CHECKPOINT_MAY_VERIFY"
+    }
+  ],
+  "invariants": [
+    "dependency manifest is external to the proposal text and bound to exact proof source",
+    "comparison uses statement hashes rather than node display names",
+    "dependency equality is set-based and order-independent",
+    "ordinary strict proof receipt audit remains required",
+    "a passing dependency check grants no novelty or publication authority"
+  ]
+}

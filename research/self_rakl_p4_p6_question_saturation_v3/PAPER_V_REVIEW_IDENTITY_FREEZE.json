@@ -1,0 +1,49 @@
+{
+  "schema_version": "paper5-review-identity-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "HOSTILE_CONFORMANCE_ONLY",
+  "question": "Can a mathematical research-promotion record distinguish a truly independent, exact-subject review from a proposer self-asserting reviewer counts/booleans?",
+  "incumbent_gap": "MathResearchRecord/FormalizationWitness/NoveltyCertificate use reviewer counts or booleans without content-bound reviewer identity, exact subject binding, procedure identity, or proposer separation.",
+  "cases": [
+    {
+      "id": "P5-RI-01-SELF-REVIEW",
+      "world": "all v1 fields are positive, but proposer_identity_hash equals reviewer_identity_hash for formalization, novelty, and value review",
+      "expected_v2": "BLOCK_SELF_REVIEW"
+    },
+    {
+      "id": "P5-RI-02-SUBJECT-SWAP",
+      "world": "valid review receipt for formal statement A is attached to statement B",
+      "expected_v2": "BLOCK_REVIEW_SUBJECT_MISMATCH"
+    },
+    {
+      "id": "P5-RI-03-NOVELTY-WORLD-SWAP",
+      "world": "novelty review binds the theorem fingerprint but a different literature-manifest hash or cutoff",
+      "expected_v2": "CANNOT_CHECK_NOVELTY_WORLD_MISMATCH"
+    },
+    {
+      "id": "P5-RI-04-VALUE-CRITERIA-MISSING",
+      "world": "truth and novelty pass but research-value review has no frozen criteria hash",
+      "expected_v2": "NO_NEW_MATHEMATICS_PROMOTION"
+    },
+    {
+      "id": "P5-RI-05-INDEPENDENT-EXACT-SUBJECT",
+      "world": "formalization, novelty, and value reviews bind exact subjects/procedures/worlds and reviewer identity differs from proposer",
+      "expected_v2": "MAY_ENTER_EXISTING_NEW_MATHEMATICS_CANDIDATE_GATE"
+    },
+    {
+      "id": "P5-RI-06-PROOF-SOURCE-VERIFIER-MANIFEST",
+      "world": "proof receipt is accepted but the verifier trust receipt is bound to a different proof source or checker manifest",
+      "expected_v2": "BLOCK_VERIFIER_TRUST_BINDING"
+    }
+  ],
+  "invariants": [
+    "review identity is content-bound and cannot be replaced by a reviewer count",
+    "reviewer identity must differ from proposer identity for a receipt labelled independent",
+    "formalization review binds the exact formal statement hash",
+    "novelty review binds theorem fingerprint, literature manifest, search procedure and cutoff",
+    "value review binds exact formal statement and frozen value-criteria hash",
+    "verifier trust binds the exact proof source and checker manifest",
+    "the wrapper may narrow incumbent promotion but never silently widen it",
+    "all outputs grant no scientific or publication authority by themselves"
+  ]
+}

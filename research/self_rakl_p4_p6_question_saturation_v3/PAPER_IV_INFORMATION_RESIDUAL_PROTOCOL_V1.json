@@ -1,0 +1,77 @@
+{
+  "schema_version": "paper4-structural-information-residual-protocol-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "authority": "PREDICTIVE_INFORMATION_GATE_ONLY",
+  "question": "Does the typed checkpoint-bound structural learner state predict the vector of future transfer gain/harm from an equal-cost candidate exposure beyond generic learner-state proxies and the strongest fair adaptive parent features?",
+  "subject": {
+    "model_family": "Qwen2.5-7B exact revision used by frozen Paper-IV Phase-2",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "structural_families": ["sequence_composition", "balance_conservation", "state_reachability"],
+    "phase1_evidence_is_training_only": true
+  },
+  "prediction_unit": "checkpoint x candidate exposure type x structural family",
+  "outcome_vector": [
+    "future_same_structure_gain",
+    "future_composition_gain",
+    "future_boundary_gain",
+    "future_representation_gain",
+    "future_transfer_gain",
+    "future_retention_gain",
+    "future_negative_transfer_harm"
+  ],
+  "feature_sets": {
+    "GENERIC": [
+      "current training/validation loss",
+      "gradient norm",
+      "probe-gradient alignment when feasible",
+      "model-aware NLL/influence proxy used by strongest frozen parent",
+      "exposure count",
+      "semantic diversity/redundancy features"
+    ],
+    "STRUCTURAL_INCREMENT": [
+      "registered structure identity",
+      "direction/QoI/applicability-boundary identity",
+      "principle mastery",
+      "composition mastery",
+      "boundary mastery",
+      "representation mastery",
+      "transfer mastery",
+      "retention mastery",
+      "uncertainty/staleness of each coordinate"
+    ]
+  },
+  "design": {
+    "cross_fitting": "No future-gain outcome may be used to construct features or fit the predictor that scores that held-out checkpoint/candidate unit.",
+    "freshness": "Use disjoint future exposures/outcomes from the Phase-1 instrument rows that motivated the question; the existing Phase-1 terminal rows are development/history, not assurance.",
+    "models": [
+      "generic-only strongest fair predictor",
+      "generic-plus-structural predictor",
+      "structural-only diagnostic"
+    ],
+    "losses": [
+      "proper probabilistic/calibration loss for harm events",
+      "held-out squared/absolute error for signed gain coordinates",
+      "rank correlation for equal-cost candidate ordering"
+    ],
+    "statistics": "paired held-out unit differences with bootstrap confidence intervals; family-wise correction across registered primary coordinates"
+  },
+  "hard_falsifiers": [
+    "generic-plus-structural does not improve held-out predictive loss/ranking beyond the strongest generic model",
+    "apparent improvement disappears on fresh structural families/checkpoints",
+    "harm calibration worsens materially",
+    "structural identity is reconstructed from future outcome or leaked assurance labels",
+    "a simpler parent feature set is sufficient"
+  ],
+  "terminals": {
+    "STRUCTURAL_INFORMATION_RESIDUAL_SUPPORTED": "The structural increment improves preregistered held-out prediction/ranking beyond the strongest generic feature set without harm-calibration regression.",
+    "GENERIC_PARENT_SUFFICIENT": "The strongest generic/model-aware predictor matches or beats generic-plus-structural.",
+    "STRUCTURAL_SIGNAL_NOT_GENERAL": "Development information exists but fresh family/checkpoint assurance does not replicate.",
+    "UNDERPOWERED": "Intervals remain too wide for the preregistered material predictive difference.",
+    "INVALID_LEAKAGE_OR_INSTRUMENT": "Feature/outcome chronology, partitioning, or proxy computation is invalid."
+  },
+  "non_claims": [
+    "This protocol does not establish allocation-policy value; that is Paper-IV Q2.",
+    "It does not establish train-to-inference identity reuse; that is Q3.",
+    "It grants no scientific or publication authority before execution."
+  ]
+}

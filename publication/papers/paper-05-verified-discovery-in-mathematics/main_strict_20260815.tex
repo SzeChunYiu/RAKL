@@ -1,0 +1,11 @@
+% Current strict Paper-V companion entrypoint.
+% The historical main.tex remains immutable evidence; this wrapper appends the
+% current strict promotion section at end-document time.  \AtEndDocument is
+% used because the kernel does not declare an `enddocument/before' hook: code
+% added to that name via \AddToHook forms a generic hook that nothing
+% executes, so the section never reached the PDF.
+\AtEndDocument{%
+  \clearpage
+  \input{sections/17_strict_current_promotion_path_20260815.tex}%
+}
+\input{main.tex}

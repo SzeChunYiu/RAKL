@@ -1,0 +1,24 @@
+{
+  "schema_version": "strict-self-evolution-entrypoint-freeze-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "authority": "CONFORMANCE_ONLY",
+  "question": "Can the current RAKL self-evolution orchestration surface expose only the strongest V5 content-addressed controls, while historical versioned APIs remain replayable but cannot be mistaken for the current controller?",
+  "cases": [
+    {"id":"CTRL-01-HISTORICAL-PORTRAIT","world":"caller passes DiagnosisBoundEvolutionPortrait/v2 to current controller","expected":"EXPLICIT_TYPE_REJECT"},
+    {"id":"CTRL-02-STRICT-PORTRAIT","world":"caller passes StrictEvolutionPortraitV5 and SHA-bound diagnosis state","expected":"DELEGATE_TO_V5_PLAN"},
+    {"id":"CTRL-03-FREE-SCOPE-CREDIT","world":"caller attempts contextual credit with free scope string or historical ContextualMutationPolicy","expected":"EXPLICIT_TYPE_REJECT"},
+    {"id":"CTRL-04-STRICT-CREDIT","world":"caller passes StrictContextualMutationPolicyV5 plus CanonicalContextManifestV4","expected":"DELEGATE_TO_V5_CREDIT"},
+    {"id":"CTRL-05-WEAK-EVALUATOR","world":"caller passes historical EvaluatorEpochIdentity or label-like subject/benchmark","expected":"EXPLICIT_TYPE_OR_CONTENT_REJECT"},
+    {"id":"CTRL-06-STRICT-GOVERNANCE","world":"caller passes StrictEvaluatorEpochIdentityV5 and StrictOuterAssuranceBindingV5","expected":"DELEGATE_TO_V5_GOVERNANCE"},
+    {"id":"CTRL-07-FRONTIER","world":"candidate set contains PASS plus FAIL/CANNOT_CHECK soft superstars","expected":"ONLY_PASS_ENTERS_V5_PARETO"},
+    {"id":"CTRL-08-NO-AUTO-PROMOTION","world":"all strict controller checks pass","expected":"CONTROLLER_STILL_GRANTS_NO_SCIENTIFIC_OR_METHOD_PROMOTION_AUTHORITY"}
+  ],
+  "invariants": [
+    "one canonical SelfEvolutionController is the current orchestration facade",
+    "controller methods accept only strict v4/v5 identity-bearing types for load-bearing inputs",
+    "historical modules are replay/research surfaces, not current orchestration inputs",
+    "controller delegates rather than reimplementing diagnosis, credit, evaluator governance or Pareto semantics",
+    "controller has no method that mutates scientific authority or auto-promotes a method",
+    "all positive controller outputs mean at most eligibility to enter existing protected gates"
+  ]
+}
