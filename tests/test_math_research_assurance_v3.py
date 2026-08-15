@@ -11,7 +11,7 @@ def _record(*, informal="informal-v1", equivalent=False):
         claim_id="C", interestingness_screened=True, external_mathematical_review=True,
         formalization=FormalizationWitness(informal,"formal-v1",True,True,True,1),
         proof=ProofReceipt("T","formal-v1","lean","4.32.1",True,(),"comparator","pinned",True,True,"proof-source-v1"),
-        novelty=NoveltyCertificate("2026-08-15",("registered",),("exact","structural"),"fp-v1",equivalent,("known-parent",) if equivalent else (),1,"coverage-v1"),
+        novelty=NoveltyCertificate("2026-08-15",("registered",),("exact","structural"),"fp-v1",equivalent,("known-parent",) if equivalent else (),1,("coverage-v1",)),
     )
 
 def _review(subject, axis, proposer=PROP, reviewer=REVIEW):
@@ -45,7 +45,6 @@ def test_same_formal_statement_with_changed_informal_claim_needs_new_review():
 def test_novelty_result_flip_invalidates_old_dossier_review():
     before=_record(equivalent=False); ids=_bundle(before)
     after=_record(equivalent=True)
-    # Rebind formal/proof receipt to isolate the novelty-dossier mismatch.
     ids=replace(ids,formalization_review=_review(formalization_pair_digest(after),"formal"),verifier_trust=VerifierTrustAttestationV3("trust","proof-source-v1",checker_identity_digest(after),"checker-manifest","trust-procedure",ATTEST,PROP,True))
     report=classify_math_record_v3(after,proposer_identity_hash=PROP,identities=ids,literature_manifest_hash=LIT)
     assert report.stage is MathClaimStage.MACHINE_PROVEN_NOVELTY_UNRESOLVED
