@@ -1,0 +1,69 @@
+{
+  "schema_version": "rakl-arn-local-vs-parent-discriminator-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "grants_scientific_authority": false,
+  "grants_method_promotion_authority": false,
+  "question": "Is the persistent ARN negative attributable to the LOCAL reducer family, or to the PARENT abstraction that the licensed prose carries recoverable structural correspondence at all?",
+  "why_this_is_needed": "research/self_rakl_recursive_question_audit_v1/AUDIT_RESULT.json records the ARN lineage as the strongest ancestor challenge on the negative frontier: three distinct repaired reducer families (v2 deterministic, v3 instance-paired, v4 relational) all closed negative against one parent abstraction. The frozen decide() chain selects ASCEND on two failed local repair families, but AncestorChallenge.escalation_admissible is False because no local-vs-parent discriminator is registered. Three failed local repairs establish that the local level is not responsible; they do not separate parent from child. This protocol registers that missing discriminator.",
+  "observation_contract": {
+    "contract_id": "arn-discriminator-source-grounded-v1",
+    "version": "1.0.0",
+    "regime": "SOURCE_GROUNDED",
+    "input_sources": ["query_narrative", "first_choice", "second_choice"],
+    "allowed_normalizers": [],
+    "external_knowledge_policy": "FORBIDDEN",
+    "provenance_required": true,
+    "abstention_allowed": false,
+    "evaluator_policy": "FROZEN_THIRD_PARTY_GOLD",
+    "evaluator_epoch": "arn-correct-answer-column",
+    "note": "The proverb column is NOT an input source: it is the dataset's own key to the intended analogy and reading it would be external completion, not source-grounded acquisition."
+  },
+  "instrument": {
+    "name": "contract-bounded separability probe",
+    "logic": "The three failed reducers are sophisticated. This probe asks the prior question they all presuppose: under the registered source-grounded contract, does the licensed prose carry ANY label-blind signal that separates the analogue from the distractor? The probe deliberately uses the simplest admissible representations, because it is bounding information availability, not competing on extraction quality.",
+    "task": "two-alternative forced choice per corpus row: given query_narrative, pick which of first_choice / second_choice is the analogue",
+    "chance_accuracy": 0.5,
+    "features_frozen": [
+      {"id": "F1_content_jaccard", "definition": "Jaccard overlap of lowercased content-word sets (stopwords removed), query vs candidate"},
+      {"id": "F2_idf_overlap", "definition": "sum of corpus IDF weights over shared content words, normalized by the query's total IDF mass"},
+      {"id": "F3_bigram_jaccard", "definition": "Jaccard overlap of adjacent content-word bigrams"},
+      {"id": "F4_positional_overlap", "definition": "mean of content-word Jaccard computed separately over the first and last third of each narrative, capturing coarse discourse order"}
+    ],
+    "decision_rule_per_feature": "predict the candidate with the higher feature value; ties are recorded and scored as 0.5"
+  },
+  "split": {
+    "use": "DEV ONLY",
+    "grouping": "by proverb, sorted by sha256(group_key + ':20260814'), matching research/paper2_external_corpus_v1/PROTOCOL.json",
+    "dev_fraction": 0.25,
+    "why": "The CONFIRM split belongs to the registered confirmatory epochs. A diagnostic discriminator must not consume it."
+  },
+  "null": {
+    "kind": "label permutation",
+    "permutations": 1000,
+    "seed": 20260815,
+    "statistic": "accuracy",
+    "p_value": "one-sided fraction of permuted accuracies >= observed"
+  },
+  "construct_independence_declaration": {
+    "note": "Declared under the four obligations specified in research/self_rakl_recursive_question_audit_v1/NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md, because a discriminator is itself an instrument.",
+    "CHANNEL_SEPARATION": "features are computed from narrative text only; the correct_answer column is never read during feature computation, and the proverb column is excluded from the contract",
+    "AUTHOR_SEPARATION": "the gold labels are third-party (the ARN dataset); the features are authored here and were not tuned against the labels",
+    "GOLD_INDEPENDENCE": "gold is a property of the dataset, never a function of any feature",
+    "PERMUTATION_NULL": "label shuffling, 1000 permutations, seed 20260815"
+  },
+  "frozen_decision_rule": {
+    "alpha": 0.01,
+    "multiple_comparison": "Bonferroni over the 4 frozen features (per-feature alpha 0.0025)",
+    "accuracy_floor": 0.6,
+    "PARENT_RESPONSIBLE_SUPPORTED": "no feature exceeds chance at the corrected alpha. The licensed prose carries no label-blind separating signal even for the simplest admissible representations, so the obstruction is above the reducer family and ASCEND is licensed.",
+    "LOCAL_RESPONSIBLE_SUPPORTED": "at least one feature exceeds chance at the corrected alpha AND reaches accuracy >= 0.60. The information is present under the contract, so three failed reducers are a local failure and ASCEND is NOT licensed.",
+    "INDETERMINATE__WEAK_SIGNAL": "some feature is significant but none reaches 0.60. The discriminator did not separate the levels and is not probative; the ancestor challenge stays inadmissible."
+  },
+  "falsifier": "A LOCAL_RESPONSIBLE_SUPPORTED outcome refutes the ascent this session recommended. That is the intended failure direction: the discriminator can block the conclusion its author expects.",
+  "non_claims": [
+    "A separating cheap feature does not show that the registered reducers should have found the signal, only that signal exists under the contract.",
+    "A null result is not a theorem that prose analogy is unrecoverable; it is bounded by the registered contract, the DEV split and these four representations.",
+    "No outcome promotes or retracts any prior ARN terminal. The v2/v3/v4 negatives stand under their own contracts.",
+    "This grants no scientific or method-promotion authority."
+  ]
+}
