@@ -33,9 +33,20 @@ before execution*. **No outcome label is read, so the census cannot be circular 
 that motivated it.**
 
 ```text
-artifacts in scope                       248
-declaring any construct-independence control   38   (15%)
+artifacts in scope (filename pattern)          248
+   ... declaring a control                      38   (15%)
+instrument-like subset (reads a subject, grades it)   180
+   ... declaring a control                      37   (21%)
 ```
+
+The rate is **bracketed at roughly 15–21%, not a point estimate.** The raw denominator is chosen by
+filename pattern, and a hand-check of a deterministic sample of 15 non-declaring artifacts found 4
+that are not instruments at all — a Self-RAKL round freeze, a review protocol, a receipt-binding
+freeze — where no construct control could apply. Restricting to artifacts whose text shows an
+instrument (arms, gold, grader, annotation, extraction, held-out, scoring, MDE) gives 37/180. That
+filter is itself a keyword heuristic with misses in both directions: one known false exclusion is
+`experiments/paper1/source_monitoring_repetition_attack_v1/PROTOCOL.json`, which is an instrument
+protocol. Both numbers are reported rather than the flattering one.
 
 | Control family | Declared in |
 |---|---|
@@ -51,7 +62,16 @@ author" is the frontier's own named lever for the template-inversion negative
 (`NEG-p2-template-inversion.md`). The two controls that map most directly onto the dominant failure
 sub-shapes — gold independence and author separation — are the two that are effectively absent.
 
-*Checker validated before reporting.* Hits were read individually: `E_SHAM_LESSON`, a preregistered
+A zero is the strongest possible claim, so it was attacked separately. A wide sweep over eleven
+further phrasings the tight pattern would miss — *arm's length*, *disjoint author/team/person*,
+*built by a different*, *written by a different*, *not the same person*, *independently
+constructed/written/built*, *separate person/team/constructor*, *blind to the generator/renderer*,
+*generator and grader/evaluator/extractor are* — returns **0 hits** across all 248 artifacts. The
+claim is therefore: no registered design declares author separation in any phrasing searched, and
+the searched phrasings are recorded in `run_validate_census.py` so the absence can be attacked
+again with better ones.
+
+*Checker validated before reporting, in both directions.* Hits were read individually: `E_SHAM_LESSON`, a preregistered
 paired permutation test, `MAP04_SHUFFLED_STRUCTURE_NULL`, "two independent annotations plus
 adjudication". One false positive was found and fixed — `separate authorization` matched an
 `author_separation` pattern lacking a word boundary — which is why that family now reads 0 rather
@@ -106,11 +126,12 @@ Failure of that test is a real outcome for this line, not a prompt to redefine t
 
 No mechanic is promoted; nothing here is scientific or method-promotion authority. The census is a
 measurement of declaration practice, not of instrument quality: a design that declares a control
-may still be defective, and one that declares none may be sound. The 15% figure bounds how often
-the programme *writes the check down* — nothing more.
+may still be defective, and one that declares none may be sound. The 15–21% bracket bounds how
+often the programme *writes the check down* — nothing more.
 
 ## Reproduce
 
 ```bash
 python research/self_rakl_recursive_question_audit_v1/run_construct_independence_census.py
+python research/self_rakl_recursive_question_audit_v1/run_validate_census.py
 ```
