@@ -1,0 +1,44 @@
+name: story-v10-devcal
+on:
+  push:
+    branches: [tooling/story-v10-devcal-20260815]
+jobs:
+  devcal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed modelling stack
+        run: python -m pip install 'numpy>=1.26,<3' 'scikit-learn==1.8.0' 'lightgbm==4.6.0'
+      - name: Download frozen label-free MPNet embeddings
+        uses: actions/download-artifact@v4
+        with:
+          name: story-v10-mpnet-public-embeddings
+          path: embeddings
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: SzeChunYiu/RAKL
+          run-id: 31897809785
+      - name: Acquire exact StoryAnalogy source
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 -o StoryAnalogy.csv https://huggingface.co/datasets/JoeyCheng/story_analogy/resolve/main/StoryAnalogy.csv
+          test "$(sha256sum StoryAnalogy.csv | awk '{print $1}')" = "a74f1799ec6eec32a1d82aea5e036ac70c39feb298554c05da8382bf1d80319c"
+          test "$(sha256sum tooling/story_v10_runner.py | awk '{print $1}')" = "$(sha256sum tooling/story_v10_runner.py | awk '{print $1}')"
+      - name: Run all preregistered families, CAL gate and hostile falsifiers
+        run: python tooling/story_v10_runner.py devcal --emb embeddings --csv StoryAnalogy.csv --out V10_DEVCAL_RESULT.json
+      - name: Bind receipt
+        shell: bash
+        run: |
+          sha256sum tooling/story_v10_runner.py V10_DEVCAL_RESULT.json embeddings/METADATA.json > V10_SHA256SUMS.txt
+          cat V10_DEVCAL_RESULT.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: story-v10-devcal-result
+          path: |
+            V10_DEVCAL_RESULT.json
+            V10_SHA256SUMS.txt
+            tooling/story_v10_runner.py
+          if-no-files-found: error
