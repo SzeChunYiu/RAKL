@@ -1,0 +1,50 @@
+{
+  "answer": "No. The lever requires renderer author != extractor author, and one agent authoring both cannot satisfy AUTHOR_SEPARATION.",
+  "gate": {
+    "instrument_id": "p2-prose-successor-v2-single-author",
+    "reasons": [
+      "AUTHOR_SEPARATION declared unsatisfied: this session would author both the renderer and the extractor; the lever requires renderer author != extractor author and a single agent cannot satisfy it"
+    ],
+    "undeclared": [],
+    "verdict": "INADMISSIBLE",
+    "violated": [
+      "AUTHOR_SEPARATION"
+    ]
+  },
+  "grants_scientific_authority": false,
+  "not_claimed": [
+    "This does not show a successor instrument is impossible, only that this session cannot build an admissible one.",
+    "The predecessor's INSTRUMENT_NOT_PROBATIVE__TEMPLATE_INVERSION terminal is unchanged.",
+    "The 0.9722 ceiling is recorded as the constraint a successor must not exceed, not as a target to reach."
+  ],
+  "question": "Can this session build the successor prose instrument the lever requires?",
+  "reclassification_proposed": {
+    "from": "REVIVABLE_LOCAL",
+    "reason": "author separation is a resource this session does not have, in the same sense as an A100 or a third-party annotator. It is not a budget question and no amount of local effort supplies it.",
+    "to": "REVIVABLE_EXTERNAL"
+  },
+  "schema_version": "rakl-p2-template-successor-admission-v1",
+  "session_step": {
+    "blocked": false,
+    "digest": "1f0d2a3769b56287ddce92779f14cf54dab9b1f1e16e27540879c8dc4cf52e93",
+    "licensed": "REVISE_MEASUREMENT",
+    "proposed": "REVISE_MEASUREMENT",
+    "reasons": [
+      "single responsible coordinate: MEASUREMENT",
+      "instrument 'p2-prose-successor-v2-single-author' is inadmissible: AUTHOR_SEPARATION"
+    ]
+  },
+  "status": "ADMISSION_REFUSED_BEFORE_CONSTRUCTION",
+  "support": {
+    "ceiling_basis": "G2 full_exact on the executed predecessor run; the lever requires the successor's ceiling not to rise",
+    "conditioning_variables": [
+      "ambiguity_class"
+    ],
+    "population": "576 held-out confirmatory pairs, prose-transfer instrument",
+    "reachable_ceiling": 0.9722222222222222
+  },
+  "what_would_change_it": [
+    "a second author \u2014 human or a separate agent with no access to the renderer \u2014 writing the extractor against the rendered surface alone",
+    "or a third-party corpus whose surfaces this programme did not render, which converts the obligation from author separation to provenance"
+  ]
+}
