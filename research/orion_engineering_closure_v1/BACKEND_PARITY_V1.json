@@ -1,0 +1,140 @@
+{
+  "artifact": "BACKEND_PARITY_V1",
+  "assertions": {
+    "capabilities_declared": {
+      "sqlite": {
+        "detail": "BEGIN IMMEDIATE / conflict at BEGIN",
+        "falsifier_detail": "the two backends declare different param styles and conflict points; a shared stub would fail one branch",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "conflict_classification": {
+      "sqlite+postgres": {
+        "detail": "40001/40P01 retryable, 23xxx integrity, 08xxx unavailable, others UNKNOWN",
+        "falsifier_detail": "unrecognised SQLSTATE 42P01 and a bare Exception both classify UNKNOWN, so nothing unclassified is retried",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "failed_batch_rolls_back_every_plane": {
+      "sqlite": {
+        "detail": "after rollback {'parity_head': 0, 'parity_transition': 0, 'parity_event': 0}",
+        "falsifier_detail": "identical batch without the failure committed {'parity_head': 1, 'parity_transition': 1, 'parity_event': 1}",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "hash_chain_survives_round_trip": {
+      "sqlite": {
+        "detail": "4 links recomputed after round trip: all links recomputed and matched",
+        "falsifier_detail": "payload tamper detected: link 1 recomputed hash differs",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "postgres_entrypoints_typed": {
+      "postgres": {
+        "detail": "driver_missing:psycopg,psycopg2 not importable in the active interpreter; dsn_absent:none of ORION_POSTGRES_DSN,ORION_PG_DSN,RAKL_POSTGRES_DSN,DATABASE_URL is set",
+        "falsifier_detail": "require() raises BackendUnavailable and write_transaction() raises driver_missing, so no entry point can silently no-op or fake success",
+        "falsifier_executed": true,
+        "status": "EXECUTED_CANNOT_CHECK"
+      }
+    },
+    "read_connection_releases_handles": {
+      "sqlite": {
+        "detail": "protocol delta=0 over 120 reads",
+        "falsifier_detail": "control arm SqliteEngineeringStateStore.head() leaked 0 descriptors over 120 reads (gc disabled); sqlite3.Connection.__exit__ commits but does not close, so `with self._connect() as db` retains the handle",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "retry_helper_replays_only_retryable_conflicts": {
+      "sqlite": {
+        "detail": "retried 2x then committed; integrity error escaped; permanent conflict exhausted",
+        "falsifier_detail": "IntegrityError escapes un-retried; permanent conflict raises RetryExhausted",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "serialization_conflict_detectable_and_retryable": {
+      "sqlite": {
+        "detail": "second_writer=FAILED kind=ConflictKind.RETRYABLE_CONFLICT err=OperationalError: database is locked",
+        "falsifier_detail": "with the shipped busy_timeout the second writer instead COMMITTED (kind=None) \u2014 the conflict assertion is therefore observing a real refusal, not a wait",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "shipped_store_semantics_grounding": {
+      "sqlite": {
+        "detail": "commit/replay/idempotency-conflict/stale-head verified on SqliteEngineeringStateStore",
+        "falsifier_detail": "the differing-request replay raises IdempotencyConflict and the stale-head request returns RETRY_REQUIRED with the head unchanged, so the replay assertion is not merely matching everything",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    },
+    "unique_index_idempotency": {
+      "sqlite": {
+        "detail": "duplicate key skipped by ON CONFLICT DO NOTHING; distinct key admitted",
+        "falsifier_detail": "raw duplicate insert raised and classified INTEGRITY_VIOLATION; distinct-key insert succeeded, so the refusal is key-specific",
+        "falsifier_executed": true,
+        "status": "PASS"
+      }
+    }
+  },
+  "backends": {
+    "postgres": {
+      "probe": {
+        "driver": {
+          "available": false,
+          "driver": null,
+          "import_errors": [
+            "psycopg:ModuleNotFoundError",
+            "psycopg2:ModuleNotFoundError"
+          ],
+          "version": null
+        },
+        "dsn_present": false,
+        "dsn_source": null,
+        "reasons": [
+          "driver_missing:psycopg,psycopg2 not importable in the active interpreter",
+          "dsn_absent:none of ORION_POSTGRES_DSN,ORION_PG_DSN,RAKL_POSTGRES_DSN,DATABASE_URL is set"
+        ],
+        "server_reachable": null,
+        "status": "CANNOT_CHECK"
+      },
+      "status": "CANNOT_CHECK"
+    },
+    "sqlite": {
+      "conflict_detection_point": "BEGIN",
+      "identity": "sqlite:/tmp/pytest-of-billy/pytest-607/parity-sqlite0/parity.db",
+      "sqlite_library_version": "3.50.4",
+      "status": "EXECUTED",
+      "write_transaction_mode": "BEGIN IMMEDIATE"
+    }
+  },
+  "generated_at_utc": "2026-08-15T18:48:12.264812+00:00",
+  "generated_by": "tests/test_engineering_backend_parity.py",
+  "not_exercised": [
+    {
+      "item": "POSTGRES_SCHEMA_V1.sql DDL execution",
+      "reason": "no PostgreSQL server and no PostgreSQL client on the host; the DDL is unparsed and its syntax is unverified"
+    },
+    {
+      "item": "POSTGRES_SCHEMA_V1.sql table definitions",
+      "reason": "the assertions above run against the parity_* fixture schema in tests/test_engineering_backend_parity.py, NOT against the tables V1 declares; V1's constraints and its field-for-field correspondence to the shipped stores were derived by reading the code, not executed"
+    },
+    {
+      "item": "PostgresEngineeringBackend write_transaction / read_connection / insert_if_absent against a real server",
+      "reason": "psycopg and psycopg2 are not installed in the active interpreter"
+    },
+    {
+      "item": "SERIALIZABLE 40001 retry behaviour under real contention",
+      "reason": "requires a live PostgreSQL server; the SQLSTATE mapping is unit tested against synthetic exceptions only"
+    },
+    {
+      "item": "cross-backend byte parity of stored canonical payloads",
+      "reason": "requires both backends simultaneously"
+    }
+  ]
+}

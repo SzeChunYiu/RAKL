@@ -1,0 +1,1662 @@
+{
+  "audit_version": "orion-engineering-conformance-audit-v1",
+  "axis": "NAMED_SURFACE_CONFORMANCE_ONLY",
+  "checker_self_validation": {
+    "all_controls_passed": true,
+    "controls": [
+      {
+        "control": "known-present-module",
+        "expected": "PRESENT",
+        "got": "PRESENT",
+        "ok": true
+      },
+      {
+        "control": "known-present-field",
+        "expected": "PRESENT",
+        "got": "PRESENT",
+        "ok": true
+      },
+      {
+        "control": "known-absent-attr",
+        "expected": "ABSENT",
+        "got": "ABSENT",
+        "ok": true
+      },
+      {
+        "control": "known-absent-module",
+        "expected": "ABSENT",
+        "got": "ABSENT",
+        "ok": true
+      },
+      {
+        "control": "uncheckable-field-target",
+        "expected": "CANNOT_CHECK",
+        "got": "CANNOT_CHECK",
+        "ok": true
+      }
+    ]
+  },
+  "closure_assessment_v3_review": {
+    "axis_note": "'REFERENCE_IMPLEMENTED' in V3 asserts falsifier closure. A fibre can close its GAP_LEDGER falsifier while the surface the packet's own ladder/API named is absent. Only E10 and E18 are overclaims; the rest are gaps, citation defects, or nothing.",
+    "claim_reviewed": "all 20 fibres REFERENCE_IMPLEMENTED, terminal ALL_FIBRES_REFERENCE_IMPLEMENTED__PRODUCTION_RESIDUALS_TYPED",
+    "not_checked_here": "This audit did not independently re-derive whether each falsifier is defeated by the existing tests. Where it says CLAIM_HOLDS it means the named surface is present and no contrary evidence was found -- not that the falsifier was re-executed.",
+    "per_fibre": [
+      {
+        "axis": "falsifier + spec obligation",
+        "evidence": "V3 marks E18 REFERENCE_IMPLEMENTED citing a 12-case campaign. Those 12 cases attack 7 of the 30 HOSTILE_TEST_MATRIX rows fully and 4 partially; 19 rows are never executed. E18's own ledger 'next' is 'execute HOSTILE_TEST_MATRIX on release candidate'. Compounding it, the campaign numbers its cases H01..H12, colliding with the matrix namespace while attacking different things -- a reader cross-referencing 'H01 held' concludes 'kill during canonical blob write' held. It did not. run_hostile_assurance_v3.py itself is honest: its docstring freezes its own list and never claims to be the matrix. The defect is in the assessment that cites it as E18 closure, and in the colliding ID namespace.",
+        "fiber": "E18",
+        "verdict": "OVERCLAIM"
+      },
+      {
+        "axis": "the packet's own API contract",
+        "evidence": "The GAP_LEDGER falsifier ('a mutating request has no idempotency/snapshot contract') IS defeated. But API_AND_OBSERVATORY.md is also spec: 10 of its 12 named routes return 404 NOT_FOUND; query strings are not parsed out of the path segment so the spec'd ?snapshot=&target=&fiber= form 404s; and 'Every mutation returns a StateTransitionReceipt, even on RETRY_REQUIRED, RECOVERY_REQUIRED or CANNOT_CHECK' does not hold -- a commit returns {committed, before_snapshot_id, after_snapshot_id, payload_hash, api_version} and a refusal returns {error, detail, api_version}. engineering_http.py never imports engineering_state and keeps its own in-memory 'snap-N' state. V3's only named E10 residual is 'TLS, rate limits is deployment', which names none of this.",
+        "fiber": "E10",
+        "verdict": "OVERCLAIM"
+      },
+      {
+        "axis": "named surface",
+        "evidence": "The falsifier is defeated: ObservatoryView has no method that computes a score and every displayed field drills through provenance_ids. Views 1,2,3,5,6 of the 8 named are carried as fields; views 4,7,8 are not -- but each has a real implementation elsewhere (see concurrent_work_qualifications). Wiring gap.",
+        "fiber": "E11",
+        "verdict": "PARTIAL_NOT_OVERCLAIM"
+      },
+      {
+        "axis": "evidence citation",
+        "evidence": "V3 cites project_runtime.py::next_action -- a runtime decision function -- as evidence for 'metric/decision/residual/saturation PERSISTENCE'. The thing that actually persists these is engineering_control_store.SqliteControlProjectionStore (ControlArtifactKind = METRIC_RECEIPT, SATURATION_CERTIFICATE, HARD_GATE, CONTROLLER_DECISION, RESIDUAL_EVENT, AUTHORITY_PROJECTION). The fibre is supported; the cited evidence is not what supports it.",
+        "fiber": "E4",
+        "verdict": "CITATION_DEFECT"
+      },
+      {
+        "axis": "named surface",
+        "evidence": "9 of the metadata families ARCHITECTURE 5 names have no table in ANY of the 8 engineering sqlite stores: blob_bindings, identity_assertions/lineage_edges, residuals/residual_events, research_rounds/novelty_events, saturation_bases/saturation_certificates, metric_definitions/metric_receipts, hard_gate_observations/controller_decisions, episodes/lessons/tools, evolution_variants/promotion_events. Four of those are served by one generic control_projection table keyed by kind, without the per-family foreign keys ARCHITECTURE 5 requires. V3 claims no more than REFERENCE_IMPLEMENTED here, so this is an unstated gap rather than a false claim.",
+        "fiber": "E3/E4",
+        "verdict": "GAP_NOT_OVERCLAIM"
+      },
+      {
+        "axis": "named surface",
+        "evidence": "The ladder-named abstractions (BlobStore aside) were absent while working semantic equivalents existed. Closed by src/rakl/engineering_contracts.py.",
+        "fiber": "E2/E5/E6",
+        "verdict": "NOT_AN_OVERCLAIM"
+      },
+      {
+        "axis": "named surface",
+        "evidence": "Every module and symbol V3 cites resolves, and every named field/enum/method this audit checked for these fibres is PRESENT.",
+        "fiber": "E1,E5,E7,E8,E9,E12,E13,E14,E15,E16,E17,E19,E20",
+        "verdict": "CLAIM_HOLDS"
+      }
+    ],
+    "verdict": "OVERCLAIMS ON TWO FIBRES (E10, E18); one citation defect (E4); the remaining seventeen hold on the falsifier axis"
+  },
+  "concurrent_work_qualifications": {
+    "note": "Other sessions landed files into this working tree while the audit ran. Each was checked against every ABSENT verdict below; none defines any symbol this audit reports as absent. Two qualifications are recorded so the negatives are not read more harshly than the evidence supports.",
+    "qualifications": [
+      {
+        "audit_item": "API-view-4-solver-state",
+        "mechanical_verdict": "ABSENT on rakl.engineering_ops.ObservatoryView",
+        "qualification": "rakl.engineering_integration.SnapshotBoundSolverView already carries support_structure_id, compiler_identity, obstruction_ids and source_evidence_ids, all bound to project_snapshot_id, and solver_view_freshness computes staleness. That IS API view 4's content. The ObservatoryView field is absent; the capability is not. This is a wiring gap, not a missing mechanism."
+      },
+      {
+        "audit_item": "API-view-7-evolution-history",
+        "mechanical_verdict": "ABSENT on rakl.engineering_ops.ObservatoryView",
+        "qualification": "rakl.evolution_archive (RAKLVariant, VariantStatus, register_challenger, variant_promotion_subject_hash) and rakl.promotion_attestation carry challenger/promotion identities. The ObservatoryView field is absent; the capability is not."
+      },
+      {
+        "audit_item": "API-view-8-operational-health",
+        "mechanical_verdict": "ABSENT on rakl.engineering_ops.ObservatoryView",
+        "qualification": "src/rakl/engineering_doctor_probes.py (landed concurrently) provides probe_database / probe_object_store / probe_index / probe_workflow_workers / probe_backup / probe_secrets. API_AND_OBSERVATORY view 8 requires operational health 'clearly separated from scientific status', which a separate doctor surface arguably satisfies. The ObservatoryView field is still absent; the capability is not."
+      },
+      {
+        "audit_item": "ARCH-5 metadata families",
+        "mechanical_verdict": "9 families ABSENT from all 8 sqlite stores",
+        "qualification": "research/orion_engineering_closure_v1/POSTGRES_SCHEMA_V1.sql (landed concurrently) mirrors the SQLite tables exactly and also contains none of the 9 missing families. The gap is therefore reproduced in the production-class backend, not closed by it. This STRENGTHENS the finding."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_state.py",
+      "item_id": "ARCH-MOD-state",
+      "kind": "module",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 7 fields present",
+      "evidence": "rakl.engineering_state.ProjectSnapshot",
+      "item_id": "ARCH-2-ProjectSnapshot",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state.ProjectSnapshot(evidence_cutoff,semantic_state_revision,metric_ledger_head,episode_store_head,saturation_basis_ids,authority_projection_revision,controller_epoch_id)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 17 fields present",
+      "evidence": "rakl.engineering_state.EpistemicStatus",
+      "item_id": "ARCH-3-EpistemicStatus",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state.EpistemicStatus(project_snapshot_id,target_id,fiber_id,axis_statuses,required_routes,covered_routes,missing_routes,active_residual_ids,freshness_stale,required_authority,available_support_paths,blocking_cut_ids,hard_gate_ids,next_action,reasons,metric_receipt_ids,basis_fingerprints)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 4 fields present",
+      "evidence": "rakl.engineering_state.EpistemicAxisStatus",
+      "item_id": "ARCH-3-EpistemicAxisStatus",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state.EpistemicAxisStatus(axis,bounded_flat,recent_retained_novelty,independent_flat_routes)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 12 fields present",
+      "evidence": "rakl.engineering_state.StateTransitionReceipt",
+      "item_id": "ARCH-4-StateTransitionReceipt",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state.StateTransitionReceipt(before_snapshot_id,after_snapshot_id,action,idempotency_key,process_identity,read_set,write_set,produced_artifact_ids,metric_receipt_ids,residual_ids,status,reasons)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 5 members present",
+      "evidence": "rakl.engineering_state.TransitionStatus",
+      "item_id": "ARCH-4-TransitionStatus",
+      "kind": "enum_member",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_state.TransitionStatus[COMMITTED,ABORTED,RETRY_REQUIRED,RECOVERY_REQUIRED,CANNOT_CHECK]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 4 methods present",
+      "evidence": "rakl.engineering_store.BlobStore",
+      "item_id": "ARCH-6-BlobStore",
+      "kind": "method",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_store.BlobStore.{put_if_absent,get_verified,exists_verified,stat}",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 4 methods present",
+      "evidence": "rakl.engineering_blob.LocalFilesystemBlobStore",
+      "item_id": "ARCH-6-BlobStore-local",
+      "kind": "method",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_blob.LocalFilesystemBlobStore.{put_if_absent,get_verified,exists_verified,stat}",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 5 fields present",
+      "evidence": "rakl.engineering_workflow.ActivitySpec",
+      "item_id": "ARCH-7-ActivitySpec",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_workflow.ActivitySpec(activity_id,invocation_id,input_digest,retry_safe,max_attempts)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 4 fields present",
+      "evidence": "rakl.engineering_workflow_workers.WorkerActivityRecord",
+      "item_id": "ARCH-7-WorkerActivity",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_workflow_workers.WorkerActivityRecord(attempt_count,lease,idempotency_key,effect_started)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 3 fields present",
+      "evidence": "rakl.engineering_workflow_workers.Lease",
+      "item_id": "ARCH-7-Lease",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_workflow_workers.Lease(heartbeat_at,ttl,lease_token)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 11 fields present",
+      "evidence": "rakl.engineering_telemetry.OperationalCorrelationContext",
+      "item_id": "ARCH-9-CorrelationContext",
+      "kind": "field",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_telemetry.OperationalCorrelationContext(project_id,snapshot_id,workflow_id,activity_id,invocation_id,research_round_id,episode_id,target_id,fiber_id,evaluation_epoch_id,controller_decision_id)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: epistemic_statuses,project_heads,snapshots,transitions",
+      "evidence": "rakl.engineering_store.SqliteEngineeringStateStore",
+      "item_id": "ARCH-5-projects/snapshots",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_store.SqliteEngineeringStateStore tables[project_heads,snapshots]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: epistemic_statuses,project_heads,snapshots,transitions",
+      "evidence": "rakl.engineering_store.SqliteEngineeringStateStore",
+      "item_id": "ARCH-5-state_transition_receipts",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_store.SqliteEngineeringStateStore tables[transitions]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: engineering_evidence_batch_commits,engineering_evidence_records",
+      "evidence": "rakl.engineering_evidence_store.SqliteEvidenceMetadataStore",
+      "item_id": "ARCH-5-evidence_records",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_evidence_store.SqliteEvidenceMetadataStore tables[engineering_evidence_records]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
+      "evidence": "rakl.engineering_semantic_store.SqliteSemanticStateStore",
+      "item_id": "ARCH-5-fibres/atoms/atom_versions",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_semantic_store.SqliteSemanticStateStore tables[semantic_fibers,semantic_atoms,semantic_atom_versions]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: semantic_atom_versions,semantic_atoms,semantic_batch_commits,semantic_fibers,semantic_witness_versions,semantic_witnesses",
+      "evidence": "rakl.engineering_semantic_store.SqliteSemanticStateStore",
+      "item_id": "ARCH-5-relations/relation_witnesses",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_semantic_store.SqliteSemanticStateStore tables[semantic_witnesses,semantic_witness_versions]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: atlas_charts,atlas_obstructions,atlas_plane_commits,atlas_transitions",
+      "evidence": "rakl.engineering_atlas_store.SqliteAtlasPlaneStore",
+      "item_id": "ARCH-5-atlas_charts/transitions/obstructions",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_atlas_store.SqliteAtlasPlaneStore tables[atlas_charts,atlas_transitions,atlas_obstructions]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "tables: workflow_activities,workflow_events,workflows",
+      "evidence": "rakl.engineering_workflow.SqliteReferenceWorkflowEngine",
+      "item_id": "ARCH-5-executions/execution_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_workflow.SqliteReferenceWorkflowEngine tables[workflows,workflow_activities,workflow_events]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-blob_bindings",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family blob_bindings",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-identity_assertions/lineage_edges",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family identity_assertions/lineage_edges",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-residuals/residual_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family residuals/residual_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-research_rounds/novelty_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family research_rounds/novelty_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-saturation_bases/saturation_certificates",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family saturation_bases/saturation_certificates",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-metric_definitions/metric_receipts",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family metric_definitions/metric_receipts",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-hard_gate_observations/controller_decisions",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family hard_gate_observations/controller_decisions",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-episodes/lessons/tools",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family episodes/lessons/tools",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-evolution_variants/promotion_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family evolution_variants/promotion_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "all 6 members present",
+      "evidence": "rakl.engineering_control_store.ControlArtifactKind",
+      "item_id": "ARCH-5-control-projection-kinds",
+      "kind": "enum_member",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "rakl.engineering_control_store.ControlArtifactKind[METRIC_RECEIPT,SATURATION_CERTIFICATE,HARD_GATE,CONTROLLER_DECISION,RESIDUAL_EVENT,AUTHORITY_PROJECTION]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E2 repository interface",
+      "evidence": "rakl.engineering_contracts.BlobStore;rakl.engineering_store.BlobStore;rakl.engineering_atomic.BlobStore;rakl.engineering_blob.BlobStore",
+      "item_id": "LADDER-E2-BlobStore",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "BlobStore",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E2 repository interface",
+      "evidence": "rakl.engineering_contracts.SnapshotRepository",
+      "item_id": "LADDER-E2-SnapshotRepository",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "SnapshotRepository",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E2 repository interface",
+      "evidence": "rakl.engineering_contracts.SemanticRepository",
+      "item_id": "LADDER-E2-SemanticRepository",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "SemanticRepository",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E2 repository interface",
+      "evidence": "rakl.engineering_contracts.MetrologyRepository",
+      "item_id": "LADDER-E2-MetrologyRepository",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "MetrologyRepository",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E2 repository interface",
+      "evidence": "rakl.engineering_contracts.TransitionRepository",
+      "item_id": "LADDER-E2-TransitionRepository",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "TransitionRepository",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E5 workflow engine abstraction",
+      "evidence": "rakl.engineering_contracts.ResearchWorkflowEngine",
+      "item_id": "LADDER-E5-ResearchWorkflowEngine",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "ResearchWorkflowEngine",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 8 members present",
+      "evidence": "rakl.engineering_contracts.WaveE8Terminal",
+      "item_id": "LADDER-E8-terminals",
+      "kind": "enum_member",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "rakl.engineering_contracts.WaveE8Terminal[PRODUCTION_READY_SCOPED,SINGLE_NODE_READY_ONLY,DURABILITY_READY_CONTROL_INTEGRATION_OPEN,CONTROL_READY_DISTRIBUTED_RUNTIME_OPEN,SECURITY_OR_RECOVERY_BLOCKED,PERFORMANCE_ENVELOPE_EXCEEDED,MIGRATION_PARITY_FAILED,CANNOT_CHECK_RESOURCE_BOUND]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E4 saturation entry point",
+      "evidence": "rakl.research_machine_workflow.assess_knowledge_saturation",
+      "item_id": "LADDER-E4-assess_knowledge_saturation",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "assess_knowledge_saturation",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "wave-E4 bounded-saturation artifacts",
+      "evidence": "rakl.observability_adapters.bounded_saturation_artifacts",
+      "item_id": "LADDER-E4-bounded_saturation_artifacts",
+      "kind": "attr",
+      "spec_source": "IMPLEMENTATION_LADDER.md",
+      "specified": "bounded_saturation_artifacts",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "POST /v1/projects -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/head -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/head",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/head",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/snapshots/snap-0 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/snapshots/snap-0",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/snapshots/snap-0",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/evidence -> 200 ok",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/evidence",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/evidence",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/research-rounds -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/research-rounds",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/research-rounds",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/epistemic-status -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/epistemic-status",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/epistemic-status",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/actions:plan -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/actions:plan",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/actions:plan",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/actions:execute -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/actions:execute",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/actions:execute",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/transitions/t1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/transitions/t1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/transitions/t1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/decisions/d1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/decisions/d1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/decisions/d1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/runs/r1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/runs/r1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/runs/r1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/provenance/e1 -> 200 ok",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/provenance/e1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/provenance/e1",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "query string is not stripped from the path segment -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-query-params",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET .../epistemic-status?snapshot=&target=&fiber=",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "committed mutation returned keys ['after_snapshot_id', 'api_version', 'before_snapshot_id', 'committed', 'payload_hash']; a StateTransitionReceipt requires ['action', 'action_payload_hash', 'after_snapshot_id', 'before_snapshot_id', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set'] -- missing ['action', 'action_payload_hash', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set']",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-mutation-returns-receipt",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "every mutation returns a StateTransitionReceipt",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "refusal (SNAPSHOT_STALE) returned keys ['api_version', 'detail', 'error'], not a StateTransitionReceipt",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-refusal-returns-receipt",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "RETRY_REQUIRED/RECOVERY_REQUIRED/CANNOT_CHECK also return a receipt",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "all 4 members present",
+      "evidence": "rakl.engineering_http.ApiErrorCode",
+      "item_id": "API-mutation-contract",
+      "kind": "enum_member",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_http.ApiErrorCode[MISSING_IDEMPOTENCY_KEY,MISSING_EXPECTED_SNAPSHOT,IDEMPOTENCY_CONFLICT,SNAPSHOT_STALE]",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 3 fields present",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-1-project-head",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(project_id,snapshot_id,freshness)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 4 fields present",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-2-epistemic-status",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(saturation_axes,route_coverage,residuals,freshness)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 2 fields present",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-3-decision-trace",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(hard_gates,controller_decision)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "missing: compiled_view_identity,support_paths,cuts",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-4-solver-state",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(compiled_view_identity,support_paths,cuts)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "all 1 fields present",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-5-evidence-provenance",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(provenance_ids)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "all 1 fields present",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-6-execution-recovery",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(workflow_states)",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "missing: evolution_history",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-7-evolution-history",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(evolution_history)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "missing: operational_health",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-8-operational-health",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(operational_health)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H01",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H01 kill during canonical blob write",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H02",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H02 blob committed, metadata transition killed before commit",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H03",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H03 metadata references unavailable blob",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H04",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H04 mutate stored blob bytes",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H05",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H05 torn episode JSONL tail",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H06",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H06 delete interior episode record",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "identical key + identical request replays, head unmoved",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H03 replayed decision, same key'",
+      "item_id": "MATRIX-H07",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H07 concurrent identical idempotency key, identical request",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "same key, different payload -> IDEMPOTENCY_CONFLICT",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H04 replayed decision, tampered payload'",
+      "item_id": "MATRIX-H08",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H08 same idempotency key, different request",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "second writer on the same expected snapshot is refused SNAPSHOT_STALE and the head does not move; the row's allowed result names RETRY_REQUIRED, the refusal is the same terminal class",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H01 stale snapshot mutation'",
+      "item_id": "MATRIX-H09",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H09 two writers plan on same project snapshot",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H10",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H10 stale controller decision replayed after semantic mutation",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H11",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H11 saturation certificate basis fingerprint changes",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H12",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H12 new native residual after bounded saturation",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H13",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H13 delete full-text/vector/graph index",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H14",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H14 corrupt derived index to return nonexistent atom",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "a lease expiry/reclaim with a stale completion token refused. The row's actual attack -- external effect COMPLETED, then crash before the completion record, expecting RECOVERY_REQUIRED -- is not run; mark_effect_started/recover_ambiguous_activity are never invoked in the campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H06 delayed worker past lease'",
+      "item_id": "MATRIX-H15",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H15 worker finishes external effect, crashes before completion record",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "two claims on one activity: one ACQUIRED, one HELD_BY_LIVE_WORKER, attempt_count==1",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H02 duplicate worker delivery'",
+      "item_id": "MATRIX-H16",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H16 duplicate activity delivery",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "shows no partial commit survives an aborted multi-record batch, which is the row's INVARIANT; the row's mechanism (DB failover mid-transition) is not simulated",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H10 atlas plane half-write'",
+      "item_id": "MATRIX-H17",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H17 DB failover mid-transition",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H18",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H18 object store temporary outage",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "exercises only the FAILURE branch (restore into a corrupted tree -> CORRUPTED_BLOB). 'frozen snapshot identities reproduce' after a restore into an EMPTY environment is not asserted by this case",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H05 corrupted backup blob'",
+      "item_id": "MATRIX-H19",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H19 restore backup into empty environment",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H20",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H20 point-in-time replay to older snapshot",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H21",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H21 partial schema migration",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H22",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H22 rollback after failed migration",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "covers 'no secret in receipt/log' (reference only). Secret ROTATION during a worker lifetime, and the declared-revision change, are not exercised",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H12 secret value in provenance'",
+      "item_id": "MATRIX-H23",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H23 secret rotation during worker lifetime",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "fully-capable actor cannot write the authority projection -> 403",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H09 authority projection via API'",
+      "item_id": "MATRIX-H24",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H24 infrastructure admin submits unverified scientific promotion",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H25",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H25 malicious fabricated hard-gate ID in status",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "a backwards heartbeat does not extend the lease; reclaim still occurs",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H07 clock skew: heartbeat in the past'",
+      "item_id": "MATRIX-H26",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H26 clock skew on worker",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "an artifact ref without a digest is refused",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H11 mutable image tag'",
+      "item_id": "MATRIX-H27",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H27 execution artifact rebuilt from different source but same label",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H28",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H28 audit/log exporter unavailable",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H29",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H29 high transaction contention",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H30",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H30 huge knowledge lattice + context request",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_state.py",
+      "item_id": "V3-evidence-E1",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_state",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_http.py",
+      "item_id": "V3-evidence-E10",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_http",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_ops.project_observatory",
+      "item_id": "V3-evidence-E11",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_ops.project_observatory",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_http.Telemetry",
+      "item_id": "V3-evidence-E12",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_http.Telemetry",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_http.IdentityProvider",
+      "item_id": "V3-evidence-E13",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_http.IdentityProvider",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_migration.py",
+      "item_id": "V3-evidence-E14",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_migration",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_ops.verify_restore",
+      "item_id": "V3-evidence-E15",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_ops.verify_restore",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_release.py",
+      "item_id": "V3-evidence-E16",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_release",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_ops.ResourceBudget",
+      "item_id": "V3-evidence-E17",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_ops.ResourceBudget",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "see MATRIX-* rows for what it covers",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "V3-evidence-E18",
+      "kind": "artifact",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "run_hostile_assurance_v3.py + HOSTILE_ASSURANCE_V3.json",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_ops.BuildProvenance",
+      "item_id": "V3-evidence-E19",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_ops.BuildProvenance",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_store.py",
+      "item_id": "V3-evidence-E2",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_store",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.engineering_ops.OperatorDoctor",
+      "item_id": "V3-evidence-E20",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_ops.OperatorDoctor",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_atlas_store.py",
+      "item_id": "V3-evidence-E3",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_atlas_store",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.project_runtime.RAKLProject.next_action",
+      "item_id": "V3-evidence-E4",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.project_runtime.RAKLProject.next_action",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_atomic.py",
+      "item_id": "V3-evidence-E5",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_atomic",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_workflow_workers.py",
+      "item_id": "V3-evidence-E6",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_workflow_workers",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_index.py",
+      "item_id": "V3-evidence-E7",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_index",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "/home/billy/rakl-pub46/src/rakl/engineering_service.py",
+      "item_id": "V3-evidence-E8",
+      "kind": "module",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.engineering_service",
+      "verdict": "PRESENT"
+    },
+    {
+      "detail": "",
+      "evidence": "rakl.governed_solver.governed_solve",
+      "item_id": "V3-evidence-E9",
+      "kind": "attr",
+      "spec_source": "CLOSURE_ASSESSMENT_V3.json",
+      "specified": "rakl.governed_solver.governed_solve",
+      "verdict": "PRESENT"
+    }
+  ],
+  "grants_scientific_authority": false,
+  "hostile_matrix_coverage": {
+    "campaign_case_to_matrix_row": {
+      "H01 stale snapshot mutation": "H09",
+      "H02 duplicate worker delivery": "H16",
+      "H03 replayed decision, same key": "H07",
+      "H04 replayed decision, tampered payload": "H08",
+      "H05 corrupted backup blob": "H19",
+      "H06 delayed worker past lease": "H15",
+      "H07 clock skew: heartbeat in the past": "H26",
+      "H08 payload hash not binding effect": null,
+      "H09 authority projection via API": "H24",
+      "H10 atlas plane half-write": "H17",
+      "H11 mutable image tag": "H27",
+      "H12 secret value in provenance": "H23"
+    },
+    "campaign_reuses_matrix_ids_for_different_attacks": [
+      "H01",
+      "H02",
+      "H03",
+      "H04",
+      "H05",
+      "H06",
+      "H07",
+      "H08",
+      "H09",
+      "H10",
+      "H11",
+      "H12"
+    ],
+    "mapping_is_an_analyst_judgement": "campaign_case_to_matrix_row below is a hand mapping by CONTENT, produced by reading run_hostile_assurance_v3.py case by case. It is not a mechanical result. The per-row 'why' text in each MATRIX-* finding is what makes it reviewable; disagree with a row by disputing its reason, not the count.",
+    "note": "CLOSURE_ASSESSMENT_V3 reports hostile_assurance held=12 total=12. That is true of the campaign's OWN 12 cases. The campaign numbers them H01..H12, colliding with the HOSTILE_TEST_MATRIX namespace while attacking different things: campaign H01 is 'stale snapshot mutation', matrix H01 is 'kill during canonical blob write'.",
+    "rows_fully_attacked": [
+      "H07",
+      "H08",
+      "H09",
+      "H16",
+      "H24",
+      "H26",
+      "H27"
+    ],
+    "rows_not_attacked": [
+      "H01",
+      "H02",
+      "H03",
+      "H04",
+      "H05",
+      "H06",
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H18",
+      "H20",
+      "H21",
+      "H22",
+      "H25",
+      "H28",
+      "H29",
+      "H30"
+    ],
+    "rows_partially_attacked": [
+      "H15",
+      "H17",
+      "H19",
+      "H23"
+    ],
+    "rows_specified": 30
+  },
+  "negative_history_preserved": {
+    "absent_at_first_run_and_STILL_OPEN": [
+      "API_AND_OBSERVATORY: 10 of 12 named routes 404",
+      "API_AND_OBSERVATORY: mutations do not return a StateTransitionReceipt",
+      "API_AND_OBSERVATORY: query strings are not parsed out of the path segment",
+      "API_AND_OBSERVATORY: Observatory views 4 (solver state), 7 (evolution history), 8 (operational health) have no fields on ObservatoryView",
+      "ARCHITECTURE 5: 9 named metadata families have no table in any engineering store",
+      "HOSTILE_TEST_MATRIX: 19 of 30 rows never executed by the frozen campaign"
+    ],
+    "absent_at_first_run_and_closed_by_this_session": [
+      "IMPLEMENTATION_LADDER wave E2: SnapshotRepository",
+      "IMPLEMENTATION_LADDER wave E2: SemanticRepository",
+      "IMPLEMENTATION_LADDER wave E2: MetrologyRepository",
+      "IMPLEMENTATION_LADDER wave E2: TransitionRepository",
+      "IMPLEMENTATION_LADDER wave E5: ResearchWorkflowEngine",
+      "IMPLEMENTATION_LADDER wave E8: the 8 allowed terminals"
+    ],
+    "closed_how": "src/rakl/engineering_contracts.py -- runtime_checkable Protocols asserted against the existing concrete classes in tests/test_engineering_conformance.py, plus WaveE8Terminal. This closes the NAMED-SURFACE gap only. It adds no persistence, no routes and no production backend, and it does not move any fibre's production readiness.",
+    "first_run_summary": {
+      "ABSENT": 50,
+      "CANNOT_CHECK": 0,
+      "PARTIAL": 4,
+      "PRESENT": 58
+    },
+    "note": "The first execution of this audit, against the tree as the parent session left it, found these named surfaces ABSENT. They are recorded here permanently. Some were closed by this same session; the record of their absence is not rewritten.",
+    "why_still_open": "Those live in src/rakl/engineering_http.py and src/rakl/engineering_ops.py, which this audit does not own, and in the case of the hostile matrix they are execution obligations rather than missing symbols. They are reported, not patched."
+  },
+  "negatives_preserved": [
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-blob_bindings",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family blob_bindings",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-identity_assertions/lineage_edges",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family identity_assertions/lineage_edges",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-residuals/residual_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family residuals/residual_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-research_rounds/novelty_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family research_rounds/novelty_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-saturation_bases/saturation_certificates",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family saturation_bases/saturation_certificates",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-metric_definitions/metric_receipts",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family metric_definitions/metric_receipts",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-hard_gate_observations/controller_decisions",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family hard_gate_observations/controller_decisions",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-episodes/lessons/tools",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family episodes/lessons/tools",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "no engineering store creates a table of this name",
+      "evidence": "all 8 engineering sqlite stores probed",
+      "item_id": "ARCH-5-evolution_variants/promotion_events",
+      "kind": "table",
+      "spec_source": "ARCHITECTURE.md",
+      "specified": "metadata family evolution_variants/promotion_events",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/head -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/head",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/head",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/snapshots/snap-0 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/snapshots/snap-0",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/snapshots/snap-0",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/research-rounds -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/research-rounds",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/research-rounds",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/epistemic-status -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/epistemic-status",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/epistemic-status",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/actions:plan -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/actions:plan",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/actions:plan",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "POST /v1/projects/p1/actions:execute -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-POST-/v1/projects/p1/actions:execute",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "POST /v1/projects/p1/actions:execute",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/transitions/t1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/transitions/t1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/transitions/t1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/decisions/d1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/decisions/d1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/decisions/d1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "GET /v1/projects/p1/runs/r1 -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-route-GET-/v1/projects/p1/runs/r1",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET /v1/projects/p1/runs/r1",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "query string is not stripped from the path segment -> 404 NOT_FOUND",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-query-params",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "GET .../epistemic-status?snapshot=&target=&fiber=",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "committed mutation returned keys ['after_snapshot_id', 'api_version', 'before_snapshot_id', 'committed', 'payload_hash']; a StateTransitionReceipt requires ['action', 'action_payload_hash', 'after_snapshot_id', 'before_snapshot_id', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set'] -- missing ['action', 'action_payload_hash', 'created_at_utc', 'idempotency_key', 'metric_receipt_ids', 'process_identity', 'produced_artifact_ids', 'project_id', 'read_set', 'reasons', 'request_hash', 'residual_ids', 'status', 'write_set']",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-mutation-returns-receipt",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "every mutation returns a StateTransitionReceipt",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "refusal (SNAPSHOT_STALE) returned keys ['api_version', 'detail', 'error'], not a StateTransitionReceipt",
+      "evidence": "rakl.engineering_http.EngineeringHttpService.handle",
+      "item_id": "API-refusal-returns-receipt",
+      "kind": "behaviour",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "RETRY_REQUIRED/RECOVERY_REQUIRED/CANNOT_CHECK also return a receipt",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "missing: compiled_view_identity,support_paths,cuts",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-4-solver-state",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(compiled_view_identity,support_paths,cuts)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "missing: evolution_history",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-7-evolution-history",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(evolution_history)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "missing: operational_health",
+      "evidence": "rakl.engineering_ops.ObservatoryView",
+      "item_id": "API-view-8-operational-health",
+      "kind": "field",
+      "spec_source": "API_AND_OBSERVATORY.md",
+      "specified": "rakl.engineering_ops.ObservatoryView(operational_health)",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H01",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H01 kill during canonical blob write",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H02",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H02 blob committed, metadata transition killed before commit",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H03",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H03 metadata references unavailable blob",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H04",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H04 mutate stored blob bytes",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H05",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H05 torn episode JSONL tail",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H06",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H06 delete interior episode record",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H10",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H10 stale controller decision replayed after semantic mutation",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H11",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H11 saturation certificate basis fingerprint changes",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign; the campaign REUSES this id for a different attack",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H12",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H12 new native residual after bounded saturation",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H13",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H13 delete full-text/vector/graph index",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H14",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H14 corrupt derived index to return nonexistent atom",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "a lease expiry/reclaim with a stale completion token refused. The row's actual attack -- external effect COMPLETED, then crash before the completion record, expecting RECOVERY_REQUIRED -- is not run; mark_effect_started/recover_ambiguous_activity are never invoked in the campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H06 delayed worker past lease'",
+      "item_id": "MATRIX-H15",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H15 worker finishes external effect, crashes before completion record",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "shows no partial commit survives an aborted multi-record batch, which is the row's INVARIANT; the row's mechanism (DB failover mid-transition) is not simulated",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H10 atlas plane half-write'",
+      "item_id": "MATRIX-H17",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H17 DB failover mid-transition",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H18",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H18 object store temporary outage",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "exercises only the FAILURE branch (restore into a corrupted tree -> CORRUPTED_BLOB). 'frozen snapshot identities reproduce' after a restore into an EMPTY environment is not asserted by this case",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H05 corrupted backup blob'",
+      "item_id": "MATRIX-H19",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H19 restore backup into empty environment",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H20",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H20 point-in-time replay to older snapshot",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H21",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H21 partial schema migration",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H22",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H22 rollback after failed migration",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "covers 'no secret in receipt/log' (reference only). Secret ROTATION during a worker lifetime, and the declared-revision change, are not exercised",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json :: campaign case 'H12 secret value in provenance'",
+      "item_id": "MATRIX-H23",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H23 secret rotation during worker lifetime",
+      "verdict": "PARTIAL"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H25",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H25 malicious fabricated hard-gate ID in status",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H28",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H28 audit/log exporter unavailable",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H29",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H29 high transaction contention",
+      "verdict": "ABSENT"
+    },
+    {
+      "detail": "NOT executed by the frozen campaign",
+      "evidence": "research/orion_engineering_closure_v1/HOSTILE_ASSURANCE_V3.json",
+      "item_id": "MATRIX-H30",
+      "kind": "hostile_case",
+      "spec_source": "HOSTILE_TEST_MATRIX.md",
+      "specified": "H30 huge knowledge lattice + context request",
+      "verdict": "ABSENT"
+    }
+  ],
+  "summary": {
+    "ABSENT": 44,
+    "CANNOT_CHECK": 0,
+    "PARTIAL": 4,
+    "PRESENT": 64
+  },
+  "what_this_does_not_decide": "whether each GAP_LEDGER falsifier is defeated. A fibre can defeat its falsifier with a differently-named abstraction, and can carry every named symbol while its falsifier stands. Only the named-surface question is answered mechanically here."
+}
