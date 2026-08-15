@@ -1,0 +1,60 @@
+{
+  "schema_version": "paper1-source-identity-repair-v1",
+  "date": "2026-08-15",
+  "parent_negative": "research/negative_frontier_v1/NEG-p1-source-monitoring-repetition-attack.md",
+  "parent_protocol": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/PROTOCOL.json",
+  "parent_receipt": "publication-overlay-papers-123:experiments/paper1/source_monitoring_repetition_attack_v1/RESULTS.json",
+  "one_stage_attribution": "extraction",
+  "registered_lever": "source-identity / lineage resolution (DOI<->arXiv mapping, case-insensitivity, publisher prefixes, URL vs bare identifier)",
+  "forbidden_lever": "any change to the hard-gate threshold, formula, or denominator",
+
+  "gate_slot_declared_before_run": {
+    "formula": "repetition_ratio = 1.0 - (distinct_count / total_submissions)",
+    "formula_source": "byte-identical to parent PROTOCOL.json / run_source_monitoring_repetition_attack_v1.py",
+    "total_submissions": 10,
+    "threshold_repetition_ratio_min": 0.5,
+    "threshold_source": "parent PROTOCOL.json hard_gate.repetition_ratio_min (unchanged)",
+    "distinct_count_slot": "distinct_canonical",
+    "slot_justification": "distinct_canonical is the same slot the v1 normalizer filled; swapping the normalizer under a fixed slot keeps the comparison apples-to-apples. distinct_roots is reported as a secondary diagnostic only and MUST NOT feed the gate."
+  },
+
+  "arms": {
+    "v1_baseline": "lower().replace('?v=','').replace('doi:','').replace('arxiv:','') then sha256 - transcribed verbatim from the frozen parent harness, re-executed in-process so the before/after delta is attributable to the normalizer alone",
+    "v2_repair": "rakl.source_identity.resolve_source_identities - scheme-aware canonicalization"
+  },
+
+  "controls_asserted_before_attack_result": [
+    {
+      "id": "C1_no_false_merge_benign",
+      "corpus": "benign_distinct",
+      "expectation": "8 genuinely distinct sources stay 8 distinct canonical identities under v2"
+    },
+    {
+      "id": "C2_near_miss_pairs_stay_separate",
+      "corpus": "near_miss_pairs",
+      "expectation": "each planted near-miss pair (adjacent DOI, same-author arXiv pair, identity-bearing URL query, DOI supplement suffix, v1-collision pair) resolves to 2 distinct canonical identities under v2"
+    },
+    {
+      "id": "C3_arxiv_versions_distinct_but_share_root",
+      "corpus": "arxiv_version_pair",
+      "expectation": "arXiv v1 and v2 of one work are 2 distinct canonical identities and 1 lineage root"
+    },
+    {
+      "id": "C4_baseline_over_merge_exists",
+      "corpus": "near_miss_pairs",
+      "expectation": "the v1 baseline over-merges at least one near-miss pair, proving the control can fail and is not a no-op"
+    }
+  ],
+
+  "attack_corpus_source": "verbatim submission_details[].evidence_id from the frozen parent RESULTS.json (10 entries, order preserved)",
+
+  "cross_venue_boundary": "arXiv:1234.5678v1 is asserted by a harness comment to be the same work as doi:10.1038/s41586-019-1234-5. Nothing in either identifier supports that. The v2 arm therefore reports the attack result WITHOUT any declared DOI<->arXiv record as the primary result, and reports the with-record variant separately as a diagnostic.",
+
+  "decision_terminals": {
+    "pass": "ATTACK_DETECTED_CONTROLS_PASSING",
+    "residual": "ATTACK_STILL_SUCCEEDS",
+    "over_merge": "NORMALIZATION_UNSAFE_OVER_MERGES"
+  },
+  "no_optional_stopping": true,
+  "grants_scientific_authority": false
+}
