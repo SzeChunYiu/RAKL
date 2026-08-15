@@ -1,0 +1,53 @@
+{
+  "schema_version": "rakl-question-level-instrument-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "grants_scientific_authority": false,
+  "grants_method_promotion_authority": false,
+  "question": "For each negative on the frontier, can a QUESTION-level cause be excluded, or does the record leave one open?",
+  "why_this_is_needed": "research/self_rakl_recursive_question_audit_v1/CORE.md returns CANNOT_CHECK__SOURCE_VOCABULARY_CANNOT_EXPRESS_THE_COORDINATE for the QUESTION coordinate: the frontier attributes execution-stage failure and its vocabulary has no question-level category, so a question-level cause could not have been recorded even if present. The audit's programme-level RUN_DISCRIMINATOR asks for an instrument whose vocabulary CAN express that coordinate. This is the smallest such instrument, covering one Q subtype rather than claiming the whole coordinate.",
+  "scope": {
+    "covers": "Q_REGIME_CONFLATION only — the closure packet's Q cause reads 'the active scientific question is malformed, over-demanding, or conflates information regimes'. This instrument addresses the third clause and no other.",
+    "does_not_cover": [
+      "malformed questions that declare their regime correctly",
+      "over-demanding questions whose information assumptions are explicit and honest",
+      "any judgement about whether the registered question was the right question to ask"
+    ],
+    "consequence": "A record scored REGIME_DECLARED has one Q subtype excluded, not the QUESTION coordinate cleared."
+  },
+  "instrument": {
+    "name": "regime-declaration probe",
+    "logic": "The observation contract merged in #726 makes a question's information assumptions a first-class object: acquisition regime, licensed input sources, permitted normalizers, external-knowledge policy. A design that never declared these could not have detected that its question conflated regimes, so a regime-conflation cause cannot be excluded for it. A design that declared them has that subtype excluded by construction.",
+    "unit": "one frontier record",
+    "source": "research/negative_frontier_v1/INVENTORY.json, fields receipt_path and supporting_receipts",
+    "reads": "the record's pre-execution design artifacts only",
+    "never_reads": "the record's terminal, what_happened, one_stage_attribution or core_lever fields",
+    "markers": {
+      "regime": "acquisition regime or information regime named (source-grounded / semantic / external / world-knowledge / benchmark-reproduction)",
+      "sources": "the licensed input fields or columns enumerated",
+      "normalizer": "semantic normalization explicitly permitted or forbidden",
+      "external": "external or world knowledge explicitly permitted or forbidden"
+    }
+  },
+  "frozen_verdicts": {
+    "REGIME_DECLARED": "the design names its regime AND its licensed sources. Regime conflation is excluded for this record.",
+    "REGIME_PARTIAL": "some but not all markers present. Conflation is not excluded, and the specific missing marker is reported.",
+    "Q_REGIME_CONFLATION_NOT_EXCLUDED": "no marker present in any design artifact. A question-level regime cause remains open for this record.",
+    "CANNOT_CHECK__NO_DESIGN_ARTIFACT": "the record lists no pre-execution artifact, or none is on disk. Not scored as either exclusion or non-exclusion."
+  },
+  "non_circularity": "No outcome field is read. The probe cannot be circular with the negatives it is scoring, because it never sees how any of them closed.",
+  "construct_independence_declaration": {
+    "gate": "src/rakl/construct_independence.py",
+    "CHANNEL_SEPARATION": "SATISFIED — only pre-execution design artifacts are read; the terminal and attribution fields are excluded by path, not by convention",
+    "AUTHOR_SEPARATION": "PARTIAL — the design artifacts were authored by earlier sessions of this programme, not by an independent party. Declared as partial rather than satisfied.",
+    "GOLD_INDEPENDENCE": "NOT_APPLICABLE — this is a census-type measurement with no gold and no scored prediction",
+    "PERMUTATION_NULL": "NOT_APPLICABLE — there is no statistic to shuffle labels against",
+    "gate_scope_note": "Two obligations are not applicable, so the merged gate would return CANNOT_CHECK for this instrument. That is a scope limit of the gate rather than a defect in this probe: the gate was specified for scored comparisons against gold, not for censuses. Recorded here rather than worked around."
+  },
+  "falsifier": "If every record scores REGIME_DECLARED, the instrument is vacuous — it would mean the vocabulary gap the audit found does not exist at the design layer, and the CANNOT_CHECK should be attributed elsewhere. If every record scores NOT_EXCLUDED, the probe is equally uninformative: a marker set that nothing satisfies measures the marker set, not the designs.",
+  "non_claims": [
+    "A NOT_EXCLUDED verdict is not evidence that the question WAS malformed. It records that the design cannot rule the cause out.",
+    "This does not retract, promote or reinterpret any frontier terminal.",
+    "Excluding one Q subtype does not clear the QUESTION coordinate; the audit's CANNOT_CHECK stands for every subtype this instrument does not cover.",
+    "Grants no scientific or method-promotion authority."
+  ]
+}
