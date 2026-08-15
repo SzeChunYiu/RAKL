@@ -51,7 +51,7 @@ from .structure_space import (
     solve_problem,
     unmatched_roles,
 )
-from .support_solver import SolveReport
+from .support_solver import Outcome, SolveReport
 
 
 class FiberState(str, Enum):
@@ -139,6 +139,32 @@ AtomDecomposer = Callable[[str], ProblemStructure | None]
 
 #: Propose a bridging structure for an exhausted fiber, or None to decline.
 InventionOperator = Callable[[AtomFiber], InventionCandidate | None]
+
+
+def _atom_is_disconnected(space: StructureSpace, problem: ProblemStructure, atom: str, start: str) -> bool:
+    """True when ``atom`` is covered but no licensed edge reaches it.
+
+    Coverage is not reachability. A structure can supply a role without any
+    edge into that role from anything else on the path, and the fibre loop's
+    coverage predicate cannot see the difference. This looks at edges.
+    """
+
+    if atom == start:
+        return False
+    licensed_ids = {
+        m.structure_id for m in match(space, problem) if m.verdict is MatchVerdict.LICENSED
+    }
+    for reduced in space.structures:
+        if reduced.structure.structure_id not in licensed_ids:
+            continue
+        for edge in reduced.structure.edges:
+            if edge.target == atom:
+                return False
+    return True
+
+
+def prob_qoi_for_route(problem: ProblemStructure, atom: str) -> str:
+    return f"{problem.qoi} [connect {atom}]"
 
 
 def _atom_is_supplied(space: StructureSpace, problem: ProblemStructure, atom: str) -> bool:
@@ -305,6 +331,58 @@ def solve_recursive(
 
     for atom in sorted(unmatched_roles(space, problem)):
         close_atom(atom, problem, None, 0)
+
+    # Phase 2 — reachability. Coverage says every required role exists somewhere
+    # in the space; it does not say the pieces connect. If the goal is covered
+    # but no route reaches it, open a fibre for each required atom that has no
+    # inbound licensed edge and research *that*. These fibres are researched
+    # exactly like coverage fibres, but they exist because of a missing edge, so
+    # the researcher is asked even when the role itself is already covered.
+    #
+    # This is the phase a fully-matched-yet-unreachable search was missing: all
+    # five atoms found by live git query, every fibre MATCHED, outcome
+    # UNREACHABLE_IN_PRINCIPLE, because one atom's researcher never ran.
+    interim = solve_problem(space, problem, start=start, goal=goal)
+    if interim.outcome is not Outcome.REACHED and not unmatched_roles(space, problem):
+        disconnected = sorted(
+            a for a in problem.required_roles
+            if _atom_is_disconnected(space, problem, a, start)
+        )
+        for atom in disconnected:
+            emit("ROUTE_FIBER", atom=atom, depth=0,
+                 detail="covered but no licensed edge reaches it; researching connectivity")
+            counter += 1
+            fiber = AtomFiber(
+                fiber_id=f"R{counter}",
+                atom=atom,
+                qoi=prob_qoi_for_route(problem, atom),
+                context="reachability",
+                residual="role is covered but no licensed edge reaches it",
+                parent=None,
+                depth=0,
+            )
+            fibers.append(fiber)
+            while len(fiber.growth_rounds) < max_rounds_per_fiber:
+                if not _atom_is_disconnected(space, problem, atom, start):
+                    fiber.state = FiberState.MATCHED
+                    emit("FIBER_MATCHED", fiber_id=fiber.fiber_id, atom=atom, depth=0,
+                         state="MATCHED", detail="inbound edge now present")
+                    break
+                if fiber.research_saturated:
+                    emit("RESEARCH_FLAT", fiber_id=fiber.fiber_id, atom=atom, depth=0,
+                         round_index=len(fiber.growth_rounds),
+                         detail="no growth across the saturation window")
+                    break
+                batch = researcher(fiber)
+                rounds_spent += 1
+                growth = sum(space.accumulate(r) for r in batch)
+                fiber.growth_rounds.append(growth)
+                emit("RESEARCH_ROUND", fiber_id=fiber.fiber_id, atom=atom, depth=0,
+                     round_index=len(fiber.growth_rounds), growth=growth,
+                     detail=f"{len(batch)} structure(s) returned")
+            if fiber.state is not FiberState.MATCHED:
+                fiber.state = FiberState.EXHAUSTED
+                fiber.failed_attempts.append("no licensed edge into this atom was found")
 
     report = solve_problem(space, problem, start=start, goal=goal)
     return RecursiveSolveReport(

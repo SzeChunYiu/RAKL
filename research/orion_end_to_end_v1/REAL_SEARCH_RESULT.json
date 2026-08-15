@@ -1,0 +1,144 @@
+{
+  "control": {
+    "fibers": {
+      "cluster_research": "EXHAUSTED",
+      "frontier_source": "EXHAUSTED",
+      "gate_module": "EXHAUSTED",
+      "gate_tests": "EXHAUSTED",
+      "merged_by": "EXHAUSTED"
+    },
+    "findings": [
+      {
+        "atom": "cluster_research",
+        "cmd": "git grep -il 'construct dependence' cf508565 -- research",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "cluster_research",
+        "cmd": "git grep -il 'construct dependence' cf508565 -- research",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "frontier_source",
+        "cmd": "git grep -l negative_frontier_v1 cf508565 -- research/self_rakl_recursive_question_audit_v1",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "frontier_source",
+        "cmd": "git grep -l negative_frontier_v1 cf508565 -- research/self_rakl_recursive_question_audit_v1",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "gate_module",
+        "cmd": "git ls-tree cf508565 src/rakl/construct_independence.py",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "gate_module",
+        "cmd": "git ls-tree cf508565 src/rakl/construct_independence.py",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "gate_tests",
+        "cmd": "git grep -l construct_independence cf508565 -- tests",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "gate_tests",
+        "cmd": "git grep -l construct_independence cf508565 -- tests",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "merged_by",
+        "cmd": "git log --oneline cf508565 -S'class ConstructObligation' -- src/rakl/construct_independence.py",
+        "found": false,
+        "output": ""
+      },
+      {
+        "atom": "merged_by",
+        "cmd": "git log --oneline cf508565 -S'class ConstructObligation' -- src/rakl/construct_independence.py",
+        "found": false,
+        "output": ""
+      }
+    ],
+    "label": "CONTROL: same search against cf508565, before the gate existed",
+    "outcome": "UNREACHABLE_IN_PRINCIPLE",
+    "ref": "cf508565",
+    "research_rounds": 10,
+    "route": null
+  },
+  "corpus": "this repository, queried live with git ls-tree / git grep / git log -S",
+  "grants_scientific_authority": false,
+  "live": {
+    "fibers": {
+      "cluster_research": "MATCHED",
+      "frontier_source": "MATCHED",
+      "gate_module": "MATCHED",
+      "gate_tests": "MATCHED",
+      "merged_by": "MATCHED"
+    },
+    "findings": [
+      {
+        "atom": "cluster_research",
+        "cmd": "git grep -il 'construct dependence' origin/main -- research",
+        "found": true,
+        "output": "origin/main:research/construct_independence_gate_v1/run_validation.py\norigin/main:research/self_rakl_failure_pattern_v1/CORE.md\norigin/main:research/self_rakl_failure_pattern_v1/RESULT.json\norigin/main:research/self_rakl_failure_pattern_v1/run_failure_pattern.py\norigin/main:research/self_rakl_recursive_question_audit_v1/NEG_CLUSTER_CONSTRUCT_DEPENDENCE.md"
+      },
+      {
+        "atom": "frontier_source",
+        "cmd": "git grep -l negative_frontier_v1 origin/main -- research/self_rakl_recursive_question_audit_v1",
+        "found": true,
+        "output": "origin/main:research/self_rakl_recursive_question_audit_v1/AUDIT_RESULT.json\norigin/main:research/self_rakl_recursive_question_audit_v1/CONSTRUCT_INDEPENDENCE_CENSUS.json\norigin/main:research/self_rakl_recursive_question_audit_v1/CORE.md\norigin/main:research/self_rakl_recursive_question_audit_v1/run_self_audit.py"
+      },
+      {
+        "atom": "gate_module",
+        "cmd": "git ls-tree origin/main src/rakl/construct_independence.py",
+        "found": true,
+        "output": "src/rakl/construct_independence.py"
+      },
+      {
+        "atom": "merged_by",
+        "cmd": "git log --oneline origin/main -S'class ConstructObligation' -- src/rakl/construct_independence.py",
+        "found": true,
+        "output": "d0e4ac3 feat(construct-independence): the third admissibility gate \u2014 and it misses the defect this session just found (#731)"
+      },
+      {
+        "atom": "gate_tests",
+        "cmd": "git grep -l construct_independence origin/main -- tests",
+        "found": true,
+        "output": "origin/main:tests/test_construct_independence.py\norigin/main:tests/test_research_session.py"
+      }
+    ],
+    "label": "LIVE: search origin/main with git",
+    "outcome": "REACHED",
+    "ref": "origin/main",
+    "research_rounds": 5,
+    "route": [
+      "start",
+      "gate_module",
+      "gate_tests",
+      "cluster_research",
+      "frontier_source",
+      "merged_by"
+    ]
+  },
+  "mechanic_finding": {
+    "consequence": "the fibre loop can declare success on every atom while the composed structure has no route. This is not a bug in solve_problem, which is correct; it is a mismatch between the predicate the fibre loop closes on and the predicate the verdict needs.",
+    "id": "COVERAGE_IS_NOT_REACHABILITY",
+    "not_fixed_in_the_solver": "changing _atom_is_supplied changes frozen behaviour; recorded for a governed change",
+    "what": "_atom_is_supplied checks whether some licensed structure covers the role. The final verdict from solve_problem requires a connected route. A role can be covered by a structure not connected to the path, so a fibre closes MATCHED without its inbound edge ever being researched. First attempt: all five fibres MATCHED, outcome UNREACHABLE_IN_PRINCIPLE, because gate_tests was 'already supplied' as a role and its researcher never ran.",
+    "where": "src/rakl/recursive_solver.py::_atom_is_supplied",
+    "worked_around_here": "the researcher supplies the inbound edge with every finding"
+  },
+  "question": "can the solver, with a researcher that actually searches, establish an evidenced provenance route?",
+  "schema_version": "rakl-orion-real-search-v1",
+  "status": "REAL_SEARCH__RESEARCHER_DID_NOT_KNOW_THE_ANSWERS"
+}
