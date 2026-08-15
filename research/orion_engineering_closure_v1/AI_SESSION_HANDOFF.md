@@ -34,7 +34,7 @@ tests/test_engineering_store.py
 tests/test_engineering_schemas.py
 ```
 
-Local isolated result when packet was created: **14 passed**. The bundle also contains the complete RAKL-style architecture, gap ledger, hostile test matrix, migration plan, API/Observatory contract, parent atlas, repo-relative overlay, and unified additions-only git patch.
+Local isolated result when the final packet was created: **16 passed**. The reference layer includes backend-neutral `BlobStore` / `EngineeringStateRepository` protocols, real two-writer concurrency coverage, persisted `RECOVERY_REQUIRED` idempotency coverage, and a PostgreSQL source-of-truth schema draft. The bundle also contains the complete RAKL-style architecture, E1-E20 gap ledger, 30-case hostile test matrix, migration plan, API/Observatory contract, parent atlas, repo-relative overlay, and unified additions-only git patch.
 
 Do not merge until the full repository suite and protected workflow gates are green.
 
