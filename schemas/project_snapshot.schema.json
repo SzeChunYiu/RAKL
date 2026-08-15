@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/project_snapshot.schema.json",
+  "title": "ORION ProjectSnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "sequence",
+    "previous_snapshot_id",
+    "evidence_cutoff",
+    "semantic_state_revision",
+    "metric_ledger_head",
+    "episode_store_head",
+    "saturation_basis_ids",
+    "authority_projection_revision",
+    "controller_epoch_id",
+    "created_at_utc",
+    "snapshot_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "orion-engineering-state-v2"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "previous_snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_cutoff": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_state_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_ledger_head": {
+      "type": "string",
+      "minLength": 1
+    },
+    "episode_store_head": {
+      "type": "string",
+      "minLength": 1
+    },
+    "saturation_basis_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority_projection_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "controller_epoch_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^snapshot:[0-9a-f]{64}$"
+    }
+  }
+}

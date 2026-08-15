@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/engineering_support_profile.schema.json",
+  "title": "ORION EngineeringSupportProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile_id",
+    "mode",
+    "max_concurrent_workers",
+    "requires_shared_blob_store",
+    "requires_serializable_metadata",
+    "requires_durable_workflow_history",
+    "requires_point_in_time_recovery",
+    "requires_authz",
+    "requires_build_attestation",
+    "external_effect_classes"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "SINGLE_PROCESS",
+        "MULTI_PROCESS_SINGLE_HOST",
+        "MULTI_HOST"
+      ]
+    },
+    "max_concurrent_workers": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "requires_shared_blob_store": {
+      "type": "boolean"
+    },
+    "requires_serializable_metadata": {
+      "type": "boolean"
+    },
+    "requires_durable_workflow_history": {
+      "type": "boolean"
+    },
+    "requires_point_in_time_recovery": {
+      "type": "boolean"
+    },
+    "requires_authz": {
+      "type": "boolean"
+    },
+    "requires_build_attestation": {
+      "type": "boolean"
+    },
+    "external_effect_classes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

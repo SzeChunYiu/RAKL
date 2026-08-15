@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/runtime_artifact_identity.schema.json",
+  "title": "ORION RuntimeArtifactIdentity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_name",
+    "artifact_sha256",
+    "source_revision",
+    "builder_id",
+    "build_type",
+    "provenance_id",
+    "image_digest",
+    "environment_manifest_digest",
+    "identity_id"
+  ],
+  "properties": {
+    "artifact_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "builder_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "image_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "environment_manifest_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "identity_id": {
+      "type": "string",
+      "pattern": "^runtime-artifact:[0-9a-f]{64}$"
+    }
+  }
+}

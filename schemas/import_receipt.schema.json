@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SzeChunYiu/RAKL/schemas/import_receipt.schema.json",
+  "title": "ORION ImportReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "import_id",
+    "project_id",
+    "source_store_kind",
+    "source_store_identity",
+    "source_head_hash",
+    "target_backend_identity",
+    "imported_object_ids",
+    "parity_digest",
+    "created_at_utc",
+    "receipt_id"
+  ],
+  "properties": {
+    "import_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_store_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_store_identity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_head_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_backend_identity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "imported_object_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "parity_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^import-receipt:[0-9a-f]{64}$"
+    }
+  }
+}

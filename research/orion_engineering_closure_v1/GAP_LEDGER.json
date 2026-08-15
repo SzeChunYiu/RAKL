@@ -1,0 +1,37 @@
+{
+  "ledger_version": "orion-engineering-gap-ledger-v1",
+  "baseline_commit": "d0e4ac3109d55ff10a0c32168f369bc57fbf39cd",
+  "terminal_vocabulary": [
+    "ESTABLISHED",
+    "IMPLEMENTED_REFERENCE",
+    "IMPLEMENTED_FRAGMENTED",
+    "OPEN",
+    "ABSORBED_STRONGER_PARENT",
+    "NEGATIVE",
+    "REGIME_LIMITED",
+    "CANNOT_CHECK_RESOURCE_BOUND",
+    "CANNOT_CHECK_EXTERNAL_TRUST_ROOT"
+  ],
+  "fibres": [
+    {"id":"E1","name":"canonical durable state model","status":"IMPLEMENTED_REFERENCE","patch_surface":"engineering_state.py","depends_on":[],"falsifier":"same logical state can receive incompatible snapshot identities or snapshot tampering goes undetected","next":"integrate heads from existing RAKL state planes"},
+    {"id":"E2","name":"raw evidence/object persistence","status":"IMPLEMENTED_FRAGMENTED","depends_on":["E1"],"falsifier":"blob corruption/rebinding survives verified read","next":"define BlobStore adapter around current local CAS and production object backend"},
+    {"id":"E3","name":"semantic Atlas/lattice persistence","status":"OPEN","depends_on":["E1","E2"],"falsifier":"restart loses atoms/relations/charts or a relation can reference a missing atom","next":"transactional semantic repository + immutable versions"},
+    {"id":"E4","name":"metric/decision/residual/saturation persistence","status":"IMPLEMENTED_FRAGMENTED","depends_on":["E1"],"falsifier":"resumed decision cannot reconstruct exact metric/saturation basis","next":"persist certificates/receipts and bind heads into ProjectSnapshot"},
+    {"id":"E5","name":"transactional transitions/concurrency","status":"IMPLEMENTED_REFERENCE","patch_surface":"engineering_store.py","depends_on":["E1"],"falsifier":"two stale writers silently both commit or idempotency key changes meaning","next":"PostgreSQL serializable adapter; retry whole transition"},
+    {"id":"E6","name":"durable workflow orchestration","status":"IMPLEMENTED_FRAGMENTED","depends_on":["E1","E5"],"falsifier":"worker death loses logical progress or duplicates an unprotected side effect without recovery state","next":"ResearchWorkflowEngine + durable-history production adapter"},
+    {"id":"E7","name":"target-conditioned query/index layer","status":"OPEN","depends_on":["E3"],"falsifier":"index loss destroys canonical knowledge or an index silently changes authority","next":"rebuildable exact/full-text/graph/vector projections"},
+    {"id":"E8","name":"canonical EpistemicStatus service","status":"IMPLEMENTED_REFERENCE","patch_surface":"engineering_state.py","depends_on":["E1","E4"],"falsifier":"UI and controller can disagree on status for same snapshot","next":"runtime service adapter over real saturation/residual/solver state"},
+    {"id":"E9","name":"controller-saturation-solver wiring","status":"OPEN","depends_on":["E3","E4","E8"],"falsifier":"solver runs on an unlicensed/stale knowledge state or search continues after valid bounded saturation without reason","next":"wire assess_knowledge_saturation + hard gates + snapshot-bound solver compilation"},
+    {"id":"E10","name":"API/CLI/service boundary","status":"OPEN","depends_on":["E5","E8"],"falsifier":"mutating request has no idempotency/snapshot contract","next":"versioned service API with transition receipts"},
+    {"id":"E11","name":"observatory/dashboard read model","status":"OPEN","depends_on":["E8","E10"],"falsifier":"UI recomputes its own epistemic score or cannot drill to exact receipts/evidence","next":"read-only first observatory"},
+    {"id":"E12","name":"distributed telemetry correlation","status":"OPEN","depends_on":["E6","E10"],"falsifier":"a transition cannot be correlated across worker/database/blob/runtime boundaries","next":"OpenTelemetry-compatible operational adapter"},
+    {"id":"E13","name":"auth/access/secrets/security","status":"OPEN","depends_on":["E10"],"falsifier":"secret material enters canonical receipt/log or infra role changes scientific authority","next":"explicit authn/authz/secret-manager/service-identity contracts"},
+    {"id":"E14","name":"schema/data migrations","status":"OPEN","depends_on":["E1","E3","E4","E5"],"falsifier":"migration changes canonical identity/history without import/supersession receipt","next":"versioned migrations + dual-write + shadow-read parity"},
+    {"id":"E15","name":"backup/restore/disaster recovery","status":"OPEN","depends_on":["E2","E3","E4","E14"],"falsifier":"restore cannot reproduce frozen snapshot/head hashes","next":"backup/PITR/restore drills and receipts"},
+    {"id":"E16","name":"deployment/configuration/environment identity","status":"OPEN","depends_on":["E6","E13"],"falsifier":"two semantically different deployments share one runtime identity","next":"deployment release identity and environment manifest"},
+    {"id":"E17","name":"capacity/performance/load behavior","status":"OPEN","depends_on":["E3","E6","E7","E12"],"falsifier":"load causes unbounded queue/index/context growth or violates registered latency/resource envelope","next":"SLO/capacity benchmark"},
+    {"id":"E18","name":"hostile reliability/chaos/replay assurance","status":"OPEN","depends_on":["E5","E6","E14","E15"],"falsifier":"any planted partial failure yields silent partial success","next":"execute HOSTILE_TEST_MATRIX on release candidate"},
+    {"id":"E19","name":"software build/release provenance","status":"OPEN","depends_on":["E16"],"falsifier":"runtime cannot bind executable artifact back to build/source identity","next":"SLSA-class provenance/attestation verification"},
+    {"id":"E20","name":"production runbook/operator diagnostics","status":"OPEN","depends_on":["E12","E15","E17"],"falsifier":"operator cannot distinguish retry/recovery/integrity/capacity failures from generic error","next":"doctor/status/runbook procedures with typed terminals"}
+  ]
+}

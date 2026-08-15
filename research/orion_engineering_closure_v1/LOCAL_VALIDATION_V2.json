@@ -1,0 +1,33 @@
+{
+  "date": "2026-08-15",
+  "environment": "ChatGPT local container; additive overlay tested independently because direct git clone was unavailable",
+  "full_engineering_suite": {
+    "command": "PYTHONPATH=src pytest -q tests/test_engineering_*.py",
+    "failed": 0,
+    "passed": 82,
+    "warnings": 0
+  },
+  "limitations": [
+    "full incumbent repository suite/CI not executable in the local shell because the complete repo could not be cloned there",
+    "production PostgreSQL/object-store/workflow/OTel/auth/PITR/load infrastructure not executed locally",
+    "same-context hostile testing is not independent release assurance"
+  ],
+  "production_ready": false,
+  "repo_reaudit_cutoff": "19dc8d022e5c609d30d075a754f52f58242ce917",
+  "research_saturation": "BOUNDED_SATURATED",
+  "stress_routes": {
+    "clean_restore_reconstruct_postfix": {
+      "repetitions": 2,
+      "result": "FLAT_PASS"
+    },
+    "combined_hostile_static_postfix": {
+      "passed": 39,
+      "result": "FLAT_PASS"
+    },
+    "concurrency_replay_postfix": {
+      "repetitions": 4,
+      "result": "FLAT_PASS"
+    }
+  },
+  "validation_version": "orion-engineering-local-validation-v2"
+}

@@ -1,0 +1,127 @@
+{
+  "date": "2026-08-15",
+  "findings": [
+    {
+      "class": "CANONICAL_STATUS_COORDINATE_AMBIGUITY",
+      "finding": "same snapshot+target+fiber admitted conflicting EpistemicStatus",
+      "id": "F01",
+      "repair": "unique coordinate + fail-closed recomputation",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "HISTORICAL_FIBER_FUTURE_LEAK",
+      "finding": "semantic revision at old sequence included fibers created later",
+      "id": "F02",
+      "repair": "fiber creation sequence and historical filtering",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "WORKFLOW_CLEAN_TAIL_TRUNCATION_UNSEALED",
+      "finding": "internally valid shortened workflow history could verify without expected head",
+      "id": "F03",
+      "repair": "expected externally sealed workflow head verification",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "CROSS_PROJECT_SNAPSHOT_REQUEST",
+      "finding": "transition for project A could name project B snapshot and degrade to retry",
+      "id": "F04",
+      "repair": "hard project/snapshot binding integrity check",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "BACKUP_SYMLINK_ESCAPE",
+      "finding": "backup traversal could ingest bytes outside requested tree through symlink",
+      "id": "F05",
+      "repair": "reject symlink source/tree entries",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "WEAK_RUNTIME_IMAGE_DIGEST",
+      "finding": "image identity accepted malformed sha256-prefixed string",
+      "id": "F06",
+      "repair": "strict 64-hex digest validation",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "SCHEMA_CODE_VALIDATION_DRIFT",
+      "finding": "several digest/timestamp fields were schema-strong but code-weak",
+      "id": "F07",
+      "repair": "Python validation aligned with JSON schemas",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "SEMANTIC_SNAPSHOT_IDENTITY_CYCLE",
+      "finding": "semantic version ids hashed after-snapshot id while snapshot hashed semantic revision",
+      "id": "F08",
+      "repair": "previewable content-identified SemanticMutationBatch; snapshot binding metadata excluded from semantic content hash",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "SEMANTIC_PROJECT_HEAD_SPLIT_TRANSACTION",
+      "finding": "semantic state and project head could commit independently",
+      "id": "F09",
+      "repair": "single SQLite transaction for semantic batch + snapshot + transition receipt",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "IDEMPOTENCY_EFFECT_NOT_BOUND",
+      "finding": "request hash did not bind intended mutation payload",
+      "id": "F10",
+      "repair": "required action_payload_hash carried into request/receipt",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "LIVE_SQLITE_FILE_COPY_WAL_LOSS",
+      "finding": "copying main SQLite file omitted committed WAL pages",
+      "id": "F11",
+      "repair": "SQLite online backup API + quick_check before archive",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "POSTGRES_CROSS_PROJECT_SEMANTIC_FK",
+      "finding": "production draft allowed semantic parent/atom/witness cross-project binding",
+      "id": "F12",
+      "repair": "project-scoped composite semantic keys/FKs",
+      "status": "FIXED_DESIGN"
+    },
+    {
+      "class": "POSTGRES_ATLAS_ENDPOINT_UNBOUND",
+      "finding": "Atlas transition versions lacked stable chart endpoint foreign keys",
+      "id": "F13",
+      "repair": "stable project-scoped chart/transition/obstruction identities and version tables",
+      "status": "FIXED_DESIGN"
+    },
+    {
+      "class": "SEMANTIC_FIBER_PREVIEW_COMMIT_ORDER_DIVERGENCE",
+      "finding": "preview accepted child-before-parent or cycles while immediate FK commit could fail",
+      "id": "F14",
+      "repair": "deterministic topological parent ordering + cycle rejection at preview",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "BACKUP_ARCHIVE_CLOSED_WORLD_AMBIGUITY",
+      "finding": "duplicate/unmanifested ZIP members could coexist with valid manifest",
+      "id": "F15",
+      "repair": "exact member set + duplicate-name rejection",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "CROSS_PLANE_SNAPSHOT_STRING_UNVERIFIED",
+      "finding": "integrated workflow/control records could bind nonexistent snapshot ids",
+      "id": "F16",
+      "repair": "when sharing project DB, workflow/control admit only stored snapshot identities",
+      "status": "FIXED_REFERENCE"
+    },
+    {
+      "class": "PURE_SEMANTIC_EFFECT_SMUGGLING",
+      "finding": "semantic action could change unrelated snapshot heads not bound by action payload",
+      "id": "F17",
+      "repair": "pure semantic/evidence transitions enforce non-target head invariants; composite changes require explicit payload",
+      "status": "FIXED_REFERENCE"
+    }
+  ],
+  "ledger_version": "orion-engineering-defect-ledger-v2",
+  "preservation_rule": "Findings are retained even after repair; repair status supersedes forward state only.",
+  "scope": "local reference/design hostile findings during V2 RAKL engineering closure"
+}

@@ -1,0 +1,111 @@
+{
+  "packet_version": "orion-engineering-closure-v1",
+  "frozen_at": "2026-08-15T14:35:00Z",
+  "repository": "SzeChunYiu/RAKL",
+  "baseline_commit": "d0e4ac3109d55ff10a0c32168f369bc57fbf39cd",
+  "programme_issue": 736,
+  "predecessor_audit": "research/orion_architecture_audit_v1/",
+  "predecessor_is_immutable": true,
+  "existing_primitives": [
+    {
+      "surface": "local_project_storage",
+      "paths": [
+        "src/rakl/project_runtime.py"
+      ],
+      "status": "IMPLEMENTED_LOCAL",
+      "properties": [
+        "atomic_file_write",
+        "sha256_payload_identity",
+        "immutable_record_id",
+        "integrity_doctor"
+      ]
+    },
+    {
+      "surface": "governed_execution",
+      "paths": [
+        "src/rakl/execution.py",
+        "docs/EXECUTION_RUNTIME.md"
+      ],
+      "status": "IMPLEMENTED_LOCAL",
+      "properties": [
+        "invocation_identity",
+        "local_lease",
+        "append_only_events",
+        "duplicate_safe_terminal_receipt",
+        "RECOVERY_REQUIRED"
+      ]
+    },
+    {
+      "surface": "durable_episode_memory",
+      "paths": [
+        "src/rakl/episode_store.py"
+      ],
+      "status": "IMPLEMENTED_REFERENCE_DURABLE",
+      "properties": [
+        "append_only_jsonl",
+        "hash_chain",
+        "typed_integrity_verdict",
+        "exact_rehydration"
+      ]
+    },
+    {
+      "surface": "controller_metric_resumption",
+      "paths": [
+        "src/rakl/runtime_resumption.py",
+        "src/rakl/evolution_trace.py"
+      ],
+      "status": "IMPLEMENTED_REFERENCE",
+      "properties": [
+        "sealed_epoch",
+        "metric_ledger",
+        "decision_receipt",
+        "episode_store_head_pointer"
+      ]
+    },
+    {
+      "surface": "epistemic_metrology_control",
+      "paths": [
+        "src/rakl/saturation_vector.py",
+        "src/rakl/research_machine_workflow.py",
+        "src/rakl/observability_adapters.py",
+        "src/rakl/meta_controller.py"
+      ],
+      "status": "IMPLEMENTED_FRAGMENTED",
+      "properties": [
+        "bounded_saturation",
+        "knowledge_decision",
+        "hard_gate_projection",
+        "metric_authority_separation"
+      ]
+    },
+    {
+      "surface": "semantic_and_solver_state",
+      "paths": [
+        "src/rakl/typed_lattice.py",
+        "src/rakl/atlas_gluing.py",
+        "src/rakl/structure_space.py",
+        "src/rakl/support_solver.py"
+      ],
+      "status": "IN_MEMORY_REFERENCE",
+      "properties": [
+        "typed_atoms",
+        "compatibility_witnesses",
+        "atlas_charts",
+        "compiled_support_structure",
+        "epistemic_cut"
+      ]
+    }
+  ],
+  "new_patch_nucleus": {
+    "paths": [
+      "src/rakl/engineering_state.py",
+      "src/rakl/engineering_store.py",
+      "schemas/project_snapshot.schema.json",
+      "schemas/epistemic_status.schema.json",
+      "schemas/state_transition_receipt.schema.json"
+    ],
+    "local_test_count": 16,
+    "local_test_status": "PASS",
+    "production_authority": false
+  }
+}
