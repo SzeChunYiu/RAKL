@@ -1,0 +1,36 @@
+{
+  "schema_version": "paper5-executor-independence-freeze-v1",
+  "status": "FROZEN_BEFORE_EXECUTION",
+  "authority": "CONFORMANCE_ONLY",
+  "question": "Does the mathematical promotion contract classify the same exact research artifact by its evidence receipts rather than by which proposer class produced it?",
+  "executors": ["SYMBOLIC_ENUMERATOR", "LLM_PROPOSER"],
+  "cases": [
+    {
+      "id": "P5-XI-01-SAME-VALID-ARTIFACT",
+      "world": "both executors emit the same exact statement/proof/novelty/value artifact; each has a reviewer distinct from its proposer identity",
+      "expected": "SAME_NEW_MATHEMATICS_CANDIDATE_STAGE"
+    },
+    {
+      "id": "P5-XI-02-SAME-BAD-STATEMENT-BINDING",
+      "world": "both executors emit a proof bound to a neighboring formal statement",
+      "expected": "SAME_BLOCKED_PROOF_ASSURANCE_STAGE"
+    },
+    {
+      "id": "P5-XI-03-SAME-REDISCOVERY",
+      "world": "both executors emit the same verified theorem with identified equivalent prior art",
+      "expected": "SAME_VERIFIED_REDISCOVERY_STAGE"
+    },
+    {
+      "id": "P5-XI-04-SELF-REVIEW-IS-NOT-EXECUTOR-INDEPENDENCE",
+      "world": "an executor reuses its own proposer identity as the nominal independent reviewer",
+      "expected": "BLOCK_SELF_REVIEW"
+    }
+  ],
+  "invariants": [
+    "executor class is not an authority coordinate",
+    "exact artifact/evidence identity, not proposer label, determines promotion stage",
+    "different executors may have different discovery performance; this test says nothing about equal search quality",
+    "a proposer cannot satisfy executor independence by reviewing itself",
+    "conformance grants no novelty or scientific authority"
+  ]
+}
