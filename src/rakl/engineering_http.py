@@ -238,6 +238,9 @@ class SpanExporter:
 class Telemetry:
     def __init__(self, exporter: SpanExporter | None = None) -> None:
         self.exporter = exporter or SpanExporter()
+        # H28: exporter failures are counted here, never raised. Zero is healthy.
+        self.export_failures: int = 0
+        self.last_export_error: str | None = None
 
     @staticmethod
     def new_trace_id() -> str:
@@ -263,10 +266,19 @@ class _SpanCtx:
         forbidden = [k for k in self.attrs if k.startswith("receipt.") and k != "receipt.id"]
         for k in forbidden:
             self.attrs.pop(k)
-        self.tel.exporter.export(Span(
+        span = Span(
             trace_id=self.trace_id, span_id=secrets.token_hex(8), name=self.name,
             start_ns=self.start, end_ns=time.time_ns(), attributes=self.attrs, status=self.status,
-        ))
+        )
+        # H28: a broken telemetry sink degrades observability; it must never take
+        # the scientific API down or lose a receipt. Count and record the failure
+        # so the doctor can surface it, and never let it propagate. Returning
+        # None (not True) means a real exception inside the span still raises.
+        try:
+            self.tel.exporter.export(span)
+        except Exception as export_error:  # noqa: BLE001 — sink failures are contained by design
+            self.tel.export_failures += 1
+            self.tel.last_export_error = f"{type(export_error).__name__}: {export_error}"
 
 
 # --- E10: the mutation contract --------------------------------------------

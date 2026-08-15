@@ -255,3 +255,41 @@ def test_operational_spans_never_carry_receipt_content(world) -> None:
     assert span.attributes.get("receipt.id") == "r1"
     assert "receipt.value" not in span.attributes
     assert "receipt.verdict" not in span.attributes
+
+
+
+def test_a_raising_exporter_never_takes_the_api_down_or_loses_a_receipt(world) -> None:
+    """H28. A telemetry sink that raises must degrade observability, not the API.
+
+    Before the fix, _SpanCtx.__exit__ let exporter.export raise through the
+    context manager; handle()'s try/except sat inside the span, so a mutation's
+    state change was applied while no response and no receipt reached the
+    caller. Now the failure is counted on Telemetry and the request completes.
+    """
+
+    class Broken(SpanExporter):
+        def export(self, span):  # noqa: D401
+            raise ConnectionError("otlp collector unreachable")
+
+    svc = world["svc"]
+    svc.tel.exporter = Broken()
+    # a read completes
+    status, body, _ = call(world["base"], "GET", "/v1/projects/p1/head", token=world["writer"])
+    assert status == 200 and "snapshot_id" in body
+    # a mutation completes AND returns its receipt
+    status, receipt, _ = call(world["base"], "POST", "/v1/projects/p1/evidence", token=world["writer"],
+                              body=mutation({"h28": 1}, key="k-h28", expected=body["snapshot_id"]))
+    assert status == 200 and receipt["status"] == "COMMITTED"
+    # the failure is visible, not swallowed silently
+    assert svc.tel.export_failures >= 2
+    assert "otlp collector unreachable" in (svc.tel.last_export_error or "")
+
+
+def test_a_real_exception_inside_a_span_still_propagates() -> None:
+    """The H28 containment must not become a blanket swallow of real errors."""
+
+    tel = Telemetry(SpanExporter())
+    with pytest.raises(RuntimeError, match="genuine"):
+        with tel.span("x", trace_id="t", attributes={}):
+            raise RuntimeError("genuine failure inside the span")
+    assert tel.export_failures == 0

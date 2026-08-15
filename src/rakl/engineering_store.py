@@ -181,6 +181,15 @@ class SqliteEngineeringStateStore:
                     FOREIGN KEY(before_snapshot_id) REFERENCES snapshots(snapshot_id),
                     FOREIGN KEY(after_snapshot_id) REFERENCES snapshots(snapshot_id)
                 );
+                CREATE TABLE IF NOT EXISTS superseded_transitions(
+                    transition_id TEXT PRIMARY KEY,
+                    project_id TEXT NOT NULL,
+                    idempotency_key TEXT NOT NULL,
+                    request_hash TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    superseded_by_request_hash TEXT NOT NULL,
+                    payload_json TEXT NOT NULL
+                );
                 """
             )
 
@@ -337,6 +346,64 @@ class SqliteEngineeringStateStore:
             ).fetchone()
         return None if row is None else StateTransitionReceipt.from_dict(json.loads(row["payload_json"]))
 
+    def _resolve_idempotency_key(
+        self,
+        db: sqlite3.Connection,
+        request: StateTransitionRequest,
+    ) -> tuple[StateTransitionReceipt | None, int]:
+        """Apply the one rule for what an idempotency key binds.
+
+        Returns (replay_receipt, superseded_deferrals). If replay_receipt is not
+        None the caller returns it unchanged. Otherwise the key is free for this
+        request; superseded_deferrals counts how many RETRY_REQUIRED priors were
+        superseded under it (0 for a fresh key).
+
+        Only a TERMINAL receipt binds a key. RETRY_REQUIRED is a deferral: the
+        store told the caller to come back with a fresh before snapshot, and a
+        different request under the same key is the caller doing exactly that.
+        Before this rule, the deferral occupied the unique (project, key) slot
+        and its request_hash bound the stale before snapshot, so the retry the
+        deferral asked for was refused as a conflict and the key was dead after
+        one stale attempt -- measured at 0.317 same-key eventual success under
+        16 writers, against 0.875 with a fresh key per retry.
+        """
+
+        replay = db.execute(
+            "SELECT transition_id,request_hash,status,payload_json FROM transitions "
+            "WHERE project_id=? AND idempotency_key=?",
+            (request.project_id, request.idempotency_key),
+        ).fetchone()
+        if replay is None:
+            return None, 0
+        if replay["request_hash"] == request.request_hash:
+            # identical re-send: replay whatever it produced, terminal or not
+            return StateTransitionReceipt.from_dict(json.loads(replay["payload_json"])), 0
+        if replay["status"] != TransitionStatus.RETRY_REQUIRED.value:
+            raise IdempotencyConflict(
+                "idempotency key already bound to a different transition request"
+            )
+        prior = json.loads(replay["payload_json"])
+        prev = 0
+        for reason in prior.get("reasons", ()):
+            if isinstance(reason, str) and reason.startswith("superseded_deferrals:"):
+                try:
+                    prev = int(reason.split(":", 1)[1])
+                except ValueError:
+                    prev = 0
+        db.execute(
+            "INSERT OR REPLACE INTO superseded_transitions VALUES(?,?,?,?,?,?,?)",
+            (
+                replay["transition_id"], request.project_id, request.idempotency_key,
+                replay["request_hash"], replay["status"], request.request_hash,
+                replay["payload_json"],
+            ),
+        )
+        db.execute(
+            "DELETE FROM transitions WHERE project_id=? AND idempotency_key=?",
+            (request.project_id, request.idempotency_key),
+        )
+        return None, prev + 1
+
     def commit_transition(
         self,
         request: StateTransitionRequest,
@@ -360,16 +427,9 @@ class SqliteEngineeringStateStore:
         self._require_project_snapshot(request.project_id, request.before_snapshot_id)
 
         with self._transaction() as db:
-            replay = db.execute(
-                "SELECT request_hash,payload_json FROM transitions WHERE project_id=? AND idempotency_key=?",
-                (request.project_id, request.idempotency_key),
-            ).fetchone()
-            if replay is not None:
-                if replay["request_hash"] != request.request_hash:
-                    raise IdempotencyConflict(
-                        "idempotency key already bound to a different transition request"
-                    )
-                return StateTransitionReceipt.from_dict(json.loads(replay["payload_json"]))
+            replayed, superseded_count = self._resolve_idempotency_key(db, request)
+            if replayed is not None:
+                return replayed
 
             head = db.execute(
                 "SELECT snapshot_id,sequence FROM project_heads WHERE project_id=?",
@@ -394,7 +454,10 @@ class SqliteEngineeringStateStore:
                     metric_receipt_ids=(),
                     residual_ids=(),
                     status=TransitionStatus.RETRY_REQUIRED,
-                    reasons=("stale_before_snapshot_replan_on_current_head",),
+                    reasons=(
+                        ("stale_before_snapshot_replan_on_current_head",)
+                        + ((f"superseded_deferrals:{superseded_count}",) if superseded_count else ())
+                    ),
                     created_at_utc=created_at_utc,
                 )
                 db.execute(
@@ -495,16 +558,9 @@ class SqliteEngineeringStateStore:
             created_at_utc=created_at_utc,
         )
         with self._transaction() as db:
-            replay = db.execute(
-                "SELECT request_hash,payload_json FROM transitions WHERE project_id=? AND idempotency_key=?",
-                (request.project_id, request.idempotency_key),
-            ).fetchone()
-            if replay is not None:
-                if replay["request_hash"] != request.request_hash:
-                    raise IdempotencyConflict(
-                        "idempotency key already bound to a different transition request"
-                    )
-                return StateTransitionReceipt.from_dict(json.loads(replay["payload_json"]))
+            replayed, _ = self._resolve_idempotency_key(db, request)
+            if replayed is not None:
+                return replayed
             db.execute(
                 "INSERT INTO transitions VALUES(?,?,?,?,?,?,?,?)",
                 (

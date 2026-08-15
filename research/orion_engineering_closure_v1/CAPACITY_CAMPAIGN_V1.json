@@ -1,7 +1,7 @@
 {
   "budget_source": "rakl.engineering_capacity.ENGINEERING_SLO_ENVELOPES (imported, not declared here)",
   "budgets_frozen_before_execution": true,
-  "campaign_wall_seconds": 9.024997878819704,
+  "campaign_wall_seconds": 63.408658537082374,
   "configuration": {
     "activity_hold_s": 0.002,
     "budget_degrade_at_inflight": 3,
@@ -15,7 +15,6 @@
     "index_rebuild_interval_s": 0.02,
     "max_claim_retries": 12,
     "probe_sqlite_busy_timeout_s": 0.02,
-    "race_probe_window_sleep_s": 0.005,
     "same_key_race_threads": 16,
     "shipped_sqlite_busy_timeout_s": 5.0,
     "solver_chain_structures": 8,
@@ -31,35 +30,39 @@
   },
   "contention": {
     "commits_by_phase": {
-      "api::evidence": 640.0,
+      "api::evidence": 203.0,
+      "api::evidence-fresh-key": 560.0,
       "workflow::shipped-0": 2280.0,
       "workflow::shipped-1": 2280.0,
       "workflow::shipped-2": 2280.0
     },
-    "commits_total": 7480.0,
+    "commits_total": 7603.0,
     "conflicts_by_class": {
-      "held_by_live_worker": 76.0,
-      "snapshot_stale": 62.0
+      "held_by_live_worker": 141.0,
+      "idempotency_conflict": 437.0,
+      "snapshot_stale": 2176.0
     },
     "denominator_composition": "a committed transaction is any durable BEGIN IMMEDIATE that succeeded, which includes claims that committed a no-op because the activity was ALREADY_COMPLETED. Under this load most of the workflow denominator is such no-op claims, so these are retries per durable transaction, not retries per unit of work.",
     "retries_by_class": {
-      "snapshot_stale": 62.0
+      "snapshot_stale": 2096.0
     },
     "retries_by_phase": {
-      "api::evidence": 62.0
+      "api::evidence": 437.0,
+      "api::evidence-fresh-key": 1659.0
     },
     "retry_amplification_by_phase": {
-      "api::evidence": 0.096875,
+      "api::evidence": 2.1527093596059115,
+      "api::evidence-fresh-key": 2.9625,
       "workflow::shipped-0": 0.0,
       "workflow::shipped-1": 0.0,
       "workflow::shipped-2": 0.0
     },
     "retry_amplification_definition": "retries issued / transactions that committed, each phase against its own commits",
-    "retry_amplification_pooled": 0.008288770053475936,
+    "retry_amplification_pooled": 0.27568065237406286,
     "workflow_claim_outcomes_behind_the_denominator": {
       "acquired": 360,
-      "already_completed": 5324,
-      "held_by_live_worker": 76
+      "already_completed": 5259,
+      "held_by_live_worker": 141
     }
   },
   "declared_slo_envelopes": {
@@ -147,50 +150,55 @@
   },
   "defect_probes": [
     {
+      "detail": "exactly one fresh COMMITTED, the rest replayed the same receipt, one after snapshot, one transitions row",
       "distinct_after_snapshot_ids": [
-        "snap-1",
-        "snap-10",
-        "snap-11",
-        "snap-12",
-        "snap-13",
-        "snap-14",
-        "snap-15",
-        "snap-16",
-        "snap-2",
-        "snap-3",
-        "snap-4",
-        "snap-5",
-        "snap-6",
-        "snap-7",
-        "snap-8",
-        "snap-9"
+        "snapshot:733cfef4ff91ece8ca2d19e0987872c73e41838eaf38b312dd7d1e3965a07d75"
       ],
-      "duplicate_commits": 15,
-      "evidence_records": 16,
-      "expected_invariant": "one logical mutation advances the head exactly once",
-      "final_sequence": 16,
-      "fresh_commit_responses": 16,
+      "distinct_transition_ids": 1,
+      "duplicate_commits": 0,
+      "expected_invariant": "one logical mutation advances the head exactly once: one fresh COMMITTED receipt, N-1 replays of it, one after_snapshot_id, one transitions row",
+      "final_head_sequence": 1,
+      "fresh_commit_responses": 1,
       "history": [
         {
           "attempt": 1,
+          "duplicate_commits": 0,
           "note": "one handle() call completed in tens of microseconds against a 0.5ms switch interval, so the window was never entered; that result carried no power",
+          "service": "in-memory ProjectState + idempotency dict",
           "verdict": "NOT_OBSERVED_IN_THIS_RUN",
           "window_widened": "none"
         },
         {
           "attempt": 2,
           "duplicate_commits": 0,
-          "note": "all 16 threads read prior=None in _validate_mutation, but the second read in _apply_idempotent, the apply() and the map write are microseconds apart with no GIL yield between them; the first thread to wake wrote the map entry before any other thread re-read it. The window that matters is read->apply->write, not the validate path",
+          "note": "all 16 threads read prior=None in _validate_mutation, but the second read in _apply_idempotent, the apply() and the map write were microseconds apart with no GIL yield between them; the first thread to wake wrote the map entry before any other thread re-read it",
+          "service": "in-memory ProjectState + idempotency dict",
           "verdict": "NOT_OBSERVED_IN_THIS_RUN",
           "window_widened": "content_hash sleeps 5ms (validate path only)"
+        },
+        {
+          "attempt": 3,
+          "distinct_after_snapshot_ids": 16,
+          "duplicate_commits": 15,
+          "evidence_records": 16,
+          "final_sequence": 16,
+          "fresh_commit_responses": 16,
+          "note": "the idempotency check and the expected-snapshot check in _validate_mutation and the prior read in _apply_idempotent all ran outside the lock; only _advance was inside it and the map write came after. With the mutation held open for milliseconds all 16 threads passed both checks and all 16 committed: one logical mutation advanced the head sixteen times",
+          "service": "in-memory ProjectState + idempotency dict",
+          "verdict": "DEFECT_OBSERVED",
+          "window_widened": "content_hash sleeps 5ms AND service._lock acquire sleeps 5ms"
         }
       ],
-      "mutation_lock_acquisitions": 32,
-      "power_note": "with the mutation held open for milliseconds, every thread reads project.idempotency before any thread has written it; a NOT_OBSERVED here would be a real absence, not a timing artefact",
       "probe": "http_same_idempotency_key_race",
+      "replayed_responses": 15,
+      "responses_by_status": {
+        "COMMITTED": 16
+      },
+      "service": "rewired: SqliteAtomicEngineeringCoordinator; head CAS + idempotency check in one BEGIN IMMEDIATE transaction; no service lock; no in-memory state",
       "threads": 16,
-      "verdict": "DEFECT_OBSERVED",
-      "window_widened_by": "module-level content_hash patched to sleep 0.005s (entered 32 times across 16 threads) AND service._lock wrapped so acquire sleeps 0.005s before taking the real lock (32 acquisitions)"
+      "transitions_rows_for_project": 1,
+      "verdict": "FIXED_VERIFIED",
+      "window_widened": "not possible and not needed: there is no service lock to wrap; the 16 threads contend on the store transaction itself"
     },
     {
       "admit_trace": [
@@ -324,6 +332,57 @@
         }
       ],
       "verdict": "FIXED_VERIFIED"
+    },
+    {
+      "detail": "the RETRY_REQUIRED receipt is persisted under (project, idempotency_key), and the same-key retry from the fresh head derives a different action_payload_hash (the evidence batch binds sequence and base revision), so matches_prior() is false and every retry is IDEMPOTENCY_CONFLICT: the key is dead after one stale attempt, and the client cannot distinguish that from a genuinely foreign key",
+      "expected_invariant": "a RETRY_REQUIRED receipt is a request to retry; the same logical mutation under the same idempotency key, retried from the current head, commits",
+      "persisted_receipt_for_key_B": "RETRY_REQUIRED",
+      "probe": "http_stale_then_retry_same_key",
+      "same_key_retry_ever_committed": false,
+      "trace": [
+        {
+          "http": 200,
+          "reasons": [
+            "evidence_metadata_and_project_snapshot_committed_atomically"
+          ],
+          "replayed": false,
+          "status": "COMMITTED",
+          "step": "A commits from genesis"
+        },
+        {
+          "http": 409,
+          "reasons": [
+            "stale_before_snapshot_replan_on_current_head"
+          ],
+          "replayed": false,
+          "status": "RETRY_REQUIRED",
+          "step": "B built against genesis (now stale)"
+        },
+        {
+          "http": 409,
+          "reasons": [],
+          "replayed": null,
+          "status": "IDEMPOTENCY_CONFLICT",
+          "step": "B retries: same key, same payload, fresh head"
+        },
+        {
+          "http": 409,
+          "reasons": [],
+          "replayed": null,
+          "status": "IDEMPOTENCY_CONFLICT",
+          "step": "B retries again"
+        },
+        {
+          "http": 200,
+          "reasons": [
+            "evidence_metadata_and_project_snapshot_committed_atomically"
+          ],
+          "replayed": false,
+          "status": "COMMITTED",
+          "step": "B with a NEW key, same payload, fresh head"
+        }
+      ],
+      "verdict": "DEFECT_OBSERVED"
     }
   ],
   "fibres": [
@@ -332,25 +391,25 @@
     "E12 item 11 (named-operation instrumentation)"
   ],
   "findings": [
-    "under the shipped 5.0s sqlite busy timeout the workflow load produced 0 `database is locked` errors; lock contention was absorbed as latency (claim/complete p95 5.481 ms over 6840 attempts), not surfaced as a conflict",
-    "with the busy timeout cut to 0.02s the same load produced 225 lock conflicts and a retry amplification of 0.0987 retries per commit",
-    "the workflow-layer conflict that does fire under the shipped configuration is the lease: 76 HELD_BY_LIVE_WORKER verdicts across 360 acquisitions",
+    "under the shipped 5.0s sqlite busy timeout the workflow load produced 0 `database is locked` errors; lock contention was absorbed as latency (claim/complete p95 7.102 ms over 6840 attempts), not surfaced as a conflict",
+    "with the busy timeout cut to 0.02s the same load produced 256 lock conflicts and a retry amplification of 0.1123 retries per commit",
+    "the workflow-layer conflict that does fire under the shipped configuration is the lease: 141 HELD_BY_LIVE_WORKER verdicts across 360 acquisitions",
     "the bounded budget (max_inflight=4, max_queue=4) refused 2880 admissions before any mutation; every scheduled activity still reached exactly one terminal receipt ({'COMPLETED': 360})",
-    "concurrent writers to one project head saw a first-attempt success ratio of 0.9359 (62 SNAPSHOT_STALE over 640 first attempts); after bounded retry the eventual success ratio was 1.0000 with 0 untyped failures",
-    "storage held 480 canonical records in 196608 bytes, 409.6 bytes per record",
-    "the index-lag envelope is missed at cold start, not in steady state: pooled p95 33.0 events against a first-rebuild-per-repeat set of [120, 120, 120] and a steady-state p95 of 25.0 events",
-    "the same workflow load repeated 3x produced per-repeat workflow-latency p95s of [1397.2, 1393.6, 1403.5] ms against a 2000.0 ms budget; the reported verdict is on the pooled 360-sample distribution"
+    "concurrent writers to one project head saw a first-attempt success ratio of 0.3172 (437 RETRY_REQUIRED receipts over 640 first attempts); after bounded retry the eventual success ratio was 0.3172 with 0 untyped failures and 437 IDEMPOTENCY_CONFLICT on the retry the RETRY_REQUIRED receipt asked for; under a fresh-key-per-retry control the same load reached an eventual success ratio of 0.8750 (1659 key rotations, 560 commits)",
+    "storage held 480 canonical records in 192512 bytes, 401.1 bytes per record",
+    "the index-lag envelope is missed at cold start, not in steady state: pooled p95 43.0 events against a first-rebuild-per-repeat set of [120, 120, 120] and a steady-state p95 of 22.0 events",
+    "the same workflow load repeated 3x produced per-repeat workflow-latency p95s of [1413.3, 1332.5, 2098.9] ms against a 2000.0 ms budget; the reported verdict is on the pooled 360-sample distribution"
   ],
   "grants_scientific_authority": false,
   "hardware_context": {
     "cpu_count": 16,
     "load_average_1_5_15": [
-      1.77197265625,
-      1.6826171875,
-      1.61474609375
+      2.119140625,
+      1.640625,
+      1.53369140625
     ],
     "machine": "x86_64",
-    "measured_at_utc": "2026-08-15T18:50:51.863754+00:00",
+    "measured_at_utc": "2026-08-15T19:12:36.609879+00:00",
     "note": "LAPTOP HARDWARE. These are measurements of this machine under this load. They are not a production capacity statement, and a missed envelope here is a measurement to report, not a budget to move.",
     "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.35",
     "processor": "x86_64",
@@ -403,7 +462,7 @@
   },
   "measurements": {
     "B1_R1_backup_and_recovery": {
-      "backup_age_seconds": 0.00020599365234375,
+      "backup_age_seconds": 0.0002090930938720703,
       "backup_detail": [],
       "backup_entries": 1,
       "backup_is_exact": true,
@@ -434,19 +493,41 @@
       }
     },
     "H1_api_concurrency": {
-      "eventual_success": 640,
-      "eventual_success_ratio": 1.0,
-      "evidence_records": 640,
-      "final_sequence": 640,
-      "first_attempt_success_ratio": 0.9359375,
+      "eventual_success": 203,
+      "eventual_success_ratio": 0.3171875,
+      "final_head_sequence": 203,
+      "first_attempt_success_ratio": 0.3171875,
+      "idempotency_key_rotations": 0,
       "requests_first_attempt": 640,
       "responses_by_code": {
-        "200": 640,
-        "SNAPSHOT_STALE": 62
+        "COMMITTED": 203,
+        "IDEMPOTENCY_CONFLICT": 437,
+        "RETRY_REQUIRED": 437
       },
       "retry_exhausted": 0,
+      "retry_policy": "same_key",
+      "store": "SqliteAtomicEngineeringCoordinator + LocalFilesystemBlobStore (temp dir), not an in-memory dict",
+      "transitions_persisted": 640,
       "unhandled_exceptions": 0,
-      "wall_seconds": 0.06155524495989084
+      "wall_seconds": 6.66827732976526
+    },
+    "H1b_api_concurrency_fresh_key_control": {
+      "eventual_success": 560,
+      "eventual_success_ratio": 0.875,
+      "final_head_sequence": 560,
+      "first_attempt_success_ratio": 0.659375,
+      "idempotency_key_rotations": 1659,
+      "requests_first_attempt": 640,
+      "responses_by_code": {
+        "COMMITTED": 560,
+        "RETRY_REQUIRED": 1739
+      },
+      "retry_exhausted": 80,
+      "retry_policy": "fresh_key",
+      "store": "SqliteAtomicEngineeringCoordinator + LocalFilesystemBlobStore (temp dir), not an in-memory dict",
+      "transitions_persisted": 2299,
+      "unhandled_exceptions": 0,
+      "wall_seconds": 46.532947240862995
     },
     "I1_index_lag_cold_start_vs_steady_state": {
       "cold_start_note": "the first rebuild of each repeat has an empty baseline, so it reports every event the schedule burst committed. The envelope verdict stands as measured; the steady-state figure below is reported alongside it, not in place of it.",
@@ -456,10 +537,10 @@
         120,
         120
       ],
-      "steady_state_max_events": 61,
+      "steady_state_max_events": 166,
       "steady_state_p50_events": 4.0,
-      "steady_state_p95_events": 25.0,
-      "steady_state_samples": 118
+      "steady_state_p95_events": 22.0,
+      "steady_state_samples": 114
     },
     "S1_solver_cost": {
       "fibres_opened": 3.0,
@@ -488,7 +569,7 @@
         {
           "activities_scheduled": 120,
           "budget": {
-            "degraded": 503,
+            "degraded": 259,
             "inflight_at_end": 0,
             "max_inflight": 4,
             "max_queue": 4,
@@ -498,14 +579,14 @@
           "bytes_per_record_final": 401.06666666666666,
           "claim_outcomes": {
             "ACQUIRED": 120,
-            "ALREADY_COMPLETED": 1776,
-            "HELD_BY_LIVE_WORKER": 24,
+            "ALREADY_COMPLETED": 1763,
+            "HELD_BY_LIVE_WORKER": 37,
             "budget_refused": 960,
             "completed": 120
           },
           "db_bytes_final": 192512,
           "index_lag_max": 120,
-          "index_lag_samples": 46,
+          "index_lag_samples": 55,
           "label": "shipped-0",
           "records_final": {
             "leases": 0,
@@ -526,36 +607,36 @@
               "records": 480
             }
           ],
-          "storage_samples": 53,
+          "storage_samples": 43,
           "terminal_status_counts": {
             "COMPLETED": 120
           },
-          "wall_seconds": 1.7251528850756586,
+          "wall_seconds": 1.7203325242735445,
           "worker_threads": 12,
           "workflow_latency_ms_samples": 120,
-          "workflow_latency_p95_ms": 1397.1862690523267
+          "workflow_latency_p95_ms": 1413.2849448360503
         },
         {
           "activities_scheduled": 120,
           "budget": {
-            "degraded": 427,
+            "degraded": 213,
             "inflight_at_end": 0,
             "max_inflight": 4,
             "max_queue": 4,
             "queued_at_end": 0,
             "refused": 960
           },
-          "bytes_per_record_final": 409.6,
+          "bytes_per_record_final": 401.06666666666666,
           "claim_outcomes": {
             "ACQUIRED": 120,
-            "ALREADY_COMPLETED": 1776,
-            "HELD_BY_LIVE_WORKER": 24,
+            "ALREADY_COMPLETED": 1753,
+            "HELD_BY_LIVE_WORKER": 47,
             "budget_refused": 960,
             "completed": 120
           },
-          "db_bytes_final": 196608,
-          "index_lag_max": 120,
-          "index_lag_samples": 35,
+          "db_bytes_final": 192512,
+          "index_lag_max": 166,
+          "index_lag_samples": 27,
           "label": "shipped-1",
           "records_final": {
             "leases": 0,
@@ -571,41 +652,41 @@
               "records": 240
             },
             {
-              "bytes_per_record": 409.6,
-              "db_bytes": 196608,
+              "bytes_per_record": 401.06666666666666,
+              "db_bytes": 192512,
               "records": 480
             }
           ],
-          "storage_samples": 43,
+          "storage_samples": 26,
           "terminal_status_counts": {
             "COMPLETED": 120
           },
-          "wall_seconds": 1.6218775501474738,
+          "wall_seconds": 1.6037642299197614,
           "worker_threads": 12,
           "workflow_latency_ms_samples": 120,
-          "workflow_latency_p95_ms": 1393.6370960436761
+          "workflow_latency_p95_ms": 1332.4874779209495
         },
         {
           "activities_scheduled": 120,
           "budget": {
-            "degraded": 533,
+            "degraded": 443,
             "inflight_at_end": 0,
             "max_inflight": 4,
             "max_queue": 4,
             "queued_at_end": 0,
             "refused": 960
           },
-          "bytes_per_record_final": 409.6,
+          "bytes_per_record_final": 401.06666666666666,
           "claim_outcomes": {
             "ACQUIRED": 120,
-            "ALREADY_COMPLETED": 1772,
-            "HELD_BY_LIVE_WORKER": 28,
+            "ALREADY_COMPLETED": 1743,
+            "HELD_BY_LIVE_WORKER": 57,
             "budget_refused": 960,
             "completed": 120
           },
-          "db_bytes_final": 196608,
+          "db_bytes_final": 192512,
           "index_lag_max": 120,
-          "index_lag_samples": 40,
+          "index_lag_samples": 35,
           "label": "shipped-2",
           "records_final": {
             "leases": 0,
@@ -621,19 +702,19 @@
               "records": 240
             },
             {
-              "bytes_per_record": 409.6,
-              "db_bytes": 196608,
+              "bytes_per_record": 401.06666666666666,
+              "db_bytes": 192512,
               "records": 480
             }
           ],
-          "storage_samples": 32,
+          "storage_samples": 21,
           "terminal_status_counts": {
             "COMPLETED": 120
           },
-          "wall_seconds": 1.703457866795361,
+          "wall_seconds": 2.457976902835071,
           "worker_threads": 12,
           "workflow_latency_ms_samples": 120,
-          "workflow_latency_p95_ms": 1403.4825381822884
+          "workflow_latency_p95_ms": 2098.8775598816574
         }
       ],
       "terminal_status_counts_total": {
@@ -641,16 +722,16 @@
       },
       "why_repeated": "a single run of this phase decided the workflow-latency verdict by what else this shared host was doing; the verdict below is on the pooled sample and the per-repeat spread is stated",
       "workflow_latency_p95_ms_per_repeat": [
-        1397.1862690523267,
-        1393.6370960436761,
-        1403.4825381822884
+        1413.2849448360503,
+        1332.4874779209495,
+        2098.8775598816574
       ],
       "workflow_latency_pooled_samples": 360
     },
     "W2_workflow_concurrency_low_busy_timeout_probe": {
       "activities_scheduled": 120,
       "budget": {
-        "degraded": 266,
+        "degraded": 309,
         "inflight_at_end": 0,
         "max_inflight": 4,
         "max_queue": 4,
@@ -660,14 +741,14 @@
       "bytes_per_record_final": 401.06666666666666,
       "claim_outcomes": {
         "ACQUIRED": 120,
-        "ALREADY_COMPLETED": 1629,
-        "HELD_BY_LIVE_WORKER": 171,
+        "ALREADY_COMPLETED": 1617,
+        "HELD_BY_LIVE_WORKER": 183,
         "budget_refused": 960,
         "completed": 120
       },
       "conflicts_by_class": {
-        "held_by_live_worker": 171.0,
-        "sqlite_locked": 225.0
+        "held_by_live_worker": 183.0,
+        "sqlite_locked": 256.0
       },
       "db_bytes_final": 192512,
       "index_lag_max": null,
@@ -680,18 +761,18 @@
         "worker_activities": 120,
         "worker_events": 360
       },
-      "retry_amplification": 0.09868421052631579,
+      "retry_amplification": 0.11228070175438597,
       "retry_exhausted": 0,
-      "sqlite_locked_conflicts": 225.0,
+      "sqlite_locked_conflicts": 256.0,
       "storage_sample_first_last": [],
       "storage_samples": 0,
       "terminal_status_counts": {
         "COMPLETED": 120
       },
-      "wall_seconds": 1.5241488772444427,
+      "wall_seconds": 1.4193071331828833,
       "worker_threads": 12,
       "workflow_latency_ms_samples": 120,
-      "workflow_latency_p95_ms": 1331.9923472590744
+      "workflow_latency_p95_ms": 1277.470133267343
     }
   },
   "not_claimed": [
@@ -702,7 +783,7 @@
   ],
   "queue_saturation": {
     "budget": {
-      "degraded": 533,
+      "degraded": 443,
       "inflight_at_end": 0,
       "max_inflight": 4,
       "max_queue": 4,
@@ -714,7 +795,7 @@
   },
   "receipt_separation_check": {
     "held": true,
-    "otlp_payload_bytes": 10405,
+    "otlp_payload_bytes": 11619,
     "receipt_content_keys_found_in_export": [],
     "rule": "an operational metric may reference a receipt id and carry no other receipt content"
   },
@@ -732,13 +813,13 @@
   "slo_readings": [
     {
       "budget": 0.99,
-      "detail": "mean=0.9359 1 vs budget AT_LEAST 0.99 1",
+      "detail": "mean=0.3172 1 vs budget AT_LEAST 0.99 1",
       "direction": "AT_LEAST",
       "max": 1.0,
-      "mean": 0.9359375,
-      "measured": 0.9359375,
+      "mean": 0.3171875,
+      "measured": 0.3171875,
       "min": 0.0,
-      "p50": 1.0,
+      "p50": 0.0,
       "p95": 1.0,
       "samples": 640,
       "slo_id": "api_availability_ratio",
@@ -748,14 +829,14 @@
     },
     {
       "budget": 50.0,
-      "detail": "p95=0.5119 ms vs budget AT_MOST 50.0 ms",
+      "detail": "p95=0.5571 ms vs budget AT_MOST 50.0 ms",
       "direction": "AT_MOST",
-      "max": 0.5757180042564869,
-      "mean": 0.4652335386102398,
-      "measured": 0.511879101395607,
-      "min": 0.44497568160295486,
-      "p50": 0.45769382268190384,
-      "p95": 0.511879101395607,
+      "max": 0.9377892129123211,
+      "mean": 0.4875610815361142,
+      "measured": 0.5571078509092331,
+      "min": 0.4584686830639839,
+      "p50": 0.4678494296967983,
+      "p95": 0.5571078509092331,
       "samples": 60,
       "slo_id": "context_compilation_ms",
       "statistic": "p95",
@@ -764,15 +845,15 @@
     },
     {
       "budget": 25.0,
-      "detail": "p95=33.0000 {event} vs budget AT_MOST 25.0 {event}",
+      "detail": "p95=43.0000 {event} vs budget AT_MOST 25.0 {event}",
       "direction": "AT_MOST",
-      "max": 120.0,
-      "mean": 8.925619834710744,
-      "measured": 33.0,
+      "max": 166.0,
+      "mean": 9.23076923076923,
+      "measured": 43.0,
       "min": 0.0,
       "p50": 4.0,
-      "p95": 33.0,
-      "samples": 121,
+      "p95": 43.0,
+      "samples": 117,
       "slo_id": "index_lag_events",
       "statistic": "p95",
       "unit": "{event}",
@@ -780,14 +861,14 @@
     },
     {
       "budget": 100.0,
-      "detail": "p95=0.0211 ms vs budget AT_MOST 100.0 ms",
+      "detail": "p95=0.0213 ms vs budget AT_MOST 100.0 ms",
       "direction": "AT_MOST",
-      "max": 0.044465065002441406,
-      "mean": 0.020117172971367836,
-      "measured": 0.021093059331178665,
-      "min": 0.018928200006484985,
-      "p50": 0.01954333856701851,
-      "p95": 0.021093059331178665,
+      "max": 0.05221879109740257,
+      "mean": 0.01994602692623933,
+      "measured": 0.021329615265130997,
+      "min": 0.018535181879997253,
+      "p50": 0.019033439457416534,
+      "p95": 0.021329615265130997,
       "samples": 60,
       "slo_id": "solver_compilation_ms",
       "statistic": "p95",
@@ -796,14 +877,14 @@
     },
     {
       "budget": 100.0,
-      "detail": "p95=0.0279 ms vs budget AT_MOST 100.0 ms",
+      "detail": "p95=0.0255 ms vs budget AT_MOST 100.0 ms",
       "direction": "AT_MOST",
-      "max": 0.04791282117366791,
-      "mean": 0.024940352886915207,
-      "measured": 0.02786470577120781,
-      "min": 0.0229543074965477,
-      "p50": 0.024260953068733215,
-      "p95": 0.02786470577120781,
+      "max": 0.0471300445497036,
+      "mean": 0.023876347889502842,
+      "measured": 0.02547306939959526,
+      "min": 0.022127293050289154,
+      "p50": 0.023236963897943497,
+      "p95": 0.02547306939959526,
       "samples": 60,
       "slo_id": "solver_navigation_ms",
       "statistic": "p95",
@@ -812,14 +893,14 @@
     },
     {
       "budget": 50.0,
-      "detail": "p95=0.4127 ms vs budget AT_MOST 50.0 ms",
+      "detail": "p95=0.4305 ms vs budget AT_MOST 50.0 ms",
       "direction": "AT_MOST",
-      "max": 0.4497379995882511,
-      "mean": 0.363761264209946,
-      "measured": 0.4127020947635174,
-      "min": 0.3418000414967537,
-      "p50": 0.3551216796040535,
-      "p95": 0.4127020947635174,
+      "max": 0.5996772088110447,
+      "mean": 0.37645303333799046,
+      "measured": 0.43045682832598686,
+      "min": 0.34227827563881874,
+      "p50": 0.3626430407166481,
+      "p95": 0.43045682832598686,
       "samples": 60,
       "slo_id": "status_computation_ms",
       "statistic": "p95",
@@ -828,15 +909,15 @@
     },
     {
       "budget": 4096.0,
-      "detail": "mean=401.9676 By vs budget AT_MOST 4096.0 By",
+      "detail": "mean=395.3820 By vs budget AT_MOST 4096.0 By",
       "direction": "AT_MOST",
-      "max": 422.2680412371134,
-      "mean": 401.9676318048132,
-      "measured": 401.9676318048132,
-      "min": 344.9263157894737,
-      "p50": 403.83098591549293,
-      "p95": 415.536231884058,
-      "samples": 128,
+      "max": 421.6470588235294,
+      "mean": 395.38203123505497,
+      "measured": 395.38203123505497,
+      "min": 247.46666666666667,
+      "p50": 401.06666666666666,
+      "p95": 409.6,
+      "samples": 90,
       "slo_id": "storage_growth_bytes_per_record",
       "statistic": "mean",
       "unit": "By",
@@ -844,14 +925,14 @@
     },
     {
       "budget": 250.0,
-      "detail": "p95=5.4813 ms vs budget AT_MOST 250.0 ms",
+      "detail": "p95=7.1023 ms vs budget AT_MOST 250.0 ms",
       "direction": "AT_MOST",
-      "max": 1530.7506676763296,
-      "mean": 5.542465386645357,
-      "measured": 5.481254775077105,
-      "min": 0.07335003465414047,
-      "p50": 0.07943622767925262,
-      "p95": 5.481254775077105,
+      "max": 2430.7651980780065,
+      "mean": 6.303712572665526,
+      "measured": 7.102290168404579,
+      "min": 0.07106782868504524,
+      "p50": 0.07882528007030487,
+      "p95": 7.102290168404579,
       "samples": 6840,
       "slo_id": "transaction_latency_ms",
       "statistic": "p95",
@@ -860,14 +941,14 @@
     },
     {
       "budget": 2000.0,
-      "detail": "p95=1400.6668 ms vs budget AT_MOST 2000.0 ms",
+      "detail": "p95=1965.8214 ms vs budget AT_MOST 2000.0 ms",
       "direction": "AT_MOST",
-      "max": 2015.092516783625,
-      "mean": 993.7624295500832,
-      "measured": 1400.6668110378087,
-      "min": 351.64345195516944,
-      "p50": 1038.8118079863489,
-      "p95": 1400.6668110378087,
+      "max": 2632.7401739545166,
+      "mean": 1095.9889265436989,
+      "measured": 1965.8213867805898,
+      "min": 309.219544287771,
+      "p50": 1018.4594141319394,
+      "p95": 1965.8213867805898,
       "samples": 360,
       "slo_id": "workflow_latency_ms",
       "statistic": "p95",
@@ -892,9 +973,9 @@
     ]
   },
   "storage_scaling": {
-    "bytes_per_record_final": 409.6,
-    "bytes_per_record_samples": 128,
-    "db_bytes_final": 196608,
+    "bytes_per_record_final": 401.06666666666666,
+    "bytes_per_record_samples": 90,
+    "db_bytes_final": 192512,
     "records_final": {
       "leases": 0,
       "total": 480,
@@ -908,8 +989,8 @@
         "records": 240
       },
       {
-        "bytes_per_record": 409.6,
-        "db_bytes": 196608,
+        "bytes_per_record": 401.06666666666666,
+        "db_bytes": 192512,
         "records": 480
       }
     ]

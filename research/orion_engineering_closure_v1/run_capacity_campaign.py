@@ -80,7 +80,6 @@ from rakl.engineering_http import (  # noqa: E402
     SecretStore,
     content_hash,
 )
-import rakl.engineering_http as engineering_http_module  # noqa: E402
 from rakl.engineering_ops import (  # noqa: E402
     Admission,
     AdmissionSlot,
@@ -148,9 +147,6 @@ CONFIG = {
     "context_iterations": 60,
     "context_items": 200,
     "same_key_race_threads": 16,
-    # D1 race probe: how long the patched content_hash sleeps inside the
-    # unguarded validate->apply window so 16 threads genuinely overlap in it.
-    "race_probe_window_sleep_s": 0.005,
     "max_claim_retries": 12,
 }
 
@@ -447,14 +443,48 @@ def run_workflow_phase(
 HTTP_PHASE = "api::evidence"
 
 
-def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[float]]:
+def _bootstrap_service(project_ids: list[str]):
+    """A service over REAL stores (temp SQLite + blob dir), projects created via genesis."""
+
     idp, secret_store = IdentityProvider(), SecretStore()
     service = EngineeringHttpService(idp=idp, secrets=secret_store)
-    actor = Actor("writer", frozenset({"p"}),
-                  frozenset({Capability.READ_EVIDENCE, Capability.WRITE_EVIDENCE}))
-    token = idp.issue(actor)
-    headers = {"Authorization": f"Bearer {token}"}
-    service.ensure_project("p")
+    admin = Actor("campaign-admin", frozenset(project_ids), frozenset({Capability.ADMIN}))
+    writer = Actor("writer", frozenset(project_ids),
+                   frozenset({Capability.READ_EVIDENCE, Capability.WRITE_EVIDENCE}))
+    admin_headers = {"Authorization": f"Bearer {idp.issue(admin)}"}
+    writer_headers = {"Authorization": f"Bearer {idp.issue(writer)}"}
+    genesis: dict[str, str] = {}
+    for project_id in project_ids:
+        status, body, _ = service.handle(
+            "POST", "/v1/projects", admin_headers, json.dumps({"project_id": project_id}).encode())
+        if int(status) not in (HTTPStatus.OK, HTTPStatus.CREATED):
+            raise RuntimeError(f"genesis for {project_id!r} failed: {status} {body}")
+        genesis[project_id] = str(body["genesis_snapshot_id"])
+    return service, writer_headers, genesis
+
+
+def _transition_count(service: EngineeringHttpService, project_id: str) -> int:
+    db = sqlite3.connect(f"file:{service.coordinator.path}?mode=ro", uri=True, timeout=10.0)
+    try:
+        return db.execute("SELECT COUNT(*) FROM transitions WHERE project_id=?", (project_id,)).fetchone()[0]
+    finally:
+        db.close()
+
+
+def run_http_phase(metrics: EngineeringOperationMetrics, *, retry_policy: str = "same_key",
+                   phase: str = HTTP_PHASE) -> tuple[dict, list[float]]:
+    """Concurrent writers to one head.
+
+    `retry_policy="same_key"` is the E10 contract as written: a RETRY_REQUIRED
+    receipt says "replan on current head", and the client retries the SAME
+    logical mutation under the SAME idempotency key with a refreshed
+    expected_snapshot_id. `retry_policy="fresh_key"` mints a new key per retry;
+    it is not the contract, it is the control that separates "the store cannot
+    absorb this load" from "the key is dead after one stale attempt".
+    """
+
+    service, headers, _ = _bootstrap_service(["p"])
+    key_rotations = 0
 
     availability_samples: list[float] = []
     lock = threading.Lock()
@@ -469,13 +499,15 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
             outcomes[name] = outcomes.get(name, 0) + 1
 
     def head_snapshot() -> str:
-        status, body, _ = service.handle("GET", "/v1/projects/p/snapshot", headers, b"")
+        status, body, _ = service.handle("GET", "/v1/projects/p/head", headers, b"")
+        if int(status) != HTTPStatus.OK:
+            raise RuntimeError(f"head read failed: {status} {body}")
         return str(body["snapshot_id"])
 
     start_together = threading.Barrier(CONFIG["http_writer_threads"])
 
     def writer(index: int) -> None:
-        nonlocal retry_exhausted, eventual_success, first_attempt_total, unhandled_exceptions
+        nonlocal retry_exhausted, eventual_success, first_attempt_total, unhandled_exceptions, key_rotations
         start_together.wait()
         for n in range(CONFIG["http_writes_per_thread"]):
             payload = {"note": f"w{index}-{n}"}
@@ -489,7 +521,7 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
             first = True
             while True:
                 try:
-                    with time_into(metrics.api_latency_ms, {"route": "evidence"}):
+                    with time_into(metrics.api_latency_ms, {"route": "evidence", "policy": retry_policy}):
                         status, response, _ = service.handle(
                             "POST", "/v1/projects/p/evidence", headers,
                             json.dumps(body).encode())
@@ -501,7 +533,9 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
                             availability_samples.append(0.0)
                     bump(f"EXCEPTION:{type(exc).__name__}")
                     break
-                code = str(response.get("error", int(status)))
+                # a receipt carries `status` in the TransitionStatus vocabulary; a typed
+                # 4xx carries `error`. Both are counted by their own name.
+                code = str(response.get("status") or response.get("error") or int(status))
                 metrics.api_requests.add(1.0, {"outcome": code})
                 bump(code)
                 if first:
@@ -509,23 +543,30 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
                         first_attempt_total += 1
                         availability_samples.append(1.0 if int(status) == HTTPStatus.OK else 0.0)
                     first = False
-                if int(status) == HTTPStatus.OK:
-                    metrics.record_commit(phase=HTTP_PHASE)
+                if int(status) == HTTPStatus.OK and response.get("status") == "COMMITTED":
+                    metrics.record_commit(phase=phase)
                     with lock:
                         eventual_success += 1
                     break
-                if response.get("error") == "SNAPSHOT_STALE":
+                if response.get("status") == "RETRY_REQUIRED":
+                    # staleness is a receipt, not an error: refresh the head and retry
                     attempts += 1
                     if attempts > CONFIG["http_max_retries"]:
-                        metrics.record_conflict("snapshot_stale", retried=False, phase=HTTP_PHASE)
+                        metrics.record_conflict("snapshot_stale", retried=False, phase=phase)
                         with lock:
                             retry_exhausted += 1
                         break
-                    metrics.record_conflict("snapshot_stale", phase=HTTP_PHASE)
+                    metrics.record_conflict("snapshot_stale", phase=phase)
                     body["expected_snapshot_id"] = head_snapshot()
+                    if retry_policy == "fresh_key":
+                        body["idempotency_key"] = f"key-{index}-{n}-r{attempts}"
+                        with lock:
+                            key_rotations += 1
                     continue
                 if response.get("error") == "IDEMPOTENCY_CONFLICT":
-                    metrics.record_conflict("idempotency_conflict", retried=False, phase=HTTP_PHASE)
+                    # under same_key this is the persisted RETRY_REQUIRED receipt occupying the
+                    # key: the retry the receipt asked for is refused. Not retried; counted.
+                    metrics.record_conflict("idempotency_conflict", retried=False, phase=phase)
                     break
                 break
 
@@ -538,8 +579,11 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
         thread.join()
     wall_s = time.perf_counter() - started
 
-    project = service.projects["p"]
+    head = service.state.head("p")
     return {
+        "store": "SqliteAtomicEngineeringCoordinator + LocalFilesystemBlobStore (temp dir), not an in-memory dict",
+        "retry_policy": retry_policy,
+        "idempotency_key_rotations": key_rotations,
         "requests_first_attempt": first_attempt_total,
         "responses_by_code": dict(sorted(outcomes.items())),
         "first_attempt_success_ratio": (
@@ -548,8 +592,8 @@ def run_http_phase(metrics: EngineeringOperationMetrics) -> tuple[dict, list[flo
         "eventual_success_ratio": eventual_success / first_attempt_total if first_attempt_total else None,
         "retry_exhausted": retry_exhausted,
         "unhandled_exceptions": unhandled_exceptions,
-        "final_sequence": project.sequence,
-        "evidence_records": len(project.evidence),
+        "final_head_sequence": head.sequence,
+        "transitions_persisted": _transition_count(service, "p"),
         "wall_seconds": wall_s,
     }, availability_samples
 
@@ -736,21 +780,49 @@ def run_backup_and_recovery_phase(metrics: EngineeringOperationMetrics, root: Pa
 # --- D1: defect probes ------------------------------------------------------
 
 
-def probe_http_same_key_race() -> dict:
-    """`_validate_mutation` and `_apply_idempotent` read the head and the
-    idempotency map outside `EngineeringHttpService._lock`. If that races, one
-    logical mutation commits more than once."""
+#: What this probe found before the service was rewired through the real store,
+#: preserved verbatim. Attempt 3 is the run that established the defect.
+_RACE_PROBE_HISTORY = [
+    {"attempt": 1, "service": "in-memory ProjectState + idempotency dict",
+     "window_widened": "none", "verdict": "NOT_OBSERVED_IN_THIS_RUN", "duplicate_commits": 0,
+     "note": ("one handle() call completed in tens of microseconds against a 0.5ms switch "
+              "interval, so the window was never entered; that result carried no power")},
+    {"attempt": 2, "service": "in-memory ProjectState + idempotency dict",
+     "window_widened": "content_hash sleeps 5ms (validate path only)",
+     "verdict": "NOT_OBSERVED_IN_THIS_RUN", "duplicate_commits": 0,
+     "note": ("all 16 threads read prior=None in _validate_mutation, but the second read in "
+              "_apply_idempotent, the apply() and the map write were microseconds apart with no "
+              "GIL yield between them; the first thread to wake wrote the map entry before any "
+              "other thread re-read it")},
+    {"attempt": 3, "service": "in-memory ProjectState + idempotency dict",
+     "window_widened": "content_hash sleeps 5ms AND service._lock acquire sleeps 5ms",
+     "verdict": "DEFECT_OBSERVED", "duplicate_commits": 15, "final_sequence": 16,
+     "evidence_records": 16, "fresh_commit_responses": 16,
+     "distinct_after_snapshot_ids": 16,
+     "note": ("the idempotency check and the expected-snapshot check in _validate_mutation and "
+              "the prior read in _apply_idempotent all ran outside the lock; only _advance was "
+              "inside it and the map write came after. With the mutation held open for "
+              "milliseconds all 16 threads passed both checks and all 16 committed: one "
+              "logical mutation advanced the head sixteen times")},
+]
 
-    idp, secret_store = IdentityProvider(), SecretStore()
-    service = EngineeringHttpService(idp=idp, secrets=secret_store)
-    actor = Actor("writer", frozenset({"p"}), frozenset({Capability.WRITE_EVIDENCE}))
-    token = idp.issue(actor)
-    headers = {"Authorization": f"Bearer {token}"}
-    project = service.ensure_project("p")
+
+def probe_http_same_key_race() -> dict:
+    """The same 16-thread, one-key, one-expected-snapshot burst, now against the
+    rewired service whose mutation is one store transaction (BEGIN IMMEDIATE)
+    performing the head compare-and-swap and the idempotency check together.
+
+    There is no service lock left to widen, and that is the point: the store's
+    own serialization is the critical section. If it holds, exactly one request
+    receives a fresh COMMITTED receipt, the other fifteen receive the same
+    receipt replayed, one after_snapshot_id exists, and the transitions table
+    holds one row for the key."""
+
+    service, headers, genesis = _bootstrap_service(["race"])
     payload = {"note": "one logical mutation"}
     body = json.dumps({
         "idempotency_key": "the-one-key",
-        "expected_snapshot_id": project.snapshot_id,
+        "expected_snapshot_id": genesis["race"],
         "payload": payload,
         "payload_hash": content_hash(payload),
     }).encode()
@@ -758,95 +830,106 @@ def probe_http_same_key_race() -> dict:
     barrier = threading.Barrier(CONFIG["same_key_race_threads"])
     results: list[tuple[int, dict]] = []
     lock = threading.Lock()
-    window_entries = {"count": 0}
-    window_lock = threading.Lock()
 
-    # Widen the unguarded window. `_validate_mutation` and `handle` call the
-    # module-level `content_hash` BEFORE `_apply_idempotent` reads the
-    # idempotency map, all outside `self._lock`. Sleeping inside it (sleep
-    # releases the GIL) parks every thread in the window at once, so the read
-    # of `project.idempotency` genuinely overlaps with other threads' apply().
-    real_content_hash = engineering_http_module.content_hash
+    def fire() -> None:
+        barrier.wait()
+        status, response, _ = service.handle("POST", "/v1/projects/race/evidence", headers, body)
+        with lock:
+            results.append((int(status), response))
 
-    def slow_content_hash(payload):
-        with window_lock:
-            window_entries["count"] += 1
-        time.sleep(CONFIG["race_probe_window_sleep_s"])
-        return real_content_hash(payload)
+    threads = [threading.Thread(target=fire) for _ in range(CONFIG["same_key_race_threads"])]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
-    # And hold the mutation itself open. `_apply_idempotent` reads
-    # `project.idempotency.get(key)` OUTSIDE the lock, then calls apply() which
-    # takes the lock, then writes the map entry after the lock is released. A
-    # mutation that takes milliseconds (a real store write) is the production
-    # shape of that critical section; a lock whose acquire sleeps first is how
-    # the probe gives it that shape without touching the service code.
-    class _SlowLock:
-        def __init__(self, inner):
-            self.inner = inner
-            self.acquisitions = 0
+    committed = [r for _, r in results if r.get("status") == "COMMITTED"]
+    fresh = [r for r in committed if r.get("replayed") is False]
+    replayed = [r for r in committed if r.get("replayed") is True]
+    statuses: dict[str, int] = {}
+    for http_status, r in results:
+        code = str(r.get("status") or r.get("error") or http_status)
+        statuses[code] = statuses.get(code, 0) + 1
+    after_ids = sorted({str(r.get("after_snapshot_id")) for r in committed if r.get("after_snapshot_id")})
+    transition_ids = sorted({str(r.get("transition_id")) for r in committed if r.get("transition_id")})
+    head = service.state.head("race")
+    transitions = _transition_count(service, "race")
 
-        def __enter__(self):
-            time.sleep(CONFIG["race_probe_window_sleep_s"])
-            self.acquisitions += 1
-            return self.inner.__enter__()
-
-        def __exit__(self, *exc):
-            return self.inner.__exit__(*exc)
-
-    slow_lock = _SlowLock(service._lock)
-    service._lock = slow_lock
-    engineering_http_module.content_hash = slow_content_hash
-    try:
-        def fire() -> None:
-            barrier.wait()
-            status, response, _ = service.handle("POST", "/v1/projects/p/evidence", headers, body)
-            with lock:
-                results.append((int(status), response))
-
-        threads = [threading.Thread(target=fire) for _ in range(CONFIG["same_key_race_threads"])]
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-    finally:
-        engineering_http_module.content_hash = real_content_hash
-        service._lock = slow_lock.inner
-
-    committed_fresh = [r for _, r in results if r.get("committed") and not r.get("replayed")]
-    after_ids = {r.get("after_snapshot_id") for _, r in results if r.get("after_snapshot_id")}
-    observed = project.sequence > 1 or len(project.evidence) > 1
+    fixed = (
+        len(results) == CONFIG["same_key_race_threads"]
+        and len(fresh) == 1
+        and len(replayed) == CONFIG["same_key_race_threads"] - 1
+        and len(after_ids) == 1
+        and len(transition_ids) == 1
+        and head.sequence == 1
+        and transitions == 1
+    )
     return {
         "probe": "http_same_idempotency_key_race",
         "threads": CONFIG["same_key_race_threads"],
-        "expected_invariant": "one logical mutation advances the head exactly once",
-        "final_sequence": project.sequence,
-        "evidence_records": len(project.evidence),
-        "fresh_commit_responses": len(committed_fresh),
-        "distinct_after_snapshot_ids": sorted(x for x in after_ids if x),
-        "verdict": "DEFECT_OBSERVED" if observed else "NOT_OBSERVED_IN_THIS_RUN",
-        "duplicate_commits": max(project.sequence - 1, 0),
-        "window_widened_by": (
-            f"module-level content_hash patched to sleep {CONFIG['race_probe_window_sleep_s']}s "
-            f"(entered {window_entries['count']} times across {CONFIG['same_key_race_threads']} threads) "
-            f"AND service._lock wrapped so acquire sleeps {CONFIG['race_probe_window_sleep_s']}s "
-            f"before taking the real lock ({slow_lock.acquisitions} acquisitions)"),
-        "mutation_lock_acquisitions": slow_lock.acquisitions,
-        "history": [
-            {"attempt": 1, "window_widened": "none", "verdict": "NOT_OBSERVED_IN_THIS_RUN",
-             "note": ("one handle() call completed in tens of microseconds against a 0.5ms switch "
-                      "interval, so the window was never entered; that result carried no power")},
-            {"attempt": 2, "window_widened": "content_hash sleeps 5ms (validate path only)",
-             "verdict": "NOT_OBSERVED_IN_THIS_RUN", "duplicate_commits": 0,
-             "note": ("all 16 threads read prior=None in _validate_mutation, but the second read in "
-                      "_apply_idempotent, the apply() and the map write are microseconds apart with "
-                      "no GIL yield between them; the first thread to wake wrote the map entry before "
-                      "any other thread re-read it. The window that matters is read->apply->write, "
-                      "not the validate path")},
-        ],
-        "power_note": (
-            "with the mutation held open for milliseconds, every thread reads "
-            "project.idempotency before any thread has written it; a NOT_OBSERVED here would "
-            "be a real absence, not a timing artefact"),
+        "expected_invariant": ("one logical mutation advances the head exactly once: one fresh "
+                               "COMMITTED receipt, N-1 replays of it, one after_snapshot_id, one "
+                               "transitions row"),
+        "history": _RACE_PROBE_HISTORY,
+        "service": ("rewired: SqliteAtomicEngineeringCoordinator; head CAS + idempotency check in one "
+                    "BEGIN IMMEDIATE transaction; no service lock; no in-memory state"),
+        "window_widened": ("not possible and not needed: there is no service lock to wrap; the 16 "
+                           "threads contend on the store transaction itself"),
+        "responses_by_status": dict(sorted(statuses.items())),
+        "fresh_commit_responses": len(fresh),
+        "replayed_responses": len(replayed),
+        "distinct_after_snapshot_ids": after_ids,
+        "distinct_transition_ids": len(transition_ids),
+        "final_head_sequence": head.sequence,
+        "transitions_rows_for_project": transitions,
+        "duplicate_commits": max(len(after_ids) - 1, 0),
+        "verdict": "FIXED_VERIFIED" if fixed else "DEFECT_OBSERVED",
+        "detail": ("exactly one fresh COMMITTED, the rest replayed the same receipt, one after "
+                   "snapshot, one transitions row" if fixed else
+                   "the invariant did not hold; see the counts"),
+    }
+
+
+def probe_stale_retry_same_key() -> dict:
+    """Single-threaded, deterministic. A stale mutation returns a persisted
+    RETRY_REQUIRED receipt whose reason says replan on the current head. The
+    client does exactly that — same idempotency key, same payload, refreshed
+    expected_snapshot_id. Does the same logical mutation ever commit?"""
+
+    service, headers, genesis = _bootstrap_service(["stale"])
+
+    def post(key: str, expected: str, note: str) -> dict:
+        payload = {"note": note}
+        status, body, _ = service.handle(
+            "POST", "/v1/projects/stale/evidence", headers,
+            json.dumps({"idempotency_key": key, "expected_snapshot_id": expected,
+                        "payload": payload, "payload_hash": content_hash(payload)}).encode())
+        return {"http": int(status), "status": body.get("status") or body.get("error"),
+                "replayed": body.get("replayed"), "reasons": list(body.get("reasons") or [])}
+
+    trace = []
+    trace.append({"step": "A commits from genesis", **post("A", genesis["stale"], "a")})
+    head = service.state.head("stale").snapshot_id
+    trace.append({"step": "B built against genesis (now stale)", **post("B", genesis["stale"], "b")})
+    trace.append({"step": "B retries: same key, same payload, fresh head", **post("B", head, "b")})
+    trace.append({"step": "B retries again", **post("B", head, "b")})
+    trace.append({"step": "B with a NEW key, same payload, fresh head", **post("B2", head, "b")})
+    b_receipt = service.state.transition_receipt("stale", "B")
+    same_key_ever_committed = any(t["status"] == "COMMITTED" for t in trace[2:4])
+    return {
+        "probe": "http_stale_then_retry_same_key",
+        "expected_invariant": ("a RETRY_REQUIRED receipt is a request to retry; the same logical mutation "
+                               "under the same idempotency key, retried from the current head, commits"),
+        "trace": trace,
+        "persisted_receipt_for_key_B": None if b_receipt is None else b_receipt.status.value,
+        "same_key_retry_ever_committed": same_key_ever_committed,
+        "verdict": "NOT_OBSERVED_IN_THIS_RUN" if same_key_ever_committed else "DEFECT_OBSERVED",
+        "detail": ("" if same_key_ever_committed else
+                   "the RETRY_REQUIRED receipt is persisted under (project, idempotency_key), and the "
+                   "same-key retry from the fresh head derives a different action_payload_hash "
+                   "(the evidence batch binds sequence and base revision), so matches_prior() is false "
+                   "and every retry is IDEMPOTENCY_CONFLICT: the key is dead after one stale attempt, "
+                   "and the client cannot distinguish that from a genuinely foreign key"),
     }
 
 
@@ -992,8 +1075,13 @@ def main() -> int:
             engine_factory=lambda p: _low_timeout_engine(p, CONFIG["probe_sqlite_busy_timeout_s"]),
             sample_storage=False)
 
-        print("H1  API concurrency")
-        h1, availability_samples = run_http_phase(metrics)
+        print("H1  API concurrency (same-key retry: the E10 contract)")
+        h1, availability_samples = run_http_phase(metrics, retry_policy="same_key")
+        print("H1b API concurrency (fresh-key retry: control)")
+        h1b, _ = run_http_phase(metrics, retry_policy="fresh_key", phase="api::evidence-fresh-key")
+
+        print("D1  stale-then-retry same key (deterministic)")
+        d1_stale = probe_stale_retry_same_key()
 
         print("S1  solver cost")
         s1 = run_solver_phase(metrics)
@@ -1008,7 +1096,7 @@ def main() -> int:
         b1 = run_backup_and_recovery_phase(metrics, root)
 
         print("D1  defect probes")
-        d1 = [probe_http_same_key_race(), probe_resource_budget_release()]
+        d1 = [probe_http_same_key_race(), probe_resource_budget_release(), d1_stale]
 
     samples_by_slo = {
         "transaction_latency_ms": metrics.txn_latency_ms.all_samples(),
@@ -1056,10 +1144,14 @@ def main() -> int:
          f"scheduled activity still reached exactly one terminal receipt "
          f"({terminal_totals})"),
         (f"concurrent writers to one project head saw a first-attempt success ratio of "
-         f"{h1['first_attempt_success_ratio']:.4f} ({h1['responses_by_code'].get('SNAPSHOT_STALE', 0)} "
-         f"SNAPSHOT_STALE over {h1['requests_first_attempt']} first attempts); after bounded retry the "
+         f"{h1['first_attempt_success_ratio']:.4f} ({h1['responses_by_code'].get('RETRY_REQUIRED', 0)} "
+         f"RETRY_REQUIRED receipts over {h1['requests_first_attempt']} first attempts); after bounded retry the "
          f"eventual success ratio was {h1['eventual_success_ratio']:.4f} with "
-         f"{h1['unhandled_exceptions']} untyped failures"),
+         f"{h1['unhandled_exceptions']} untyped failures and "
+         f"{h1['responses_by_code'].get('IDEMPOTENCY_CONFLICT', 0)} IDEMPOTENCY_CONFLICT on the retry the "
+         f"RETRY_REQUIRED receipt asked for; under a fresh-key-per-retry control the same load reached an "
+         f"eventual success ratio of {h1b['eventual_success_ratio']:.4f} "
+         f"({h1b['idempotency_key_rotations']} key rotations, {h1b['final_head_sequence']} commits)"),
         (f"storage held {w1['records_final']['total']} canonical records in "
          f"{w1['db_bytes_final']} bytes, {w1['bytes_per_record_final']:.1f} bytes per record"),
         (f"the index-lag envelope is missed at cold start, not in steady state: pooled p95 "
@@ -1130,6 +1222,7 @@ def main() -> int:
                 "retry_amplification": probe_metrics.retry_amplification(),
             },
             "H1_api_concurrency": h1,
+            "H1b_api_concurrency_fresh_key_control": h1b,
             "S1_solver_cost": s1,
             "T1_status_computation": t1,
             "C1_context_compilation": c1,
