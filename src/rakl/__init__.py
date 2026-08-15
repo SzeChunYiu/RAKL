@@ -183,6 +183,13 @@ from .identity import (
     LineageResolution,
 )
 from .identity_saturation import IdentityAwareSaturationTracker
+from .source_identity import (
+    CanonicalSourceIdentifier,
+    SourceIdentityMapping,
+    SourceIdentityResolution,
+    canonicalize_source_identifier,
+    resolve_source_identities,
+)
 from .invention import (
     CandidateMutationReport,
     CandidateMutationVerdict,
@@ -384,6 +391,11 @@ __all__ = [
     "EvaluationTarget",
     "EvidenceIdentityEdge",
     "EvidenceIdentityLedger",
+    "CanonicalSourceIdentifier",
+    "SourceIdentityMapping",
+    "SourceIdentityResolution",
+    "canonicalize_source_identifier",
+    "resolve_source_identities",
     "EvidenceIdentityRelation",
     "EvidenceJudgment",
     "EvidenceRelation",

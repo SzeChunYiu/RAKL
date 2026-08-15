@@ -1,0 +1,81 @@
+{
+  "schema_version": "rakl-p3-router-v2-pre-execution-freeze-v1",
+  "date": "2026-08-15",
+  "paper": "Paper III — Method-Evolution Mechanics",
+  "negative_addressed": "research/negative_frontier_v1/NEG-p3-router-v2-unreproducible.md",
+  "purpose": "Freeze the reconstructed instrument BEFORE any number is observed, so that git history shows the generator, the gold source and the gate were fixed independently of the quoted values.",
+
+  "why_this_freeze_exists": [
+    "The quoted composite ceiling 0.6190476190476191 is exactly 13/21 and the quoted composite unsafe rate 0.30952380952380953 is exactly 13/42. Those are family-level fractions, so a generator could be reverse-engineered to hit them by construction.",
+    "That reverse-engineering is the specific failure this task exists to prevent. The 21 families below are constructed from the frozen protocol's own family names and the production route-resolver contracts, and from nothing else.",
+    "This file is committed in a separate commit that precedes the execution commit. Any later change to the generator, the router or the gate must appear as a distinct commit with a stated reason, and both runs must survive in the receipt."
+  ],
+
+  "instrument": {
+    "case_generator": "experiments/paper3/router_v2/route_case_generator.py",
+    "candidate": "experiments/paper3/router_v2/strict_typed_router.py",
+    "runner": "experiments/paper3/router_v2/run_router_v2_reconstruction.py",
+    "battery": "src/rakl/gate_falsifiability.py"
+  },
+
+  "severance_design": {
+    "gold_source": "GENERATOR_DESIGN_INTENT — each family commits (gold_route, gold_trace) at construction time; gold is never recomputed from the record by any routing rule.",
+    "rejected_alternative": "An independently written declarative oracle over the same record. Rejected because it computes the same function as the candidate, so route accuracy would hold 1.0 under every perturbation — the exact P3_TYPED_ARM_SELF_IDENTITY defect confirmed in the sibling experience-to-action harness and predicted for this one.",
+    "structural_guarantee": "The candidate is handed route_case_generator.candidate_view(case), whose key set is exactly CANDIDATE_VISIBLE_FIELDS. gold_route, gold_trace, gold_source, family, pair_index and case_id are structurally absent.",
+    "static_audit": "AST scan asserts the candidate module imports no generator module and references none of the forbidden names in code (docstrings excluded); the generator imports no candidate module. Asserted before execution; the runner exits non-zero on failure.",
+    "probe_audit": "No evidence perturbation may target a gold field; a probe that shuffled gold would manufacture falsifiability."
+  },
+
+  "case_construction": {
+    "seed": 202608140502,
+    "pairs_per_family": 64,
+    "families": 21,
+    "cases": 2688,
+    "pair_rule": "Each family is a matched twin pair differing in exactly one decision-critical coordinate, with distinct committed gold.",
+    "variation_rule": "Every coordinate strictly downstream of the family's deciding stage is provably irrelevant to that family's gold and is redrawn per pair, together with three declared nuisance fields (semantic_similarity, domain_match, candidate_count). Coordinates at or upstream of the deciding stage, and the three global vetoes (forbidden_loss, proposal_only, negative_history_retained), are fixed.",
+    "semantics_source": [
+      "research/paper3_route_resolver_v1/PROTOCOL.json — SEARCH>JUMP>GLUE>LIFT priority; an unresolved earlier structural candidate forces CANNOT_CHECK rather than bypass; proposal-only and forbidden-loss episodes cannot create a route.",
+      "research/paper3_typed_rejection_production_v1/PROTOCOL.json and research/paper3_glue_rejection_production_v1/PROTOCOL.json — only a conclusive, content-bound rejection certificate clears a failed earlier candidate; missing/ambiguous/non-conclusive evidence stays CANNOT_CHECK; every certified rejection is retained in the returned trace."
+    ]
+  },
+
+  "metrics": {
+    "route_plus_negative_trace_exact": "fraction of cases where (route, negative_trace) equals (gold_route, gold_trace)",
+    "unsafe_route_rate": "fraction of cases where the arm authorises a route that gold does not authorise: predicted != CANNOT_CHECK and predicted != gold. Predicting CANNOT_CHECK for a viable route is a miss, not unsafe — the fail-closed asymmetry.",
+    "cannot_check_recall": "over gold == CANNOT_CHECK",
+    "viable_route_recall": "over gold in {SEARCH, JUMP, GLUE, LIFT}",
+    "information_ceiling": "accuracy of the best deterministic function of a projection. Reported both as resubstitution and leave-one-out; the gate uses leave-one-out, because resubstitution rewards singleton signature groups and so inflates the parent on high-cardinality projections.",
+    "parent_tie_break": "fail-closed toward CANNOT_CHECK, which minimises the parent's unsafe rate — the strongest fair form of the parent."
+  },
+
+  "gate_conditions_registered_in_the_frozen_protocol": {
+    "strict_exact": ">= 1.0",
+    "strict_unsafe": "<= 0.0",
+    "strict_cannot_check_recall": ">= 1.0",
+    "strict_legal_route_recall": ">= 1.0",
+    "composite_information_ceiling": "<= 0.95",
+    "all_mutations_caught": "all 12 registered mutations must diverge from gold somewhere"
+  },
+
+  "falsifiability_plan": {
+    "per_condition": "Each of the six conditions is probed independently. Auditing the conjunction would let live conditions mask dead ones.",
+    "candidate_mutants_separate_the_strict_four": {
+      "DROP_NEGATIVE_HISTORY": "route unchanged, trace dropped — expected to move strict_exact alone",
+      "CANNOT_CHECK_AS_REJECTED": "blocked CANNOT_CHECK promoted to a route — expected to move exact, unsafe and cannot_check_recall, not legal_route_recall",
+      "AUDIT_DOWNGRADE_VIABLE_ROUTES": "audit-only mutant, fail-closed direction — expected to move exact and legal_route_recall while leaving unsafe at 0",
+      "AUDIT_SWAP_SEARCH_FOR_JUMP": "audit-only mutant, wrong concrete route — expected to move exact, unsafe and legal_route_recall, not cannot_check_recall"
+    },
+    "known_structural_limit_declared_in_advance": [
+      "cannot_check_recall cannot fail without unsafe also failing: any CANNOT_CHECK miss is by definition an authorised route gold does not authorise. The pair is expected to be separable only in the unsafe-without-cannot_check direction, and that asymmetry is a finding, not a defect to be engineered away.",
+      "composite_information_ceiling is a property of the parent projection, not of the candidate. No candidate mutant can move it; its falsifier must be an evidence perturbation that collapses family diversity. If no perturbation pushes it past 0.95 it will be reported NON_FALSIFIABLE, which is a first-class outcome.",
+      "all_mutations_caught is falsified by dropping the sole family that makes a registered mutation load-bearing — a direct re-test of the recorded v1 terminal INSTRUMENT_DEFECT_TWO_MUTATIONS_NOT_EXERCISED."
+    ],
+    "controls": [
+      "the baseline must reproduce a PASS on unperturbed evidence, or every verdict below is meaningless",
+      "at least one condition must come back FALSIFIABLE under the same probe set, or the probes are not live and no NON_FALSIFIABLE verdict is reportable"
+    ]
+  },
+
+  "terminal_language": "Reconstruction, never reproduction. The original instrument never existed, so agreement with the quoted prose would be corroboration of the values and not a receipt for the quoted run.",
+  "grants_scientific_authority": false
+}
