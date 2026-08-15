@@ -1,0 +1,19 @@
+name: stale-metadata-only
+on:
+  push:
+    branches: [tooling/export-storyanalogy-20260815]
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve dataset revision only
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote https://huggingface.co/datasets/STALEproj/STALE refs/heads/main | awk '{print $1}')
+          test -n "$sha"
+          printf 'dataset=STALEproj/STALE\nrevision=%s\nresolved_at=%s\ncontent_accessed=false\n' "$sha" "$(date -u +%FT%TZ)" | tee STALE_METADATA.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stale-metadata-only
+          path: STALE_METADATA.txt
