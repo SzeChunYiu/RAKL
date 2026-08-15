@@ -1,0 +1,36 @@
+{
+  "anachronism_check": {
+    "acquisition_regime_vocabulary_first_existed": "2026-08-15T15:21:37+02:00",
+    "consequence": "The probe is uninformative on THIS population by anachronism, not because the designs were careless. It measures a property the vocabulary made expressible only after they were frozen.",
+    "finding": "The observation contract that defines acquisition regimes landed on the day this probe was run. Every design artifact in the scored population predates it, so no record could have declared an acquisition regime even in principle.",
+    "forward_use": "Apply prospectively to designs authored after the observation contract landed. On that population REGIME_DECLARED becomes reachable and the falsifier becomes informative."
+  },
+  "counts_after_correcting_false_positives": {
+    "CANNOT_CHECK__NO_DESIGN_ARTIFACT": 22,
+    "Q_REGIME_CONFLATION_NOT_EXCLUDED": 12,
+    "REGIME_PARTIAL": 4
+  },
+  "counts_as_executed": {
+    "CANNOT_CHECK__NO_DESIGN_ARTIFACT": 22,
+    "Q_REGIME_CONFLATION_NOT_EXCLUDED": 11,
+    "REGIME_PARTIAL": 5
+  },
+  "grants_scientific_authority": false,
+  "marker_false_positives": [
+    {
+      "artifact": "research/orion_saturation_solve_enablement_v1/PROTOCOL.json",
+      "context": "arm A. Either outcome refutes the corresponding benefit claim in this regime and must be filed as such.\",   \"decision_rule\": {     \"primary_test\":",
+      "slug": "p1-bounded-saturation-null",
+      "why": "matches 'regime' in the problem-regime sense, not an acquisition regime"
+    },
+    {
+      "artifact": "research/benefit_L4_navigation_v1/PROTOCOL.json",
+      "context": "ction adapted to a solve-rate observable: arm B must not gut the easy regime (where distillation cannot pay off) to look good on the deep regime.\"",
+      "slug": "p1-l4-tight-resource-floor",
+      "why": "matches 'regime' in the problem-regime sense, not an acquisition regime"
+    }
+  ],
+  "schema_version": "rakl-question-level-instrument-marker-validity-v1",
+  "terminal_unchanged": true,
+  "why_terminal_unchanged": "Correcting the false positives moves records from REGIME_PARTIAL to NOT_EXCLUDED. REGIME_DECLARED stays at zero either way, so the frozen falsifier state is unaffected. The correction can only strengthen the instrument's own negative verdict about itself, never rescue it."
+}
