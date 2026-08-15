@@ -19,6 +19,12 @@ class MetacognitiveAuditVerdict(str, Enum):
     EXPLANATION_GAP = "EXPLANATION_GAP"
     ONTOLOGY_GAP_CANDIDATE = "ONTOLOGY_GAP_CANDIDATE"
     METHOD_BASIS_GAP_CANDIDATE = "METHOD_BASIS_GAP_CANDIDATE"
+    QUESTION_FORMULATION_GAP_CANDIDATE = "QUESTION_FORMULATION_GAP_CANDIDATE"
+    FRAMEWORK_GAP_CANDIDATE = "FRAMEWORK_GAP_CANDIDATE"
+    DECOMPOSITION_GAP_CANDIDATE = "DECOMPOSITION_GAP_CANDIDATE"
+    INTERFACE_GAP_CANDIDATE = "INTERFACE_GAP_CANDIDATE"
+    MEASUREMENT_GAP_CANDIDATE = "MEASUREMENT_GAP_CANDIDATE"
+    EVALUATOR_GAP_CANDIDATE = "EVALUATOR_GAP_CANDIDATE"
     INDEPENDENT_REVIEW_REQUIRED = "INDEPENDENT_REVIEW_REQUIRED"
     CANNOT_CHECK = "CANNOT_CHECK"
 
@@ -349,3 +355,33 @@ class MetacognitiveCompletenessAuditor:
             ),
             review_credit=review_credit,
         )
+
+
+# ---------------------------------------------------------------------------
+# Proposal-side formulation-gap projection (consumed by the recursive
+# framework audit; see src/rakl/recursive_framework_audit.py)
+# ---------------------------------------------------------------------------
+
+FORMULATION_GAP_CANDIDATES: dict[str, MetacognitiveAuditVerdict] = {
+    "QUESTION": MetacognitiveAuditVerdict.QUESTION_FORMULATION_GAP_CANDIDATE,
+    "FRAMEWORK": MetacognitiveAuditVerdict.FRAMEWORK_GAP_CANDIDATE,
+    "DECOMPOSITION": MetacognitiveAuditVerdict.DECOMPOSITION_GAP_CANDIDATE,
+    "INTERFACE": MetacognitiveAuditVerdict.INTERFACE_GAP_CANDIDATE,
+    "ATOM": MetacognitiveAuditVerdict.DECOMPOSITION_GAP_CANDIDATE,
+    "MEASUREMENT": MetacognitiveAuditVerdict.MEASUREMENT_GAP_CANDIDATE,
+    "EVALUATOR": MetacognitiveAuditVerdict.EVALUATOR_GAP_CANDIDATE,
+    "EVIDENCE": MetacognitiveAuditVerdict.EXPLANATION_GAP,
+    "METHOD": MetacognitiveAuditVerdict.METHOD_BASIS_GAP_CANDIDATE,
+}
+
+
+def formulation_gap_candidate(coordinate: object) -> MetacognitiveAuditVerdict:
+    """Project a formulation-responsibility coordinate onto an audit verdict.
+
+    Frozen mapping; unknown coordinates fail closed to ``CANNOT_CHECK`` rather
+    than guessing a weakness class.  The result is a diagnostic candidate only
+    — it never repairs, promotes, or mints authority.
+    """
+
+    key = getattr(coordinate, "value", coordinate)
+    return FORMULATION_GAP_CANDIDATES.get(str(key), MetacognitiveAuditVerdict.CANNOT_CHECK)

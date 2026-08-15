@@ -36,6 +36,17 @@ LLM prompt policy
 
 Each facet has an incumbent implementation and may have challengers.
 
+The same recursive audit operator applies to all three scales — it is not a method-only loop:
+
+```text
+the target problem's formulation (question, framework, decomposition,
+  interfaces, measurement, evaluator) before commitment
+each child fiber after a material residual
+RAKL method itself (escalation only, never bypass)
+```
+
+At the method scale the audit may only *request* escalation through the existing challenger protocol (`src/rakl/self_evolution_controller.py` remains the only method-evolution gate); at the problem and fiber scales it selects pursuit actions (§8.1 of `FORMAL_SYSTEM_SPECIFICATION.md`, `src/rakl/recursive_framework_audit.py`). None of the three mints scientific authority.
+
 ## 2. The LLM is a proposer
 
 The LLM may propose:

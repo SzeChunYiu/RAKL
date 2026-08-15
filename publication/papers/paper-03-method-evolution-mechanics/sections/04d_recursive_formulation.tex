@@ -1,0 +1,83 @@
+\section{Recursive formulation: auditing the question, framework, and decomposition}
+\label{sec:recursive-formulation}
+
+Method evolution is incomplete if the method may change while the problem representation is
+treated as fixed. For an unfamiliar research problem, the stated question, active representation,
+decomposition, interface contracts, measurement model, and evaluator may themselves be the source
+of error. We therefore treat these objects as versioned pursuit state. They may guide search, but
+they receive no scientific authority merely because an executor selected them.
+
+For an existing recursive fiber
+\[
+f=(o_f,q_f,\gamma_f,r_f,\operatorname{parent}(f)),
+\]
+define an audit projection
+\[
+\pi_{\mathrm{audit}}(f)=
+(\mathbb Q_f,\Phi_f,\mathbb D_f,\mathbb I_f,\mathbb M_f,\mathbb V_f,
+ \mathbb R_f,\chi_f),
+\]
+containing candidate question formulations, framework candidates, candidate decompositions,
+interface contracts, measurement contracts, evaluator identity, residual-responsibility hypotheses
+and recursive closure state. This is a projection of the existing research state rather than a
+second authority architecture.
+
+A recursive audit may recommend solving at the current representation, reframing the question,
+challenging the framework, splitting or merging a provisional atom, repairing an interface,
+revising a measurement contract, auditing the evaluator, running a discriminator, descending to a
+child, ascending to an ancestor, stopping at a bounded cutoff, or returning
+\texttt{CANNOT\_CHECK}. None of these actions changes scientific authority without the ordinary
+certificate-producing gate.
+
+Atomicity is scoped. A fiber is provisionally atomic only relative to a registered target, split
+family, evaluator, evidence cutoff and decision consumer. A fresh discriminator that separates two
+child regimes reopens that atomicity certificate without rewriting evidence accumulated under the
+former representation.
+
+Descendant failure may challenge an ancestor abstraction. Repeated raw failure is insufficient:
+if several abstraction levels remain plausible, a decision-bearing discriminator is required.
+When distinct local repair families fail and evidence implicates a parent assumption, the correct
+action is upward reframing rather than indefinite downward patching. Prior descendants remain
+immutable negative/process history under the superseded parent identity.
+
+This calculus does not imply that one globally correct formulation exists or can always be found.
+Closure remains target-, evaluator-, cutoff- and resource-relative.
+
+\subsection{Formal obligations}
+\label{sec:recursive-formulation-obligations}
+
+The calculus carries six obligations, each falsifiable by a counterexample artifact rather than
+by argument:
+
+\begin{description}
+\item[P-RF1 (Pursuit non-sovereignty)] Formulation change alone cannot increase scientific
+  authority. Every audit action is a pursuit-state transition; authority still requires a
+  certificate-producing evidence gate.
+\item[P-RF2 (History preservation)] Superseding a question, framework or decomposition cannot
+  delete old evidence or negative history; superseded identities remain addressable.
+\item[P-RF3 (No post-hoc responsibility selection)] If multiple abstraction levels remain
+  plausible, the system may not mutate all of them and call the winning level ``diagnosed'';
+  a decision-bearing discriminator must run first.
+\item[P-RF4 (Indexed atomicity)] Atomicity certificates are target-, split-family-, evaluator-
+  and cutoff-indexed; no certificate subsumes another index, and there is no
+  \texttt{ATOM\_PROVEN\_FOREVER} terminal.
+\item[P-RF5 (Ancestor reopening)] Superseding an ancestor abstraction stales dependent descendant
+  closure certificates while preserving their evidence identities.
+\item[P-RF6 (Evaluator epoch closure)] An evaluator change closes the evaluation epoch; no
+  cross-epoch comparison is offered. Method-scale audits reuse the strict Self-RAKL governance
+  (Section~\ref{sec:upgrade}) and cannot bypass it.
+\end{description}
+
+\subsection{Executable known-world evaluation}
+\label{sec:recursive-formulation-evaluation}
+
+The obligations are executed against a frozen known-world benchmark
+(\texttt{research/recursive\_framework\_audit\_v1/}): eleven defect families including a
+well-posed control on which any reframe is harm, twelve hostile priority cases probing the
+ordering of the audit's decision chain, and eight structural invariant checks instantiating
+P-RF1--P-RF6. The production decision operator is differential-conformant to a vendored
+handoff reference on every case. Conformance establishes that the control semantics are
+executable and fail closed; it is instrument evidence, not utility evidence. Real open-ended
+formulation utility is owned by the research-engine paper (Paper~VI), whose capstone separates
+solution gain, responsible-coordinate localization, false-reframe harm, audit cost and
+method-evolution gain.

@@ -323,6 +323,39 @@ Gap detection, operator-family identification and fresh transfer are distinct ev
 
 but cannot activate \(\omega^*\) without separate validation.
 
+### 8.1 Recursive framework audit (vertical recursion over the fibers)
+
+Each fiber additionally carries an **audit projection**
+
+\[
+\pi_{\mathrm{audit}}(f)=
+(Q_f,\Phi_f,D_f,I_f,M_f,V_f,R_f,\chi_f),
+\]
+
+whose components are the question candidates \(Q_f\), framework candidates \(\Phi_f\), decomposition candidates \(D_f\), interface contracts \(I_f\), measurement contracts \(M_f\), evaluator epoch \(V_f\), responsibility-hypothesis set \(R_f\subseteq\{\)QUESTION, FRAMEWORK, DECOMPOSITION, INTERFACE, ATOM, MEASUREMENT, EVALUATOR, EVIDENCE, METHOD\(\}\), and closure state \(\chi_f\). The projection is read off the existing fiber; it is not a second authority architecture.
+
+A material residual with \(|R_f|>1\) admits no revision: a discriminator must first separate the responsibility levels. Revision actions are pursuit-state changes only (question reframe, framework challenge, split, merge, interface repair, measurement revision, evaluator audit, descend, ascend) and never change scientific authority, which remains governed by §7.
+
+**Provisional atomicity.** An atom is atomic only relative to a registered target, split family, evaluator epoch and evidence cutoff:
+
+\[
+\operatorname{atomic}(f;\tau,\sigma,V,t_{\operatorname{cut}}),
+\]
+
+never absolutely. There is no ATOM-PROVEN-FOREVER terminal.
+
+**Ancestor challenge.** Descendant failures may reopen the lowest responsible ancestor. Ascent requires a supported parent challenge and at least two distinct failed local repair families:
+
+\[
+\text{ascend} \iff c_{\mathrm{par}} \wedge |\Sigma_{\mathrm{failed}}|\ge 2.
+\]
+
+Ancestor supersession stales dependent descendant closure certificates; evidence identities remain addressable (no negative-history deletion).
+
+**Bounded node closure.** A node stops as STOP_BOUNDED only when its closure coordinates pass and no material open residual remains at the registered cutoff; a resource bound with the audit still open yields CANNOT_CHECK, which is neither solver failure nor a scientific terminal.
+
+Reference implementation: `src/rakl/recursive_framework_audit.py`; frozen known-world benchmark: `research/recursive_framework_audit_v1/`.
+
 ---
 
 ## 9. Action and experiment selection
@@ -355,6 +388,12 @@ for an identified-set width functional \(W\), or a worst-case separation score
 \]
 
 The portfolio is non-greedy across exploit, diversify, moonshot and meta-method actions.
+
+### 9.1 Audit computations and value-of-audit
+
+Recursive framework audit is itself an action-selection problem. The audit operator chooses among solve-at-current-representation, refine downward, and challenge an ancestor abstraction; its selection is a pure function of the audited node and residual (§8.1), with priority ordering that fails closed: an invalid evaluator outranks an external trust root, which outranks a resource bound with open audit (CANNOT_CHECK), which outranks revision.
+
+Value-of-audit stopping applies the same discipline as §9: an audit computation is selected when its expected decision improvement justifies its cost, and `STOP_BOUNDED` is licensed only when closure coordinates pass with no material open residual at the registered cutoff. Conformance of these control semantics is instrument evidence only; it is not evidence that recursion improves fresh-task outcomes (that requires the separately frozen RFC-v1 utility benchmark).
 
 ---
 
@@ -428,6 +467,8 @@ A semantic round is flat only when \(\Delta_t^f=\varnothing\) after typed dedupl
 Independent-flat credit additionally requires process independence and evidence-lineage independence. Multiple agents or papers sharing the same underlying evidence do not create multiple independent confirmations.
 
 Saturation is a stopping statement about a declared search universe, not a theorem that reality contains no unknown knowledge.
+
+**Semantic saturation is not formulation closure.** A fiber may be semantically saturated within its current formulation (§12) while its formulation is still open: the question, framework, decomposition, interface, measurement or evaluator may each carry a material residual (§8.1). Semantic saturation licenses no claim about the formulation; formulation closure is the separate, cutoff-relative STOP_BOUNDED state of the audit projection, and ancestor supersession stales it.
 
 ---
 
