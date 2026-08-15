@@ -1,0 +1,141 @@
+{
+  "assessment_version": "orion-engineering-closure-assessment-v4",
+  "campaigns": {
+    "capacity_campaign": "measured on laptop hardware; 2 SLOs missed (api_availability 0.928 vs 0.99, index_lag p95 34 vs 25); budgets not moved",
+    "conformance_audit": "112 items: 64 PRESENT 44 ABSENT 4 PARTIAL 0 CANNOT_CHECK; 48 negatives preserved",
+    "cross_plane_attacks": "14 HELD / 3 BROKE / 1 CONFIRMS_KNOWN_OPEN; the 3 BROKE are X08 X11 X12 above",
+    "hostile_assurance_a01_a12": "12/12 held; renamed from H01..H12 to stop colliding with the matrix namespace",
+    "hostile_matrix_30_rows": "IN_FLIGHT",
+    "restore_drill": "8 HELD / 1 NOT_EXERCISED (WAL sidecar absent at copy time); 9/9 planes semantically EQUAL on clean restore",
+    "runbook_drill": "11 procedures: 8 EXECUTED 3 NOT_EXECUTABLE_LOCALLY"
+  },
+  "corrections_to_v3": {
+    "E10": {
+      "found_by": "conformance lane, CONFORMANCE_AUDIT_V1, verified route by route",
+      "status": "FIX_IN_FLIGHT",
+      "v3_said": "REFERENCE_IMPLEMENTED; residual: fronting with a hardened production server",
+      "what_was_wrong": "The GAP_LEDGER falsifier is defeated, but API_AND_OBSERVATORY.md is also part of the specification and 10 of its 12 named routes returned 404; query strings were not stripped from the path segment; every mutation is specified to return a StateTransitionReceipt on every outcome and the service returned ad-hoc dicts; and the service kept its own in-memory snapshot state, never touching the real store. V3's named residual (TLS, rate limits) named none of this."
+    },
+    "E18": {
+      "found_by": "conformance lane, cross-referenced against HOSTILE_TEST_MATRIX.md row by row",
+      "status": "FIX_IN_FLIGHT",
+      "v3_said": "hostile_assurance held 12/12; REFERENCE_IMPLEMENTED",
+      "what_was_wrong": "The 12 executed cases attack 7 of the matrix's 30 rows fully and 4 partially; 19 rows were never executed. The campaign's own docstring is honest -- it freezes its own list and never claims to be the matrix -- but V3 cited it as E18 closure. Worse, the campaign numbered its cases H01..H12, colliding with the matrix namespace while attacking different things: campaign H01 is stale-snapshot mutation, matrix H01 is kill during canonical blob write. A reader cross-referencing would conclude the wrong thing."
+    },
+    "E3": {
+      "found_by": "restore lane, CROSS_PLANE_ATTACKS_V1 X11 and X12, confirmed in source",
+      "status": "FIX_IN_FLIGHT",
+      "v3_said": "REFERENCE_IMPLEMENTED, production_residuals: []",
+      "what_was_wrong": "SqliteAtlasPlaneStore.commit_batch had no compare-and-swap against the stored revision (base_atlas_revision was stored and never compared; expected_atlas_revision was recomputed from the same batch, a self-consistency check not a CAS) and no monotonic sequence check. The semantic store, which the atlas docstring claims to mirror, does both. A stale-base batch and a sequence-rewind batch both committed."
+    },
+    "E4": {
+      "found_by": "conformance lane",
+      "status": "CITATION_CORRECTED_HERE",
+      "v3_said": "evidence: project_runtime.py::next_action",
+      "what_was_wrong": "Citation defect, not an overclaim. The fibre is supported, but the cited symbol is a runtime decision function; the thing that actually persists is engineering_control_store.SqliteControlProjectionStore."
+    },
+    "E8": {
+      "found_by": "operate lane (OperatorDoctor.render), capacity lane (ResourceBudget.release), postgres lane (fd leak in five stores, ensure_ascii divergence)",
+      "status": "FIXED",
+      "v3_said": "REFERENCE_IMPLEMENTED",
+      "what_was_wrong": "Four defects in already-landed engineering code, two of them in files written earlier this session. Each confirmed in source and reproduced before fixing; all four fixed in commit 9a89ace with a test that failed before and passes after."
+    }
+  },
+  "date": "2026-08-15",
+  "defects_fixed_count": 7,
+  "defects_found_today": [
+    {
+      "confirmed": true,
+      "found_by": "restore lane",
+      "id": "X08",
+      "status": "FIX_IN_FLIGHT",
+      "what": "action_payload_hash stored but never verified to bind any effect; all six heads advanced under a hash of nothing",
+      "where": "engineering_store.SqliteEngineeringStateStore.commit_transition"
+    },
+    {
+      "confirmed": true,
+      "found_by": "restore lane",
+      "id": "X11",
+      "status": "FIX_IN_FLIGHT",
+      "what": "no compare-and-swap against stored revision",
+      "where": "engineering_atlas_store.SqliteAtlasPlaneStore.commit_batch"
+    },
+    {
+      "confirmed": true,
+      "found_by": "restore lane",
+      "id": "X12",
+      "status": "FIX_IN_FLIGHT",
+      "what": "no monotonic sequence check; sequence rewind commits",
+      "where": "engineering_atlas_store.SqliteAtlasPlaneStore.commit_batch"
+    },
+    {
+      "confirmed": true,
+      "found_by": "postgres lane",
+      "id": "FD_LEAK",
+      "status": "FIXED 9a89ace",
+      "what": "with self._connect() as db commits but does not close; 200 fds over 100 reads",
+      "where": "23 sites across 6 stores"
+    },
+    {
+      "confirmed": true,
+      "found_by": "postgres lane",
+      "id": "ENSURE_ASCII",
+      "status": "FIXED 9a89ace",
+      "what": "ensure_ascii=True while canonical_sha256 uses False; non-ASCII payload bytes diverge from hashed bytes",
+      "where": "engineering_atlas_store._dump, engineering_workflow_workers._dump"
+    },
+    {
+      "confirmed": true,
+      "found_by": "operate lane",
+      "id": "RENDER_EMPTY_OK",
+      "status": "FIXED 9a89ace",
+      "what": "empty result set rendered overall=OK",
+      "where": "engineering_ops.OperatorDoctor.render"
+    },
+    {
+      "confirmed": true,
+      "found_by": "operate lane",
+      "id": "RENDER_MASK",
+      "status": "FIXED 9a89ace",
+      "what": "CANNOT_CHECK outranked FAIL by enum order; a confirmed failure was hidden",
+      "where": "engineering_ops.OperatorDoctor.render"
+    },
+    {
+      "confirmed": true,
+      "found_by": "capacity lane",
+      "id": "BUDGET_RATCHET",
+      "status": "FIXED 9a89ace",
+      "what": "release freed a queued slot for an inflight holder; inflight pinned at ceiling forever; my first fix had the same class of bug for promoted callers, caught by my own regression test",
+      "where": "engineering_ops.ResourceBudget.release"
+    },
+    {
+      "confirmed": true,
+      "found_by": "own tests",
+      "id": "REPLAY_ORDER",
+      "status": "FIXED 2122612",
+      "what": "replay checked after staleness; a legitimate retry got 409",
+      "where": "engineering_http.EngineeringHttpService._validate_mutation"
+    },
+    {
+      "confirmed": true,
+      "found_by": "first real search",
+      "id": "COVERAGE_NOT_REACHABILITY",
+      "status": "FIXED #749",
+      "what": "coverage predicate used where a route was needed; covered atom's researcher never called",
+      "where": "recursive_solver.solve_recursive"
+    }
+  ],
+  "defects_found_today_count": 10,
+  "grants_scientific_authority": false,
+  "production_ready_scoped": false,
+  "supersedes": "CLOSURE_ASSESSMENT_V3.json",
+  "terminal": "CORRECTED__FIXES_IN_FLIGHT__NOT_PRODUCTION_READY",
+  "what_this_does_not_claim": [
+    "that any fibre is closed while a fix for it is in flight",
+    "that laptop capacity numbers are production capacity",
+    "PostgreSQL WAL/PITR, failover, or that POSTGRES_SCHEMA_V1.sql parses -- nothing here to run it against",
+    "distributed exactly-once across external effects",
+    "an independently executed assurance pass on an exact production release"
+  ],
+  "why_v4_exists": "V3 was checked mechanically by an independent lane and found to overclaim on E10 and E18, and the restore lane found E3 defects V3 listed no residual for. This assessment records each as a correction. V3 stays in the tree, superseded, not rewritten."
+}
