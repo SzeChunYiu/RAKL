@@ -44,7 +44,7 @@ jobs:
             --raw revival/population_raw2.jsonl \
             --corpus revival/corpus2.jsonl \
             --mathlib /tmp/mathlib4 \
-            --work revival/work \
+            --work "$GITHUB_WORKSPACE/revival/work" \
             --out revival/population_v4_all.jsonl \
             --workers 2 --stride 1
       - name: Enforce fresh-task exclusion from v1
@@ -72,7 +72,7 @@ jobs:
             --population revival/population_v4_fresh.jsonl \
             --corpus revival/corpus2.jsonl \
             --mathlib /tmp/mathlib4 \
-            --work revival/work \
+            --work "$GITHUB_WORKSPACE/revival/work" \
             --out revival/results_revival.json \
             --workers 2
       - name: Score frozen revival decision rule
@@ -87,7 +87,6 @@ jobs:
           ao=sum(bool(x['solved_A']) and not bool(x['solved_B']) for x in rows)
           bo=sum(bool(x['solved_B']) and not bool(x['solved_A']) for x in rows)
           n=ao+bo
-          # Exact two-sided McNemar/binomial p under p=.5
           if n==0:p=1.0
           else:
             lo=min(ao,bo)
