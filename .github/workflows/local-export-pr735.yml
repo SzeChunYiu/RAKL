@@ -1,0 +1,19 @@
+name: local-export-pr735
+on:
+  push:
+    branches:
+      - tooling/export-pr735-local
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Archive exact parent commit
+        run: git archive --format=zip --output=RAKL-pr735-f466179.zip HEAD^
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAKL-pr735-f466179
+          path: RAKL-pr735-f466179.zip
+          if-no-files-found: error
