@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {"type": "string"},
+    "changes": {"description": "Overrides applied to BASE in src/rakl/epistemic_projection_benchmark_v2.py; gold is stored separately.", "type": "object"},
+    "family": {"type": "string"},
+    "kind": {"enum": ["INVARIANCE", "DECISION_TWIN", "LEGITIMATE_UPDATE"]},
+    "request": {"enum": ["PROMOTE_CLAIM", "PROMOTE_MECHANISM", "PROMOTE_IDENTIFICATION", "PROMOTE_NOVELTY", "REACTIVATE_CLAIM", "SUPERSEDE_CLAIM", "RESOLVE_CONTRADICTION"]}
+  },
+  "required": ["case_id", "family", "kind", "request", "changes"],
+  "title": "Paper I Epistemic Governance Benchmark v2 Case",
+  "type": "object"
+}
